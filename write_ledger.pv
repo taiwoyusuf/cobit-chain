@@ -1,0 +1,32 @@
+from azure.identity import DefaultAzureCredential
+from azure.confidentialledger import ConfidentialLedgerClient
+from azure.confidentialledger.certificate import ConfidentialLedgerCertificateClient
+
+ledger_name = "cobitchain-ledger01"
+
+identity_url = "https://identity.confidential-ledger.core.azure.com"
+ledger_url = f"https://{ledger_name}.confidential-ledger.azure.com"
+
+credential = DefaultAzureCredential()
+
+# 🔥 THIS PART WAS MISSING
+identity_client = ConfidentialLedgerCertificateClient(identity_url)
+network_identity = identity_client.get_ledger_identity(ledger_id=ledger_name)
+
+with open("ledger_cert.pem", "w") as f:
+    f.write(network_identity["ledgerTlsCertificate"])
+
+# Client with certificate
+client = ConfidentialLedgerClient(
+    endpoint=ledger_url,
+    credential=credential,
+    ledger_certificate_path="ledger_cert.pem"
+)
+
+entry = {
+    "contents": "{\"cobit_control\":\"Backup Review\",\"system\":\"Niagara BMS\",\"status\":\"Completed\",\"performed_by\":\"Taiwo Yusuf\"}"
+}
+
+result = client.create_ledger_entry(entry=entry)
+
+print("Transaction ID:", result["transactionId"])
