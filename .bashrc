@@ -41,3 +41,87 @@ export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
 export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
 export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
+################################################
+# Rootless docker specific environment variables
+export XDG_RUNTIME_DIR=/home/yusuf/.docker/run
+export DOCKER_HOST=unix:///home/yusuf/.docker/run/docker.sock
+export PATH=/home/yusuf/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+################################################
