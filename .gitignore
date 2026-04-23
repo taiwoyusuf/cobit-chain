@@ -1,2 +1,6 @@
 .azure/
-
+__pycache__/
+*.pyc
+.env
+.bash_history
+.lesshst
