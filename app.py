@@ -2,10 +2,25 @@ from flask import Flask, request, render_template_string
 import os
 import io
 import csv
+import json
 import hashlib
 import uuid
 import datetime
 from azure.storage.blob import BlobServiceClient
+
+# ---------------- BASELINE STORAGE ----------------
+
+BASELINE_FILE = "baseline_hashes.json"
+
+def load_baseline():
+    if os.path.exists(BASELINE_FILE):
+        with open(BASELINE_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_baseline(data):
+    with open(BASELINE_FILE, "w") as f:
+        json.dump(data, f)
 
 app = Flask(__name__)
 
@@ -213,70 +228,78 @@ def verify():
             baseline_rows = read_csv_blob(baseline_blob_client)
             baseline_map = {row["filename"]: row for row in baseline_rows}
 
-            if filename not in baseline_map:
-                baseline_hash = current_hash
-                baseline_rows.append({
-                    "filename": filename,
-                    "baseline_hash": baseline_hash,
-                    "created_on": timestamp,
-                    "last_verified_on": timestamp
-                })
-                write_csv_blob(
-                    baseline_blob_client,
-                    ["filename", "baseline_hash", "created_on", "last_verified_on"],
-                    baseline_rows
-                )
+           if filename not in baseline_map:
+    # FIRST TIME → CREATE BASELINE
+    baseline_hash = current_hash
 
-                if not system or not verified_by:
-                    status = "WARNING — BASELINE CREATED WITH INCOMPLETE METADATA"
-                    rag = "YELLOW"
-                    color = "yellow"
-                    score = 70
-                    audit_message = "Trusted baseline created, but metadata is incomplete."
-                else:
-                    status = "BASELINE CREATED"
-                    rag = "GREEN"
-                    color = "green"
-                    score = 100
-                    audit_message = "Trusted baseline created successfully for future verification."
+    baseline_rows.append({
+        "filename": filename,
+        "baseline_hash": baseline_hash,
+        "created_on": timestamp,
+        "last_verified_on": timestamp
+    })
 
-                action_taken = "Stored new baseline hash"
+    write_csv_blob(
+        baseline_blob_client,
+        ["filename", "baseline_hash", "created_on", "last_verified_on"],
+        baseline_rows
+    )
 
-            else:
-                baseline_hash = baseline_map[filename]["baseline_hash"]
+    # Metadata check
+    if not system or not verified_by:
+        status = "WARNING — BASELINE CREATED WITH INCOMPLETE METADATA"
+        rag = "YELLOW"
+        color = "yellow"
+        score = 70
+        audit_message = "Trusted baseline created, but metadata is incomplete."
+    else:
+        status = "BASELINE CREATED"
+        rag = "GREEN"
+        color = "green"
+        score = 100
+        audit_message = "Trusted baseline created successfully for future verification."
 
-                if current_hash == baseline_hash:
-                    if not system or not verified_by:
-                        status = "WARNING — INCOMPLETE METADATA"
-                        rag = "YELLOW"
-                        color = "yellow"
-                        score = 70
-                        audit_message = "File integrity verified, but metadata is incomplete."
-                    else:
-                        status = "VERIFIED"
-                        rag = "GREEN"
-                        color = "green"
-                        score = 100
-                        audit_message = "File matches the trusted baseline hash."
+    action_taken = "Stored new baseline hash"
 
-                    action_taken = "Compared against stored baseline"
+else:
+    baseline_hash = baseline_map[filename]["baseline_hash"]
 
-                    for row in baseline_rows:
-                        if row["filename"] == filename:
-                            row["last_verified_on"] = timestamp
-                    write_csv_blob(
-                        baseline_blob_client,
-                        ["filename", "baseline_hash", "created_on", "last_verified_on"],
-                        baseline_rows
-                    )
+    if current_hash == baseline_hash:
+        # MATCH
+        if not system or not verified_by:
+            status = "WARNING — INCOMPLETE METADATA"
+            rag = "YELLOW"
+            color = "yellow"
+            score = 70
+            audit_message = "File integrity verified, but metadata is incomplete."
+        else:
+            status = "VERIFIED"
+            rag = "GREEN"
+            color = "green"
+            score = 100
+            audit_message = "File matches the trusted baseline hash."
 
-                else:
-                    status = "TAMPER DETECTED"
-                    rag = "RED"
-                    color = "red"
-                    score = 0
-                    audit_message = "Current file hash does not match the trusted baseline hash."
-                    action_taken = "Tamper detected during verification"
+        action_taken = "Compared against stored baseline"
+
+        # Update last verified timestamp
+        for row in baseline_rows:
+            if row["filename"] == filename:
+                row["last_verified_on"] = timestamp
+
+        write_csv_blob(
+            baseline_blob_client,
+            ["filename", "baseline_hash", "created_on", "last_verified_on"],
+            baseline_rows
+        )
+
+    else:
+        # MISMATCH
+        status = "TAMPER DETECTED"
+        rag = "RED"
+        color = "red"
+        score = 0
+        audit_message = "Current file hash does not match the trusted baseline hash."
+        action_taken = "Tamper detected during verification"
 
             log_rows = read_csv_blob(log_blob_client)
             log_rows.append({
