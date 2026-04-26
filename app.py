@@ -9,6 +9,8 @@ from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
+# ---------------- CONFIG ----------------
+
 connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 container_name = "cobitchain-evidence"
 
@@ -22,7 +24,7 @@ log_blob_client = container_client.get_blob_client(log_blob_name)
 baseline_blob_client = container_client.get_blob_client(baseline_blob_name)
 
 LOG_HEADERS = [
-    "evidence_id", "filename", "system", "verified_by", "status", "rag",
+    "evidence_id", "batch_id", "filename", "system", "verified_by", "status", "rag",
     "baseline_hash", "current_hash", "timestamp", "score",
     "action_taken", "audit_message"
 ]
@@ -38,7 +40,7 @@ HTML = """
     <title>COBIT-Chain™</title>
     <style>
         body { font-family: Arial; background:#f4f6f9; margin:0; padding:0; }
-        .container { width:900px; margin:40px auto; background:white; padding:25px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+        .container { width:1000px; margin:40px auto; background:white; padding:25px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
         h1 { margin-top:0; }
         input, button { width:100%; padding:10px; margin-top:10px; box-sizing:border-box; }
         button { background:#1f6feb; color:white; border:none; border-radius:8px; cursor:pointer; }
@@ -56,10 +58,11 @@ HTML = """
 <body>
 <div class="container">
     <h1>COBIT-Chain™ Evidence Integrity</h1>
-    <p>Upload file → auto-baseline → verify integrity → log audit trail</p>
+    <p>Upload file → auto-baseline → verify integrity → log audit trail → trace by batch/process</p>
 
     <form method="post" enctype="multipart/form-data">
         <input type="file" name="file" required>
+        <input type="text" name="batch_id" placeholder="Batch ID / Process ID e.g. BATCH-001">
         <input type="text" name="system" placeholder="System e.g. BMS, ERP, Weighbridge">
         <input type="text" name="verified_by" placeholder="Verified By">
         <button type="submit">Verify File</button>
@@ -68,6 +71,7 @@ HTML = """
     {% if status %}
     <div class="card {{ color }}">
         <div class="status">{{ status }}</div>
+        <p><b>Batch / Process ID:</b> {{ batch_id }}</p>
         <p><b>File:</b> {{ filename }}</p>
         <p><b>RAG:</b> {{ rag }}</p>
         <p><b>Score:</b> {{ score }}%</p>
@@ -83,6 +87,7 @@ HTML = """
     <table>
         <tr>
             <th>Time</th>
+            <th>Batch / Process</th>
             <th>File</th>
             <th>System</th>
             <th>User</th>
@@ -93,6 +98,7 @@ HTML = """
         {% for row in logs %}
         <tr>
             <td>{{ row.timestamp }}</td>
+            <td>{{ row.batch_id }}</td>
             <td>{{ row.filename }}</td>
             <td>{{ row.system }}</td>
             <td>{{ row.verified_by }}</td>
@@ -145,6 +151,8 @@ def verify():
     color = "yellow"
     rag = ""
     score = 0
+    evidence_id = ""
+    batch_id = ""
     filename = ""
     system = ""
     verified_by = ""
@@ -159,6 +167,7 @@ def verify():
 
     if request.method == "POST":
         file = request.files.get("file")
+        batch_id = request.form.get("batch_id", "").strip()
         system = request.form.get("system", "").strip()
         verified_by = request.form.get("verified_by", "").strip()
         timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -222,6 +231,7 @@ def verify():
 
             log_rows.append({
                 "evidence_id": evidence_id,
+                "batch_id": batch_id,
                 "filename": filename,
                 "system": system,
                 "verified_by": verified_by,
@@ -254,6 +264,8 @@ def verify():
         color=color,
         rag=rag,
         score=score,
+        evidence_id=evidence_id,
+        batch_id=batch_id,
         filename=filename,
         system=system,
         verified_by=verified_by,
@@ -267,3 +279,4 @@ def verify():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
