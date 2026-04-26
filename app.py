@@ -8,10 +8,14 @@ from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
-# =============================
-# CONFIG (SAFE - NO SECRETS)
-# =============================
+# ================================
+# CONFIG (SAFE - NO HARD CODE)
+# ================================
 AZURE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+if not AZURE_CONNECTION_STRING:
+    raise ValueError("AZURE_STORAGE_CONNECTION_STRING not set")
+
 CONTAINER_NAME = "cobitchain-evidence"
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
@@ -20,41 +24,41 @@ container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 BASELINE_FILE = "baseline_hashes.csv"
 LOG_FILE = "logs.csv"
 
-# =============================
+# ================================
 # HASH FUNCTIONS
-# =============================
-def compute_hash(file):
+# ================================
+def sha256_text(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+def compute_file_hash(file):
     sha256 = hashlib.sha256()
     file.seek(0)
     sha256.update(file.read())
     file.seek(0)
     return sha256.hexdigest()
 
-def hash_text(text):
-    return hashlib.sha256(text.encode()).hexdigest()
-
-# =============================
-# STORAGE FUNCTIONS
-# =============================
+# ================================
+# CSV HANDLING
+# ================================
 def load_csv(filename):
     try:
-        blob = container_client.get_blob_client(filename).download_blob().readall()
-        return pd.read_csv(io.BytesIO(blob))
+        data = container_client.get_blob_client(filename).download_blob().readall()
+        return pd.read_csv(io.BytesIO(data))
     except:
         return pd.DataFrame()
 
 def save_csv(df, filename):
     container_client.get_blob_client(filename).upload_blob(df.to_csv(index=False), overwrite=True)
 
-def ensure_columns(df, cols):
-    for c in cols:
+def ensure_columns(df, columns):
+    for c in columns:
         if c not in df.columns:
             df[c] = ""
     return df
 
-# =============================
+# ================================
 # STATUS LOGIC
-# =============================
+# ================================
 def get_status(expected, current):
     if not expected:
         return "YELLOW"
@@ -63,9 +67,9 @@ def get_status(expected, current):
     else:
         return "RED"
 
-# =============================
+# ================================
 # MAIN ROUTE
-# =============================
+# ================================
 @app.route("/", methods=["GET", "POST"])
 def index():
 
@@ -77,7 +81,7 @@ def index():
     logs_df = ensure_columns(logs_df, [
         "filename","batch_id","timestamp","current_hash","expected_hash","status",
         "process_stage","evidence_category","uploaded_by",
-        "signed_by","approval_status","signature_hash",
+        "signed_by","approval_status",
         "previous_hash","record_hash"
     ])
 
@@ -93,7 +97,7 @@ def index():
         signed_by = request.form.get("signed_by")
         approval = request.form.get("approval_status")
 
-        file_hash = compute_hash(file)
+        file_hash = compute_file_hash(file)
         timestamp = datetime.datetime.utcnow().isoformat()
 
         existing = baseline_df[baseline_df["filename"] == filename]
@@ -108,20 +112,21 @@ def index():
             }])], ignore_index=True)
 
             save_csv(baseline_df, BASELINE_FILE)
+
         else:
             expected_hash = existing.iloc[0]["baseline_hash"]
             status = get_status(expected_hash, file_hash)
 
-        # DIGITAL SIGNATURE
-        signature_hash = hash_text(file_hash + (signed_by or "UNKNOWN") + timestamp)
-
-        # LEDGER CHAIN
+        # ================================
+        # LEDGER LOGIC
+        # ================================
         if logs_df.empty:
             previous_hash = "GENESIS"
         else:
             previous_hash = logs_df.iloc[-1]["record_hash"]
 
-        record_hash = hash_text(file_hash + previous_hash + signature_hash + timestamp)
+        record_string = file_hash + previous_hash + timestamp
+        record_hash = sha256_text(record_string)
 
         new_log = pd.DataFrame([{
             "filename": filename,
@@ -135,7 +140,6 @@ def index():
             "uploaded_by": user,
             "signed_by": signed_by,
             "approval_status": approval,
-            "signature_hash": signature_hash,
             "previous_hash": previous_hash,
             "record_hash": record_hash
         }])
@@ -145,9 +149,9 @@ def index():
 
         return redirect("/")
 
-    # =============================
+    # ================================
     # BATCH SUMMARY
-    # =============================
+    # ================================
     batch_summary = []
 
     if not logs_df.empty:
@@ -158,33 +162,34 @@ def index():
             red = len(group[group["status"]=="RED"])
             yellow = len(group[group["status"]=="YELLOW"])
 
-            if red > 0:
-                status = "RED"
-            elif yellow > 0:
-                status = "YELLOW"
+            if red>0:
+                status="RED"
+            elif yellow>0:
+                status="YELLOW"
             else:
-                status = "GREEN"
+                status="GREEN"
 
-            integrity = round((green / total) * 100, 2)
+            integrity = round((green/total)*100,2)
 
             batch_summary.append({
                 "batch": batch,
-                "status": status,
-                "integrity": integrity,
+                "total": total,
                 "green": green,
                 "yellow": yellow,
-                "red": red
+                "red": red,
+                "status": status,
+                "integrity": integrity
             })
 
-    # =============================
+    # ================================
     # UI
-    # =============================
+    # ================================
     html = """
     <html>
     <head>
     <title>COBIT-Chain™</title>
     <style>
-    body{font-family:Arial;margin:40px;background:#f4f6f8;}
+    body{font-family:Arial;margin:40px;background:#f5f7fb;}
     .card{padding:15px;margin:10px;border-radius:10px;color:white;display:inline-block;width:250px;}
     .GREEN{background:#2ecc71;}
     .YELLOW{background:#f1c40f;color:black;}
@@ -192,15 +197,12 @@ def index():
     table{width:100%;margin-top:20px;border-collapse:collapse;}
     th,td{padding:8px;border:1px solid #ddd;}
     th{background:black;color:white;}
-    .row-GREEN{background:#eafaf1;}
-    .row-YELLOW{background:#fcf3cf;}
-    .row-RED{background:#fdecea;}
     </style>
     </head>
 
     <body>
 
-    <h1>COBIT-Chain™ Evidence Integrity + Ledger</h1>
+    <h1>COBIT-Chain™ Evidence Integrity System</h1>
 
     <form method="POST" enctype="multipart/form-data">
 
@@ -214,7 +216,7 @@ def index():
 
     <input type="text" name="uploaded_by" placeholder="Uploaded By"><br><br>
 
-    <input type="text" name="signed_by" placeholder="Signed By (QA / IT / Audit)"><br><br>
+    <input type="text" name="signed_by" placeholder="Signed By (QA / IT / Auditor)"><br><br>
 
     <select name="approval_status">
         <option value="">Approval Status</option>
@@ -224,33 +226,30 @@ def index():
     </select><br><br>
 
     <button type="submit">Upload</button>
-
     </form>
 
     <h2>Batch Summary</h2>
-
     {% for b in batch_summary %}
         <div class="card {{b.status}}">
             <b>{{b.batch}}</b><br>
             Integrity: {{b.integrity}}%<br>
-            G: {{b.green}} | Y: {{b.yellow}} | R: {{b.red}}
+            Green: {{b.green}} | Yellow: {{b.yellow}} | Red: {{b.red}}
         </div>
     {% endfor %}
 
-    <h2>Ledger</h2>
-
+    <h2>Audit Log</h2>
     <table>
     <tr>
-    <th>File</th><th>Status</th><th>Signed By</th><th>Approval</th><th>Hash</th>
+    <th>File</th><th>Batch</th><th>Status</th><th>Signed By</th><th>Approval</th>
     </tr>
 
     {% for r in logs %}
-    <tr class="row-{{r.status}}">
+    <tr>
         <td>{{r.filename}}</td>
+        <td>{{r.batch_id}}</td>
         <td>{{r.status}}</td>
         <td>{{r.signed_by}}</td>
         <td>{{r.approval_status}}</td>
-        <td>{{r.record_hash[:10]}}...</td>
     </tr>
     {% endfor %}
     </table>
