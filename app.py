@@ -97,12 +97,17 @@ def verify():
 
     ensure_blob_with_header(
         log_blob_client,
-        ["filename", "status", "timestamp"]
+        [
+            "evidence_id", "filename", "system", "verified_by", "status", "rag",
+            "baseline_hash", "current_hash", "timestamp", "score", "action_taken", "audit_message"
+        ]
     )
 
     if request.method == "POST":
 
         file = request.files.get("file")
+        system = request.form.get("system", "").strip()
+        verified_by = request.form.get("verified_by", "").strip()
 
         if file and file.filename:
 
@@ -114,6 +119,7 @@ def verify():
             baseline_map = {r["filename"]: r for r in rows}
 
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            evidence_id = str(uuid.uuid4())
 
             if filename not in baseline_map:
 
@@ -134,6 +140,10 @@ def verify():
 
                 status = "BASELINE CREATED"
                 color = "orange"
+                rag = "YELLOW"
+                score = 70
+                audit_message = "Baseline created"
+                action_taken = "Stored baseline"
 
             else:
 
@@ -143,24 +153,55 @@ def verify():
 
                     status = "VERIFIED"
                     color = "green"
+                    rag = "GREEN"
+                    score = 100
+                    audit_message = "File matches baseline"
+                    action_taken = "Verified"
+
+                    for r in rows:
+                        if r["filename"] == filename:
+                            r["last_verified_on"] = timestamp
+
+                    write_csv_blob(
+                        baseline_blob_client,
+                        ["filename", "baseline_hash", "created_on", "last_verified_on"],
+                        rows
+                    )
 
                 else:
 
                     status = "TAMPER DETECTED"
                     color = "red"
+                    rag = "RED"
+                    score = 0
+                    audit_message = "File does not match baseline"
+                    action_taken = "Tamper detected"
 
-            # LOG
+            # ---------------- LOGGING ----------------
+
             log_rows = read_csv_blob(log_blob_client)
 
             log_rows.append({
+                "evidence_id": evidence_id,
                 "filename": filename,
+                "system": system,
+                "verified_by": verified_by,
                 "status": status,
-                "timestamp": timestamp
+                "rag": rag,
+                "baseline_hash": baseline_hash,
+                "current_hash": current_hash,
+                "timestamp": timestamp,
+                "score": score,
+                "action_taken": action_taken,
+                "audit_message": audit_message
             })
 
             write_csv_blob(
                 log_blob_client,
-                ["filename", "status", "timestamp"],
+                [
+                    "evidence_id", "filename", "system", "verified_by", "status", "rag",
+                    "baseline_hash", "current_hash", "timestamp", "score", "action_taken", "audit_message"
+                ],
                 log_rows
             )
 
