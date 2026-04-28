@@ -1,21 +1,12 @@
 from flask import Flask, request, render_template_string, redirect
-import os
-import io
-import hashlib
-import datetime
+import os, io, hashlib, datetime
 import pandas as pd
 from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
-# ================================
 # CONFIG
-# ================================
 AZURE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-
-if not AZURE_CONNECTION_STRING:
-    raise ValueError("AZURE_STORAGE_CONNECTION_STRING not set")
-
 CONTAINER_NAME = "cobitchain-evidence"
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
@@ -24,278 +15,251 @@ container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 BASELINE_FILE = "baseline_hashes.csv"
 LOG_FILE = "logs.csv"
 
-# ================================
-# HELPERS
-# ================================
-def clean(val):
-    if val is None:
-        return ""
-    val = str(val)
-    return "" if val.lower() == "nan" else val.strip()
+REQUIRED_STAGES = ["Weighbridge", "Dispatch", "Invoice"]
 
-def sha256_text(text):
-    return hashlib.sha256(text.encode()).hexdigest()
+def clean(x):
+    if x is None: return ""
+    x = str(x).strip()
+    return "" if x.lower() == "nan" else x
 
-def compute_bytes_hash(file_bytes):
-    return hashlib.sha256(file_bytes).hexdigest()
+def sha256_text(x): return hashlib.sha256(x.encode()).hexdigest()
+def compute_hash(b): return hashlib.sha256(b).hexdigest()
 
-# ================================
-# CSV HANDLING
-# ================================
-def load_csv(filename):
+def load_csv(name):
     try:
-        data = container_client.get_blob_client(filename).download_blob().readall()
-        df = pd.read_csv(io.BytesIO(data), keep_default_na=False)
-        return df.fillna("")
+        data = container_client.get_blob_client(name).download_blob().readall()
+        return pd.read_csv(io.BytesIO(data), keep_default_na=False).fillna("")
     except:
         return pd.DataFrame()
 
-def save_csv(df, filename):
-    df = df.fillna("")
-    container_client.get_blob_client(filename).upload_blob(
-        df.to_csv(index=False),
-        overwrite=True
-    )
+def save_csv(df, name):
+    container_client.get_blob_client(name).upload_blob(df.to_csv(index=False), overwrite=True)
 
-def ensure_columns(df, cols):
+def ensure_cols(df, cols):
     for c in cols:
-        if c not in df.columns:
-            df[c] = ""
+        if c not in df.columns: df[c] = ""
     return df.fillna("")
 
-# ================================
 # EXCEL ANALYTICS
-# ================================
-def analyze_excel(file_bytes, filename):
-    result = {
-        "file_type": "Non-Excel",
-        "excel_rows": "",
-        "excel_columns": "",
-        "missing_cells": "",
-        "duplicate_rows": "",
-        "columns_detected": "",
-        "analysis_summary": ""
-    }
+def analyze_excel(bytes_data, filename):
+    result = {"excel_rows":"","excel_columns":"","missing_cells":"","duplicate_rows":"","analysis_summary":"","data_quality":"N/A"}
 
-    if not filename.lower().endswith((".xlsx", ".xls")):
+    if not filename.lower().endswith((".xlsx",".xls")):
         return result
 
     try:
-        df = pd.read_excel(io.BytesIO(file_bytes), engine="openpyxl")
-
-        rows = len(df)
-        cols = len(df.columns)
+        df = pd.read_excel(io.BytesIO(bytes_data), engine="openpyxl")
+        rows, cols = df.shape
         missing = int(df.isna().sum().sum())
-        duplicates = int(df.duplicated().sum())
+        dup = int(df.duplicated().sum())
+
+        quality = "GOOD"
+        if missing > 0 or dup > 0:
+            quality = "REVIEW"
 
         result.update({
-            "file_type": "Excel",
-            "excel_rows": rows,
-            "excel_columns": cols,
-            "missing_cells": missing,
-            "duplicate_rows": duplicates,
-            "columns_detected": ", ".join(df.columns),
-            "analysis_summary": f"{rows} rows | {cols} cols | {missing} missing | {duplicates} duplicates"
+            "excel_rows":rows,
+            "excel_columns":cols,
+            "missing_cells":missing,
+            "duplicate_rows":dup,
+            "analysis_summary":f"{rows} rows | {cols} cols | {missing} missing | {dup} dup",
+            "data_quality":quality
         })
-
     except Exception as e:
-        result["analysis_summary"] = f"Excel error: {str(e)}"
+        result["analysis_summary"] = f"Error: {e}"
 
     return result
 
-# ================================
-# STATUS
-# ================================
-def get_status(expected, current):
-    if not expected:
-        return "YELLOW"
-    elif expected == current:
-        return "GREEN"
-    else:
-        return "RED"
+def get_status(expected,current):
+    if not expected: return "YELLOW"
+    return "GREEN" if expected == current else "RED"
 
-# ================================
 # MAIN
-# ================================
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET","POST"])
 def index():
 
-    baseline_df = load_csv(BASELINE_FILE)
-    logs_df = load_csv(LOG_FILE)
+    baseline = load_csv(BASELINE_FILE)
+    logs = load_csv(LOG_FILE)
 
-    baseline_df = ensure_columns(baseline_df, ["filename", "baseline_hash"])
-
-    logs_df = ensure_columns(logs_df, [
+    baseline = ensure_cols(baseline,["filename","baseline_hash"])
+    logs = ensure_cols(logs,[
         "filename","batch_id","timestamp","current_hash","expected_hash","status",
-        "process_stage","evidence_category","uploaded_by",
-        "signed_by","approval_status",
-        "previous_hash","record_hash",
-        "file_type","excel_rows","excel_columns",
-        "missing_cells","duplicate_rows",
-        "columns_detected","analysis_summary"
+        "process_stage","evidence_category","uploaded_by","signed_by","approval_status",
+        "previous_hash","record_hash","excel_rows","excel_columns","missing_cells","duplicate_rows","analysis_summary","data_quality"
     ])
 
-    error_msg = ""
+    error = ""
 
     if request.method == "POST":
-
         file = request.files.get("file")
+        if not file: return redirect("/")
 
         filename = clean(file.filename)
-        batch_id = clean(request.form.get("batch_id"))
+        batch = clean(request.form.get("batch_id"))
         stage = clean(request.form.get("process_stage"))
         category = clean(request.form.get("evidence_category"))
         user = clean(request.form.get("uploaded_by"))
-        signed_by = clean(request.form.get("signed_by"))
+        signed = clean(request.form.get("signed_by"))
         approval = clean(request.form.get("approval_status"))
 
-        # ================================
-        # GOVERNANCE VALIDATION
-        # ================================
-        if signed_by and not approval:
-            error_msg = "❌ Approval is required when 'Signed By' is filled."
-            return render_page(logs_df, error_msg)
+        # GOVERNANCE RULES
+        if signed and not approval:
+            return render_page(logs,"Approval required when Signed By is filled")
 
-        if user and signed_by and user == signed_by:
-            error_msg = "❌ Segregation of Duties violation (Uploader = Signer)."
-            return render_page(logs_df, error_msg)
-
-        if not batch_id:
-            error_msg = "❌ Batch ID is required."
-            return render_page(logs_df, error_msg)
+        if user and signed and user == signed:
+            return render_page(logs,"SoD violation (Uploader = Signer)")
 
         file_bytes = file.read()
-        file_hash = compute_bytes_hash(file_bytes)
-        timestamp = datetime.datetime.utcnow().isoformat()
+        h = compute_hash(file_bytes)
+        ts = datetime.datetime.utcnow().isoformat()
 
         excel = analyze_excel(file_bytes, filename)
 
-        existing = baseline_df[baseline_df["filename"] == filename]
+        existing = baseline[baseline["filename"] == filename]
 
         if existing.empty:
             expected = ""
             status = "YELLOW"
-
-            baseline_df = pd.concat([baseline_df, pd.DataFrame([{
-                "filename": filename,
-                "baseline_hash": file_hash
-            }])])
-
-            save_csv(baseline_df, BASELINE_FILE)
+            baseline = pd.concat([baseline,pd.DataFrame([{"filename":filename,"baseline_hash":h}])])
+            save_csv(baseline,BASELINE_FILE)
         else:
             expected = existing.iloc[0]["baseline_hash"]
-            status = get_status(expected, file_hash)
+            status = get_status(expected,h)
 
-        prev = "GENESIS" if logs_df.empty else logs_df.iloc[-1]["record_hash"]
-
-        record_hash = sha256_text(filename + batch_id + file_hash + prev + timestamp)
+        prev = "GENESIS" if logs.empty else logs.iloc[-1]["record_hash"]
+        record_hash = sha256_text(filename+batch+h+prev+ts)
 
         new = pd.DataFrame([{
-            "filename": filename,
-            "batch_id": batch_id,
-            "timestamp": timestamp,
-            "current_hash": file_hash,
-            "expected_hash": expected,
-            "status": status,
-            "process_stage": stage,
-            "evidence_category": category,
-            "uploaded_by": user,
-            "signed_by": signed_by,
-            "approval_status": approval,
-            "previous_hash": prev,
-            "record_hash": record_hash,
+            "filename":filename,
+            "batch_id":batch,
+            "timestamp":ts,
+            "current_hash":h,
+            "expected_hash":expected,
+            "status":status,
+            "process_stage":stage,
+            "evidence_category":category,
+            "uploaded_by":user,
+            "signed_by":signed,
+            "approval_status":approval,
+            "previous_hash":prev,
+            "record_hash":record_hash,
             **excel
         }])
 
-        logs_df = pd.concat([logs_df, new])
-        save_csv(logs_df, LOG_FILE)
+        logs = pd.concat([logs,new])
+        save_csv(logs,LOG_FILE)
 
         return redirect("/")
 
-    return render_page(logs_df, error_msg)
+    return render_page(logs,error)
 
-# ================================
-# UI RENDER
-# ================================
-def render_page(logs_df, error_msg):
+# RENDER
+def render_page(logs, error):
 
     exceptions = []
 
-    if not logs_df.empty:
-        if (logs_df["signed_by"] != "") & (logs_df["approval_status"] == ""):
-            exceptions.append("Missing approvals detected")
+    if not logs.empty:
 
-        if (logs_df["uploaded_by"] == logs_df["signed_by"]).any():
-            exceptions.append("Segregation of Duties violation detected")
+        if ((logs["signed_by"] != "") & (logs["approval_status"] == "")).any():
+            exceptions.append("Missing approvals")
 
-        if (logs_df["status"] == "RED").any():
-            exceptions.append("Tampered files detected")
+        if ((logs["uploaded_by"] != "") &
+            (logs["signed_by"] != "") &
+            (logs["uploaded_by"] == logs["signed_by"])).any():
+            exceptions.append("SoD violation")
+
+        if (logs["status"] == "RED").any():
+            exceptions.append("Tampered files")
+
+    batches = []
+
+    for b,grp in logs.groupby("batch_id"):
+
+        stages = grp["process_stage"].tolist()
+        missing = [s for s in REQUIRED_STAGES if s not in stages]
+
+        seq_issue = False
+        order_map = {"Weighbridge":1,"Dispatch":2,"Invoice":3}
+        last = 0
+        for s in stages:
+            if s in order_map:
+                if order_map[s] < last:
+                    seq_issue = True
+                last = order_map[s]
+
+        risk = "LOW"
+        if (grp["status"]=="RED").any() or seq_issue:
+            risk = "HIGH"
+        elif missing:
+            risk = "MEDIUM"
+
+        batches.append({
+            "name":b,
+            "risk":risk,
+            "missing":missing,
+            "seq":seq_issue,
+            "records":grp.to_dict("records")
+        })
 
     html = """
-    <html><body style="font-family:Arial; margin:30px">
+    <html><body style="font-family:Arial;margin:30px">
 
-    <h1>COBIT-Chain™ Evidence Integrity System</h1>
+    <h1>COBIT-Chain™</h1>
 
-    {% if error %}
-        <div style="color:red; font-weight:bold">{{error}}</div>
-    {% endif %}
+    {% if error %}<div style="color:red">{{error}}</div>{% endif %}
 
     {% if exceptions %}
-        <div style="background:#ffe0e0; padding:10px; margin-bottom:20px">
-            <b>⚠ Exceptions:</b>
-            <ul>
-            {% for e in exceptions %}
-                <li>{{e}}</li>
-            {% endfor %}
-            </ul>
-        </div>
+    <div style="background:#ffe0e0;padding:10px">
+    <b>Exceptions:</b>
+    <ul>{% for e in exceptions %}<li>{{e}}</li>{% endfor %}</ul>
+    </div>
     {% endif %}
 
     <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required><br><br>
-        <input name="batch_id" placeholder="Batch ID" required><br><br>
-        <input name="process_stage" placeholder="Stage"><br><br>
-        <input name="evidence_category" placeholder="Category"><br><br>
-        <input name="uploaded_by" placeholder="Uploaded By"><br><br>
-        <input name="signed_by" placeholder="Signed By"><br><br>
-
-        <select name="approval_status">
-            <option value="">Approval</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-        </select><br><br>
-
-        <button type="submit">Upload</button>
+    <input type="file" name="file" required><br>
+    <input name="batch_id" placeholder="Batch ID" required><br>
+    <input name="process_stage" placeholder="Stage"><br>
+    <input name="evidence_category" placeholder="Category"><br>
+    <input name="uploaded_by" placeholder="Uploader"><br>
+    <input name="signed_by" placeholder="Signer"><br>
+    <select name="approval_status">
+    <option value="">Approval</option>
+    <option value="Approved">Approved</option>
+    </select>
+    <button>Upload</button>
     </form>
 
     <hr>
 
-    <table border="1" cellpadding="5">
-    <tr>
-        <th>Batch</th><th>Stage</th><th>Status</th>
-        <th>Uploader</th><th>Signer</th><th>Approval</th>
-        <th>Rows</th><th>Missing</th><th>Dup</th>
-    </tr>
+    {% for b in batches %}
+    <h3>{{b.name}} | Risk: {{b.risk}}</h3>
 
-    {% for _, r in logs.iterrows() %}
+    {% if b.missing %}
+    Missing: {{b.missing}}
+    {% endif %}
+
+    {% if b.seq %}
+    <div style="color:red">Sequence issue detected</div>
+    {% endif %}
+
+    <table border=1>
+    <tr><th>Stage</th><th>Status</th><th>Rows</th><th>Missing</th><th>Dup</th></tr>
+    {% for r in b.records %}
     <tr>
-        <td>{{r.batch_id}}</td>
-        <td>{{r.process_stage}}</td>
-        <td>{{r.status}}</td>
-        <td>{{r.uploaded_by}}</td>
-        <td>{{r.signed_by}}</td>
-        <td>{{r.approval_status}}</td>
-        <td>{{r.excel_rows}}</td>
-        <td>{{r.missing_cells}}</td>
-        <td>{{r.duplicate_rows}}</td>
+    <td>{{r.process_stage}}</td>
+    <td>{{r.status}}</td>
+    <td>{{r.excel_rows}}</td>
+    <td>{{r.missing_cells}}</td>
+    <td>{{r.duplicate_rows}}</td>
     </tr>
     {% endfor %}
     </table>
+    {% endfor %}
 
     </body></html>
     """
 
-    return render_template_string(html, logs=logs_df, error=error_msg, exceptions=exceptions)
+    return render_template_string(html, logs=logs, error=error, exceptions=exceptions, batches=batches)
 
 if __name__ == "__main__":
     app.run(debug=True)
