@@ -5,7 +5,6 @@ from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
-# CONFIG
 AZURE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER_NAME = "cobitchain-evidence"
 
@@ -16,35 +15,52 @@ BASELINE_FILE = "baseline_hashes.csv"
 LOG_FILE = "logs.csv"
 
 REQUIRED_STAGES = ["Weighbridge", "Dispatch", "Invoice"]
+ORDER_MAP = {"Weighbridge": 1, "Dispatch": 2, "Invoice": 3}
 
 def clean(x):
-    if x is None: return ""
+    if x is None:
+        return ""
     x = str(x).strip()
     return "" if x.lower() == "nan" else x
 
-def sha256_text(x): return hashlib.sha256(x.encode()).hexdigest()
-def compute_hash(b): return hashlib.sha256(b).hexdigest()
+def sha256_text(x):
+    return hashlib.sha256(x.encode()).hexdigest()
+
+def compute_hash(b):
+    return hashlib.sha256(b).hexdigest()
 
 def load_csv(name):
     try:
         data = container_client.get_blob_client(name).download_blob().readall()
         return pd.read_csv(io.BytesIO(data), keep_default_na=False).fillna("")
-    except:
+    except Exception:
         return pd.DataFrame()
 
 def save_csv(df, name):
-    container_client.get_blob_client(name).upload_blob(df.to_csv(index=False), overwrite=True)
+    df = df.fillna("")
+    container_client.get_blob_client(name).upload_blob(
+        df.to_csv(index=False),
+        overwrite=True
+    )
 
 def ensure_cols(df, cols):
     for c in cols:
-        if c not in df.columns: df[c] = ""
+        if c not in df.columns:
+            df[c] = ""
     return df.fillna("")
 
-# EXCEL ANALYTICS
 def analyze_excel(bytes_data, filename):
-    result = {"excel_rows":"","excel_columns":"","missing_cells":"","duplicate_rows":"","analysis_summary":"","data_quality":"N/A"}
+    result = {
+        "excel_rows": "",
+        "excel_columns": "",
+        "missing_cells": "",
+        "duplicate_rows": "",
+        "analysis_summary": "",
+        "data_quality": "N/A"
+    }
 
-    if not filename.lower().endswith((".xlsx",".xls")):
+    if not filename.lower().endswith((".xlsx", ".xls")):
+        result["analysis_summary"] = "Non-Excel file. Data quality analytics not applied."
         return result
 
     try:
@@ -58,41 +74,44 @@ def analyze_excel(bytes_data, filename):
             quality = "REVIEW"
 
         result.update({
-            "excel_rows":rows,
-            "excel_columns":cols,
-            "missing_cells":missing,
-            "duplicate_rows":dup,
-            "analysis_summary":f"{rows} rows | {cols} cols | {missing} missing | {dup} dup",
-            "data_quality":quality
+            "excel_rows": rows,
+            "excel_columns": cols,
+            "missing_cells": missing,
+            "duplicate_rows": dup,
+            "analysis_summary": f"{rows} rows | {cols} columns | {missing} missing cells | {dup} duplicate rows",
+            "data_quality": quality
         })
+
     except Exception as e:
-        result["analysis_summary"] = f"Error: {e}"
+        result["analysis_summary"] = f"Excel analysis error: {e}"
+        result["data_quality"] = "ERROR"
 
     return result
 
-def get_status(expected,current):
-    if not expected: return "YELLOW"
+def get_status(expected, current):
+    if not expected:
+        return "YELLOW"
     return "GREEN" if expected == current else "RED"
 
-# MAIN
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
-
     baseline = load_csv(BASELINE_FILE)
     logs = load_csv(LOG_FILE)
 
-    baseline = ensure_cols(baseline,["filename","baseline_hash"])
-    logs = ensure_cols(logs,[
-        "filename","batch_id","timestamp","current_hash","expected_hash","status",
-        "process_stage","evidence_category","uploaded_by","signed_by","approval_status",
-        "previous_hash","record_hash","excel_rows","excel_columns","missing_cells","duplicate_rows","analysis_summary","data_quality"
-    ])
+    baseline = ensure_cols(baseline, ["filename", "baseline_hash"])
 
-    error = ""
+    logs = ensure_cols(logs, [
+        "filename", "batch_id", "timestamp", "current_hash", "expected_hash", "status",
+        "process_stage", "evidence_category", "uploaded_by", "signed_by", "approval_status",
+        "previous_hash", "record_hash", "excel_rows", "excel_columns", "missing_cells",
+        "duplicate_rows", "analysis_summary", "data_quality"
+    ])
 
     if request.method == "POST":
         file = request.files.get("file")
-        if not file: return redirect("/")
+
+        if not file or file.filename == "":
+            return render_page(logs, "Please select a file before upload.")
 
         filename = clean(file.filename)
         batch = clean(request.form.get("batch_id"))
@@ -102,17 +121,27 @@ def index():
         signed = clean(request.form.get("signed_by"))
         approval = clean(request.form.get("approval_status"))
 
-        # GOVERNANCE RULES
-        if signed and not approval:
-            return render_page(logs,"Approval required when Signed By is filled")
+        if not batch:
+            return render_page(logs, "Batch ID is required.")
 
-        if user and signed and user == signed:
-            return render_page(logs,"SoD violation (Uploader = Signer)")
+        if not stage:
+            return render_page(logs, "Process Stage is required.")
+
+        if not category:
+            return render_page(logs, "Evidence Category is required.")
+
+        if not user:
+            return render_page(logs, "Uploaded By is required.")
+
+        if signed and not approval:
+            return render_page(logs, "Approval Status is required when Signed By is filled.")
+
+        if user and signed and user.lower() == signed.lower():
+            return render_page(logs, "Segregation of Duties violation: uploader and signer cannot be the same person.")
 
         file_bytes = file.read()
         h = compute_hash(file_bytes)
         ts = datetime.datetime.utcnow().isoformat()
-
         excel = analyze_excel(file_bytes, filename)
 
         existing = baseline[baseline["filename"] == filename]
@@ -120,146 +149,722 @@ def index():
         if existing.empty:
             expected = ""
             status = "YELLOW"
-            baseline = pd.concat([baseline,pd.DataFrame([{"filename":filename,"baseline_hash":h}])])
-            save_csv(baseline,BASELINE_FILE)
+            baseline = pd.concat([baseline, pd.DataFrame([{
+                "filename": filename,
+                "baseline_hash": h
+            }])], ignore_index=True)
+            save_csv(baseline, BASELINE_FILE)
         else:
-            expected = existing.iloc[0]["baseline_hash"]
-            status = get_status(expected,h)
+            expected = clean(existing.iloc[0]["baseline_hash"])
+            status = get_status(expected, h)
 
-        prev = "GENESIS" if logs.empty else logs.iloc[-1]["record_hash"]
-        record_hash = sha256_text(filename+batch+h+prev+ts)
+        prev = "GENESIS" if logs.empty else clean(logs.iloc[-1]["record_hash"])
+        record_hash = sha256_text(filename + batch + h + prev + ts)
 
         new = pd.DataFrame([{
-            "filename":filename,
-            "batch_id":batch,
-            "timestamp":ts,
-            "current_hash":h,
-            "expected_hash":expected,
-            "status":status,
-            "process_stage":stage,
-            "evidence_category":category,
-            "uploaded_by":user,
-            "signed_by":signed,
-            "approval_status":approval,
-            "previous_hash":prev,
-            "record_hash":record_hash,
+            "filename": filename,
+            "batch_id": batch,
+            "timestamp": ts,
+            "current_hash": h,
+            "expected_hash": expected,
+            "status": status,
+            "process_stage": stage,
+            "evidence_category": category,
+            "uploaded_by": user,
+            "signed_by": signed,
+            "approval_status": approval,
+            "previous_hash": prev,
+            "record_hash": record_hash,
             **excel
         }])
 
-        logs = pd.concat([logs,new])
-        save_csv(logs,LOG_FILE)
+        logs = pd.concat([logs, new], ignore_index=True)
+        save_csv(logs, LOG_FILE)
 
         return redirect("/")
 
-    return render_page(logs,error)
+    return render_page(logs, "")
 
-# RENDER
 def render_page(logs, error):
+    logs = logs.fillna("")
 
-    exceptions = []
+    total_records = len(logs)
+    total_batches = logs["batch_id"].nunique() if not logs.empty else 0
+    green_total = len(logs[logs["status"] == "GREEN"]) if not logs.empty else 0
+    yellow_total = len(logs[logs["status"] == "YELLOW"]) if not logs.empty else 0
+    red_total = len(logs[logs["status"] == "RED"]) if not logs.empty else 0
+
+    global_exceptions = []
 
     if not logs.empty:
-
         if ((logs["signed_by"] != "") & (logs["approval_status"] == "")).any():
-            exceptions.append("Missing approvals")
-
-        if ((logs["uploaded_by"] != "") &
-            (logs["signed_by"] != "") &
-            (logs["uploaded_by"] == logs["signed_by"])).any():
-            exceptions.append("SoD violation")
-
+            global_exceptions.append("Missing approval detected")
+        if ((logs["uploaded_by"] != "") & (logs["signed_by"] != "") & (logs["uploaded_by"] == logs["signed_by"])).any():
+            global_exceptions.append("Segregation of Duties violation detected")
         if (logs["status"] == "RED").any():
-            exceptions.append("Tampered files")
+            global_exceptions.append("Tampered or changed evidence detected")
+        if (logs["data_quality"] == "REVIEW").any():
+            global_exceptions.append("Excel data quality review required")
 
     batches = []
 
-    for b,grp in logs.groupby("batch_id"):
+    if not logs.empty:
+        for batch_id, grp in logs.groupby("batch_id", dropna=False):
+            grp = grp.fillna("")
+            batch_name = clean(batch_id) if clean(batch_id) else "NO-BATCH-ID"
 
-        stages = grp["process_stage"].tolist()
-        missing = [s for s in REQUIRED_STAGES if s not in stages]
+            stages = grp["process_stage"].tolist()
+            missing = [s for s in REQUIRED_STAGES if s not in stages]
 
-        seq_issue = False
-        order_map = {"Weighbridge":1,"Dispatch":2,"Invoice":3}
-        last = 0
-        for s in stages:
-            if s in order_map:
-                if order_map[s] < last:
-                    seq_issue = True
-                last = order_map[s]
+            seq_issue = False
+            last = 0
+            for s in stages:
+                if s in ORDER_MAP:
+                    if ORDER_MAP[s] < last:
+                        seq_issue = True
+                    last = max(last, ORDER_MAP[s])
 
-        risk = "LOW"
-        if (grp["status"]=="RED").any() or seq_issue:
-            risk = "HIGH"
-        elif missing:
-            risk = "MEDIUM"
+            red = len(grp[grp["status"] == "RED"])
+            yellow = len(grp[grp["status"] == "YELLOW"])
+            green = len(grp[grp["status"] == "GREEN"])
+            total = len(grp)
+            integrity = round((green / total) * 100, 2) if total else 0
 
-        batches.append({
-            "name":b,
-            "risk":risk,
-            "missing":missing,
-            "seq":seq_issue,
-            "records":grp.to_dict("records")
-        })
+            missing_approval = len(grp[(grp["signed_by"] != "") & (grp["approval_status"] == "")])
+            data_review = len(grp[grp["data_quality"] == "REVIEW"])
+
+            if red > 0 or seq_issue:
+                risk = "HIGH"
+            elif missing or missing_approval > 0 or yellow > 0 or data_review > 0:
+                risk = "MEDIUM"
+            else:
+                risk = "LOW"
+
+            stage_cards = []
+            for required in REQUIRED_STAGES:
+                rows = grp[grp["process_stage"] == required]
+                if rows.empty:
+                    stage_cards.append({"stage": required, "status": "MISSING", "count": 0})
+                else:
+                    statuses = rows["status"].tolist()
+                    if "RED" in statuses:
+                        s = "RED"
+                    elif "YELLOW" in statuses:
+                        s = "YELLOW"
+                    else:
+                        s = "GREEN"
+                    stage_cards.append({"stage": required, "status": s, "count": len(rows)})
+
+            if risk == "HIGH":
+                narrative = "Critical audit attention required. This batch has tampering, sequence, or integrity issues that may compromise traceability."
+            elif risk == "MEDIUM":
+                narrative = "Governance review required. This batch has baseline, approval, missing-stage, or data-quality issues."
+            else:
+                narrative = "Audit posture is strong. Required stages are present and no major exceptions were detected."
+
+            cobit = []
+            if red > 0:
+                cobit.append("MEA02 — Monitor internal control system")
+            if yellow > 0:
+                cobit.append("DSS06 — Manage business process controls")
+            if missing:
+                cobit.append("APO12 — Managed risk")
+            if seq_issue:
+                cobit.append("DSS01 — Managed operations")
+            if missing_approval > 0:
+                cobit.append("DSS06 — Approval and control enforcement")
+            if data_review > 0:
+                cobit.append("MEA01 — Performance and conformance monitoring")
+            if not cobit:
+                cobit.append("EDM03 — Risk optimization")
+
+            batches.append({
+                "name": batch_name,
+                "risk": risk,
+                "integrity": integrity,
+                "total": total,
+                "green": green,
+                "yellow": yellow,
+                "red": red,
+                "missing": missing,
+                "seq_issue": seq_issue,
+                "stage_cards": stage_cards,
+                "narrative": narrative,
+                "cobit": list(dict.fromkeys(cobit)),
+                "records": grp.tail(12).to_dict("records")
+            })
 
     html = """
-    <html><body style="font-family:Arial;margin:30px">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COBIT-Chain™ Evidence Integrity System</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --navy: #071527;
+            --navy2: #0f2745;
+            --blue: #2563eb;
+            --cyan: #06b6d4;
+            --green: #16a34a;
+            --yellow: #f59e0b;
+            --red: #dc2626;
+            --muted: #64748b;
+            --card: #ffffff;
+            --border: #e5e7eb;
+        }
 
-    <h1>COBIT-Chain™</h1>
+        * { box-sizing: border-box; }
 
-    {% if error %}<div style="color:red">{{error}}</div>{% endif %}
+        body {
+            margin: 0;
+            font-family: Inter, Segoe UI, Arial, sans-serif;
+            background: linear-gradient(135deg, #eef4ff 0%, #f8fafc 50%, #eefdf8 100%);
+            color: #0f172a;
+        }
 
-    {% if exceptions %}
-    <div style="background:#ffe0e0;padding:10px">
-    <b>Exceptions:</b>
-    <ul>{% for e in exceptions %}<li>{{e}}</li>{% endfor %}</ul>
-    </div>
-    {% endif %}
+        .hero {
+            background: radial-gradient(circle at top left, #1d4ed8 0%, #0f2745 42%, #071527 100%);
+            color: white;
+            padding: 38px 42px 46px;
+            border-bottom-left-radius: 34px;
+            border-bottom-right-radius: 34px;
+            box-shadow: 0 18px 45px rgba(15, 39, 69, .25);
+        }
 
-    <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" required><br>
-    <input name="batch_id" placeholder="Batch ID" required><br>
-    <input name="process_stage" placeholder="Stage"><br>
-    <input name="evidence_category" placeholder="Category"><br>
-    <input name="uploaded_by" placeholder="Uploader"><br>
-    <input name="signed_by" placeholder="Signer"><br>
-    <select name="approval_status">
-    <option value="">Approval</option>
-    <option value="Approved">Approved</option>
-    </select>
-    <button>Upload</button>
-    </form>
+        .hero-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
-    <hr>
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-    {% for b in batches %}
-    <h3>{{b.name}} | Risk: {{b.risk}}</h3>
+        .logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #38bdf8, #22c55e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 22px;
+            box-shadow: 0 10px 30px rgba(56,189,248,.35);
+        }
 
-    {% if b.missing %}
-    Missing: {{b.missing}}
-    {% endif %}
+        .brand h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: -0.8px;
+        }
 
-    {% if b.seq %}
-    <div style="color:red">Sequence issue detected</div>
-    {% endif %}
+        .brand p {
+            margin: 4px 0 0;
+            color: #cbd5e1;
+        }
 
-    <table border=1>
-    <tr><th>Stage</th><th>Status</th><th>Rows</th><th>Missing</th><th>Dup</th></tr>
-    {% for r in b.records %}
-    <tr>
-    <td>{{r.process_stage}}</td>
-    <td>{{r.status}}</td>
-    <td>{{r.excel_rows}}</td>
-    <td>{{r.missing_cells}}</td>
-    <td>{{r.duplicate_rows}}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    {% endfor %}
+        .badge {
+            padding: 10px 15px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.22);
+            color: #e0f2fe;
+            font-weight: 700;
+        }
 
-    </body></html>
+        .container {
+            max-width: 1450px;
+            margin: -28px auto 50px;
+            padding: 0 26px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            background: rgba(255,255,255,.95);
+            border: 1px solid rgba(226,232,240,.9);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 12px 32px rgba(15,23,42,.08);
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .metric-value {
+            margin-top: 8px;
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .metric-sub {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 14px 35px rgba(15,23,42,.08);
+        }
+
+        .panel h2 {
+            margin: 0 0 14px;
+            font-size: 20px;
+        }
+
+        input, select, button {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid #dbe3ef;
+            padding: 12px 13px;
+            margin: 7px 0;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+        }
+
+        button {
+            margin-top: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            color: white;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 12px 28px rgba(37,99,235,.28);
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 6px solid var(--red);
+            padding: 14px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            font-weight: 800;
+        }
+
+        .exceptions {
+            background: linear-gradient(135deg, #fff1f2, #ffffff);
+            border: 1px solid #fecdd3;
+            border-left: 7px solid var(--red);
+        }
+
+        .exceptions ul {
+            margin: 10px 0 0;
+            padding-left: 20px;
+        }
+
+        .batch {
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+
+        .batch-header {
+            padding: 20px 22px;
+            border-radius: 24px 24px 0 0;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .risk-HIGH .batch-header {
+            background: linear-gradient(135deg, #991b1b, #dc2626);
+        }
+
+        .risk-MEDIUM .batch-header {
+            background: linear-gradient(135deg, #92400e, #f59e0b);
+        }
+
+        .risk-LOW .batch-header {
+            background: linear-gradient(135deg, #166534, #16a34a);
+        }
+
+        .batch-title {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .risk-pill {
+            padding: 9px 14px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.35);
+            border-radius: 999px;
+            font-weight: 900;
+        }
+
+        .batch-body {
+            background: white;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 24px 24px;
+            padding: 22px;
+            box-shadow: 0 12px 30px rgba(15,23,42,.06);
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .mini {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 13px;
+        }
+
+        .mini b {
+            display: block;
+            font-size: 22px;
+            margin-top: 3px;
+        }
+
+        .chain {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 14px 0 18px;
+        }
+
+        .stage-card {
+            min-width: 150px;
+            padding: 14px;
+            border-radius: 18px;
+            color: white;
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(15,23,42,.12);
+        }
+
+        .stage-GREEN { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .stage-YELLOW { background: linear-gradient(135deg, #d97706, #fbbf24); color: #111827; }
+        .stage-RED { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+        .stage-MISSING { background: linear-gradient(135deg, #475569, #94a3b8); }
+
+        .arrow {
+            color: #94a3b8;
+            font-weight: 900;
+            font-size: 22px;
+        }
+
+        .narrative {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+            line-height: 1.45;
+        }
+
+        .cobit {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .cobit span {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 8px 11px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+
+        th {
+            background: #0f172a;
+            color: white;
+            text-align: left;
+            padding: 11px;
+        }
+
+        td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        tr.row-GREEN { background: #f0fdf4; }
+        tr.row-YELLOW { background: #fffbeb; }
+        tr.row-RED { background: #fef2f2; }
+
+        .status {
+            font-weight: 900;
+            border-radius: 999px;
+            padding: 5px 9px;
+            display: inline-block;
+        }
+
+        .status-GREEN { background: #dcfce7; color: #166534; }
+        .status-YELLOW { background: #fef3c7; color: #92400e; }
+        .status-RED { background: #fee2e2; color: #991b1b; }
+
+        .footer-note {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 18px;
+        }
+
+        @media(max-width: 1000px) {
+            .grid, .mini-grid, .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="hero">
+        <div class="hero-top">
+            <div class="brand">
+                <div class="logo">CC</div>
+                <div>
+                    <h1>COBIT-Chain™</h1>
+                    <p>Evidence Integrity • Governance Enforcement • Audit Readiness</p>
+                </div>
+            </div>
+            <div class="badge">Governance Assurance Engine</div>
+        </div>
+    </section>
+
+    <main class="container">
+
+        <section class="grid">
+            <div class="metric">
+                <div class="metric-label">Total Batches</div>
+                <div class="metric-value">{{ total_batches }}</div>
+                <div class="metric-sub">Process chains tracked</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Total Records</div>
+                <div class="metric-value">{{ total_records }}</div>
+                <div class="metric-sub">Evidence events logged</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Verified Green</div>
+                <div class="metric-value" style="color:#16a34a">{{ green_total }}</div>
+                <div class="metric-sub">Hash matched records</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Critical Red</div>
+                <div class="metric-value" style="color:#dc2626">{{ red_total }}</div>
+                <div class="metric-sub">Tamper/change detections</div>
+            </div>
+        </section>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <section class="main-layout">
+            <aside>
+                <div class="panel">
+                    <h2>Upload Evidence</h2>
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="file" name="file" required>
+                        <input name="batch_id" placeholder="Batch ID e.g. WOLE-BATCH-001" required>
+
+                        <select name="process_stage" required>
+                            <option value="">Select Process Stage</option>
+                            <option value="Weighbridge">Weighbridge</option>
+                            <option value="Dispatch">Dispatch</option>
+                            <option value="Invoice">Invoice</option>
+                        </select>
+
+                        <select name="evidence_category" required>
+                            <option value="">Select Evidence Category</option>
+                            <option value="Operational">Operational Evidence</option>
+                            <option value="Financial">Financial Evidence</option>
+                            <option value="QA">QA Evidence</option>
+                            <option value="Compliance">Compliance Evidence</option>
+                        </select>
+
+                        <input name="uploaded_by" placeholder="Uploaded By" required>
+                        <input name="signed_by" placeholder="Signed By">
+
+                        <select name="approval_status">
+                            <option value="">Approval Status</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                        <button type="submit">Upload and Verify</button>
+                    </form>
+
+                    <div class="footer-note">
+                        First upload creates baseline. Later uploads verify against the saved cryptographic baseline.
+                    </div>
+                </div>
+
+                {% if global_exceptions %}
+                <div class="panel exceptions">
+                    <h2>⚠ Exception Center</h2>
+                    <ul>
+                        {% for e in global_exceptions %}
+                            <li>{{ e }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </aside>
+
+            <section>
+                {% for b in batches %}
+                <article class="batch risk-{{ b.risk }}">
+                    <div class="batch-header">
+                        <div>
+                            <div class="batch-title">{{ b.name }}</div>
+                            <div>Integrity {{ b.integrity }}% • {{ b.total }} evidence records</div>
+                        </div>
+                        <div class="risk-pill">Risk: {{ b.risk }}</div>
+                    </div>
+
+                    <div class="batch-body">
+                        <div class="mini-grid">
+                            <div class="mini">Total <b>{{ b.total }}</b></div>
+                            <div class="mini">Green <b style="color:#16a34a">{{ b.green }}</b></div>
+                            <div class="mini">Yellow <b style="color:#d97706">{{ b.yellow }}</b></div>
+                            <div class="mini">Red <b style="color:#dc2626">{{ b.red }}</b></div>
+                            <div class="mini">Integrity <b>{{ b.integrity }}%</b></div>
+                        </div>
+
+                        <h3>Process Chain</h3>
+                        <div class="chain">
+                            {% for s in b.stage_cards %}
+                                <div class="stage-card stage-{{ s.status }}">
+                                    {{ s.stage }}<br>
+                                    <small>{{ s.status }} • {{ s.count }} record(s)</small>
+                                </div>
+                                {% if not loop.last %}
+                                    <div class="arrow">→</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% if b.missing %}
+                            <div class="narrative"><b>Missing Stage:</b> {{ b.missing }}</div>
+                        {% endif %}
+
+                        {% if b.seq_issue %}
+                            <div class="narrative" style="border-color:#fecaca;background:#fff1f2;color:#991b1b;">
+                                <b>Sequence Issue:</b> Records appear outside the expected Weighbridge → Dispatch → Invoice flow.
+                            </div>
+                        {% endif %}
+
+                        <div class="narrative">
+                            <b>Audit Narrative:</b> {{ b.narrative }}
+                        </div>
+
+                        <h3>COBIT 2019 Control Overlay</h3>
+                        <div class="cobit">
+                            {% for c in b.cobit %}
+                                <span>{{ c }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <h3>Evidence Log</h3>
+                        <table>
+                            <tr>
+                                <th>Stage</th>
+                                <th>File</th>
+                                <th>Status</th>
+                                <th>Category</th>
+                                <th>Uploader</th>
+                                <th>Signer</th>
+                                <th>Approval</th>
+                                <th>Rows</th>
+                                <th>Missing</th>
+                                <th>Dup</th>
+                                <th>Analysis</th>
+                            </tr>
+                            {% for r in b.records %}
+                            <tr class="row-{{ r.status }}">
+                                <td>{{ r.process_stage }}</td>
+                                <td>{{ r.filename }}</td>
+                                <td><span class="status status-{{ r.status }}">{{ r.status }}</span></td>
+                                <td>{{ r.evidence_category }}</td>
+                                <td>{{ r.uploaded_by }}</td>
+                                <td>{{ r.signed_by }}</td>
+                                <td>{{ r.approval_status }}</td>
+                                <td>{{ r.excel_rows }}</td>
+                                <td>{{ r.missing_cells }}</td>
+                                <td>{{ r.duplicate_rows }}</td>
+                                <td>{{ r.analysis_summary }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </article>
+                {% endfor %}
+            </section>
+        </section>
+
+    </main>
+</body>
+</html>
     """
 
-    return render_template_string(html, logs=logs, error=error, exceptions=exceptions, batches=batches)
+    return render_template_string(
+        html,
+        error=error,
+        batches=batches,
+        global_exceptions=global_exceptions,
+        total_records=total_records,
+        total_batches=total_batches,
+        green_total=green_total,
+        yellow_total=yellow_total,
+        red_total=red_total
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
