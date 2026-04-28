@@ -28,7 +28,7 @@ LOG_FILE = "logs.csv"
 # HASH FUNCTIONS
 # ================================
 def sha256_text(text):
-    return hashlib.sha256(text.encode()).hexdigest()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 def compute_bytes_hash(file_bytes):
     return hashlib.sha256(file_bytes).hexdigest()
@@ -39,11 +39,13 @@ def compute_bytes_hash(file_bytes):
 def load_csv(filename):
     try:
         data = container_client.get_blob_client(filename).download_blob().readall()
-        return pd.read_csv(io.BytesIO(data))
+        df = pd.read_csv(io.BytesIO(data), keep_default_na=False)
+        return df.fillna("")
     except Exception:
         return pd.DataFrame()
 
 def save_csv(df, filename):
+    df = df.fillna("")
     container_client.get_blob_client(filename).upload_blob(
         df.to_csv(index=False),
         overwrite=True
@@ -53,7 +55,15 @@ def ensure_columns(df, columns):
     for c in columns:
         if c not in df.columns:
             df[c] = ""
-    return df
+    return df.fillna("")
+
+def clean_value(value):
+    if value is None:
+        return ""
+    value = str(value)
+    if value.lower() == "nan":
+        return ""
+    return value.strip()
 
 # ================================
 # EXCEL ANALYTICS
@@ -73,16 +83,17 @@ def analyze_excel(file_bytes, filename):
         return result
 
     try:
-        df = pd.read_excel(io.BytesIO(file_bytes))
+        df = pd.read_excel(io.BytesIO(file_bytes), engine="openpyxl")
+        df.columns = [str(c).strip() for c in df.columns]
 
-        rows = len(df)
-        cols = len(df.columns)
+        rows = int(df.shape[0])
+        cols = int(df.shape[1])
         missing = int(df.isna().sum().sum())
         duplicates = int(df.duplicated().sum())
-        columns_detected = ", ".join([str(c) for c in df.columns])
+        columns_detected = ", ".join(df.columns)
 
         if rows == 0:
-            summary = "Excel file opened, but no data rows were found."
+            summary = "Excel analyzed. No data rows found."
         elif missing > 0 or duplicates > 0:
             summary = (
                 f"Excel analyzed. Rows: {rows}, Columns: {cols}, "
@@ -122,6 +133,9 @@ def analyze_excel(file_bytes, filename):
 # STATUS LOGIC
 # ================================
 def get_status(expected, current):
+    expected = clean_value(expected)
+    current = clean_value(current)
+
     if not expected:
         return "YELLOW"
     elif expected == current:
@@ -151,15 +165,19 @@ def index():
 
     if request.method == "POST":
 
-        file = request.files["file"]
-        filename = file.filename
+        file = request.files.get("file")
 
-        batch_id = request.form.get("batch_id", "")
-        stage = request.form.get("process_stage", "")
-        category = request.form.get("evidence_category", "")
-        user = request.form.get("uploaded_by", "")
-        signed_by = request.form.get("signed_by", "")
-        approval = request.form.get("approval_status", "")
+        if not file or file.filename == "":
+            return redirect("/")
+
+        filename = clean_value(file.filename)
+
+        batch_id = clean_value(request.form.get("batch_id", ""))
+        stage = clean_value(request.form.get("process_stage", ""))
+        category = clean_value(request.form.get("evidence_category", ""))
+        user = clean_value(request.form.get("uploaded_by", ""))
+        signed_by = clean_value(request.form.get("signed_by", ""))
+        approval = clean_value(request.form.get("approval_status", ""))
 
         file_bytes = file.read()
         file_hash = compute_bytes_hash(file_bytes)
@@ -181,13 +199,13 @@ def index():
             save_csv(baseline_df, BASELINE_FILE)
 
         else:
-            expected_hash = existing.iloc[0]["baseline_hash"]
+            expected_hash = clean_value(existing.iloc[0]["baseline_hash"])
             status = get_status(expected_hash, file_hash)
 
-        if logs_df.empty or "record_hash" not in logs_df.columns or logs_df["record_hash"].dropna().empty:
+        if logs_df.empty or logs_df["record_hash"].dropna().astype(str).str.strip().eq("").all():
             previous_hash = "GENESIS"
         else:
-            previous_hash = str(logs_df.iloc[-1]["record_hash"])
+            previous_hash = clean_value(logs_df.iloc[-1]["record_hash"])
 
         record_string = (
             str(filename) +
@@ -223,9 +241,17 @@ def index():
         }])
 
         logs_df = pd.concat([logs_df, new_log], ignore_index=True)
+        logs_df = logs_df.fillna("")
         save_csv(logs_df, LOG_FILE)
 
         return redirect("/")
+
+    # ================================
+    # CLEAN DISPLAY VALUES
+    # ================================
+    logs_df = logs_df.fillna("")
+    for col in logs_df.columns:
+        logs_df[col] = logs_df[col].astype(str).replace("nan", "")
 
     # ================================
     # BATCH / CHAIN SUMMARY
@@ -234,6 +260,8 @@ def index():
 
     if not logs_df.empty:
         for batch, group in logs_df.groupby("batch_id", dropna=False):
+
+            batch_name = clean_value(batch) if clean_value(batch) else "NO-BATCH-ID"
 
             total = len(group)
             green = len(group[group["status"] == "GREEN"])
@@ -250,7 +278,7 @@ def index():
             integrity = round((green / total) * 100, 2) if total else 0
 
             chains.append({
-                "batch": batch if batch else "NO-BATCH-ID",
+                "batch": batch_name,
                 "status": batch_status,
                 "integrity": integrity,
                 "total": total,
@@ -269,12 +297,15 @@ def index():
     <title>COBIT-Chain™ Evidence Integrity System</title>
     <style>
     body {
-        font-family: Arial;
+        font-family: Arial, sans-serif;
         margin: 40px;
         background: #f5f7fb;
     }
     h1, h2 {
         color: #111827;
+    }
+    p {
+        color: #374151;
     }
     .form-box {
         background: white;
@@ -320,11 +351,13 @@ def index():
         margin-top: 10px;
         border-collapse: collapse;
         background: white;
+        color: #111827;
     }
     th, td {
         padding: 8px;
         border: 1px solid #ddd;
         font-size: 13px;
+        vertical-align: top;
     }
     th {
         background: black;
@@ -342,6 +375,10 @@ def index():
     .small {
         font-size: 12px;
         color: #374151;
+    }
+    .meta {
+        font-size: 13px;
+        margin-top: 5px;
     }
     </style>
     </head>
@@ -385,11 +422,14 @@ def index():
     {% for b in chains %}
         <div class="batch {{b.status}}">
             <h3>{{b.batch}} → {{b.status}}</h3>
-            <b>Integrity:</b> {{b.integrity}}% |
-            <b>Total:</b> {{b.total}} |
-            <b>Green:</b> {{b.green}} |
-            <b>Yellow:</b> {{b.yellow}} |
-            <b>Red:</b> {{b.red}}
+
+            <div class="meta">
+                <b>Integrity:</b> {{b.integrity}}% |
+                <b>Total:</b> {{b.total}} |
+                <b>Green:</b> {{b.green}} |
+                <b>Yellow:</b> {{b.yellow}} |
+                <b>Red:</b> {{b.red}}
+            </div>
 
             <table>
             <tr>
@@ -401,8 +441,10 @@ def index():
                 <th>Signed By</th>
                 <th>Approval</th>
                 <th>Excel Rows</th>
+                <th>Excel Columns</th>
                 <th>Missing Cells</th>
                 <th>Duplicates</th>
+                <th>Columns Detected</th>
                 <th>Analysis</th>
             </tr>
 
@@ -416,8 +458,10 @@ def index():
                 <td>{{r.signed_by}}</td>
                 <td>{{r.approval_status}}</td>
                 <td>{{r.excel_rows}}</td>
+                <td>{{r.excel_columns}}</td>
                 <td>{{r.missing_cells}}</td>
                 <td>{{r.duplicate_rows}}</td>
+                <td class="small">{{r.columns_detected}}</td>
                 <td class="small">{{r.analysis_summary}}</td>
             </tr>
             {% endfor %}
