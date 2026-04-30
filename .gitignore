@@ -5,3 +5,9 @@ app_BACKUP_*.py
 __pycache__/
 *.pyc
 .env
+
+# Azure Cloud Shell personal/profile files
+.azure/
+.bash_history
+.bashrc
+.lesshst
