@@ -4431,5 +4431,361 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# AUDIT/CAPA V2 TEST ACTIVE
+# Functional test page only. Does not replace /audit-capa.
+# ============================================================
+
+AUDIT_CAPA_FILE = "audit_capa_register.csv"
+
+
+def prepare_audit_capa_register():
+    df = load_csv(AUDIT_CAPA_FILE)
+    return ensure_cols(df, [
+        "audit_id", "timestamp", "finding_id", "finding_source", "process_area",
+        "severity", "deviation_capa_ref", "capa_owner", "due_date",
+        "required_evidence", "evidence_status", "effectiveness_status",
+        "sop_update_required", "training_required", "system_change_required",
+        "remediation_summary", "readiness_status", "readiness_score",
+        "risk_level", "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_audit_capa_readiness(severity, deviation_capa_ref, capa_owner, required_evidence,
+                                   evidence_status, effectiveness_status, sop_update_required,
+                                   training_required, system_change_required, remediation_summary):
+    score = 100
+    signals = []
+
+    severity = clean(severity)
+    deviation_capa_ref = clean(deviation_capa_ref)
+    capa_owner = clean(capa_owner)
+    required_evidence = clean(required_evidence)
+    evidence_status = clean(evidence_status)
+    effectiveness_status = clean(effectiveness_status)
+    remediation_summary = clean(remediation_summary)
+
+    if severity in ["High", "Critical"]:
+        score -= 10
+        signals.append("Finding severity is high or critical.")
+
+    if severity in ["High", "Critical"] and not deviation_capa_ref:
+        score -= 25
+        signals.append("High/Critical issue has no linked deviation or CAPA reference.")
+
+    if not capa_owner:
+        score -= 20
+        signals.append("No CAPA owner is assigned.")
+
+    if not required_evidence:
+        score -= 15
+        signals.append("Required evidence is not defined.")
+
+    if evidence_status in ["Missing", "Partial", "Rejected"]:
+        score -= 30
+        signals.append("Evidence is missing, partial, or rejected.")
+
+    if effectiveness_status in ["Blocked", "Failed"]:
+        score -= 25
+        signals.append("Effectiveness readiness is blocked or failed.")
+
+    if effectiveness_status == "Not Started" and evidence_status != "Approved":
+        score -= 10
+        signals.append("Effectiveness check has not started and evidence is not approved.")
+
+    if sop_update_required == "Yes" and not remediation_summary:
+        score -= 10
+        signals.append("SOP update is required but remediation summary is missing.")
+
+    if training_required == "Yes" and not remediation_summary:
+        score -= 10
+        signals.append("Training is required but remediation summary is missing.")
+
+    if system_change_required == "Yes" and not remediation_summary:
+        score -= 10
+        signals.append("System change is required but remediation summary is missing.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness_status = "EFFECTIVENESS READY"
+        risk_level = "LOW"
+    elif score >= 60:
+        readiness_status = "CONDITIONALLY READY"
+        risk_level = "MEDIUM"
+    else:
+        readiness_status = "NOT READY"
+        risk_level = "HIGH"
+
+    if not signals:
+        signals.append("No major Audit/CAPA readiness risk detected.")
+
+    return readiness_status, score, risk_level, signals
+
+
+def save_audit_capa_test(req):
+    df = prepare_audit_capa_register()
+
+    finding_id = clean(req.form.get("finding_id"))
+    finding_source = clean(req.form.get("finding_source"))
+    process_area = clean(req.form.get("process_area"))
+    severity = clean(req.form.get("severity"))
+    deviation_capa_ref = clean(req.form.get("deviation_capa_ref"))
+    capa_owner = clean(req.form.get("capa_owner"))
+    due_date = clean(req.form.get("due_date"))
+    required_evidence = clean(req.form.get("required_evidence"))
+    evidence_status = clean(req.form.get("evidence_status"))
+    effectiveness_status = clean(req.form.get("effectiveness_status"))
+    sop_update_required = clean(req.form.get("sop_update_required")) or "No"
+    training_required = clean(req.form.get("training_required")) or "No"
+    system_change_required = clean(req.form.get("system_change_required")) or "No"
+    remediation_summary = clean(req.form.get("remediation_summary"))
+
+    required = [finding_id, finding_source, process_area, severity, evidence_status, effectiveness_status]
+    if not all(required):
+        return {"error": "Finding ID, Finding Source, Process Area, Severity, Evidence Status, and Effectiveness Status are required."}
+
+    readiness_status, readiness_score, risk_level, risk_signals = calculate_audit_capa_readiness(
+        severity, deviation_capa_ref, capa_owner, required_evidence,
+        evidence_status, effectiveness_status, sop_update_required,
+        training_required, system_change_required, remediation_summary
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    audit_id = "AUDITCAPA-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        audit_id + timestamp + finding_id + finding_source + process_area +
+        severity + deviation_capa_ref + capa_owner + evidence_status +
+        effectiveness_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "audit_id": audit_id,
+        "timestamp": timestamp,
+        "finding_id": finding_id,
+        "finding_source": finding_source,
+        "process_area": process_area,
+        "severity": severity,
+        "deviation_capa_ref": deviation_capa_ref,
+        "capa_owner": capa_owner,
+        "due_date": due_date,
+        "required_evidence": required_evidence,
+        "evidence_status": evidence_status,
+        "effectiveness_status": effectiveness_status,
+        "sop_update_required": sop_update_required,
+        "training_required": training_required,
+        "system_change_required": system_change_required,
+        "remediation_summary": remediation_summary,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, AUDIT_CAPA_FILE)
+
+    return {
+        "error": "",
+        "audit_id": audit_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_audit_capa_test_metrics():
+    df = prepare_audit_capa_register()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "EFFECTIVENESS READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/audit-capa-v2-test", methods=["GET", "POST"])
+def audit_capa_v2_test():
+    result = None
+    if request.method == "POST":
+        result = save_audit_capa_test(request)
+
+    metrics = get_audit_capa_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Audit/CAPA v2 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:390px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:85px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Audit/CAPA v2 Test</h1>
+<p>Functional test page only — stable /audit-capa is untouched.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/sop-governance">SOP Governance</a>
+<a href="/shift-assurance">Shift Assurance</a>
+<a href="/access-governance">Access Governance</a>
+<a href="/audit-capa">Audit/CAPA v1 Stable</a>
+<a class="active" href="/audit-capa-v2-test">Audit/CAPA v2 Test</a>
+<a href="/clinical-trial-integrity">Clinical Trial Integrity</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.audit_id }} — <b>{{ result.readiness_status }}</b> — Score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Effectiveness Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Audit/CAPA Record</h2>
+<form method="POST" action="/audit-capa-v2-test">
+<input name="finding_id" placeholder="Finding ID e.g. AUD-2026-001 / NCR-001" required>
+
+<select name="finding_source" required>
+<option value="">Finding Source</option>
+<option value="Internal Audit">Internal Audit</option>
+<option value="External Audit">External Audit</option>
+<option value="QA Review">QA Review</option>
+<option value="Regulatory Inspection">Regulatory Inspection</option>
+<option value="Process Review">Process Review</option>
+</select>
+
+<input name="process_area" placeholder="Process/System Area e.g. Speedy Glove / SOP Governance" required>
+
+<select name="severity" required>
+<option value="">Severity</option>
+<option value="Low">Low</option>
+<option value="Medium">Medium</option>
+<option value="High">High</option>
+<option value="Critical">Critical</option>
+</select>
+
+<input name="deviation_capa_ref" placeholder="Deviation / CAPA / NCR Reference">
+<input name="capa_owner" placeholder="CAPA Owner">
+<label><b>Due Date</b></label>
+<input type="date" name="due_date">
+
+<textarea name="required_evidence" placeholder="Required Evidence"></textarea>
+
+<select name="evidence_status" required>
+<option value="">Evidence Status</option>
+<option value="Missing">Missing</option>
+<option value="Partial">Partial</option>
+<option value="Uploaded">Uploaded</option>
+<option value="Approved">Approved</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<select name="effectiveness_status" required>
+<option value="">Effectiveness Status</option>
+<option value="Not Started">Not Started</option>
+<option value="Blocked">Blocked</option>
+<option value="Ready">Ready</option>
+<option value="In Review">In Review</option>
+<option value="Passed">Passed</option>
+<option value="Failed">Failed</option>
+</select>
+
+<select name="sop_update_required"><option value="No">SOP Update Required? No</option><option value="Yes">SOP Update Required? Yes</option></select>
+<select name="training_required"><option value="No">Training Required? No</option><option value="Yes">Training Required? Yes</option></select>
+<select name="system_change_required"><option value="No">System Change Required? No</option><option value="Yes">System Change Required? Yes</option></select>
+
+<textarea name="remediation_summary" placeholder="Remediation Summary / Next Action"></textarea>
+
+<button type="submit">Save Audit/CAPA Record</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Audit/CAPA Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Finding</th><th>Area</th><th>Severity</th><th>CAPA Ref</th><th>Owner</th><th>Evidence</th><th>Effectiveness</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.audit_id }}</td>
+<td><b>{{ r.finding_id }}</b><br>{{ r.finding_source }}</td>
+<td>{{ r.process_area }}</td>
+<td>{{ r.severity }}</td>
+<td>{{ r.deviation_capa_ref }}</td>
+<td>{{ r.capa_owner }}</td>
+<td>{{ r.evidence_status }}</td>
+<td>{{ r.effectiveness_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No Audit/CAPA records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>audit_capa_register.csv</b>. Manufacturing, SOP, Shift, Access, and Clinical Trial records are untouched.
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
