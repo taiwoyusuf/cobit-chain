@@ -5458,5 +5458,416 @@ Manufacturing, SOP, Shift, Access, and Audit/CAPA registers are untouched.
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# COMPOUNDING PHARMACY V1 TEST ACTIVE
+# Functional compounding pharmacy evidence register.
+# Does not replace or modify existing modules.
+# ============================================================
+
+COMPOUNDING_PHARMACY_FILE = "compounding_pharmacy_evidence.csv"
+
+
+def prepare_compounding_pharmacy_evidence():
+    df = load_csv(COMPOUNDING_PHARMACY_FILE)
+    return ensure_cols(df, [
+        "compound_record_id", "timestamp", "order_id", "formula_name",
+        "compound_type", "preparation_risk", "ingredient_lot_status",
+        "operator_training_status", "environmental_monitoring_status",
+        "cleaning_status", "garbing_status", "qa_review_status",
+        "bud_status", "deviation_capa_link", "release_decision",
+        "readiness_status", "readiness_score", "risk_level",
+        "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_compounding_readiness(preparation_risk, ingredient_lot_status,
+                                    operator_training_status, environmental_monitoring_status,
+                                    cleaning_status, garbing_status, qa_review_status,
+                                    bud_status, deviation_capa_link, release_decision):
+    score = 100
+    signals = []
+
+    preparation_risk = clean(preparation_risk)
+    ingredient_lot_status = clean(ingredient_lot_status)
+    operator_training_status = clean(operator_training_status)
+    environmental_monitoring_status = clean(environmental_monitoring_status)
+    cleaning_status = clean(cleaning_status)
+    garbing_status = clean(garbing_status)
+    qa_review_status = clean(qa_review_status)
+    bud_status = clean(bud_status)
+    deviation_capa_link = clean(deviation_capa_link)
+    release_decision = clean(release_decision)
+
+    if preparation_risk in ["High Risk", "Hazardous", "Sterile"]:
+        score -= 10
+        signals.append("Preparation has elevated compounding risk and requires strong evidence control.")
+
+    if ingredient_lot_status in ["Missing", "Incomplete", "Unverified"]:
+        score -= 25
+        signals.append("Ingredient/lot evidence is missing, incomplete, or unverified.")
+
+    if operator_training_status in ["Missing", "Expired", "Not Verified"]:
+        score -= 20
+        signals.append("Operator training or competency evidence is missing, expired, or not verified.")
+
+    if environmental_monitoring_status in ["Missing", "Failed", "Out of Trend", "Not Reviewed"]:
+        score -= 25
+        signals.append("Environmental monitoring evidence is missing, failed, out of trend, or not reviewed.")
+
+    if cleaning_status in ["Missing", "Failed", "Not Verified"]:
+        score -= 20
+        signals.append("Cleaning evidence is missing, failed, or not verified.")
+
+    if garbing_status in ["Missing", "Failed", "Not Verified"]:
+        score -= 15
+        signals.append("Garbing/aseptic practice evidence is missing, failed, or not verified.")
+
+    if qa_review_status in ["Missing", "Pending", "Rejected"]:
+        score -= 20
+        signals.append("QA review is missing, pending, or rejected.")
+
+    if bud_status in ["Missing", "Unsupported", "Expired"]:
+        score -= 20
+        signals.append("Beyond-use-date evidence is missing, unsupported, or expired.")
+
+    if release_decision == "Released" and score < 85:
+        score -= 15
+        signals.append("Preparation is marked released even though readiness evidence is incomplete.")
+
+    if release_decision in ["Hold", "Rejected"] and not deviation_capa_link:
+        score -= 10
+        signals.append("Hold/rejection exists without deviation or CAPA linkage.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "RELEASE READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT RELEASE READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major compounding release-readiness risk detected.")
+
+    return readiness, score, risk, signals
+
+
+def save_compounding_pharmacy_test(req):
+    df = prepare_compounding_pharmacy_evidence()
+
+    order_id = clean(req.form.get("order_id"))
+    formula_name = clean(req.form.get("formula_name"))
+    compound_type = clean(req.form.get("compound_type"))
+    preparation_risk = clean(req.form.get("preparation_risk"))
+    ingredient_lot_status = clean(req.form.get("ingredient_lot_status"))
+    operator_training_status = clean(req.form.get("operator_training_status"))
+    environmental_monitoring_status = clean(req.form.get("environmental_monitoring_status"))
+    cleaning_status = clean(req.form.get("cleaning_status"))
+    garbing_status = clean(req.form.get("garbing_status"))
+    qa_review_status = clean(req.form.get("qa_review_status"))
+    bud_status = clean(req.form.get("bud_status"))
+    deviation_capa_link = clean(req.form.get("deviation_capa_link"))
+    release_decision = clean(req.form.get("release_decision"))
+
+    required = [
+        order_id, formula_name, compound_type, preparation_risk,
+        ingredient_lot_status, operator_training_status,
+        environmental_monitoring_status, cleaning_status,
+        garbing_status, qa_review_status, bud_status, release_decision
+    ]
+
+    if not all(required):
+        return {
+            "error": "Order ID, Formula Name, Compound Type, Risk, all evidence statuses, BUD Status, and Release Decision are required."
+        }
+
+    readiness, readiness_score, risk_level, risk_signals = calculate_compounding_readiness(
+        preparation_risk, ingredient_lot_status, operator_training_status,
+        environmental_monitoring_status, cleaning_status, garbing_status,
+        qa_review_status, bud_status, deviation_capa_link, release_decision
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    compound_record_id = "CP-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        compound_record_id + timestamp + order_id + formula_name + compound_type +
+        preparation_risk + ingredient_lot_status + operator_training_status +
+        environmental_monitoring_status + cleaning_status + garbing_status +
+        qa_review_status + bud_status + release_decision + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "compound_record_id": compound_record_id,
+        "timestamp": timestamp,
+        "order_id": order_id,
+        "formula_name": formula_name,
+        "compound_type": compound_type,
+        "preparation_risk": preparation_risk,
+        "ingredient_lot_status": ingredient_lot_status,
+        "operator_training_status": operator_training_status,
+        "environmental_monitoring_status": environmental_monitoring_status,
+        "cleaning_status": cleaning_status,
+        "garbing_status": garbing_status,
+        "qa_review_status": qa_review_status,
+        "bud_status": bud_status,
+        "deviation_capa_link": deviation_capa_link,
+        "release_decision": release_decision,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, COMPOUNDING_PHARMACY_FILE)
+
+    return {
+        "error": "",
+        "compound_record_id": compound_record_id,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_compounding_pharmacy_test_metrics():
+    df = prepare_compounding_pharmacy_evidence()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "RELEASE READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT RELEASE READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/compounding-pharmacy-v1-test", methods=["GET", "POST"])
+def compounding_pharmacy_v1_test():
+    result = None
+    if request.method == "POST":
+        result = save_compounding_pharmacy_test(request)
+
+    metrics = get_compounding_pharmacy_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Compounding Pharmacy v1 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:410px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Compounding Pharmacy v1 Test</h1>
+<p>Sterility-to-Release Evidence Graph™ • Release Readiness • Inspection Evidence</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a class="active" href="/compounding-pharmacy-v1-test">Compounding Pharmacy</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.compound_record_id }} —
+<b>{{ result.readiness_status }}</b> —
+Readiness score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Release Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Compounding Evidence Record</h2>
+<form method="POST" action="/compounding-pharmacy-v1-test">
+<input name="order_id" placeholder="Order / Batch / Prescription ID e.g. RX-CP-001" required>
+<input name="formula_name" placeholder="Formula / Preparation Name" required>
+
+<select name="compound_type" required>
+<option value="">Compound Type</option>
+<option value="Sterile">Sterile</option>
+<option value="Non-Sterile">Non-Sterile</option>
+<option value="Hazardous">Hazardous</option>
+<option value="Patient-Specific">Patient-Specific</option>
+<option value="Batch Preparation">Batch Preparation</option>
+</select>
+
+<select name="preparation_risk" required>
+<option value="">Preparation Risk</option>
+<option value="Low Risk">Low Risk</option>
+<option value="Medium Risk">Medium Risk</option>
+<option value="High Risk">High Risk</option>
+<option value="Sterile">Sterile</option>
+<option value="Hazardous">Hazardous</option>
+</select>
+
+<select name="ingredient_lot_status" required>
+<option value="">Ingredient/Lot Evidence</option>
+<option value="Verified">Verified</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+<option value="Unverified">Unverified</option>
+</select>
+
+<select name="operator_training_status" required>
+<option value="">Operator Training</option>
+<option value="Verified">Verified</option>
+<option value="Expired">Expired</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+</select>
+
+<select name="environmental_monitoring_status" required>
+<option value="">Environmental Monitoring</option>
+<option value="Reviewed">Reviewed</option>
+<option value="Not Reviewed">Not Reviewed</option>
+<option value="Out of Trend">Out of Trend</option>
+<option value="Failed">Failed</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="cleaning_status" required>
+<option value="">Cleaning Evidence</option>
+<option value="Verified">Verified</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Failed">Failed</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="garbing_status" required>
+<option value="">Garbing / Aseptic Evidence</option>
+<option value="Verified">Verified</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Failed">Failed</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="qa_review_status" required>
+<option value="">QA Review</option>
+<option value="Approved">Approved</option>
+<option value="Pending">Pending</option>
+<option value="Rejected">Rejected</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="bud_status" required>
+<option value="">Beyond-Use-Date Evidence</option>
+<option value="Supported">Supported</option>
+<option value="Unsupported">Unsupported</option>
+<option value="Expired">Expired</option>
+<option value="Missing">Missing</option>
+</select>
+
+<input name="deviation_capa_link" placeholder="Deviation / CAPA Link if applicable">
+
+<select name="release_decision" required>
+<option value="">Release Decision</option>
+<option value="Released">Released</option>
+<option value="Hold">Hold</option>
+<option value="Rejected">Rejected</option>
+<option value="Pending QA Review">Pending QA Review</option>
+</select>
+
+<button type="submit">Save Compounding Evidence</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Compounding Pharmacy Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Order</th><th>Formula</th><th>Type</th><th>EM</th><th>QA</th><th>BUD</th><th>Decision</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.compound_record_id }}</td>
+<td>{{ r.order_id }}</td>
+<td>{{ r.formula_name }}</td>
+<td>{{ r.compound_type }}</td>
+<td>{{ r.environmental_monitoring_status }}</td>
+<td>{{ r.qa_review_status }}</td>
+<td>{{ r.bud_status }}</td>
+<td>{{ r.release_decision }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No compounding pharmacy evidence records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>compounding_pharmacy_evidence.csv</b>.
+Manufacturing, SOP, Shift, Access, Audit/CAPA, and Clinical Trial registers are untouched.
+</div>
+
+<div class="card">
+<h2>Advanced Feature Direction</h2>
+<p><b>Sterility-to-Release Evidence Graph™</b> links order, formulation, ingredient lots, operator training, environmental monitoring, cleaning, garbing, QA review, deviations, BUD support, and final release decision into one inspection-ready chain.</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
