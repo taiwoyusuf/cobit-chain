@@ -972,7 +972,7 @@ def audit_capa_page():
 @app.route("/clinical-trial-integrity")
 def clinical_trial_integrity_page():
     page = get_enterprise_page("/clinical-trial-integrity")
-    return render_enterprise_shell_page(page)
+    return render_clinical_trial_integrity_v2(page)
 
 
 def render_enterprise_shell_page(page, metrics=None):
@@ -3395,6 +3395,413 @@ button {
         pages=ENTERPRISE_PAGES,
         result=result,
         recent=recent
+    )
+
+
+# ============================================================
+# CLINICAL TRIAL INTEGRITY V2 ACTIVE
+# Purview + Protocol-to-Evidence Governance Engine
+# ============================================================
+
+def render_clinical_trial_integrity_v2(page):
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Clinical Trial Integrity</title>
+<style>
+:root {
+    --bg:#f4f7fb; --navy:#071527; --blue:#2563eb; --cyan:#06b6d4;
+    --green:#16a34a; --yellow:#f59e0b; --red:#dc2626; --muted:#64748b;
+    --card:#ffffff; --border:#e5e7eb;
+}
+* { box-sizing:border-box; }
+body {
+    margin:0; font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:linear-gradient(135deg,#eef4ff,#f8fafc,#eefdf8);
+    color:#0f172a;
+}
+.hero {
+    background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
+    color:white; padding:36px 42px 46px;
+    border-bottom-left-radius:34px; border-bottom-right-radius:34px;
+    box-shadow:0 18px 45px rgba(15,39,69,.25);
+}
+.hero-top { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:14px; }
+.logo {
+    width:54px; height:54px; border-radius:18px;
+    background:linear-gradient(135deg,#38bdf8,#22c55e);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:22px;
+}
+.brand h1 { margin:0; font-size:34px; letter-spacing:-.8px; }
+.brand p { margin:4px 0 0; color:#cbd5e1; }
+.badge {
+    padding:10px 15px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    color:#e0f2fe; font-weight:800;
+}
+.container { max-width:1450px; margin:-28px auto 50px; padding:0 26px; }
+.nav {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:14px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;
+}
+.nav a {
+    text-decoration:none; color:#0f172a; background:#f8fafc; border:1px solid #e2e8f0;
+    padding:10px 13px; border-radius:999px; font-weight:900; font-size:13px;
+}
+.nav a.active { background:#0f172a; color:white; border-color:#0f172a; }
+.card {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+    margin-bottom:20px;
+}
+.notice {
+    background:#f0fdf4; border-left:7px solid #16a34a; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.warning {
+    background:#fff7ed; border-left:7px solid #f59e0b; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.trial-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.trial-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.trial-card, .trial-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.trial-card h3 { margin:8px 0 10px; }
+.trial-card p, .trial-mini p { color:#475569; line-height:1.5; }
+.trial-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.trial-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.exec-table {
+    width:100%; border-collapse:collapse; border-radius:16px; overflow:hidden; font-size:13px;
+}
+.exec-table th {
+    background:#0f172a; color:white; text-align:left; padding:12px;
+}
+.exec-table td {
+    border-bottom:1px solid #e5e7eb; padding:12px; vertical-align:top;
+}
+.flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.flow-step {
+    flex:1; min-width:185px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.flow-step b { display:block; margin-bottom:7px; }
+.flow-step span { display:block; color:#475569; line-height:1.45; font-size:13px; }
+.flow-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+.tag {
+    display:inline-block; padding:6px 9px; border-radius:999px;
+    background:#f1f5f9; color:#334155; font-size:12px; font-weight:800;
+    margin:4px 4px 0 0;
+}
+@media(max-width:1000px){
+    .trial-grid,.trial-two-col{ grid-template-columns:1fr; }
+    .flow-arrow{ display:none; }
+}
+</style>
+</head>
+
+<body>
+<section class="hero">
+    <div class="hero-top">
+        <div class="brand">
+            <div class="logo">CC</div>
+            <div>
+                <h1>COBIT-Chain™</h1>
+                <p>Clinical Trial Integrity • Microsoft Purview • Protocol-to-Evidence Governance</p>
+            </div>
+        </div>
+        <div class="badge">Clinical Trial Integrity v2</div>
+    </div>
+</section>
+
+<main class="container">
+    <nav class="nav">
+        {% for p in pages %}
+            <a class="{% if p.route == '/clinical-trial-integrity' %}active{% endif %}" href="{{ p.route }}">{{ p.title }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="notice">
+        <b>Clinical Trial Integrity v2 is active.</b>
+        This page extends your earlier Microsoft Purview/eConsent governance work into a full clinical-trial evidence integrity model.
+        The Manufacturing/Wole dashboard, SOP comparison engine, Access, Shift, and Audit/CAPA modules remain untouched.
+    </div>
+
+    <section class="trial-grid">
+        <div class="trial-card">
+            <div class="trial-label">Your Prior Build</div>
+            <h3>Microsoft Purview eConsent Governance</h3>
+            <p>Tracks the earlier eConsent-DLP policy work, retention label plan, and SharePoint validation-pack direction.</p>
+            <span class="trial-badge">Purview-connected</span>
+        </div>
+
+        <div class="trial-card">
+            <div class="trial-label">Advanced Feature</div>
+            <h3>Protocol-to-Purview Evidence Graph™</h3>
+            <p>Maps protocol obligations to evidence artifacts, Purview compliance state, COBIT-Chain hash integrity, and inspection readiness.</p>
+            <span class="trial-badge">Differentiated engine</span>
+        </div>
+
+        <div class="trial-card">
+            <div class="trial-label">Trial Pain Point</div>
+            <h3>Fragmented Evidence Control</h3>
+            <p>Creates a single governance view across eConsent, eTMF, EDC, SharePoint, vendor files, monitoring evidence, and CSV validation packs.</p>
+            <span class="trial-badge">Evidence control tower</span>
+        </div>
+    </section>
+
+    <div class="card">
+        <h2>What You Already Achieved / Started</h2>
+        <table class="exec-table">
+            <tr>
+                <th>Workstream</th>
+                <th>Status / Meaning</th>
+                <th>How COBIT-Chain Extends It</th>
+            </tr>
+            <tr>
+                <td><b>eConsent-DLP Policy</b></td>
+                <td>Purview DLP policy was created, but detection still needed troubleshooting.</td>
+                <td>Adds a DLP Readiness Gate: scope, rule logic, test document, sensitive data pattern, and SharePoint location must all pass.</td>
+            </tr>
+            <tr>
+                <td><b>15-Year eConsent Retention</b></td>
+                <td>Retention label/policy was planned for long-term clinical evidence preservation.</td>
+                <td>Adds a Records Retention Gate: evidence cannot be inspection-ready unless expected retention label status is confirmed.</td>
+            </tr>
+            <tr>
+                <td><b>CSV Validation Packs Library</b></td>
+                <td>SharePoint library was planned for CSV validation evidence packs.</td>
+                <td>Adds CSV Evidence Integrity: file hash, row/column checks, missing value checks, validation pack status, and audit trail readiness.</td>
+            </tr>
+            <tr>
+                <td><b>Purview + COBIT-Chain Model</b></td>
+                <td>Purview governs classification, DLP, retention, and records; COBIT-Chain governs evidence integrity and audit logic.</td>
+                <td>Combines compliance state with cryptographic evidence verification and COBIT/ALCOA+ readiness scoring.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Protocol-to-Purview Evidence Graph™</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <b>1. Protocol Obligation</b>
+                <span>Consent, visit, source data, monitoring, safety, TMF, or data-transfer requirement.</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <b>2. Evidence Artifact</b>
+                <span>eConsent, CSV, TMF file, EDC export, monitoring report, vendor file, or SharePoint document.</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <b>3. Purview State</b>
+                <span>DLP match, sensitivity label, retention label, record status, access/sharing risk, and policy alert.</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <b>4. COBIT-Chain Integrity</b>
+                <span>SHA-256 hash, baseline match, evidence status, chain record, and tamper detection.</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+                <b>5. Inspection Readiness</b>
+                <span>ALCOA+ score, deviation/CAPA linkage, reviewer signoff, and audit-ready evidence pack.</span>
+            </div>
+        </div>
+    </div>
+
+    <section class="trial-two-col">
+        <div class="card">
+            <h2>Global Clinical Trial Pain Points</h2>
+            <ul>
+                <li>Evidence scattered across eTMF, EDC, eConsent, SharePoint, labs, vendors, monitoring reports, and emails.</li>
+                <li>Protocol requirements not clearly linked to proof that the required action happened.</li>
+                <li>Manual inspection-readiness work and late evidence reconstruction.</li>
+                <li>Data integrity risk from decentralized, remote, and vendor-generated evidence.</li>
+                <li>Participant privacy risk when sensitive trial documents are shared or stored incorrectly.</li>
+                <li>Retention uncertainty for long-lived clinical evidence such as eConsent records.</li>
+                <li>Difficulty proving ALCOA+ readiness across multiple evidence sources.</li>
+                <li>Weak linkage between evidence gaps, deviations, CAPA, and effectiveness checks.</li>
+                <li>CSV and data-transfer reconciliation gaps.</li>
+                <li>Inconsistent site/vendor visibility for sponsors and QA.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>COBIT-Chain Solution</h2>
+            <ul>
+                <li>Creates one clinical evidence control tower across fragmented evidence sources.</li>
+                <li>Maps each protocol obligation to evidence, reviewer, status, hash, and Purview policy state.</li>
+                <li>Pre-validates inspection readiness before audit pressure begins.</li>
+                <li>Combines Purview DLP/retention status with COBIT-Chain cryptographic evidence integrity.</li>
+                <li>Flags sensitive data exposure risk before evidence is shared incorrectly.</li>
+                <li>Tracks retention readiness for eConsent and regulated trial records.</li>
+                <li>Scores ALCOA+ readiness using evidence completeness, attribution, timestamp, originality, availability, and review state.</li>
+                <li>Links missing or defective evidence to deviation/CAPA readiness.</li>
+                <li>Validates CSV packs using file hash, missing values, duplicate rows, and expected record checks.</li>
+                <li>Gives leadership a trial integrity status without replacing eTMF, EDC, or Purview.</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="card">
+        <h2>Clinical Trial Integrity Data Model</h2>
+        <table class="exec-table">
+            <tr>
+                <th>Field</th>
+                <th>Purpose</th>
+                <th>Governance Value</th>
+            </tr>
+            <tr>
+                <td><b>Study / Protocol ID</b></td>
+                <td>Identifies trial, protocol, amendment, or study version.</td>
+                <td>Links evidence to the correct clinical requirement.</td>
+            </tr>
+            <tr>
+                <td><b>Protocol Obligation</b></td>
+                <td>Defines required action such as consent, visit, monitoring, safety review, or data transfer.</td>
+                <td>Creates the baseline for evidence verification.</td>
+            </tr>
+            <tr>
+                <td><b>Evidence Artifact</b></td>
+                <td>eConsent, TMF artifact, EDC export, lab file, vendor CSV, monitoring report, or SharePoint file.</td>
+                <td>Identifies the proof used for inspection readiness.</td>
+            </tr>
+            <tr>
+                <td><b>Purview DLP Status</b></td>
+                <td>No match, matched, alert, override, blocked, or policy exception.</td>
+                <td>Shows participant-data protection risk.</td>
+            </tr>
+            <tr>
+                <td><b>Retention Label Status</b></td>
+                <td>Missing, applied, record, regulatory record, expired, or review required.</td>
+                <td>Shows long-term evidence preservation readiness.</td>
+            </tr>
+            <tr>
+                <td><b>Hash Integrity Status</b></td>
+                <td>Green, yellow, or red based on baseline and current hash.</td>
+                <td>Shows whether evidence changed after baseline creation.</td>
+            </tr>
+            <tr>
+                <td><b>ALCOA+ Score</b></td>
+                <td>Assesses attributable, legible, contemporaneous, original, accurate, complete, consistent, enduring, and available.</td>
+                <td>Provides data-integrity readiness scoring.</td>
+            </tr>
+            <tr>
+                <td><b>Deviation / CAPA Link</b></td>
+                <td>Links evidence gaps to controlled remediation.</td>
+                <td>Prevents unresolved trial evidence gaps from remaining hidden.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Purview + COBIT-Chain Control Gates</h2>
+        <table class="exec-table">
+            <tr>
+                <th>Gate</th>
+                <th>Failure Signal</th>
+                <th>Recommended Action</th>
+            </tr>
+            <tr>
+                <td><b>eConsent DLP Gate</b></td>
+                <td>Policy does not trigger on expected eConsent test file.</td>
+                <td>Check DLP scope, sensitive info type, test content, SharePoint location, policy mode, and alert configuration.</td>
+            </tr>
+            <tr>
+                <td><b>Retention Gate</b></td>
+                <td>eConsent evidence has no retention label or record status.</td>
+                <td>Apply or auto-apply correct clinical retention label before declaring inspection readiness.</td>
+            </tr>
+            <tr>
+                <td><b>CSV Validation Gate</b></td>
+                <td>CSV pack has missing rows, duplicates, mismatch counts, or no validation evidence.</td>
+                <td>Block reliance until validation pack is complete and hash baseline is generated.</td>
+            </tr>
+            <tr>
+                <td><b>Protocol Evidence Gate</b></td>
+                <td>Protocol obligation has no mapped evidence artifact.</td>
+                <td>Create evidence mapping or raise deviation/remediation workflow.</td>
+            </tr>
+            <tr>
+                <td><b>ALCOA+ Gate</b></td>
+                <td>Evidence lacks owner, timestamp, original source, completeness, or availability.</td>
+                <td>Escalate to study owner, QA, or site monitor before inspection reliance.</td>
+            </tr>
+            <tr>
+                <td><b>CAPA Linkage Gate</b></td>
+                <td>Evidence gap exists but no deviation/CAPA reference is linked.</td>
+                <td>Route to Audit/CAPA module for controlled remediation and effectiveness readiness.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Clinical Trial Integrity Domains</h2>
+        <section class="trial-grid">
+            <div class="trial-mini">
+                <b>eConsent Integrity</b>
+                <p>Consent version, signature, timestamp, participant/site linkage, DLP status, retention status, and audit trail readiness.</p>
+            </div>
+            <div class="trial-mini">
+                <b>Source Data Verification</b>
+                <p>Traceability between source records, EDC entries, monitoring review, query resolution, and evidence status.</p>
+            </div>
+            <div class="trial-mini">
+                <b>TMF Completeness</b>
+                <p>TMF artifact completeness, owner, version, review status, filing status, and inspection readiness.</p>
+            </div>
+            <div class="trial-mini">
+                <b>CSV Validation Packs</b>
+                <p>CSV evidence packs with hash baseline, row count, duplicate checks, missing values, and validation signoff.</p>
+            </div>
+            <div class="trial-mini">
+                <b>Vendor Data Transfer</b>
+                <p>Lab, safety, imaging, or external vendor file reconciliation with exception and acceptance status.</p>
+            </div>
+            <div class="trial-mini">
+                <b>Deviation / CAPA Readiness</b>
+                <p>Evidence gaps linked to deviation, CAPA, remediation proof, and effectiveness-check readiness.</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="warning">
+        <b>Next build step:</b> add a separate <b>clinical_trial_evidence.csv</b> storage file for protocol obligations,
+        evidence artifacts, Purview status, ALCOA+ scoring, CSV validation packs, deviation linkage, and inspection-readiness scoring.
+        This must stay separate from Manufacturing/Wole <b>logs.csv</b> and <b>baseline_hashes.csv</b>.
+    </div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        page=page,
+        pages=ENTERPRISE_PAGES
     )
 
 if __name__ == "__main__":
