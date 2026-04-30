@@ -833,6 +833,7 @@ def get_enterprise_page(route):
 
 
 def get_enterprise_overview_metrics():
+    # EXECUTIVE_OVERVIEW_V2_ACTIVE
     logs = prepare_logs()
 
     metrics = {
@@ -845,10 +846,28 @@ def get_enterprise_overview_metrics():
         "conditional": 0,
         "not_ready": 0,
         "integrity_score": 0,
-        "open_exceptions": []
+        "enterprise_status": "NO DATA",
+        "enterprise_status_icon": "ℹ",
+        "enterprise_status_class": "neutral",
+        "open_exceptions": [],
+        "recommended_actions": [],
+        "module_maturity": [
+            {"module": "Executive Overview", "status": "LIVE", "maturity": "Leadership dashboard active"},
+            {"module": "SOP Governance", "status": "SHELL", "maturity": "Route live; SOP data connection pending"},
+            {"module": "Manufacturing", "status": "LIVE", "maturity": "Wole evidence hashing and audit logic active"},
+            {"module": "Shift Assurance", "status": "SHELL", "maturity": "Route live; shift/equipment data pending"},
+            {"module": "Access Governance", "status": "SHELL", "maturity": "Route live; myAccess/binder data pending"},
+            {"module": "Audit/CAPA", "status": "SHELL", "maturity": "Route live; CAPA/deviation data pending"},
+            {"module": "Clinical Trial Integrity", "status": "PLANNED", "maturity": "Concept page live"}
+        ]
     }
 
     if logs.empty:
+        metrics["recommended_actions"] = [
+            "Upload manufacturing evidence to establish the first governance baseline.",
+            "Use the Manufacturing dashboard as the initial controlled evidence engine.",
+            "Connect Shift Assurance, Access Governance, SOP Governance, and Audit/CAPA after baseline evidence is stable."
+        ]
         return metrics
 
     logs = logs.fillna("")
@@ -871,6 +890,37 @@ def get_enterprise_overview_metrics():
         else:
             metrics["not_ready"] += 1
             metrics["open_exceptions"].append(f"{batch_name}: NOT AUDIT-READY")
+
+    if metrics["red_total"] > 0 or metrics["not_ready"] > 0:
+        metrics["enterprise_status"] = "CRITICAL GOVERNANCE ATTENTION REQUIRED"
+        metrics["enterprise_status_icon"] = "❌"
+        metrics["enterprise_status_class"] = "critical"
+        metrics["recommended_actions"] = [
+            "Review all RED evidence records before relying on affected batches for audit.",
+            "Investigate hash mismatches and confirm whether evidence changed after baseline creation.",
+            "Document remediation actions and regenerate audit reports after correction.",
+            "Do not treat affected batches as audit-ready until integrity issues are resolved."
+        ]
+    elif metrics["yellow_total"] > 0 or metrics["conditional"] > 0:
+        metrics["enterprise_status"] = "CONDITIONAL GOVERNANCE READINESS"
+        metrics["enterprise_status_icon"] = "⚠"
+        metrics["enterprise_status_class"] = "warning"
+        metrics["recommended_actions"] = [
+            "Review YELLOW records and confirm whether they represent new baselines or missing verification history.",
+            "Complete missing process stages, approvals, or supporting evidence before final audit reliance.",
+            "Use the Manufacturing dashboard to download audit reports for conditional batches.",
+            "Prioritize connecting Shift Assurance and Access Governance data next."
+        ]
+    else:
+        metrics["enterprise_status"] = "GOVERNANCE BASELINE HEALTHY"
+        metrics["enterprise_status_icon"] = "✅"
+        metrics["enterprise_status_class"] = "healthy"
+        metrics["recommended_actions"] = [
+            "Maintain current evidence upload discipline and baseline control.",
+            "Expand the assurance model into Shift Assurance and Access Governance.",
+            "Begin mapping SOP Governance evidence to existing manufacturing records.",
+            "Prepare leadership demo using Executive Overview and Manufacturing pages."
+        ]
 
     return metrics
 
@@ -1013,6 +1063,21 @@ body {
     padding:15px; font-weight:800;
 }
 .exception-list li { margin-bottom:8px; }
+
+.exec-table {
+    width:100%; border-collapse:collapse; border-radius:16px; overflow:hidden; font-size:13px;
+}
+.exec-table th {
+    background:#0f172a; color:white; text-align:left; padding:12px;
+}
+.exec-table td {
+    border-bottom:1px solid #e5e7eb; padding:12px; vertical-align:top;
+}
+.status-card-healthy { border-left:8px solid #16a34a; background:linear-gradient(135deg,#f0fdf4,#ffffff); }
+.status-card-warning { border-left:8px solid #f59e0b; background:linear-gradient(135deg,#fffbeb,#ffffff); }
+.status-card-critical { border-left:8px solid #dc2626; background:linear-gradient(135deg,#fef2f2,#ffffff); }
+.status-card-neutral { border-left:8px solid #64748b; background:linear-gradient(135deg,#f8fafc,#ffffff); }
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1077,6 +1142,15 @@ body {
             </div>
 
             {% if page.route == "/executive-overview" %}
+            <div class="card status-card-{{ metrics.enterprise_status_class }}">
+                <h2>{{ metrics.enterprise_status_icon }} Executive Governance Status</h2>
+                <p><b>{{ metrics.enterprise_status }}</b></p>
+                <p>
+                    This executive view summarizes the current governance posture using the Manufacturing Assurance evidence engine
+                    while the other enterprise modules are being connected safely.
+                </p>
+            </div>
+
             <div class="card">
                 <h2>Audit Readiness Summary</h2>
                 <section class="grid">
@@ -1085,8 +1159,28 @@ body {
                     <div class="metric"><div class="metric-label">Not Ready</div><div class="metric-value" style="color:#dc2626">{{ metrics.not_ready }}</div><div class="metric-sub">Critical issues</div></div>
                     <div class="metric"><div class="metric-label">Yellow Records</div><div class="metric-value" style="color:#f59e0b">{{ metrics.yellow_total }}</div><div class="metric-sub">Baseline or review gaps</div></div>
                 </section>
+            </div>
 
-                <h3>Open Exceptions</h3>
+            <div class="card">
+                <h2>Module Maturity Board</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Module</th>
+                        <th>Status</th>
+                        <th>Current Maturity</th>
+                    </tr>
+                    {% for m in metrics.module_maturity %}
+                    <tr>
+                        <td><b>{{ m.module }}</b></td>
+                        <td>{{ m.status }}</td>
+                        <td>{{ m.maturity }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Open Exceptions</h2>
                 {% if metrics.open_exceptions %}
                     <ul class="exception-list">
                     {% for item in metrics.open_exceptions[:10] %}
@@ -1096,6 +1190,15 @@ body {
                 {% else %}
                     <p>No open exceptions detected from current manufacturing records.</p>
                 {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Recommended Leadership Actions</h2>
+                <ul class="exception-list">
+                    {% for action in metrics.recommended_actions %}
+                    <li>{{ action }}</li>
+                    {% endfor %}
+                </ul>
             </div>
             {% endif %}
 
