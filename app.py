@@ -4789,5 +4789,316 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# EXECUTIVE OVERVIEW V3 TEST ACTIVE
+# Enterprise dashboard across all module registers.
+# Does not replace /executive-overview yet.
+# ============================================================
+
+def safe_int(value):
+    try:
+        return int(float(clean(value)))
+    except Exception:
+        return 0
+
+
+def safe_float(value):
+    try:
+        return float(clean(value))
+    except Exception:
+        return 0.0
+
+
+def load_named_register(filename, columns):
+    df = load_csv(filename)
+    return ensure_cols(df, columns).fillna("")
+
+
+def get_executive_v3_metrics():
+    # Manufacturing
+    manufacturing = prepare_logs()
+    manufacturing = manufacturing.fillna("")
+
+    m_total = len(manufacturing)
+    m_batches = manufacturing["batch_id"].nunique() if not manufacturing.empty else 0
+    m_green = len(manufacturing[manufacturing["status"] == "GREEN"]) if not manufacturing.empty else 0
+    m_yellow = len(manufacturing[manufacturing["status"] == "YELLOW"]) if not manufacturing.empty else 0
+    m_red = len(manufacturing[manufacturing["status"] == "RED"]) if not manufacturing.empty else 0
+
+    # SOP
+    sop = load_named_register("sop_comparisons.csv", [
+        "comparison_id", "process_area", "gap_count", "high_risk_gap_count",
+        "outdated_sop_signals", "technology_gap_signals", "recommended_decision"
+    ])
+    sop_total = len(sop)
+    sop_gaps = sum(safe_int(x) for x in sop["gap_count"]) if not sop.empty else 0
+    sop_high = sum(safe_int(x) for x in sop["high_risk_gap_count"]) if not sop.empty else 0
+
+    # Shift
+    shift = load_named_register("shift_handoffs.csv", [
+        "handoff_id", "readiness_status", "risk_level", "equipment_status", "servicenow_ticket"
+    ])
+    shift_total = len(shift)
+    shift_ready = len(shift[shift["readiness_status"] == "READY"]) if not shift.empty else 0
+    shift_conditional = len(shift[shift["readiness_status"] == "CONDITIONALLY READY"]) if not shift.empty else 0
+    shift_not_ready = len(shift[shift["readiness_status"] == "NOT READY"]) if not shift.empty else 0
+    shift_high = len(shift[shift["risk_level"] == "HIGH"]) if not shift.empty else 0
+
+    # Access
+    access = load_named_register("access_reviews.csv", [
+        "review_id", "readiness_status", "risk_level", "system_name", "review_decision"
+    ])
+    access_total = len(access)
+    access_ready = len(access[access["readiness_status"] == "AUDIT-READY"]) if not access.empty else 0
+    access_conditional = len(access[access["readiness_status"] == "CONDITIONALLY READY"]) if not access.empty else 0
+    access_not_ready = len(access[access["readiness_status"] == "NOT AUDIT-READY"]) if not access.empty else 0
+    access_high = len(access[access["risk_level"] == "HIGH"]) if not access.empty else 0
+
+    # Audit/CAPA
+    audit = load_named_register("audit_capa_register.csv", [
+        "audit_id", "readiness_status", "risk_level", "severity", "evidence_status", "effectiveness_status"
+    ])
+    audit_total = len(audit)
+    audit_ready = len(audit[audit["readiness_status"] == "EFFECTIVENESS READY"]) if not audit.empty else 0
+    audit_conditional = len(audit[audit["readiness_status"] == "CONDITIONALLY READY"]) if not audit.empty else 0
+    audit_not_ready = len(audit[audit["readiness_status"] == "NOT READY"]) if not audit.empty else 0
+    audit_high = len(audit[audit["risk_level"] == "HIGH"]) if not audit.empty else 0
+
+    # Clinical Trial future register
+    clinical = load_named_register("clinical_trial_evidence.csv", [
+        "evidence_id", "study_id", "protocol_obligation", "purview_status",
+        "retention_status", "alcoa_score", "inspection_readiness"
+    ])
+    clinical_total = len(clinical)
+
+    total_records = m_total + sop_total + shift_total + access_total + audit_total + clinical_total
+    high_risk_total = m_red + sop_high + shift_high + access_high + audit_high
+    conditional_total = m_yellow + shift_conditional + access_conditional + audit_conditional
+
+    if high_risk_total > 0:
+        enterprise_status = "CRITICAL GOVERNANCE ATTENTION REQUIRED"
+        enterprise_icon = "❌"
+        enterprise_class = "critical"
+    elif conditional_total > 0:
+        enterprise_status = "CONDITIONAL ENTERPRISE READINESS"
+        enterprise_icon = "⚠"
+        enterprise_class = "warning"
+    elif total_records > 0:
+        enterprise_status = "ENTERPRISE GOVERNANCE BASELINE HEALTHY"
+        enterprise_icon = "✅"
+        enterprise_class = "healthy"
+    else:
+        enterprise_status = "NO ENTERPRISE RECORDS YET"
+        enterprise_icon = "ℹ"
+        enterprise_class = "neutral"
+
+    module_rows = [
+        {
+            "module": "Manufacturing Assurance",
+            "route": "/",
+            "register": "logs.csv",
+            "records": m_total,
+            "ready": m_green,
+            "conditional": m_yellow,
+            "not_ready": m_red,
+            "high_risk": m_red,
+            "status": "ACTIVE"
+        },
+        {
+            "module": "SOP Governance",
+            "route": "/sop-governance",
+            "register": "sop_comparisons.csv",
+            "records": sop_total,
+            "ready": max(sop_total - sop_high, 0),
+            "conditional": sop_gaps,
+            "not_ready": sop_high,
+            "high_risk": sop_high,
+            "status": "ACTIVE"
+        },
+        {
+            "module": "Shift Assurance",
+            "route": "/shift-assurance",
+            "register": "shift_handoffs.csv",
+            "records": shift_total,
+            "ready": shift_ready,
+            "conditional": shift_conditional,
+            "not_ready": shift_not_ready,
+            "high_risk": shift_high,
+            "status": "ACTIVE"
+        },
+        {
+            "module": "Access Governance",
+            "route": "/access-governance",
+            "register": "access_reviews.csv",
+            "records": access_total,
+            "ready": access_ready,
+            "conditional": access_conditional,
+            "not_ready": access_not_ready,
+            "high_risk": access_high,
+            "status": "ACTIVE"
+        },
+        {
+            "module": "Audit/CAPA",
+            "route": "/audit-capa",
+            "register": "audit_capa_register.csv",
+            "records": audit_total,
+            "ready": audit_ready,
+            "conditional": audit_conditional,
+            "not_ready": audit_not_ready,
+            "high_risk": audit_high,
+            "status": "ACTIVE"
+        },
+        {
+            "module": "Clinical Trial Integrity",
+            "route": "/clinical-trial-integrity",
+            "register": "clinical_trial_evidence.csv",
+            "records": clinical_total,
+            "ready": 0,
+            "conditional": 0,
+            "not_ready": 0,
+            "high_risk": 0,
+            "status": "PURVIEW OVERVIEW ACTIVE / REGISTER FUTURE"
+        }
+    ]
+
+    recommended_actions = []
+
+    if m_red > 0:
+        recommended_actions.append("Manufacturing: review RED hash/integrity records before audit reliance.")
+    if sop_high > 0:
+        recommended_actions.append("SOP Governance: review high-risk SOP harmonization gaps and outdated SOP signals.")
+    if shift_high > 0:
+        recommended_actions.append("Shift Assurance: review high-risk equipment handoffs and unresolved carryover items.")
+    if access_high > 0:
+        recommended_actions.append("Access Governance: remediate high-risk access review records and missing approvals.")
+    if audit_high > 0:
+        recommended_actions.append("Audit/CAPA: resolve high-risk CAPA readiness blockers before effectiveness review.")
+    if clinical_total == 0:
+        recommended_actions.append("Clinical Trial Integrity: next build should create clinical_trial_evidence.csv for Purview + ALCOA+ evidence tracking.")
+
+    if not recommended_actions:
+        recommended_actions.append("Maintain evidence upload discipline and continue expanding functional registers module by module.")
+
+    return {
+        "enterprise_status": enterprise_status,
+        "enterprise_icon": enterprise_icon,
+        "enterprise_class": enterprise_class,
+        "total_records": total_records,
+        "high_risk_total": high_risk_total,
+        "conditional_total": conditional_total,
+        "manufacturing_batches": m_batches,
+        "module_rows": module_rows,
+        "recommended_actions": recommended_actions
+    }
+
+
+@app.route("/executive-overview-v3-test")
+def executive_overview_v3_test():
+    metrics = get_executive_v3_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Executive Overview v3 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+.status-card{border-left:8px solid #64748b}
+.status-card.healthy{border-left-color:#16a34a;background:linear-gradient(135deg,#f0fdf4,#ffffff)}
+.status-card.warning{border-left-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#ffffff)}
+.status-card.critical{border-left-color:#dc2626;background:linear-gradient(135deg,#fef2f2,#ffffff)}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
+.risk{font-weight:900}.high{color:#dc2626}.medium{color:#d97706}.low{color:#16a34a}
+a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Executive Overview v3 Test</h1>
+<p>Enterprise dashboard across Manufacturing, SOP, Shift, Access, Audit/CAPA, and Clinical Trial Integrity.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive v2</a>
+<a class="active" href="/executive-overview-v3-test">Executive v3 Test</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+</nav>
+
+<div class="card status-card {{ metrics.enterprise_class }}">
+<h2>{{ metrics.enterprise_icon }} {{ metrics.enterprise_status }}</h2>
+<p>This page summarizes all active COBIT-Chain enterprise registers without replacing the current Executive Overview yet.</p>
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Enterprise Records</div><div class="metric-value">{{ metrics.total_records }}</div></div>
+<div class="metric"><div class="metric-label">High-Risk Items</div><div class="metric-value" style="color:#dc2626">{{ metrics.high_risk_total }}</div></div>
+<div class="metric"><div class="metric-label">Conditional Items</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional_total }}</div></div>
+<div class="metric"><div class="metric-label">Manufacturing Batches</div><div class="metric-value">{{ metrics.manufacturing_batches }}</div></div>
+</section>
+
+<div class="card">
+<h2>Enterprise Module Register Board</h2>
+<table>
+<tr>
+<th>Module</th><th>Register</th><th>Records</th><th>Ready</th><th>Conditional</th><th>Not Ready</th><th>High Risk</th><th>Status</th>
+</tr>
+{% for m in metrics.module_rows %}
+<tr>
+<td><a class="module-link" href="{{ m.route }}">{{ m.module }}</a></td>
+<td>{{ m.register }}</td>
+<td><b>{{ m.records }}</b></td>
+<td class="risk low">{{ m.ready }}</td>
+<td class="risk medium">{{ m.conditional }}</td>
+<td class="risk high">{{ m.not_ready }}</td>
+<td class="risk high">{{ m.high_risk }}</td>
+<td>{{ m.status }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2>Recommended Leadership Actions</h2>
+<ul>
+{% for action in metrics.recommended_actions %}
+<li>{{ action }}</li>
+{% endfor %}
+</ul>
+</div>
+
+<div class="card">
+<h2>Governance Meaning</h2>
+<p>
+Executive Overview v3 turns COBIT-Chain from separate module pages into an enterprise governance control tower.
+It reads each module register separately, summarizes readiness, identifies high-risk items, and keeps the original
+Manufacturing/Wole evidence chain protected.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics)
+
 if __name__ == "__main__":
     app.run(debug=True)
