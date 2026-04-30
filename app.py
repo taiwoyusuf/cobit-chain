@@ -937,10 +937,18 @@ def executive_overview_page():
     return render_enterprise_shell_page(page, metrics=metrics)
 
 
-@app.route("/sop-governance")
+@app.route("/sop-governance", methods=["GET", "POST"])
 def sop_governance_page():
     page = get_enterprise_page("/sop-governance")
-    return render_enterprise_shell_page(page)
+
+    if request.method == "POST":
+        result = run_sop_comparison(request)
+        if not result.get("error"):
+            save_sop_comparison_result(result)
+        return render_sop_governance_v2(page, result=result)
+
+    return render_sop_governance_v2(page)
+
 
 
 @app.route("/shift-assurance")
@@ -1949,6 +1957,844 @@ body {
         page=page,
         pages=ENTERPRISE_PAGES,
         metrics=metrics
+    )
+
+
+# ============================================================
+# SOP GOVERNANCE V2 ACTIVE
+# Dual SOP Harmonization + Reality Alignment Engine
+# ============================================================
+
+SOP_COMPARISON_FILE = "sop_comparisons.csv"
+
+
+def prepare_sop_comparisons():
+    df = load_csv(SOP_COMPARISON_FILE)
+    return ensure_cols(df, [
+        "comparison_id",
+        "timestamp",
+        "process_area",
+        "reviewer",
+        "sop_owner",
+        "global_filename",
+        "local_filename",
+        "global_hash",
+        "local_hash",
+        "global_control_dna_score",
+        "local_control_dna_score",
+        "maturity_gap",
+        "gap_count",
+        "high_risk_gap_count",
+        "outdated_sop_signals",
+        "technology_gap_signals",
+        "review_triggers",
+        "recommended_decision",
+        "previous_hash",
+        "record_hash"
+    ])
+
+
+def sop_extract_text(upload):
+    import zipfile
+    import xml.etree.ElementTree as ET
+
+    if not upload or not upload.filename:
+        return {
+            "filename": "",
+            "bytes": b"",
+            "hash": "",
+            "text": "",
+            "warning": "No file uploaded."
+        }
+
+    filename = clean(upload.filename)
+    data = upload.read()
+    file_hash = compute_hash(data)
+    lower_name = filename.lower()
+    warning = ""
+
+    try:
+        if lower_name.endswith((".txt", ".md", ".csv")):
+            text_value = data.decode("utf-8", errors="ignore")
+
+        elif lower_name.endswith((".xlsx", ".xls")):
+            sheets = pd.read_excel(io.BytesIO(data), sheet_name=None, engine="openpyxl")
+            parts = []
+            for sheet_name, df in sheets.items():
+                parts.append(f"Sheet: {sheet_name}")
+                parts.append(" ".join([str(c) for c in df.columns]))
+                parts.append(df.fillna("").astype(str).to_string(index=False))
+            text_value = "\n".join(parts)
+
+        elif lower_name.endswith(".docx"):
+            with zipfile.ZipFile(io.BytesIO(data)) as z:
+                xml_content = z.read("word/document.xml")
+            root = ET.fromstring(xml_content)
+            text_nodes = []
+            for node in root.iter():
+                if node.text:
+                    text_nodes.append(node.text)
+            text_value = " ".join(text_nodes)
+
+        else:
+            text_value = ""
+            warning = "Unsupported file type for text extraction. Use .txt, .csv, .xlsx, or .docx for this version."
+
+    except Exception as e:
+        text_value = ""
+        warning = f"Text extraction error: {e}"
+
+    return {
+        "filename": filename,
+        "bytes": data,
+        "hash": file_hash,
+        "text": clean(text_value),
+        "warning": warning
+    }
+
+
+def sop_theme_library():
+    return [
+        {
+            "theme": "Approval workflow",
+            "category": "Approval control",
+            "keywords": ["approval", "approve", "approved", "approver", "authorization", "authorisation", "sign-off", "signoff", "signature"],
+            "risk": "HIGH",
+            "cobit": "DSS06, MEA02",
+            "recommendation": "Define explicit approval ownership, approval evidence, and escalation where approval is missing."
+        },
+        {
+            "theme": "Audit trail",
+            "category": "Evidence integrity",
+            "keywords": ["audit trail", "audit log", "system log", "traceability", "record history", "event log"],
+            "risk": "HIGH",
+            "cobit": "MEA02, DSS06, MEA03",
+            "recommendation": "Require system-generated audit trail or controlled equivalent evidence."
+        },
+        {
+            "theme": "Electronic workflow / system control",
+            "category": "Technology maturity",
+            "keywords": ["system", "workflow", "electronic", "automated", "digital", "application", "platform", "service now", "servicenow", "myaccess"],
+            "risk": "MEDIUM",
+            "cobit": "BAI06, DSS01, DSS06",
+            "recommendation": "Assess whether manual steps should be harmonized into the mature system-enabled process."
+        },
+        {
+            "theme": "Manual paper or Excel dependency",
+            "category": "Manual process weakness",
+            "keywords": ["manual", "paper", "binder", "spreadsheet", "excel", "email approval", "printed", "wet signature"],
+            "risk": "MEDIUM",
+            "cobit": "DSS06, APO12, MEA02",
+            "recommendation": "Reduce manual dependency or add compensating controls, ownership, evidence retention, and review frequency."
+        },
+        {
+            "theme": "Deviation / CAPA linkage",
+            "category": "Quality event linkage",
+            "keywords": ["deviation", "capa", "corrective action", "preventive action", "investigation", "effectiveness check"],
+            "risk": "HIGH",
+            "cobit": "MEA02, MEA03, DSS06",
+            "recommendation": "Link SOP exceptions to deviation/CAPA process where quality impact or repeated failure exists."
+        },
+        {
+            "theme": "Training requirement",
+            "category": "People and training",
+            "keywords": ["training", "trained", "qualification", "competency", "read and understand", "curriculum"],
+            "risk": "MEDIUM",
+            "cobit": "APO07, DSS06",
+            "recommendation": "Add training or retraining requirement where SOP changes affect execution responsibility."
+        },
+        {
+            "theme": "Role and responsibility ownership",
+            "category": "Accountability",
+            "keywords": ["owner", "responsible", "accountable", "qa", "system owner", "process owner", "technician", "reviewer"],
+            "risk": "MEDIUM",
+            "cobit": "APO01, APO07, DSS06",
+            "recommendation": "Clarify ownership, reviewer role, system owner responsibility, and escalation chain."
+        },
+        {
+            "theme": "Periodic review frequency",
+            "category": "Review control",
+            "keywords": ["periodic review", "quarterly", "monthly", "annually", "annual", "review frequency", "recertification", "certification"],
+            "risk": "MEDIUM",
+            "cobit": "MEA01, MEA02",
+            "recommendation": "Define review frequency and evidence required to prove review completion."
+        },
+        {
+            "theme": "Access governance",
+            "category": "Access control",
+            "keywords": ["access", "entitlement", "user access", "permission", "role", "privilege", "segregation of duties", "sod"],
+            "risk": "HIGH",
+            "cobit": "DSS05, DSS06, MEA02",
+            "recommendation": "Link SOP control to access approval, review, entitlement evidence, and segregation of duties."
+        },
+        {
+            "theme": "Data integrity / ALCOA+",
+            "category": "Data integrity",
+            "keywords": ["data integrity", "alcoa", "accurate", "legible", "contemporaneous", "original", "attributable", "complete", "consistent", "enduring", "available"],
+            "risk": "HIGH",
+            "cobit": "MEA02, MEA03, DSS06",
+            "recommendation": "Define data integrity requirements and evidence retention expectations."
+        },
+        {
+            "theme": "Backup / recovery evidence",
+            "category": "Operational resilience",
+            "keywords": ["backup", "restore", "recovery", "disaster recovery", "archive", "retention"],
+            "risk": "MEDIUM",
+            "cobit": "DSS04, DSS01, MEA02",
+            "recommendation": "Add backup, recovery, retention, and restoration evidence expectations where relevant."
+        },
+        {
+            "theme": "Change control",
+            "category": "Change governance",
+            "keywords": ["change control", "change request", "configuration change", "system change", "validated change", "impact assessment"],
+            "risk": "HIGH",
+            "cobit": "BAI06, BAI07, MEA03",
+            "recommendation": "Connect SOP changes or process changes to formal change control and impact assessment."
+        },
+        {
+            "theme": "Escalation path",
+            "category": "Escalation governance",
+            "keywords": ["escalation", "escalate", "notify", "urgent", "critical", "manager", "qa notification"],
+            "risk": "MEDIUM",
+            "cobit": "DSS02, DSS06, APO12",
+            "recommendation": "Define escalation threshold, notification path, and evidence required for closure."
+        }
+    ]
+
+
+def sop_contains(text_value, keywords):
+    haystack = clean(text_value).lower()
+    return any(k.lower() in haystack for k in keywords)
+
+
+def sop_control_dna(text_value):
+    dimensions = [
+        ("Approval Control", ["approval", "approved", "approver", "sign-off", "signature"]),
+        ("Evidence Integrity", ["evidence", "record", "audit trail", "traceability", "log"]),
+        ("Technology Enablement", ["system", "workflow", "electronic", "automated", "digital"]),
+        ("Manual Dependency", ["manual", "paper", "binder", "excel", "spreadsheet"]),
+        ("Data Integrity", ["data integrity", "alcoa", "accurate", "complete", "available"]),
+        ("Review Frequency", ["periodic review", "quarterly", "monthly", "annual", "review frequency"]),
+        ("Deviation/CAPA Linkage", ["deviation", "capa", "investigation", "effectiveness check"]),
+        ("Access Governance", ["access", "entitlement", "permission", "role", "segregation"]),
+        ("Training Control", ["training", "qualified", "competency", "curriculum"]),
+        ("Change Control", ["change control", "impact assessment", "configuration change"])
+    ]
+
+    covered = []
+    missing = []
+
+    for name, keywords in dimensions:
+        if sop_contains(text_value, keywords):
+            covered.append(name)
+        else:
+            missing.append(name)
+
+    score = round((len(covered) / len(dimensions)) * 100, 2) if dimensions else 0
+
+    return {
+        "score": score,
+        "covered": covered,
+        "missing": missing,
+        "dimension_count": len(dimensions),
+        "covered_count": len(covered)
+    }
+
+
+def run_sop_comparison(req):
+    timestamp = datetime.datetime.utcnow().isoformat()
+
+    process_area = clean(req.form.get("process_area"))
+    reviewer = clean(req.form.get("reviewer"))
+    sop_owner = clean(req.form.get("sop_owner"))
+    reality_notes = clean(req.form.get("reality_notes"))
+
+    global_doc = sop_extract_text(req.files.get("global_sop"))
+    local_doc = sop_extract_text(req.files.get("local_sop"))
+
+    if not global_doc["filename"] or not local_doc["filename"]:
+        return {
+            "error": "Please upload both the Lilly/GPOS SOP and the Point/Local SOP."
+        }
+
+    if not global_doc["text"] or not local_doc["text"]:
+        return {
+            "error": "One or both SOP files could not be read. Use .txt, .csv, .xlsx, or .docx for this version."
+        }
+
+    global_text = global_doc["text"]
+    local_text = local_doc["text"]
+    reality_text = reality_notes
+
+    themes = sop_theme_library()
+    gaps = []
+    pain_point_solutions = []
+
+    for theme in themes:
+        g_present = sop_contains(global_text, theme["keywords"])
+        l_present = sop_contains(local_text, theme["keywords"])
+        r_present = sop_contains(reality_text, theme["keywords"])
+
+        if g_present and not l_present:
+            gaps.append({
+                "gap_type": "Lilly/GPOS control missing in Point SOP",
+                "theme": theme["theme"],
+                "category": theme["category"],
+                "risk": theme["risk"],
+                "evidence": "Control theme appears in the mature/global SOP but is missing from the local/manual SOP.",
+                "cobit": theme["cobit"],
+                "recommendation": "Adopt or harmonize the Lilly/GPOS control into the Point/local SOP. " + theme["recommendation"]
+            })
+
+        if r_present and not l_present:
+            gaps.append({
+                "gap_type": "Outdated SOP / reality mismatch signal",
+                "theme": theme["theme"],
+                "category": theme["category"],
+                "risk": "HIGH" if theme["risk"] == "HIGH" else "MEDIUM",
+                "evidence": "Operational reality notes mention this control theme, but the local SOP does not. This suggests the SOP may be outdated or incomplete.",
+                "cobit": theme["cobit"],
+                "recommendation": "Trigger SOP review. Determine whether the SOP should be updated to reflect the real process or whether the process is being executed outside procedure."
+            })
+
+        if l_present and not g_present:
+            gaps.append({
+                "gap_type": "Local-specific control not visible in Lilly/GPOS SOP",
+                "theme": theme["theme"],
+                "category": theme["category"],
+                "risk": "MEDIUM",
+                "evidence": "Point/local SOP includes a control theme that is not detected in the Lilly/GPOS SOP.",
+                "cobit": theme["cobit"],
+                "recommendation": "Review whether this is a legitimate site-specific control, a legacy requirement, or a candidate for harmonization."
+            })
+
+    tech_keywords = ["system", "workflow", "electronic", "automated", "digital", "audit trail", "platform"]
+    manual_keywords = ["manual", "paper", "binder", "excel", "spreadsheet", "email approval", "printed"]
+
+    global_tech = sop_contains(global_text, tech_keywords)
+    local_manual = sop_contains(local_text, manual_keywords)
+
+    if global_tech and local_manual:
+        gaps.append({
+            "gap_type": "Technology maturity gap",
+            "theme": "Manual Point process vs mature Lilly system-enabled process",
+            "category": "Technology maturity",
+            "risk": "HIGH",
+            "evidence": "Lilly/GPOS appears to reference system-enabled or digital control, while Point/local SOP appears to rely on manual, paper, Excel, or binder-based execution.",
+            "cobit": "BAI06, DSS06, MEA02, APO12",
+            "recommendation": "Assess whether Point should adopt the Lilly system-enabled process, retain local process with compensating controls, or follow a phased harmonization plan."
+        })
+
+    global_dna = sop_control_dna(global_text)
+    local_dna = sop_control_dna(local_text)
+    maturity_gap = round(global_dna["score"] - local_dna["score"], 2)
+
+    high_risk_count = len([g for g in gaps if g["risk"] == "HIGH"])
+    outdated_count = len([g for g in gaps if "Outdated SOP" in g["gap_type"]])
+    technology_gap_count = len([g for g in gaps if "Technology maturity" in g["gap_type"]])
+
+    review_triggers = []
+
+    reality_lower = reality_text.lower()
+    combined_lower = (global_text + " " + local_text + " " + reality_text + " " + process_area).lower()
+
+    if outdated_count > 0:
+        review_triggers.append("Evidence mismatch-triggered SOP review")
+    if technology_gap_count > 0 or "system change" in combined_lower or "technology" in combined_lower:
+        review_triggers.append("System / technology change-triggered SOP review")
+    if "audit" in reality_lower or "observation" in reality_lower or "finding" in reality_lower:
+        review_triggers.append("Audit-triggered SOP review")
+    if "recurring" in reality_lower or "repeated" in reality_lower or "repeat" in reality_lower:
+        review_triggers.append("Recurring issue-triggered SOP review")
+    if "acquisition" in combined_lower or "acquired" in combined_lower or "harmonization" in combined_lower or "lilly" in combined_lower or "point" in combined_lower or "gpos" in combined_lower:
+        review_triggers.append("M&A / harmonization-triggered SOP review")
+    if "new product" in combined_lower or "expansion" in combined_lower or "business expansion" in combined_lower:
+        review_triggers.append("Business expansion or new product-triggered SOP review")
+
+    if not review_triggers and gaps:
+        review_triggers.append("Governance gap-triggered SOP review")
+    if not review_triggers:
+        review_triggers.append("No major SOP review trigger detected from current comparison.")
+
+    if high_risk_count >= 3 or technology_gap_count > 0:
+        recommended_decision = "Adopt Lilly/GPOS target-state controls or create a phased harmonization plan with QA/SOP owner review."
+    elif outdated_count > 0:
+        recommended_decision = "Update Point/local SOP to reflect validated operational reality, or correct the process if the reality is noncompliant."
+    elif gaps:
+        recommended_decision = "Review identified gaps and decide whether to harmonize, retain local controls, or document compensating controls."
+    else:
+        recommended_decision = "No major gap detected. Retain as aligned, but document reviewer decision and comparison evidence."
+
+    pain_point_solutions = [
+        {
+            "pain_point": "Manual SOP comparison takes too long after acquisition.",
+            "solution": "COBIT-Chain creates a structured gap table between Lilly/GPOS and Point/local SOPs."
+        },
+        {
+            "pain_point": "Teams cannot tell whether the SOP is wrong or the process is wrong.",
+            "solution": "The SOP Obsolescence Signal separates outdated documentation from actual process noncompliance."
+        },
+        {
+            "pain_point": "Mature global process and local manual process are hard to reconcile.",
+            "solution": "Technology Maturity Gap logic highlights where Point manual controls differ from Lilly system-enabled controls."
+        },
+        {
+            "pain_point": "Audit evidence is reconstructed late and manually.",
+            "solution": "The comparison record is stored in sop_comparisons.csv with file hashes and a record hash for audit traceability."
+        },
+        {
+            "pain_point": "SOP harmonization recommendations are subjective.",
+            "solution": "Control DNA Diff gives an objective control coverage score for each SOP and shows the maturity gap."
+        },
+        {
+            "pain_point": "Review triggers are not always clear.",
+            "solution": "The engine identifies audit-triggered, technology-triggered, M&A-triggered, recurring-issue, and evidence-mismatch review triggers."
+        }
+    ]
+
+    comparison_id = "SOP-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    result = {
+        "error": "",
+        "comparison_id": comparison_id,
+        "timestamp": timestamp,
+        "process_area": process_area,
+        "reviewer": reviewer,
+        "sop_owner": sop_owner,
+        "global_filename": global_doc["filename"],
+        "local_filename": local_doc["filename"],
+        "global_hash": global_doc["hash"],
+        "local_hash": local_doc["hash"],
+        "global_warning": global_doc["warning"],
+        "local_warning": local_doc["warning"],
+        "gap_count": len(gaps),
+        "high_risk_gap_count": high_risk_count,
+        "outdated_sop_signals": outdated_count,
+        "technology_gap_signals": technology_gap_count,
+        "gaps": gaps[:40],
+        "control_dna": {
+            "global_score": global_dna["score"],
+            "local_score": local_dna["score"],
+            "maturity_gap": maturity_gap,
+            "global_covered": global_dna["covered"],
+            "local_covered": local_dna["covered"],
+            "global_missing": global_dna["missing"],
+            "local_missing": local_dna["missing"]
+        },
+        "review_triggers": list(dict.fromkeys(review_triggers)),
+        "recommended_decision": recommended_decision,
+        "pain_point_solutions": pain_point_solutions
+    }
+
+    return result
+
+
+def save_sop_comparison_result(result):
+    df = prepare_sop_comparisons()
+
+    previous_hash = "GENESIS"
+    if not df.empty and "record_hash" in df.columns:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    trigger_text = " | ".join(result.get("review_triggers", []))
+    record_basis = (
+        result["comparison_id"] +
+        result["global_hash"] +
+        result["local_hash"] +
+        result["timestamp"] +
+        previous_hash
+    )
+    record_hash = sha256_text(record_basis)
+
+    row = pd.DataFrame([{
+        "comparison_id": result["comparison_id"],
+        "timestamp": result["timestamp"],
+        "process_area": result["process_area"],
+        "reviewer": result["reviewer"],
+        "sop_owner": result["sop_owner"],
+        "global_filename": result["global_filename"],
+        "local_filename": result["local_filename"],
+        "global_hash": result["global_hash"],
+        "local_hash": result["local_hash"],
+        "global_control_dna_score": result["control_dna"]["global_score"],
+        "local_control_dna_score": result["control_dna"]["local_score"],
+        "maturity_gap": result["control_dna"]["maturity_gap"],
+        "gap_count": result["gap_count"],
+        "high_risk_gap_count": result["high_risk_gap_count"],
+        "outdated_sop_signals": result["outdated_sop_signals"],
+        "technology_gap_signals": result["technology_gap_signals"],
+        "review_triggers": trigger_text,
+        "recommended_decision": result["recommended_decision"],
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, SOP_COMPARISON_FILE)
+
+
+def load_recent_sop_comparisons():
+    df = prepare_sop_comparisons()
+    if df.empty:
+        return []
+    return df.tail(10).to_dict("records")
+
+
+def render_sop_governance_v2(page, result=None):
+    recent = load_recent_sop_comparisons()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ SOP Governance</title>
+<style>
+:root {
+    --bg:#f4f7fb; --navy:#071527; --blue:#2563eb; --cyan:#06b6d4;
+    --green:#16a34a; --yellow:#f59e0b; --red:#dc2626; --muted:#64748b;
+    --card:#ffffff; --border:#e5e7eb;
+}
+* { box-sizing:border-box; }
+body {
+    margin:0; font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:linear-gradient(135deg,#eef4ff,#f8fafc,#eefdf8);
+    color:#0f172a;
+}
+.hero {
+    background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
+    color:white; padding:36px 42px 46px;
+    border-bottom-left-radius:34px; border-bottom-right-radius:34px;
+    box-shadow:0 18px 45px rgba(15,39,69,.25);
+}
+.hero-top { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:14px; }
+.logo {
+    width:54px; height:54px; border-radius:18px;
+    background:linear-gradient(135deg,#38bdf8,#22c55e);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:22px;
+}
+.brand h1 { margin:0; font-size:34px; letter-spacing:-.8px; }
+.brand p { margin:4px 0 0; color:#cbd5e1; }
+.badge {
+    padding:10px 15px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    color:#e0f2fe; font-weight:800;
+}
+.container { max-width:1450px; margin:-28px auto 50px; padding:0 26px; }
+.nav {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:14px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;
+}
+.nav a {
+    text-decoration:none; color:#0f172a; background:#f8fafc; border:1px solid #e2e8f0;
+    padding:10px 13px; border-radius:999px; font-weight:900; font-size:13px;
+}
+.nav a.active { background:#0f172a; color:white; border-color:#0f172a; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:20px; }
+.main-layout { display:grid; grid-template-columns:380px 1fr; gap:22px; align-items:start; }
+.panel, .card {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.panel { margin-bottom:20px; }
+input, textarea, button {
+    width:100%; border-radius:14px; border:1px solid #dbe3ef;
+    padding:12px 13px; margin:7px 0; font-size:14px; background:white;
+}
+textarea { min-height:120px; resize:vertical; }
+button {
+    border:none; background:linear-gradient(135deg,#2563eb,#06b6d4);
+    color:white; font-weight:900; cursor:pointer;
+}
+.notice {
+    background:#f0fdf4; border-left:7px solid #16a34a; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.warning {
+    background:#fff7ed; border-left:7px solid #f59e0b; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.error {
+    background:#fee2e2; border-left:7px solid #dc2626; color:#991b1b;
+    border-radius:18px; padding:17px; font-weight:900; margin-bottom:20px;
+}
+.metric {
+    background:rgba(255,255,255,.96); border:1px solid rgba(226,232,240,.9);
+    border-radius:22px; padding:22px; box-shadow:0 12px 32px rgba(15,23,42,.08);
+}
+.metric-label { color:#64748b; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.08em; }
+.metric-value { margin-top:8px; font-size:34px; font-weight:900; }
+.metric-sub { color:#64748b; font-size:13px; }
+.sop-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px; }
+.sop-two-col { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px; }
+.sop-card, .sop-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.sop-card p, .sop-mini p { color:#475569; line-height:1.5; }
+.sop-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.sop-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.exec-table {
+    width:100%; border-collapse:collapse; border-radius:16px; overflow:hidden; font-size:13px;
+}
+.exec-table th {
+    background:#0f172a; color:white; text-align:left; padding:12px;
+}
+.exec-table td {
+    border-bottom:1px solid #e5e7eb; padding:12px; vertical-align:top;
+}
+.risk-HIGH { color:#dc2626; font-weight:900; }
+.risk-MEDIUM { color:#d97706; font-weight:900; }
+.risk-LOW { color:#16a34a; font-weight:900; }
+.page-link {
+    display:block; text-decoration:none; color:#0f172a; padding:13px 14px;
+    border:1px solid #e2e8f0; border-radius:16px; margin:9px 0; background:#f8fafc;
+}
+.page-link.active {
+    background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border-color:#93c5fd; box-shadow:0 8px 18px rgba(37,99,235,.12);
+}
+.page-link b { display:block; font-size:14px; }
+.page-link small { color:#64748b; font-weight:700; }
+.dna-box {
+    background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:20px; padding:18px;
+}
+.tag {
+    display:inline-block; padding:6px 9px; border-radius:999px;
+    background:#f1f5f9; color:#334155; font-size:12px; font-weight:800;
+    margin:4px 4px 0 0;
+}
+@media(max-width:1000px){ .grid,.main-layout,.sop-grid,.sop-two-col{ grid-template-columns:1fr; } }
+</style>
+</head>
+
+<body>
+<section class="hero">
+    <div class="hero-top">
+        <div class="brand">
+            <div class="logo">CC</div>
+            <div>
+                <h1>COBIT-Chain™</h1>
+                <p>SOP Governance • SOP-to-Reality Alignment • Harmonization Engine</p>
+            </div>
+        </div>
+        <div class="badge">SOP Governance v2</div>
+    </div>
+</section>
+
+<main class="container">
+    <nav class="nav">
+        {% for p in pages %}
+            <a class="{% if p.route == '/sop-governance' %}active{% endif %}" href="{{ p.route }}">{{ p.title }}</a>
+        {% endfor %}
+    </nav>
+
+    {% if result and result.error %}
+        <div class="error">{{ result.error }}</div>
+    {% endif %}
+
+    <section class="main-layout">
+        <aside>
+            <div class="panel">
+                <h2>Dual SOP Upload</h2>
+                <form method="POST" enctype="multipart/form-data" action="/sop-governance">
+                    <label><b>Lilly / GPOS / Mature SOP</b></label>
+                    <input type="file" name="global_sop" required>
+
+                    <label><b>Point / Local / Legacy SOP</b></label>
+                    <input type="file" name="local_sop" required>
+
+                    <input name="process_area" placeholder="Process Area e.g. User Access Review / Equipment Handoff">
+                    <input name="reviewer" placeholder="Reviewer e.g. Sree / Taiwo">
+                    <input name="sop_owner" placeholder="SOP Owner / System Owner">
+
+                    <textarea name="reality_notes" placeholder="Optional: describe actual operational reality, audit finding, manual binder/Excel process, system workflow, recurring issue, acquisition/harmonization context..."></textarea>
+
+                    <button type="submit">Compare SOPs and Identify Gaps</button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>Enterprise Pages</h2>
+                {% for p in pages %}
+                <a class="page-link {% if p.route == '/sop-governance' %}active{% endif %}" href="{{ p.route }}">
+                    <b>{{ p.number }} → {{ p.title }}</b>
+                    <small>{{ p.purpose }}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <section>
+            <div class="notice">
+                <b>Advanced SOP feature:</b> this page compares Lilly/GPOS against Point/local SOPs, identifies control gaps,
+                detects outdated SOP signals, highlights technology maturity differences, maps findings to COBIT, and creates
+                a harmonization recommendation.
+            </div>
+
+            <section class="sop-grid">
+                <div class="sop-card">
+                    <div class="sop-label">M&A Pain Point</div>
+                    <h3>Lilly + Point Harmonization</h3>
+                    <p>Supports acquisition scenarios where a mature global process must be compared against a local manual process.</p>
+                    <span class="sop-badge">SOP harmonization</span>
+                </div>
+                <div class="sop-card">
+                    <div class="sop-label">Wole Insight</div>
+                    <h3>Outdated SOP Detection</h3>
+                    <p>Determines whether a gap is true process noncompliance or an outdated SOP that no longer reflects operational reality.</p>
+                    <span class="sop-badge">Reality alignment</span>
+                </div>
+                <div class="sop-card">
+                    <div class="sop-label">Advanced Feature</div>
+                    <h3>Control DNA Diff</h3>
+                    <p>Compares control maturity signals between SOPs and produces a governance maturity gap score.</p>
+                    <span class="sop-badge">Novel governance engine</span>
+                </div>
+            </section>
+
+            {% if result and not result.error %}
+            <section class="grid">
+                <div class="metric"><div class="metric-label">Total Gaps</div><div class="metric-value">{{ result.gap_count }}</div><div class="metric-sub">Detected comparison gaps</div></div>
+                <div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ result.high_risk_gap_count }}</div><div class="metric-sub">Priority governance issues</div></div>
+                <div class="metric"><div class="metric-label">Outdated SOP Signals</div><div class="metric-value" style="color:#f59e0b">{{ result.outdated_sop_signals }}</div><div class="metric-sub">SOP vs reality mismatch</div></div>
+                <div class="metric"><div class="metric-label">Maturity Gap</div><div class="metric-value">{{ result.control_dna.maturity_gap }}%</div><div class="metric-sub">Global score minus local score</div></div>
+            </section>
+
+            <div class="card">
+                <h2>Executive SOP Harmonization Decision</h2>
+                <p><b>{{ result.recommended_decision }}</b></p>
+                <p><b>Comparison ID:</b> {{ result.comparison_id }}</p>
+                <p><b>Process Area:</b> {{ result.process_area }}</p>
+                <p><b>Reviewer:</b> {{ result.reviewer }}</p>
+                <p><b>SOP Owner:</b> {{ result.sop_owner }}</p>
+            </div>
+
+            <section class="sop-two-col">
+                <div class="dna-box">
+                    <h2>Lilly / GPOS Control DNA</h2>
+                    <p><b>Score:</b> {{ result.control_dna.global_score }}%</p>
+                    <p><b>File:</b> {{ result.global_filename }}</p>
+                    <p><b>Covered Controls:</b></p>
+                    {% for c in result.control_dna.global_covered %}
+                        <span class="tag">{{ c }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="dna-box">
+                    <h2>Point / Local Control DNA</h2>
+                    <p><b>Score:</b> {{ result.control_dna.local_score }}%</p>
+                    <p><b>File:</b> {{ result.local_filename }}</p>
+                    <p><b>Missing Controls:</b></p>
+                    {% for c in result.control_dna.local_missing %}
+                        <span class="tag">{{ c }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>SOP Review Trigger Assessment</h2>
+                <ul>
+                {% for t in result.review_triggers %}
+                    <li>{{ t }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>Gap Detection Table</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Gap Type</th>
+                        <th>Theme</th>
+                        <th>Risk</th>
+                        <th>COBIT Mapping</th>
+                        <th>Recommendation</th>
+                    </tr>
+                    {% for g in result.gaps %}
+                    <tr>
+                        <td>{{ g.gap_type }}</td>
+                        <td><b>{{ g.theme }}</b><br><small>{{ g.evidence }}</small></td>
+                        <td class="risk-{{ g.risk }}">{{ g.risk }}</td>
+                        <td>{{ g.cobit }}</td>
+                        <td>{{ g.recommendation }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Organizational Pain Points Solved</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Pain Point</th>
+                        <th>COBIT-Chain Solution</th>
+                    </tr>
+                    {% for p in result.pain_point_solutions %}
+                    <tr>
+                        <td>{{ p.pain_point }}</td>
+                        <td>{{ p.solution }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <h2>Recent SOP Comparisons</h2>
+                {% if recent %}
+                <table class="exec-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Process Area</th>
+                        <th>Global SOP</th>
+                        <th>Local SOP</th>
+                        <th>Gaps</th>
+                        <th>Decision</th>
+                    </tr>
+                    {% for r in recent %}
+                    <tr>
+                        <td>{{ r.comparison_id }}</td>
+                        <td>{{ r.process_area }}</td>
+                        <td>{{ r.global_filename }}</td>
+                        <td>{{ r.local_filename }}</td>
+                        <td>{{ r.gap_count }}</td>
+                        <td>{{ r.recommended_decision }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                    <p>No SOP comparisons saved yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="warning">
+                <b>Storage design:</b> SOP comparison records are saved separately in <b>sop_comparisons.csv</b>.
+                This does not touch Manufacturing/Wole <b>logs.csv</b> or <b>baseline_hashes.csv</b>.
+            </div>
+        </section>
+    </section>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        page=page,
+        pages=ENTERPRISE_PAGES,
+        result=result,
+        recent=recent
     )
 
 if __name__ == "__main__":
