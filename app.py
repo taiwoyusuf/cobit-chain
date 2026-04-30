@@ -1218,6 +1218,50 @@ body {
     .sop-arrow{ display:none; }
 }
 
+
+.audit-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.audit-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.audit-card, .audit-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.audit-card h3 { margin:8px 0 10px; }
+.audit-card p, .audit-mini p { color:#475569; line-height:1.5; }
+.audit-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.audit-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.audit-flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.audit-step {
+    flex:1; min-width:190px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.audit-step b {
+    display:block; margin-bottom:7px;
+}
+.audit-step span {
+    display:block; color:#475569; line-height:1.45; font-size:13px;
+}
+.audit-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+@media(max-width:1000px){
+    .audit-grid,.audit-two-col{ grid-template-columns:1fr; }
+    .audit-arrow{ display:none; }
+}
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1935,9 +1979,272 @@ body {
                 This will allow Access Governance to save real review evidence without touching the Manufacturing/Wole evidence chain.
             </div>
             {% elif page.route == "/audit-capa" %}
+            <!-- AUDIT_CAPA_V1_ACTIVE -->
+            <div class="card status-card-warning">
+                <h2>⚠ Audit/CAPA v1</h2>
+                <p><b>Purpose:</b> create a governed evidence chain from audit finding to deviation, CAPA, remediation proof, and effectiveness-check readiness.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard, SOP comparison engine, or existing evidence logs.</p>
+            </div>
+
+            <section class="audit-grid">
+                <div class="audit-card">
+                    <div class="audit-label">Audit Finding</div>
+                    <h3>Finding-to-Evidence Traceability</h3>
+                    <p>Links each audit finding or observation to supporting evidence, responsible owner, system/process area, and remediation status.</p>
+                    <span class="audit-badge">Audit traceability</span>
+                </div>
+
+                <div class="audit-card">
+                    <div class="audit-label">CAPA Control</div>
+                    <h3>CAPA Evidence Chain</h3>
+                    <p>Connects CAPA actions to objective evidence, approval status, due dates, closure proof, and residual risk indicators.</p>
+                    <span class="audit-badge">Remediation proof</span>
+                </div>
+
+                <div class="audit-card">
+                    <div class="audit-label">Advanced Feature</div>
+                    <h3>Effectiveness Readiness Gate</h3>
+                    <p>Pre-validates whether linked evidence is complete before an effectiveness check is started, reducing avoidable review failures.</p>
+                    <span class="audit-badge">Pre-validation</span>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Audit/CAPA Governance Control Flow</h2>
+                <div class="audit-flow">
+                    <div class="audit-step">
+                        <b>1. Audit Finding</b>
+                        <span>Capture finding, source audit, process area, severity, owner, and required response.</span>
+                    </div>
+                    <div class="audit-arrow">→</div>
+                    <div class="audit-step">
+                        <b>2. Deviation / Issue Link</b>
+                        <span>Link the finding to deviation, NCR, incident, or quality event where applicable.</span>
+                    </div>
+                    <div class="audit-arrow">→</div>
+                    <div class="audit-step">
+                        <b>3. CAPA Action</b>
+                        <span>Define corrective/preventive actions, owners, target dates, and evidence expectations.</span>
+                    </div>
+                    <div class="audit-arrow">→</div>
+                    <div class="audit-step">
+                        <b>4. Remediation Evidence</b>
+                        <span>Attach proof such as screenshots, reports, approvals, training records, system updates, or SOP revisions.</span>
+                    </div>
+                    <div class="audit-arrow">→</div>
+                    <div class="audit-step">
+                        <b>5. Effectiveness Readiness</b>
+                        <span>Check whether all linked dependencies are complete before effectiveness review or audit reliance.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Audit/CAPA Data Model</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                        <th>Governance Value</th>
+                    </tr>
+                    <tr>
+                        <td><b>Audit Finding ID</b></td>
+                        <td>Unique finding, observation, NCR, or audit reference.</td>
+                        <td>Creates traceability from issue to remediation evidence.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Finding Source</b></td>
+                        <td>Internal audit, external audit, QA review, regulatory inspection, or process review.</td>
+                        <td>Supports audit response prioritization and reporting.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Process / System Area</b></td>
+                        <td>Identifies the affected process, system, equipment, SOP, or department.</td>
+                        <td>Links CAPA to impacted operational area.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Deviation / CAPA Reference</b></td>
+                        <td>Links finding to deviation, CAPA, NCR, or remediation workflow.</td>
+                        <td>Prevents orphan audit findings with no controlled response.</td>
+                    </tr>
+                    <tr>
+                        <td><b>CAPA Owner</b></td>
+                        <td>Person accountable for action and closure.</td>
+                        <td>Creates ownership and escalation accountability.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Required Evidence</b></td>
+                        <td>Defines what proof is required before closure or effectiveness review.</td>
+                        <td>Reduces subjective closure decisions.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Evidence Status</b></td>
+                        <td>Missing, partial, uploaded, approved, rejected, or verified.</td>
+                        <td>Shows whether remediation can be relied upon.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Effectiveness Status</b></td>
+                        <td>Not started, blocked, ready, in review, passed, or failed.</td>
+                        <td>Supports pre-validation before effectiveness check execution.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <section class="audit-two-col">
+                <div class="card">
+                    <h2>Organizational Pain Points</h2>
+                    <ul class="exception-list">
+                        <li>Audit findings are tracked separately from remediation evidence.</li>
+                        <li>CAPA closure sometimes depends on manual reconstruction of proof.</li>
+                        <li>Effectiveness checks can fail because linked actions were not actually ready.</li>
+                        <li>Owners, due dates, and evidence status may be scattered across systems.</li>
+                        <li>Repeated findings are difficult to connect across SOP, access, shift, or manufacturing records.</li>
+                        <li>Leadership sees CAPA status late, not before risk becomes visible to audit.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>COBIT-Chain Solution</h2>
+                    <ul class="exception-list">
+                        <li>Creates a finding-to-CAPA-to-evidence chain of custody.</li>
+                        <li>Shows whether remediation evidence is complete before closure.</li>
+                        <li>Pre-validates effectiveness-check readiness before review starts.</li>
+                        <li>Highlights blocked CAPAs, overdue evidence, missing owners, and repeated failure themes.</li>
+                        <li>Links CAPA issues back to SOP, manufacturing, access, or shift assurance modules.</li>
+                        <li>Prepares an audit-ready remediation evidence pack.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Advanced Feature: Effectiveness Readiness Gate</h2>
+                <p>
+                    This feature is designed to prevent premature effectiveness checks. Before a CAPA is marked ready,
+                    COBIT-Chain checks whether prerequisite evidence, linked actions, approvals, training updates,
+                    SOP revisions, and system corrections are complete.
+                </p>
+
+                <table class="exec-table">
+                    <tr>
+                        <th>Gate Condition</th>
+                        <th>Risk Signal</th>
+                        <th>Governance Action</th>
+                    </tr>
+                    <tr>
+                        <td>CAPA action marked complete but required evidence missing</td>
+                        <td>High</td>
+                        <td>Block effectiveness readiness until evidence is uploaded and reviewed.</td>
+                    </tr>
+                    <tr>
+                        <td>SOP update required but SOP Governance gap remains open</td>
+                        <td>High</td>
+                        <td>Link CAPA to SOP Governance and prevent premature closure.</td>
+                    </tr>
+                    <tr>
+                        <td>Training required but training evidence missing</td>
+                        <td>Medium</td>
+                        <td>Require training proof before effectiveness check starts.</td>
+                    </tr>
+                    <tr>
+                        <td>System change required but change evidence missing</td>
+                        <td>High</td>
+                        <td>Link to change control evidence or system owner signoff.</td>
+                    </tr>
+                    <tr>
+                        <td>All dependencies complete and evidence verified</td>
+                        <td>Low</td>
+                        <td>Mark effectiveness check as ready for review.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>CAPA Failure-Risk Signals</h2>
+                <section class="audit-grid">
+                    <div class="audit-mini">
+                        <b>Missing Evidence Signal</b>
+                        <p>CAPA is approaching closure but the required proof is missing, partial, or not linked.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Dependency Signal</b>
+                        <p>CAPA depends on SOP update, training, access correction, equipment fix, or system change that remains incomplete.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Repeat Finding Signal</b>
+                        <p>Same issue type appears across multiple audits, suggesting weak root cause or ineffective remediation.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Owner Risk Signal</b>
+                        <p>CAPA has no clear owner, overdue owner action, or unclear QA/system owner accountability.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Effectiveness Blocker Signal</b>
+                        <p>Effectiveness review should not start because key evidence or dependencies are unresolved.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Audit Pack Readiness Signal</b>
+                        <p>Shows whether finding, root cause, action, evidence, approval, and effectiveness proof are complete.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="card">
+                <h2>Audit/CAPA Risk Rules</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Condition</th>
+                        <th>Risk Level</th>
+                        <th>Recommended Governance Action</th>
+                    </tr>
+                    <tr>
+                        <td>Audit finding has no linked owner or remediation action</td>
+                        <td>High</td>
+                        <td>Escalate to QA/process owner and require controlled response.</td>
+                    </tr>
+                    <tr>
+                        <td>CAPA action is closed but evidence is missing</td>
+                        <td>High</td>
+                        <td>Reopen or block closure until objective evidence is attached.</td>
+                    </tr>
+                    <tr>
+                        <td>Effectiveness check started while dependencies remain incomplete</td>
+                        <td>High</td>
+                        <td>Pause effectiveness review and complete prerequisite evidence.</td>
+                    </tr>
+                    <tr>
+                        <td>Repeated audit finding appears across process areas</td>
+                        <td>Medium</td>
+                        <td>Review root cause quality and consider systemic CAPA.</td>
+                    </tr>
+                    <tr>
+                        <td>Finding, CAPA, evidence, approval, and effectiveness proof are complete</td>
+                        <td>Low</td>
+                        <td>Retain as audit-ready remediation evidence pack.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Audit/CAPA Relationship Model</h2>
+                <div class="audit-grid">
+                    <div class="audit-mini">
+                        <b>Audit / Observation</b>
+                        <p>Source of finding, weakness, nonconformance, inspection observation, or internal review issue.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>Deviation / CAPA</b>
+                        <p>Controlled quality response, corrective action, preventive action, and owner accountability.</p>
+                    </div>
+                    <div class="audit-mini">
+                        <b>COBIT-Chain</b>
+                        <p>Governance assurance layer that validates whether evidence, dependencies, and effectiveness readiness are complete.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="note">
-                <b>Audit/CAPA design direction:</b> this page will later connect audit observations,
-                deviation records, CAPA evidence, remediation proof, and effectiveness-check readiness.
+                <b>Next build step:</b> add a separate <b>audit_capa_register.csv</b> storage file for audit findings, CAPA records,
+                remediation proof, and effectiveness readiness scoring. This will keep Audit/CAPA records separate from Manufacturing/Wole logs.
             </div>
             {% endif %}
 
