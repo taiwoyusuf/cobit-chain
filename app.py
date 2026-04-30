@@ -5869,5 +5869,459 @@ Manufacturing, SOP, Shift, Access, Audit/CAPA, and Clinical Trial registers are 
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# RLT-TRUST V1 TEST ACTIVE
+# Radiopharma / RLT dose evidence register.
+# Does not replace or modify existing modules.
+# ============================================================
+
+RLT_DOSE_FILE = "rlt_dose_evidence.csv"
+
+
+def prepare_rlt_dose_evidence():
+    df = load_csv(RLT_DOSE_FILE)
+    return ensure_cols(df, [
+        "rlt_record_id", "timestamp", "dose_id", "batch_id", "radionuclide",
+        "product_name", "manufacturing_complete_time", "qa_release_status",
+        "dose_calibration_time", "courier_pickup_time", "delivery_eta_time",
+        "receiving_site", "patient_appointment_time", "administration_deadline_time",
+        "temperature_status", "radiation_survey_status", "chain_of_custody_status",
+        "site_receipt_status", "administration_status", "deviation_capa_link",
+        "decay_window_status", "readiness_status", "readiness_score",
+        "risk_level", "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def rlt_parse_datetime(value):
+    value = clean(value)
+    if not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(value)
+    except Exception:
+        return None
+
+
+def calculate_rlt_readiness(qa_release_status, dose_calibration_time, courier_pickup_time,
+                            delivery_eta_time, patient_appointment_time, administration_deadline_time,
+                            temperature_status, radiation_survey_status, chain_of_custody_status,
+                            site_receipt_status, administration_status, deviation_capa_link):
+    score = 100
+    signals = []
+
+    qa_release_status = clean(qa_release_status)
+    temperature_status = clean(temperature_status)
+    radiation_survey_status = clean(radiation_survey_status)
+    chain_of_custody_status = clean(chain_of_custody_status)
+    site_receipt_status = clean(site_receipt_status)
+    administration_status = clean(administration_status)
+    deviation_capa_link = clean(deviation_capa_link)
+
+    calibration_dt = rlt_parse_datetime(dose_calibration_time)
+    pickup_dt = rlt_parse_datetime(courier_pickup_time)
+    eta_dt = rlt_parse_datetime(delivery_eta_time)
+    appt_dt = rlt_parse_datetime(patient_appointment_time)
+    deadline_dt = rlt_parse_datetime(administration_deadline_time)
+
+    decay_window_status = "NOT ASSESSED"
+
+    if qa_release_status in ["Pending", "Rejected", "Not Released"]:
+        score -= 35
+        signals.append("QA release is pending, rejected, or not released.")
+
+    if not calibration_dt:
+        score -= 15
+        signals.append("Dose calibration time is missing or invalid.")
+
+    if not pickup_dt:
+        score -= 10
+        signals.append("Courier pickup time is missing or invalid.")
+
+    if not eta_dt:
+        score -= 10
+        signals.append("Delivery ETA is missing or invalid.")
+
+    if not appt_dt:
+        score -= 15
+        signals.append("Patient appointment time is missing or invalid.")
+
+    if not deadline_dt:
+        score -= 20
+        signals.append("Administration deadline / usable window is missing.")
+    else:
+        if appt_dt and appt_dt > deadline_dt:
+            score -= 45
+            decay_window_status = "EXPIRED / OUTSIDE ADMINISTRATION WINDOW"
+            signals.append("Patient appointment is after the administration deadline.")
+        elif appt_dt:
+            minutes_to_deadline = (deadline_dt - appt_dt).total_seconds() / 60
+            if minutes_to_deadline < 60:
+                score -= 20
+                decay_window_status = "AT RISK — LESS THAN 60 MINUTES BUFFER"
+                signals.append("Patient appointment is close to dose administration deadline.")
+            else:
+                decay_window_status = "WITHIN ADMINISTRATION WINDOW"
+
+    if eta_dt and appt_dt and eta_dt > appt_dt:
+        score -= 30
+        signals.append("Delivery ETA is after patient appointment time.")
+
+    if temperature_status in ["Excursion", "Unknown", "Not Recorded"]:
+        score -= 25
+        signals.append("Temperature status is excursion, unknown, or not recorded.")
+
+    if radiation_survey_status in ["Failed", "Missing", "Not Reviewed"]:
+        score -= 25
+        signals.append("Radiation survey evidence failed, missing, or not reviewed.")
+
+    if chain_of_custody_status in ["Broken", "Incomplete", "Missing"]:
+        score -= 30
+        signals.append("Chain-of-custody status is broken, incomplete, or missing.")
+
+    if site_receipt_status in ["Not Received", "Received With Exception", "Unknown"]:
+        score -= 20
+        signals.append("Receiving site status is not clean.")
+
+    if administration_status in ["Not Administered", "Missed Window", "Unknown"]:
+        score -= 30
+        signals.append("Administration status indicates missed, unknown, or not administered.")
+
+    if score < 85 and not deviation_capa_link:
+        score -= 10
+        signals.append("Readiness issues exist but no deviation/CAPA link is recorded.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "DOSE-TO-PATIENT READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major RLT dose readiness risk detected.")
+
+    return readiness, score, risk, signals, decay_window_status
+
+
+def save_rlt_dose_test(req):
+    df = prepare_rlt_dose_evidence()
+
+    dose_id = clean(req.form.get("dose_id"))
+    batch_id = clean(req.form.get("batch_id"))
+    radionuclide = clean(req.form.get("radionuclide"))
+    product_name = clean(req.form.get("product_name"))
+    manufacturing_complete_time = clean(req.form.get("manufacturing_complete_time"))
+    qa_release_status = clean(req.form.get("qa_release_status"))
+    dose_calibration_time = clean(req.form.get("dose_calibration_time"))
+    courier_pickup_time = clean(req.form.get("courier_pickup_time"))
+    delivery_eta_time = clean(req.form.get("delivery_eta_time"))
+    receiving_site = clean(req.form.get("receiving_site"))
+    patient_appointment_time = clean(req.form.get("patient_appointment_time"))
+    administration_deadline_time = clean(req.form.get("administration_deadline_time"))
+    temperature_status = clean(req.form.get("temperature_status"))
+    radiation_survey_status = clean(req.form.get("radiation_survey_status"))
+    chain_of_custody_status = clean(req.form.get("chain_of_custody_status"))
+    site_receipt_status = clean(req.form.get("site_receipt_status"))
+    administration_status = clean(req.form.get("administration_status"))
+    deviation_capa_link = clean(req.form.get("deviation_capa_link"))
+
+    required = [
+        dose_id, batch_id, radionuclide, product_name, qa_release_status,
+        receiving_site, temperature_status, radiation_survey_status,
+        chain_of_custody_status, site_receipt_status, administration_status
+    ]
+
+    if not all(required):
+        return {
+            "error": "Dose ID, Batch ID, Radionuclide, Product Name, QA Release Status, Receiving Site, Temperature, Radiation Survey, Chain-of-Custody, Site Receipt, and Administration Status are required."
+        }
+
+    readiness, readiness_score, risk_level, risk_signals, decay_window_status = calculate_rlt_readiness(
+        qa_release_status, dose_calibration_time, courier_pickup_time,
+        delivery_eta_time, patient_appointment_time, administration_deadline_time,
+        temperature_status, radiation_survey_status, chain_of_custody_status,
+        site_receipt_status, administration_status, deviation_capa_link
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    rlt_record_id = "RLT-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        rlt_record_id + timestamp + dose_id + batch_id + radionuclide +
+        product_name + qa_release_status + receiving_site + temperature_status +
+        radiation_survey_status + chain_of_custody_status + site_receipt_status +
+        administration_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "rlt_record_id": rlt_record_id,
+        "timestamp": timestamp,
+        "dose_id": dose_id,
+        "batch_id": batch_id,
+        "radionuclide": radionuclide,
+        "product_name": product_name,
+        "manufacturing_complete_time": manufacturing_complete_time,
+        "qa_release_status": qa_release_status,
+        "dose_calibration_time": dose_calibration_time,
+        "courier_pickup_time": courier_pickup_time,
+        "delivery_eta_time": delivery_eta_time,
+        "receiving_site": receiving_site,
+        "patient_appointment_time": patient_appointment_time,
+        "administration_deadline_time": administration_deadline_time,
+        "temperature_status": temperature_status,
+        "radiation_survey_status": radiation_survey_status,
+        "chain_of_custody_status": chain_of_custody_status,
+        "site_receipt_status": site_receipt_status,
+        "administration_status": administration_status,
+        "deviation_capa_link": deviation_capa_link,
+        "decay_window_status": decay_window_status,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, RLT_DOSE_FILE)
+
+    return {
+        "error": "",
+        "rlt_record_id": rlt_record_id,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "decay_window_status": decay_window_status,
+        "risk_signals": risk_signals
+    }
+
+
+def get_rlt_test_metrics():
+    df = prepare_rlt_dose_evidence()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "DOSE-TO-PATIENT READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/rlt-trust-v1-test", methods=["GET", "POST"])
+def rlt_trust_v1_test():
+    result = None
+    if request.method == "POST":
+        result = save_rlt_dose_test(request)
+
+    metrics = get_rlt_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain RLT-Trust v1 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#7c3aed);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+button{border:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ RLT-Trust™ v1 Test</h1>
+<p>Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/compounding-pharmacy-v1-test">CompoundTrust</a>
+<a class="active" href="/rlt-trust-v1-test">RLT-Trust</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.rlt_record_id }} —
+<b>{{ result.readiness_status }}</b> —
+Score <b>{{ result.readiness_score }}%</b> —
+Decay Window: <b>{{ result.decay_window_status }}</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Dose Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Dose-to-Patient Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create RLT Dose Evidence Record</h2>
+<form method="POST" action="/rlt-trust-v1-test">
+<input name="dose_id" placeholder="Dose ID e.g. DOSE-RLT-001" required>
+<input name="batch_id" placeholder="Batch ID e.g. BATCH-RLT-001" required>
+<input name="radionuclide" placeholder="Radionuclide / Isotope e.g. Lu-177 / Ac-225" required>
+<input name="product_name" placeholder="Product / Therapy Name" required>
+
+<label><b>Manufacturing Complete Time</b></label>
+<input type="datetime-local" name="manufacturing_complete_time">
+
+<select name="qa_release_status" required>
+<option value="">QA Release Status</option>
+<option value="Released">Released</option>
+<option value="Pending">Pending</option>
+<option value="Rejected">Rejected</option>
+<option value="Not Released">Not Released</option>
+</select>
+
+<label><b>Dose Calibration Time</b></label>
+<input type="datetime-local" name="dose_calibration_time">
+
+<label><b>Courier Pickup Time</b></label>
+<input type="datetime-local" name="courier_pickup_time">
+
+<label><b>Delivery ETA</b></label>
+<input type="datetime-local" name="delivery_eta_time">
+
+<input name="receiving_site" placeholder="Receiving Site e.g. Novartis Indy / Treatment Site" required>
+
+<label><b>Patient Appointment Time</b></label>
+<input type="datetime-local" name="patient_appointment_time">
+
+<label><b>Administration Deadline / Usable Window</b></label>
+<input type="datetime-local" name="administration_deadline_time">
+
+<select name="temperature_status" required>
+<option value="">Temperature Status</option>
+<option value="Within Range">Within Range</option>
+<option value="Excursion">Excursion</option>
+<option value="Unknown">Unknown</option>
+<option value="Not Recorded">Not Recorded</option>
+</select>
+
+<select name="radiation_survey_status" required>
+<option value="">Radiation Survey Status</option>
+<option value="Passed">Passed</option>
+<option value="Failed">Failed</option>
+<option value="Missing">Missing</option>
+<option value="Not Reviewed">Not Reviewed</option>
+</select>
+
+<select name="chain_of_custody_status" required>
+<option value="">Chain-of-Custody Status</option>
+<option value="Complete">Complete</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Broken">Broken</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="site_receipt_status" required>
+<option value="">Site Receipt Status</option>
+<option value="Received Clean">Received Clean</option>
+<option value="Received With Exception">Received With Exception</option>
+<option value="Not Received">Not Received</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<select name="administration_status" required>
+<option value="">Administration Status</option>
+<option value="Administered">Administered</option>
+<option value="Pending">Pending</option>
+<option value="Not Administered">Not Administered</option>
+<option value="Missed Window">Missed Window</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<input name="deviation_capa_link" placeholder="Deviation / CAPA Link if applicable">
+
+<button type="submit">Save RLT Dose Evidence</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent RLT Dose Evidence Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Dose</th><th>Isotope</th><th>QA</th><th>Site</th><th>Decay Window</th><th>Temp</th><th>COC</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.rlt_record_id }}</td>
+<td><b>{{ r.dose_id }}</b><br>{{ r.batch_id }}</td>
+<td>{{ r.radionuclide }}</td>
+<td>{{ r.qa_release_status }}</td>
+<td>{{ r.receiving_site }}</td>
+<td>{{ r.decay_window_status }}</td>
+<td>{{ r.temperature_status }}</td>
+<td>{{ r.chain_of_custody_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No RLT dose evidence records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>rlt_dose_evidence.csv</b>.
+Manufacturing, SOP, Shift, Access, Audit/CAPA, Clinical Trial, and CompoundTrust registers are untouched.
+</div>
+
+<div class="card">
+<h2>Advanced Feature Direction</h2>
+<p><b>Isotope-to-Patient Evidence Graph™</b> links isotope production, radiolabeling/manufacturing, QA release, calibration, courier pickup, delivery, site receipt, patient appointment, administration window, radiation survey, deviation/CAPA, and final dose-to-patient readiness.</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
