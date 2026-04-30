@@ -6323,5 +6323,16 @@ Manufacturing, SOP, Shift, Access, Audit/CAPA, Clinical Trial, and CompoundTrust
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# RLT-TRUST V1 PROMOTED REDIRECT ACTIVE
+# Clean production route for RLT-Trust.
+# ============================================================
+
+@app.route("/rlt-trust")
+def rlt_trust_page():
+    # RLT_TRUST_V1_PROMOTED_REDIRECT_ACTIVE
+    return redirect("/rlt-trust-v1-test")
+
 if __name__ == "__main__":
     app.run(debug=True)
