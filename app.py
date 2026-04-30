@@ -6588,7 +6588,7 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 <body>
 <section class="hero">
 <h1>COBIT-Chain™ DSCSA TrustChain™</h1>
-<p><b>SEPARATE TIER 1 PHARMA SUPPLY-CHAIN MODULE</b> • Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
+<p><b>SUPPORTING PHARMA SUPPLY-CHAIN MODULE</b> • Standard Prescription Drug Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
 </section>
 
 <main class="container">
@@ -6606,11 +6606,11 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 </nav>
 
 <div class="notice">
-<b>DSCSA TrustChain™ is separate from RLT-Trust™.</b>
-Use DSCSA TrustChain™ for standard prescription drug package traceability, trading partner verification,
+<b>DSCSA TrustChain™ is a supporting supply-chain module, separate from the RLT-Trust™ flagship.</b>
+Use DSCSA TrustChain™ for non-radioactive standard prescription drug package traceability, trading partner verification,
 transaction information/statement evidence, suspect product investigation, quarantine, notification, and disposition.
 <br><br>
-<b>Do not use DSCSA TrustChain™ as the main RLT dose-readiness module.</b>
+<b>Do not use DSCSA TrustChain™ as the main radiopharma/RLT dose-readiness module. RLT-Trust™ remains the flagship for Lilly/Point/Novartis-style radiopharma governance.</b>
 Radiopharma dose timing, decay-window readiness, radiation survey, site receipt, and patient administration belong in RLT-Trust™.
 </div>
 
