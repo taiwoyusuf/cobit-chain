@@ -932,9 +932,10 @@ def manufacturing_alias():
 
 @app.route("/executive-overview")
 def executive_overview_page():
-    metrics = get_enterprise_overview_metrics()
-    page = get_enterprise_page("/executive-overview")
-    return render_enterprise_shell_page(page, metrics=metrics)
+    # EXECUTIVE_V3_PROMOTED_REDIRECT_ACTIVE
+    # Safe promotion: keep /executive-overview-v3-test as the functional enterprise dashboard,
+    # and redirect the main Executive Overview route to it.
+    return redirect("/executive-overview-v3-test")
 
 
 @app.route("/sop-governance", methods=["GET", "POST"])
