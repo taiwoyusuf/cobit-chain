@@ -1166,6 +1166,50 @@ body {
     .access-arrow{ display:none; }
 }
 
+
+.sop-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.sop-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.sop-card, .sop-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.sop-card h3 { margin:8px 0 10px; }
+.sop-card p, .sop-mini p { color:#475569; line-height:1.5; }
+.sop-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.sop-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.sop-flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.sop-step {
+    flex:1; min-width:190px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.sop-step b {
+    display:block; margin-bottom:7px;
+}
+.sop-step span {
+    display:block; color:#475569; line-height:1.45; font-size:13px;
+}
+.sop-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+@media(max-width:1000px){
+    .sop-grid,.sop-two-col{ grid-template-columns:1fr; }
+    .sop-arrow{ display:none; }
+}
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1494,9 +1538,199 @@ body {
                 <b>shift_handoffs.csv</b>. That will allow this page to save real day/night shift records without touching the current Wole manufacturing evidence chain.
             </div>
             {% elif page.route == "/sop-governance" %}
+            <!-- SOP_GOVERNANCE_V1_ACTIVE -->
+            <div class="card status-card-warning">
+                <h2>⚠ SOP Governance v1</h2>
+                <p><b>Purpose:</b> create a controlled governance view for SOP-to-reality alignment, process drift, SOP gaps, review triggers, and audit-ready recommendations.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard or write to the existing manufacturing evidence logs.</p>
+            </div>
+
+            <section class="sop-grid">
+                <div class="sop-card">
+                    <div class="sop-label">Core Problem</div>
+                    <h3>SOP vs Reality Gap</h3>
+                    <p>Identifies where the written procedure says one thing but the business process, system workflow, or evidence trail shows something different.</p>
+                    <span class="sop-badge">Process drift</span>
+                </div>
+
+                <div class="sop-card">
+                    <div class="sop-label">Evidence Source</div>
+                    <h3>SOP_Gap / SOP_Summary</h3>
+                    <p>Future linkage point for SOP gap files, SOP summaries, control mappings, exception narratives, and recommendation outputs.</p>
+                    <span class="sop-badge">Future CSV linkage</span>
+                </div>
+
+                <div class="sop-card">
+                    <div class="sop-label">Governance Output</div>
+                    <h3>Review Triggers</h3>
+                    <p>Flags when SOP review may be required due to audit findings, process expansion, system change, repeated deviations, or recurring control gaps.</p>
+                    <span class="sop-badge">Review readiness</span>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>SOP Governance Control Flow</h2>
+                <div class="sop-flow">
+                    <div class="sop-step">
+                        <b>1. SOP Intake</b>
+                        <span>Capture SOP title, version, owner, effective date, process area, and key control points.</span>
+                    </div>
+                    <div class="sop-arrow">→</div>
+                    <div class="sop-step">
+                        <b>2. Reality Evidence</b>
+                        <span>Compare SOP expectations against actual evidence from logs, uploads, workflows, tickets, or audit findings.</span>
+                    </div>
+                    <div class="sop-arrow">→</div>
+                    <div class="sop-step">
+                        <b>3. Gap Classification</b>
+                        <span>Classify whether the issue is documentation drift, process noncompliance, missing evidence, or control weakness.</span>
+                    </div>
+                    <div class="sop-arrow">→</div>
+                    <div class="sop-step">
+                        <b>4. Review Trigger</b>
+                        <span>Determine whether SOP revision, training, CAPA, system update, or governance escalation is needed.</span>
+                    </div>
+                    <div class="sop-arrow">→</div>
+                    <div class="sop-step">
+                        <b>5. Audit-Ready Recommendation</b>
+                        <span>Generate a defensible recommendation showing gap, impact, owner, action, and evidence basis.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>SOP Gap Data Model</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                        <th>Governance Value</th>
+                    </tr>
+                    <tr>
+                        <td><b>SOP ID / Title</b></td>
+                        <td>Identifies the controlled procedure being assessed.</td>
+                        <td>Links gap findings to the correct controlled document.</td>
+                    </tr>
+                    <tr>
+                        <td><b>SOP Version / Effective Date</b></td>
+                        <td>Shows which version was active when the gap was identified.</td>
+                        <td>Prevents confusion between outdated and current procedure expectations.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Process Area</b></td>
+                        <td>Identifies the business or operational process covered by the SOP.</td>
+                        <td>Supports ownership and impact analysis.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Expected Procedure Step</b></td>
+                        <td>Captures what the SOP says should happen.</td>
+                        <td>Creates the baseline for procedural compliance assessment.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Observed Reality</b></td>
+                        <td>Captures what actually happened in practice or system evidence.</td>
+                        <td>Identifies process drift or execution mismatch.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Gap Type</b></td>
+                        <td>Documentation gap, process gap, system gap, training gap, or evidence gap.</td>
+                        <td>Supports correct remediation pathway.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Severity</b></td>
+                        <td>Low, medium, high, or critical.</td>
+                        <td>Prioritizes governance attention and escalation.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Recommended Action</b></td>
+                        <td>SOP update, retraining, CAPA, workflow fix, control update, or no action.</td>
+                        <td>Turns observation into auditable governance response.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <section class="sop-two-col">
+                <div class="card">
+                    <h2>When SOP Review Should Be Triggered</h2>
+                    <ul class="exception-list">
+                        <li>Audit identifies mismatch between procedure and actual process.</li>
+                        <li>Business expands or introduces a new product/process flow.</li>
+                        <li>System or technology change affects control execution.</li>
+                        <li>Repeated deviations suggest the procedure is no longer practical.</li>
+                        <li>Evidence trail does not support the procedure as written.</li>
+                        <li>Roles and responsibilities have changed but SOP still reflects old ownership.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>COBIT-Chain Value</h2>
+                    <ul class="exception-list">
+                        <li>Connects procedure expectations to operational evidence.</li>
+                        <li>Distinguishes outdated SOPs from actual process noncompliance.</li>
+                        <li>Creates a governance trail for SOP review and remediation.</li>
+                        <li>Supports audit-ready explanation of why an SOP requires update.</li>
+                        <li>Links SOP gaps to CAPA, access, shift, or manufacturing evidence where relevant.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>SOP Gap Risk Rules</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Condition</th>
+                        <th>Risk Level</th>
+                        <th>Recommended Governance Action</th>
+                    </tr>
+                    <tr>
+                        <td>SOP requires a control step but no evidence exists that the step occurred</td>
+                        <td>High</td>
+                        <td>Investigate process execution and determine whether CAPA or retraining is required.</td>
+                    </tr>
+                    <tr>
+                        <td>Business performs a valid process not reflected in the SOP</td>
+                        <td>Medium</td>
+                        <td>Open SOP review and update controlled procedure to reflect operational reality.</td>
+                    </tr>
+                    <tr>
+                        <td>SOP references an old system, role, or tool</td>
+                        <td>Medium</td>
+                        <td>Assign SOP owner to update outdated system or responsibility references.</td>
+                    </tr>
+                    <tr>
+                        <td>Repeated deviations occur against the same SOP section</td>
+                        <td>High</td>
+                        <td>Assess whether the SOP is impractical, unclear, outdated, or not properly trained.</td>
+                    </tr>
+                    <tr>
+                        <td>SOP, process, and evidence are aligned</td>
+                        <td>Low</td>
+                        <td>Retain as audit-ready procedural evidence.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>SOP Governance Relationship Model</h2>
+                <div class="sop-grid">
+                    <div class="sop-mini">
+                        <b>SOP Document</b>
+                        <p>Defines the approved process, roles, control points, sequence, and required evidence.</p>
+                    </div>
+                    <div class="sop-mini">
+                        <b>Operational Reality</b>
+                        <p>Shows what users, systems, technicians, reviewers, or process owners actually do.</p>
+                    </div>
+                    <div class="sop-mini">
+                        <b>COBIT-Chain</b>
+                        <p>Acts as the governance assurance layer that compares procedure expectation to evidence-backed reality.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="note">
-                <b>SOP Governance design direction:</b> this page will later connect SOP_Gap, SOP_Summary,
-                procedure review triggers, and SOP-to-reality exception scoring.
+                <b>Next build step:</b> add a separate <b>sop_gaps.csv</b> storage file for SOP gap records.
+                This will allow SOP Governance to save real SOP mismatch evidence without touching the Manufacturing/Wole evidence chain.
             </div>
             {% elif page.route == "/access-governance" %}
             <!-- ACCESS_GOVERNANCE_V1_ACTIVE -->
