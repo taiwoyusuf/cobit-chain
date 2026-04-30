@@ -953,8 +953,10 @@ def sop_governance_page():
 
 @app.route("/shift-assurance")
 def shift_assurance_page():
-    page = get_enterprise_page("/shift-assurance")
-    return render_enterprise_shell_page(page)
+    # SHIFT_V2_PROMOTED_REDIRECT_ACTIVE
+    # Safe promotion: keep /shift-assurance-v2-test as the functional page,
+    # and redirect the main Shift Assurance route to it.
+    return redirect("/shift-assurance-v2-test")
 
 
 @app.route("/access-governance")
