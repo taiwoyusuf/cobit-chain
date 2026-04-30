@@ -526,6 +526,20 @@ tr.row-RED { background:#fef2f2; }
 .status-GREEN { background:#dcfce7; color:#166534; }
 .status-YELLOW { background:#fef3c7; color:#92400e; }
 .status-RED { background:#fee2e2; color:#991b1b; }
+
+.enterprise-nav-safe-addition {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:14px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;
+}
+.enterprise-nav-safe-addition a {
+    text-decoration:none; color:#0f172a; background:#f8fafc; border:1px solid #e2e8f0;
+    padding:10px 13px; border-radius:999px; font-weight:900; font-size:13px;
+}
+.enterprise-nav-safe-addition a.active {
+    background:#0f172a; color:white; border-color:#0f172a;
+}
+
 @media(max-width:1000px){ .grid,.mini-grid,.main-layout{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -545,6 +559,17 @@ tr.row-RED { background:#fef2f2; }
 </section>
 
 <main class="container">
+
+    <nav class="enterprise-nav-safe-addition">
+        <a href="/executive-overview">Executive Overview</a>
+        <a href="/sop-governance">SOP Governance</a>
+        <a class="active" href="/">Manufacturing</a>
+        <a href="/shift-assurance">Shift Assurance</a>
+        <a href="/access-governance">Access Governance</a>
+        <a href="/audit-capa">Audit/CAPA</a>
+        <a href="/clinical-trial-integrity">Clinical Trial Integrity</a>
+    </nav>
+
     <section class="grid">
         <div class="metric"><div class="metric-label">Total Batches</div><div class="metric-value">{{ total_batches }}</div><div class="metric-sub">Process chains tracked</div></div>
         <div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ total_records }}</div><div class="metric-sub">Evidence events logged</div></div>
@@ -689,6 +714,438 @@ tr.row-RED { background:#fef2f2; }
         total_batches=total_batches,
         green_total=green_total,
         red_total=red_total
+    )
+
+
+# ============================================================
+# ENTERPRISE GOVERNANCE PAGES - SAFE ADDITION
+# ============================================================
+# These pages are added beside the existing Manufacturing/Wole
+# dashboard. The existing "/" route remains unchanged.
+
+ENTERPRISE_PAGES = [
+    {
+        "number": "Page 1",
+        "title": "Executive Overview",
+        "route": "/executive-overview",
+        "status": "LIVE SHELL",
+        "purpose": "Leadership-level summary of governance risk, audit readiness, evidence integrity, open exceptions, and module status.",
+        "focus": [
+            "Enterprise governance scorecard",
+            "Audit-readiness overview",
+            "Open exception summary",
+            "Evidence integrity performance",
+            "Module-by-module assurance status"
+        ]
+    },
+    {
+        "number": "Page 2",
+        "title": "SOP Governance",
+        "route": "/sop-governance",
+        "status": "LIVE SHELL",
+        "purpose": "SOP-to-reality alignment, SOP gaps, process drift, review triggers, and governance recommendations.",
+        "focus": [
+            "SOP gap tracking",
+            "Procedure-to-practice comparison",
+            "Review trigger identification",
+            "Control weakness classification",
+            "Governance recommendation logging"
+        ]
+    },
+    {
+        "number": "Page 3",
+        "title": "Manufacturing",
+        "route": "/",
+        "status": "LIVE",
+        "purpose": "Preserved Wole manufacturing assurance dashboard with evidence upload, hashing, verification, Excel analytics, process-chain validation, and audit report download.",
+        "focus": [
+            "Weighbridge → Dispatch → Invoice evidence chain",
+            "Azure Blob-backed evidence records",
+            "SHA-256 hash verification",
+            "GREEN / YELLOW / RED integrity status",
+            "COBIT 2019 control overlay"
+        ]
+    },
+    {
+        "number": "Page 4",
+        "title": "Shift Assurance",
+        "route": "/shift-assurance",
+        "status": "LIVE SHELL",
+        "purpose": "12-hour day/night shift assurance, equipment handoff, technician accountability, open issue carryover, and ServiceNow linkage.",
+        "focus": [
+            "Day/night shift handoff",
+            "Equipment custody transfer",
+            "Open issue carryover",
+            "Technician accountability",
+            "ServiceNow ticket linkage"
+        ]
+    },
+    {
+        "number": "Page 5",
+        "title": "Access Governance",
+        "route": "/access-governance",
+        "status": "LIVE SHELL",
+        "purpose": "myAccess alignment, user access review, binder-to-digital evidence, entitlement assurance, and quarterly certification support.",
+        "focus": [
+            "myAccess entitlement assurance",
+            "Quarterly access review",
+            "Binder evidence reconciliation",
+            "Access approval traceability",
+            "Segregation of duties monitoring"
+        ]
+    },
+    {
+        "number": "Page 6",
+        "title": "Audit/CAPA",
+        "route": "/audit-capa",
+        "status": "LIVE SHELL",
+        "purpose": "Audit findings, CAPA evidence, deviation linkage, remediation proof, and effectiveness-check readiness.",
+        "focus": [
+            "Audit finding traceability",
+            "CAPA evidence integrity",
+            "Deviation-to-remediation linkage",
+            "Effectiveness-check readiness",
+            "Audit response evidence pack"
+        ]
+    },
+    {
+        "number": "Future Page",
+        "title": "Clinical Trial Integrity",
+        "route": "/clinical-trial-integrity",
+        "status": "PLANNED SHELL",
+        "purpose": "Clinical trial evidence integrity, ALCOA+ traceability, COBIT control mapping, and regulated evidence assurance.",
+        "focus": [
+            "ALCOA+ evidence principles",
+            "Clinical trial evidence traceability",
+            "Control-to-evidence mapping",
+            "Regulatory audit readiness",
+            "Governance assurance overlay"
+        ]
+    }
+]
+
+
+def get_enterprise_page(route):
+    for page in ENTERPRISE_PAGES:
+        if page["route"] == route:
+            return page
+    return None
+
+
+def get_enterprise_overview_metrics():
+    logs = prepare_logs()
+
+    metrics = {
+        "total_records": 0,
+        "total_batches": 0,
+        "green_total": 0,
+        "yellow_total": 0,
+        "red_total": 0,
+        "audit_ready": 0,
+        "conditional": 0,
+        "not_ready": 0,
+        "integrity_score": 0,
+        "open_exceptions": []
+    }
+
+    if logs.empty:
+        return metrics
+
+    logs = logs.fillna("")
+    metrics["total_records"] = len(logs)
+    metrics["total_batches"] = logs["batch_id"].nunique()
+    metrics["green_total"] = len(logs[logs["status"] == "GREEN"])
+    metrics["yellow_total"] = len(logs[logs["status"] == "YELLOW"])
+    metrics["red_total"] = len(logs[logs["status"] == "RED"])
+    metrics["integrity_score"] = round((metrics["green_total"] / metrics["total_records"]) * 100, 2) if metrics["total_records"] else 0
+
+    for batch_id, grp in logs.groupby("batch_id", dropna=False):
+        batch_name = clean(batch_id) if clean(batch_id) else "NO-BATCH-ID"
+        analysis = analyze_batch(batch_name, grp)
+
+        if analysis["verdict"] == "AUDIT-READY":
+            metrics["audit_ready"] += 1
+        elif analysis["verdict"] == "CONDITIONALLY READY":
+            metrics["conditional"] += 1
+            metrics["open_exceptions"].append(f"{batch_name}: CONDITIONALLY READY")
+        else:
+            metrics["not_ready"] += 1
+            metrics["open_exceptions"].append(f"{batch_name}: NOT AUDIT-READY")
+
+    return metrics
+
+
+@app.route("/manufacturing")
+def manufacturing_alias():
+    return redirect("/")
+
+
+@app.route("/executive-overview")
+def executive_overview_page():
+    metrics = get_enterprise_overview_metrics()
+    page = get_enterprise_page("/executive-overview")
+    return render_enterprise_shell_page(page, metrics=metrics)
+
+
+@app.route("/sop-governance")
+def sop_governance_page():
+    page = get_enterprise_page("/sop-governance")
+    return render_enterprise_shell_page(page)
+
+
+@app.route("/shift-assurance")
+def shift_assurance_page():
+    page = get_enterprise_page("/shift-assurance")
+    return render_enterprise_shell_page(page)
+
+
+@app.route("/access-governance")
+def access_governance_page():
+    page = get_enterprise_page("/access-governance")
+    return render_enterprise_shell_page(page)
+
+
+@app.route("/audit-capa")
+def audit_capa_page():
+    page = get_enterprise_page("/audit-capa")
+    return render_enterprise_shell_page(page)
+
+
+@app.route("/clinical-trial-integrity")
+def clinical_trial_integrity_page():
+    page = get_enterprise_page("/clinical-trial-integrity")
+    return render_enterprise_shell_page(page)
+
+
+def render_enterprise_shell_page(page, metrics=None):
+    metrics = metrics or {}
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Enterprise Governance Platform</title>
+<style>
+:root {
+    --bg:#f4f7fb; --navy:#071527; --blue:#2563eb; --cyan:#06b6d4;
+    --green:#16a34a; --yellow:#f59e0b; --red:#dc2626; --muted:#64748b;
+    --card:#ffffff; --border:#e5e7eb;
+}
+* { box-sizing:border-box; }
+body {
+    margin:0; font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:linear-gradient(135deg,#eef4ff,#f8fafc,#eefdf8);
+    color:#0f172a;
+}
+.hero {
+    background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
+    color:white; padding:36px 42px 46px;
+    border-bottom-left-radius:34px; border-bottom-right-radius:34px;
+    box-shadow:0 18px 45px rgba(15,39,69,.25);
+}
+.hero-top { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:14px; }
+.logo {
+    width:54px; height:54px; border-radius:18px;
+    background:linear-gradient(135deg,#38bdf8,#22c55e);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:22px;
+}
+.brand h1 { margin:0; font-size:34px; letter-spacing:-.8px; }
+.brand p { margin:4px 0 0; color:#cbd5e1; }
+.badge {
+    padding:10px 15px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    color:#e0f2fe; font-weight:800;
+}
+.container { max-width:1450px; margin:-28px auto 50px; padding:0 26px; }
+.nav {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:14px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;
+}
+.nav a {
+    text-decoration:none; color:#0f172a; background:#f8fafc; border:1px solid #e2e8f0;
+    padding:10px 13px; border-radius:999px; font-weight:900; font-size:13px;
+}
+.nav a.active { background:#0f172a; color:white; border-color:#0f172a; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:20px; }
+.metric {
+    background:rgba(255,255,255,.96); border:1px solid rgba(226,232,240,.9);
+    border-radius:22px; padding:22px; box-shadow:0 12px 32px rgba(15,23,42,.08);
+}
+.metric-label { color:#64748b; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.08em; }
+.metric-value { margin-top:8px; font-size:34px; font-weight:900; }
+.metric-sub { color:#64748b; font-size:13px; }
+.main-layout { display:grid; grid-template-columns:360px 1fr; gap:22px; align-items:start; }
+.panel, .card {
+    background:white; border:1px solid #e5e7eb; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.panel { margin-bottom:20px; }
+.page-link {
+    display:block; text-decoration:none; color:#0f172a; padding:13px 14px;
+    border:1px solid #e2e8f0; border-radius:16px; margin:9px 0; background:#f8fafc;
+}
+.page-link.active {
+    background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border-color:#93c5fd; box-shadow:0 8px 18px rgba(37,99,235,.12);
+}
+.page-link b { display:block; font-size:14px; }
+.page-link small { color:#64748b; font-weight:700; }
+.status-pill {
+    display:inline-block; margin-top:7px; padding:5px 8px; border-radius:999px;
+    font-size:11px; font-weight:900; background:#e2e8f0; color:#334155;
+}
+.status-live { background:#dcfce7; color:#166534; }
+.status-shell { background:#dbeafe; color:#1d4ed8; }
+.status-planned { background:#f1f5f9; color:#475569; }
+.notice {
+    background:#f0fdf4; border-left:7px solid #16a34a; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.note {
+    background:#fff7ed; border-left:7px solid #f59e0b; border-radius:18px;
+    padding:17px; line-height:1.55; margin-bottom:20px;
+}
+.focus-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.focus-item {
+    background:#f8fafc; border:1px solid #e2e8f0; border-radius:18px;
+    padding:15px; font-weight:800;
+}
+.exception-list li { margin-bottom:8px; }
+@media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+
+<body>
+<section class="hero">
+    <div class="hero-top">
+        <div class="brand">
+            <div class="logo">CC</div>
+            <div>
+                <h1>COBIT-Chain™</h1>
+                <p>Enterprise Governance Platform • Evidence Integrity • Audit Readiness</p>
+            </div>
+        </div>
+        <div class="badge">{{ page.number }} • {{ page.status }}</div>
+    </div>
+</section>
+
+<main class="container">
+    <nav class="nav">
+        {% for p in pages %}
+            <a class="{% if p.route == page.route %}active{% endif %}" href="{{ p.route }}">{{ p.title }}</a>
+        {% endfor %}
+    </nav>
+
+    {% if page.route == "/executive-overview" %}
+    <section class="grid">
+        <div class="metric"><div class="metric-label">Total Batches</div><div class="metric-value">{{ metrics.total_batches }}</div><div class="metric-sub">Manufacturing process chains</div></div>
+        <div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total_records }}</div><div class="metric-sub">Evidence events logged</div></div>
+        <div class="metric"><div class="metric-label">Integrity Score</div><div class="metric-value" style="color:#16a34a">{{ metrics.integrity_score }}%</div><div class="metric-sub">Green records vs total records</div></div>
+        <div class="metric"><div class="metric-label">Critical Red</div><div class="metric-value" style="color:#dc2626">{{ metrics.red_total }}</div><div class="metric-sub">Tamper or integrity issues</div></div>
+    </section>
+    {% endif %}
+
+    <section class="main-layout">
+        <aside>
+            <div class="panel">
+                <h2>Enterprise Pages</h2>
+                {% for p in pages %}
+                <a class="page-link {% if p.route == page.route %}active{% endif %}" href="{{ p.route }}">
+                    <b>{{ p.number }} → {{ p.title }}</b>
+                    <small>{{ p.purpose }}</small><br>
+                    <span class="status-pill {% if p.status == 'LIVE' %}status-live{% elif 'SHELL' in p.status %}status-shell{% else %}status-planned{% endif %}">
+                        {{ p.status }}
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <section>
+            <div class="card">
+                <h2>{{ page.number }} → {{ page.title }}</h2>
+                <p><b>Status:</b> {{ page.status }}</p>
+                <p>{{ page.purpose }}</p>
+            </div>
+
+            <div class="notice">
+                <b>Safe enterprise expansion:</b> This page was added beside the existing Manufacturing/Wole dashboard.
+                The original <b>/</b> dashboard remains preserved and continues to handle upload, hashing, verification,
+                Azure Blob logging, process-chain validation, and audit report generation.
+            </div>
+
+            {% if page.route == "/executive-overview" %}
+            <div class="card">
+                <h2>Audit Readiness Summary</h2>
+                <section class="grid">
+                    <div class="metric"><div class="metric-label">Audit Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.audit_ready }}</div><div class="metric-sub">Batches ready</div></div>
+                    <div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div><div class="metric-sub">Need follow-up</div></div>
+                    <div class="metric"><div class="metric-label">Not Ready</div><div class="metric-value" style="color:#dc2626">{{ metrics.not_ready }}</div><div class="metric-sub">Critical issues</div></div>
+                    <div class="metric"><div class="metric-label">Yellow Records</div><div class="metric-value" style="color:#f59e0b">{{ metrics.yellow_total }}</div><div class="metric-sub">Baseline or review gaps</div></div>
+                </section>
+
+                <h3>Open Exceptions</h3>
+                {% if metrics.open_exceptions %}
+                    <ul class="exception-list">
+                    {% for item in metrics.open_exceptions[:10] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No open exceptions detected from current manufacturing records.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <h2>Module Focus Areas</h2>
+                <div class="focus-grid">
+                    {% for item in page.focus %}
+                    <div class="focus-item">{{ item }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if page.route == "/shift-assurance" %}
+            <div class="note">
+                <b>Shift Assurance design direction:</b> this page will later connect ServiceNow ticket exports,
+                equipment status, technician ownership, handoff notes, unresolved risks, and day/night carryover logic.
+            </div>
+            {% elif page.route == "/sop-governance" %}
+            <div class="note">
+                <b>SOP Governance design direction:</b> this page will later connect SOP_Gap, SOP_Summary,
+                procedure review triggers, and SOP-to-reality exception scoring.
+            </div>
+            {% elif page.route == "/access-governance" %}
+            <div class="note">
+                <b>Access Governance design direction:</b> this page will later connect myAccess exports,
+                binder evidence, user access review logs, and entitlement approval evidence.
+            </div>
+            {% elif page.route == "/audit-capa" %}
+            <div class="note">
+                <b>Audit/CAPA design direction:</b> this page will later connect audit observations,
+                deviation records, CAPA evidence, remediation proof, and effectiveness-check readiness.
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <h2>Current Manufacturing Dashboard</h2>
+                <p>The existing Wole Manufacturing Assurance dashboard remains available here:</p>
+                <p><a href="/" style="font-weight:900;color:#2563eb;">Open Manufacturing Dashboard</a></p>
+            </div>
+        </section>
+    </section>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(
+        html,
+        page=page,
+        pages=ENTERPRISE_PAGES,
+        metrics=metrics
     )
 
 if __name__ == "__main__":
