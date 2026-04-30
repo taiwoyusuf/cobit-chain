@@ -1078,6 +1078,50 @@ body {
 .status-card-critical { border-left:8px solid #dc2626; background:linear-gradient(135deg,#fef2f2,#ffffff); }
 .status-card-neutral { border-left:8px solid #64748b; background:linear-gradient(135deg,#f8fafc,#ffffff); }
 
+
+.shift-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.shift-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.shift-card, .shift-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.shift-card h3 { margin:8px 0 10px; }
+.shift-card p, .shift-mini p { color:#475569; line-height:1.5; }
+.shift-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.shift-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.handoff-flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.handoff-step {
+    flex:1; min-width:190px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.handoff-step b {
+    display:block; margin-bottom:7px;
+}
+.handoff-step span {
+    display:block; color:#475569; line-height:1.45; font-size:13px;
+}
+.handoff-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+@media(max-width:1000px){
+    .shift-grid,.shift-two-col{ grid-template-columns:1fr; }
+    .handoff-arrow{ display:none; }
+}
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1212,9 +1256,198 @@ body {
             </div>
 
             {% if page.route == "/shift-assurance" %}
+            <!-- SHIFT_ASSURANCE_V1_ACTIVE -->
+            <div class="card status-card-warning">
+                <h2>⚠ Shift Assurance v1</h2>
+                <p><b>Purpose:</b> create a governed 12-hour day/night shift handoff model for technicians, equipment status, unresolved issues, and ServiceNow-linked operational continuity.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard or write to the existing manufacturing evidence logs.</p>
+            </div>
+
+            <section class="shift-grid">
+                <div class="shift-card">
+                    <div class="shift-label">Shift Model</div>
+                    <h3>Day Shift / Night Shift</h3>
+                    <p>Designed for 12-hour coverage where each incoming technician can see equipment condition, unresolved issues, and carryover items from the prior shift.</p>
+                    <span class="shift-badge">12-hour rotation</span>
+                </div>
+
+                <div class="shift-card">
+                    <div class="shift-label">Equipment Scope</div>
+                    <h3>Equipment Handoff</h3>
+                    <p>Tracks whether each equipment item is available, unavailable, under maintenance, out of service, or pending QA/engineering review.</p>
+                    <span class="shift-badge">Custody control</span>
+                </div>
+
+                <div class="shift-card">
+                    <div class="shift-label">Ticket Source</div>
+                    <h3>ServiceNow Linkage</h3>
+                    <p>ServiceNow remains the ticket system of record. COBIT-Chain adds governance visibility, handoff assurance, and unresolved issue carryover.</p>
+                    <span class="shift-badge">Future CSV/API link</span>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Shift Handoff Control Flow</h2>
+                <div class="handoff-flow">
+                    <div class="handoff-step">
+                        <b>1. Incoming Shift Review</b>
+                        <span>Review prior shift notes, open tickets, equipment status, and unresolved risks.</span>
+                    </div>
+                    <div class="handoff-arrow">→</div>
+                    <div class="handoff-step">
+                        <b>2. Equipment Status Check</b>
+                        <span>Confirm each covered equipment item is available, degraded, under maintenance, or out of service.</span>
+                    </div>
+                    <div class="handoff-arrow">→</div>
+                    <div class="handoff-step">
+                        <b>3. Issue Ownership</b>
+                        <span>Assign owner, escalation path, and expected next action for each carryover item.</span>
+                    </div>
+                    <div class="handoff-arrow">→</div>
+                    <div class="handoff-step">
+                        <b>4. Handoff Signoff</b>
+                        <span>Outgoing and incoming technicians confirm handoff completeness and known exceptions.</span>
+                    </div>
+                    <div class="handoff-arrow">→</div>
+                    <div class="handoff-step">
+                        <b>5. Audit-Ready Record</b>
+                        <span>Create traceable shift evidence for operational continuity, investigation support, and audit review.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Equipment Handoff Data Model</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                        <th>Governance Value</th>
+                    </tr>
+                    <tr>
+                        <td><b>Shift Date / Shift Type</b></td>
+                        <td>Identifies day shift or night shift coverage window.</td>
+                        <td>Creates time-bound accountability.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Equipment ID / Name</b></td>
+                        <td>Identifies the asset or system being handed over.</td>
+                        <td>Links equipment condition to operational ownership.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Equipment Status</b></td>
+                        <td>Available, degraded, under maintenance, out of service, or pending review.</td>
+                        <td>Prevents unclear equipment readiness during shift transition.</td>
+                    </tr>
+                    <tr>
+                        <td><b>ServiceNow Ticket</b></td>
+                        <td>Links open incident, request, work order, or maintenance item.</td>
+                        <td>Keeps ServiceNow as record of action while COBIT-Chain governs visibility.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Open Issue / Risk</b></td>
+                        <td>Captures unresolved operational issue or compliance concern.</td>
+                        <td>Prevents loss of critical issue context between shifts.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Outgoing Technician</b></td>
+                        <td>Person handing over the shift or equipment status.</td>
+                        <td>Creates accountability for outgoing information.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Incoming Technician</b></td>
+                        <td>Person accepting the handoff and next action ownership.</td>
+                        <td>Creates accountability for follow-up execution.</td>
+                    </tr>
+                    <tr>
+                        <td><b>QA / Engineering Escalation</b></td>
+                        <td>Indicates whether issue needs escalation beyond technician level.</td>
+                        <td>Supports controlled escalation and audit defensibility.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <section class="shift-two-col">
+                <div class="card">
+                    <h2>Day Shift View</h2>
+                    <ul class="exception-list">
+                        <li>Review carryover issues from night shift.</li>
+                        <li>Confirm production-support equipment readiness.</li>
+                        <li>Validate critical open ServiceNow tickets.</li>
+                        <li>Escalate blocked or repeated equipment issues.</li>
+                        <li>Document any handoff exception before shift close.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>Night Shift View</h2>
+                    <ul class="exception-list">
+                        <li>Confirm unresolved day-shift issues are still visible.</li>
+                        <li>Track equipment status changes during night coverage.</li>
+                        <li>Flag items requiring next-day QA or engineering action.</li>
+                        <li>Preserve evidence for next shift review.</li>
+                        <li>Prevent silent issue rollover without ownership.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>ServiceNow Linkage Design</h2>
+                <div class="shift-grid">
+                    <div class="shift-mini">
+                        <b>Input</b>
+                        <p>ServiceNow ticket export or API feed: ticket number, CI/equipment, status, priority, assignment group, opened date, and latest update.</p>
+                    </div>
+                    <div class="shift-mini">
+                        <b>COBIT-Chain Governance Layer</b>
+                        <p>Maps tickets to shift handoff records, equipment status, unresolved risk, technician ownership, and escalation state.</p>
+                    </div>
+                    <div class="shift-mini">
+                        <b>Output</b>
+                        <p>Shift readiness view, unresolved issue carryover, audit-ready handoff record, and exception list for leadership or QA review.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Escalation Rules</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Condition</th>
+                        <th>Risk Level</th>
+                        <th>Recommended Escalation</th>
+                    </tr>
+                    <tr>
+                        <td>Critical equipment out of service with no owner assigned</td>
+                        <td>High</td>
+                        <td>Escalate to IT/Engineering lead and shift supervisor.</td>
+                    </tr>
+                    <tr>
+                        <td>Open ServiceNow ticket carried over for more than one shift</td>
+                        <td>Medium</td>
+                        <td>Require update note and named owner before next handoff.</td>
+                    </tr>
+                    <tr>
+                        <td>Equipment available but status not confirmed by incoming technician</td>
+                        <td>Medium</td>
+                        <td>Require incoming acceptance before handoff closure.</td>
+                    </tr>
+                    <tr>
+                        <td>QA-impacting issue with incomplete evidence</td>
+                        <td>High</td>
+                        <td>Escalate to QA or system owner before audit reliance.</td>
+                    </tr>
+                    <tr>
+                        <td>No open issues and all equipment status confirmed</td>
+                        <td>Low</td>
+                        <td>Proceed with normal shift acceptance.</td>
+                    </tr>
+                </table>
+            </div>
+
             <div class="note">
-                <b>Shift Assurance design direction:</b> this page will later connect ServiceNow ticket exports,
-                equipment status, technician ownership, handoff notes, unresolved risks, and day/night carryover logic.
+                <b>Next build step:</b> add a simple Shift Handoff CSV storage file separate from manufacturing logs, for example
+                <b>shift_handoffs.csv</b>. That will allow this page to save real day/night shift records without touching the current Wole manufacturing evidence chain.
             </div>
             {% elif page.route == "/sop-governance" %}
             <div class="note">
