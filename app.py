@@ -967,8 +967,10 @@ def access_governance_page():
 
 @app.route("/audit-capa")
 def audit_capa_page():
-    page = get_enterprise_page("/audit-capa")
-    return render_enterprise_shell_page(page)
+    # AUDIT_CAPA_V2_PROMOTED_REDIRECT_ACTIVE
+    # Safe promotion: keep /audit-capa-v2-test as the functional page,
+    # and redirect the main Audit/CAPA route to it.
+    return redirect("/audit-capa-v2-test")
 
 
 @app.route("/clinical-trial-integrity")
