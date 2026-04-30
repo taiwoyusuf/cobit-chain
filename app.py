@@ -4107,5 +4107,329 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# ACCESS GOVERNANCE V2 TEST ACTIVE
+# Functional test page only. Does not replace /access-governance.
+# ============================================================
+
+ACCESS_REVIEW_FILE = "access_reviews.csv"
+
+
+def prepare_access_reviews():
+    df = load_csv(ACCESS_REVIEW_FILE)
+    return ensure_cols(df, [
+        "review_id", "timestamp", "review_cycle", "system_name",
+        "user_id", "user_name", "role_entitlement", "access_source",
+        "approval_reference", "approver", "system_owner",
+        "review_decision", "privileged_access", "binder_reference",
+        "remediation_action", "risk_level", "readiness_status",
+        "readiness_score", "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_access_readiness(access_source, approval_reference, approver, system_owner,
+                               review_decision, privileged_access, binder_reference,
+                               remediation_action):
+    score = 100
+    signals = []
+
+    access_source = clean(access_source)
+    approval_reference = clean(approval_reference)
+    approver = clean(approver)
+    system_owner = clean(system_owner)
+    review_decision = clean(review_decision)
+    privileged_access = clean(privileged_access)
+    binder_reference = clean(binder_reference)
+    remediation_action = clean(remediation_action)
+
+    if not approval_reference:
+        score -= 30
+        signals.append("No approval reference is linked to the access record.")
+
+    if not approver:
+        score -= 20
+        signals.append("No approver is recorded.")
+
+    if not system_owner:
+        score -= 15
+        signals.append("No system owner is recorded.")
+
+    if review_decision in ["Pending", "Exception"]:
+        score -= 20
+        signals.append("Review decision is pending or marked as exception.")
+
+    if review_decision in ["Remove", "Modify"] and not remediation_action:
+        score -= 20
+        signals.append("Access requires removal/modification but no remediation action is documented.")
+
+    if privileged_access == "Yes" and not approval_reference:
+        score -= 25
+        signals.append("Privileged access exists without approval reference.")
+
+    if access_source in ["Binder", "Excel", "Manual"] and not binder_reference:
+        score -= 15
+        signals.append("Manual/binder/Excel source selected but no binder/evidence reference is provided.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness_status = "AUDIT-READY"
+        risk_level = "LOW"
+    elif score >= 60:
+        readiness_status = "CONDITIONALLY READY"
+        risk_level = "MEDIUM"
+    else:
+        readiness_status = "NOT AUDIT-READY"
+        risk_level = "HIGH"
+
+    if not signals:
+        signals.append("No major access governance risk detected.")
+
+    return readiness_status, score, risk_level, signals
+
+
+def save_access_review_test(req):
+    df = prepare_access_reviews()
+
+    review_cycle = clean(req.form.get("review_cycle"))
+    system_name = clean(req.form.get("system_name"))
+    user_id = clean(req.form.get("user_id"))
+    user_name = clean(req.form.get("user_name"))
+    role_entitlement = clean(req.form.get("role_entitlement"))
+    access_source = clean(req.form.get("access_source"))
+    approval_reference = clean(req.form.get("approval_reference"))
+    approver = clean(req.form.get("approver"))
+    system_owner = clean(req.form.get("system_owner"))
+    review_decision = clean(req.form.get("review_decision"))
+    privileged_access = clean(req.form.get("privileged_access")) or "No"
+    binder_reference = clean(req.form.get("binder_reference"))
+    remediation_action = clean(req.form.get("remediation_action"))
+
+    required = [review_cycle, system_name, user_id, user_name, role_entitlement, access_source, review_decision]
+    if not all(required):
+        return {"error": "Review Cycle, System Name, User ID, User Name, Role/Entitlement, Access Source, and Review Decision are required."}
+
+    readiness_status, readiness_score, risk_level, risk_signals = calculate_access_readiness(
+        access_source, approval_reference, approver, system_owner,
+        review_decision, privileged_access, binder_reference, remediation_action
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    review_id = "ACCESS-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        review_id + timestamp + review_cycle + system_name + user_id +
+        user_name + role_entitlement + access_source + approval_reference +
+        review_decision + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "review_id": review_id,
+        "timestamp": timestamp,
+        "review_cycle": review_cycle,
+        "system_name": system_name,
+        "user_id": user_id,
+        "user_name": user_name,
+        "role_entitlement": role_entitlement,
+        "access_source": access_source,
+        "approval_reference": approval_reference,
+        "approver": approver,
+        "system_owner": system_owner,
+        "review_decision": review_decision,
+        "privileged_access": privileged_access,
+        "binder_reference": binder_reference,
+        "remediation_action": remediation_action,
+        "risk_level": risk_level,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, ACCESS_REVIEW_FILE)
+
+    return {
+        "error": "",
+        "review_id": review_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_access_test_metrics():
+    df = prepare_access_reviews()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "AUDIT-READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT AUDIT-READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/access-governance-v2-test", methods=["GET", "POST"])
+def access_governance_v2_test():
+    result = None
+    if request.method == "POST":
+        result = save_access_review_test(request)
+
+    metrics = get_access_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Access Governance v2 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:390px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:85px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Access Governance v2 Test</h1>
+<p>Functional test page only — stable /access-governance is untouched.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/sop-governance">SOP Governance</a>
+<a href="/shift-assurance">Shift Assurance</a>
+<a href="/access-governance">Access v1 Stable</a>
+<a class="active" href="/access-governance-v2-test">Access v2 Test</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial Integrity</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.review_id }} — <b>{{ result.readiness_status }}</b> — Score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Reviews</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Audit-Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Access Review Record</h2>
+<form method="POST" action="/access-governance-v2-test">
+<input name="review_cycle" placeholder="Review Cycle e.g. Q2-2026" required>
+<input name="system_name" placeholder="System/Application e.g. Blue Mountain / myAccess / Speedy Glove" required>
+<input name="user_id" placeholder="User ID / Account ID" required>
+<input name="user_name" placeholder="User Name" required>
+<input name="role_entitlement" placeholder="Role / Entitlement" required>
+
+<select name="access_source" required>
+<option value="">Access Source</option>
+<option value="myAccess">myAccess</option>
+<option value="Binder">Binder</option>
+<option value="Excel">Excel</option>
+<option value="Manual">Manual</option>
+<option value="System Export">System Export</option>
+</select>
+
+<input name="approval_reference" placeholder="Approval Reference e.g. REQ123 / myAccess ID / form reference">
+<input name="approver" placeholder="Approver">
+<input name="system_owner" placeholder="System Owner">
+
+<select name="review_decision" required>
+<option value="">Review Decision</option>
+<option value="Approved">Approved</option>
+<option value="Remove">Remove</option>
+<option value="Modify">Modify</option>
+<option value="Pending">Pending</option>
+<option value="Exception">Exception</option>
+</select>
+
+<select name="privileged_access">
+<option value="No">Privileged Access? No</option>
+<option value="Yes">Privileged Access? Yes</option>
+</select>
+
+<input name="binder_reference" placeholder="Binder / Excel Evidence Reference">
+<textarea name="remediation_action" placeholder="Remediation Action / Follow-up"></textarea>
+
+<button type="submit">Save Access Review</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Access Review Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Cycle</th><th>System</th><th>User</th><th>Role</th><th>Source</th><th>Decision</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.review_id }}</td>
+<td>{{ r.review_cycle }}</td>
+<td>{{ r.system_name }}</td>
+<td><b>{{ r.user_id }}</b><br>{{ r.user_name }}</td>
+<td>{{ r.role_entitlement }}</td>
+<td>{{ r.access_source }}</td>
+<td>{{ r.review_decision }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No access review records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>access_reviews.csv</b>. Manufacturing logs.csv, SOP comparisons, and shift handoffs are untouched.
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
