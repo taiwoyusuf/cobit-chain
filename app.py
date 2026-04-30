@@ -5101,5 +5101,360 @@ Manufacturing/Wole evidence chain protected.
 
     return render_template_string(html, metrics=metrics)
 
+
+# ============================================================
+# CLINICAL TRIAL V3 TEST ACTIVE
+# Functional clinical trial evidence register.
+# Does not replace /clinical-trial-integrity.
+# ============================================================
+
+CLINICAL_TRIAL_FILE = "clinical_trial_evidence.csv"
+
+
+def prepare_clinical_trial_evidence():
+    df = load_csv(CLINICAL_TRIAL_FILE)
+    return ensure_cols(df, [
+        "evidence_id", "timestamp", "study_id", "protocol_id",
+        "site_id", "subject_visit_ref", "protocol_obligation",
+        "evidence_type", "evidence_artifact", "purview_dlp_status",
+        "retention_label_status", "sensitivity_status",
+        "evidence_owner", "reviewer", "deviation_capa_link",
+        "alcoa_score", "inspection_readiness", "risk_level",
+        "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_clinical_readiness(purview_dlp_status, retention_label_status, sensitivity_status,
+                                 evidence_owner, reviewer, deviation_capa_link,
+                                 evidence_type, evidence_artifact, protocol_obligation):
+    score = 100
+    signals = []
+
+    purview_dlp_status = clean(purview_dlp_status)
+    retention_label_status = clean(retention_label_status)
+    sensitivity_status = clean(sensitivity_status)
+    evidence_owner = clean(evidence_owner)
+    reviewer = clean(reviewer)
+    deviation_capa_link = clean(deviation_capa_link)
+    evidence_type = clean(evidence_type)
+    evidence_artifact = clean(evidence_artifact)
+    protocol_obligation = clean(protocol_obligation)
+
+    if not protocol_obligation:
+        score -= 20
+        signals.append("Protocol obligation is missing.")
+
+    if not evidence_artifact:
+        score -= 25
+        signals.append("Evidence artifact/reference is missing.")
+
+    if purview_dlp_status in ["Not Tested", "Failed", "Policy Not Triggered"]:
+        score -= 20
+        signals.append("Purview DLP status is not confirmed or did not trigger as expected.")
+
+    if retention_label_status in ["Missing", "Not Applied", "Unknown"]:
+        score -= 20
+        signals.append("Retention label/record status is missing or unknown.")
+
+    if sensitivity_status in ["Unclassified", "Unknown"]:
+        score -= 10
+        signals.append("Sensitivity/classification status is not confirmed.")
+
+    if not evidence_owner:
+        score -= 10
+        signals.append("Evidence owner is missing.")
+
+    if not reviewer:
+        score -= 10
+        signals.append("Reviewer is missing.")
+
+    if evidence_type in ["eConsent", "Subject Source Data"] and not deviation_capa_link and score < 80:
+        score -= 10
+        signals.append("High-value trial evidence has readiness issues but no deviation/CAPA link.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "INSPECTION READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT INSPECTION READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major clinical trial evidence readiness risk detected.")
+
+    return readiness, score, risk, signals
+
+
+def save_clinical_trial_evidence_test(req):
+    df = prepare_clinical_trial_evidence()
+
+    study_id = clean(req.form.get("study_id"))
+    protocol_id = clean(req.form.get("protocol_id"))
+    site_id = clean(req.form.get("site_id"))
+    subject_visit_ref = clean(req.form.get("subject_visit_ref"))
+    protocol_obligation = clean(req.form.get("protocol_obligation"))
+    evidence_type = clean(req.form.get("evidence_type"))
+    evidence_artifact = clean(req.form.get("evidence_artifact"))
+    purview_dlp_status = clean(req.form.get("purview_dlp_status"))
+    retention_label_status = clean(req.form.get("retention_label_status"))
+    sensitivity_status = clean(req.form.get("sensitivity_status"))
+    evidence_owner = clean(req.form.get("evidence_owner"))
+    reviewer = clean(req.form.get("reviewer"))
+    deviation_capa_link = clean(req.form.get("deviation_capa_link"))
+
+    required = [
+        study_id, protocol_id, protocol_obligation, evidence_type,
+        evidence_artifact, purview_dlp_status, retention_label_status
+    ]
+
+    if not all(required):
+        return {
+            "error": "Study ID, Protocol ID, Protocol Obligation, Evidence Type, Evidence Artifact, Purview DLP Status, and Retention Label Status are required."
+        }
+
+    readiness, alcoa_score, risk_level, risk_signals = calculate_clinical_readiness(
+        purview_dlp_status, retention_label_status, sensitivity_status,
+        evidence_owner, reviewer, deviation_capa_link,
+        evidence_type, evidence_artifact, protocol_obligation
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    evidence_id = "CTE-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        evidence_id + timestamp + study_id + protocol_id + site_id +
+        subject_visit_ref + protocol_obligation + evidence_type +
+        evidence_artifact + purview_dlp_status + retention_label_status +
+        previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "evidence_id": evidence_id,
+        "timestamp": timestamp,
+        "study_id": study_id,
+        "protocol_id": protocol_id,
+        "site_id": site_id,
+        "subject_visit_ref": subject_visit_ref,
+        "protocol_obligation": protocol_obligation,
+        "evidence_type": evidence_type,
+        "evidence_artifact": evidence_artifact,
+        "purview_dlp_status": purview_dlp_status,
+        "retention_label_status": retention_label_status,
+        "sensitivity_status": sensitivity_status,
+        "evidence_owner": evidence_owner,
+        "reviewer": reviewer,
+        "deviation_capa_link": deviation_capa_link,
+        "alcoa_score": alcoa_score,
+        "inspection_readiness": readiness,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, CLINICAL_TRIAL_FILE)
+
+    return {
+        "error": "",
+        "evidence_id": evidence_id,
+        "inspection_readiness": readiness,
+        "alcoa_score": alcoa_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_clinical_trial_test_metrics():
+    df = prepare_clinical_trial_evidence()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["inspection_readiness"] == "INSPECTION READY"]),
+        "conditional": len(df[df["inspection_readiness"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["inspection_readiness"] == "NOT INSPECTION READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/clinical-trial-integrity-v3-test", methods=["GET", "POST"])
+def clinical_trial_integrity_v3_test():
+    result = None
+    if request.method == "POST":
+        result = save_clinical_trial_evidence_test(request)
+
+    metrics = get_clinical_trial_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Clinical Trial Integrity v3 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:410px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:85px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Clinical Trial Integrity v3 Test</h1>
+<p>Functional clinical-trial evidence register — Purview, retention, ALCOA+, and inspection readiness.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical v2 Stable</a>
+<a class="active" href="/clinical-trial-integrity-v3-test">Clinical v3 Test</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.evidence_id }} —
+<b>{{ result.inspection_readiness }}</b> —
+ALCOA+ readiness score <b>{{ result.alcoa_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Evidence Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Inspection Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Clinical Evidence Record</h2>
+<form method="POST" action="/clinical-trial-integrity-v3-test">
+<input name="study_id" placeholder="Study ID e.g. STUDY-001" required>
+<input name="protocol_id" placeholder="Protocol ID / Amendment e.g. PROT-001-A2" required>
+<input name="site_id" placeholder="Site ID e.g. SITE-IND-01">
+<input name="subject_visit_ref" placeholder="Subject / Visit Reference e.g. SUBJ-001 / Visit 2">
+
+<textarea name="protocol_obligation" placeholder="Protocol Obligation e.g. eConsent must be completed before trial procedure" required></textarea>
+
+<select name="evidence_type" required>
+<option value="">Evidence Type</option>
+<option value="eConsent">eConsent</option>
+<option value="Subject Source Data">Subject Source Data</option>
+<option value="EDC Export">EDC Export</option>
+<option value="TMF Artifact">TMF Artifact</option>
+<option value="Monitoring Report">Monitoring Report</option>
+<option value="Vendor CSV">Vendor CSV</option>
+<option value="Safety Record">Safety Record</option>
+</select>
+
+<textarea name="evidence_artifact" placeholder="Evidence Artifact / SharePoint / File / Reference" required></textarea>
+
+<select name="purview_dlp_status" required>
+<option value="">Purview DLP Status</option>
+<option value="Passed">Passed</option>
+<option value="Matched">Matched</option>
+<option value="Alerted">Alerted</option>
+<option value="Policy Not Triggered">Policy Not Triggered</option>
+<option value="Failed">Failed</option>
+<option value="Not Tested">Not Tested</option>
+</select>
+
+<select name="retention_label_status" required>
+<option value="">Retention Label Status</option>
+<option value="Applied">Applied</option>
+<option value="Record">Record</option>
+<option value="Regulatory Record">Regulatory Record</option>
+<option value="Missing">Missing</option>
+<option value="Not Applied">Not Applied</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<select name="sensitivity_status">
+<option value="Classified">Sensitivity/Classified</option>
+<option value="Unclassified">Unclassified</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<input name="evidence_owner" placeholder="Evidence Owner">
+<input name="reviewer" placeholder="Reviewer / QA / Monitor">
+<input name="deviation_capa_link" placeholder="Deviation / CAPA Link if applicable">
+
+<button type="submit">Save Clinical Evidence</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Clinical Trial Evidence Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Study</th><th>Evidence</th><th>Purview</th><th>Retention</th><th>ALCOA+</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.evidence_id }}</td>
+<td><b>{{ r.study_id }}</b><br>{{ r.protocol_id }}</td>
+<td><b>{{ r.evidence_type }}</b><br>{{ r.evidence_artifact }}</td>
+<td>{{ r.purview_dlp_status }}</td>
+<td>{{ r.retention_label_status }}</td>
+<td>{{ r.alcoa_score }}%</td>
+<td><b>{{ r.inspection_readiness }}</b></td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No clinical trial evidence records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>clinical_trial_evidence.csv</b>.
+Manufacturing, SOP, Shift, Access, and Audit/CAPA registers are untouched.
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
