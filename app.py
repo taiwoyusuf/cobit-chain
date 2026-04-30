@@ -976,8 +976,10 @@ def audit_capa_page():
 
 @app.route("/clinical-trial-integrity")
 def clinical_trial_integrity_page():
-    page = get_enterprise_page("/clinical-trial-integrity")
-    return render_clinical_trial_integrity_v2(page)
+    # CLINICAL_TRIAL_V3_PROMOTED_REDIRECT_ACTIVE
+    # Safe promotion: keep /clinical-trial-integrity-v3-test as the functional page,
+    # and redirect the main Clinical Trial Integrity route to it.
+    return redirect("/clinical-trial-integrity-v3-test")
 
 
 def render_enterprise_shell_page(page, metrics=None):
