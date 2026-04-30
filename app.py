@@ -1,111 +1,12 @@
 from flask import Flask, request, render_template_string, redirect, Response
-import os
-import io
-import hashlib
-import datetime
+import os, io, hashlib, datetime
 import pandas as pd
 from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
-# ============================================================
-# COBIT-Chain Enterprise Workspace Registry
-# ============================================================
-# This keeps the current Wole Manufacturing Assurance dashboard
-# as the active live module while introducing a safe modular shell.
-# Existing functionality is preserved.
-
-WORKSPACES = [
-    {
-        "id": "manufacturing_assurance",
-        "slug": "manufacturing-assurance",
-        "name": "Manufacturing Assurance",
-        "short_name": "Manufacturing",
-        "status": "LIVE",
-        "route": "/workspace/manufacturing-assurance",
-        "description": "Wole manufacturing evidence integrity, batch assurance, process-chain verification, Excel analytics, and audit-readiness reporting.",
-        "module_note": "This is the existing live dashboard. All current hashing, verification, Azure Blob, Excel analytics, and audit-report logic remain active."
-    },
-    {
-        "id": "shift_equipment_assurance",
-        "slug": "shift-equipment-assurance",
-        "name": "Shift & Equipment Assurance",
-        "short_name": "Shift / Equipment",
-        "status": "MODULE SHELL",
-        "route": "/workspace/shift-equipment-assurance",
-        "description": "12-hour day/night shift assurance, equipment handoff, technician accountability, open issue carryover, and future ServiceNow ticket linkage.",
-        "module_note": "Foundation module added safely. It does not change existing manufacturing evidence records or current dashboard behavior."
-    },
-    {
-        "id": "sop_governance",
-        "slug": "sop-governance",
-        "name": "SOP Governance",
-        "short_name": "SOP",
-        "status": "PLANNED",
-        "route": "/workspace/sop-governance",
-        "description": "SOP-to-reality alignment, SOP gap tracking, review triggers, governance recommendations, and procedure drift monitoring.",
-        "module_note": "Planned enterprise module."
-    },
-    {
-        "id": "access_governance",
-        "slug": "access-governance",
-        "name": "Access Governance",
-        "short_name": "Access",
-        "status": "PLANNED",
-        "route": "/workspace/access-governance",
-        "description": "myAccess alignment, user access reviews, binder-to-digital evidence, entitlement verification, and quarterly certification support.",
-        "module_note": "Planned enterprise module."
-    },
-    {
-        "id": "clinical_trial_integrity",
-        "slug": "clinical-trial-integrity",
-        "name": "Clinical Trial Integrity",
-        "short_name": "Clinical Trials",
-        "status": "PLANNED",
-        "route": "/workspace/clinical-trial-integrity",
-        "description": "Clinical trial evidence integrity, ALCOA+ traceability, COBIT control mapping, and regulated evidence assurance.",
-        "module_note": "Planned enterprise module."
-    },
-    {
-        "id": "audit_capa",
-        "slug": "audit-capa",
-        "name": "Audit & CAPA",
-        "short_name": "Audit / CAPA",
-        "status": "PLANNED",
-        "route": "/workspace/audit-capa",
-        "description": "Audit findings, CAPA evidence, deviation linkage, remediation proof, and effectiveness-check readiness.",
-        "module_note": "Planned enterprise module."
-    }
-]
-
-
-def get_workspace_by_slug(slug):
-    for workspace in WORKSPACES:
-        if workspace["slug"] == slug:
-            return workspace
-    return None
-
-
-def get_workspace_by_id(workspace_id):
-    for workspace in WORKSPACES:
-        if workspace["id"] == workspace_id:
-            return workspace
-    return None
-
-
-def get_manufacturing_workspace():
-    return get_workspace_by_id("manufacturing_assurance")
-
-
-# ============================================================
-# Azure Blob Configuration
-# ============================================================
-
 AZURE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER_NAME = "cobitchain-evidence"
-
-if not AZURE_CONNECTION_STRING:
-    raise ValueError("AZURE_STORAGE_CONNECTION_STRING environment variable is not set.")
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 container_client = blob_service_client.get_container_client(CONTAINER_NAME)
@@ -113,17 +14,8 @@ container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 BASELINE_FILE = "baseline_hashes.csv"
 LOG_FILE = "logs.csv"
 
-# ============================================================
-# Manufacturing Assurance Configuration
-# ============================================================
-
 REQUIRED_STAGES = ["Weighbridge", "Dispatch", "Invoice"]
 ORDER_MAP = {"Weighbridge": 1, "Dispatch": 2, "Invoice": 3}
-
-
-# ============================================================
-# Utility Functions
-# ============================================================
 
 def clean(x):
     if x is None:
@@ -131,14 +23,11 @@ def clean(x):
     x = str(x).strip()
     return "" if x.lower() == "nan" else x
 
-
 def sha256_text(x):
     return hashlib.sha256(x.encode()).hexdigest()
 
-
 def compute_hash(b):
     return hashlib.sha256(b).hexdigest()
-
 
 def load_csv(name):
     try:
@@ -147,7 +36,6 @@ def load_csv(name):
     except Exception:
         return pd.DataFrame()
 
-
 def save_csv(df, name):
     df = df.fillna("")
     container_client.get_blob_client(name).upload_blob(
@@ -155,13 +43,11 @@ def save_csv(df, name):
         overwrite=True
     )
 
-
 def ensure_cols(df, cols):
     for c in cols:
         if c not in df.columns:
             df[c] = ""
     return df.fillna("")
-
 
 def prepare_logs():
     logs = load_csv(LOG_FILE)
@@ -171,7 +57,6 @@ def prepare_logs():
         "previous_hash", "record_hash", "excel_rows", "excel_columns", "missing_cells",
         "duplicate_rows", "analysis_summary", "data_quality"
     ])
-
 
 def analyze_excel(bytes_data, filename):
     result = {
@@ -212,16 +97,10 @@ def analyze_excel(bytes_data, filename):
 
     return result
 
-
 def get_status(expected, current):
     if not expected:
         return "YELLOW"
     return "GREEN" if expected == current else "RED"
-
-
-# ============================================================
-# Manufacturing Batch Analysis Engine
-# ============================================================
 
 def analyze_batch(batch_name, grp):
     grp = grp.fillna("")
@@ -244,13 +123,7 @@ def analyze_batch(batch_name, grp):
     integrity = round((green / total) * 100, 2) if total else 0
 
     missing_approval = len(grp[(grp["signed_by"] != "") & (grp["approval_status"] == "")])
-
-    sod = len(grp[
-        (grp["uploaded_by"] != "") &
-        (grp["signed_by"] != "") &
-        (grp["uploaded_by"].astype(str).str.lower() == grp["signed_by"].astype(str).str.lower())
-    ])
-
+    sod = len(grp[(grp["uploaded_by"] != "") & (grp["signed_by"] != "") & (grp["uploaded_by"].str.lower() == grp["signed_by"].str.lower())])
     data_review = len(grp[grp["data_quality"].isin(["REVIEW", "ERROR"])])
 
     root_causes = []
@@ -361,33 +234,7 @@ def analyze_batch(batch_name, grp):
         "records": grp.tail(12).to_dict("records")
     }
 
-
-# ============================================================
-# Routes
-# ============================================================
-
-@app.route("/")
-def home():
-    return redirect("/workspace/manufacturing-assurance")
-
-
-@app.route("/workspace/<workspace_slug>", methods=["GET", "POST"])
-def workspace_router(workspace_slug):
-    workspace = get_workspace_by_slug(workspace_slug)
-
-    if not workspace:
-        return redirect("/workspace/manufacturing-assurance")
-
-    if workspace["id"] == "manufacturing_assurance":
-        return manufacturing_workspace(workspace)
-
-    if workspace["id"] == "shift_equipment_assurance":
-        return render_shift_equipment_workspace(workspace)
-
-    return render_planned_workspace(workspace)
-
-
-@app.route("/download-report/<path:batch_id>")
+@app.route("/download-report/<batch_id>")
 def download_report(batch_id):
     logs = prepare_logs()
 
@@ -461,12 +308,8 @@ def download_report(batch_id):
         }
     )
 
-
-# ============================================================
-# Manufacturing Assurance Module
-# ============================================================
-
-def manufacturing_workspace(current_workspace):
+@app.route("/", methods=["GET", "POST"])
+def index():
     baseline = load_csv(BASELINE_FILE)
     logs = prepare_logs()
 
@@ -476,7 +319,7 @@ def manufacturing_workspace(current_workspace):
         file = request.files.get("file")
 
         if not file or file.filename == "":
-            return render_manufacturing_page(logs, "Please select a file before upload.", current_workspace)
+            return render_page(logs, "Please select a file before upload.")
 
         filename = clean(file.filename)
         batch = clean(request.form.get("batch_id"))
@@ -487,17 +330,17 @@ def manufacturing_workspace(current_workspace):
         approval = clean(request.form.get("approval_status"))
 
         if not batch:
-            return render_manufacturing_page(logs, "Batch ID is required.", current_workspace)
+            return render_page(logs, "Batch ID is required.")
         if not stage:
-            return render_manufacturing_page(logs, "Process Stage is required.", current_workspace)
+            return render_page(logs, "Process Stage is required.")
         if not category:
-            return render_manufacturing_page(logs, "Evidence Category is required.", current_workspace)
+            return render_page(logs, "Evidence Category is required.")
         if not user:
-            return render_manufacturing_page(logs, "Uploaded By is required.", current_workspace)
+            return render_page(logs, "Uploaded By is required.")
         if signed and not approval:
-            return render_manufacturing_page(logs, "Approval Status is required when Signed By is filled.", current_workspace)
+            return render_page(logs, "Approval Status is required when Signed By is filled.")
         if user and signed and user.lower() == signed.lower():
-            return render_manufacturing_page(logs, "Segregation of Duties violation: uploader and signer cannot be the same person.", current_workspace)
+            return render_page(logs, "Segregation of Duties violation: uploader and signer cannot be the same person.")
 
         file_bytes = file.read()
         h = compute_hash(file_bytes)
@@ -541,12 +384,11 @@ def manufacturing_workspace(current_workspace):
         logs = pd.concat([logs, new], ignore_index=True)
         save_csv(logs, LOG_FILE)
 
-        return redirect(current_workspace["route"])
+        return redirect("/")
 
-    return render_manufacturing_page(logs, "", current_workspace)
+    return render_page(logs, "")
 
-
-def render_manufacturing_page(logs, error, current_workspace):
+def render_page(logs, error):
     logs = logs.fillna("")
 
     total_records = len(logs)
@@ -570,7 +412,7 @@ def render_manufacturing_page(logs, error, current_workspace):
 <!DOCTYPE html>
 <html>
 <head>
-<title>COBIT-Chain™ Enterprise Governance Platform</title>
+<title>COBIT-Chain™</title>
 <style>
 :root {
     --bg:#f4f7fb; --navy:#071527; --blue:#2563eb; --cyan:#06b6d4;
@@ -585,7 +427,7 @@ body {
 }
 .hero {
     background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
-    color:white; padding:34px 42px 46px;
+    color:white; padding:38px 42px 46px;
     border-bottom-left-radius:34px; border-bottom-right-radius:34px;
     box-shadow:0 18px 45px rgba(15,39,69,.25);
 }
@@ -603,13 +445,6 @@ body {
     padding:10px 15px; border-radius:999px;
     background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
     color:#e0f2fe; font-weight:800;
-}
-.workspace-strip {
-    margin-top:22px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;
-}
-.workspace-chip {
-    padding:10px 14px; border-radius:999px; background:rgba(255,255,255,.13);
-    border:1px solid rgba(255,255,255,.24); color:#e0f2fe; font-weight:900;
 }
 .container { max-width:1450px; margin:-28px auto 50px; padding:0 26px; }
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:20px; }
@@ -637,27 +472,6 @@ button {
 .error {
     background:#fee2e2; color:#991b1b; border-left:6px solid var(--red);
     padding:14px; border-radius:16px; margin-bottom:18px; font-weight:900;
-}
-.workspace-link {
-    display:block; text-decoration:none; color:#0f172a; padding:13px 14px;
-    border:1px solid #e2e8f0; border-radius:16px; margin:9px 0; background:#f8fafc;
-}
-.workspace-link.active {
-    background:linear-gradient(135deg,#eff6ff,#ecfeff);
-    border-color:#93c5fd; box-shadow:0 8px 18px rgba(37,99,235,.12);
-}
-.workspace-link b { display:block; font-size:14px; }
-.workspace-link small { color:#64748b; font-weight:700; }
-.status-pill {
-    display:inline-block; margin-top:7px; padding:5px 8px; border-radius:999px;
-    font-size:11px; font-weight:900; background:#e2e8f0; color:#334155;
-}
-.status-live { background:#dcfce7; color:#166534; }
-.status-shell { background:#dbeafe; color:#1d4ed8; }
-.status-planned { background:#f1f5f9; color:#475569; }
-.module-note {
-    background:#f8fafc; border-left:6px solid #2563eb; border-radius:16px;
-    padding:13px; color:#334155; line-height:1.45;
 }
 .exceptions { background:linear-gradient(135deg,#fff1f2,#fff); border-left:7px solid var(--red); }
 .batch { margin-bottom:22px; }
@@ -723,14 +537,10 @@ tr.row-RED { background:#fef2f2; }
             <div class="logo">CC</div>
             <div>
                 <h1>COBIT-Chain™</h1>
-                <p>Enterprise Governance Platform • Evidence Integrity • Audit Readiness</p>
+                <p>Evidence Integrity • Governance Enforcement • Audit Readiness</p>
             </div>
         </div>
         <div class="badge">Governance Assurance Engine</div>
-    </div>
-    <div class="workspace-strip">
-        <div class="workspace-chip">Current Workspace: {{ current_workspace.name }}</div>
-        <div class="workspace-chip">Status: {{ current_workspace.status }}</div>
     </div>
 </section>
 
@@ -747,31 +557,8 @@ tr.row-RED { background:#fef2f2; }
     <section class="main-layout">
         <aside>
             <div class="panel">
-                <h2>Workspace Selector</h2>
-                <select onchange="if(this.value){window.location.href=this.value}">
-                    {% for w in workspaces %}
-                    <option value="{{ w.route }}" {% if w.id == current_workspace.id %}selected{% endif %}>{{ w.name }} — {{ w.status }}</option>
-                    {% endfor %}
-                </select>
-
-                {% for w in workspaces %}
-                <a class="workspace-link {% if w.id == current_workspace.id %}active{% endif %}" href="{{ w.route }}">
-                    <b>{{ w.name }}</b>
-                    <small>{{ w.description }}</small><br>
-                    <span class="status-pill {% if w.status == 'LIVE' %}status-live{% elif w.status == 'MODULE SHELL' %}status-shell{% else %}status-planned{% endif %}">
-                        {{ w.status }}
-                    </span>
-                </a>
-                {% endfor %}
-            </div>
-
-            <div class="panel">
                 <h2>Upload Evidence</h2>
-                <div class="module-note">
-                    <b>Manufacturing Assurance is preserved.</b><br>
-                    This form still writes to Azure Blob-backed logs.csv and baseline_hashes.csv.
-                </div>
-                <form method="POST" enctype="multipart/form-data" action="{{ current_workspace.route }}">
+                <form method="POST" enctype="multipart/form-data">
                     <input type="file" name="file" required>
                     <input name="batch_id" placeholder="Batch ID e.g. WOLE-DEMO-001" required>
 
@@ -901,265 +688,8 @@ tr.row-RED { background:#fef2f2; }
         total_records=total_records,
         total_batches=total_batches,
         green_total=green_total,
-        red_total=red_total,
-        current_workspace=current_workspace,
-        workspaces=WORKSPACES
+        red_total=red_total
     )
-
-
-# ============================================================
-# Shift & Equipment Assurance Module
-# ============================================================
-
-def render_shift_equipment_workspace(current_workspace):
-    html = """
-<!DOCTYPE html>
-<html>
-<head>
-<title>COBIT-Chain™ Shift & Equipment Assurance</title>
-<style>
-:root {
-    --bg:#f4f7fb; --navy:#071527; --blue:#2563eb; --cyan:#06b6d4;
-    --green:#16a34a; --yellow:#f59e0b; --red:#dc2626; --muted:#64748b;
-    --card:#ffffff; --border:#e5e7eb;
-}
-* { box-sizing:border-box; }
-body {
-    margin:0; font-family:Inter,Segoe UI,Arial,sans-serif;
-    background:linear-gradient(135deg,#eef4ff,#f8fafc,#eefdf8);
-    color:#0f172a;
-}
-.hero {
-    background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
-    color:white; padding:34px 42px 46px;
-    border-bottom-left-radius:34px; border-bottom-right-radius:34px;
-    box-shadow:0 18px 45px rgba(15,39,69,.25);
-}
-.hero-top { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
-.brand { display:flex; align-items:center; gap:14px; }
-.logo {
-    width:54px; height:54px; border-radius:18px;
-    background:linear-gradient(135deg,#38bdf8,#22c55e);
-    display:flex; align-items:center; justify-content:center;
-    font-weight:900; font-size:22px;
-}
-.brand h1 { margin:0; font-size:34px; letter-spacing:-.8px; }
-.brand p { margin:4px 0 0; color:#cbd5e1; }
-.badge {
-    padding:10px 15px; border-radius:999px;
-    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-    color:#e0f2fe; font-weight:800;
-}
-.container { max-width:1450px; margin:-28px auto 50px; padding:0 26px; }
-.main-layout { display:grid; grid-template-columns:360px 1fr; gap:22px; align-items:start; }
-.panel, .card {
-    background:white; border:1px solid var(--border); border-radius:24px;
-    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
-}
-.panel { margin-bottom:20px; }
-select {
-    width:100%; border-radius:14px; border:1px solid #dbe3ef;
-    padding:12px 13px; margin:7px 0; font-size:14px; background:white;
-}
-.workspace-link {
-    display:block; text-decoration:none; color:#0f172a; padding:13px 14px;
-    border:1px solid #e2e8f0; border-radius:16px; margin:9px 0; background:#f8fafc;
-}
-.workspace-link.active {
-    background:linear-gradient(135deg,#eff6ff,#ecfeff);
-    border-color:#93c5fd; box-shadow:0 8px 18px rgba(37,99,235,.12);
-}
-.workspace-link b { display:block; font-size:14px; }
-.workspace-link small { color:#64748b; font-weight:700; }
-.status-pill {
-    display:inline-block; margin-top:7px; padding:5px 8px; border-radius:999px;
-    font-size:11px; font-weight:900; background:#e2e8f0; color:#334155;
-}
-.status-live { background:#dcfce7; color:#166534; }
-.status-shell { background:#dbeafe; color:#1d4ed8; }
-.status-planned { background:#f1f5f9; color:#475569; }
-.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px; }
-.module-card {
-    background:white; border:1px solid #e2e8f0; border-radius:24px;
-    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
-}
-.module-card h3 { margin-top:0; }
-.module-card p { color:#475569; line-height:1.5; }
-.flow {
-    display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:16px;
-}
-.step {
-    background:linear-gradient(135deg,#eff6ff,#ecfeff);
-    border:1px solid #bfdbfe; border-radius:18px;
-    padding:14px; font-weight:900; min-width:160px;
-}
-.arrow { color:#94a3b8; font-weight:900; font-size:22px; }
-.note {
-    background:#fff7ed; border-left:7px solid #f59e0b; border-radius:18px;
-    padding:17px; line-height:1.55; margin-bottom:20px;
-}
-.ready {
-    background:#f0fdf4; border-left:7px solid #16a34a; border-radius:18px;
-    padding:17px; line-height:1.55; margin-bottom:20px;
-}
-@media(max-width:1000px){ .grid,.main-layout{ grid-template-columns:1fr; } }
-</style>
-</head>
-<body>
-<section class="hero">
-    <div class="hero-top">
-        <div class="brand">
-            <div class="logo">CC</div>
-            <div>
-                <h1>COBIT-Chain™</h1>
-                <p>Shift & Equipment Assurance • Handoff Control • Technician Accountability</p>
-            </div>
-        </div>
-        <div class="badge">{{ current_workspace.status }}</div>
-    </div>
-</section>
-
-<main class="container">
-    <section class="main-layout">
-        <aside>
-            <div class="panel">
-                <h2>Workspace Selector</h2>
-                <select onchange="if(this.value){window.location.href=this.value}">
-                    {% for w in workspaces %}
-                    <option value="{{ w.route }}" {% if w.id == current_workspace.id %}selected{% endif %}>{{ w.name }} — {{ w.status }}</option>
-                    {% endfor %}
-                </select>
-
-                {% for w in workspaces %}
-                <a class="workspace-link {% if w.id == current_workspace.id %}active{% endif %}" href="{{ w.route }}">
-                    <b>{{ w.name }}</b>
-                    <small>{{ w.description }}</small><br>
-                    <span class="status-pill {% if w.status == 'LIVE' %}status-live{% elif w.status == 'MODULE SHELL' %}status-shell{% else %}status-planned{% endif %}">
-                        {{ w.status }}
-                    </span>
-                </a>
-                {% endfor %}
-            </div>
-        </aside>
-
-        <section>
-            <div class="ready">
-                <b>Shift & Equipment Assurance module shell is now active.</b><br>
-                This module has been added without changing the current Wole Manufacturing Assurance dashboard.
-                The next build step can connect this to shift handoff records, equipment lists, and ServiceNow ticket exports.
-            </div>
-
-            <div class="note">
-                <b>Governance purpose:</b> prove that every 12-hour day/night shift has a clean handoff, open issues are not lost,
-                equipment status is traceable, and unresolved ServiceNow tickets are carried forward with ownership.
-            </div>
-
-            <section class="grid">
-                <div class="module-card">
-                    <h3>1. Shift Structure</h3>
-                    <p>Designed for 12-hour day and night shifts. Each shift can later capture shift owner, backup technician, equipment coverage, open risks, and handoff notes.</p>
-                </div>
-                <div class="module-card">
-                    <h3>2. Equipment Handoff</h3>
-                    <p>Tracks equipment condition at shift start and shift end, including available, unavailable, under maintenance, out of service, or pending QA/engineering review.</p>
-                </div>
-                <div class="module-card">
-                    <h3>3. ServiceNow Linkage</h3>
-                    <p>Future integration point for ServiceNow ticket exports so open incidents, work orders, and equipment issues can feed the handoff view.</p>
-                </div>
-                <div class="module-card">
-                    <h3>4. Technician Accountability</h3>
-                    <p>Creates an accountable chain of custody across technicians, shifts, and equipment areas without replacing ServiceNow as the ticket system of record.</p>
-                </div>
-                <div class="module-card">
-                    <h3>5. Risk Carryover</h3>
-                    <p>Flags unresolved items from the prior shift so the incoming team can see what is still open, what is blocked, and what needs escalation.</p>
-                </div>
-                <div class="module-card">
-                    <h3>6. Audit Readiness</h3>
-                    <p>Prepares the same governance logic used in Manufacturing Assurance for shift logs, equipment custody, and operational continuity evidence.</p>
-                </div>
-            </section>
-
-            <div class="card">
-                <h2>Target Shift Assurance Flow</h2>
-                <div class="flow">
-                    <div class="step">ServiceNow Ticket Intake</div>
-                    <div class="arrow">→</div>
-                    <div class="step">Equipment Status Check</div>
-                    <div class="arrow">→</div>
-                    <div class="step">Day/Night Shift Handoff</div>
-                    <div class="arrow">→</div>
-                    <div class="step">Open Issue Carryover</div>
-                    <div class="arrow">→</div>
-                    <div class="step">Audit-Ready Shift Evidence</div>
-                </div>
-            </div>
-        </section>
-    </section>
-</main>
-</body>
-</html>
-    """
-
-    return render_template_string(
-        html,
-        current_workspace=current_workspace,
-        workspaces=WORKSPACES
-    )
-
-
-# ============================================================
-# Planned Workspace Renderer
-# ============================================================
-
-def render_planned_workspace(current_workspace):
-    html = """
-<!DOCTYPE html>
-<html>
-<head>
-<title>COBIT-Chain™ Planned Workspace</title>
-<style>
-body {
-    margin:0; font-family:Inter,Segoe UI,Arial,sans-serif;
-    background:linear-gradient(135deg,#eef4ff,#f8fafc,#eefdf8);
-    color:#0f172a;
-}
-.hero {
-    background:radial-gradient(circle at top left,#1d4ed8 0%,#0f2745 42%,#071527 100%);
-    color:white; padding:34px 42px 46px;
-    border-bottom-left-radius:34px; border-bottom-right-radius:34px;
-}
-.container { max-width:1200px; margin:-24px auto 50px; padding:0 26px; }
-.card {
-    background:white; border:1px solid #e5e7eb; border-radius:24px;
-    padding:24px; box-shadow:0 14px 35px rgba(15,23,42,.08);
-}
-a {
-    display:inline-block; margin-top:16px; padding:12px 15px; border-radius:14px;
-    background:#0f172a; color:white; text-decoration:none; font-weight:900;
-}
-</style>
-</head>
-<body>
-<section class="hero">
-    <h1>COBIT-Chain™</h1>
-    <p>Enterprise Governance Platform</p>
-</section>
-<main class="container">
-    <div class="card">
-        <h2>{{ current_workspace.name }}</h2>
-        <p><b>Status:</b> {{ current_workspace.status }}</p>
-        <p>{{ current_workspace.description }}</p>
-        <p>{{ current_workspace.module_note }}</p>
-        <a href="/workspace/manufacturing-assurance">Return to Manufacturing Assurance</a>
-    </div>
-</main>
-</body>
-</html>
-    """
-    return render_template_string(html, current_workspace=current_workspace)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
