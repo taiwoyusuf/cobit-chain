@@ -1122,6 +1122,50 @@ body {
     .handoff-arrow{ display:none; }
 }
 
+
+.access-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.access-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.access-card, .access-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.access-card h3 { margin:8px 0 10px; }
+.access-card p, .access-mini p { color:#475569; line-height:1.5; }
+.access-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.access-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.access-flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.access-step {
+    flex:1; min-width:190px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.access-step b {
+    display:block; margin-bottom:7px;
+}
+.access-step span {
+    display:block; color:#475569; line-height:1.45; font-size:13px;
+}
+.access-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+@media(max-width:1000px){
+    .access-grid,.access-two-col{ grid-template-columns:1fr; }
+    .access-arrow{ display:none; }
+}
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1455,9 +1499,198 @@ body {
                 procedure review triggers, and SOP-to-reality exception scoring.
             </div>
             {% elif page.route == "/access-governance" %}
+            <!-- ACCESS_GOVERNANCE_V1_ACTIVE -->
+            <div class="card status-card-warning">
+                <h2>⚠ Access Governance v1</h2>
+                <p><b>Purpose:</b> provide a controlled governance view for myAccess, access review evidence, binder-to-digital reconciliation, entitlement approval, and quarterly certification readiness.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not write to the existing Manufacturing/Wole evidence logs and does not change the homepage dashboard.</p>
+            </div>
+
+            <section class="access-grid">
+                <div class="access-card">
+                    <div class="access-label">System of Record</div>
+                    <h3>myAccess Alignment</h3>
+                    <p>myAccess remains the access request and approval system of record. COBIT-Chain adds governance visibility, evidence integrity, and audit-readiness mapping.</p>
+                    <span class="access-badge">Approval traceability</span>
+                </div>
+
+                <div class="access-card">
+                    <div class="access-label">Legacy Evidence</div>
+                    <h3>Binder-to-Digital Control</h3>
+                    <p>Paper binder records and Excel trackers can be converted into governed evidence packs with clear owner, approval, review, and reconciliation status.</p>
+                    <span class="access-badge">Binder reconciliation</span>
+                </div>
+
+                <div class="access-card">
+                    <div class="access-label">Periodic Review</div>
+                    <h3>Quarterly Access Review</h3>
+                    <p>Supports user access review evidence, reviewer signoff, exception tracking, and readiness for internal or external audit review.</p>
+                    <span class="access-badge">Certification support</span>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Access Governance Control Flow</h2>
+                <div class="access-flow">
+                    <div class="access-step">
+                        <b>1. Access Request</b>
+                        <span>User access is requested through myAccess or an approved intake process.</span>
+                    </div>
+                    <div class="access-arrow">→</div>
+                    <div class="access-step">
+                        <b>2. Approval Evidence</b>
+                        <span>Approver, role, business justification, and approval date are captured as evidence.</span>
+                    </div>
+                    <div class="access-arrow">→</div>
+                    <div class="access-step">
+                        <b>3. Entitlement Mapping</b>
+                        <span>Approved access is mapped to system, role, group, or application entitlement.</span>
+                    </div>
+                    <div class="access-arrow">→</div>
+                    <div class="access-step">
+                        <b>4. Review / Certification</b>
+                        <span>Periodic access review confirms whether access remains appropriate.</span>
+                    </div>
+                    <div class="access-arrow">→</div>
+                    <div class="access-step">
+                        <b>5. Audit Evidence Pack</b>
+                        <span>Creates a traceable evidence view showing access, approval, review, and exceptions.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Access Evidence Data Model</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                        <th>Governance Value</th>
+                    </tr>
+                    <tr>
+                        <td><b>User / Account ID</b></td>
+                        <td>Identifies the person or account being reviewed.</td>
+                        <td>Creates traceability between identity and entitlement.</td>
+                    </tr>
+                    <tr>
+                        <td><b>System / Application</b></td>
+                        <td>Identifies the platform where access exists.</td>
+                        <td>Supports system-by-system access certification.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Role / Entitlement</b></td>
+                        <td>Defines what access the user has.</td>
+                        <td>Allows review of least privilege and role appropriateness.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Request / Approval Reference</b></td>
+                        <td>Links access to myAccess request, approval, or supporting evidence.</td>
+                        <td>Proves that access was authorized before use.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Approver / System Owner</b></td>
+                        <td>Identifies who approved or owns the access decision.</td>
+                        <td>Creates accountability for access authorization.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Review Status</b></td>
+                        <td>Approved, remove, modify, pending, or exception.</td>
+                        <td>Supports quarterly access certification and remediation tracking.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Binder Evidence Reference</b></td>
+                        <td>Links old paper or Excel evidence to digital governance record.</td>
+                        <td>Prevents evidence loss during binder-to-digital transition.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Exception / Remediation</b></td>
+                        <td>Captures access issues needing follow-up.</td>
+                        <td>Supports audit defensibility and closure tracking.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <section class="access-two-col">
+                <div class="card">
+                    <h2>Current-State Problem</h2>
+                    <ul class="exception-list">
+                        <li>Paper binders and Excel trackers can become informal sources of truth.</li>
+                        <li>Approval records may exist separately from actual access state.</li>
+                        <li>Access review evidence may be difficult to reconstruct during audit.</li>
+                        <li>Terminated, transferred, or role-changed users may require manual reconciliation.</li>
+                        <li>Reviewer decisions may not always be linked to supporting evidence.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>COBIT-Chain Value</h2>
+                    <ul class="exception-list">
+                        <li>Creates an evidence bridge between myAccess, binder records, and access reviews.</li>
+                        <li>Supports cryptographic fingerprinting of uploaded access review evidence.</li>
+                        <li>Highlights missing approvals, pending reviews, and entitlement exceptions.</li>
+                        <li>Gives leadership a clean view of access certification readiness.</li>
+                        <li>Prepares access evidence for audit without replacing myAccess.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Access Governance Risk Rules</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Condition</th>
+                        <th>Risk Level</th>
+                        <th>Recommended Governance Action</th>
+                    </tr>
+                    <tr>
+                        <td>Active access with no approval reference</td>
+                        <td>High</td>
+                        <td>Escalate to system owner and require approval evidence or removal decision.</td>
+                    </tr>
+                    <tr>
+                        <td>User appears in binder but not in myAccess export</td>
+                        <td>High</td>
+                        <td>Investigate source-of-truth mismatch and document reconciliation outcome.</td>
+                    </tr>
+                    <tr>
+                        <td>Quarterly access review pending past due date</td>
+                        <td>Medium</td>
+                        <td>Notify reviewer and track overdue certification to closure.</td>
+                    </tr>
+                    <tr>
+                        <td>Privileged entitlement assigned without clear business justification</td>
+                        <td>High</td>
+                        <td>Require re-approval, role validation, or removal.</td>
+                    </tr>
+                    <tr>
+                        <td>Access approved and review evidence complete</td>
+                        <td>Low</td>
+                        <td>Retain as audit-ready evidence.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>myAccess + Binder + COBIT-Chain Relationship</h2>
+                <div class="access-grid">
+                    <div class="access-mini">
+                        <b>myAccess</b>
+                        <p>System of record for access requests, approvals, entitlement workflow, and access governance ownership.</p>
+                    </div>
+                    <div class="access-mini">
+                        <b>Binder / Excel Evidence</b>
+                        <p>Legacy evidence source that may contain physical forms, signatures, manual trackers, or historical review records.</p>
+                    </div>
+                    <div class="access-mini">
+                        <b>COBIT-Chain</b>
+                        <p>Governance assurance layer that links evidence, verifies completeness, detects exceptions, and prepares audit-ready access packs.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="note">
-                <b>Access Governance design direction:</b> this page will later connect myAccess exports,
-                binder evidence, user access review logs, and entitlement approval evidence.
+                <b>Next build step:</b> add a separate <b>access_reviews.csv</b> storage file for access governance records.
+                This will allow Access Governance to save real review evidence without touching the Manufacturing/Wole evidence chain.
             </div>
             {% elif page.route == "/audit-capa" %}
             <div class="note">
