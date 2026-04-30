@@ -1,8 +1,7 @@
-.azure/
+.Azure/
+.cache/
+.local/
+app_BACKUP_*.py
 __pycache__/
 *.pyc
 .env
-.bash_history
-.lesshst
-.bashrc
-.bashrc
