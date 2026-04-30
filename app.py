@@ -1,3 +1,4 @@
+# VISUAL_HIERARCHY_RLT_DSCSA_ACTIVE
 # RLT_DSCSA_POSITIONING_ACTIVE
 from flask import Flask, request, render_template_string, redirect, Response
 import os, io, hashlib, datetime
@@ -539,6 +540,50 @@ tr.row-RED { background:#fef2f2; }
 }
 .enterprise-nav-safe-addition a.active {
     background:#0f172a; color:white; border-color:#0f172a;
+}
+
+
+.flagship-pill{
+    display:inline-block;
+    background:linear-gradient(135deg,#facc15,#f97316);
+    color:#111827;
+    padding:8px 13px;
+    border-radius:999px;
+    font-weight:1000;
+    letter-spacing:.06em;
+    margin-right:8px;
+    box-shadow:0 10px 24px rgba(249,115,22,.28);
+}
+.flagship-banner{
+    margin-top:18px;
+    background:rgba(250,204,21,.16);
+    border:1px solid rgba(250,204,21,.45);
+    border-left:8px solid #facc15;
+    color:#fff7ed;
+    padding:15px 17px;
+    border-radius:18px;
+    line-height:1.55;
+}
+.supporting-pill{
+    display:inline-block;
+    background:rgba(255,255,255,.14);
+    color:#dbeafe;
+    padding:7px 11px;
+    border-radius:999px;
+    font-weight:800;
+    letter-spacing:.04em;
+    margin-right:8px;
+    border:1px solid rgba(255,255,255,.25);
+}
+.supporting-banner{
+    margin-top:18px;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.18);
+    border-left:6px solid #94a3b8;
+    color:#e2e8f0;
+    padding:14px 16px;
+    border-radius:18px;
+    line-height:1.55;
 }
 
 @media(max-width:1000px){ .grid,.mini-grid,.main-layout{ grid-template-columns:1fr; } }
@@ -6163,7 +6208,10 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 <body>
 <section class="hero">
 <h1>COBIT-Chain™ RLT-Trust™</h1>
-<p><b>FLAGSHIP TIER 1 RADIOPHARMA MODULE</b> • Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
+<p><span class="flagship-pill">FLAGSHIP TIER 1 RADIOPHARMA MODULE</span> Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
+<div class="flagship-banner">
+<b>Main Radiopharma Commercial Focus:</b> RLT-Trust™ is the primary COBIT-Chain module for Lilly/Point/Novartis-style radiopharmaceutical operations, where dose timing, decay window, QA release, radiation survey, chain-of-custody, site receipt, and patient administration readiness matter.
+</div>
 </section>
 
 <main class="container">
@@ -6588,7 +6636,10 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 <body>
 <section class="hero">
 <h1>COBIT-Chain™ DSCSA TrustChain™</h1>
-<p><b>SUPPORTING PHARMA SUPPLY-CHAIN MODULE</b> • Standard Prescription Drug Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
+<p><span class="supporting-pill">SUPPORTING PHARMA SUPPLY-CHAIN MODULE</span> Standard Prescription Drug Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
+<div class="supporting-banner">
+<b>Supporting Module:</b> DSCSA TrustChain™ is important for standard prescription drug package traceability, trading partner evidence, transaction information, suspect product workflow, quarantine, notification, and disposition. It is separate from the RLT-Trust™ radiopharma flagship.
+</div>
 </section>
 
 <main class="container">
