@@ -6334,5 +6334,423 @@ def rlt_trust_page():
     # RLT_TRUST_V1_PROMOTED_REDIRECT_ACTIVE
     return redirect("/rlt-trust-v1-test")
 
+
+# ============================================================
+# DSCSA TRUSTCHAIN V1 TEST ACTIVE
+# Drug supply chain traceability evidence register.
+# Does not replace or modify existing modules.
+# ============================================================
+
+DSCSA_FILE = "dscsa_traceability_evidence.csv"
+
+
+def prepare_dscsa_evidence():
+    df = load_csv(DSCSA_FILE)
+    return ensure_cols(df, [
+        "dscsa_record_id", "timestamp", "product_name", "product_identifier",
+        "gtin", "serial_number", "lot_number", "expiration_date",
+        "trading_partner", "partner_status", "transaction_info_status",
+        "transaction_statement_status", "verification_status",
+        "suspect_product_status", "quarantine_status", "fda_notification_status",
+        "disposition_status", "recall_status", "investigation_summary",
+        "readiness_status", "readiness_score", "risk_level",
+        "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_dscsa_readiness(partner_status, transaction_info_status,
+                              transaction_statement_status, verification_status,
+                              suspect_product_status, quarantine_status,
+                              fda_notification_status, disposition_status,
+                              recall_status, investigation_summary):
+    score = 100
+    signals = []
+
+    partner_status = clean(partner_status)
+    transaction_info_status = clean(transaction_info_status)
+    transaction_statement_status = clean(transaction_statement_status)
+    verification_status = clean(verification_status)
+    suspect_product_status = clean(suspect_product_status)
+    quarantine_status = clean(quarantine_status)
+    fda_notification_status = clean(fda_notification_status)
+    disposition_status = clean(disposition_status)
+    recall_status = clean(recall_status)
+    investigation_summary = clean(investigation_summary)
+
+    if partner_status in ["Unknown", "Not Verified", "Invalid"]:
+        score -= 25
+        signals.append("Trading partner status is unknown, not verified, or invalid.")
+
+    if transaction_info_status in ["Missing", "Incomplete", "Mismatch"]:
+        score -= 25
+        signals.append("Transaction information is missing, incomplete, or mismatched.")
+
+    if transaction_statement_status in ["Missing", "Incomplete"]:
+        score -= 20
+        signals.append("Transaction statement is missing or incomplete.")
+
+    if verification_status in ["Failed", "Not Verified", "Mismatch"]:
+        score -= 30
+        signals.append("Product verification failed, was not performed, or shows mismatch.")
+
+    if suspect_product_status in ["Suspect", "Illegitimate", "Under Investigation"]:
+        score -= 35
+        signals.append("Product is suspect, illegitimate, or under investigation.")
+
+    if suspect_product_status in ["Suspect", "Illegitimate", "Under Investigation"] and quarantine_status != "Quarantined":
+        score -= 20
+        signals.append("Suspect/illegitimate product is not marked as quarantined.")
+
+    if suspect_product_status in ["Illegitimate"] and fda_notification_status != "Submitted":
+        score -= 20
+        signals.append("Illegitimate product signal exists but FDA notification is not submitted.")
+
+    if disposition_status in ["Unknown", "Pending", "Not Documented"]:
+        score -= 15
+        signals.append("Product disposition is unknown, pending, or not documented.")
+
+    if recall_status in ["Active Recall", "Recall Pending"] and not investigation_summary:
+        score -= 15
+        signals.append("Recall signal exists but investigation summary is missing.")
+
+    if score < 85 and not investigation_summary:
+        score -= 10
+        signals.append("Readiness issues exist but investigation summary is missing.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "TRACEABILITY READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT TRACEABILITY READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major DSCSA traceability readiness risk detected.")
+
+    return readiness, score, risk, signals
+
+
+def save_dscsa_test(req):
+    df = prepare_dscsa_evidence()
+
+    product_name = clean(req.form.get("product_name"))
+    product_identifier = clean(req.form.get("product_identifier"))
+    gtin = clean(req.form.get("gtin"))
+    serial_number = clean(req.form.get("serial_number"))
+    lot_number = clean(req.form.get("lot_number"))
+    expiration_date = clean(req.form.get("expiration_date"))
+    trading_partner = clean(req.form.get("trading_partner"))
+    partner_status = clean(req.form.get("partner_status"))
+    transaction_info_status = clean(req.form.get("transaction_info_status"))
+    transaction_statement_status = clean(req.form.get("transaction_statement_status"))
+    verification_status = clean(req.form.get("verification_status"))
+    suspect_product_status = clean(req.form.get("suspect_product_status"))
+    quarantine_status = clean(req.form.get("quarantine_status"))
+    fda_notification_status = clean(req.form.get("fda_notification_status"))
+    disposition_status = clean(req.form.get("disposition_status"))
+    recall_status = clean(req.form.get("recall_status"))
+    investigation_summary = clean(req.form.get("investigation_summary"))
+
+    required = [
+        product_name, product_identifier, lot_number, expiration_date,
+        trading_partner, partner_status, transaction_info_status,
+        transaction_statement_status, verification_status, suspect_product_status,
+        quarantine_status, disposition_status
+    ]
+
+    if not all(required):
+        return {
+            "error": "Product Name, Product Identifier, Lot, Expiration, Trading Partner, Partner Status, Transaction Info, Transaction Statement, Verification, Suspect Product, Quarantine, and Disposition are required."
+        }
+
+    readiness, readiness_score, risk_level, risk_signals = calculate_dscsa_readiness(
+        partner_status, transaction_info_status, transaction_statement_status,
+        verification_status, suspect_product_status, quarantine_status,
+        fda_notification_status, disposition_status, recall_status,
+        investigation_summary
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    dscsa_record_id = "DSCSA-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        dscsa_record_id + timestamp + product_name + product_identifier +
+        gtin + serial_number + lot_number + expiration_date + trading_partner +
+        partner_status + transaction_info_status + transaction_statement_status +
+        verification_status + suspect_product_status + quarantine_status +
+        disposition_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "dscsa_record_id": dscsa_record_id,
+        "timestamp": timestamp,
+        "product_name": product_name,
+        "product_identifier": product_identifier,
+        "gtin": gtin,
+        "serial_number": serial_number,
+        "lot_number": lot_number,
+        "expiration_date": expiration_date,
+        "trading_partner": trading_partner,
+        "partner_status": partner_status,
+        "transaction_info_status": transaction_info_status,
+        "transaction_statement_status": transaction_statement_status,
+        "verification_status": verification_status,
+        "suspect_product_status": suspect_product_status,
+        "quarantine_status": quarantine_status,
+        "fda_notification_status": fda_notification_status,
+        "disposition_status": disposition_status,
+        "recall_status": recall_status,
+        "investigation_summary": investigation_summary,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, DSCSA_FILE)
+
+    return {
+        "error": "",
+        "dscsa_record_id": dscsa_record_id,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_dscsa_test_metrics():
+    df = prepare_dscsa_evidence()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "TRACEABILITY READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT TRACEABILITY READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/dscsa-trustchain-v1-test", methods=["GET", "POST"])
+def dscsa_trustchain_v1_test():
+    result = None
+    if request.method == "POST":
+        result = save_dscsa_test(request)
+
+    metrics = get_dscsa_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain DSCSA TrustChain v1 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:90px}
+button{border:none;background:linear-gradient(135deg,#0f766e,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ DSCSA TrustChain™ v1 Test</h1>
+<p>Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/compounding-pharmacy-v1-test">CompoundTrust</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a class="active" href="/dscsa-trustchain-v1-test">DSCSA TrustChain</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.dscsa_record_id }} —
+<b>{{ result.readiness_status }}</b> —
+Traceability score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Traceability Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create DSCSA Traceability Record</h2>
+<form method="POST" action="/dscsa-trustchain-v1-test">
+<input name="product_name" placeholder="Product Name" required>
+<input name="product_identifier" placeholder="Product Identifier / NDC / Package ID" required>
+<input name="gtin" placeholder="GTIN">
+<input name="serial_number" placeholder="Serial Number">
+<input name="lot_number" placeholder="Lot Number" required>
+<label><b>Expiration Date</b></label>
+<input type="date" name="expiration_date" required>
+<input name="trading_partner" placeholder="Trading Partner" required>
+
+<select name="partner_status" required>
+<option value="">Trading Partner Status</option>
+<option value="Verified">Verified</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Unknown">Unknown</option>
+<option value="Invalid">Invalid</option>
+</select>
+
+<select name="transaction_info_status" required>
+<option value="">Transaction Information Status</option>
+<option value="Complete">Complete</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+<option value="Mismatch">Mismatch</option>
+</select>
+
+<select name="transaction_statement_status" required>
+<option value="">Transaction Statement Status</option>
+<option value="Complete">Complete</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="verification_status" required>
+<option value="">Verification Status</option>
+<option value="Verified">Verified</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Failed">Failed</option>
+<option value="Mismatch">Mismatch</option>
+</select>
+
+<select name="suspect_product_status" required>
+<option value="">Suspect Product Status</option>
+<option value="No Suspect Signal">No Suspect Signal</option>
+<option value="Suspect">Suspect</option>
+<option value="Illegitimate">Illegitimate</option>
+<option value="Under Investigation">Under Investigation</option>
+</select>
+
+<select name="quarantine_status" required>
+<option value="">Quarantine Status</option>
+<option value="Not Required">Not Required</option>
+<option value="Quarantined">Quarantined</option>
+<option value="Not Quarantined">Not Quarantined</option>
+</select>
+
+<select name="fda_notification_status">
+<option value="Not Required">FDA Notification Status: Not Required</option>
+<option value="Submitted">Submitted</option>
+<option value="Not Submitted">Not Submitted</option>
+<option value="Pending">Pending</option>
+</select>
+
+<select name="disposition_status" required>
+<option value="">Disposition Status</option>
+<option value="Released">Released</option>
+<option value="Quarantined">Quarantined</option>
+<option value="Destroyed">Destroyed</option>
+<option value="Returned">Returned</option>
+<option value="Pending">Pending</option>
+<option value="Unknown">Unknown</option>
+<option value="Not Documented">Not Documented</option>
+</select>
+
+<select name="recall_status">
+<option value="No Recall">Recall Status: No Recall</option>
+<option value="Active Recall">Active Recall</option>
+<option value="Recall Pending">Recall Pending</option>
+</select>
+
+<textarea name="investigation_summary" placeholder="Investigation Summary / Traceability Notes"></textarea>
+
+<button type="submit">Save DSCSA Traceability Evidence</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent DSCSA Traceability Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Product</th><th>Lot/Serial</th><th>Partner</th><th>Verification</th><th>Suspect Status</th><th>Quarantine</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.dscsa_record_id }}</td>
+<td><b>{{ r.product_name }}</b><br>{{ r.product_identifier }}</td>
+<td>{{ r.lot_number }}<br>{{ r.serial_number }}</td>
+<td>{{ r.trading_partner }}</td>
+<td>{{ r.verification_status }}</td>
+<td>{{ r.suspect_product_status }}</td>
+<td>{{ r.quarantine_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No DSCSA traceability records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>dscsa_traceability_evidence.csv</b>.
+Existing COBIT-Chain module registers are untouched.
+</div>
+
+<div class="card">
+<h2>Advanced Feature Direction</h2>
+<p><b>Suspect Product Evidence Graph™</b> links product identifier, transaction evidence, trading partner status, verification result, suspect/illegitimate product investigation, quarantine, notification, disposition, and final traceability readiness.</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
