@@ -3804,5 +3804,306 @@ body {
         pages=ENTERPRISE_PAGES
     )
 
+
+# ============================================================
+# SHIFT ASSURANCE V2 TEST ACTIVE
+# Functional test page only. Does not replace /shift-assurance.
+# ============================================================
+
+SHIFT_HANDOFF_FILE = "shift_handoffs.csv"
+
+
+def prepare_shift_handoffs():
+    df = load_csv(SHIFT_HANDOFF_FILE)
+    return ensure_cols(df, [
+        "handoff_id", "timestamp", "shift_date", "shift_type",
+        "equipment_id", "equipment_name", "equipment_status",
+        "servicenow_ticket", "ticket_priority",
+        "outgoing_technician", "incoming_technician",
+        "open_issue", "next_action",
+        "escalation_required", "qa_engineering_followup",
+        "readiness_status", "readiness_score", "risk_level",
+        "previous_hash", "record_hash"
+    ])
+
+
+def calculate_shift_readiness(equipment_status, servicenow_ticket, open_issue, next_action,
+                              escalation_required, qa_engineering_followup,
+                              outgoing_technician, incoming_technician):
+    score = 100
+    signals = []
+
+    if equipment_status in ["Out of Service", "Under Maintenance"]:
+        score -= 35
+        signals.append("Equipment is not fully available.")
+
+    if equipment_status == "Degraded":
+        score -= 20
+        signals.append("Equipment is degraded and needs monitoring.")
+
+    if clean(open_issue) and not clean(next_action):
+        score -= 20
+        signals.append("Open issue exists with no next action.")
+
+    if clean(open_issue) and not clean(servicenow_ticket):
+        score -= 15
+        signals.append("Open issue exists without ServiceNow ticket reference.")
+
+    if escalation_required == "Yes" and qa_engineering_followup == "No":
+        score -= 20
+        signals.append("Escalation required but QA/Engineering follow-up is not marked.")
+
+    if not clean(outgoing_technician) or not clean(incoming_technician):
+        score -= 15
+        signals.append("Outgoing or incoming technician is missing.")
+
+    if clean(outgoing_technician).lower() == clean(incoming_technician).lower():
+        score -= 10
+        signals.append("Outgoing and incoming technician are the same person; verify handoff accountability.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        return "READY", score, "LOW", signals or ["No major shift handoff risk detected."]
+    if score >= 60:
+        return "CONDITIONALLY READY", score, "MEDIUM", signals
+    return "NOT READY", score, "HIGH", signals
+
+
+def save_shift_handoff_test(req):
+    df = prepare_shift_handoffs()
+
+    shift_date = clean(req.form.get("shift_date"))
+    shift_type = clean(req.form.get("shift_type"))
+    equipment_id = clean(req.form.get("equipment_id"))
+    equipment_name = clean(req.form.get("equipment_name"))
+    equipment_status = clean(req.form.get("equipment_status"))
+    servicenow_ticket = clean(req.form.get("servicenow_ticket"))
+    ticket_priority = clean(req.form.get("ticket_priority"))
+    outgoing_technician = clean(req.form.get("outgoing_technician"))
+    incoming_technician = clean(req.form.get("incoming_technician"))
+    open_issue = clean(req.form.get("open_issue"))
+    next_action = clean(req.form.get("next_action"))
+    escalation_required = clean(req.form.get("escalation_required")) or "No"
+    qa_engineering_followup = clean(req.form.get("qa_engineering_followup")) or "No"
+
+    if not shift_date or not shift_type or not equipment_id or not equipment_name or not equipment_status:
+        return {"error": "Shift Date, Shift Type, Equipment ID, Equipment Name, and Equipment Status are required."}
+
+    if not outgoing_technician or not incoming_technician:
+        return {"error": "Outgoing Technician and Incoming Technician are required."}
+
+    readiness_status, readiness_score, risk_level, risk_signals = calculate_shift_readiness(
+        equipment_status, servicenow_ticket, open_issue, next_action,
+        escalation_required, qa_engineering_followup,
+        outgoing_technician, incoming_technician
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    handoff_id = "SHIFT-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        handoff_id + timestamp + shift_date + shift_type + equipment_id +
+        equipment_name + equipment_status + servicenow_ticket +
+        outgoing_technician + incoming_technician + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "handoff_id": handoff_id,
+        "timestamp": timestamp,
+        "shift_date": shift_date,
+        "shift_type": shift_type,
+        "equipment_id": equipment_id,
+        "equipment_name": equipment_name,
+        "equipment_status": equipment_status,
+        "servicenow_ticket": servicenow_ticket,
+        "ticket_priority": ticket_priority,
+        "outgoing_technician": outgoing_technician,
+        "incoming_technician": incoming_technician,
+        "open_issue": open_issue,
+        "next_action": next_action,
+        "escalation_required": escalation_required,
+        "qa_engineering_followup": qa_engineering_followup,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, SHIFT_HANDOFF_FILE)
+
+    return {
+        "error": "",
+        "handoff_id": handoff_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_shift_test_metrics():
+    df = prepare_shift_handoffs()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/shift-assurance-v2-test", methods=["GET", "POST"])
+def shift_assurance_v2_test():
+    result = None
+    if request.method == "POST":
+        result = save_shift_handoff_test(request)
+
+    metrics = get_shift_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Shift Assurance v2 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:390px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:85px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Shift Assurance v2 Test</h1>
+<p>Functional test page only — stable /shift-assurance is untouched.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/sop-governance">SOP Governance</a>
+<a href="/shift-assurance">Shift v1 Stable</a>
+<a class="active" href="/shift-assurance-v2-test">Shift v2 Test</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial Integrity</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.handoff_id }} — <b>{{ result.readiness_status }}</b> — Score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Handoffs</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Shift Handoff</h2>
+<form method="POST" action="/shift-assurance-v2-test">
+<input type="date" name="shift_date" required>
+<select name="shift_type" required>
+<option value="">Select Shift</option>
+<option value="Day Shift">Day Shift</option>
+<option value="Night Shift">Night Shift</option>
+</select>
+<input name="equipment_id" placeholder="Equipment ID e.g. EQP-1803" required>
+<input name="equipment_name" placeholder="Equipment Name e.g. Speedy Glove Isolator" required>
+<select name="equipment_status" required>
+<option value="">Equipment Status</option>
+<option value="Available">Available</option>
+<option value="Degraded">Degraded</option>
+<option value="Under Maintenance">Under Maintenance</option>
+<option value="Out of Service">Out of Service</option>
+<option value="Pending QA/Engineering Review">Pending QA/Engineering Review</option>
+</select>
+<input name="servicenow_ticket" placeholder="ServiceNow Ticket e.g. MWO-003753-2026">
+<select name="ticket_priority">
+<option value="">Ticket Priority</option>
+<option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option><option value="Critical">Critical</option>
+</select>
+<input name="outgoing_technician" placeholder="Outgoing Technician" required>
+<input name="incoming_technician" placeholder="Incoming Technician" required>
+<textarea name="open_issue" placeholder="Open Issue / Risk"></textarea>
+<textarea name="next_action" placeholder="Next Action / Carryover Instruction"></textarea>
+<select name="escalation_required"><option value="No">Escalation Required? No</option><option value="Yes">Escalation Required? Yes</option></select>
+<select name="qa_engineering_followup"><option value="No">QA/Engineering Follow-up? No</option><option value="Yes">QA/Engineering Follow-up? Yes</option></select>
+<button type="submit">Save Shift Handoff</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Shift Handoffs</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Date</th><th>Shift</th><th>Equipment</th><th>Status</th><th>Ticket</th><th>Incoming</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.handoff_id }}</td>
+<td>{{ r.shift_date }}</td>
+<td>{{ r.shift_type }}</td>
+<td><b>{{ r.equipment_id }}</b><br>{{ r.equipment_name }}</td>
+<td>{{ r.equipment_status }}</td>
+<td>{{ r.servicenow_ticket }}</td>
+<td>{{ r.incoming_technician }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No shift handoffs saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>shift_handoffs.csv</b>. Manufacturing logs.csv and baseline_hashes.csv are untouched.
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
