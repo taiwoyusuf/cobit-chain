@@ -1262,6 +1262,50 @@ body {
     .audit-arrow{ display:none; }
 }
 
+
+.trial-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:20px;
+}
+.trial-two-col {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:20px;
+}
+.trial-card, .trial-mini {
+    background:white; border:1px solid #e2e8f0; border-radius:24px;
+    padding:22px; box-shadow:0 14px 35px rgba(15,23,42,.08);
+}
+.trial-card h3 { margin:8px 0 10px; }
+.trial-card p, .trial-mini p { color:#475569; line-height:1.5; }
+.trial-label {
+    color:#64748b; font-weight:900; font-size:12px;
+    text-transform:uppercase; letter-spacing:.08em;
+}
+.trial-badge {
+    display:inline-block; margin-top:10px; padding:7px 10px; border-radius:999px;
+    background:#eff6ff; color:#1d4ed8; font-weight:900; font-size:12px;
+    border:1px solid #bfdbfe;
+}
+.trial-flow {
+    display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:14px;
+}
+.trial-step {
+    flex:1; min-width:190px; background:linear-gradient(135deg,#eff6ff,#ecfeff);
+    border:1px solid #bfdbfe; border-radius:18px; padding:15px;
+}
+.trial-step b {
+    display:block; margin-bottom:7px;
+}
+.trial-step span {
+    display:block; color:#475569; line-height:1.45; font-size:13px;
+}
+.trial-arrow {
+    display:flex; align-items:center; justify-content:center;
+    color:#94a3b8; font-weight:900; font-size:22px;
+}
+@media(max-width:1000px){
+    .trial-grid,.trial-two-col{ grid-template-columns:1fr; }
+    .trial-arrow{ display:none; }
+}
+
 @media(max-width:1000px){ .grid,.main-layout,.focus-grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -2245,6 +2289,255 @@ body {
             <div class="note">
                 <b>Next build step:</b> add a separate <b>audit_capa_register.csv</b> storage file for audit findings, CAPA records,
                 remediation proof, and effectiveness readiness scoring. This will keep Audit/CAPA records separate from Manufacturing/Wole logs.
+            </div>
+            {% elif page.route == "/clinical-trial-integrity" %}
+            <!-- CLINICAL_TRIAL_INTEGRITY_V1_ACTIVE -->
+            <div class="card status-card-warning">
+                <h2>⚠ Clinical Trial Integrity v1</h2>
+                <p><b>Purpose:</b> create a governance assurance layer for clinical trial evidence integrity, protocol-to-evidence traceability, ALCOA+ readiness, deviation linkage, and inspection preparedness.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change Manufacturing/Wole, SOP comparison, Access, Shift, or Audit/CAPA records.</p>
+            </div>
+
+            <section class="trial-grid">
+                <div class="trial-card">
+                    <div class="trial-label">Trial Evidence</div>
+                    <h3>Protocol-to-Evidence Traceability</h3>
+                    <p>Links protocol requirements, visit activities, consent records, monitoring evidence, deviations, and TMF artifacts into a governed evidence chain.</p>
+                    <span class="trial-badge">Traceability layer</span>
+                </div>
+
+                <div class="trial-card">
+                    <div class="trial-label">Data Integrity</div>
+                    <h3>ALCOA+ Readiness</h3>
+                    <p>Assesses whether trial evidence is attributable, legible, contemporaneous, original, accurate, complete, consistent, enduring, and available.</p>
+                    <span class="trial-badge">Data integrity</span>
+                </div>
+
+                <div class="trial-card">
+                    <div class="trial-label">Advanced Feature</div>
+                    <h3>Protocol-to-Evidence Integrity Graph</h3>
+                    <p>Future differentiator: map every protocol obligation to the evidence proving it was performed, reviewed, approved, and retained.</p>
+                    <span class="trial-badge">Evidence graph</span>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Clinical Trial Integrity Control Flow</h2>
+                <div class="trial-flow">
+                    <div class="trial-step">
+                        <b>1. Protocol Requirement</b>
+                        <span>Identify required study activity, visit, consent step, data capture point, safety review, or monitoring obligation.</span>
+                    </div>
+                    <div class="trial-arrow">→</div>
+                    <div class="trial-step">
+                        <b>2. Evidence Capture</b>
+                        <span>Link source document, eConsent, monitoring note, TMF artifact, data export, or system record.</span>
+                    </div>
+                    <div class="trial-arrow">→</div>
+                    <div class="trial-step">
+                        <b>3. Integrity Check</b>
+                        <span>Confirm evidence completeness, ownership, timestamp, hash, version, and review status.</span>
+                    </div>
+                    <div class="trial-arrow">→</div>
+                    <div class="trial-step">
+                        <b>4. Deviation Linkage</b>
+                        <span>Identify missing, late, inconsistent, or noncompliant evidence and link it to deviation/CAPA where needed.</span>
+                    </div>
+                    <div class="trial-arrow">→</div>
+                    <div class="trial-step">
+                        <b>5. Inspection-Ready Pack</b>
+                        <span>Produce a defensible evidence pack showing requirement, proof, reviewer, exception, and remediation status.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Clinical Trial Evidence Data Model</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Purpose</th>
+                        <th>Governance Value</th>
+                    </tr>
+                    <tr>
+                        <td><b>Study / Protocol ID</b></td>
+                        <td>Identifies the trial, protocol, amendment, or study version.</td>
+                        <td>Links evidence to the correct approved clinical requirement.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Site / Subject / Visit Reference</b></td>
+                        <td>Identifies where and when the trial activity occurred.</td>
+                        <td>Supports traceability across site, subject, visit, and evidence.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Evidence Type</b></td>
+                        <td>eConsent, source data, monitoring report, lab data, TMF artifact, safety record, or data transfer file.</td>
+                        <td>Classifies evidence for inspection readiness.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Protocol Obligation</b></td>
+                        <td>Defines what the protocol or study plan required.</td>
+                        <td>Creates the baseline for control-to-evidence verification.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Evidence Status</b></td>
+                        <td>Missing, uploaded, verified, rejected, late, incomplete, or superseded.</td>
+                        <td>Shows whether evidence can support inspection reliance.</td>
+                    </tr>
+                    <tr>
+                        <td><b>ALCOA+ Status</b></td>
+                        <td>Assesses evidence against data integrity principles.</td>
+                        <td>Provides defensible data integrity readiness scoring.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Deviation / CAPA Link</b></td>
+                        <td>Links missing or defective evidence to controlled remediation.</td>
+                        <td>Prevents unresolved trial evidence gaps from being hidden.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Reviewer / Approver</b></td>
+                        <td>Identifies who verified or approved the evidence.</td>
+                        <td>Creates accountability and review traceability.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <section class="trial-two-col">
+                <div class="card">
+                    <h2>Organizational Pain Points</h2>
+                    <ul class="exception-list">
+                        <li>Clinical evidence is spread across eTMF, EDC, eConsent, spreadsheets, emails, vendor files, and monitoring reports.</li>
+                        <li>Teams often reconstruct evidence late during audit or inspection preparation.</li>
+                        <li>Protocol obligations may not be clearly linked to proof that the activity was completed.</li>
+                        <li>Evidence may exist but lack clear version, timestamp, owner, or review status.</li>
+                        <li>Deviation and CAPA records may not clearly show the evidence gap that triggered them.</li>
+                        <li>Inspection readiness depends on manual reconciliation across fragmented systems.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>COBIT-Chain Solution</h2>
+                    <ul class="exception-list">
+                        <li>Creates a governance map from protocol requirement to verified evidence.</li>
+                        <li>Uses evidence hashing and status checks to support tamper-aware evidence integrity.</li>
+                        <li>Highlights missing, late, incomplete, or inconsistent trial evidence.</li>
+                        <li>Links evidence gaps to deviation/CAPA readiness.</li>
+                        <li>Supports ALCOA+ readiness scoring for trial records.</li>
+                        <li>Produces an inspection-ready evidence pack with requirement, proof, owner, reviewer, and exception status.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card">
+                <h2>Advanced Feature: Protocol-to-Evidence Integrity Graph</h2>
+                <p>
+                    This feature is designed as a future differentiator for COBIT-Chain. Instead of only storing evidence,
+                    it models the relationship between trial obligations and the evidence proving those obligations were met.
+                </p>
+
+                <table class="exec-table">
+                    <tr>
+                        <th>Graph Node</th>
+                        <th>Example</th>
+                        <th>Governance Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><b>Protocol Obligation</b></td>
+                        <td>Informed consent completed before trial procedure.</td>
+                        <td>Defines what must be proven.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Evidence Artifact</b></td>
+                        <td>Signed eConsent record, timestamp, version, and audit trail.</td>
+                        <td>Shows proof of performance.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Review Event</b></td>
+                        <td>CRA/QA/site monitor review and acceptance.</td>
+                        <td>Shows independent verification.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Exception</b></td>
+                        <td>Missing date, late consent, wrong version, incomplete signature, or unsupported correction.</td>
+                        <td>Identifies inspection risk.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Remediation Link</b></td>
+                        <td>Deviation, CAPA, retraining, or evidence correction.</td>
+                        <td>Shows controlled response and closure pathway.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Clinical Trial Risk Rules</h2>
+                <table class="exec-table">
+                    <tr>
+                        <th>Condition</th>
+                        <th>Risk Level</th>
+                        <th>Recommended Governance Action</th>
+                    </tr>
+                    <tr>
+                        <td>Protocol-required evidence is missing</td>
+                        <td>High</td>
+                        <td>Flag as inspection risk and link to deviation or remediation owner.</td>
+                    </tr>
+                    <tr>
+                        <td>Consent evidence exists but version, date, or signature is unclear</td>
+                        <td>High</td>
+                        <td>Escalate for consent evidence review and site/QA assessment.</td>
+                    </tr>
+                    <tr>
+                        <td>Evidence exists but no reviewer or approval is recorded</td>
+                        <td>Medium</td>
+                        <td>Require reviewer verification before treating as inspection-ready.</td>
+                    </tr>
+                    <tr>
+                        <td>Data transfer evidence does not reconcile with expected record count</td>
+                        <td>High</td>
+                        <td>Block reliance until reconciliation is completed and documented.</td>
+                    </tr>
+                    <tr>
+                        <td>Protocol obligation, evidence, reviewer, and exception status are complete</td>
+                        <td>Low</td>
+                        <td>Retain as inspection-ready evidence.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Clinical Trial Integrity Domains</h2>
+                <section class="trial-grid">
+                    <div class="trial-mini">
+                        <b>eConsent Integrity</b>
+                        <p>Consent version, signature, timestamp, subject/site linkage, and audit-trail completeness.</p>
+                    </div>
+                    <div class="trial-mini">
+                        <b>Source Data Verification</b>
+                        <p>Traceability between source record, EDC entry, monitoring review, and issue resolution.</p>
+                    </div>
+                    <div class="trial-mini">
+                        <b>TMF Completeness</b>
+                        <p>Trial master file artifact completeness, version status, owner, and review readiness.</p>
+                    </div>
+                    <div class="trial-mini">
+                        <b>Protocol Deviation Linkage</b>
+                        <p>Connection between evidence gaps, deviation record, CAPA/remediation, and closure proof.</p>
+                    </div>
+                    <div class="trial-mini">
+                        <b>Data Transfer Reconciliation</b>
+                        <p>Vendor file, lab data, safety data, or system export count reconciliation and exception handling.</p>
+                    </div>
+                    <div class="trial-mini">
+                        <b>Inspection Readiness</b>
+                        <p>Evidence pack showing requirement, proof, reviewer, exception status, and governance decision.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="note">
+                <b>Next build step:</b> add a separate <b>clinical_trial_evidence.csv</b> storage file for protocol obligations,
+                evidence artifacts, ALCOA+ readiness, deviation linkage, and inspection-readiness scoring. This will keep clinical records separate from Manufacturing/Wole logs.
             </div>
             {% endif %}
 
