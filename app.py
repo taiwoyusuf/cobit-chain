@@ -1,3 +1,4 @@
+# RLT_DSCSA_POSITIONING_ACTIVE
 from flask import Flask, request, render_template_string, redirect, Response
 import os, io, hashlib, datetime
 import pandas as pd
@@ -6161,8 +6162,8 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 </head>
 <body>
 <section class="hero">
-<h1>COBIT-Chain™ RLT-Trust™ v1 Test</h1>
-<p>Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
+<h1>COBIT-Chain™ RLT-Trust™</h1>
+<p><b>FLAGSHIP TIER 1 RADIOPHARMA MODULE</b> • Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
 </section>
 
 <main class="container">
@@ -6586,8 +6587,8 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 </head>
 <body>
 <section class="hero">
-<h1>COBIT-Chain™ DSCSA TrustChain™ v1 Test</h1>
-<p>Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
+<h1>COBIT-Chain™ DSCSA TrustChain™</h1>
+<p><b>SEPARATE TIER 1 PHARMA SUPPLY-CHAIN MODULE</b> • Package Traceability • Suspect Product Evidence Graph™ • Transaction Evidence Readiness</p>
 </section>
 
 <main class="container">
@@ -6603,6 +6604,15 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 <a href="/rlt-trust">RLT-Trust</a>
 <a class="active" href="/dscsa-trustchain-v1-test">DSCSA TrustChain</a>
 </nav>
+
+<div class="notice">
+<b>DSCSA TrustChain™ is separate from RLT-Trust™.</b>
+Use DSCSA TrustChain™ for standard prescription drug package traceability, trading partner verification,
+transaction information/statement evidence, suspect product investigation, quarantine, notification, and disposition.
+<br><br>
+<b>Do not use DSCSA TrustChain™ as the main RLT dose-readiness module.</b>
+Radiopharma dose timing, decay-window readiness, radiation survey, site receipt, and patient administration belong in RLT-Trust™.
+</div>
 
 {% if result and result.error %}
 <div class="error">{{ result.error }}</div>
@@ -6751,6 +6761,28 @@ Existing COBIT-Chain module registers are untouched.
     """
 
     return render_template_string(html, metrics=metrics, result=result)
+
+
+# ============================================================
+# DSCSA TRUSTCHAIN V1 PROMOTED REDIRECT ACTIVE
+# Clean production route for DSCSA TrustChain.
+# ============================================================
+
+@app.route("/dscsa-trustchain")
+def dscsa_trustchain_page():
+    # DSCSA_TRUSTCHAIN_V1_PROMOTED_REDIRECT_ACTIVE
+    return redirect("/dscsa-trustchain-v1-test")
+
+
+# ============================================================
+# RADIOPHARMA TRUST ALIAS ACTIVE
+# Alias route for RLT-Trust.
+# ============================================================
+
+@app.route("/radiopharma-trust")
+def radiopharma_trust_page():
+    # RADIOPHARMA_TRUST_ALIAS_ACTIVE
+    return redirect("/rlt-trust")
 
 if __name__ == "__main__":
     app.run(debug=True)
