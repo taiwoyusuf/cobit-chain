@@ -8650,5 +8650,26 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
     """
     return render_template_string(html)
 
+
+# ============================================================
+# DEMO LANDING ALIASES ACTIVE
+# Clean demo URLs. Protected / homepage remains Manufacturing/Wole.
+# ============================================================
+
+@app.route("/home")
+def home_alias_page():
+    # DEMO_LANDING_ALIASES_ACTIVE
+    return redirect("/command-center")
+
+
+@app.route("/start")
+def start_alias_page():
+    return redirect("/command-center")
+
+
+@app.route("/suite")
+def suite_alias_page():
+    return redirect("/modules")
+
 if __name__ == "__main__":
     app.run(debug=True)
