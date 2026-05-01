@@ -1,3 +1,4 @@
+# DEIDENTIFIED_DEMO_LANGUAGE_ACTIVE
 # VISUAL_HIERARCHY_RLT_DSCSA_ACTIVE
 # RLT_DSCSA_POSITIONING_ACTIVE
 from flask import Flask, request, render_template_string, redirect, Response
@@ -766,7 +767,7 @@ tr.row-RED { background:#fef2f2; }
 # ============================================================
 # ENTERPRISE GOVERNANCE PAGES - SAFE ADDITION
 # ============================================================
-# These pages are added beside the existing Manufacturing/Wole
+# These pages are added beside the existing Manufacturing/Manufacturing Core
 # dashboard. The existing "/" route remains unchanged.
 
 ENTERPRISE_PAGES = [
@@ -803,7 +804,7 @@ ENTERPRISE_PAGES = [
         "title": "Manufacturing",
         "route": "/",
         "status": "LIVE",
-        "purpose": "Preserved Wole manufacturing assurance dashboard with evidence upload, hashing, verification, Excel analytics, process-chain validation, and audit report download.",
+        "purpose": "Preserved Manufacturing Core manufacturing assurance dashboard with evidence upload, hashing, verification, Excel analytics, process-chain validation, and audit report download.",
         "focus": [
             "Weighbridge → Dispatch → Invoice evidence chain",
             "Azure Blob-backed evidence records",
@@ -900,7 +901,7 @@ def get_enterprise_overview_metrics():
         "module_maturity": [
             {"module": "Executive Overview", "status": "LIVE", "maturity": "Leadership dashboard active"},
             {"module": "SOP Governance", "status": "SHELL", "maturity": "Route live; SOP data connection pending"},
-            {"module": "Manufacturing", "status": "LIVE", "maturity": "Wole evidence hashing and audit logic active"},
+            {"module": "Manufacturing", "status": "LIVE", "maturity": "Manufacturing Core evidence hashing and audit logic active"},
             {"module": "Shift Assurance", "status": "SHELL", "maturity": "Route live; shift/equipment data pending"},
             {"module": "Access Governance", "status": "SHELL", "maturity": "Route live; myAccess/binder data pending"},
             {"module": "Audit/CAPA", "status": "SHELL", "maturity": "Route live; CAPA/deviation data pending"},
@@ -1417,7 +1418,7 @@ body {
             </div>
 
             <div class="notice">
-                <b>Safe enterprise expansion:</b> This page was added beside the existing Manufacturing/Wole dashboard.
+                <b>Safe enterprise expansion:</b> This page was added beside the existing Manufacturing/Manufacturing Core dashboard.
                 The original <b>/</b> dashboard remains preserved and continues to handle upload, hashing, verification,
                 Azure Blob logging, process-chain validation, and audit report generation.
             </div>
@@ -1497,7 +1498,7 @@ body {
             <div class="card status-card-warning">
                 <h2>⚠ Shift Assurance v1</h2>
                 <p><b>Purpose:</b> create a governed 12-hour day/night shift handoff model for technicians, equipment status, unresolved issues, and ServiceNow-linked operational continuity.</p>
-                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard or write to the existing manufacturing evidence logs.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Manufacturing Core dashboard or write to the existing manufacturing evidence logs.</p>
             </div>
 
             <section class="shift-grid">
@@ -1684,14 +1685,14 @@ body {
 
             <div class="note">
                 <b>Next build step:</b> add a simple Shift Handoff CSV storage file separate from manufacturing logs, for example
-                <b>shift_handoffs.csv</b>. That will allow this page to save real day/night shift records without touching the current Wole manufacturing evidence chain.
+                <b>shift_handoffs.csv</b>. That will allow this page to save real day/night shift records without touching the current Manufacturing Core manufacturing evidence chain.
             </div>
             {% elif page.route == "/sop-governance" %}
             <!-- SOP_GOVERNANCE_V1_ACTIVE -->
             <div class="card status-card-warning">
                 <h2>⚠ SOP Governance v1</h2>
                 <p><b>Purpose:</b> create a controlled governance view for SOP-to-reality alignment, process drift, SOP gaps, review triggers, and audit-ready recommendations.</p>
-                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard or write to the existing manufacturing evidence logs.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Manufacturing Core dashboard or write to the existing manufacturing evidence logs.</p>
             </div>
 
             <section class="sop-grid">
@@ -1705,7 +1706,7 @@ body {
                 <div class="sop-card">
                     <div class="sop-label">Evidence Source</div>
                     <h3>SOP_Gap / SOP_Summary</h3>
-                    <p>Future linkage point for SOP gap files, SOP summaries, control mappings, exception narratives, and recommendation outputs.</p>
+                    <p>Future linkage Acquired Site for SOP gap files, SOP summaries, control mappings, exception narratives, and recommendation outputs.</p>
                     <span class="sop-badge">Future CSV linkage</span>
                 </div>
 
@@ -1879,14 +1880,14 @@ body {
 
             <div class="note">
                 <b>Next build step:</b> add a separate <b>sop_gaps.csv</b> storage file for SOP gap records.
-                This will allow SOP Governance to save real SOP mismatch evidence without touching the Manufacturing/Wole evidence chain.
+                This will allow SOP Governance to save real SOP mismatch evidence without touching the Manufacturing/Manufacturing Core evidence chain.
             </div>
             {% elif page.route == "/access-governance" %}
             <!-- ACCESS_GOVERNANCE_V1_ACTIVE -->
             <div class="card status-card-warning">
                 <h2>⚠ Access Governance v1</h2>
                 <p><b>Purpose:</b> provide a controlled governance view for myAccess, access review evidence, binder-to-digital reconciliation, entitlement approval, and quarterly certification readiness.</p>
-                <p>This page is currently a controlled enterprise module shell. It does not write to the existing Manufacturing/Wole evidence logs and does not change the homepage dashboard.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not write to the existing Manufacturing/Manufacturing Core evidence logs and does not change the homepage dashboard.</p>
             </div>
 
             <section class="access-grid">
@@ -2073,14 +2074,14 @@ body {
 
             <div class="note">
                 <b>Next build step:</b> add a separate <b>access_reviews.csv</b> storage file for access governance records.
-                This will allow Access Governance to save real review evidence without touching the Manufacturing/Wole evidence chain.
+                This will allow Access Governance to save real review evidence without touching the Manufacturing/Manufacturing Core evidence chain.
             </div>
             {% elif page.route == "/audit-capa" %}
             <!-- AUDIT_CAPA_V1_ACTIVE -->
             <div class="card status-card-warning">
                 <h2>⚠ Audit/CAPA v1</h2>
                 <p><b>Purpose:</b> create a governed evidence chain from audit finding to deviation, CAPA, remediation proof, and effectiveness-check readiness.</p>
-                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Wole dashboard, SOP comparison engine, or existing evidence logs.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change the Manufacturing/Manufacturing Core dashboard, SOP comparison engine, or existing evidence logs.</p>
             </div>
 
             <section class="audit-grid">
@@ -2341,14 +2342,14 @@ body {
 
             <div class="note">
                 <b>Next build step:</b> add a separate <b>audit_capa_register.csv</b> storage file for audit findings, CAPA records,
-                remediation proof, and effectiveness readiness scoring. This will keep Audit/CAPA records separate from Manufacturing/Wole logs.
+                remediation proof, and effectiveness readiness scoring. This will keep Audit/CAPA records separate from Manufacturing/Manufacturing Core logs.
             </div>
             {% elif page.route == "/clinical-trial-integrity" %}
             <!-- CLINICAL_TRIAL_INTEGRITY_V1_ACTIVE -->
             <div class="card status-card-warning">
                 <h2>⚠ Clinical Trial Integrity v1</h2>
                 <p><b>Purpose:</b> create a governance assurance layer for clinical trial evidence integrity, protocol-to-evidence traceability, ALCOA+ readiness, deviation linkage, and inspection preparedness.</p>
-                <p>This page is currently a controlled enterprise module shell. It does not change Manufacturing/Wole, SOP comparison, Access, Shift, or Audit/CAPA records.</p>
+                <p>This page is currently a controlled enterprise module shell. It does not change Manufacturing/Manufacturing Core, SOP comparison, Access, Shift, or Audit/CAPA records.</p>
             </div>
 
             <section class="trial-grid">
@@ -2379,7 +2380,7 @@ body {
                 <div class="trial-flow">
                     <div class="trial-step">
                         <b>1. Protocol Requirement</b>
-                        <span>Identify required study activity, visit, consent step, data capture point, safety review, or monitoring obligation.</span>
+                        <span>Identify required study activity, visit, consent step, data capture Acquired Site, safety review, or monitoring obligation.</span>
                     </div>
                     <div class="trial-arrow">→</div>
                     <div class="trial-step">
@@ -2590,13 +2591,13 @@ body {
 
             <div class="note">
                 <b>Next build step:</b> add a separate <b>clinical_trial_evidence.csv</b> storage file for protocol obligations,
-                evidence artifacts, ALCOA+ readiness, deviation linkage, and inspection-readiness scoring. This will keep clinical records separate from Manufacturing/Wole logs.
+                evidence artifacts, ALCOA+ readiness, deviation linkage, and inspection-readiness scoring. This will keep clinical records separate from Manufacturing/Manufacturing Core logs.
             </div>
             {% endif %}
 
             <div class="card">
                 <h2>Current Manufacturing Dashboard</h2>
-                <p>The existing Wole Manufacturing Assurance dashboard remains available here:</p>
+                <p>The existing Manufacturing Core Manufacturing Assurance dashboard remains available here:</p>
                 <p><a href="/" style="font-weight:900;color:#2563eb;">Open Manufacturing Dashboard</a></p>
             </div>
         </section>
@@ -2867,7 +2868,7 @@ def run_sop_comparison(req):
 
     if not global_doc["filename"] or not local_doc["filename"]:
         return {
-            "error": "Please upload both the Lilly/GPOS SOP and the Point/Local SOP."
+            "error": "Please upload both the Enterprise Pharma/GPOS SOP and the Acquired Site/Local SOP."
         }
 
     if not global_doc["text"] or not local_doc["text"]:
@@ -2890,13 +2891,13 @@ def run_sop_comparison(req):
 
         if g_present and not l_present:
             gaps.append({
-                "gap_type": "Lilly/GPOS control missing in Point SOP",
+                "gap_type": "Enterprise Pharma/GPOS control missing in Acquired Site SOP",
                 "theme": theme["theme"],
                 "category": theme["category"],
                 "risk": theme["risk"],
                 "evidence": "Control theme appears in the mature/global SOP but is missing from the local/manual SOP.",
                 "cobit": theme["cobit"],
-                "recommendation": "Adopt or harmonize the Lilly/GPOS control into the Point/local SOP. " + theme["recommendation"]
+                "recommendation": "Adopt or harmonize the Enterprise Pharma/GPOS control into the Acquired Site/local SOP. " + theme["recommendation"]
             })
 
         if r_present and not l_present:
@@ -2912,11 +2913,11 @@ def run_sop_comparison(req):
 
         if l_present and not g_present:
             gaps.append({
-                "gap_type": "Local-specific control not visible in Lilly/GPOS SOP",
+                "gap_type": "Local-specific control not visible in Enterprise Pharma/GPOS SOP",
                 "theme": theme["theme"],
                 "category": theme["category"],
                 "risk": "MEDIUM",
-                "evidence": "Point/local SOP includes a control theme that is not detected in the Lilly/GPOS SOP.",
+                "evidence": "Acquired Site/local SOP includes a control theme that is not detected in the Enterprise Pharma/GPOS SOP.",
                 "cobit": theme["cobit"],
                 "recommendation": "Review whether this is a legitimate site-specific control, a legacy requirement, or a candidate for harmonization."
             })
@@ -2930,12 +2931,12 @@ def run_sop_comparison(req):
     if global_tech and local_manual:
         gaps.append({
             "gap_type": "Technology maturity gap",
-            "theme": "Manual Point process vs mature Lilly system-enabled process",
+            "theme": "Manual Acquired Site process vs mature Enterprise Pharma system-enabled process",
             "category": "Technology maturity",
             "risk": "HIGH",
-            "evidence": "Lilly/GPOS appears to reference system-enabled or digital control, while Point/local SOP appears to rely on manual, paper, Excel, or binder-based execution.",
+            "evidence": "Enterprise Pharma/GPOS appears to reference system-enabled or digital control, while Acquired Site/local SOP appears to rely on manual, paper, Excel, or binder-based execution.",
             "cobit": "BAI06, DSS06, MEA02, APO12",
-            "recommendation": "Assess whether Point should adopt the Lilly system-enabled process, retain local process with compensating controls, or follow a phased harmonization plan."
+            "recommendation": "Assess whether Acquired Site should adopt the Enterprise Pharma system-enabled process, retain local process with compensating controls, or follow a phased harmonization plan."
         })
 
     global_dna = sop_control_dna(global_text)
@@ -2959,7 +2960,7 @@ def run_sop_comparison(req):
         review_triggers.append("Audit-triggered SOP review")
     if "recurring" in reality_lower or "repeated" in reality_lower or "repeat" in reality_lower:
         review_triggers.append("Recurring issue-triggered SOP review")
-    if "acquisition" in combined_lower or "acquired" in combined_lower or "harmonization" in combined_lower or "lilly" in combined_lower or "point" in combined_lower or "gpos" in combined_lower:
+    if "acquisition" in combined_lower or "acquired" in combined_lower or "harmonization" in combined_lower or "Enterprise Pharma" in combined_lower or "Acquired Site" in combined_lower or "gpos" in combined_lower:
         review_triggers.append("M&A / harmonization-triggered SOP review")
     if "new product" in combined_lower or "expansion" in combined_lower or "business expansion" in combined_lower:
         review_triggers.append("Business expansion or new product-triggered SOP review")
@@ -2970,9 +2971,9 @@ def run_sop_comparison(req):
         review_triggers.append("No major SOP review trigger detected from current comparison.")
 
     if high_risk_count >= 3 or technology_gap_count > 0:
-        recommended_decision = "Adopt Lilly/GPOS target-state controls or create a phased harmonization plan with QA/SOP owner review."
+        recommended_decision = "Adopt Enterprise Pharma/GPOS target-state controls or create a phased harmonization plan with QA/SOP owner review."
     elif outdated_count > 0:
-        recommended_decision = "Update Point/local SOP to reflect validated operational reality, or correct the process if the reality is noncompliant."
+        recommended_decision = "Update Acquired Site/local SOP to reflect validated operational reality, or correct the process if the reality is noncompliant."
     elif gaps:
         recommended_decision = "Review identified gaps and decide whether to harmonize, retain local controls, or document compensating controls."
     else:
@@ -2981,7 +2982,7 @@ def run_sop_comparison(req):
     pain_point_solutions = [
         {
             "pain_point": "Manual SOP comparison takes too long after acquisition.",
-            "solution": "COBIT-Chain creates a structured gap table between Lilly/GPOS and Point/local SOPs."
+            "solution": "COBIT-Chain creates a structured gap table between Enterprise Pharma/GPOS and Acquired Site/local SOPs."
         },
         {
             "pain_point": "Teams cannot tell whether the SOP is wrong or the process is wrong.",
@@ -2989,7 +2990,7 @@ def run_sop_comparison(req):
         },
         {
             "pain_point": "Mature global process and local manual process are hard to reconcile.",
-            "solution": "Technology Maturity Gap logic highlights where Point manual controls differ from Lilly system-enabled controls."
+            "solution": "Technology Maturity Gap logic highlights where Acquired Site manual controls differ from Enterprise Pharma system-enabled controls."
         },
         {
             "pain_point": "Audit evidence is reconstructed late and manually.",
@@ -3261,14 +3262,14 @@ button {
             <div class="panel">
                 <h2>Dual SOP Upload</h2>
                 <form method="POST" enctype="multipart/form-data" action="/sop-governance">
-                    <label><b>Lilly / GPOS / Mature SOP</b></label>
+                    <label><b>Enterprise Pharma / GPOS / Mature SOP</b></label>
                     <input type="file" name="global_sop" required>
 
-                    <label><b>Point / Local / Legacy SOP</b></label>
+                    <label><b>Acquired Site / Local / Legacy SOP</b></label>
                     <input type="file" name="local_sop" required>
 
                     <input name="process_area" placeholder="Process Area e.g. User Access Review / Equipment Handoff">
-                    <input name="reviewer" placeholder="Reviewer e.g. Sree / Taiwo">
+                    <input name="reviewer" placeholder="Reviewer e.g. Integration Lead / Taiwo">
                     <input name="sop_owner" placeholder="SOP Owner / System Owner">
 
                     <textarea name="reality_notes" placeholder="Optional: describe actual operational reality, audit finding, manual binder/Excel process, system workflow, recurring issue, acquisition/harmonization context..."></textarea>
@@ -3290,20 +3291,20 @@ button {
 
         <section>
             <div class="notice">
-                <b>Advanced SOP feature:</b> this page compares Lilly/GPOS against Point/local SOPs, identifies control gaps,
+                <b>Advanced SOP feature:</b> this page compares Enterprise Pharma/GPOS against Acquired Site/local SOPs, identifies control gaps,
                 detects outdated SOP signals, highlights technology maturity differences, maps findings to COBIT, and creates
                 a harmonization recommendation.
             </div>
 
             <section class="sop-grid">
                 <div class="sop-card">
-                    <div class="sop-label">M&A Pain Point</div>
-                    <h3>Lilly + Point Harmonization</h3>
+                    <div class="sop-label">M&A Pain Acquired Site</div>
+                    <h3>Enterprise Pharma + Acquired Site Harmonization</h3>
                     <p>Supports acquisition scenarios where a mature global process must be compared against a local manual process.</p>
                     <span class="sop-badge">SOP harmonization</span>
                 </div>
                 <div class="sop-card">
-                    <div class="sop-label">Wole Insight</div>
+                    <div class="sop-label">Manufacturing Core Insight</div>
                     <h3>Outdated SOP Detection</h3>
                     <p>Determines whether a gap is true process noncompliance or an outdated SOP that no longer reflects operational reality.</p>
                     <span class="sop-badge">Reality alignment</span>
@@ -3335,7 +3336,7 @@ button {
 
             <section class="sop-two-col">
                 <div class="dna-box">
-                    <h2>Lilly / GPOS Control DNA</h2>
+                    <h2>Enterprise Pharma / GPOS Control DNA</h2>
                     <p><b>Score:</b> {{ result.control_dna.global_score }}%</p>
                     <p><b>File:</b> {{ result.global_filename }}</p>
                     <p><b>Covered Controls:</b></p>
@@ -3345,7 +3346,7 @@ button {
                 </div>
 
                 <div class="dna-box">
-                    <h2>Point / Local Control DNA</h2>
+                    <h2>Acquired Site / Local Control DNA</h2>
                     <p><b>Score:</b> {{ result.control_dna.local_score }}%</p>
                     <p><b>File:</b> {{ result.local_filename }}</p>
                     <p><b>Missing Controls:</b></p>
@@ -3390,7 +3391,7 @@ button {
                 <h2>Organizational Pain Points Solved</h2>
                 <table class="exec-table">
                     <tr>
-                        <th>Pain Point</th>
+                        <th>Pain Acquired Site</th>
                         <th>COBIT-Chain Solution</th>
                     </tr>
                     {% for p in result.pain_point_solutions %}
@@ -3433,7 +3434,7 @@ button {
 
             <div class="warning">
                 <b>Storage design:</b> SOP comparison records are saved separately in <b>sop_comparisons.csv</b>.
-                This does not touch Manufacturing/Wole <b>logs.csv</b> or <b>baseline_hashes.csv</b>.
+                This does not touch Manufacturing/Manufacturing Core <b>logs.csv</b> or <b>baseline_hashes.csv</b>.
             </div>
         </section>
     </section>
@@ -3598,7 +3599,7 @@ body {
     <div class="notice">
         <b>Clinical Trial Integrity v2 is active.</b>
         This page extends your earlier Microsoft Purview/eConsent governance work into a full clinical-trial evidence integrity model.
-        The Manufacturing/Wole dashboard, SOP comparison engine, Access, Shift, and Audit/CAPA modules remain untouched.
+        The Manufacturing/Manufacturing Core dashboard, SOP comparison engine, Access, Shift, and Audit/CAPA modules remain untouched.
     </div>
 
     <section class="trial-grid">
@@ -3617,7 +3618,7 @@ body {
         </div>
 
         <div class="trial-card">
-            <div class="trial-label">Trial Pain Point</div>
+            <div class="trial-label">Trial Pain Acquired Site</div>
             <h3>Fragmented Evidence Control</h3>
             <p>Creates a single governance view across eConsent, eTMF, EDC, SharePoint, vendor files, monitoring evidence, and CSV validation packs.</p>
             <span class="trial-badge">Evidence control tower</span>
@@ -3844,7 +3845,7 @@ body {
     <div class="warning">
         <b>Next build step:</b> add a separate <b>clinical_trial_evidence.csv</b> storage file for protocol obligations,
         evidence artifacts, Purview status, ALCOA+ scoring, CSV validation packs, deviation linkage, and inspection-readiness scoring.
-        This must stay separate from Manufacturing/Wole <b>logs.csv</b> and <b>baseline_hashes.csv</b>.
+        This must stay separate from Manufacturing/Manufacturing Core <b>logs.csv</b> and <b>baseline_hashes.csv</b>.
     </div>
 </main>
 </body>
@@ -5139,7 +5140,7 @@ a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
 <p>
 Executive Overview v3 turns COBIT-Chain from separate module pages into an enterprise governance control tower.
 It reads each module register separately, summarizes readiness, identifies high-risk items, and keeps the original
-Manufacturing/Wole evidence chain protected.
+Manufacturing/Manufacturing Core evidence chain protected.
 </p>
 </div>
 </main>
@@ -6210,7 +6211,7 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 <h1>COBIT-Chain™ RLT-Trust™</h1>
 <p><span class="flagship-pill">FLAGSHIP TIER 1 RADIOPHARMA MODULE</span> Decay-Aware Governance Engine™ • Isotope-to-Patient Evidence Graph™ • Dose-to-Patient Readiness</p>
 <div class="flagship-banner">
-<b>Main Radiopharma Commercial Focus:</b> RLT-Trust™ is the primary COBIT-Chain module for Lilly/Point/Novartis-style radiopharmaceutical operations, where dose timing, decay window, QA release, radiation survey, chain-of-custody, site receipt, and patient administration readiness matter.
+<b>Main Radiopharma Commercial Focus:</b> RLT-Trust™ is the primary COBIT-Chain module for enterprise radiopharma / acquired-site radiopharmaceutical operations, where dose timing, decay window, QA release, radiation survey, chain-of-custody, site receipt, and patient administration readiness matter.
 </div>
 </section>
 
@@ -6275,7 +6276,7 @@ Decay Window: <b>{{ result.decay_window_status }}</b>
 <label><b>Delivery ETA</b></label>
 <input type="datetime-local" name="delivery_eta_time">
 
-<input name="receiving_site" placeholder="Receiving Site e.g. Novartis Indy / Treatment Site" required>
+<input name="receiving_site" placeholder="Receiving Site e.g. External RLT Business Integration Stakeholderchmark Site / Treatment Site" required>
 
 <label><b>Patient Appointment Time</b></label>
 <input type="datetime-local" name="patient_appointment_time">
@@ -6661,7 +6662,7 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
 Use DSCSA TrustChain™ for non-radioactive standard prescription drug package traceability, trading partner verification,
 transaction information/statement evidence, suspect product investigation, quarantine, notification, and disposition.
 <br><br>
-<b>Do not use DSCSA TrustChain™ as the main radiopharma/RLT dose-readiness module. RLT-Trust™ remains the flagship for Lilly/Point/Novartis-style radiopharma governance.</b>
+<b>Do not use DSCSA TrustChain™ as the main radiopharma/RLT dose-readiness module. RLT-Trust™ remains the flagship for enterprise radiopharma / acquired-site radiopharma governance.</b>
 Radiopharma dose timing, decay-window readiness, radiation survey, site receipt, and patient administration belong in RLT-Trust™.
 </div>
 
@@ -7379,7 +7380,7 @@ def get_executive_v4_metrics():
     sop_gaps = sum(exec_v4_int(x) for x in sop["gap_count"]) if not sop.empty else 0
 
     rows = [
-        {"tier": "Core", "module": "Manufacturing Assurance", "route": "/", "register": "logs.csv", "records": m_total, "ready": m_green, "conditional": m_yellow, "not_ready": m_red, "high": m_red, "position": "Protected Wole manufacturing core"},
+        {"tier": "Core", "module": "Manufacturing Assurance", "route": "/", "register": "logs.csv", "records": m_total, "ready": m_green, "conditional": m_yellow, "not_ready": m_red, "high": m_red, "position": "Protected Manufacturing Core manufacturing core"},
         {"tier": "Core", "module": "SOP Governance / SOPTrust™", "route": "/sop-governance", "register": "sop_comparisons.csv", "records": sop_total, "ready": max(sop_total - sop_high, 0), "conditional": sop_gaps, "not_ready": sop_high, "high": sop_high, "position": "Dual SOP harmonization engine"},
         {"tier": "Core", "module": "Shift Assurance / ShiftTrust™", "route": "/shift-assurance", "register": "shift_handoffs.csv", "records": len(shift), "ready": exec_v4_count(shift, "readiness_status", "READY"), "conditional": exec_v4_count(shift, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(shift, "readiness_status", "NOT READY"), "high": exec_v4_count(shift, "risk_level", "HIGH"), "position": "Equipment handoff and ServiceNow carryover"},
         {"tier": "Core", "module": "Access Governance / AccessTrust™", "route": "/access-governance", "register": "access_reviews.csv", "records": len(access), "ready": exec_v4_count(access, "readiness_status", "AUDIT-READY"), "conditional": exec_v4_count(access, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(access, "readiness_status", "NOT AUDIT-READY"), "high": exec_v4_count(access, "risk_level", "HIGH"), "position": "myAccess, binder, entitlement review"},
@@ -7618,14 +7619,14 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </nav>
 
 <div class="notice">
-<b>Platform positioning:</b> RLT-Trust™ is the flagship radiopharma module for Lilly/Point/Novartis-style RLT operations. 
+<b>Platform positioning:</b> RLT-Trust™ is the flagship radiopharma module for enterprise radiopharma / acquired-site RLT operations. 
 DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. CompoundTrust™, TrialTrust™, Audit/CAPA, SOP, Access, and Shift Assurance share the same COBIT-Chain evidence integrity engine.
 </div>
 
 <div class="section">
 <h2>Core Enterprise Modules</h2>
 <div class="grid">
-<div class="module-card"><span class="badge core">CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Wole manufacturing dashboard, evidence hashing, Azure Blob records, and integrity verification.</p><a href="/">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Manufacturing Core manufacturing dashboard, evidence hashing, Azure Blob records, and integrity verification.</p><a href="/">Open Module</a></div>
 <div class="module-card"><span class="badge core">CORE</span><h3>Executive Overview / CommandTrust™</h3><p>Enterprise-wide control tower across all active registers and module readiness scores.</p><a href="/executive-overview">Open Module</a></div>
 <div class="module-card"><span class="badge core">CORE</span><h3>SOP Governance / SOPTrust™</h3><p>Dual SOP comparison, SOP-to-reality gap detection, outdated SOP signals, and harmonization decisions.</p><a href="/sop-governance">Open Module</a></div>
 <div class="module-card"><span class="badge core">CORE</span><h3>Shift Assurance / ShiftTrust™</h3><p>Equipment handoff, day/night carryover, ServiceNow linkage, and technician accountability.</p><a href="/shift-assurance">Open Module</a></div>
@@ -7739,7 +7740,7 @@ def get_platform_health_rows():
             "route": "/",
             "test_route": "",
             "register": "logs.csv",
-            "purpose": "Manufacturing evidence, hashing, Azure Blob records, and Wole dashboard."
+            "purpose": "Manufacturing evidence, hashing, Azure Blob records, and Manufacturing Core dashboard."
         },
         {
             "tier": "Core Enterprise",
@@ -7925,7 +7926,7 @@ small{color:#64748b}
 
 <div class="card status-card {{ metrics.platform_class }}">
 <h2>{{ metrics.platform_icon }} {{ metrics.platform_status }}</h2>
-<p>This page verifies that COBIT-Chain modules are mapped to separate evidence registers. It helps confirm that new modules did not disturb the protected Manufacturing/Wole evidence chain.</p>
+<p>This page verifies that COBIT-Chain modules are mapped to separate evidence registers. It helps confirm that new modules did not disturb the protected Manufacturing/Manufacturing Core evidence chain.</p>
 </div>
 
 <section class="grid">
@@ -7968,7 +7969,7 @@ small{color:#64748b}
 <div class="card">
 <h2>Register Separation Principle</h2>
 <p>
-Each module uses a separate CSV register. This protects the original Manufacturing/Wole evidence chain while allowing COBIT-Chain™ to scale into SOP, Shift, Access, Audit/CAPA, Clinical Trial, CompoundTrust™, RLT-Trust™, DSCSA TrustChain™, and HomeCare Command™.
+Each module uses a separate CSV register. This protects the original Manufacturing/Manufacturing Core evidence chain while allowing COBIT-Chain™ to scale into SOP, Shift, Access, Audit/CAPA, Clinical Trial, CompoundTrust™, RLT-Trust™, DSCSA TrustChain™, and HomeCare Command™.
 </p>
 </div>
 </main>
@@ -8073,7 +8074,7 @@ It acts as a governance assurance layer over them.
 <tr><td><b>Flask App</b></td><td>Single deployed web app with modular routes.</td><td>Allows rapid enterprise module expansion without rebuilding from scratch.</td></tr>
 <tr><td><b>Azure Blob Storage</b></td><td>Stores CSV registers and evidence outputs.</td><td>Provides cloud-based persistence for evidence registers.</td></tr>
 <tr><td><b>SHA-256 / Record Hashes</b></td><td>Creates cryptographic fingerprints for evidence and register records.</td><td>Supports tamper-aware evidence integrity and audit defensibility.</td></tr>
-<tr><td><b>Separate CSV Registers</b></td><td>Each module writes to a separate evidence register.</td><td>Protects Manufacturing/Wole core while enabling modular expansion.</td></tr>
+<tr><td><b>Separate CSV Registers</b></td><td>Each module writes to a separate evidence register.</td><td>Protects Manufacturing/Manufacturing Core core while enabling modular expansion.</td></tr>
 <tr><td><b>Readiness Scoring</b></td><td>Each module applies domain-specific rules.</td><td>Transforms raw evidence into governance decisions.</td></tr>
 </table>
 </div>
@@ -8082,7 +8083,7 @@ It acts as a governance assurance layer over them.
 <h2>4. Module Register Architecture</h2>
 <table>
 <tr><th>Module</th><th>Register</th><th>Purpose</th></tr>
-<tr><td>Manufacturing Assurance</td><td>logs.csv / baseline_hashes.csv</td><td>Protected Wole manufacturing evidence integrity chain.</td></tr>
+<tr><td>Manufacturing Assurance</td><td>logs.csv / baseline_hashes.csv</td><td>Protected Manufacturing Core manufacturing evidence integrity chain.</td></tr>
 <tr><td>SOP Governance</td><td>sop_comparisons.csv</td><td>Dual SOP comparison, gap detection, and harmonization evidence.</td></tr>
 <tr><td>Shift Assurance</td><td>shift_handoffs.csv</td><td>Equipment handoff, ServiceNow carryover, and technician accountability.</td></tr>
 <tr><td>Access Governance</td><td>access_reviews.csv</td><td>myAccess/binder/Excel access review readiness.</td></tr>
@@ -8098,7 +8099,7 @@ It acts as a governance assurance layer over them.
 <div class="section">
 <h2>5. RLT-Trust™ Flagship Positioning</h2>
 <div class="grid">
-<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>RLT-Trust™</h3><p>Main radiopharma module for Lilly/Point/Novartis-style RLT operations.</p></div>
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>RLT-Trust™</h3><p>Main radiopharma module for enterprise radiopharma / acquired-site RLT operations.</p></div>
 <div class="card"><span class="badge flagship">ADVANCED ENGINE</span><h3>Decay-Aware Governance Engine™</h3><p>Assesses timing, delivery, appointment, administration deadline, QA release, and readiness risk.</p></div>
 <div class="card"><span class="badge flagship">EVIDENCE GRAPH</span><h3>Isotope-to-Patient Evidence Graph™</h3><p>Links isotope/manufacturing, QA release, courier, site receipt, radiation survey, and patient administration evidence.</p></div>
 </div>
@@ -8132,7 +8133,7 @@ chain-of-custody, radiation survey, site receipt, and patient administration win
 <h2>8. Commercial Roadmap</h2>
 <table>
 <tr><th>Priority</th><th>Module</th><th>Commercial Rationale</th></tr>
-<tr><td><b>Tier 1</b></td><td>RLT-Trust™</td><td>Best aligned to Lilly/Point and Novartis Indianapolis radiopharma opportunity.</td></tr>
+<tr><td><b>Tier 1</b></td><td>RLT-Trust™</td><td>Best aligned to enterprise pharma / acquired-site and External RLT Business Integration Stakeholderchmark Site radiopharma opportunity.</td></tr>
 <tr><td><b>Tier 1</b></td><td>CompoundTrust™</td><td>Strong inspection-readiness use case for sterile and compounding pharmacy operations.</td></tr>
 <tr><td><b>Tier 1</b></td><td>TrialTrust™</td><td>Supports dissertation, clinical trial governance, Purview, eConsent, and ALCOA+ readiness.</td></tr>
 <tr><td><b>Tier 1</b></td><td>SOP / Audit / Access</td><td>Strong enterprise governance modules for regulated IT and QA operations.</td></tr>
@@ -8194,7 +8195,7 @@ td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
 <body>
 <section class="hero">
 <h1>COBIT-Chain™ Stakeholder Demo Script</h1>
-<p>Guided narrative for leadership, dissertation, ISACA, USCIS, Lilly/Point, Novartis, compounding pharmacy, and homecare audiences.</p>
+<p>Guided narrative for leadership, dissertation, ISACA, USCIS, enterprise pharma / acquired-site, External RLT Business Integration Stakeholderchmark, compounding pharmacy, and homecare audiences.</p>
 </section>
 
 <main class="container">
@@ -8231,9 +8232,9 @@ release, or leadership review.
 <div class="section">
 <h2>2. What Problem It Solves</h2>
 <div class="grid">
-<div class="card"><span class="badge core">PAIN POINT</span><h3>Evidence is fragmented</h3><p>Records sit across binders, Excel, ServiceNow, myAccess, SharePoint, Purview, QA systems, logs, and emails.</p></div>
-<div class="card"><span class="badge core">PAIN POINT</span><h3>Audit readiness is manual</h3><p>Teams reconstruct evidence late, often under audit pressure, instead of validating readiness continuously.</p></div>
-<div class="card"><span class="badge core">PAIN POINT</span><h3>Approvals do not prove reality</h3><p>A workflow approval may exist, but it does not always prove the actual system, equipment, SOP, or evidence state.</p></div>
+<div class="card"><span class="badge core">PAIN Acquired Site</span><h3>Evidence is fragmented</h3><p>Records sit across binders, Excel, ServiceNow, myAccess, SharePoint, Purview, QA systems, logs, and emails.</p></div>
+<div class="card"><span class="badge core">PAIN Acquired Site</span><h3>Audit readiness is manual</h3><p>Teams reconstruct evidence late, often under audit pressure, instead of validating readiness continuously.</p></div>
+<div class="card"><span class="badge core">PAIN Acquired Site</span><h3>Approvals do not prove reality</h3><p>A workflow approval may exist, but it does not always prove the actual system, equipment, SOP, or evidence state.</p></div>
 </div>
 </div>
 
@@ -8241,11 +8242,11 @@ release, or leadership review.
 <h2>3. Demo Sequence</h2>
 <table>
 <tr><th>Step</th><th>Page</th><th>What to Say</th></tr>
-<tr><td>1</td><td><b>/</b></td><td>Start with the protected Manufacturing/Wole dashboard. Emphasize that existing functionality was preserved.</td></tr>
+<tr><td>1</td><td><b>/</b></td><td>Start with the protected Manufacturing/Manufacturing Core dashboard. Emphasize that existing functionality was preserved.</td></tr>
 <tr><td>2</td><td><b>/modules</b></td><td>Show that COBIT-Chain™ is now a product suite, not a single dashboard.</td></tr>
 <tr><td>3</td><td><b>/platform-health</b></td><td>Show every module, route, evidence register, record count, and health status.</td></tr>
 <tr><td>4</td><td><b>/executive-overview</b></td><td>Show the enterprise control tower summarizing all module records and high-risk signals.</td></tr>
-<tr><td>5</td><td><b>/sop-governance</b></td><td>Show Lilly/Point-style SOP harmonization and outdated SOP detection.</td></tr>
+<tr><td>5</td><td><b>/sop-governance</b></td><td>Show enterprise pharma / acquired-site-style SOP harmonization and outdated SOP detection.</td></tr>
 <tr><td>6</td><td><b>/clinical-trial-integrity</b></td><td>Show Microsoft Purview, eConsent, retention, ALCOA+, and inspection-readiness connection.</td></tr>
 <tr><td>7</td><td><b>/rlt-trust</b></td><td>Show RLT-Trust™ as the flagship radiopharma module for dose-to-patient readiness.</td></tr>
 <tr><td>8</td><td><b>/architecture</b></td><td>Close with the architecture, novelty claims, and commercialization roadmap.</td></tr>
@@ -8263,7 +8264,7 @@ The module is designed to show whether a dose is truly ready to move from isotop
 <div class="grid">
 <div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Decay-Aware Governance Engine™</h3><p>Scores readiness based on timing, QA release, delivery ETA, patient appointment, and administration deadline.</p></div>
 <div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Isotope-to-Patient Evidence Graph™</h3><p>Links dose manufacturing, release, courier custody, site receipt, radiation survey, and administration evidence.</p></div>
-<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Lilly/Point/Novartis Fit</h3><p>Best aligned with Point Biopharma/Lilly RLT operations and Novartis-style radiopharma manufacturing environments.</p></div>
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>enterprise pharma / acquired-site/External RLT Business Integration Stakeholderchmark Fit</h3><p>Best aligned with Acquired Radiopharma Site/Enterprise Pharma RLT operations and External RLT Business Integration Stakeholderchmark-style radiopharma manufacturing environments.</p></div>
 </div>
 </div>
 
@@ -8418,7 +8419,7 @@ The flagship commercial wedge is <b>RLT-Trust™</b> for radiopharma/RLT operati
 <b>Primary commercial thesis:</b> Radiopharma/RLT operations have a unique governance burden because evidence must prove not only product quality, but also timing, decay-window readiness, site receipt, radiation survey, chain-of-custody, and patient administration readiness.
 </div>
 <table>
-<tr><th>RLT Pain Point</th><th>RLT-Trust™ Response</th><th>Commercial Value</th></tr>
+<tr><th>RLT Pain Acquired Site</th><th>RLT-Trust™ Response</th><th>Commercial Value</th></tr>
 <tr><td>Radioactive decay window</td><td>Decay-Aware Governance Engine™</td><td>Shows whether dose timing remains usable and operationally safe.</td></tr>
 <tr><td>QA release timing</td><td>Release-to-delivery readiness scoring</td><td>Helps prevent dose movement before release evidence is complete.</td></tr>
 <tr><td>Courier and site handoffs</td><td>Isotope-to-Patient Evidence Graph™</td><td>Creates dose chain-of-custody from production to treatment site.</td></tr>
@@ -8456,7 +8457,7 @@ The core market problem is proving that a visit happened correctly, the caregive
 </div>
 <br>
 <table>
-<tr><th>Homecare Pain Point</th><th>HomeCare Command™ Feature</th><th>Buyer Value</th></tr>
+<tr><th>Homecare Pain Acquired Site</th><th>HomeCare Command™ Feature</th><th>Buyer Value</th></tr>
 <tr><td>EVV disputes</td><td>EVV Integrity Monitor</td><td>Reduces disputed visits and audit risk.</td></tr>
 <tr><td>Billing without proof</td><td>Billing Readiness Gate</td><td>Helps prevent unsupported claims.</td></tr>
 <tr><td>Payroll mismatch</td><td>Payroll vs Verified Visit Readiness</td><td>Aligns caregiver pay with verified care evidence.</td></tr>
@@ -8500,7 +8501,7 @@ The core market problem is proving that a visit happened correctly, the caregive
 <div class="section">
 <h2>9. Implementation Roadmap</h2>
 <div class="timeline">
-<div class="milestone"><b>Phase 1 — Stabilize Platform</b><br>Protect Manufacturing/Wole, lock tags, maintain routes, and validate all registers.</div>
+<div class="milestone"><b>Phase 1 — Stabilize Platform</b><br>Protect Manufacturing/Manufacturing Core, lock tags, maintain routes, and validate all registers.</div>
 <div class="milestone"><b>Phase 2 — Strengthen RLT-Trust™</b><br>Add decay buffer logic, time-window visuals, RLT evidence pack, and flagship visual hierarchy.</div>
 <div class="milestone"><b>Phase 3 — Strengthen Clinical Trial/Purview</b><br>Add eConsent DLP test checklist, retention label status, and CSV validation pack readiness.</div>
 <div class="milestone"><b>Phase 4 — Commercial Modules</b><br>Improve CompoundTrust™ and HomeCare Command™ for external demos and buyer conversations.</div>
@@ -8597,7 +8598,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <div class="card"><span class="badge strategy">PRODUCT SUITE</span><h3>Modules Directory</h3><p>Clean product-suite page showing core enterprise modules, life sciences modules, RLT flagship, DSCSA, and HomeCare.</p><a href="/modules">Open Modules</a></div>
 <div class="card"><span class="badge strategy">SYSTEM HEALTH</span><h3>Platform Health</h3><p>Route registry and register-health page showing each module, route, CSV register, record count, and status.</p><a href="/platform-health">Open Platform Health</a></div>
 <div class="card"><span class="badge strategy">ARCHITECTURE</span><h3>Architecture & Innovation Claims</h3><p>Explains the COBIT-Chain™ engine, Azure Blob, SHA-256, module registers, novelty claims, and RLT positioning.</p><a href="/architecture">Open Architecture</a></div>
-<div class="card"><span class="badge strategy">PRESENTATION</span><h3>Stakeholder Demo Script</h3><p>Guided narrative for Chris, Sree, dissertation reviewers, ISACA, USCIS, partners, and future customers.</p><a href="/demo-script">Open Demo Script</a></div>
+<div class="card"><span class="badge strategy">PRESENTATION</span><h3>Stakeholder Demo Script</h3><p>Guided narrative for IT Leadership, Integration Lead, dissertation reviewers, ISACA, USCIS, partners, and future customers.</p><a href="/demo-script">Open Demo Script</a></div>
 <div class="card"><span class="badge strategy">COMMERCIALIZATION</span><h3>Roadmap</h3><p>Commercialization, partnership, PhD, USCIS, ISACA, and product-suite roadmap with RLT-Trust™ as the flagship.</p><a href="/roadmap">Open Roadmap</a></div>
 </div>
 </div>
@@ -8614,7 +8615,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <div class="section">
 <h2>Core Enterprise Modules</h2>
 <div class="grid">
-<div class="card"><span class="badge core">PROTECTED CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Manufacturing/Wole dashboard, evidence hashing, Azure Blob records, and verification engine.</p><a href="/">Open Manufacturing</a></div>
+<div class="card"><span class="badge core">PROTECTED CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Manufacturing/Manufacturing Core dashboard, evidence hashing, Azure Blob records, and verification engine.</p><a href="/">Open Manufacturing</a></div>
 <div class="card"><span class="badge core">SOP</span><h3>SOP Governance / SOPTrust™</h3><p>Dual SOP comparison, SOP-to-reality gap detection, outdated SOP signals, and harmonization decisions.</p><a href="/sop-governance">Open SOP Governance</a></div>
 <div class="card"><span class="badge core">SHIFT</span><h3>Shift Assurance / ShiftTrust™</h3><p>Equipment handoff, day/night carryover, ServiceNow linkage, technician accountability, and shift readiness.</p><a href="/shift-assurance">Open Shift Assurance</a></div>
 <div class="card"><span class="badge core">ACCESS</span><h3>Access Governance / AccessTrust™</h3><p>myAccess, binder/Excel access evidence, approval references, system owner review, and audit readiness.</p><a href="/access-governance">Open Access Governance</a></div>
@@ -8653,7 +8654,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 
 # ============================================================
 # DEMO LANDING ALIASES ACTIVE
-# Clean demo URLs. Protected / homepage remains Manufacturing/Wole.
+# Clean demo URLs. Protected / homepage remains Manufacturing/Manufacturing Core.
 # ============================================================
 
 @app.route("/home")
