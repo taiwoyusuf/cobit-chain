@@ -7669,5 +7669,308 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
     """
     return render_template_string(html)
 
+
+# ============================================================
+# PLATFORM HEALTH ACTIVE
+# Route registry and register health dashboard.
+# ============================================================
+
+def get_platform_register_health(filename):
+    try:
+        df = load_csv(filename)
+        if df is None:
+            return {
+                "exists": "UNKNOWN",
+                "records": 0,
+                "latest_timestamp": "",
+                "columns": "",
+                "status": "CHECK REQUIRED",
+                "risk": "MEDIUM"
+            }
+
+        df = df.fillna("")
+        records = len(df)
+        latest_timestamp = ""
+
+        if records > 0 and "timestamp" in df.columns:
+            latest_timestamp = clean(df.tail(1).iloc[0].get("timestamp"))
+
+        columns = ", ".join([str(c) for c in list(df.columns)[:8]])
+        if len(df.columns) > 8:
+            columns += " ..."
+
+        if records > 0:
+            status = "ACTIVE WITH RECORDS"
+            risk = "LOW"
+        else:
+            status = "REGISTER READY / NO RECORDS YET"
+            risk = "MEDIUM"
+
+        return {
+            "exists": "YES",
+            "records": records,
+            "latest_timestamp": latest_timestamp,
+            "columns": columns,
+            "status": status,
+            "risk": risk
+        }
+
+    except Exception as e:
+        return {
+            "exists": "ERROR",
+            "records": 0,
+            "latest_timestamp": "",
+            "columns": str(e),
+            "status": "REGISTER ERROR",
+            "risk": "HIGH"
+        }
+
+
+def get_platform_health_rows():
+    modules = [
+        {
+            "tier": "Core Enterprise",
+            "module": "Manufacturing Assurance / BatchTrust™",
+            "route": "/",
+            "test_route": "",
+            "register": "logs.csv",
+            "purpose": "Manufacturing evidence, hashing, Azure Blob records, and Wole dashboard."
+        },
+        {
+            "tier": "Core Enterprise",
+            "module": "SOP Governance / SOPTrust™",
+            "route": "/sop-governance",
+            "test_route": "",
+            "register": "sop_comparisons.csv",
+            "purpose": "Dual SOP comparison, harmonization, SOP gap detection, and outdated SOP signals."
+        },
+        {
+            "tier": "Core Enterprise",
+            "module": "Shift Assurance / ShiftTrust™",
+            "route": "/shift-assurance",
+            "test_route": "/shift-assurance-v2-test",
+            "register": "shift_handoffs.csv",
+            "purpose": "Equipment handoff, ServiceNow carryover, technician accountability, and shift readiness."
+        },
+        {
+            "tier": "Core Enterprise",
+            "module": "Access Governance / AccessTrust™",
+            "route": "/access-governance",
+            "test_route": "/access-governance-v2-test",
+            "register": "access_reviews.csv",
+            "purpose": "myAccess, binder reconciliation, approval evidence, and access review readiness."
+        },
+        {
+            "tier": "Core Enterprise",
+            "module": "Audit/CAPA / CAPATrust™",
+            "route": "/audit-capa",
+            "test_route": "/audit-capa-v2-test",
+            "register": "audit_capa_register.csv",
+            "purpose": "Finding-to-CAPA evidence, remediation proof, and effectiveness readiness."
+        },
+        {
+            "tier": "Life Sciences",
+            "module": "TrialTrust™ / Clinical Trial Integrity",
+            "route": "/clinical-trial-integrity",
+            "test_route": "/clinical-trial-integrity-v3-test",
+            "register": "clinical_trial_evidence.csv",
+            "purpose": "Purview, eConsent, retention, ALCOA+, deviation/CAPA linkage, and inspection readiness."
+        },
+        {
+            "tier": "Life Sciences",
+            "module": "CompoundTrust™",
+            "route": "/compoundtrust",
+            "test_route": "/compounding-pharmacy-v1-test",
+            "register": "compounding_pharmacy_evidence.csv",
+            "purpose": "Sterility-to-release evidence, BUD, EM, cleaning, garbing, QA, and release readiness."
+        },
+        {
+            "tier": "Flagship Radiopharma",
+            "module": "RLT-Trust™ / RadiopharmaTrust™",
+            "route": "/rlt-trust",
+            "test_route": "/rlt-trust-v1-test",
+            "register": "rlt_dose_evidence.csv",
+            "purpose": "Decay-aware dose-to-patient readiness, chain-of-custody, QA release, site receipt, and administration window."
+        },
+        {
+            "tier": "Supporting Pharma Supply Chain",
+            "module": "DSCSA TrustChain™",
+            "route": "/dscsa-trustchain",
+            "test_route": "/dscsa-trustchain-v1-test",
+            "register": "dscsa_traceability_evidence.csv",
+            "purpose": "Standard prescription drug package traceability, trading partner evidence, suspect product workflow, and disposition."
+        },
+        {
+            "tier": "Commercial Expansion",
+            "module": "HomeCare Command™ / CareTrust™",
+            "route": "/homecare-command",
+            "test_route": "/homecare-command-v1-test",
+            "register": "homecare_delivery_evidence.csv",
+            "purpose": "EVV, GPS, care-plan completion, caregiver credential, billing, payroll, and Medicaid/MCO audit readiness."
+        }
+    ]
+
+    rows = []
+    total_records = 0
+    active_registers = 0
+    high_risk = 0
+    medium_risk = 0
+
+    for m in modules:
+        health = get_platform_register_health(m["register"])
+        row = {**m, **health}
+        rows.append(row)
+
+        total_records += int(health.get("records", 0) or 0)
+
+        if health.get("records", 0) > 0:
+            active_registers += 1
+
+        if health.get("risk") == "HIGH":
+            high_risk += 1
+        elif health.get("risk") == "MEDIUM":
+            medium_risk += 1
+
+    if high_risk > 0:
+        platform_status = "REGISTER ERROR REQUIRES ATTENTION"
+        platform_class = "critical"
+        platform_icon = "❌"
+    elif active_registers > 0:
+        platform_status = "PLATFORM ACTIVE"
+        platform_class = "healthy"
+        platform_icon = "✅"
+    else:
+        platform_status = "PLATFORM ROUTES READY / NO RECORDS YET"
+        platform_class = "warning"
+        platform_icon = "⚠"
+
+    return {
+        "rows": rows,
+        "total_modules": len(modules),
+        "active_registers": active_registers,
+        "total_records": total_records,
+        "high_risk": high_risk,
+        "medium_risk": medium_risk,
+        "platform_status": platform_status,
+        "platform_class": platform_class,
+        "platform_icon": platform_icon
+    }
+
+
+@app.route("/platform-health")
+def platform_health_page():
+    # PLATFORM_HEALTH_ACTIVE
+    metrics = get_platform_health_rows()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Platform Health</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:36px 42px 48px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1550px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+.status-card{border-left:8px solid #64748b}
+.status-card.healthy{border-left-color:#16a34a;background:linear-gradient(135deg,#f0fdf4,#fff)}
+.status-card.warning{border-left-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fff)}
+.status-card.critical{border-left-color:#dc2626;background:linear-gradient(135deg,#fef2f2,#fff)}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
+.low{color:#16a34a;font-weight:900}
+.medium{color:#d97706;font-weight:900}
+.high{color:#dc2626;font-weight:900}
+.flagship{background:#fff7ed}
+small{color:#64748b}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Platform Health</h1>
+<p>Route registry, register health, module storage validation, and enterprise evidence visibility.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/modules">Modules Directory</a>
+<a class="active" href="/platform-health">Platform Health</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/compoundtrust">CompoundTrust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="card status-card {{ metrics.platform_class }}">
+<h2>{{ metrics.platform_icon }} {{ metrics.platform_status }}</h2>
+<p>This page verifies that COBIT-Chain modules are mapped to separate evidence registers. It helps confirm that new modules did not disturb the protected Manufacturing/Wole evidence chain.</p>
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Modules</div><div class="metric-value">{{ metrics.total_modules }}</div></div>
+<div class="metric"><div class="metric-label">Active Registers</div><div class="metric-value" style="color:#16a34a">{{ metrics.active_registers }}</div></div>
+<div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total_records }}</div></div>
+<div class="metric"><div class="metric-label">Register Errors</div><div class="metric-value" style="color:#dc2626">{{ metrics.high_risk }}</div></div>
+</section>
+
+<div class="card">
+<h2>Route Registry + Register Health Board</h2>
+<table>
+<tr>
+<th>Tier</th>
+<th>Module</th>
+<th>Main Route</th>
+<th>Test Route</th>
+<th>Register</th>
+<th>Records</th>
+<th>Latest Timestamp</th>
+<th>Status</th>
+<th>Purpose</th>
+</tr>
+{% for r in metrics.rows %}
+<tr class="{% if 'RLT-Trust' in r.module %}flagship{% endif %}">
+<td>{{ r.tier }}</td>
+<td><b>{{ r.module }}</b></td>
+<td><a class="module-link" href="{{ r.route }}">{{ r.route }}</a></td>
+<td>{% if r.test_route %}<a class="module-link" href="{{ r.test_route }}">{{ r.test_route }}</a>{% else %}<small>N/A</small>{% endif %}</td>
+<td>{{ r.register }}</td>
+<td><b>{{ r.records }}</b></td>
+<td>{{ r.latest_timestamp }}</td>
+<td class="{% if r.risk == 'LOW' %}low{% elif r.risk == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.status }}</td>
+<td>{{ r.purpose }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2>Register Separation Principle</h2>
+<p>
+Each module uses a separate CSV register. This protects the original Manufacturing/Wole evidence chain while allowing COBIT-Chain™ to scale into SOP, Shift, Access, Audit/CAPA, Clinical Trial, CompoundTrust™, RLT-Trust™, DSCSA TrustChain™, and HomeCare Command™.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics)
+
 if __name__ == "__main__":
     app.run(debug=True)
