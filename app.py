@@ -7332,5 +7332,210 @@ def homecare_command_page():
     # HOMECARE_COMMAND_V1_PROMOTED_REDIRECT_ACTIVE
     return redirect("/homecare-command-v1-test")
 
+
+# ============================================================
+# EXECUTIVE OVERVIEW V4 TEST ACTIVE
+# Enterprise + vertical module dashboard.
+# Does not replace /executive-overview yet.
+# ============================================================
+
+def exec_v4_int(value):
+    try:
+        return int(float(clean(value)))
+    except Exception:
+        return 0
+
+
+def exec_v4_register(filename, columns):
+    df = load_csv(filename)
+    return ensure_cols(df, columns).fillna("")
+
+
+def exec_v4_count(df, column, value):
+    if df.empty or column not in df.columns:
+        return 0
+    return len(df[df[column] == value])
+
+
+def get_executive_v4_metrics():
+    manufacturing = prepare_logs().fillna("")
+    sop = exec_v4_register("sop_comparisons.csv", ["comparison_id", "gap_count", "high_risk_gap_count"])
+    shift = exec_v4_register("shift_handoffs.csv", ["handoff_id", "readiness_status", "risk_level"])
+    access = exec_v4_register("access_reviews.csv", ["review_id", "readiness_status", "risk_level"])
+    audit = exec_v4_register("audit_capa_register.csv", ["audit_id", "readiness_status", "risk_level"])
+    clinical = exec_v4_register("clinical_trial_evidence.csv", ["evidence_id", "inspection_readiness", "risk_level"])
+    compound = exec_v4_register("compounding_pharmacy_evidence.csv", ["compound_record_id", "readiness_status", "risk_level"])
+    rlt = exec_v4_register("rlt_dose_evidence.csv", ["rlt_record_id", "readiness_status", "risk_level"])
+    dscsa = exec_v4_register("dscsa_traceability_evidence.csv", ["dscsa_record_id", "readiness_status", "risk_level"])
+    homecare = exec_v4_register("homecare_delivery_evidence.csv", ["homecare_record_id", "readiness_status", "risk_level"])
+
+    m_total = len(manufacturing)
+    m_green = exec_v4_count(manufacturing, "status", "GREEN")
+    m_yellow = exec_v4_count(manufacturing, "status", "YELLOW")
+    m_red = exec_v4_count(manufacturing, "status", "RED")
+
+    sop_total = len(sop)
+    sop_high = sum(exec_v4_int(x) for x in sop["high_risk_gap_count"]) if not sop.empty else 0
+    sop_gaps = sum(exec_v4_int(x) for x in sop["gap_count"]) if not sop.empty else 0
+
+    rows = [
+        {"tier": "Core", "module": "Manufacturing Assurance", "route": "/", "register": "logs.csv", "records": m_total, "ready": m_green, "conditional": m_yellow, "not_ready": m_red, "high": m_red, "position": "Protected Wole manufacturing core"},
+        {"tier": "Core", "module": "SOP Governance / SOPTrust™", "route": "/sop-governance", "register": "sop_comparisons.csv", "records": sop_total, "ready": max(sop_total - sop_high, 0), "conditional": sop_gaps, "not_ready": sop_high, "high": sop_high, "position": "Dual SOP harmonization engine"},
+        {"tier": "Core", "module": "Shift Assurance / ShiftTrust™", "route": "/shift-assurance", "register": "shift_handoffs.csv", "records": len(shift), "ready": exec_v4_count(shift, "readiness_status", "READY"), "conditional": exec_v4_count(shift, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(shift, "readiness_status", "NOT READY"), "high": exec_v4_count(shift, "risk_level", "HIGH"), "position": "Equipment handoff and ServiceNow carryover"},
+        {"tier": "Core", "module": "Access Governance / AccessTrust™", "route": "/access-governance", "register": "access_reviews.csv", "records": len(access), "ready": exec_v4_count(access, "readiness_status", "AUDIT-READY"), "conditional": exec_v4_count(access, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(access, "readiness_status", "NOT AUDIT-READY"), "high": exec_v4_count(access, "risk_level", "HIGH"), "position": "myAccess, binder, entitlement review"},
+        {"tier": "Core", "module": "Audit/CAPA / CAPATrust™", "route": "/audit-capa", "register": "audit_capa_register.csv", "records": len(audit), "ready": exec_v4_count(audit, "readiness_status", "EFFECTIVENESS READY"), "conditional": exec_v4_count(audit, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(audit, "readiness_status", "NOT READY"), "high": exec_v4_count(audit, "risk_level", "HIGH"), "position": "Effectiveness readiness gate"},
+        {"tier": "Tier 1 Life Sciences", "module": "TrialTrust™ / Clinical Trial Integrity", "route": "/clinical-trial-integrity", "register": "clinical_trial_evidence.csv", "records": len(clinical), "ready": exec_v4_count(clinical, "inspection_readiness", "INSPECTION READY"), "conditional": exec_v4_count(clinical, "inspection_readiness", "CONDITIONALLY READY"), "not_ready": exec_v4_count(clinical, "inspection_readiness", "NOT INSPECTION READY"), "high": exec_v4_count(clinical, "risk_level", "HIGH"), "position": "Microsoft Purview, eConsent, ALCOA+, inspection readiness"},
+        {"tier": "Tier 1 Life Sciences", "module": "CompoundTrust™", "route": "/compounding-pharmacy-v1-test", "register": "compounding_pharmacy_evidence.csv", "records": len(compound), "ready": exec_v4_count(compound, "readiness_status", "RELEASE READY"), "conditional": exec_v4_count(compound, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(compound, "readiness_status", "NOT RELEASE READY"), "high": exec_v4_count(compound, "risk_level", "HIGH"), "position": "Sterility-to-release evidence graph"},
+        {"tier": "Tier 1 Flagship", "module": "RLT-Trust™ / RadiopharmaTrust™", "route": "/rlt-trust", "register": "rlt_dose_evidence.csv", "records": len(rlt), "ready": exec_v4_count(rlt, "readiness_status", "DOSE-TO-PATIENT READY"), "conditional": exec_v4_count(rlt, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(rlt, "readiness_status", "NOT READY"), "high": exec_v4_count(rlt, "risk_level", "HIGH"), "position": "FLAGSHIP radiopharma/RLT dose-to-patient module"},
+        {"tier": "Supporting Pharma", "module": "DSCSA TrustChain™", "route": "/dscsa-trustchain", "register": "dscsa_traceability_evidence.csv", "records": len(dscsa), "ready": exec_v4_count(dscsa, "readiness_status", "TRACEABILITY READY"), "conditional": exec_v4_count(dscsa, "readiness_status", "CONDITIONALLY READY"), "not_ready": exec_v4_count(dscsa, "readiness_status", "NOT TRACEABILITY READY"), "high": exec_v4_count(dscsa, "risk_level", "HIGH"), "position": "Supporting standard prescription drug traceability"},
+        {"tier": "Commercial Expansion", "module": "HomeCare Command™ / CareTrust™", "route": "/homecare-command", "register": "homecare_delivery_evidence.csv", "records": len(homecare), "ready": exec_v4_count(homecare, "readiness_status", "CARE DELIVERY VERIFIED"), "conditional": exec_v4_count(homecare, "readiness_status", "CONDITIONALLY VERIFIED"), "not_ready": exec_v4_count(homecare, "readiness_status", "NOT VERIFIED"), "high": exec_v4_count(homecare, "risk_level", "HIGH"), "position": "EVV, care plan, billing/payroll readiness"}
+    ]
+
+    total_records = sum(r["records"] for r in rows)
+    high_total = sum(r["high"] for r in rows)
+    conditional_total = sum(r["conditional"] for r in rows)
+    ready_total = sum(r["ready"] for r in rows)
+
+    if high_total > 0:
+        status = "CRITICAL ITEMS EXIST ACROSS THE ENTERPRISE"
+        icon = "❌"
+        css = "critical"
+    elif conditional_total > 0:
+        status = "CONDITIONAL ENTERPRISE READINESS"
+        icon = "⚠"
+        css = "warning"
+    elif total_records > 0:
+        status = "ENTERPRISE GOVERNANCE BASELINE HEALTHY"
+        icon = "✅"
+        css = "healthy"
+    else:
+        status = "NO MODULE RECORDS YET"
+        icon = "ℹ"
+        css = "neutral"
+
+    actions = []
+    for r in rows:
+        if r["high"] > 0:
+            actions.append(f"{r['module']}: review {r['high']} high-risk item(s).")
+    if not actions:
+        actions.append("No high-risk items detected. Continue expanding module evidence coverage.")
+
+    return {
+        "rows": rows,
+        "total_records": total_records,
+        "high_total": high_total,
+        "conditional_total": conditional_total,
+        "ready_total": ready_total,
+        "status": status,
+        "icon": icon,
+        "css": css,
+        "actions": actions
+    }
+
+
+@app.route("/executive-overview-v4-test")
+def executive_overview_v4_test():
+    metrics = get_executive_v4_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain Executive Overview v4 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1500px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:6px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+.status-card{border-left:8px solid #64748b}
+.status-card.healthy{border-left-color:#16a34a;background:linear-gradient(135deg,#f0fdf4,#fff)}
+.status-card.warning{border-left-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fff)}
+.status-card.critical{border-left-color:#dc2626;background:linear-gradient(135deg,#fef2f2,#fff)}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
+.high{color:#dc2626;font-weight:900}.medium{color:#d97706;font-weight:900}.low{color:#16a34a;font-weight:900}
+.flagship{background:#fff7ed;font-weight:900}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Executive Overview v4 Test</h1>
+<p>Enterprise + Life Sciences + Radiopharma + Homecare Governance Control Tower</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Current</a>
+<a class="active" href="/executive-overview-v4-test">Executive v4 Test</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/compounding-pharmacy-v1-test">CompoundTrust</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="card status-card {{ metrics.css }}">
+<h2>{{ metrics.icon }} {{ metrics.status }}</h2>
+<p>This page includes the original enterprise modules plus CompoundTrust™, RLT-Trust™, DSCSA TrustChain™, and HomeCare Command™.</p>
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Records</div><div class="metric-value">{{ metrics.total_records }}</div></div>
+<div class="metric"><div class="metric-label">Ready / Verified</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready_total }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional_total }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high_total }}</div></div>
+</section>
+
+<div class="card">
+<h2>Enterprise + Vertical Module Board</h2>
+<table>
+<tr>
+<th>Tier</th><th>Module</th><th>Register</th><th>Records</th><th>Ready</th><th>Conditional</th><th>Not Ready</th><th>High Risk</th><th>Positioning</th>
+</tr>
+{% for r in metrics.rows %}
+<tr class="{% if 'RLT-Trust' in r.module %}flagship{% endif %}">
+<td>{{ r.tier }}</td>
+<td><a class="module-link" href="{{ r.route }}">{{ r.module }}</a></td>
+<td>{{ r.register }}</td>
+<td><b>{{ r.records }}</b></td>
+<td class="low">{{ r.ready }}</td>
+<td class="medium">{{ r.conditional }}</td>
+<td class="high">{{ r.not_ready }}</td>
+<td class="high">{{ r.high }}</td>
+<td>{{ r.position }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2>Leadership Actions</h2>
+<ul>
+{% for a in metrics.actions %}
+<li>{{ a }}</li>
+{% endfor %}
+</ul>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics)
+
 if __name__ == "__main__":
     app.run(debug=True)
