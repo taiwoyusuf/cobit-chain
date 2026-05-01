@@ -8332,5 +8332,193 @@ radiopharma, compounding pharmacy, supply chain, access governance, Audit/CAPA, 
     """
     return render_template_string(html)
 
+
+# ============================================================
+# ROADMAP PAGE ACTIVE
+# Product roadmap, commercialization, partnership, and research path.
+# ============================================================
+
+@app.route("/roadmap")
+def roadmap_page():
+    # ROADMAP_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Roadmap</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.section{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.flagship{background:#fff7ed;color:#c2410c;border:2px solid #fb923c}
+.tier1{background:#ecfdf5;color:#047857}
+.enterprise{background:#eff6ff;color:#1d4ed8}
+.commercial{background:#faf5ff;color:#7e22ce}
+.future{background:#f1f5f9;color:#334155}
+.research{background:#fef2f2;color:#b91c1c}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
+.timeline{border-left:5px solid #2563eb;padding-left:18px}
+.milestone{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:14px}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Roadmap & Commercialization Strategy</h1>
+<p>Product suite roadmap for regulated enterprise, life sciences, radiopharma, supply chain, and care-delivery governance.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
+<a href="/demo-script">Demo Script</a>
+<a class="active" href="/roadmap">Roadmap</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/compoundtrust">CompoundTrust</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="notice">
+<b>Roadmap position:</b> COBIT-Chain™ is being shaped as a reusable governance assurance platform. 
+The flagship commercial wedge is <b>RLT-Trust™</b> for radiopharma/RLT operations, while TrialTrust™, CompoundTrust™, SOPTrust™, CAPATrust™, AccessTrust™, and HomeCare Command™ expand the same evidence-integrity engine into adjacent regulated markets.
+</div>
+
+<div class="section">
+<h2>1. Tier 1 Product Priorities</h2>
+<div class="grid">
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>RLT-Trust™ / RadiopharmaTrust™</h3><p>Main radiopharma/RLT product for dose-to-patient readiness, decay-aware governance, QA release, site receipt, radiation survey, chain-of-custody, and administration window.</p></div>
+<div class="card"><span class="badge tier1">TIER 1</span><h3>TrialTrust™</h3><p>Clinical trial integrity module connecting Microsoft Purview, eConsent, retention, CSV validation packs, ALCOA+, deviation/CAPA, and inspection readiness.</p></div>
+<div class="card"><span class="badge tier1">TIER 1</span><h3>CompoundTrust™</h3><p>Compounding pharmacy module for sterility-to-release evidence, BUD, environmental monitoring, cleaning, garbing, QA review, and release readiness.</p></div>
+<div class="card"><span class="badge tier1">TIER 1</span><h3>SOPTrust™</h3><p>Dual SOP comparison and process-reality gap detection for acquisition integration, harmonization, and outdated SOP identification.</p></div>
+<div class="card"><span class="badge tier1">TIER 1</span><h3>CAPATrust™</h3><p>Audit finding, CAPA, remediation evidence, and effectiveness-readiness logic for QA and regulated operations.</p></div>
+<div class="card"><span class="badge tier1">TIER 1</span><h3>AccessTrust™</h3><p>Access review, myAccess, binder/Excel reconciliation, approval evidence, and entitlement readiness.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>2. Flagship Strategy: RLT-Trust™</h2>
+<div class="warning">
+<b>Primary commercial thesis:</b> Radiopharma/RLT operations have a unique governance burden because evidence must prove not only product quality, but also timing, decay-window readiness, site receipt, radiation survey, chain-of-custody, and patient administration readiness.
+</div>
+<table>
+<tr><th>RLT Pain Point</th><th>RLT-Trust™ Response</th><th>Commercial Value</th></tr>
+<tr><td>Radioactive decay window</td><td>Decay-Aware Governance Engine™</td><td>Shows whether dose timing remains usable and operationally safe.</td></tr>
+<tr><td>QA release timing</td><td>Release-to-delivery readiness scoring</td><td>Helps prevent dose movement before release evidence is complete.</td></tr>
+<tr><td>Courier and site handoffs</td><td>Isotope-to-Patient Evidence Graph™</td><td>Creates dose chain-of-custody from production to treatment site.</td></tr>
+<tr><td>Patient appointment alignment</td><td>Dose-to-patient readiness gate</td><td>Connects logistics timing with patient administration window.</td></tr>
+<tr><td>Inspection evidence</td><td>RLT evidence register and record hash</td><td>Supports audit/inspection traceability and leadership visibility.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>3. Life Sciences Expansion Strategy</h2>
+<div class="grid">
+<div class="card"><span class="badge tier1">TRIALS</span><h3>TrialTrust™</h3><p>Use dissertation and Purview/eConsent work as the research-backed clinical trial governance module.</p></div>
+<div class="card"><span class="badge tier1">COMPOUNDING</span><h3>CompoundTrust™</h3><p>Use sterile/compounding pharmacy inspection pressure as a product wedge for smaller regulated operators.</p></div>
+<div class="card"><span class="badge future">SUPPLY CHAIN</span><h3>DSCSA TrustChain™</h3><p>Keep as supporting supply-chain traceability for standard prescription drug package movement and suspect product investigation.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>4. Enterprise Governance Expansion</h2>
+<table>
+<tr><th>Module</th><th>Current Value</th><th>Next Upgrade</th></tr>
+<tr><td>SOPTrust™</td><td>Dual SOP comparison and SOP gap detection.</td><td>Add structured gap export, decision history, and SOP maturity scoring.</td></tr>
+<tr><td>ShiftTrust™</td><td>Equipment handoff and ServiceNow carryover readiness.</td><td>Add technician trend analytics and recurring equipment issue detection.</td></tr>
+<tr><td>AccessTrust™</td><td>Access review readiness and approval evidence scoring.</td><td>Add privileged access review, orphan account detection, and myAccess import logic.</td></tr>
+<tr><td>CAPATrust™</td><td>Finding-to-CAPA evidence and effectiveness readiness.</td><td>Add CAPA aging, repeat finding clustering, and effectiveness blocker dashboard.</td></tr>
+<tr><td>CommandTrust™</td><td>Executive module dashboard.</td><td>Add exportable leadership summary and PDF-ready evidence pack view.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>5. Commercial Expansion: HomeCare Command™</h2>
+<div class="script">
+HomeCare Command™ extends the COBIT-Chain™ evidence engine into care-delivery operations. 
+The core market problem is proving that a visit happened correctly, the caregiver was qualified, the care plan was completed, the client/family can confirm care, and billing/payroll are supported by verified evidence.
+</div>
+<br>
+<table>
+<tr><th>Homecare Pain Point</th><th>HomeCare Command™ Feature</th><th>Buyer Value</th></tr>
+<tr><td>EVV disputes</td><td>EVV Integrity Monitor</td><td>Reduces disputed visits and audit risk.</td></tr>
+<tr><td>Billing without proof</td><td>Billing Readiness Gate</td><td>Helps prevent unsupported claims.</td></tr>
+<tr><td>Payroll mismatch</td><td>Payroll vs Verified Visit Readiness</td><td>Aligns caregiver pay with verified care evidence.</td></tr>
+<tr><td>Family visibility</td><td>Proof-of-Care Evidence Chain™</td><td>Improves trust and transparency.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>6. Future Modules</h2>
+<div class="grid">
+<div class="card"><span class="badge future">FUTURE</span><h3>ValidationTrust™</h3><p>CSV validation packs, GxP validation evidence, test scripts, approvals, and periodic review.</p></div>
+<div class="card"><span class="badge future">FUTURE</span><h3>EnviroTrust™</h3><p>Environmental monitoring, room readiness, excursions, cleaning verification, and release impact.</p></div>
+<div class="card"><span class="badge future">FUTURE</span><h3>CompetencyTrust™</h3><p>Training, qualification, operator competency, role-to-task readiness, and retraining triggers.</p></div>
+<div class="card"><span class="badge future">FUTURE</span><h3>SupplierTrust™</h3><p>Supplier qualification, quality agreements, vendor audits, and remediation evidence.</p></div>
+<div class="card"><span class="badge future">FUTURE</span><h3>DataTransferTrust™</h3><p>CSV/vendor exports, row-count validation, duplicate checks, reconciliation, and hash integrity.</p></div>
+<div class="card"><span class="badge future">FUTURE</span><h3>Inventory / Material Chain Trust™</h3><p>Ingredient lots, storage conditions, expiry/BUD, usage, release blocking, and material traceability.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>7. Partnership Path</h2>
+<div class="two">
+<div class="card"><span class="badge research">ACADEMIC</span><h3>University / PhD Path</h3><p>Use COBIT-Chain™ as a governance engineering research program across clinical trials, radiopharma, compounding pharmacy, and regulated digital assurance.</p></div>
+<div class="card"><span class="badge research">PROFESSIONAL</span><h3>ISACA / Governance Community</h3><p>Publish control-to-evidence framework, governance assurance model, and COBIT 2019 operationalization pattern.</p></div>
+<div class="card"><span class="badge tier1">PHARMA</span><h3>Pharma / RLT Partners</h3><p>Position RLT-Trust™ for RLT manufacturing, dose release, chain-of-custody, and dose-to-patient readiness.</p></div>
+<div class="card"><span class="badge commercial">COMMERCIAL</span><h3>Homecare / Compounding Operators</h3><p>Productize smaller-market versions where audit evidence, billing, release, and operational trust are painful.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>8. USCIS / Innovation Narrative</h2>
+<ul>
+<li><b>Working prototype:</b> deployed Flask/Azure app with multiple active modules.</li>
+<li><b>Technical contribution:</b> evidence hashing, separate registers, readiness scoring, and modular governance architecture.</li>
+<li><b>Regulated industry relevance:</b> clinical trials, radiopharma, compounding pharmacy, access governance, CAPA, SOP, and homecare.</li>
+<li><b>Commercial direction:</b> RLT-Trust™ flagship plus adjacent life sciences and care-delivery modules.</li>
+<li><b>Research path:</b> COBIT 2019-aligned governance assurance framework with future PhD and publication potential.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>9. Implementation Roadmap</h2>
+<div class="timeline">
+<div class="milestone"><b>Phase 1 — Stabilize Platform</b><br>Protect Manufacturing/Wole, lock tags, maintain routes, and validate all registers.</div>
+<div class="milestone"><b>Phase 2 — Strengthen RLT-Trust™</b><br>Add decay buffer logic, time-window visuals, RLT evidence pack, and flagship visual hierarchy.</div>
+<div class="milestone"><b>Phase 3 — Strengthen Clinical Trial/Purview</b><br>Add eConsent DLP test checklist, retention label status, and CSV validation pack readiness.</div>
+<div class="milestone"><b>Phase 4 — Commercial Modules</b><br>Improve CompoundTrust™ and HomeCare Command™ for external demos and buyer conversations.</div>
+<div class="milestone"><b>Phase 5 — Publish / Partner / Protect</b><br>Create whitepaper, ISACA article draft, invention disclosure package, GitHub evidence, and partner pitch deck.</div>
+</div>
+</div>
+
+<div class="section">
+<h2>10. One-Line Roadmap Summary</h2>
+<p>
+<b>COBIT-Chain™ will evolve from a working governance prototype into a product suite, led by RLT-Trust™ as the flagship radiopharma assurance module and expanded through clinical trials, compounding pharmacy, enterprise governance, supply chain, and homecare evidence integrity modules.</b>
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
 if __name__ == "__main__":
     app.run(debug=True)
