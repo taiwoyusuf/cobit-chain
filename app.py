@@ -8672,5 +8672,470 @@ def start_alias_page():
 def suite_alias_page():
     return redirect("/modules")
 
+
+# ============================================================
+# QC OPS INTAKE ACTIVE
+# Excel/CSV to governed operational dataset intake page.
+# ============================================================
+
+QC_OPS_INTAKE_FILE = "qc_ops_intake_register.csv"
+
+
+def prepare_qc_ops_intake_register():
+    df = load_csv(QC_OPS_INTAKE_FILE)
+    return ensure_cols(df, [
+        "intake_id", "timestamp", "filename", "file_type", "file_hash",
+        "rows", "columns", "missing_cells", "duplicate_rows",
+        "detected_dataset_type", "recommended_module",
+        "servicenow_ci_readiness", "shift_relevance",
+        "access_relevance", "data_integrity_relevance",
+        "governance_score", "risk_level", "governance_signals",
+        "previous_hash", "record_hash"
+    ])
+
+
+def qc_safe_text(value):
+    return str(value or "").strip()
+
+
+def qc_hash_bytes(data):
+    import hashlib
+    return hashlib.sha256(data).hexdigest()
+
+
+def qc_read_uploaded_table(file_storage):
+    from io import BytesIO
+    import pandas as pd
+
+    filename = qc_safe_text(file_storage.filename)
+    content = file_storage.read()
+
+    if not content:
+        raise ValueError("Uploaded file is empty.")
+
+    lower = filename.lower()
+
+    if lower.endswith(".csv"):
+        df = pd.read_csv(BytesIO(content))
+        file_type = "CSV"
+    elif lower.endswith(".xlsx") or lower.endswith(".xls"):
+        df = pd.read_excel(BytesIO(content))
+        file_type = "Excel"
+    else:
+        raise ValueError("Only .csv, .xlsx, or .xls files are supported for this intake page.")
+
+    df = df.fillna("")
+    return filename, file_type, content, df
+
+
+def qc_detect_dataset_type(df):
+    columns = [str(c).lower() for c in df.columns]
+    joined_cols = " ".join(columns)
+    sample_text = ""
+
+    try:
+        sample_text = " ".join(df.head(25).astype(str).values.flatten()).lower()
+    except Exception:
+        sample_text = ""
+
+    combined = joined_cols + " " + sample_text
+
+    scores = {
+        "Shift / Day-in-the-Life Dataset": 0,
+        "Access Governance Dataset": 0,
+        "Work Order / Equipment Matrix": 0,
+        "ServiceNow CI Preparation Dataset": 0,
+        "Data Integrity / CMMS Evidence Dataset": 0,
+        "General Operational Governance Dataset": 1
+    }
+
+    shift_terms = ["shift", "task", "handoff", "day in the life", "production manager", "teams", "email", "hours", "owner", "assigned"]
+    access_terms = ["access", "user", "role", "system list", "removed", "left site", "disable", "employee", "custodian", "approver"]
+    work_order_terms = ["work order", "workorder", "cmms", "eqp", "equipment", "matrix", "daylight", "spring", "fall", "bms", "calibration"]
+    ci_terms = ["ci", "cmdb", "configuration item", "service", "dependency", "system owner", "business owner", "support group"]
+    di_terms = ["audit trail", "event log", "backup", "system image", "data integrity", "alcoa", "spreadsheet", "validated", "review"]
+
+    for term in shift_terms:
+        if term in combined:
+            scores["Shift / Day-in-the-Life Dataset"] += 1
+
+    for term in access_terms:
+        if term in combined:
+            scores["Access Governance Dataset"] += 1
+
+    for term in work_order_terms:
+        if term in combined:
+            scores["Work Order / Equipment Matrix"] += 1
+
+    for term in ci_terms:
+        if term in combined:
+            scores["ServiceNow CI Preparation Dataset"] += 1
+
+    for term in di_terms:
+        if term in combined:
+            scores["Data Integrity / CMMS Evidence Dataset"] += 1
+
+    detected = max(scores, key=scores.get)
+
+    if scores[detected] <= 1:
+        detected = "General Operational Governance Dataset"
+
+    return detected, scores
+
+
+def qc_recommend_module(detected_type):
+    mapping = {
+        "Shift / Day-in-the-Life Dataset": "ShiftTrust™ / Shift Assurance",
+        "Access Governance Dataset": "AccessTrust™ / Access Governance",
+        "Work Order / Equipment Matrix": "Data Integrity Assurance + ShiftTrust™",
+        "ServiceNow CI Preparation Dataset": "ServiceNow CI Readiness / Platform Health",
+        "Data Integrity / CMMS Evidence Dataset": "Data Integrity Assurance / Audit-CAPA",
+        "General Operational Governance Dataset": "QC Ops Governance Intake"
+    }
+    return mapping.get(detected_type, "QC Ops Governance Intake")
+
+
+def qc_score_dataset(df, detected_type):
+    rows = len(df)
+    columns = len(df.columns)
+    missing_cells = int((df == "").sum().sum()) if rows > 0 else 0
+    duplicate_rows = int(df.duplicated().sum()) if rows > 0 else 0
+
+    score = 100
+    signals = []
+
+    if rows == 0:
+        score -= 50
+        signals.append("Dataset has no rows.")
+
+    if columns < 3:
+        score -= 20
+        signals.append("Dataset has very few columns for governance extraction.")
+
+    if missing_cells > 0:
+        score -= min(25, missing_cells)
+        signals.append(f"Dataset contains {missing_cells} missing or blank cells.")
+
+    if duplicate_rows > 0:
+        score -= min(20, duplicate_rows * 5)
+        signals.append(f"Dataset contains {duplicate_rows} duplicate row(s).")
+
+    col_text = " ".join([str(c).lower() for c in df.columns])
+
+    if detected_type == "Access Governance Dataset":
+        required_terms = ["user", "system", "access"]
+        for term in required_terms:
+            if term not in col_text:
+                score -= 8
+                signals.append(f"Access dataset may be missing a clear '{term}' field.")
+
+    if detected_type in ["Work Order / Equipment Matrix", "ServiceNow CI Preparation Dataset"]:
+        if "eqp" not in col_text and "equipment" not in col_text and "system" not in col_text:
+            score -= 15
+            signals.append("Equipment/system identifier field is not clearly detected.")
+
+    if detected_type == "Shift / Day-in-the-Life Dataset":
+        if "task" not in col_text and "owner" not in col_text and "shift" not in col_text:
+            score -= 15
+            signals.append("Shift/task ownership fields are not clearly detected.")
+
+    if not signals:
+        signals.append("Dataset appears suitable for governance intake and fingerprinting.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        risk = "LOW"
+    elif score >= 60:
+        risk = "MEDIUM"
+    else:
+        risk = "HIGH"
+
+    return score, risk, signals, rows, columns, missing_cells, duplicate_rows
+
+
+def qc_flag_relevance(detected_type, scores):
+    shift = "YES" if detected_type == "Shift / Day-in-the-Life Dataset" or scores.get("Shift / Day-in-the-Life Dataset", 0) >= 2 else "POSSIBLE"
+    access = "YES" if detected_type == "Access Governance Dataset" or scores.get("Access Governance Dataset", 0) >= 2 else "POSSIBLE"
+    data_integrity = "YES" if detected_type in ["Data Integrity / CMMS Evidence Dataset", "Work Order / Equipment Matrix"] or scores.get("Data Integrity / CMMS Evidence Dataset", 0) >= 2 else "POSSIBLE"
+    ci_ready = "YES" if detected_type in ["ServiceNow CI Preparation Dataset", "Work Order / Equipment Matrix"] or scores.get("ServiceNow CI Preparation Dataset", 0) >= 2 else "POSSIBLE"
+
+    return shift, access, data_integrity, ci_ready
+
+
+def save_qc_ops_intake_result(filename, file_type, file_hash, rows, columns, missing_cells,
+                              duplicate_rows, detected_type, recommended_module,
+                              ci_ready, shift_rel, access_rel, di_rel,
+                              governance_score, risk_level, signals):
+    df = prepare_qc_ops_intake_register()
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    intake_id = "QCOPS-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        intake_id + timestamp + filename + file_hash + detected_type +
+        recommended_module + str(governance_score) + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "intake_id": intake_id,
+        "timestamp": timestamp,
+        "filename": filename,
+        "file_type": file_type,
+        "file_hash": file_hash,
+        "rows": rows,
+        "columns": columns,
+        "missing_cells": missing_cells,
+        "duplicate_rows": duplicate_rows,
+        "detected_dataset_type": detected_type,
+        "recommended_module": recommended_module,
+        "servicenow_ci_readiness": ci_ready,
+        "shift_relevance": shift_rel,
+        "access_relevance": access_rel,
+        "data_integrity_relevance": di_rel,
+        "governance_score": governance_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, QC_OPS_INTAKE_FILE)
+
+    return intake_id, record_hash
+
+
+def get_qc_ops_intake_metrics():
+    df = prepare_qc_ops_intake_register()
+    if df.empty:
+        return {"total": 0, "low": 0, "medium": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "low": len(df[df["risk_level"] == "LOW"]),
+        "medium": len(df[df["risk_level"] == "MEDIUM"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(12).to_dict("records")
+    }
+
+
+@app.route("/qc-ops-intake", methods=["GET", "POST"])
+def qc_ops_intake_page():
+    # QC_OPS_INTAKE_ACTIVE
+    result = None
+
+    if request.method == "POST":
+        try:
+            uploaded = request.files.get("governance_file")
+            if not uploaded or not uploaded.filename:
+                raise ValueError("Please upload an Excel or CSV file.")
+
+            filename, file_type, content, df = qc_read_uploaded_table(uploaded)
+            file_hash = qc_hash_bytes(content)
+            detected_type, detection_scores = qc_detect_dataset_type(df)
+            recommended_module = qc_recommend_module(detected_type)
+            governance_score, risk_level, signals, rows, columns, missing_cells, duplicate_rows = qc_score_dataset(df, detected_type)
+            shift_rel, access_rel, di_rel, ci_ready = qc_flag_relevance(detected_type, detection_scores)
+
+            intake_id, record_hash = save_qc_ops_intake_result(
+                filename, file_type, file_hash, rows, columns, missing_cells,
+                duplicate_rows, detected_type, recommended_module,
+                ci_ready, shift_rel, access_rel, di_rel,
+                governance_score, risk_level, signals
+            )
+
+            preview = df.head(8).to_dict("records")
+            preview_columns = [str(c) for c in df.columns]
+
+            result = {
+                "error": "",
+                "intake_id": intake_id,
+                "filename": filename,
+                "file_type": file_type,
+                "file_hash": file_hash,
+                "record_hash": record_hash,
+                "rows": rows,
+                "columns": columns,
+                "missing_cells": missing_cells,
+                "duplicate_rows": duplicate_rows,
+                "detected_type": detected_type,
+                "recommended_module": recommended_module,
+                "governance_score": governance_score,
+                "risk_level": risk_level,
+                "signals": signals,
+                "shift_rel": shift_rel,
+                "access_rel": access_rel,
+                "di_rel": di_rel,
+                "ci_ready": ci_ready,
+                "preview": preview,
+                "preview_columns": preview_columns
+            }
+
+        except Exception as e:
+            result = {"error": str(e)}
+
+    metrics = get_qc_ops_intake_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ QC Ops Intake</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:12px;margin:8px 0;font-size:14px}
+button{border:none;background:linear-gradient(135deg,#0f766e,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;max-width:260px;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ QC Ops Intake</h1>
+<p>Excel / CSV → Governed Operational Dataset → Fingerprint → Shift, Access, CI, CMMS, and Data Integrity Signals</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/executive-overview">Executive</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
+<a href="/demo-script">Demo Script</a>
+<a href="/roadmap">Roadmap</a>
+<a class="active" href="/qc-ops-intake">QC Ops Intake</a>
+</nav>
+
+<div class="warning">
+<b>Demo caution:</b> upload sanitized/demo files only. Do not upload real employee identifiers, proprietary equipment lists, or company-specific confidential records into a public demo environment.
+</div>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Governed dataset created:</b> {{ result.intake_id }}<br>
+<b>Detected Type:</b> {{ result.detected_type }}<br>
+<b>Recommended Module:</b> {{ result.recommended_module }}<br>
+<b>Governance Score:</b> {{ result.governance_score }}% —
+<b class="{% if result.risk_level == 'LOW' %}low{% elif result.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Intakes</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Low Risk</div><div class="metric-value" style="color:#16a34a">{{ metrics.low }}</div></div>
+<div class="metric"><div class="metric-label">Medium Risk</div><div class="metric-value" style="color:#f59e0b">{{ metrics.medium }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Upload Operational Dataset</h2>
+<p>Use this for sanitized Excel or CSV files such as shift task lists, access lists, work order matrices, equipment owner lists, and CI preparation files.</p>
+<form method="POST" action="/qc-ops-intake" enctype="multipart/form-data">
+<input type="file" name="governance_file" accept=".xlsx,.xls,.csv" required>
+<button type="submit">Analyze & Fingerprint Dataset</button>
+</form>
+
+<div class="card">
+<h3>What this produces</h3>
+<ul>
+<li>SHA-256 file fingerprint</li>
+<li>Rows, columns, blanks, duplicates</li>
+<li>Detected governance dataset type</li>
+<li>Shift/access/data-integrity relevance</li>
+<li>ServiceNow CI readiness signal</li>
+<li>Recommended target module</li>
+</ul>
+</div>
+</aside>
+
+<section class="card">
+{% if result and not result.error %}
+<h2>Governance Analysis Result</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Filename</td><td>{{ result.filename }}</td></tr>
+<tr><td>File Type</td><td>{{ result.file_type }}</td></tr>
+<tr><td>Rows / Columns</td><td>{{ result.rows }} / {{ result.columns }}</td></tr>
+<tr><td>Missing Cells</td><td>{{ result.missing_cells }}</td></tr>
+<tr><td>Duplicate Rows</td><td>{{ result.duplicate_rows }}</td></tr>
+<tr><td>Shift Relevance</td><td>{{ result.shift_rel }}</td></tr>
+<tr><td>Access Relevance</td><td>{{ result.access_rel }}</td></tr>
+<tr><td>Data Integrity Relevance</td><td>{{ result.di_rel }}</td></tr>
+<tr><td>ServiceNow CI Readiness</td><td>{{ result.ci_ready }}</td></tr>
+<tr><td>File Fingerprint</td><td class="hash">{{ result.file_hash }}</td></tr>
+<tr><td>Register Record Hash</td><td class="hash">{{ result.record_hash }}</td></tr>
+</table>
+
+<h2>Preview</h2>
+<table>
+<tr>{% for c in result.preview_columns %}<th>{{ c }}</th>{% endfor %}</tr>
+{% for row in result.preview %}
+<tr>{% for c in result.preview_columns %}<td>{{ row.get(c, "") }}</td>{% endfor %}</tr>
+{% endfor %}
+</table>
+{% else %}
+<h2>Recent QC Ops Intakes</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Filename</th><th>Type</th><th>Detected Dataset</th><th>Recommended Module</th><th>Score</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.intake_id }}</td>
+<td>{{ r.filename }}</td>
+<td>{{ r.file_type }}</td>
+<td>{{ r.detected_dataset_type }}</td>
+<td>{{ r.recommended_module }}</td>
+<td>{{ r.governance_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No QC Ops intake records yet.</p>
+{% endif %}
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Monday Demo Message</h2>
+<p><b>“We are not replacing operational spreadsheets. We are converting them into governed, fingerprinted operational datasets that can support shift continuity, access governance, CMMS/data-integrity reviews, and ServiceNow CI readiness.”</b></p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, result=result, metrics=metrics)
+
 if __name__ == "__main__":
     app.run(debug=True)
