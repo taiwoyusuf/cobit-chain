@@ -7537,5 +7537,137 @@ a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
 
     return render_template_string(html, metrics=metrics)
 
+
+# ============================================================
+# MODULES DIRECTORY ACTIVE
+# Product suite landing page for all COBIT-Chain modules.
+# ============================================================
+
+@app.route("/compoundtrust")
+def compoundtrust_page():
+    return redirect("/compounding-pharmacy-v1-test")
+
+
+@app.route("/compounding-pharmacy")
+def compounding_pharmacy_page():
+    return redirect("/compounding-pharmacy-v1-test")
+
+
+@app.route("/caretrust")
+def caretrust_page():
+    return redirect("/homecare-command")
+
+
+@app.route("/modules")
+def modules_directory_page():
+    # MODULES_DIRECTORY_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Modules Directory</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:36px 42px 48px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.section{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.module-card{border:1px solid #e2e8f0;border-radius:22px;padding:20px;background:#ffffff;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.module-card h3{margin:0 0 8px;font-size:19px}
+.module-card p{color:#475569;line-height:1.5}
+.module-card a{display:inline-block;margin-top:10px;text-decoration:none;background:#0f172a;color:white;padding:9px 12px;border-radius:999px;font-weight:900;font-size:13px}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.core{background:#eff6ff;color:#1d4ed8}
+.life{background:#ecfdf5;color:#047857}
+.flagship{background:#fff7ed;color:#c2410c;border:2px solid #fb923c}
+.support{background:#f1f5f9;color:#334155}
+.future{background:#faf5ff;color:#7e22ce}
+.flagship-card{border:3px solid #fb923c;background:linear-gradient(135deg,#fff7ed,#ffffff)}
+.future-card{background:#fbfaff}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Product Suite</h1>
+<p>Enterprise governance, evidence integrity, regulated life sciences, radiopharma, supply chain, and commercial care-delivery assurance.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a class="active" href="/modules">Modules Directory</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/compoundtrust">CompoundTrust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="notice">
+<b>Platform positioning:</b> RLT-Trust™ is the flagship radiopharma module for Lilly/Point/Novartis-style RLT operations. 
+DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. CompoundTrust™, TrialTrust™, Audit/CAPA, SOP, Access, and Shift Assurance share the same COBIT-Chain evidence integrity engine.
+</div>
+
+<div class="section">
+<h2>Core Enterprise Modules</h2>
+<div class="grid">
+<div class="module-card"><span class="badge core">CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Wole manufacturing dashboard, evidence hashing, Azure Blob records, and integrity verification.</p><a href="/">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>Executive Overview / CommandTrust™</h3><p>Enterprise-wide control tower across all active registers and module readiness scores.</p><a href="/executive-overview">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>SOP Governance / SOPTrust™</h3><p>Dual SOP comparison, SOP-to-reality gap detection, outdated SOP signals, and harmonization decisions.</p><a href="/sop-governance">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>Shift Assurance / ShiftTrust™</h3><p>Equipment handoff, day/night carryover, ServiceNow linkage, and technician accountability.</p><a href="/shift-assurance">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>Access Governance / AccessTrust™</h3><p>myAccess, binder/Excel reconciliation, entitlement review, approval evidence, and access readiness.</p><a href="/access-governance">Open Module</a></div>
+<div class="module-card"><span class="badge core">CORE</span><h3>Audit/CAPA / CAPATrust™</h3><p>Audit finding, deviation/CAPA evidence, remediation proof, and effectiveness-readiness gate.</p><a href="/audit-capa">Open Module</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Tier 1 Life Sciences Modules</h2>
+<div class="grid">
+<div class="module-card"><span class="badge life">LIFE SCIENCES</span><h3>TrialTrust™ / Clinical Trial Integrity</h3><p>Clinical evidence register, Microsoft Purview connection, eConsent, retention, ALCOA+, and inspection readiness.</p><a href="/clinical-trial-integrity">Open Module</a></div>
+<div class="module-card"><span class="badge life">LIFE SCIENCES</span><h3>CompoundTrust™</h3><p>Sterility-to-release evidence graph for compounding pharmacy, BUD support, EM review, QA review, and release readiness.</p><a href="/compoundtrust">Open Module</a></div>
+<div class="module-card flagship-card"><span class="badge flagship">FLAGSHIP RADIOPHARMA</span><h3>RLT-Trust™ / RadiopharmaTrust™</h3><p>Primary radiopharma module: decay-aware governance, isotope-to-patient evidence graph, dose readiness, chain-of-custody, site receipt, and administration window.</p><a href="/rlt-trust">Open Flagship</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Supporting Pharma Supply Chain</h2>
+<div class="grid">
+<div class="module-card"><span class="badge support">SUPPORTING PHARMA</span><h3>DSCSA TrustChain™</h3><p>Standard prescription drug package traceability, trading partner verification, transaction evidence, suspect product workflow, quarantine, notification, and disposition.</p><a href="/dscsa-trustchain">Open Module</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Commercial Expansion Modules</h2>
+<div class="grid">
+<div class="module-card"><span class="badge life">COMMERCIAL EXPANSION</span><h3>HomeCare Command™ / CareTrust™</h3><p>EVV integrity, care plan completion, caregiver credential match, Medicaid/MCO audit evidence, payroll/billing readiness, and family proof-of-care.</p><a href="/homecare-command">Open Module</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Future Modules to Build Later</h2>
+<div class="grid">
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>ValidationTrust™</h3><p>CSV validation packs, GxP validation evidence, test scripts, approval evidence, and periodic review.</p></div>
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>EnviroTrust™</h3><p>Environmental monitoring, room readiness, cleaning verification, excursions, and batch/release impact.</p></div>
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>CompetencyTrust™</h3><p>Training, qualification, operator competency, role-to-task readiness, and retraining triggers.</p></div>
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>SupplierTrust™</h3><p>Supplier qualification, quality agreements, vendor audit findings, and remediation evidence.</p></div>
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>DataTransferTrust™</h3><p>Vendor CSV exports, row-count validation, duplicate checks, reconciliation, and hash integrity.</p></div>
+<div class="module-card future-card"><span class="badge future">FUTURE</span><h3>Inventory / Material Chain Trust™</h3><p>Ingredient lots, storage condition, usage, expiry/BUD, release blocking, and material traceability.</p></div>
+</div>
+</div>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
 if __name__ == "__main__":
     app.run(debug=True)
