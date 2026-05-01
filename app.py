@@ -7972,5 +7972,180 @@ Each module uses a separate CSV register. This protects the original Manufacturi
 
     return render_template_string(html, metrics=metrics)
 
+
+# ============================================================
+# ARCHITECTURE PAGE ACTIVE
+# COBIT-Chain platform architecture and innovation claims.
+# ============================================================
+
+@app.route("/architecture")
+def architecture_page():
+    # ARCHITECTURE_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Architecture</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.section{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.core{background:#eff6ff;color:#1d4ed8}
+.flagship{background:#fff7ed;color:#c2410c;border:2px solid #fb923c}
+.support{background:#f1f5f9;color:#334155}
+.novel{background:#ecfdf5;color:#047857}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+.flow{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+.step{flex:1;min-width:190px;background:linear-gradient(135deg,#eff6ff,#ecfeff);border:1px solid #bfdbfe;border-radius:18px;padding:15px}
+.step b{display:block;margin-bottom:7px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Platform Architecture</h1>
+<p>Governance-first evidence integrity platform for regulated enterprise, life sciences, radiopharma, supply chain, and care-delivery assurance.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a class="active" href="/architecture">Architecture</a>
+<a href="/sop-governance">SOP</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/compoundtrust">CompoundTrust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="warning">
+<b>Positioning:</b> COBIT-Chain™ is not just a dashboard. It is a modular governance assurance layer that links process evidence, cryptographic integrity, readiness scoring, and audit/inspection narratives across multiple regulated domains.
+</div>
+
+<div class="section">
+<h2>1. What COBIT-Chain™ Is</h2>
+<p>
+COBIT-Chain™ is a governance-first evidence integrity platform. It helps organizations prove that operational evidence is complete,
+traceable, risk-classified, and ready for audit, inspection, remediation, release, or leadership review.
+</p>
+<p>
+The platform does not replace systems of record such as ServiceNow, myAccess, Microsoft Purview, eTMF, EDC, QA systems, or operational systems.
+It acts as a governance assurance layer over them.
+</p>
+</div>
+
+<div class="section">
+<h2>2. Core Engine Architecture</h2>
+<div class="flow">
+<div class="step"><b>1. Evidence Capture</b><span>Users upload or enter process evidence through module-specific forms.</span></div>
+<div class="step"><b>2. Hash Integrity</b><span>Evidence records are fingerprinted using SHA-256 or record-hash logic.</span></div>
+<div class="step"><b>3. Separate Register</b><span>Each module writes to its own CSV register to avoid corrupting other workflows.</span></div>
+<div class="step"><b>4. Risk Scoring</b><span>Module rules calculate readiness score, risk level, and governance signals.</span></div>
+<div class="step"><b>5. Executive View</b><span>Executive Overview and Platform Health summarize all active registers.</span></div>
+</div>
+</div>
+
+<div class="section">
+<h2>3. Technical Foundation</h2>
+<table>
+<tr><th>Component</th><th>Current Role</th><th>Governance Value</th></tr>
+<tr><td><b>Flask App</b></td><td>Single deployed web app with modular routes.</td><td>Allows rapid enterprise module expansion without rebuilding from scratch.</td></tr>
+<tr><td><b>Azure Blob Storage</b></td><td>Stores CSV registers and evidence outputs.</td><td>Provides cloud-based persistence for evidence registers.</td></tr>
+<tr><td><b>SHA-256 / Record Hashes</b></td><td>Creates cryptographic fingerprints for evidence and register records.</td><td>Supports tamper-aware evidence integrity and audit defensibility.</td></tr>
+<tr><td><b>Separate CSV Registers</b></td><td>Each module writes to a separate evidence register.</td><td>Protects Manufacturing/Wole core while enabling modular expansion.</td></tr>
+<tr><td><b>Readiness Scoring</b></td><td>Each module applies domain-specific rules.</td><td>Transforms raw evidence into governance decisions.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Module Register Architecture</h2>
+<table>
+<tr><th>Module</th><th>Register</th><th>Purpose</th></tr>
+<tr><td>Manufacturing Assurance</td><td>logs.csv / baseline_hashes.csv</td><td>Protected Wole manufacturing evidence integrity chain.</td></tr>
+<tr><td>SOP Governance</td><td>sop_comparisons.csv</td><td>Dual SOP comparison, gap detection, and harmonization evidence.</td></tr>
+<tr><td>Shift Assurance</td><td>shift_handoffs.csv</td><td>Equipment handoff, ServiceNow carryover, and technician accountability.</td></tr>
+<tr><td>Access Governance</td><td>access_reviews.csv</td><td>myAccess/binder/Excel access review readiness.</td></tr>
+<tr><td>Audit/CAPA</td><td>audit_capa_register.csv</td><td>Finding-to-CAPA evidence and effectiveness readiness.</td></tr>
+<tr><td>Clinical Trial Integrity</td><td>clinical_trial_evidence.csv</td><td>Purview, eConsent, ALCOA+, and inspection readiness.</td></tr>
+<tr><td>CompoundTrust™</td><td>compounding_pharmacy_evidence.csv</td><td>Sterility-to-release evidence and compounding pharmacy readiness.</td></tr>
+<tr><td>RLT-Trust™</td><td>rlt_dose_evidence.csv</td><td>Flagship radiopharma dose-to-patient readiness.</td></tr>
+<tr><td>DSCSA TrustChain™</td><td>dscsa_traceability_evidence.csv</td><td>Supporting pharma package traceability and suspect product workflow.</td></tr>
+<tr><td>HomeCare Command™</td><td>homecare_delivery_evidence.csv</td><td>EVV, care plan, billing, payroll, and care-delivery verification.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>5. RLT-Trust™ Flagship Positioning</h2>
+<div class="grid">
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>RLT-Trust™</h3><p>Main radiopharma module for Lilly/Point/Novartis-style RLT operations.</p></div>
+<div class="card"><span class="badge flagship">ADVANCED ENGINE</span><h3>Decay-Aware Governance Engine™</h3><p>Assesses timing, delivery, appointment, administration deadline, QA release, and readiness risk.</p></div>
+<div class="card"><span class="badge flagship">EVIDENCE GRAPH</span><h3>Isotope-to-Patient Evidence Graph™</h3><p>Links isotope/manufacturing, QA release, courier, site receipt, radiation survey, and patient administration evidence.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>6. DSCSA Separation</h2>
+<p>
+DSCSA TrustChain™ is deliberately separate from RLT-Trust™. DSCSA TrustChain™ supports standard prescription drug package
+traceability, trading partner evidence, transaction information, suspect product investigation, quarantine, notification, and disposition.
+</p>
+<p>
+RLT-Trust™ remains the flagship for radiopharma dose readiness because RLT risk includes decay timing, release timing,
+chain-of-custody, radiation survey, site receipt, and patient administration window.
+</p>
+</div>
+
+<div class="section">
+<h2>7. Innovation / Novelty Claims</h2>
+<div class="grid">
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Governance Evidence Integrity Engine™</h3><p>Combines governance scoring with cryptographic evidence fingerprinting and module-specific readiness gates.</p></div>
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Protocol-to-Purview Evidence Graph™</h3><p>Connects protocol obligations, Microsoft Purview state, retention, DLP, ALCOA+, and inspection readiness.</p></div>
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Sterility-to-Release Evidence Graph™</h3><p>Connects compounding evidence from ingredient lot to QA release decision.</p></div>
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Isotope-to-Patient Evidence Graph™</h3><p>Connects RLT evidence from isotope/manufacturing through patient administration readiness.</p></div>
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Care Delivery Evidence Chain™</h3><p>Connects EVV, GPS, care plan tasks, caregiver credentials, billing, payroll, and family proof-of-care.</p></div>
+<div class="card"><span class="badge novel">NOVELTY</span><h3>Cross-Domain Governance Reuse</h3><p>Same core assurance pattern reused across pharma, RLT, compounding, access, audit/CAPA, and homecare.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>8. Commercial Roadmap</h2>
+<table>
+<tr><th>Priority</th><th>Module</th><th>Commercial Rationale</th></tr>
+<tr><td><b>Tier 1</b></td><td>RLT-Trust™</td><td>Best aligned to Lilly/Point and Novartis Indianapolis radiopharma opportunity.</td></tr>
+<tr><td><b>Tier 1</b></td><td>CompoundTrust™</td><td>Strong inspection-readiness use case for sterile and compounding pharmacy operations.</td></tr>
+<tr><td><b>Tier 1</b></td><td>TrialTrust™</td><td>Supports dissertation, clinical trial governance, Purview, eConsent, and ALCOA+ readiness.</td></tr>
+<tr><td><b>Tier 1</b></td><td>SOP / Audit / Access</td><td>Strong enterprise governance modules for regulated IT and QA operations.</td></tr>
+<tr><td><b>Expansion</b></td><td>HomeCare Command™</td><td>Commercially useful for homecare owners, Medicaid/MCO audit evidence, billing, and payroll governance.</td></tr>
+<tr><td><b>Supporting</b></td><td>DSCSA TrustChain™</td><td>Pharma package traceability and suspect product workflow, separate from RLT dose readiness.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>9. One-Sentence Platform Pitch</h2>
+<p>
+<b>COBIT-Chain™ is a modular evidence integrity and governance assurance platform that transforms fragmented operational records into cryptographically traceable, risk-scored, audit-ready evidence across regulated enterprise, life sciences, radiopharma, supply chain, and care-delivery environments.</b>
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
 if __name__ == "__main__":
     app.run(debug=True)
