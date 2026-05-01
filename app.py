@@ -7321,5 +7321,16 @@ Existing COBIT-Chain module registers are untouched.
 
     return render_template_string(html, metrics=metrics, result=result)
 
+
+# ============================================================
+# HOMECARE COMMAND V1 PROMOTED REDIRECT ACTIVE
+# Clean production route for HomeCare Command.
+# ============================================================
+
+@app.route("/homecare-command")
+def homecare_command_page():
+    # HOMECARE_COMMAND_V1_PROMOTED_REDIRECT_ACTIVE
+    return redirect("/homecare-command-v1-test")
+
 if __name__ == "__main__":
     app.run(debug=True)
