@@ -7477,6 +7477,9 @@ a.module-link{font-weight:900;color:#2563eb;text-decoration:none}
 <a href="/">Manufacturing</a>
 <a href="/executive-overview">Executive Current</a>
 <a class="active" href="/executive-overview-v4-test">Executive v4 Test</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
 <a href="/sop-governance">SOP</a>
 <a href="/shift-assurance">Shift</a>
 <a href="/access-governance">Access</a>
@@ -7601,6 +7604,8 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/">Manufacturing</a>
 <a href="/executive-overview">Executive Overview</a>
 <a class="active" href="/modules">Modules Directory</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
 <a href="/sop-governance">SOP</a>
 <a href="/shift-assurance">Shift</a>
 <a href="/access-governance">Access</a>
@@ -7906,6 +7911,7 @@ small{color:#64748b}
 <a href="/executive-overview">Executive Overview</a>
 <a href="/modules">Modules Directory</a>
 <a class="active" href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
 <a href="/sop-governance">SOP</a>
 <a href="/shift-assurance">Shift</a>
 <a href="/access-governance">Access</a>
@@ -8140,6 +8146,185 @@ chain-of-custody, radiation survey, site receipt, and patient administration win
 <p>
 <b>COBIT-Chain™ is a modular evidence integrity and governance assurance platform that transforms fragmented operational records into cryptographically traceable, risk-scored, audit-ready evidence across regulated enterprise, life sciences, radiopharma, supply chain, and care-delivery environments.</b>
 </p>
+</div>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
+
+# ============================================================
+# DEMO SCRIPT PAGE ACTIVE
+# Stakeholder narrative and guided demo page.
+# ============================================================
+
+@app.route("/demo-script")
+def demo_script_page():
+    # DEMO_SCRIPT_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Demo Script</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.section{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.core{background:#eff6ff;color:#1d4ed8}
+.flagship{background:#fff7ed;color:#c2410c;border:2px solid #fb923c}
+.life{background:#ecfdf5;color:#047857}
+.commercial{background:#faf5ff;color:#7e22ce}
+.script{background:#f8fafc;border-left:7px solid #2563eb;border-radius:18px;padding:16px;line-height:1.6}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Stakeholder Demo Script</h1>
+<p>Guided narrative for leadership, dissertation, ISACA, USCIS, Lilly/Point, Novartis, compounding pharmacy, and homecare audiences.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
+<a class="active" href="/demo-script">Demo Script</a>
+<a href="/sop-governance">SOP</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/compoundtrust">CompoundTrust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a href="/homecare-command">HomeCare</a>
+</nav>
+
+<div class="warning">
+<b>Demo rule:</b> Position COBIT-Chain™ as a governance assurance layer, not as a replacement for enterprise systems.
+It connects evidence, integrity, risk scoring, audit readiness, and module-specific decision gates.
+</div>
+
+<div class="section">
+<h2>1. Opening Pitch</h2>
+<div class="script">
+COBIT-Chain™ is a modular governance assurance platform that turns fragmented operational evidence into traceable,
+risk-scored, audit-ready records. It uses separate evidence registers, SHA-256 style integrity logic, and domain-specific
+readiness gates to help regulated organizations prove whether work is complete, controlled, and ready for audit, inspection,
+release, or leadership review.
+</div>
+</div>
+
+<div class="section">
+<h2>2. What Problem It Solves</h2>
+<div class="grid">
+<div class="card"><span class="badge core">PAIN POINT</span><h3>Evidence is fragmented</h3><p>Records sit across binders, Excel, ServiceNow, myAccess, SharePoint, Purview, QA systems, logs, and emails.</p></div>
+<div class="card"><span class="badge core">PAIN POINT</span><h3>Audit readiness is manual</h3><p>Teams reconstruct evidence late, often under audit pressure, instead of validating readiness continuously.</p></div>
+<div class="card"><span class="badge core">PAIN POINT</span><h3>Approvals do not prove reality</h3><p>A workflow approval may exist, but it does not always prove the actual system, equipment, SOP, or evidence state.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>3. Demo Sequence</h2>
+<table>
+<tr><th>Step</th><th>Page</th><th>What to Say</th></tr>
+<tr><td>1</td><td><b>/</b></td><td>Start with the protected Manufacturing/Wole dashboard. Emphasize that existing functionality was preserved.</td></tr>
+<tr><td>2</td><td><b>/modules</b></td><td>Show that COBIT-Chain™ is now a product suite, not a single dashboard.</td></tr>
+<tr><td>3</td><td><b>/platform-health</b></td><td>Show every module, route, evidence register, record count, and health status.</td></tr>
+<tr><td>4</td><td><b>/executive-overview</b></td><td>Show the enterprise control tower summarizing all module records and high-risk signals.</td></tr>
+<tr><td>5</td><td><b>/sop-governance</b></td><td>Show Lilly/Point-style SOP harmonization and outdated SOP detection.</td></tr>
+<tr><td>6</td><td><b>/clinical-trial-integrity</b></td><td>Show Microsoft Purview, eConsent, retention, ALCOA+, and inspection-readiness connection.</td></tr>
+<tr><td>7</td><td><b>/rlt-trust</b></td><td>Show RLT-Trust™ as the flagship radiopharma module for dose-to-patient readiness.</td></tr>
+<tr><td>8</td><td><b>/architecture</b></td><td>Close with the architecture, novelty claims, and commercialization roadmap.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. RLT-Trust™ Flagship Narrative</h2>
+<div class="script">
+RLT-Trust™ is the flagship radiopharma module because radioligand therapy is not only a cold-chain problem.
+It is a decay-window, QA-release, radiation-survey, chain-of-custody, site-receipt, patient-appointment, and administration-readiness problem.
+The module is designed to show whether a dose is truly ready to move from isotope/manufacturing to patient administration.
+</div>
+<br>
+<div class="grid">
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Decay-Aware Governance Engine™</h3><p>Scores readiness based on timing, QA release, delivery ETA, patient appointment, and administration deadline.</p></div>
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Isotope-to-Patient Evidence Graph™</h3><p>Links dose manufacturing, release, courier custody, site receipt, radiation survey, and administration evidence.</p></div>
+<div class="card"><span class="badge flagship">FLAGSHIP</span><h3>Lilly/Point/Novartis Fit</h3><p>Best aligned with Point Biopharma/Lilly RLT operations and Novartis-style radiopharma manufacturing environments.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>5. Clinical Trial + Microsoft Purview Narrative</h2>
+<div class="script">
+The Clinical Trial Integrity module connects Microsoft Purview compliance logic with COBIT-Chain™ evidence integrity.
+Purview can support DLP, sensitivity, retention, and records governance. COBIT-Chain™ adds protocol-to-evidence mapping,
+ALCOA+ readiness scoring, deviation/CAPA linkage, and inspection-readiness logic.
+</div>
+<br>
+<table>
+<tr><th>Capability</th><th>Purview Role</th><th>COBIT-Chain™ Role</th></tr>
+<tr><td>eConsent DLP</td><td>Detect sensitive content and policy matches.</td><td>Track whether the evidence is inspection-ready and linked to protocol obligations.</td></tr>
+<tr><td>Retention Labels</td><td>Apply long-term retention or record status.</td><td>Score whether evidence is ready for audit reliance.</td></tr>
+<tr><td>CSV Validation Packs</td><td>Store governed validation evidence in SharePoint/Purview ecosystem.</td><td>Hash, validate, score, and connect evidence to governance decisions.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>6. SOP / Audit / Access / Shift Narrative</h2>
+<div class="grid">
+<div class="card"><span class="badge core">SOP</span><h3>SOPTrust™</h3><p>Compares global/mature SOPs against local/manual SOPs and determines whether the issue is noncompliance, outdated SOP, or harmonization gap.</p></div>
+<div class="card"><span class="badge core">AUDIT/CAPA</span><h3>CAPATrust™</h3><p>Connects audit finding, CAPA owner, required evidence, remediation proof, and effectiveness-readiness gate.</p></div>
+<div class="card"><span class="badge core">ACCESS</span><h3>AccessTrust™</h3><p>Connects myAccess, binders, Excel, approvals, entitlements, and access-review audit readiness.</p></div>
+<div class="card"><span class="badge core">SHIFT</span><h3>ShiftTrust™</h3><p>Captures shift handoff evidence, equipment state, ServiceNow carryover, and technician accountability.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>7. Expansion Modules Narrative</h2>
+<div class="grid">
+<div class="card"><span class="badge life">LIFE SCIENCES</span><h3>CompoundTrust™</h3><p>Compounding pharmacy module for sterility-to-release evidence, BUD, EM, cleaning, garbing, QA review, and release readiness.</p></div>
+<div class="card"><span class="badge core">SUPPLY CHAIN</span><h3>DSCSA TrustChain™</h3><p>Supporting module for standard prescription drug package traceability, trading partner evidence, suspect product, quarantine, notification, and disposition.</p></div>
+<div class="card"><span class="badge commercial">COMMERCIAL</span><h3>HomeCare Command™</h3><p>Commercial expansion module for EVV, GPS, care-plan completion, caregiver credentials, billing, payroll, and Medicaid/MCO audit readiness.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>8. USCIS / Innovation Evidence Narrative</h2>
+<div class="script">
+The platform demonstrates original applied work in governance engineering: a working prototype, deployed to Azure, with multiple regulated-domain modules,
+separate evidence registers, cryptographic evidence integrity logic, domain-specific readiness scoring, and productized concepts such as
+Protocol-to-Purview Evidence Graph™, Sterility-to-Release Evidence Graph™, Isotope-to-Patient Evidence Graph™, and Care Delivery Evidence Chain™.
+</div>
+<br>
+<ul>
+<li>Shows practical implementation, not only theory.</li>
+<li>Supports dissertation novelty and future research direction.</li>
+<li>Creates evidence of technical contribution, product thinking, and regulated-industry relevance.</li>
+<li>Can support future ISACA, whitepaper, partnership, PhD, or commercialization narrative.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>9. Closing Statement</h2>
+<div class="script">
+COBIT-Chain™ is a reusable governance assurance engine. The same core model — evidence capture, integrity fingerprinting,
+separate registers, readiness scoring, and executive visibility — can be applied across regulated manufacturing, clinical trials,
+radiopharma, compounding pharmacy, supply chain, access governance, Audit/CAPA, and care-delivery operations.
+</div>
 </div>
 </main>
 </body>
