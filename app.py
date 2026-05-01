@@ -8520,5 +8520,135 @@ The core market problem is proving that a visit happened correctly, the caregive
     """
     return render_template_string(html)
 
+
+# ============================================================
+# COMMAND CENTER PAGE ACTIVE
+# Main navigation hub for COBIT-Chain platform.
+# ============================================================
+
+@app.route("/command-center")
+def command_center_page():
+    # COMMAND_CENTER_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain™ Command Center</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:radial-gradient(circle at top left,#2563eb 0%,#0f2745 42%,#071527 100%);color:white;padding:40px 44px 52px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card h3{margin:0 0 8px;font-size:19px}
+.card p{color:#475569;line-height:1.5}
+.card a{display:inline-block;margin-top:10px;text-decoration:none;background:#0f172a;color:white;padding:9px 12px;border-radius:999px;font-weight:900;font-size:13px}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.strategy{background:#eff6ff;color:#1d4ed8}
+.core{background:#ecfdf5;color:#047857}
+.flagship{background:#fff7ed;color:#c2410c;border:2px solid #fb923c}
+.support{background:#f1f5f9;color:#334155}
+.commercial{background:#faf5ff;color:#7e22ce}
+.flagship-card{border:3px solid #fb923c;background:linear-gradient(135deg,#fff7ed,#ffffff)}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+.quick-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.quick-grid a{text-align:center;text-decoration:none;background:#0f172a;color:white;padding:12px;border-radius:16px;font-weight:900;font-size:13px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ Command Center</h1>
+<p>One navigation hub for the full governance assurance platform: executive dashboard, product suite, architecture, roadmap, and all active modules.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center" class="active">Command Center</a>
+<a href="/executive-overview">Executive Overview</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/architecture">Architecture</a>
+<a href="/demo-script">Demo Script</a>
+<a href="/roadmap">Roadmap</a>
+</nav>
+
+<div class="notice">
+<b>Use this page for demos.</b> Start here, then move to Executive Overview, Modules Directory, Platform Health, Architecture, Demo Script, Roadmap, and the flagship RLT-Trust™ module.
+</div>
+
+<div class="quick-grid">
+<a href="/executive-overview">Executive</a>
+<a href="/modules">Modules</a>
+<a href="/platform-health">Health</a>
+<a href="/architecture">Architecture</a>
+<a href="/demo-script">Demo</a>
+<a href="/roadmap">Roadmap</a>
+</div>
+
+<div class="section">
+<h2>Strategic Platform Pages</h2>
+<div class="grid">
+<div class="card"><span class="badge strategy">CONTROL TOWER</span><h3>Executive Overview</h3><p>Full enterprise + vertical dashboard showing module records, readiness, conditional items, and high-risk signals.</p><a href="/executive-overview">Open Executive Overview</a></div>
+<div class="card"><span class="badge strategy">PRODUCT SUITE</span><h3>Modules Directory</h3><p>Clean product-suite page showing core enterprise modules, life sciences modules, RLT flagship, DSCSA, and HomeCare.</p><a href="/modules">Open Modules</a></div>
+<div class="card"><span class="badge strategy">SYSTEM HEALTH</span><h3>Platform Health</h3><p>Route registry and register-health page showing each module, route, CSV register, record count, and status.</p><a href="/platform-health">Open Platform Health</a></div>
+<div class="card"><span class="badge strategy">ARCHITECTURE</span><h3>Architecture & Innovation Claims</h3><p>Explains the COBIT-Chain™ engine, Azure Blob, SHA-256, module registers, novelty claims, and RLT positioning.</p><a href="/architecture">Open Architecture</a></div>
+<div class="card"><span class="badge strategy">PRESENTATION</span><h3>Stakeholder Demo Script</h3><p>Guided narrative for Chris, Sree, dissertation reviewers, ISACA, USCIS, partners, and future customers.</p><a href="/demo-script">Open Demo Script</a></div>
+<div class="card"><span class="badge strategy">COMMERCIALIZATION</span><h3>Roadmap</h3><p>Commercialization, partnership, PhD, USCIS, ISACA, and product-suite roadmap with RLT-Trust™ as the flagship.</p><a href="/roadmap">Open Roadmap</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Flagship Module</h2>
+<div class="grid">
+<div class="card flagship-card"><span class="badge flagship">FLAGSHIP RADIOPHARMA</span><h3>RLT-Trust™ / RadiopharmaTrust™</h3><p>Main radiopharma/RLT module for dose-to-patient readiness, decay-aware governance, isotope-to-patient evidence graph, QA release, courier chain-of-custody, site receipt, radiation survey, and administration window.</p><a href="/rlt-trust">Open RLT-Trust™</a></div>
+<div class="card"><span class="badge flagship">ALIAS</span><h3>Radiopharma Trust</h3><p>Clean alias route pointing to the same RLT-Trust™ flagship module.</p><a href="/radiopharma-trust">Open Radiopharma Trust</a></div>
+<div class="card"><span class="badge flagship">EVIDENCE REGISTER</span><h3>RLT Dose Evidence</h3><p>Uses rlt_dose_evidence.csv to track dose ID, batch ID, isotope, QA release, delivery, site receipt, administration, decay window, risk, and readiness.</p><a href="/platform-health">View Register Health</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Core Enterprise Modules</h2>
+<div class="grid">
+<div class="card"><span class="badge core">PROTECTED CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Manufacturing/Wole dashboard, evidence hashing, Azure Blob records, and verification engine.</p><a href="/">Open Manufacturing</a></div>
+<div class="card"><span class="badge core">SOP</span><h3>SOP Governance / SOPTrust™</h3><p>Dual SOP comparison, SOP-to-reality gap detection, outdated SOP signals, and harmonization decisions.</p><a href="/sop-governance">Open SOP Governance</a></div>
+<div class="card"><span class="badge core">SHIFT</span><h3>Shift Assurance / ShiftTrust™</h3><p>Equipment handoff, day/night carryover, ServiceNow linkage, technician accountability, and shift readiness.</p><a href="/shift-assurance">Open Shift Assurance</a></div>
+<div class="card"><span class="badge core">ACCESS</span><h3>Access Governance / AccessTrust™</h3><p>myAccess, binder/Excel access evidence, approval references, system owner review, and audit readiness.</p><a href="/access-governance">Open Access Governance</a></div>
+<div class="card"><span class="badge core">AUDIT/CAPA</span><h3>Audit/CAPA / CAPATrust™</h3><p>Audit finding, deviation/CAPA evidence, remediation proof, effectiveness readiness, and risk scoring.</p><a href="/audit-capa">Open Audit/CAPA</a></div>
+<div class="card"><span class="badge core">EXECUTIVE</span><h3>CommandTrust™</h3><p>Leadership control tower summarizing active registers, risk levels, and module readiness.</p><a href="/executive-overview">Open CommandTrust™</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Life Sciences Modules</h2>
+<div class="grid">
+<div class="card"><span class="badge core">CLINICAL</span><h3>TrialTrust™ / Clinical Trial Integrity</h3><p>Microsoft Purview, eConsent DLP, retention labels, ALCOA+, CSV validation packs, deviation/CAPA, and inspection readiness.</p><a href="/clinical-trial-integrity">Open TrialTrust™</a></div>
+<div class="card"><span class="badge core">COMPOUNDING</span><h3>CompoundTrust™</h3><p>Sterility-to-release evidence graph, BUD support, environmental monitoring, cleaning, garbing, QA review, and release readiness.</p><a href="/compoundtrust">Open CompoundTrust™</a></div>
+<div class="card"><span class="badge support">SUPPLY CHAIN</span><h3>DSCSA TrustChain™</h3><p>Supporting supply-chain module for standard prescription package traceability, trading partner verification, suspect product, quarantine, and disposition.</p><a href="/dscsa-trustchain">Open DSCSA TrustChain™</a></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Commercial Expansion Module</h2>
+<div class="grid">
+<div class="card"><span class="badge commercial">HOMECARE</span><h3>HomeCare Command™ / CareTrust™</h3><p>EVV, GPS, care plan completion, caregiver credential matching, client/family confirmation, billing, payroll, and Medicaid/MCO audit readiness.</p><a href="/homecare-command">Open HomeCare Command™</a></div>
+<div class="card"><span class="badge commercial">ALIAS</span><h3>CareTrust™</h3><p>Clean alias route for the HomeCare Command™ module.</p><a href="/caretrust">Open CareTrust™</a></div>
+<div class="card"><span class="badge commercial">EVIDENCE REGISTER</span><h3>Homecare Delivery Evidence</h3><p>Uses homecare_delivery_evidence.csv to track visit verification, evidence readiness, billing/payroll readiness, and risk signals.</p><a href="/platform-health">View Register Health</a></div>
+</div>
+</div>
+
+<div class="warning">
+<b>Suggested demo path:</b> Command Center → Executive Overview → Modules Directory → Platform Health → Architecture → RLT-Trust™ → Clinical Trial Integrity → Demo Script → Roadmap.
+</div>
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
 if __name__ == "__main__":
     app.run(debug=True)
