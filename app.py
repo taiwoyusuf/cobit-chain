@@ -6835,5 +6835,491 @@ def radiopharma_trust_page():
     # RADIOPHARMA_TRUST_ALIAS_ACTIVE
     return redirect("/rlt-trust")
 
+
+# ============================================================
+# HOMECARE COMMAND V1 TEST ACTIVE
+# Functional homecare delivery evidence register.
+# Does not replace or modify existing modules.
+# ============================================================
+
+HOMECARE_FILE = "homecare_delivery_evidence.csv"
+
+
+def prepare_homecare_delivery_evidence():
+    df = load_csv(HOMECARE_FILE)
+    return ensure_cols(df, [
+        "homecare_record_id", "timestamp", "visit_id", "client_id",
+        "care_plan_id", "payer_mco", "caregiver_id", "caregiver_name",
+        "scheduled_start", "scheduled_end", "actual_start", "actual_end",
+        "evv_status", "gps_status", "caregiver_credential_status",
+        "task_completion_status", "client_confirmation_status",
+        "incident_status", "missed_visit_status", "billing_status",
+        "payroll_status", "family_visibility_status", "remediation_action",
+        "readiness_status", "readiness_score", "risk_level",
+        "risk_signals", "previous_hash", "record_hash"
+    ])
+
+
+def homecare_parse_datetime(value):
+    value = clean(value)
+    if not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(value)
+    except Exception:
+        return None
+
+
+def calculate_homecare_readiness(evv_status, gps_status, caregiver_credential_status,
+                                 task_completion_status, client_confirmation_status,
+                                 incident_status, missed_visit_status, billing_status,
+                                 payroll_status, family_visibility_status,
+                                 scheduled_start, scheduled_end, actual_start, actual_end,
+                                 remediation_action):
+    score = 100
+    signals = []
+
+    evv_status = clean(evv_status)
+    gps_status = clean(gps_status)
+    caregiver_credential_status = clean(caregiver_credential_status)
+    task_completion_status = clean(task_completion_status)
+    client_confirmation_status = clean(client_confirmation_status)
+    incident_status = clean(incident_status)
+    missed_visit_status = clean(missed_visit_status)
+    billing_status = clean(billing_status)
+    payroll_status = clean(payroll_status)
+    family_visibility_status = clean(family_visibility_status)
+    remediation_action = clean(remediation_action)
+
+    scheduled_start_dt = homecare_parse_datetime(scheduled_start)
+    scheduled_end_dt = homecare_parse_datetime(scheduled_end)
+    actual_start_dt = homecare_parse_datetime(actual_start)
+    actual_end_dt = homecare_parse_datetime(actual_end)
+
+    if evv_status in ["Missing", "Failed", "Not Verified"]:
+        score -= 30
+        signals.append("EVV verification is missing, failed, or not verified.")
+
+    if gps_status in ["Mismatch", "Missing", "Unknown"]:
+        score -= 20
+        signals.append("GPS/location status is mismatched, missing, or unknown.")
+
+    if caregiver_credential_status in ["Expired", "Missing", "Not Verified"]:
+        score -= 25
+        signals.append("Caregiver credential or eligibility is expired, missing, or not verified.")
+
+    if task_completion_status in ["Incomplete", "Partial", "Not Documented"]:
+        score -= 25
+        signals.append("Care plan task completion is incomplete, partial, or not documented.")
+
+    if client_confirmation_status in ["Missing", "Disputed", "Not Confirmed"]:
+        score -= 20
+        signals.append("Client/family confirmation is missing, disputed, or not confirmed.")
+
+    if incident_status in ["Open Incident", "Unresolved", "Escalation Required"]:
+        score -= 25
+        signals.append("Incident exists and is open, unresolved, or requires escalation.")
+
+    if missed_visit_status in ["Missed", "Late", "No Show"]:
+        score -= 30
+        signals.append("Visit was missed, late, or caregiver no-show was recorded.")
+
+    if not actual_start_dt or not actual_end_dt:
+        score -= 15
+        signals.append("Actual visit start or end time is missing or invalid.")
+
+    if scheduled_start_dt and actual_start_dt:
+        late_minutes = (actual_start_dt - scheduled_start_dt).total_seconds() / 60
+        if late_minutes > 15:
+            score -= 10
+            signals.append("Caregiver arrived more than 15 minutes after scheduled start.")
+
+    if actual_start_dt and actual_end_dt:
+        visit_minutes = (actual_end_dt - actual_start_dt).total_seconds() / 60
+        if visit_minutes <= 0:
+            score -= 20
+            signals.append("Actual visit end time is not after start time.")
+        elif visit_minutes < 15:
+            score -= 10
+            signals.append("Actual visit duration appears unusually short.")
+
+    if billing_status in ["Submitted", "Ready for Billing"] and score < 85:
+        score -= 20
+        signals.append("Billing is marked ready/submitted even though care delivery evidence is incomplete.")
+
+    if payroll_status in ["Approved", "Ready for Payroll"] and score < 85:
+        score -= 15
+        signals.append("Payroll is marked ready/approved even though visit evidence is incomplete.")
+
+    if family_visibility_status in ["Not Shared", "Missing", "Unknown"]:
+        score -= 5
+        signals.append("Family/client visibility status is not confirmed.")
+
+    if score < 85 and not remediation_action:
+        score -= 10
+        signals.append("Readiness issues exist but remediation action is not documented.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "CARE DELIVERY VERIFIED"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY VERIFIED"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT VERIFIED"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major homecare delivery evidence risk detected.")
+
+    return readiness, score, risk, signals
+
+
+def save_homecare_command_test(req):
+    df = prepare_homecare_delivery_evidence()
+
+    visit_id = clean(req.form.get("visit_id"))
+    client_id = clean(req.form.get("client_id"))
+    care_plan_id = clean(req.form.get("care_plan_id"))
+    payer_mco = clean(req.form.get("payer_mco"))
+    caregiver_id = clean(req.form.get("caregiver_id"))
+    caregiver_name = clean(req.form.get("caregiver_name"))
+    scheduled_start = clean(req.form.get("scheduled_start"))
+    scheduled_end = clean(req.form.get("scheduled_end"))
+    actual_start = clean(req.form.get("actual_start"))
+    actual_end = clean(req.form.get("actual_end"))
+    evv_status = clean(req.form.get("evv_status"))
+    gps_status = clean(req.form.get("gps_status"))
+    caregiver_credential_status = clean(req.form.get("caregiver_credential_status"))
+    task_completion_status = clean(req.form.get("task_completion_status"))
+    client_confirmation_status = clean(req.form.get("client_confirmation_status"))
+    incident_status = clean(req.form.get("incident_status"))
+    missed_visit_status = clean(req.form.get("missed_visit_status"))
+    billing_status = clean(req.form.get("billing_status"))
+    payroll_status = clean(req.form.get("payroll_status"))
+    family_visibility_status = clean(req.form.get("family_visibility_status"))
+    remediation_action = clean(req.form.get("remediation_action"))
+
+    required = [
+        visit_id, client_id, care_plan_id, caregiver_id, caregiver_name,
+        evv_status, gps_status, caregiver_credential_status,
+        task_completion_status, client_confirmation_status,
+        incident_status, missed_visit_status, billing_status, payroll_status
+    ]
+
+    if not all(required):
+        return {
+            "error": "Visit ID, Client ID, Care Plan ID, Caregiver, EVV, GPS, credential, task, confirmation, incident, missed visit, billing, and payroll statuses are required."
+        }
+
+    readiness, readiness_score, risk_level, risk_signals = calculate_homecare_readiness(
+        evv_status, gps_status, caregiver_credential_status,
+        task_completion_status, client_confirmation_status,
+        incident_status, missed_visit_status, billing_status,
+        payroll_status, family_visibility_status,
+        scheduled_start, scheduled_end, actual_start, actual_end,
+        remediation_action
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    homecare_record_id = "HC-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        homecare_record_id + timestamp + visit_id + client_id + care_plan_id +
+        payer_mco + caregiver_id + caregiver_name + evv_status + gps_status +
+        task_completion_status + billing_status + payroll_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "homecare_record_id": homecare_record_id,
+        "timestamp": timestamp,
+        "visit_id": visit_id,
+        "client_id": client_id,
+        "care_plan_id": care_plan_id,
+        "payer_mco": payer_mco,
+        "caregiver_id": caregiver_id,
+        "caregiver_name": caregiver_name,
+        "scheduled_start": scheduled_start,
+        "scheduled_end": scheduled_end,
+        "actual_start": actual_start,
+        "actual_end": actual_end,
+        "evv_status": evv_status,
+        "gps_status": gps_status,
+        "caregiver_credential_status": caregiver_credential_status,
+        "task_completion_status": task_completion_status,
+        "client_confirmation_status": client_confirmation_status,
+        "incident_status": incident_status,
+        "missed_visit_status": missed_visit_status,
+        "billing_status": billing_status,
+        "payroll_status": payroll_status,
+        "family_visibility_status": family_visibility_status,
+        "remediation_action": remediation_action,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": " | ".join(risk_signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, HOMECARE_FILE)
+
+    return {
+        "error": "",
+        "homecare_record_id": homecare_record_id,
+        "readiness_status": readiness,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "risk_signals": risk_signals
+    }
+
+
+def get_homecare_command_test_metrics():
+    df = prepare_homecare_delivery_evidence()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "CARE DELIVERY VERIFIED"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY VERIFIED"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT VERIFIED"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(15).to_dict("records")
+    }
+
+
+@app.route("/homecare-command-v1-test", methods=["GET", "POST"])
+def homecare_command_v1_test():
+    result = None
+    if request.method == "POST":
+        result = save_homecare_command_test(request)
+
+    metrics = get_homecare_command_test_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>COBIT-Chain HomeCare Command v1 Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#9333ea);color:white;padding:34px 42px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.container{max-width:1450px;margin:-20px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:18px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:90px}
+button{border:none;background:linear-gradient(135deg,#9333ea,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.risk-HIGH{color:#dc2626;font-weight:900}.risk-MEDIUM{color:#d97706;font-weight:900}.risk-LOW{color:#16a34a;font-weight:900}
+@media(max-width:1000px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>COBIT-Chain™ HomeCare Command™ v1 Test</h1>
+<p>Care Delivery Evidence Chain™ • EVV Integrity • Medicaid/MCO Audit Pack • Payroll/Billing Readiness</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/executive-overview">Executive</a>
+<a href="/sop-governance">SOP</a>
+<a href="/shift-assurance">Shift</a>
+<a href="/access-governance">Access</a>
+<a href="/audit-capa">Audit/CAPA</a>
+<a href="/clinical-trial-integrity">Clinical Trial</a>
+<a href="/compounding-pharmacy-v1-test">CompoundTrust</a>
+<a href="/rlt-trust">RLT-Trust</a>
+<a href="/dscsa-trustchain">DSCSA</a>
+<a class="active" href="/homecare-command-v1-test">HomeCare Command</a>
+</nav>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.homecare_record_id }} —
+<b>{{ result.readiness_status }}</b> —
+Readiness score <b>{{ result.readiness_score }}%</b>
+<ul>{% for s in result.risk_signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Visits</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Verified</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Homecare Visit Evidence</h2>
+<form method="POST" action="/homecare-command-v1-test">
+<input name="visit_id" placeholder="Visit ID e.g. VISIT-001" required>
+<input name="client_id" placeholder="Client ID e.g. CLIENT-001" required>
+<input name="care_plan_id" placeholder="Care Plan ID e.g. CAREPLAN-001" required>
+<input name="payer_mco" placeholder="Payer / MCO e.g. Medicaid / Anthem / MHS / CareSource">
+
+<input name="caregiver_id" placeholder="Caregiver ID" required>
+<input name="caregiver_name" placeholder="Caregiver Name" required>
+
+<label><b>Scheduled Start</b></label>
+<input type="datetime-local" name="scheduled_start">
+<label><b>Scheduled End</b></label>
+<input type="datetime-local" name="scheduled_end">
+<label><b>Actual Start</b></label>
+<input type="datetime-local" name="actual_start">
+<label><b>Actual End</b></label>
+<input type="datetime-local" name="actual_end">
+
+<select name="evv_status" required>
+<option value="">EVV Status</option>
+<option value="Verified">Verified</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Failed">Failed</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="gps_status" required>
+<option value="">GPS / Location Status</option>
+<option value="Matched">Matched</option>
+<option value="Mismatch">Mismatch</option>
+<option value="Missing">Missing</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<select name="caregiver_credential_status" required>
+<option value="">Caregiver Credential Status</option>
+<option value="Verified">Verified</option>
+<option value="Expired">Expired</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+</select>
+
+<select name="task_completion_status" required>
+<option value="">Care Plan Task Completion</option>
+<option value="Complete">Complete</option>
+<option value="Partial">Partial</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Not Documented">Not Documented</option>
+</select>
+
+<select name="client_confirmation_status" required>
+<option value="">Client / Family Confirmation</option>
+<option value="Confirmed">Confirmed</option>
+<option value="Not Confirmed">Not Confirmed</option>
+<option value="Missing">Missing</option>
+<option value="Disputed">Disputed</option>
+</select>
+
+<select name="incident_status" required>
+<option value="">Incident Status</option>
+<option value="No Incident">No Incident</option>
+<option value="Open Incident">Open Incident</option>
+<option value="Unresolved">Unresolved</option>
+<option value="Escalation Required">Escalation Required</option>
+</select>
+
+<select name="missed_visit_status" required>
+<option value="">Missed Visit Status</option>
+<option value="No Missed Visit">No Missed Visit</option>
+<option value="Late">Late</option>
+<option value="Missed">Missed</option>
+<option value="No Show">No Show</option>
+</select>
+
+<select name="billing_status" required>
+<option value="">Billing Status</option>
+<option value="Not Ready">Not Ready</option>
+<option value="Ready for Billing">Ready for Billing</option>
+<option value="Submitted">Submitted</option>
+<option value="Blocked">Blocked</option>
+</select>
+
+<select name="payroll_status" required>
+<option value="">Payroll Status</option>
+<option value="Not Ready">Not Ready</option>
+<option value="Ready for Payroll">Ready for Payroll</option>
+<option value="Approved">Approved</option>
+<option value="Blocked">Blocked</option>
+</select>
+
+<select name="family_visibility_status">
+<option value="Shared">Family Visibility: Shared</option>
+<option value="Not Shared">Not Shared</option>
+<option value="Missing">Missing</option>
+<option value="Unknown">Unknown</option>
+</select>
+
+<textarea name="remediation_action" placeholder="Remediation Action / Follow-up"></textarea>
+
+<button type="submit">Save Homecare Evidence</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Homecare Delivery Evidence Records</h2>
+{% if metrics.recent %}
+<table>
+<tr><th>ID</th><th>Visit</th><th>Client</th><th>Caregiver</th><th>EVV</th><th>GPS</th><th>Tasks</th><th>Billing</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.homecare_record_id }}</td>
+<td><b>{{ r.visit_id }}</b><br>{{ r.care_plan_id }}</td>
+<td>{{ r.client_id }}</td>
+<td><b>{{ r.caregiver_id }}</b><br>{{ r.caregiver_name }}</td>
+<td>{{ r.evv_status }}</td>
+<td>{{ r.gps_status }}</td>
+<td>{{ r.task_completion_status }}</td>
+<td>{{ r.billing_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="risk-{{ r.risk_level }}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No homecare delivery evidence records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<b>Storage design:</b> records are saved separately in <b>homecare_delivery_evidence.csv</b>.
+Existing COBIT-Chain module registers are untouched.
+</div>
+
+<div class="card">
+<h2>Advanced Feature Direction</h2>
+<p><b>Care Delivery Evidence Chain™</b> links care plan, scheduled visit, caregiver identity, EVV, GPS/location, task completion, client/family confirmation, incident handling, billing, payroll, and Medicaid/MCO audit readiness into one governed evidence trail.</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
 if __name__ == "__main__":
     app.run(debug=True)
