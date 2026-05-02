@@ -1,3 +1,4 @@
+# KB_USAGE_LINEAGE_ACTIVE
 # INCIDENT_SPECIFIC_KB_ACTIVE
 # SERVICENOW_LIVE_NAV_UPDATE_ACTIVE
 # KNOWLEDGE_REVIEW_NAV_AND_HEALTH_ACTIVE
@@ -12371,6 +12372,7 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:br
 <td>{{ kb.supervisor_approved }}</td>
 <td>{{ kb.resolution_steps }}</td>
 <td class="action">
+<a href="/kb-usage/{{ ticket.number }}/{{ kb.kb_id }}">Record Use</a>
 <a href="/knowledge-governance">Suggest Update</a>
 <a href="/shift-handoff-lineage">Create Handoff</a>
 </td>
@@ -12396,6 +12398,382 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:br
 @app.route("/incident-register-kb")
 def incident_register_kb_page():
     return redirect("/servicenow-tickets-live")
+
+
+# ============================================================
+# KB USAGE LINEAGE ACTIVE
+# Records whether an incident-specific KB article was used,
+# whether it helped, and what evidence/action followed.
+# ============================================================
+
+KB_USAGE_LINEAGE_FILE = "kb_usage_lineage.csv"
+
+
+def prepare_kb_usage_lineage():
+    df = load_csv(KB_USAGE_LINEAGE_FILE)
+    return ensure_cols(df, [
+        "kb_usage_id", "timestamp", "ticket_number", "ci_reference",
+        "kb_id", "kb_title", "technician_id", "technician_name",
+        "technician_upn", "technician_role", "kb_used_status",
+        "helpfulness_status", "resolution_outcome", "evidence_status",
+        "evidence_reference", "technician_feedback", "knowledge_update_needed",
+        "readiness_status", "readiness_score", "risk_level",
+        "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def find_kb_article_by_id(kb_id):
+    df = prepare_kb_articles().fillna("")
+    matches = df[df["kb_id"] == clean(kb_id)]
+    if matches.empty:
+        return None
+    return matches.tail(1).iloc[0].to_dict()
+
+
+def parse_kb_usage_technician(value):
+    value = clean(value)
+    parts = value.split("||")
+    while len(parts) < 4:
+        parts.append("")
+    return {
+        "id": parts[0],
+        "displayName": parts[1],
+        "userPrincipalName": parts[2],
+        "jobTitle": parts[3]
+    }
+
+
+def calculate_kb_usage_readiness(kb_used_status, helpfulness_status, resolution_outcome,
+                                 evidence_status, evidence_reference, technician_feedback,
+                                 knowledge_update_needed, technician):
+    score = 100
+    signals = []
+
+    if not technician.get("displayName"):
+        score -= 25
+        signals.append("Technician is not selected from approved Entra group.")
+
+    if kb_used_status in ["Not Used", "Skipped"]:
+        score -= 25
+        signals.append("Recommended KB was not used for this ticket.")
+
+    if helpfulness_status in ["Not Helpful", "Partially Helpful"]:
+        score -= 25
+        signals.append("KB was not fully helpful for the incident.")
+
+    if resolution_outcome in ["Unresolved", "Escalated", "Workaround Used"]:
+        score -= 25
+        signals.append("Ticket outcome indicates unresolved, escalated, or workaround-based resolution.")
+
+    if evidence_status in ["Missing", "Not Verified", "Rejected"]:
+        score -= 30
+        signals.append("Evidence is missing, not verified, or rejected.")
+    elif evidence_status == "Pending Review":
+        score -= 15
+        signals.append("Evidence is pending review.")
+
+    if evidence_status == "Verified" and not clean(evidence_reference):
+        score -= 10
+        signals.append("Verified evidence should include an evidence reference or hash.")
+
+    if knowledge_update_needed == "Yes":
+        score -= 20
+        signals.append("Knowledge update is needed; route to Knowledge Governance.")
+
+    if not clean(technician_feedback):
+        score -= 10
+        signals.append("Technician feedback is missing.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "KB USAGE VERIFIED"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "KB USAGE CONDITIONALLY VERIFIED"
+        risk = "MEDIUM"
+    else:
+        readiness = "KB USAGE NOT READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("KB use appears complete, helpful, evidence-backed, and governance-ready.")
+
+    return readiness, score, risk, signals
+
+
+def save_kb_usage_lineage(req, ticket_number, kb_id):
+    df = prepare_kb_usage_lineage()
+
+    ticket = find_servicenow_ticket_by_number(ticket_number)
+    kb = find_kb_article_by_id(kb_id)
+
+    if not kb:
+        return {"error": "KB article was not found in kb_articles.csv."}
+
+    technician = parse_kb_usage_technician(req.form.get("technician"))
+
+    kb_used_status = clean(req.form.get("kb_used_status"))
+    helpfulness_status = clean(req.form.get("helpfulness_status"))
+    resolution_outcome = clean(req.form.get("resolution_outcome"))
+    evidence_status = clean(req.form.get("evidence_status"))
+    evidence_reference = clean(req.form.get("evidence_reference"))
+    technician_feedback = clean(req.form.get("technician_feedback"))
+    knowledge_update_needed = clean(req.form.get("knowledge_update_needed"))
+
+    required = [
+        ticket_number, kb_id, technician["displayName"], kb_used_status,
+        helpfulness_status, resolution_outcome, evidence_status,
+        knowledge_update_needed
+    ]
+
+    if not all(required):
+        return {"error": "Technician, KB used status, helpfulness, resolution outcome, evidence status, and knowledge update decision are required."}
+
+    readiness_status, readiness_score, risk_level, signals = calculate_kb_usage_readiness(
+        kb_used_status, helpfulness_status, resolution_outcome,
+        evidence_status, evidence_reference, technician_feedback,
+        knowledge_update_needed, technician
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    kb_usage_id = "KBUSE-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        kb_usage_id + timestamp + clean(ticket.get("number")) +
+        clean(ticket.get("cmdb_ci")) + clean(kb.get("kb_id")) +
+        clean(kb.get("title")) + technician["id"] + kb_used_status +
+        helpfulness_status + resolution_outcome + evidence_status +
+        knowledge_update_needed + readiness_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "kb_usage_id": kb_usage_id,
+        "timestamp": timestamp,
+        "ticket_number": clean(ticket.get("number")) or clean(ticket_number),
+        "ci_reference": clean(ticket.get("cmdb_ci")),
+        "kb_id": clean(kb.get("kb_id")),
+        "kb_title": clean(kb.get("title")),
+        "technician_id": technician["id"],
+        "technician_name": technician["displayName"],
+        "technician_upn": technician["userPrincipalName"],
+        "technician_role": technician["jobTitle"],
+        "kb_used_status": kb_used_status,
+        "helpfulness_status": helpfulness_status,
+        "resolution_outcome": resolution_outcome,
+        "evidence_status": evidence_status,
+        "evidence_reference": evidence_reference,
+        "technician_feedback": technician_feedback,
+        "knowledge_update_needed": knowledge_update_needed,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, KB_USAGE_LINEAGE_FILE)
+
+    return {
+        "error": "",
+        "kb_usage_id": kb_usage_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+@app.route("/kb-usage/<ticket_number>/<kb_id>", methods=["GET", "POST"])
+def kb_usage_lineage_page(ticket_number, kb_id):
+    # KB_USAGE_LINEAGE_ACTIVE
+    result = None
+    technician_error = ""
+    technicians = []
+
+    ticket = find_servicenow_ticket_by_number(ticket_number)
+    kb = find_kb_article_by_id(kb_id)
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        technician_error = str(e)
+
+    if request.method == "POST":
+        result = save_kb_usage_lineage(request, ticket_number, kb_id)
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ KB Usage Lineage</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#4c1d95);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.layout{display:grid;grid-template-columns:450px 1fr;gap:20px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:110px}
+button{border:none;background:linear-gradient(135deg,#4c1d95,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ KB Usage Lineage</h1>
+<p>Records whether a recommended KB was used, whether it helped, what evidence followed, and whether a knowledge update is needed.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/suggested-kb/{{ ticket.number }}">Suggested KB</a>
+<a class="active" href="/kb-usage/{{ ticket.number }}/{{ kb.kb_id if kb else kb_id }}">KB Usage</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+</nav>
+
+{% if technician_error %}
+<div class="error"><b>Technician directory connection issue:</b><br>{{ technician_error }}</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved KB Usage:</b> {{ result.kb_usage_id }} —
+<b>{{ result.readiness_status }}</b> —
+Score <b>{{ result.readiness_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<div class="warning">
+<b>Governance model:</b> A KB is only valuable if it can be tied to the ticket, CI, technician action, outcome, evidence, and feedback loop.
+</div>
+
+<section class="layout">
+<aside class="panel">
+<h2>Record KB Use</h2>
+<form method="POST" action="/kb-usage/{{ ticket.number }}/{{ kb.kb_id if kb else kb_id }}">
+<select name="technician" required>
+<option value="">Select technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="kb_used_status" required>
+<option value="">Was KB used?</option>
+<option value="Used">Used</option>
+<option value="Partially Used">Partially Used</option>
+<option value="Not Used">Not Used</option>
+<option value="Skipped">Skipped</option>
+</select>
+
+<select name="helpfulness_status" required>
+<option value="">Was it helpful?</option>
+<option value="Helpful">Helpful</option>
+<option value="Partially Helpful">Partially Helpful</option>
+<option value="Not Helpful">Not Helpful</option>
+</select>
+
+<select name="resolution_outcome" required>
+<option value="">Resolution Outcome</option>
+<option value="Resolved">Resolved</option>
+<option value="Partially Resolved">Partially Resolved</option>
+<option value="Unresolved">Unresolved</option>
+<option value="Escalated">Escalated</option>
+<option value="Workaround Used">Workaround Used</option>
+</select>
+
+<select name="evidence_status" required>
+<option value="">Evidence Status</option>
+<option value="Verified">Verified</option>
+<option value="Pending Review">Pending Review</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<input name="evidence_reference" placeholder="Evidence reference, file hash, or evidence ID e.g. EV-DEMO-0001">
+
+<select name="knowledge_update_needed" required>
+<option value="">Knowledge update needed?</option>
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+
+<textarea name="technician_feedback" placeholder="Technician feedback: what worked, what did not work, what should be improved"></textarea>
+
+<button type="submit">Save KB Usage Lineage</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Incident + KB Context</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Ticket</td><td><b>{{ ticket.number }}</b></td></tr>
+<tr><td>Ticket Description</td><td>{{ ticket.short_description }}</td></tr>
+<tr><td>CI</td><td>{{ ticket.cmdb_ci }}</td></tr>
+<tr><td>KB</td><td><b>{{ kb.kb_id if kb else kb_id }}</b> — {{ kb.title if kb else "Not found" }}</td></tr>
+<tr><td>KB Category</td><td>{{ kb.category if kb else "" }}</td></tr>
+<tr><td>KB Resolution Steps</td><td>{{ kb.resolution_steps if kb else "" }}</td></tr>
+<tr><td>Supervisor Approved</td><td>{{ kb.supervisor_approved if kb else "" }}</td></tr>
+</table>
+
+<div class="action" style="margin-top:14px">
+<a href="/knowledge-governance">Create Knowledge Update</a>
+<a href="/knowledge-review">Open Review Queue</a>
+<a href="/shift-handoff-lineage">Create Handoff</a>
+</div>
+</section>
+</section>
+
+<div class="card">
+<h2>Commercial Meaning</h2>
+<p>
+This closes the loop: ServiceNow incident → suggested KB → technician use → evidence status → feedback → knowledge update decision → hash-backed governance lineage.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        ticket=ticket,
+        kb=kb,
+        kb_id=kb_id,
+        technicians=technicians,
+        technician_error=technician_error,
+        result=result
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
