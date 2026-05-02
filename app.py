@@ -1,3 +1,4 @@
+# RELEASE_NOTES_PAGE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_HEALTH_ACTIVE
 # OPERATIONAL_LINEAGE_CONTROL_TOWER_ACTIVE
 # KNOWLEDGE_PASSPORT_NAV_HEALTH_ACTIVE
@@ -13561,6 +13562,187 @@ Lineage Score <b>{{ metrics.lineage_score }}%</b>.
     """
 
     return render_template_string(html, metrics=metrics)
+
+
+# ============================================================
+# RELEASE NOTES PAGE ACTIVE
+# Version snapshot for Monday demo and governance record.
+# ============================================================
+
+@app.route("/release-notes")
+def release_notes_page():
+    # RELEASE_NOTES_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Release Notes</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:40px 44px 54px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:28px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top;word-break:break-word}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.live{background:#dcfce7;color:#166534}
+.demo{background:#fef3c7;color:#92400e}
+.future{background:#e0e7ff;color:#3730a3}
+.protected{background:#fee2e2;color:#991b1b}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ / COBIT-Chain™ Release Notes</h1>
+<p>Version snapshot for Monday demo: live integrations, protected modules, demo-safe workflows, governance lineage, and next controlled pilot steps.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/operational-lineage">Operational Lineage</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/platform-health">Platform Health</a>
+<a class="active" href="/release-notes">Release Notes</a>
+</nav>
+
+<div class="notice">
+<b>Current stable snapshot:</b> stable-operational-lineage-nav-health-working-20260501.
+This release proves a working governance assurance chain connecting live ServiceNow PDI tickets, Microsoft Entra technician identity, shift handoff, evidence readiness, incident-specific knowledge, supervisor review, and audit lineage.
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Platform Mode</div><div class="metric-value">Demo + Live PDI</div></div>
+<div class="metric"><div class="metric-label">Live Integrations</div><div class="metric-value">2</div></div>
+<div class="metric"><div class="metric-label">Strategic Pages</div><div class="metric-value">8+</div></div>
+<div class="metric"><div class="metric-label">Protected Core</div><div class="metric-value">Yes</div></div>
+</section>
+
+<div class="section">
+<h2>1. What Is Working Now</h2>
+<table>
+<tr><th>Capability</th><th>Status</th><th>Route</th><th>What It Proves</th></tr>
+<tr><td>Command Center</td><td><span class="badge live">WORKING</span></td><td>/command-center</td><td>Main navigation hub for the full platform.</td></tr>
+<tr><td>Monday Demo Mode</td><td><span class="badge live">WORKING</span></td><td>/monday-demo</td><td>Guided presentation path with talking points and leadership framing.</td></tr>
+<tr><td>Operational Lineage Control Tower</td><td><span class="badge live">WORKING</span></td><td>/operational-lineage</td><td>One-page chain from ServiceNow live ticket to technician, handoff, KB, evidence, review, and audit lineage.</td></tr>
+<tr><td>ServiceNow Live Tickets</td><td><span class="badge live">LIVE PDI</span></td><td>/servicenow-tickets-live</td><td>Read-only pull from ServiceNow PDI incident records.</td></tr>
+<tr><td>Microsoft Entra Technicians</td><td><span class="badge live">LIVE ENTRA</span></td><td>/technicians</td><td>Technician dropdown controlled by Entra security group membership.</td></tr>
+<tr><td>Shift Enterprise</td><td><span class="badge live">WORKING</span></td><td>/shift-assurance-enterprise</td><td>Ticket, CI, Entra technician, shift, evidence status, readiness, and hash lineage.</td></tr>
+<tr><td>Formal Handoff Lineage</td><td><span class="badge live">WORKING</span></td><td>/shift-handoff-lineage</td><td>Outgoing-to-incoming technician handoff with acceptance, evidence, risk, and record hash.</td></tr>
+<tr><td>Incident-Specific Suggested KB</td><td><span class="badge live">WORKING</span></td><td>/suggested-kb/&lt;ticket&gt;</td><td>KB recommendations are contextual to one incident, not generic.</td></tr>
+<tr><td>KB Usage Lineage</td><td><span class="badge live">WORKING</span></td><td>/kb-usage/&lt;ticket&gt;/&lt;kb&gt;</td><td>Records whether the KB was used, helpful, evidence-backed, and update-worthy.</td></tr>
+<tr><td>Knowledge Governance</td><td><span class="badge live">WORKING</span></td><td>/knowledge-governance</td><td>Technician knowledge suggestion linked to ticket, CI, evidence, and future ServiceNow sync.</td></tr>
+<tr><td>Knowledge Review Queue</td><td><span class="badge live">WORKING</span></td><td>/knowledge-review</td><td>Supervisor approval, rejection, revision request, and sync-readiness decision.</td></tr>
+<tr><td>Knowledge Passport</td><td><span class="badge live">WORKING</span></td><td>/knowledge-passport/KB-DEMO-001</td><td>Full governance life of one KB article.</td></tr>
+<tr><td>Platform Health</td><td><span class="badge live">WORKING</span></td><td>/platform-health</td><td>Module register visibility and route health.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>2. Live vs Demo-Safe vs Future</h2>
+<table>
+<tr><th>Layer</th><th>Current Status</th><th>Boundary</th></tr>
+<tr><td>ServiceNow PDI Incidents</td><td><span class="badge live">LIVE</span></td><td>Read-only pull from configured PDI. No production ServiceNow dependency.</td></tr>
+<tr><td>Microsoft Entra Technician Group</td><td><span class="badge live">LIVE</span></td><td>Reads approved demo technicians from configured Entra group.</td></tr>
+<tr><td>ServiceNow CI Readiness</td><td><span class="badge demo">DEMO-SAFE</span></td><td>Uses ServiceNow-style readiness records now; future version can enrich from CMDB API.</td></tr>
+<tr><td>Knowledge Articles</td><td><span class="badge demo">DEMO-SAFE</span></td><td>Uses local KB article register now; future version can sync/pull ServiceNow knowledge articles.</td></tr>
+<tr><td>Evidence Hashing / Lineage</td><td><span class="badge live">WORKING</span></td><td>Local/Azure-backed CSV register lineage and record hash logic.</td></tr>
+<tr><td>Enterprise Production Systems</td><td><span class="badge future">FUTURE</span></td><td>Only after governance, security, IP, and integration review.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>3. Protected Core Rule</h2>
+<div class="warning">
+<b>Protected homepage:</b> The Manufacturing/Wole dashboard remains preserved at <b>/</b>. New enterprise modules were added as separate routes and registers to avoid disturbing the protected core.
+</div>
+<table>
+<tr><th>Protected Area</th><th>Status</th><th>Instruction</th></tr>
+<tr><td>Manufacturing/Wole dashboard</td><td><span class="badge protected">PROTECTED</span></td><td>Do not overwrite or rebuild unless explicitly required.</td></tr>
+<tr><td>Existing Shift page</td><td><span class="badge protected">PRESERVED</span></td><td>Enterprise Shift was added through separate test/alias routes.</td></tr>
+<tr><td>Demo records</td><td><span class="badge demo">SANITIZED</span></td><td>Use generic data only. Do not upload confidential company data.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Monday Presentation Claim</h2>
+<div class="notice">
+<b>AssuranceLayer™ is not a replacement for ServiceNow, Entra, CMMS, QMS, SOP repositories, or validated enterprise systems.</b>
+It is a governance assurance layer that connects the operational evidence around those systems.
+</div>
+<table>
+<tr><th>Question</th><th>Answer</th></tr>
+<tr><td>What is live?</td><td>ServiceNow PDI ticket pull and Microsoft Entra technician group lookup.</td></tr>
+<tr><td>What is demo-safe?</td><td>CI readiness scoring, KB articles, supervisor review, and evidence lineage records.</td></tr>
+<tr><td>What is the “wow” factor?</td><td>One governed chain: ticket → CI → technician → handoff → KB → evidence → supervisor review → passport → audit lineage.</td></tr>
+<tr><td>What is the ask?</td><td>Approve a controlled, sanitized pilot workflow before any enterprise-system integration.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>5. Recommended Demo Flow</h2>
+<table>
+<tr><th>Step</th><th>Page</th><th>Talk Track</th></tr>
+<tr><td>1</td><td>/monday-demo</td><td>Open with the controlled presentation guide.</td></tr>
+<tr><td>2</td><td>/operational-lineage</td><td>Show the full chain on one screen.</td></tr>
+<tr><td>3</td><td>/servicenow-tickets-live</td><td>Show live ServiceNow PDI tickets.</td></tr>
+<tr><td>4</td><td>/suggested-kb/&lt;ticket&gt;</td><td>Show incident-specific KB recommendations.</td></tr>
+<tr><td>5</td><td>/kb-usage/&lt;ticket&gt;/&lt;kb&gt;</td><td>Record whether KB was used and helpful.</td></tr>
+<tr><td>6</td><td>/shift-handoff-lineage</td><td>Show formal technician-to-technician transfer of responsibility.</td></tr>
+<tr><td>7</td><td>/knowledge-review</td><td>Show supervisor-controlled knowledge approval.</td></tr>
+<tr><td>8</td><td>/knowledge-passport/KB-DEMO-001</td><td>Show the full life of one KB article.</td></tr>
+<tr><td>9</td><td>/platform-health</td><td>Show module/register health.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>6. Known Next Steps After Monday</h2>
+<div class="two">
+<div class="card"><h3>1. ServiceNow PDI enrichment</h3><p>Pull real CMDB CI details, assignment group metadata, and ServiceNow knowledge articles.</p></div>
+<div class="card"><h3>2. Evidence upload integration</h3><p>Connect ticket/CI/handoff records to uploaded evidence files and stronger hash verification.</p></div>
+<div class="card"><h3>3. Supervisor role separation</h3><p>Use separate Entra groups for technicians, supervisors, and knowledge owners.</p></div>
+<div class="card"><h3>4. Exportable evidence pack</h3><p>Generate PDF/CSV audit packs for one ticket, CI, KB article, or handoff chain.</p></div>
+<div class="card"><h3>5. Security and IP review</h3><p>Keep company-specific names and proprietary records out of demos until reviewed.</p></div>
+<div class="card"><h3>6. Controlled pilot</h3><p>Select one workflow: ticket/CI readiness + shift handoff + knowledge review.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>7. Quick Links</h2>
+<div class="action">
+<a href="/monday-demo">Monday Demo</a>
+<a href="/operational-lineage">Operational Lineage</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/technicians">Technicians</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+<a href="/knowledge-passport/KB-DEMO-001">Knowledge Passport</a>
+<a href="/platform-health">Platform Health</a>
+</div>
+</div>
+
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
 
 if __name__ == "__main__":
     app.run(debug=True)
