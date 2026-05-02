@@ -1,3 +1,4 @@
+# KNOWLEDGE_REVIEW_NAV_AND_HEALTH_ACTIVE
 # KNOWLEDGE_GOVERNANCE_NAV_UPDATE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_UPDATE_ACTIVE
 # DEIDENTIFIED_DEMO_LANGUAGE_ACTIVE
@@ -7634,7 +7635,8 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
 <div class="card"><span class="badge strategy">HANDOFF</span><h3>Shift Handoff Lineage</h3><p>Formal outgoing-to-incoming technician handoff with acceptance status, evidence readiness, open risk, timestamp, and cryptographic record hash.</p><a href="/shift-handoff-lineage">Open Handoff Lineage</a></div>
 <div class="card"><span class="badge strategy">SERVICENOW</span><h3>ServiceNow CI Readiness</h3><p>Demo-safe ServiceNow-style ticket and CI readiness layer. Designed for future ServiceNow PDI API connection.</p><a href="/servicenow-ci-readiness">Open ServiceNow CI</a></div>
 <div class="card"><span class="badge strategy">FUTURE API</span><h3>ServiceNow PDI Ready</h3><p>Current page uses demo records. Future version will pull incidents, CIs, assignment groups, and knowledge articles from a real ServiceNow PDI.</p><a href="/servicenow-ci-readiness">View API-Ready Model</a></div>
-<div class="card"><span class="badge strategy">KNOWLEDGE</span><h3>Knowledge Governance</h3><p>Technician knowledge suggestion, supervisor review, CI/ticket linkage, evidence reference, approval status, and future ServiceNow PDI knowledge sync.</p><a href="/knowledge-governance">Open Knowledge Governance</a></div>
+<div class="card"><span class="badge strategy">KNOWLEDGE</span><h3>Knowledge Governance</h3><p>Technician knowledge suggestion, CI/ticket linkage, evidence reference, and future ServiceNow PDI knowledge sync preparation.</p><a href="/knowledge-governance">Open Knowledge Governance</a></div>
+<div class="card"><span class="badge strategy">REVIEW</span><h3>Knowledge Review Queue</h3><p>Supervisor review queue for approving, rejecting, requesting revision, or marking knowledge suggestions ready for ServiceNow PDI sync.</p><a href="/knowledge-review">Open Knowledge Review</a></div>
 </div>
 </div>
 
@@ -7828,6 +7830,54 @@ def get_platform_health_rows():
             "test_route": "/homecare-command-v1-test",
             "register": "homecare_delivery_evidence.csv",
             "purpose": "EVV, GPS, care-plan completion, caregiver credential, billing, payroll, and Medicaid/MCO audit readiness."
+        },
+        {
+            "tier": "Operational Lineage",
+            "module": "QC Ops Intake",
+            "route": "/qc-ops-intake",
+            "test_route": "",
+            "register": "qc_ops_intake_register.csv",
+            "purpose": "Excel/CSV intake, dataset fingerprinting, governance classification, and CI/data-integrity signal detection."
+        },
+        {
+            "tier": "Operational Lineage",
+            "module": "ShiftTrust™ Enterprise / Entra Assignment",
+            "route": "/shift-assurance-enterprise",
+            "test_route": "/shift-assurance-entra-test",
+            "register": "shift_entra_handoffs.csv",
+            "purpose": "Ticket, CI, Microsoft Entra technician assignment, evidence status, readiness score, and shift hash lineage."
+        },
+        {
+            "tier": "Operational Lineage",
+            "module": "Formal Shift Handoff Lineage",
+            "route": "/shift-handoff-lineage",
+            "test_route": "",
+            "register": "shift_handoff_lineage.csv",
+            "purpose": "Outgoing technician to incoming technician handoff, acceptance, CI context, evidence status, risk, and record hash."
+        },
+        {
+            "tier": "Service Management",
+            "module": "ServiceNow CI Readiness",
+            "route": "/servicenow-ci-readiness",
+            "test_route": "",
+            "register": "servicenow_ci_readiness.csv",
+            "purpose": "Demo-safe ServiceNow-style ticket/CI readiness, SOP linkage, evidence readiness, data-integrity status, and pre-deviation risk."
+        },
+        {
+            "tier": "Knowledge Governance",
+            "module": "Knowledge Governance",
+            "route": "/knowledge-governance",
+            "test_route": "",
+            "register": "knowledge_governance_register.csv",
+            "purpose": "Technician knowledge suggestion, CI/ticket linkage, evidence reference, workflow action, and ServiceNow PDI sync readiness."
+        },
+        {
+            "tier": "Knowledge Governance",
+            "module": "Knowledge Review Queue",
+            "route": "/knowledge-review",
+            "test_route": "",
+            "register": "knowledge_review_events.csv",
+            "purpose": "Supervisor review events, approval/rejection/revision decisions, ServiceNow PDI sync readiness, and review hash lineage."
         }
     ]
 
@@ -8597,6 +8647,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/shift-handoff-lineage">Handoff Lineage</a>
 <a href="/servicenow-ci-readiness">ServiceNow CI</a>
 <a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
 </nav>
 
 <div class="notice">
@@ -8667,7 +8718,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </div>
 
 <div class="warning">
-<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow CI Readiness → Knowledge Governance → Executive Overview → Architecture → Roadmap.
+<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow CI Readiness → Knowledge Governance → Knowledge Review → Executive Overview → Architecture → Roadmap.
 </div>
 </main>
 </body>
