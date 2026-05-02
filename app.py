@@ -11808,5 +11808,292 @@ The strongest next step is a small controlled pilot using sanitized data, Servic
     """
     return render_template_string(html)
 
+
+# ============================================================
+# SERVICENOW LIVE INTEGRATION ACTIVE
+# Pulls real incidents from ServiceNow PDI into AssuranceLayer.
+# Demo-safe, read-only integration.
+# ============================================================
+
+def get_servicenow_live_config():
+    import os
+
+    instance = os.environ.get("SERVICENOW_INSTANCE", "").strip().rstrip("/")
+    username = os.environ.get("SERVICENOW_USERNAME", "").strip()
+    password = os.environ.get("SERVICENOW_PASSWORD", "").strip()
+    assignment_group = os.environ.get("SERVICENOW_ASSIGNMENT_GROUP", "").strip()
+
+    missing = []
+    if not instance:
+        missing.append("SERVICENOW_INSTANCE")
+    if not username:
+        missing.append("SERVICENOW_USERNAME")
+    if not password:
+        missing.append("SERVICENOW_PASSWORD")
+
+    if missing:
+        raise RuntimeError("Missing ServiceNow app settings: " + ", ".join(missing))
+
+    return instance, username, password, assignment_group
+
+
+def recommend_servicenow_live_kb(short_description):
+    text = (short_description or "").lower()
+
+    if "backup" in text:
+        return "KB-DEMO-002 - Monthly backup review evidence checklist"
+    if "access" in text:
+        return "KB-DEMO-003 - Quarterly access review remediation process"
+    if "audit trail" in text or "audit" in text:
+        return "KB-DEMO-001 - How to verify audit trail export evidence"
+
+    return "KB-DEMO-000 - General GMP IT evidence handling guidance"
+
+
+def fetch_servicenow_live_incidents(limit=20):
+    import json
+    import urllib.parse
+    import urllib.request
+    import base64
+
+    instance, username, password, assignment_group = get_servicenow_live_config()
+
+    query = "active=true^ORDERBYDESCsys_updated_on"
+
+    fields = ",".join([
+        "number", "sys_id", "short_description", "description", "state",
+        "priority", "impact", "urgency", "assignment_group", "assigned_to",
+        "cmdb_ci", "opened_at", "sys_created_on", "sys_updated_on"
+    ])
+
+    params = {
+        "sysparm_limit": str(limit),
+        "sysparm_display_value": "true",
+        "sysparm_exclude_reference_link": "true",
+        "sysparm_query": query,
+        "sysparm_fields": fields
+    }
+
+    url = instance + "/api/now/table/incident?" + urllib.parse.urlencode(params)
+
+    token = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Basic {token}"
+        }
+    )
+
+    with urllib.request.urlopen(req, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    incidents = payload.get("result", [])
+    cleaned = []
+
+    for item in incidents:
+        short_desc = item.get("short_description", "")
+        ticket_no = item.get("number", "")
+        ci_name = item.get("cmdb_ci", "")
+        priority = item.get("priority", "")
+
+        evidence_status = "Evidence Pending"
+        governance_status = "Pending AssuranceLayer Evidence Review"
+        recommended_kb = recommend_servicenow_live_kb(short_desc)
+
+        cleaned.append({
+            "number": ticket_no,
+            "sys_id": item.get("sys_id", ""),
+            "short_description": short_desc,
+            "description": item.get("description", ""),
+            "state": item.get("state", ""),
+            "priority": priority,
+            "impact": item.get("impact", ""),
+            "urgency": item.get("urgency", ""),
+            "assignment_group": item.get("assignment_group", ""),
+            "assigned_to": item.get("assigned_to", ""),
+            "cmdb_ci": ci_name,
+            "opened_at": item.get("opened_at", ""),
+            "sys_created_on": item.get("sys_created_on", ""),
+            "sys_updated_on": item.get("sys_updated_on", ""),
+            "recommended_kb": recommended_kb,
+            "evidence_status": evidence_status,
+            "governance_status": governance_status
+        })
+
+    return cleaned
+
+
+@app.route("/api/servicenow/tickets-live")
+def api_servicenow_tickets_live():
+    # SERVICENOW_LIVE_INTEGRATION_ACTIVE
+    import json
+    import os
+
+    try:
+        tickets = fetch_servicenow_live_incidents(limit=20)
+        payload = {
+            "source": "ServiceNow PDI Live",
+            "instance": os.environ.get("SERVICENOW_INSTANCE", ""),
+            "count": len(tickets),
+            "tickets": tickets
+        }
+
+        return app.response_class(
+            json.dumps(payload, indent=2),
+            mimetype="application/json"
+        )
+
+    except Exception as e:
+        payload = {
+            "source": "ServiceNow PDI Live",
+            "status": "error",
+            "message": str(e)
+        }
+
+        return app.response_class(
+            json.dumps(payload, indent=2),
+            status=500,
+            mimetype="application/json"
+        )
+
+
+@app.route("/servicenow-tickets-live")
+def servicenow_tickets_live_page():
+    # SERVICENOW_LIVE_INTEGRATION_ACTIVE
+    error = ""
+    tickets = []
+
+    try:
+        tickets = fetch_servicenow_live_incidents(limit=20)
+    except Exception as e:
+        error = str(e)
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ ServiceNow Live Tickets</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1f2937);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.warn{background:#fef3c7;color:#92400e}
+.risk{background:#fee2e2;color:#991b1b}
+.ok{background:#dcfce7;color:#166534}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin-bottom:5px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ ServiceNow Live Ticket Command Center</h1>
+<p>Live read-only pull from ServiceNow PDI: ticket → CI → knowledge recommendation → evidence readiness → handoff/governance action.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a class="active" href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+</nav>
+
+{% if error %}
+<div class="error">
+<b>ServiceNow PDI connection issue:</b><br>{{ error }}
+<br><br>
+Check Azure App Service settings: SERVICENOW_INSTANCE, SERVICENOW_USERNAME, SERVICENOW_PASSWORD, and PDI availability.
+</div>
+{% else %}
+<div class="notice">
+<b>Connected to ServiceNow PDI.</b> {{ tickets|length }} active incident ticket(s) imported.
+</div>
+{% endif %}
+
+<div class="warning">
+<b>Enterprise model:</b> ServiceNow owns the ticket and CI. AssuranceLayer™ adds governance readiness, Entra-controlled technician assignment, shift handoff, knowledge recommendation, evidence verification, and audit lineage.
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Imported Tickets</div><div class="metric-value">{{ tickets|length }}</div></div>
+<div class="metric"><div class="metric-label">Evidence Pending</div><div class="metric-value" style="color:#f59e0b">{{ tickets|length }}</div></div>
+<div class="metric"><div class="metric-label">Knowledge Recommendations</div><div class="metric-value">{{ tickets|length }}</div></div>
+<div class="metric"><div class="metric-label">Mode</div><div class="metric-value" style="font-size:22px;color:#16a34a">LIVE PDI</div></div>
+</section>
+
+<div class="card">
+<h2>Imported ServiceNow PDI Tickets</h2>
+{% if tickets %}
+<table>
+<tr>
+<th>Ticket</th>
+<th>CI</th>
+<th>Description</th>
+<th>Priority</th>
+<th>State</th>
+<th>Assignment Group</th>
+<th>Recommended Knowledge</th>
+<th>Evidence</th>
+<th>Governance</th>
+<th>Action</th>
+</tr>
+{% for t in tickets %}
+<tr>
+<td><b>{{ t.number }}</b><br>{{ t.opened_at }}</td>
+<td>{{ t.cmdb_ci }}</td>
+<td><b>{{ t.short_description }}</b><br>{{ t.description }}</td>
+<td><span class="badge {% if '1' in t.priority or 'High' in t.priority %}risk{% else %}warn{% endif %}">{{ t.priority }}</span></td>
+<td>{{ t.state }}</td>
+<td>{{ t.assignment_group }}</td>
+<td>{{ t.recommended_kb }}</td>
+<td><span class="badge warn">{{ t.evidence_status }}</span></td>
+<td>{{ t.governance_status }}</td>
+<td class="action">
+<a href="/shift-assurance-enterprise">Assign Shift</a><br>
+<a href="/shift-handoff-lineage">Create Handoff</a><br>
+<a href="/knowledge-governance">Suggest KB</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No active ServiceNow tickets returned yet.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>What This Proves</h2>
+<p>
+This page proves the platform is no longer only using demo-local records. It can read live ServiceNow PDI tickets and prepare them for Entra-controlled shift assignment, CI readiness review, knowledge recommendation, handoff lineage, evidence verification, and governance scoring.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, tickets=tickets, error=error)
+
 if __name__ == "__main__":
     app.run(debug=True)
