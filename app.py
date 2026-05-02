@@ -1,3 +1,4 @@
+# OPERATIONAL_LINEAGE_NAV_UPDATE_ACTIVE
 # DEIDENTIFIED_DEMO_LANGUAGE_ACTIVE
 # VISUAL_HIERARCHY_RLT_DSCSA_ACTIVE
 # RLT_DSCSA_POSITIONING_ACTIVE
@@ -7624,6 +7625,18 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
 </div>
 
 <div class="section">
+<h2>Operational Lineage Demo Flow</h2>
+<div class="grid">
+<div class="card"><span class="badge strategy">INTAKE</span><h3>QC Ops Intake</h3><p>Upload sanitized Excel/CSV files and convert them into governed, fingerprinted operational datasets with shift, access, CI, and data-integrity signals.</p><a href="/qc-ops-intake">Open QC Ops Intake</a></div>
+<div class="card"><span class="badge strategy">IDENTITY</span><h3>Technician Directory</h3><p>Shows Microsoft Entra ID approved technicians from the controlled security group. This proves technician assignment is not manually typed.</p><a href="/technicians">Open Technicians</a></div>
+<div class="card"><span class="badge strategy">SHIFT</span><h3>Shift Enterprise</h3><p>Links ticket, CI, Entra-controlled technician, shift, evidence status, readiness score, and hash lineage.</p><a href="/shift-assurance-enterprise">Open Shift Enterprise</a></div>
+<div class="card"><span class="badge strategy">HANDOFF</span><h3>Shift Handoff Lineage</h3><p>Formal outgoing-to-incoming technician handoff with acceptance status, evidence readiness, open risk, timestamp, and cryptographic record hash.</p><a href="/shift-handoff-lineage">Open Handoff Lineage</a></div>
+<div class="card"><span class="badge strategy">SERVICENOW</span><h3>ServiceNow CI Readiness</h3><p>Demo-safe ServiceNow-style ticket and CI readiness layer. Designed for future ServiceNow PDI API connection.</p><a href="/servicenow-ci-readiness">Open ServiceNow CI</a></div>
+<div class="card"><span class="badge strategy">FUTURE API</span><h3>ServiceNow PDI Ready</h3><p>Current page uses demo records. Future version will pull incidents, CIs, assignment groups, and knowledge articles from a real ServiceNow PDI.</p><a href="/servicenow-ci-readiness">View API-Ready Model</a></div>
+</div>
+</div>
+
+<div class="section">
 <h2>Core Enterprise Modules</h2>
 <div class="grid">
 <div class="module-card"><span class="badge core">CORE</span><h3>Manufacturing Assurance / BatchTrust™</h3><p>Protected Manufacturing Core manufacturing dashboard, evidence hashing, Azure Blob records, and integrity verification.</p><a href="/">Open Module</a></div>
@@ -8576,6 +8589,11 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/architecture">Architecture</a>
 <a href="/demo-script">Demo Script</a>
 <a href="/roadmap">Roadmap</a>
+<a href="/qc-ops-intake">QC Ops Intake</a>
+<a href="/technicians">Technicians</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI</a>
 </nav>
 
 <div class="notice">
@@ -8589,6 +8607,9 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/architecture">Architecture</a>
 <a href="/demo-script">Demo</a>
 <a href="/roadmap">Roadmap</a>
+<a href="/qc-ops-intake">QC Intake</a>
+<a href="/shift-handoff-lineage">Handoff</a>
+<a href="/servicenow-ci-readiness">SN CI</a>
 </div>
 
 <div class="section">
