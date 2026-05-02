@@ -11119,5 +11119,413 @@ ticket → CI → technician observation → knowledge suggestion → supervisor
         metrics=metrics
     )
 
+
+# ============================================================
+# KNOWLEDGE REVIEW QUEUE ACTIVE
+# Supervisor review queue for technician knowledge suggestions.
+# Append-only review event register.
+# ============================================================
+
+KNOWLEDGE_REVIEW_FILE = "knowledge_review_events.csv"
+
+
+def prepare_knowledge_review_events():
+    df = load_csv(KNOWLEDGE_REVIEW_FILE)
+    return ensure_cols(df, [
+        "review_event_id", "timestamp", "knowledge_lineage_id",
+        "related_ticket", "ci_reference", "knowledge_title", "knowledge_type",
+        "technician_name", "technician_upn", "reviewer_id", "reviewer_name",
+        "reviewer_upn", "reviewer_role", "review_action", "review_status",
+        "review_comment", "service_now_sync_status", "review_score",
+        "risk_level", "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def get_knowledge_suggestion_by_id(knowledge_lineage_id):
+    df = prepare_knowledge_governance_register().fillna("")
+    if df.empty:
+        return None
+
+    matches = df[df["knowledge_lineage_id"] == knowledge_lineage_id]
+    if matches.empty:
+        return None
+
+    return matches.tail(1).iloc[0].to_dict()
+
+
+def calculate_knowledge_review_score(suggestion, reviewer, review_action, review_comment, service_now_sync_status):
+    score = 100
+    signals = []
+
+    if not suggestion:
+        score -= 50
+        signals.append("Original knowledge suggestion could not be found.")
+
+    if not reviewer.get("displayName"):
+        score -= 30
+        signals.append("Reviewer/supervisor is missing.")
+
+    if not clean(review_action):
+        score -= 25
+        signals.append("Review action is missing.")
+
+    if review_action in ["Approve", "Reject", "Request Revision", "Ready for ServiceNow PDI Sync"] and not clean(review_comment):
+        score -= 20
+        signals.append("Review comment is required for the selected action.")
+
+    if suggestion:
+        if not clean(suggestion.get("related_ticket")):
+            score -= 10
+            signals.append("Suggestion is not linked to a ticket.")
+        if not clean(suggestion.get("ci_reference")):
+            score -= 10
+            signals.append("Suggestion is not linked to a CI/equipment/system.")
+        if not clean(suggestion.get("evidence_reference")) and review_action in ["Approve", "Ready for ServiceNow PDI Sync"]:
+            score -= 15
+            signals.append("Approved or sync-ready knowledge should have an evidence reference.")
+
+    if service_now_sync_status in ["Sync Failed", "Not Ready for Sync"]:
+        score -= 15
+        signals.append("ServiceNow sync status is not ready.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        risk = "LOW"
+    elif score >= 60:
+        risk = "MEDIUM"
+    else:
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("Knowledge review event appears complete and governance-ready.")
+
+    return score, risk, signals
+
+
+def determine_knowledge_review_status(review_action):
+    review_action = clean(review_action)
+
+    if review_action == "Approve":
+        return "APPROVED BY SUPERVISOR"
+    if review_action == "Reject":
+        return "REJECTED BY SUPERVISOR"
+    if review_action == "Request Revision":
+        return "REVISION REQUESTED"
+    if review_action == "Ready for ServiceNow PDI Sync":
+        return "READY FOR SERVICENOW PDI SYNC"
+
+    return "UNDER REVIEW"
+
+
+def save_knowledge_review_event(req):
+    df = prepare_knowledge_review_events()
+
+    knowledge_lineage_id = clean(req.form.get("knowledge_lineage_id"))
+    reviewer = parse_knowledge_person(req.form.get("reviewer"))
+    review_action = clean(req.form.get("review_action"))
+    review_comment = clean(req.form.get("review_comment"))
+    service_now_sync_status = clean(req.form.get("service_now_sync_status")) or "Demo local review / future ServiceNow PDI sync"
+
+    if not knowledge_lineage_id or not reviewer["displayName"] or not review_action:
+        return {"error": "Knowledge lineage ID, reviewer, and review action are required."}
+
+    suggestion = get_knowledge_suggestion_by_id(knowledge_lineage_id)
+    if not suggestion:
+        return {"error": "Selected knowledge suggestion was not found in knowledge_governance_register.csv."}
+
+    review_status = determine_knowledge_review_status(review_action)
+
+    review_score, risk_level, signals = calculate_knowledge_review_score(
+        suggestion, reviewer, review_action, review_comment, service_now_sync_status
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    review_event_id = "KREV-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        review_event_id + timestamp + knowledge_lineage_id +
+        clean(suggestion.get("related_ticket")) + clean(suggestion.get("ci_reference")) +
+        clean(suggestion.get("knowledge_title")) + reviewer["id"] +
+        review_action + review_status + service_now_sync_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "review_event_id": review_event_id,
+        "timestamp": timestamp,
+        "knowledge_lineage_id": knowledge_lineage_id,
+        "related_ticket": clean(suggestion.get("related_ticket")),
+        "ci_reference": clean(suggestion.get("ci_reference")),
+        "knowledge_title": clean(suggestion.get("knowledge_title")),
+        "knowledge_type": clean(suggestion.get("knowledge_type")),
+        "technician_name": clean(suggestion.get("technician_name")),
+        "technician_upn": clean(suggestion.get("technician_upn")),
+        "reviewer_id": reviewer["id"],
+        "reviewer_name": reviewer["displayName"],
+        "reviewer_upn": reviewer["userPrincipalName"],
+        "reviewer_role": reviewer["jobTitle"],
+        "review_action": review_action,
+        "review_status": review_status,
+        "review_comment": review_comment,
+        "service_now_sync_status": service_now_sync_status,
+        "review_score": review_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, KNOWLEDGE_REVIEW_FILE)
+
+    return {
+        "error": "",
+        "review_event_id": review_event_id,
+        "review_status": review_status,
+        "review_score": review_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_latest_knowledge_review_map():
+    df = prepare_knowledge_review_events().fillna("")
+    latest = {}
+
+    if df.empty:
+        return latest
+
+    for _, row in df.iterrows():
+        latest[clean(row.get("knowledge_lineage_id"))] = row.to_dict()
+
+    return latest
+
+
+def get_knowledge_review_queue_metrics():
+    suggestions = prepare_knowledge_governance_register().fillna("")
+    reviews = prepare_knowledge_review_events().fillna("")
+    latest_reviews = get_latest_knowledge_review_map()
+
+    queue = []
+    if not suggestions.empty:
+        for _, row in suggestions.tail(30).iterrows():
+            item = row.to_dict()
+            lid = clean(item.get("knowledge_lineage_id"))
+            latest = latest_reviews.get(lid, {})
+            item["latest_review_status"] = clean(latest.get("review_status")) or clean(item.get("workflow_status")) or "AWAITING REVIEW"
+            item["latest_reviewer"] = clean(latest.get("reviewer_name"))
+            item["latest_review_comment"] = clean(latest.get("review_comment"))
+            item["latest_review_score"] = clean(latest.get("review_score"))
+            item["latest_review_risk"] = clean(latest.get("risk_level")) or clean(item.get("risk_level"))
+            queue.append(item)
+
+    approved = 0
+    revision = 0
+    rejected = 0
+
+    for item in queue:
+        status = clean(item.get("latest_review_status"))
+        if "APPROVED" in status or "SYNC" in status:
+            approved += 1
+        if "REVISION" in status:
+            revision += 1
+        if "REJECTED" in status:
+            rejected += 1
+
+    return {
+        "total_suggestions": len(queue),
+        "review_events": len(reviews),
+        "approved": approved,
+        "revision": revision,
+        "rejected": rejected,
+        "queue": list(reversed(queue))
+    }
+
+
+@app.route("/knowledge-review", methods=["GET", "POST"])
+def knowledge_review_page():
+    # KNOWLEDGE_REVIEW_QUEUE_ACTIVE
+    result = None
+    technician_error = ""
+    technicians = []
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        technician_error = str(e)
+
+    if request.method == "POST":
+        result = save_knowledge_review_event(request)
+
+    metrics = get_knowledge_review_queue_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Knowledge Review Queue</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#4c1d95);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:460px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:95px}
+button{border:none;background:linear-gradient(135deg,#4c1d95,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Knowledge Review Queue</h1>
+<p>Supervisor review for technician knowledge suggestions, revision requests, approval, and future ServiceNow PDI sync readiness.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a class="active" href="/knowledge-review">Knowledge Review</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/technicians">Technicians</a>
+</nav>
+
+<div class="warning">
+<b>Enterprise model:</b> technician knowledge suggestions are reviewed by a supervisor/knowledge owner before they become publish candidates for ServiceNow PDI or enterprise knowledge management.
+</div>
+
+{% if technician_error %}
+<div class="error"><b>Technician directory connection issue:</b><br>{{ technician_error }}</div>
+{% else %}
+<div class="notice"><b>Microsoft Entra connected.</b> {{ technicians|length }} approved reviewer/technician user(s) available.</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved Review Event:</b> {{ result.review_event_id }} —
+<b>{{ result.review_status }}</b> —
+Score <b>{{ result.review_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Suggestions</div><div class="metric-value">{{ metrics.total_suggestions }}</div></div>
+<div class="metric"><div class="metric-label">Review Events</div><div class="metric-value">{{ metrics.review_events }}</div></div>
+<div class="metric"><div class="metric-label">Approved / Sync Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.approved }}</div></div>
+<div class="metric"><div class="metric-label">Revision Required</div><div class="metric-value" style="color:#f59e0b">{{ metrics.revision }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Review Knowledge Suggestion</h2>
+<form method="POST" action="/knowledge-review">
+<select name="knowledge_lineage_id" required>
+<option value="">Select knowledge suggestion</option>
+{% for q in metrics.queue %}
+<option value="{{ q.knowledge_lineage_id }}">{{ q.knowledge_lineage_id }} | {{ q.knowledge_title }} | {{ q.related_ticket }} | {{ q.ci_reference }}</option>
+{% endfor %}
+</select>
+
+<select name="reviewer" required>
+<option value="">Reviewer / Supervisor</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="review_action" required>
+<option value="">Review Action</option>
+<option value="Approve">Approve</option>
+<option value="Request Revision">Request Revision</option>
+<option value="Reject">Reject</option>
+<option value="Ready for ServiceNow PDI Sync">Ready for ServiceNow PDI Sync</option>
+</select>
+
+<textarea name="review_comment" placeholder="Supervisor / reviewer comment"></textarea>
+
+<select name="service_now_sync_status">
+<option value="Demo local review / future ServiceNow PDI sync">ServiceNow Sync: Demo local review / future ServiceNow PDI sync</option>
+<option value="Not Ready for Sync">Not Ready for Sync</option>
+<option value="Ready for PDI Sync">Ready for PDI Sync</option>
+<option value="Sync Failed">Sync Failed</option>
+<option value="Synced to ServiceNow PDI">Synced to ServiceNow PDI</option>
+</select>
+
+<button type="submit">Submit Supervisor Review</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Knowledge Review Queue</h2>
+{% if metrics.queue %}
+<table>
+<tr>
+<th>ID</th><th>Ticket / CI</th><th>Title</th><th>Technician</th><th>Current Status</th><th>Latest Reviewer</th><th>Score / Risk</th>
+</tr>
+{% for q in metrics.queue %}
+<tr>
+<td>{{ q.knowledge_lineage_id }}</td>
+<td><b>{{ q.related_ticket }}</b><br>{{ q.ci_reference }}</td>
+<td><b>{{ q.knowledge_title }}</b><br>{{ q.knowledge_type }}</td>
+<td>{{ q.technician_name }}<br>{{ q.technician_role }}</td>
+<td><b>{{ q.latest_review_status }}</b><br>{{ q.service_now_sync_status }}</td>
+<td>{{ q.latest_reviewer }}<br>{{ q.latest_review_comment }}</td>
+<td>{{ q.latest_review_score or q.knowledge_integrity_score }}%<br><span class="{% if q.latest_review_risk == 'LOW' %}low{% elif q.latest_review_risk == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ q.latest_review_risk }}</span></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No knowledge suggestions found. Create one first in Knowledge Governance.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Commercial Meaning</h2>
+<p>
+This creates a governed review layer over field knowledge: technician observation, ticket, CI, evidence reference, supervisor comment,
+approval/revision decision, ServiceNow sync readiness, timestamp, and cryptographic record hash.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        technicians=technicians,
+        technician_error=technician_error,
+        result=result,
+        metrics=metrics
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
