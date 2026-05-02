@@ -9137,5 +9137,214 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;max-width:260
 
     return render_template_string(html, result=result, metrics=metrics)
 
+
+# ============================================================
+# TECHNICIANS GRAPH PAGE ACTIVE
+# Reads approved shift technicians from Microsoft Entra ID group.
+# ============================================================
+
+def get_graph_access_token():
+    import os
+    import json
+    import urllib.parse
+    import urllib.request
+
+    tenant_id = os.environ.get("AZURE_TENANT_ID", "").strip()
+    client_id = os.environ.get("AZURE_CLIENT_ID", "").strip()
+    client_secret = os.environ.get("AZURE_CLIENT_SECRET", "").strip()
+
+    if not tenant_id or not client_id or not client_secret:
+        raise RuntimeError("Missing AZURE_TENANT_ID, AZURE_CLIENT_ID, or AZURE_CLIENT_SECRET in Azure App Service settings.")
+
+    token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+
+    data = urllib.parse.urlencode({
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": "https://graph.microsoft.com/.default",
+        "grant_type": "client_credentials"
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        token_url,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+
+    with urllib.request.urlopen(req, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    token = payload.get("access_token")
+    if not token:
+        raise RuntimeError("Microsoft Graph token was not returned.")
+
+    return token
+
+
+def get_entra_shift_technicians():
+    import os
+    import json
+    import urllib.parse
+    import urllib.request
+
+    group_id = os.environ.get("TECHNICIAN_GROUP_ID", "").strip()
+    technician_domain = os.environ.get("TECHNICIAN_DOMAIN", "").strip() or "configured demo domain"
+
+    if not group_id:
+        raise RuntimeError("Missing TECHNICIAN_GROUP_ID in Azure App Service settings. Use the Object ID of the security group, not the group name.")
+
+    token = get_graph_access_token()
+
+    select_fields = "id,displayName,userPrincipalName,jobTitle,department,accountEnabled,mail"
+    url = f"https://graph.microsoft.com/v1.0/groups/{group_id}/members/microsoft.graph.user?$select={urllib.parse.quote(select_fields)}"
+
+    users = []
+
+    while url:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+        )
+
+        with urllib.request.urlopen(req, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+
+        for user in payload.get("value", []):
+            if user.get("accountEnabled") is True:
+                users.append({
+                    "id": user.get("id", ""),
+                    "displayName": user.get("displayName", ""),
+                    "userPrincipalName": user.get("userPrincipalName", ""),
+                    "jobTitle": user.get("jobTitle", ""),
+                    "department": user.get("department", ""),
+                    "mail": user.get("mail", ""),
+                    "domain": technician_domain
+                })
+
+        url = payload.get("@odata.nextLink")
+
+    users = sorted(users, key=lambda x: x.get("displayName", ""))
+    return users
+
+
+@app.route("/technicians")
+def technicians_page():
+    # TECHNICIANS_GRAPH_PAGE_ACTIVE
+    technicians = []
+    error = ""
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        error = str(e)
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Technician Directory</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#2563eb);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1400px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+select{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:12px;margin:8px 0;font-size:14px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top}
+.badge{display:inline-block;background:#eff6ff;color:#1d4ed8;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;color:#334155;word-break:break-all}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Technician Directory</h1>
+<p>Microsoft Entra ID controlled technician eligibility for ShiftTrust™ assignment dropdown.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/shift-assurance">Shift Assurance</a>
+<a class="active" href="/technicians">Technicians</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/qc-ops-intake">QC Ops Intake</a>
+</nav>
+
+{% if error %}
+<div class="error">
+<b>Microsoft Graph connection issue:</b><br>
+{{ error }}
+<br><br>
+Check Azure App Service settings: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, TECHNICIAN_GROUP_ID.
+</div>
+{% else %}
+<div class="notice">
+<b>Connected to Microsoft Entra ID.</b>
+{{ technicians|length }} active technician(s) found in the approved technician security group.
+</div>
+{% endif %}
+
+<div class="card">
+<h2>Shift Assignment Dropdown Preview</h2>
+<p>This is the commercial pattern: technician names are not manually typed. They are controlled by Microsoft Entra ID group membership.</p>
+<select>
+<option value="">Select approved technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="card">
+<h2>Approved Shift Technicians</h2>
+{% if technicians %}
+<table>
+<tr>
+<th>Display Name</th>
+<th>User Principal Name</th>
+<th>Job Title</th>
+<th>Department</th>
+<th>Account</th>
+<th>Graph Object ID</th>
+</tr>
+{% for t in technicians %}
+<tr>
+<td><b>{{ t.displayName }}</b></td>
+<td>{{ t.userPrincipalName }}</td>
+<td>{{ t.jobTitle }}</td>
+<td>{{ t.department }}</td>
+<td><span class="badge">Active</span></td>
+<td class="hash">{{ t.id }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No active technicians returned yet.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Governance Meaning</h2>
+<p>
+ServiceNow can provide tickets and CIs. Microsoft Entra ID provides controlled technician eligibility.
+AssuranceLayer™ connects the ticket, CI, technician, shift, evidence, hash, and audit lineage into one governed operational record.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, technicians=technicians, error=error)
+
 if __name__ == "__main__":
     app.run(debug=True)
