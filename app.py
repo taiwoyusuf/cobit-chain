@@ -1,3 +1,4 @@
+# SERVICENOW_LIVE_NAV_UPDATE_ACTIVE
 # KNOWLEDGE_REVIEW_NAV_AND_HEALTH_ACTIVE
 # KNOWLEDGE_GOVERNANCE_NAV_UPDATE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_UPDATE_ACTIVE
@@ -7633,7 +7634,8 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
 <div class="card"><span class="badge strategy">IDENTITY</span><h3>Technician Directory</h3><p>Shows Microsoft Entra ID approved technicians from the controlled security group. This proves technician assignment is not manually typed.</p><a href="/technicians">Open Technicians</a></div>
 <div class="card"><span class="badge strategy">SHIFT</span><h3>Shift Enterprise</h3><p>Links ticket, CI, Entra-controlled technician, shift, evidence status, readiness score, and hash lineage.</p><a href="/shift-assurance-enterprise">Open Shift Enterprise</a></div>
 <div class="card"><span class="badge strategy">HANDOFF</span><h3>Shift Handoff Lineage</h3><p>Formal outgoing-to-incoming technician handoff with acceptance status, evidence readiness, open risk, timestamp, and cryptographic record hash.</p><a href="/shift-handoff-lineage">Open Handoff Lineage</a></div>
-<div class="card"><span class="badge strategy">SERVICENOW</span><h3>ServiceNow CI Readiness</h3><p>Demo-safe ServiceNow-style ticket and CI readiness layer. Designed for future ServiceNow PDI API connection.</p><a href="/servicenow-ci-readiness">Open ServiceNow CI</a></div>
+<div class="card"><span class="badge strategy">SERVICENOW LIVE</span><h3>ServiceNow Live Tickets</h3><p>Live read-only pull from ServiceNow PDI incidents. Connects real PDI tickets to CI readiness, handoff, evidence, and knowledge governance.</p><a href="/servicenow-tickets-live">Open ServiceNow Live</a></div>
+<div class="card"><span class="badge strategy">SERVICENOW</span><h3>ServiceNow CI Readiness</h3><p>Demo-safe ServiceNow-style ticket and CI readiness layer. Designed for ServiceNow PDI and enterprise ServiceNow API connection.</p><a href="/servicenow-ci-readiness">Open ServiceNow CI</a></div>
 <div class="card"><span class="badge strategy">FUTURE API</span><h3>ServiceNow PDI Ready</h3><p>Current page uses demo records. Future version will pull incidents, CIs, assignment groups, and knowledge articles from a real ServiceNow PDI.</p><a href="/servicenow-ci-readiness">View API-Ready Model</a></div>
 <div class="card"><span class="badge strategy">KNOWLEDGE</span><h3>Knowledge Governance</h3><p>Technician knowledge suggestion, CI/ticket linkage, evidence reference, and future ServiceNow PDI knowledge sync preparation.</p><a href="/knowledge-governance">Open Knowledge Governance</a></div>
 <div class="card"><span class="badge strategy">REVIEW</span><h3>Knowledge Review Queue</h3><p>Supervisor review queue for approving, rejecting, requesting revision, or marking knowledge suggestions ready for ServiceNow PDI sync.</p><a href="/knowledge-review">Open Knowledge Review</a></div>
@@ -8645,6 +8647,8 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/technicians">Technicians</a>
 <a href="/shift-assurance-enterprise">Shift Enterprise</a>
 <a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
 <a href="/servicenow-ci-readiness">ServiceNow CI</a>
 <a href="/knowledge-governance">Knowledge Governance</a>
 <a href="/knowledge-review">Knowledge Review</a>
@@ -8718,7 +8722,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </div>
 
 <div class="warning">
-<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow CI Readiness → Knowledge Governance → Knowledge Review → Executive Overview → Architecture → Roadmap.
+<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow Live Tickets → ServiceNow CI Readiness → Knowledge Governance → Knowledge Review → Executive Overview → Architecture → Roadmap.
 </div>
 </main>
 </body>
@@ -11706,41 +11710,48 @@ The platform demonstrates how operational datasets, technician identity, ticket/
 
 <tr>
 <td class="stepno">6</td>
-<td><a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a></td>
-<td>ServiceNow-style ticket/CI readiness model.</td>
-<td>“ServiceNow can own tickets and CIs. AssuranceLayer verifies whether the CI context is governance-ready.”</td>
+<td><a href="/servicenow-tickets-live">ServiceNow Live Tickets</a></td>
+<td>Live read-only pull from ServiceNow PDI.</td>
+<td>“This is no longer only a mockup. AssuranceLayer is reading live PDI tickets and preparing them for CI readiness, handoff, evidence, and knowledge governance.”</td>
 </tr>
 
 <tr>
 <td class="stepno">7</td>
+<td><a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a></td>
+<td>Ticket/CI governance readiness model.</td>
+<td>“ServiceNow owns the ticket and CI. AssuranceLayer verifies whether the CI context is governance-ready.”</td>
+</tr>
+
+<tr>
+<td class="stepno">8</td>
 <td><a href="/knowledge-governance">Knowledge Governance</a></td>
 <td>Technician field knowledge becomes governed.</td>
 <td>“Field learning becomes linked to ticket, CI, technician, evidence, and future ServiceNow knowledge sync.”</td>
 </tr>
 
 <tr>
-<td class="stepno">8</td>
+<td class="stepno">9</td>
 <td><a href="/knowledge-review">Knowledge Review</a></td>
 <td>Supervisor review and approval lineage.</td>
 <td>“Knowledge is not published informally. It goes through review, comment, approval, revision, and hash lineage.”</td>
 </tr>
 
 <tr>
-<td class="stepno">9</td>
+<td class="stepno">10</td>
 <td><a href="/platform-health">Platform Health</a></td>
 <td>All module registers and record counts.</td>
 <td>“Each workflow has a separate evidence register, which protects modularity and traceability.”</td>
 </tr>
 
 <tr>
-<td class="stepno">10</td>
+<td class="stepno">11</td>
 <td><a href="/executive-overview">Executive Overview</a></td>
 <td>Leadership-level risk/readiness view.</td>
 <td>“This gives leaders visibility into operational governance posture, not only task status.”</td>
 </tr>
 
 <tr>
-<td class="stepno">11</td>
+<td class="stepno">12</td>
 <td><a href="/architecture">Architecture</a></td>
 <td>Architecture and innovation explanation.</td>
 <td>“This is a non-invasive assurance layer over existing enterprise systems.”</td>
