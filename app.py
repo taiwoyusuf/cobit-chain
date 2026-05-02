@@ -1,3 +1,4 @@
+# KNOWLEDGE_GOVERNANCE_NAV_UPDATE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_UPDATE_ACTIVE
 # DEIDENTIFIED_DEMO_LANGUAGE_ACTIVE
 # VISUAL_HIERARCHY_RLT_DSCSA_ACTIVE
@@ -7633,6 +7634,7 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
 <div class="card"><span class="badge strategy">HANDOFF</span><h3>Shift Handoff Lineage</h3><p>Formal outgoing-to-incoming technician handoff with acceptance status, evidence readiness, open risk, timestamp, and cryptographic record hash.</p><a href="/shift-handoff-lineage">Open Handoff Lineage</a></div>
 <div class="card"><span class="badge strategy">SERVICENOW</span><h3>ServiceNow CI Readiness</h3><p>Demo-safe ServiceNow-style ticket and CI readiness layer. Designed for future ServiceNow PDI API connection.</p><a href="/servicenow-ci-readiness">Open ServiceNow CI</a></div>
 <div class="card"><span class="badge strategy">FUTURE API</span><h3>ServiceNow PDI Ready</h3><p>Current page uses demo records. Future version will pull incidents, CIs, assignment groups, and knowledge articles from a real ServiceNow PDI.</p><a href="/servicenow-ci-readiness">View API-Ready Model</a></div>
+<div class="card"><span class="badge strategy">KNOWLEDGE</span><h3>Knowledge Governance</h3><p>Technician knowledge suggestion, supervisor review, CI/ticket linkage, evidence reference, approval status, and future ServiceNow PDI knowledge sync.</p><a href="/knowledge-governance">Open Knowledge Governance</a></div>
 </div>
 </div>
 
@@ -8594,6 +8596,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/shift-assurance-enterprise">Shift Enterprise</a>
 <a href="/shift-handoff-lineage">Handoff Lineage</a>
 <a href="/servicenow-ci-readiness">ServiceNow CI</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
 </nav>
 
 <div class="notice">
@@ -8664,7 +8667,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </div>
 
 <div class="warning">
-<b>Suggested demo path:</b> Command Center → Executive Overview → Modules Directory → Platform Health → Architecture → RLT-Trust™ → Clinical Trial Integrity → Demo Script → Roadmap.
+<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow CI Readiness → Knowledge Governance → Executive Overview → Architecture → Roadmap.
 </div>
 </main>
 </body>
