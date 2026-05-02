@@ -10234,5 +10234,422 @@ Risk <b>{{ result.risk_level }}</b>
 
     return render_template_string(html, result=result, metrics=metrics)
 
+
+# ============================================================
+# SHIFT HANDOFF LINEAGE ACTIVE
+# Two-person Entra-controlled outgoing/incoming shift handoff.
+# ============================================================
+
+SHIFT_HANDOFF_LINEAGE_FILE = "shift_handoff_lineage.csv"
+
+
+def prepare_shift_handoff_lineage():
+    df = load_csv(SHIFT_HANDOFF_LINEAGE_FILE)
+    return ensure_cols(df, [
+        "lineage_id", "timestamp", "ticket_number", "ci_reference", "equipment_name",
+        "outgoing_shift", "incoming_shift", "handoff_reason",
+        "outgoing_technician_id", "outgoing_technician_name", "outgoing_technician_upn", "outgoing_technician_role",
+        "incoming_technician_id", "incoming_technician_name", "incoming_technician_upn", "incoming_technician_role",
+        "handoff_summary", "evidence_status", "open_issue_risk", "acceptance_status",
+        "readiness_status", "readiness_score", "risk_level", "governance_signals",
+        "previous_hash", "record_hash"
+    ])
+
+
+def parse_lineage_technician(value):
+    value = clean(value)
+    parts = value.split("||")
+    while len(parts) < 4:
+        parts.append("")
+    return {
+        "id": parts[0],
+        "displayName": parts[1],
+        "userPrincipalName": parts[2],
+        "jobTitle": parts[3]
+    }
+
+
+def calculate_handoff_lineage_readiness(ticket_number, ci_reference, outgoing_tech, incoming_tech,
+                                        evidence_status, open_issue_risk, acceptance_status,
+                                        handoff_summary):
+    score = 100
+    signals = []
+
+    if not clean(ticket_number):
+        score -= 20
+        signals.append("Ticket/work item reference is missing.")
+
+    if not clean(ci_reference):
+        score -= 20
+        signals.append("CI/equipment reference is missing.")
+
+    if not outgoing_tech.get("displayName"):
+        score -= 25
+        signals.append("Outgoing technician is missing.")
+
+    if not incoming_tech.get("displayName"):
+        score -= 25
+        signals.append("Incoming technician is missing.")
+
+    if outgoing_tech.get("id") and incoming_tech.get("id") and outgoing_tech.get("id") == incoming_tech.get("id"):
+        score -= 25
+        signals.append("Outgoing and incoming technician cannot be the same person for a formal handoff.")
+
+    if evidence_status in ["Missing", "Not Verified", "Rejected"]:
+        score -= 30
+        signals.append("Handoff evidence is missing, not verified, or rejected.")
+    elif evidence_status == "Pending Review":
+        score -= 15
+        signals.append("Handoff evidence is pending review.")
+
+    if open_issue_risk in ["Unresolved", "Escalation Required", "Potential Deviation"]:
+        score -= 25
+        signals.append("Open issue may require escalation or pre-deviation review.")
+
+    if acceptance_status in ["Not Accepted", "Pending Acceptance"]:
+        score -= 25
+        signals.append("Incoming technician has not formally accepted the handoff.")
+
+    if not clean(handoff_summary):
+        score -= 15
+        signals.append("Handoff summary/carryover instruction is missing.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "HANDOFF ACCEPTED / READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY ACCEPTED"
+        risk = "MEDIUM"
+    else:
+        readiness = "HANDOFF NOT READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("Formal two-person handoff lineage appears complete.")
+
+    return readiness, score, risk, signals
+
+
+def save_shift_handoff_lineage(req):
+    df = prepare_shift_handoff_lineage()
+
+    ticket_number = clean(req.form.get("ticket_number"))
+    ci_reference = clean(req.form.get("ci_reference"))
+    equipment_name = clean(req.form.get("equipment_name"))
+    outgoing_shift = clean(req.form.get("outgoing_shift"))
+    incoming_shift = clean(req.form.get("incoming_shift"))
+    handoff_reason = clean(req.form.get("handoff_reason"))
+
+    outgoing_tech = parse_lineage_technician(req.form.get("outgoing_technician"))
+    incoming_tech = parse_lineage_technician(req.form.get("incoming_technician"))
+
+    handoff_summary = clean(req.form.get("handoff_summary"))
+    evidence_status = clean(req.form.get("evidence_status"))
+    open_issue_risk = clean(req.form.get("open_issue_risk"))
+    acceptance_status = clean(req.form.get("acceptance_status"))
+
+    required = [
+        ticket_number, ci_reference, equipment_name, outgoing_shift, incoming_shift,
+        handoff_reason, outgoing_tech["displayName"], incoming_tech["displayName"],
+        evidence_status, open_issue_risk, acceptance_status
+    ]
+
+    if not all(required):
+        return {"error": "Ticket, CI, equipment, shifts, reason, outgoing technician, incoming technician, evidence, risk, and acceptance status are required."}
+
+    readiness_status, readiness_score, risk_level, signals = calculate_handoff_lineage_readiness(
+        ticket_number, ci_reference, outgoing_tech, incoming_tech,
+        evidence_status, open_issue_risk, acceptance_status, handoff_summary
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    lineage_id = "HLIN-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        lineage_id + timestamp + ticket_number + ci_reference + equipment_name +
+        outgoing_tech["id"] + incoming_tech["id"] + outgoing_shift + incoming_shift +
+        evidence_status + open_issue_risk + acceptance_status + readiness_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "lineage_id": lineage_id,
+        "timestamp": timestamp,
+        "ticket_number": ticket_number,
+        "ci_reference": ci_reference,
+        "equipment_name": equipment_name,
+        "outgoing_shift": outgoing_shift,
+        "incoming_shift": incoming_shift,
+        "handoff_reason": handoff_reason,
+        "outgoing_technician_id": outgoing_tech["id"],
+        "outgoing_technician_name": outgoing_tech["displayName"],
+        "outgoing_technician_upn": outgoing_tech["userPrincipalName"],
+        "outgoing_technician_role": outgoing_tech["jobTitle"],
+        "incoming_technician_id": incoming_tech["id"],
+        "incoming_technician_name": incoming_tech["displayName"],
+        "incoming_technician_upn": incoming_tech["userPrincipalName"],
+        "incoming_technician_role": incoming_tech["jobTitle"],
+        "handoff_summary": handoff_summary,
+        "evidence_status": evidence_status,
+        "open_issue_risk": open_issue_risk,
+        "acceptance_status": acceptance_status,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, SHIFT_HANDOFF_LINEAGE_FILE)
+
+    return {
+        "error": "",
+        "lineage_id": lineage_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_shift_handoff_lineage_metrics():
+    df = prepare_shift_handoff_lineage()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "HANDOFF ACCEPTED / READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY ACCEPTED"]),
+        "not_ready": len(df[df["readiness_status"] == "HANDOFF NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(12).to_dict("records")
+    }
+
+
+@app.route("/shift-handoff-lineage", methods=["GET", "POST"])
+def shift_handoff_lineage_page():
+    # SHIFT_HANDOFF_LINEAGE_ACTIVE
+    result = None
+    technician_error = ""
+    technicians = []
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        technician_error = str(e)
+
+    if request.method == "POST":
+        result = save_shift_handoff_lineage(request)
+
+    metrics = get_shift_handoff_lineage_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Shift Handoff Lineage</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:450px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:100px}
+button{border:none;background:linear-gradient(135deg,#0f766e,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Shift Handoff Lineage</h1>
+<p>Formal outgoing-to-incoming technician handoff with Entra-controlled identity, CI context, evidence status, acceptance, and hash lineage.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/shift-assurance-entra-test">Shift Entra Test</a>
+<a class="active" href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/technicians">Technicians</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI</a>
+</nav>
+
+{% if technician_error %}
+<div class="error"><b>Technician directory connection issue:</b><br>{{ technician_error }}</div>
+{% else %}
+<div class="notice"><b>Microsoft Entra connected.</b> {{ technicians|length }} approved technician(s) available for outgoing/incoming handoff.</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved Lineage:</b> {{ result.lineage_id }} —
+<b>{{ result.readiness_status }}</b> —
+Score <b>{{ result.readiness_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Lineage Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Accepted / Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Submit Formal Handoff</h2>
+<form method="POST" action="/shift-handoff-lineage">
+<input name="ticket_number" placeholder="Ticket / Work Item e.g. INC-DEMO-0001" required>
+<input name="ci_reference" placeholder="CI Reference e.g. CI-DEMO-1803" required>
+<input name="equipment_name" placeholder="Equipment / System Name" required>
+
+<select name="outgoing_shift" required>
+<option value="">Outgoing Shift</option>
+<option value="Morning Shift">Morning Shift</option>
+<option value="Night Shift">Night Shift</option>
+<option value="Weekend Coverage">Weekend Coverage</option>
+<option value="Critical Handoff Queue">Critical Handoff Queue</option>
+</select>
+
+<select name="incoming_shift" required>
+<option value="">Incoming Shift</option>
+<option value="Morning Shift">Morning Shift</option>
+<option value="Night Shift">Night Shift</option>
+<option value="Weekend Coverage">Weekend Coverage</option>
+<option value="Critical Handoff Queue">Critical Handoff Queue</option>
+</select>
+
+<select name="handoff_reason" required>
+<option value="">Handoff Reason</option>
+<option value="Open Ticket Carryover">Open Ticket Carryover</option>
+<option value="Evidence Pending">Evidence Pending</option>
+<option value="Equipment Readiness Risk">Equipment Readiness Risk</option>
+<option value="Potential Deviation">Potential Deviation</option>
+<option value="Routine Shift Transfer">Routine Shift Transfer</option>
+</select>
+
+<select name="outgoing_technician" required>
+<option value="">Outgoing Technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="incoming_technician" required>
+<option value="">Incoming Technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="evidence_status" required>
+<option value="">Evidence Status</option>
+<option value="Verified">Verified</option>
+<option value="Pending Review">Pending Review</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<select name="open_issue_risk" required>
+<option value="">Open Issue / Risk</option>
+<option value="No Open Issue">No Open Issue</option>
+<option value="Unresolved">Unresolved</option>
+<option value="Escalation Required">Escalation Required</option>
+<option value="Potential Deviation">Potential Deviation</option>
+</select>
+
+<select name="acceptance_status" required>
+<option value="">Incoming Acceptance Status</option>
+<option value="Accepted">Accepted</option>
+<option value="Pending Acceptance">Pending Acceptance</option>
+<option value="Not Accepted">Not Accepted</option>
+</select>
+
+<textarea name="handoff_summary" placeholder="Handoff summary / carryover instruction"></textarea>
+
+<button type="submit">Submit Handoff Lineage</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Formal Handoff Lineage Records</h2>
+{% if metrics.recent %}
+<table>
+<tr>
+<th>ID</th><th>Ticket</th><th>CI / Equipment</th><th>Outgoing</th><th>Incoming</th><th>Evidence</th><th>Acceptance</th><th>Readiness</th><th>Risk</th>
+</tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.lineage_id }}</td>
+<td><b>{{ r.ticket_number }}</b></td>
+<td><b>{{ r.ci_reference }}</b><br>{{ r.equipment_name }}</td>
+<td><b>{{ r.outgoing_technician_name }}</b><br>{{ r.outgoing_shift }}</td>
+<td><b>{{ r.incoming_technician_name }}</b><br>{{ r.incoming_shift }}</td>
+<td>{{ r.evidence_status }}</td>
+<td>{{ r.acceptance_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No formal handoff lineage records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Commercial Meaning</h2>
+<p>
+This creates a real audit lineage record for the transfer of operational responsibility: outgoing technician, incoming technician,
+ticket, CI, evidence state, open risk, acceptance, timestamp, readiness score, and cryptographic record hash.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        technicians=technicians,
+        technician_error=technician_error,
+        result=result,
+        metrics=metrics
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
