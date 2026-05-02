@@ -9777,5 +9777,462 @@ def shift_assurance_enterprise_page():
     # SHIFT_ENTERPRISE_ALIAS_ACTIVE
     return redirect("/shift-assurance-entra-test")
 
+
+# ============================================================
+# SERVICENOW CI READINESS ACTIVE
+# Demo-safe ServiceNow-style CI/ticket governance readiness layer.
+# ============================================================
+
+SERVICENOW_CI_FILE = "servicenow_ci_readiness.csv"
+
+
+def prepare_servicenow_ci_readiness():
+    df = load_csv(SERVICENOW_CI_FILE)
+    return ensure_cols(df, [
+        "ci_readiness_id", "timestamp", "ticket_number", "ticket_type",
+        "ci_reference", "ci_name", "ci_class", "assignment_group",
+        "service_owner", "system_owner", "operational_status",
+        "regulatory_status", "cmdb_mapping_status", "sop_linkage_status",
+        "evidence_status", "shift_handoff_status", "technician_assignment_status",
+        "impact_assessment_status", "data_integrity_status", "deviation_risk",
+        "servicenow_api_mode", "readiness_status", "readiness_score",
+        "risk_level", "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def calculate_servicenow_ci_readiness(cmdb_mapping_status, sop_linkage_status,
+                                      evidence_status, shift_handoff_status,
+                                      technician_assignment_status,
+                                      impact_assessment_status, data_integrity_status,
+                                      deviation_risk, regulatory_status,
+                                      operational_status):
+    score = 100
+    signals = []
+
+    cmdb_mapping_status = clean(cmdb_mapping_status)
+    sop_linkage_status = clean(sop_linkage_status)
+    evidence_status = clean(evidence_status)
+    shift_handoff_status = clean(shift_handoff_status)
+    technician_assignment_status = clean(technician_assignment_status)
+    impact_assessment_status = clean(impact_assessment_status)
+    data_integrity_status = clean(data_integrity_status)
+    deviation_risk = clean(deviation_risk)
+    regulatory_status = clean(regulatory_status)
+    operational_status = clean(operational_status)
+
+    if cmdb_mapping_status in ["Missing", "Incomplete", "Mismatch"]:
+        score -= 25
+        signals.append("CMDB/CI mapping is missing, incomplete, or mismatched.")
+
+    if sop_linkage_status in ["Missing", "Not Linked", "Outdated"]:
+        score -= 20
+        signals.append("SOP linkage is missing, not linked, or outdated.")
+
+    if evidence_status in ["Missing", "Not Verified", "Rejected"]:
+        score -= 30
+        signals.append("Supporting evidence is missing, not verified, or rejected.")
+
+    if shift_handoff_status in ["Missing", "Incomplete", "Not Required But Recommended"]:
+        score -= 15
+        signals.append("Shift handoff linkage is missing or incomplete.")
+
+    if technician_assignment_status in ["Missing", "Manual Entry", "Not Entra-Controlled"]:
+        score -= 20
+        signals.append("Technician assignment is not controlled through approved identity source.")
+
+    if impact_assessment_status in ["Missing", "Incomplete", "Not Reviewed"]:
+        score -= 20
+        signals.append("Impact assessment is missing, incomplete, or not reviewed.")
+
+    if data_integrity_status in ["Missing", "At Risk", "Not Reviewed"]:
+        score -= 25
+        signals.append("Data integrity status is missing, at risk, or not reviewed.")
+
+    if regulatory_status in ["GxP Impact Unknown", "Quality Impact Unknown", "Not Classified"]:
+        score -= 15
+        signals.append("Regulatory/quality impact classification is not clear.")
+
+    if operational_status in ["Out of Service", "Removed By Vendor", "Unavailable", "Blocked"]:
+        score -= 25
+        signals.append("CI/equipment operational status indicates availability or continuity risk.")
+
+    if deviation_risk in ["Potential Deviation", "Escalation Required", "Deviation Opened"]:
+        score -= 30
+        signals.append("Pre-deviation/deviation signal exists for this CI/ticket.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "SERVICENOW CI READY"
+        risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        risk = "MEDIUM"
+    else:
+        readiness = "NOT READY"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("No major CI governance readiness risk detected.")
+
+    return readiness, score, risk, signals
+
+
+def save_servicenow_ci_readiness(req):
+    df = prepare_servicenow_ci_readiness()
+
+    ticket_number = clean(req.form.get("ticket_number"))
+    ticket_type = clean(req.form.get("ticket_type"))
+    ci_reference = clean(req.form.get("ci_reference"))
+    ci_name = clean(req.form.get("ci_name"))
+    ci_class = clean(req.form.get("ci_class"))
+    assignment_group = clean(req.form.get("assignment_group"))
+    service_owner = clean(req.form.get("service_owner"))
+    system_owner = clean(req.form.get("system_owner"))
+    operational_status = clean(req.form.get("operational_status"))
+    regulatory_status = clean(req.form.get("regulatory_status"))
+    cmdb_mapping_status = clean(req.form.get("cmdb_mapping_status"))
+    sop_linkage_status = clean(req.form.get("sop_linkage_status"))
+    evidence_status = clean(req.form.get("evidence_status"))
+    shift_handoff_status = clean(req.form.get("shift_handoff_status"))
+    technician_assignment_status = clean(req.form.get("technician_assignment_status"))
+    impact_assessment_status = clean(req.form.get("impact_assessment_status"))
+    data_integrity_status = clean(req.form.get("data_integrity_status"))
+    deviation_risk = clean(req.form.get("deviation_risk"))
+    servicenow_api_mode = clean(req.form.get("servicenow_api_mode")) or "Demo ServiceNow-style record"
+
+    required = [
+        ticket_number, ticket_type, ci_reference, ci_name, ci_class,
+        assignment_group, operational_status, regulatory_status,
+        cmdb_mapping_status, sop_linkage_status, evidence_status,
+        shift_handoff_status, technician_assignment_status,
+        impact_assessment_status, data_integrity_status, deviation_risk
+    ]
+
+    if not all(required):
+        return {"error": "Ticket, CI, assignment group, status, regulatory classification, mapping, SOP, evidence, handoff, technician, impact, data integrity, and deviation risk fields are required."}
+
+    readiness_status, readiness_score, risk_level, signals = calculate_servicenow_ci_readiness(
+        cmdb_mapping_status, sop_linkage_status, evidence_status,
+        shift_handoff_status, technician_assignment_status,
+        impact_assessment_status, data_integrity_status, deviation_risk,
+        regulatory_status, operational_status
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    ci_readiness_id = "SNCI-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        ci_readiness_id + timestamp + ticket_number + ticket_type +
+        ci_reference + ci_name + ci_class + operational_status +
+        regulatory_status + cmdb_mapping_status + evidence_status +
+        readiness_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "ci_readiness_id": ci_readiness_id,
+        "timestamp": timestamp,
+        "ticket_number": ticket_number,
+        "ticket_type": ticket_type,
+        "ci_reference": ci_reference,
+        "ci_name": ci_name,
+        "ci_class": ci_class,
+        "assignment_group": assignment_group,
+        "service_owner": service_owner,
+        "system_owner": system_owner,
+        "operational_status": operational_status,
+        "regulatory_status": regulatory_status,
+        "cmdb_mapping_status": cmdb_mapping_status,
+        "sop_linkage_status": sop_linkage_status,
+        "evidence_status": evidence_status,
+        "shift_handoff_status": shift_handoff_status,
+        "technician_assignment_status": technician_assignment_status,
+        "impact_assessment_status": impact_assessment_status,
+        "data_integrity_status": data_integrity_status,
+        "deviation_risk": deviation_risk,
+        "servicenow_api_mode": servicenow_api_mode,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, SERVICENOW_CI_FILE)
+
+    return {
+        "error": "",
+        "ci_readiness_id": ci_readiness_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_servicenow_ci_metrics():
+    df = prepare_servicenow_ci_readiness()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "SERVICENOW CI READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(12).to_dict("records")
+    }
+
+
+@app.route("/servicenow-ci-readiness", methods=["GET", "POST"])
+def servicenow_ci_readiness_page():
+    # SERVICENOW_CI_READINESS_ACTIVE
+    result = None
+
+    if request.method == "POST":
+        result = save_servicenow_ci_readiness(request)
+
+    metrics = get_servicenow_ci_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ ServiceNow CI Readiness</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#334155);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:90px}
+button{border:none;background:linear-gradient(135deg,#334155,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ ServiceNow CI Readiness</h1>
+<p>Ticket → CI → owner → SOP → evidence → shift handoff → data integrity → pre-deviation readiness.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/technicians">Technicians</a>
+<a href="/qc-ops-intake">QC Ops Intake</a>
+<a class="active" href="/servicenow-ci-readiness">ServiceNow CI</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="warning">
+<b>Demo-safe mode:</b> this page uses ServiceNow-style records now. Later, the same model can be connected to a ServiceNow PDI or enterprise ServiceNow API.
+</div>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.ci_readiness_id }} —
+<b>{{ result.readiness_status }}</b> —
+Score <b>{{ result.readiness_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total CI Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">CI Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create ServiceNow-Style CI Readiness Record</h2>
+<form method="POST" action="/servicenow-ci-readiness">
+<input name="ticket_number" placeholder="Ticket e.g. INC-DEMO-0001 / WO-DEMO-0001" required>
+
+<select name="ticket_type" required>
+<option value="">Ticket Type</option>
+<option value="Incident">Incident</option>
+<option value="Work Order">Work Order</option>
+<option value="Change Request">Change Request</option>
+<option value="Task">Task</option>
+</select>
+
+<input name="ci_reference" placeholder="CI Reference e.g. CI-DEMO-1803" required>
+<input name="ci_name" placeholder="CI Name e.g. Demo Isolator Integrity Tester" required>
+
+<select name="ci_class" required>
+<option value="">CI Class</option>
+<option value="Controlled Equipment">Controlled Equipment</option>
+<option value="Computerized System">Computerized System</option>
+<option value="Validated Workstation">Validated Workstation</option>
+<option value="Application Service">Application Service</option>
+<option value="Lab Instrument">Lab Instrument</option>
+</select>
+
+<input name="assignment_group" placeholder="Assignment Group e.g. Demo GMP IT Support" required>
+<input name="service_owner" placeholder="Service Owner / Business Owner">
+<input name="system_owner" placeholder="System Owner / Process Owner">
+
+<select name="operational_status" required>
+<option value="">Operational Status</option>
+<option value="In Service">In Service</option>
+<option value="Out of Service">Out of Service</option>
+<option value="Removed By Vendor">Removed By Vendor</option>
+<option value="Unavailable">Unavailable</option>
+<option value="Blocked">Blocked</option>
+</select>
+
+<select name="regulatory_status" required>
+<option value="">Regulatory / Quality Status</option>
+<option value="GxP Classified">GxP Classified</option>
+<option value="Non-GxP">Non-GxP</option>
+<option value="GxP Impact Unknown">GxP Impact Unknown</option>
+<option value="Quality Impact Unknown">Quality Impact Unknown</option>
+<option value="Not Classified">Not Classified</option>
+</select>
+
+<select name="cmdb_mapping_status" required>
+<option value="">CMDB Mapping Status</option>
+<option value="Complete">Complete</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+<option value="Mismatch">Mismatch</option>
+</select>
+
+<select name="sop_linkage_status" required>
+<option value="">SOP Linkage Status</option>
+<option value="Linked Current">Linked Current</option>
+<option value="Outdated">Outdated</option>
+<option value="Not Linked">Not Linked</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="evidence_status" required>
+<option value="">Evidence Status</option>
+<option value="Verified">Verified</option>
+<option value="Pending Review">Pending Review</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<select name="shift_handoff_status" required>
+<option value="">Shift Handoff Status</option>
+<option value="Linked Complete">Linked Complete</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+<option value="Not Required But Recommended">Not Required But Recommended</option>
+</select>
+
+<select name="technician_assignment_status" required>
+<option value="">Technician Assignment Status</option>
+<option value="Entra-Controlled">Entra-Controlled</option>
+<option value="Manual Entry">Manual Entry</option>
+<option value="Not Entra-Controlled">Not Entra-Controlled</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="impact_assessment_status" required>
+<option value="">Impact Assessment Status</option>
+<option value="Reviewed">Reviewed</option>
+<option value="Not Reviewed">Not Reviewed</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="data_integrity_status" required>
+<option value="">Data Integrity Status</option>
+<option value="Reviewed">Reviewed</option>
+<option value="At Risk">At Risk</option>
+<option value="Not Reviewed">Not Reviewed</option>
+<option value="Missing">Missing</option>
+</select>
+
+<select name="deviation_risk" required>
+<option value="">Deviation Risk</option>
+<option value="No Deviation Signal">No Deviation Signal</option>
+<option value="Potential Deviation">Potential Deviation</option>
+<option value="Escalation Required">Escalation Required</option>
+<option value="Deviation Opened">Deviation Opened</option>
+</select>
+
+<input name="servicenow_api_mode" value="Demo ServiceNow-style record">
+
+<button type="submit">Save CI Readiness Record</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent ServiceNow-Style CI Readiness Records</h2>
+{% if metrics.recent %}
+<table>
+<tr>
+<th>ID</th><th>Ticket</th><th>CI</th><th>Operational</th><th>Regulatory</th><th>Evidence</th><th>Shift</th><th>Readiness</th><th>Risk</th>
+</tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.ci_readiness_id }}</td>
+<td><b>{{ r.ticket_number }}</b><br>{{ r.ticket_type }}</td>
+<td><b>{{ r.ci_reference }}</b><br>{{ r.ci_name }}</td>
+<td>{{ r.operational_status }}</td>
+<td>{{ r.regulatory_status }}</td>
+<td>{{ r.evidence_status }}</td>
+<td>{{ r.shift_handoff_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No ServiceNow CI readiness records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Monday Demo Message</h2>
+<p>
+<b>ServiceNow can manage the ticket and CI. AssuranceLayer™ verifies whether the CI context, SOP linkage, technician assignment, shift handoff, evidence, data-integrity status, and deviation risk are governance-ready.</b>
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, result=result, metrics=metrics)
+
 if __name__ == "__main__":
     app.run(debug=True)
