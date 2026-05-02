@@ -1,3 +1,4 @@
+# OPERATIONAL_LINEAGE_CONTROL_TOWER_ACTIVE
 # KNOWLEDGE_PASSPORT_NAV_HEALTH_ACTIVE
 # KNOWLEDGE_PASSPORT_ACTIVE
 # KB_USAGE_LINEAGE_ACTIVE
@@ -13122,6 +13123,416 @@ Risk <b class="{% if data.passport_risk == 'LOW' %}low{% elif data.passport_risk
     """
 
     return render_template_string(html, data=data)
+
+
+# ============================================================
+# OPERATIONAL LINEAGE CONTROL TOWER ACTIVE
+# Read-only page showing full chain:
+# ServiceNow ticket → CI → Entra technician → shift → handoff
+# → evidence → KB usage → knowledge governance → review.
+# ============================================================
+
+def safe_count_df(df):
+    try:
+        return len(df)
+    except Exception:
+        return 0
+
+
+def get_operational_lineage_metrics():
+    metrics = {
+        "servicenow_tickets": [],
+        "servicenow_ticket_count": 0,
+        "entra_technicians": [],
+        "entra_technician_count": 0,
+        "shift_entra_records": [],
+        "shift_entra_count": 0,
+        "handoff_records": [],
+        "handoff_count": 0,
+        "ci_readiness_records": [],
+        "ci_readiness_count": 0,
+        "kb_usage_records": [],
+        "kb_usage_count": 0,
+        "knowledge_records": [],
+        "knowledge_count": 0,
+        "review_records": [],
+        "review_count": 0,
+        "high_risk_total": 0,
+        "not_ready_total": 0,
+        "lineage_status": "PARTIAL LINEAGE",
+        "lineage_score": 0,
+        "signals": []
+    }
+
+    # ServiceNow live tickets
+    try:
+        tickets = fetch_servicenow_live_incidents(limit=20)
+        metrics["servicenow_tickets"] = tickets
+        metrics["servicenow_ticket_count"] = len(tickets)
+    except Exception as e:
+        metrics["signals"].append("ServiceNow live ticket pull issue: " + str(e))
+
+    # Entra technicians
+    try:
+        techs = get_entra_shift_technicians()
+        metrics["entra_technicians"] = techs
+        metrics["entra_technician_count"] = len(techs)
+    except Exception as e:
+        metrics["signals"].append("Microsoft Entra technician pull issue: " + str(e))
+
+    # Shift Enterprise / Entra handoffs
+    try:
+        df = prepare_shift_entra_handoffs().fillna("")
+        metrics["shift_entra_count"] = len(df)
+        metrics["shift_entra_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+        metrics["not_ready_total"] += len(df[df["readiness_status"].astype(str).str.contains("NOT READY", case=False, na=False)])
+    except Exception as e:
+        metrics["signals"].append("Shift Enterprise register issue: " + str(e))
+
+    # Formal handoff lineage
+    try:
+        df = prepare_shift_handoff_lineage().fillna("")
+        metrics["handoff_count"] = len(df)
+        metrics["handoff_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+        metrics["not_ready_total"] += len(df[df["readiness_status"].astype(str).str.contains("NOT READY", case=False, na=False)])
+    except Exception as e:
+        metrics["signals"].append("Formal handoff register issue: " + str(e))
+
+    # ServiceNow CI readiness
+    try:
+        df = prepare_servicenow_ci_readiness().fillna("")
+        metrics["ci_readiness_count"] = len(df)
+        metrics["ci_readiness_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+        metrics["not_ready_total"] += len(df[df["readiness_status"].astype(str).str.contains("NOT READY", case=False, na=False)])
+    except Exception as e:
+        metrics["signals"].append("ServiceNow CI readiness register issue: " + str(e))
+
+    # KB usage lineage
+    try:
+        df = prepare_kb_usage_lineage().fillna("")
+        metrics["kb_usage_count"] = len(df)
+        metrics["kb_usage_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+        metrics["not_ready_total"] += len(df[df["readiness_status"].astype(str).str.contains("NOT READY", case=False, na=False)])
+    except Exception as e:
+        metrics["signals"].append("KB usage lineage register issue: " + str(e))
+
+    # Knowledge governance
+    try:
+        df = prepare_knowledge_governance_register().fillna("")
+        metrics["knowledge_count"] = len(df)
+        metrics["knowledge_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+    except Exception as e:
+        metrics["signals"].append("Knowledge governance register issue: " + str(e))
+
+    # Knowledge review
+    try:
+        df = prepare_knowledge_review_events().fillna("")
+        metrics["review_count"] = len(df)
+        metrics["review_records"] = df.tail(8).to_dict("records")
+        metrics["high_risk_total"] += len(df[df["risk_level"] == "HIGH"])
+    except Exception as e:
+        metrics["signals"].append("Knowledge review register issue: " + str(e))
+
+    # Readiness scoring
+    score = 0
+    if metrics["servicenow_ticket_count"] > 0:
+        score += 15
+    else:
+        metrics["signals"].append("No live ServiceNow tickets detected.")
+
+    if metrics["entra_technician_count"] > 0:
+        score += 15
+    else:
+        metrics["signals"].append("No Entra technicians detected.")
+
+    if metrics["shift_entra_count"] > 0:
+        score += 10
+    else:
+        metrics["signals"].append("No Shift Enterprise handoff records yet.")
+
+    if metrics["handoff_count"] > 0:
+        score += 15
+    else:
+        metrics["signals"].append("No formal outgoing-to-incoming handoff lineage records yet.")
+
+    if metrics["ci_readiness_count"] > 0:
+        score += 15
+    else:
+        metrics["signals"].append("No ServiceNow CI readiness records yet.")
+
+    if metrics["kb_usage_count"] > 0:
+        score += 10
+    else:
+        metrics["signals"].append("No KB usage lineage records yet.")
+
+    if metrics["knowledge_count"] > 0:
+        score += 10
+    else:
+        metrics["signals"].append("No Knowledge Governance records yet.")
+
+    if metrics["review_count"] > 0:
+        score += 10
+    else:
+        metrics["signals"].append("No Knowledge Review events yet.")
+
+    if metrics["high_risk_total"] > 0:
+        score -= min(20, metrics["high_risk_total"] * 3)
+
+    if metrics["not_ready_total"] > 0:
+        score -= min(20, metrics["not_ready_total"] * 3)
+
+    score = max(0, min(score, 100))
+    metrics["lineage_score"] = score
+
+    if score >= 85:
+        metrics["lineage_status"] = "FULL OPERATIONAL LINEAGE ACTIVE"
+    elif score >= 60:
+        metrics["lineage_status"] = "OPERATIONAL LINEAGE PARTIALLY ACTIVE"
+    else:
+        metrics["lineage_status"] = "OPERATIONAL LINEAGE NEEDS MORE RECORDS"
+
+    if not metrics["signals"]:
+        metrics["signals"].append("Full lineage chain has active records across the major operational governance layers.")
+
+    return metrics
+
+
+@app.route("/operational-lineage")
+def operational_lineage_page():
+    # OPERATIONAL_LINEAGE_CONTROL_TOWER_ACTIVE
+    metrics = get_operational_lineage_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Operational Lineage Control Tower</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:radial-gradient(circle at top left,#2563eb 0%,#0f766e 38%,#071527 100%);color:white;padding:40px 44px 54px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1550px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:30px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ok{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.risk{background:#fee2e2;color:#991b1b}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+.flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.flow a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px;font-weight:900;min-width:150px;text-align:center}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Operational Lineage Control Tower</h1>
+<p>One-page view of the full governed chain from ServiceNow live ticket to Entra identity, shift handoff, KB usage, evidence readiness, supervisor review, and audit lineage.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a class="active" href="/operational-lineage">Operational Lineage</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/technicians">Technicians</a>
+<a href="/shift-handoff-lineage">Handoff</a>
+<a href="/knowledge-passport/KB-DEMO-001">Knowledge Passport</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="notice">
+<b>{{ metrics.lineage_status }}</b> —
+Lineage Score <b>{{ metrics.lineage_score }}%</b>.
+<ul>{% for s in metrics.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">ServiceNow Live Tickets</div><div class="metric-value">{{ metrics.servicenow_ticket_count }}</div></div>
+<div class="metric"><div class="metric-label">Entra Technicians</div><div class="metric-value">{{ metrics.entra_technician_count }}</div></div>
+<div class="metric"><div class="metric-label">Formal Handoffs</div><div class="metric-value">{{ metrics.handoff_count }}</div></div>
+<div class="metric"><div class="metric-label">High-Risk Records</div><div class="metric-value" style="color:#dc2626">{{ metrics.high_risk_total }}</div></div>
+</section>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Shift Enterprise</div><div class="metric-value">{{ metrics.shift_entra_count }}</div></div>
+<div class="metric"><div class="metric-label">CI Readiness</div><div class="metric-value">{{ metrics.ci_readiness_count }}</div></div>
+<div class="metric"><div class="metric-label">KB Usage</div><div class="metric-value">{{ metrics.kb_usage_count }}</div></div>
+<div class="metric"><div class="metric-label">Knowledge Reviews</div><div class="metric-value">{{ metrics.review_count }}</div></div>
+</section>
+
+<div class="section">
+<h2>Live Demo Flow</h2>
+<div class="flow">
+<a href="/servicenow-tickets-live">1. ServiceNow Live</a>
+<a href="/suggested-kb/{{ metrics.servicenow_tickets[0].number if metrics.servicenow_tickets else 'INC-DEMO' }}">2. Suggested KB</a>
+<a href="/technicians">3. Entra Technicians</a>
+<a href="/shift-assurance-enterprise">4. Shift Enterprise</a>
+<a href="/shift-handoff-lineage">5. Handoff Lineage</a>
+<a href="/servicenow-ci-readiness">6. CI Readiness</a>
+<a href="/knowledge-governance">7. Knowledge Governance</a>
+<a href="/knowledge-review">8. Knowledge Review</a>
+<a href="/knowledge-passport/KB-DEMO-001">9. Knowledge Passport</a>
+</div>
+</div>
+
+<div class="section">
+<h2>ServiceNow Live Tickets</h2>
+{% if metrics.servicenow_tickets %}
+<table>
+<tr><th>Ticket</th><th>CI</th><th>Description</th><th>Priority</th><th>State</th><th>Recommended KB</th><th>Action</th></tr>
+{% for t in metrics.servicenow_tickets[:8] %}
+<tr>
+<td><b>{{ t.number }}</b></td>
+<td>{{ t.cmdb_ci }}</td>
+<td>{{ t.short_description }}</td>
+<td>{{ t.priority }}</td>
+<td>{{ t.state }}</td>
+<td>{{ t.recommended_kb }}</td>
+<td class="action"><a href="/suggested-kb/{{ t.number }}">Suggested KB</a></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No live ServiceNow tickets returned.</p>
+{% endif %}
+</div>
+
+<div class="section">
+<h2>Formal Handoff Lineage</h2>
+{% if metrics.handoff_records %}
+<table>
+<tr><th>ID</th><th>Ticket</th><th>CI</th><th>Outgoing</th><th>Incoming</th><th>Evidence</th><th>Acceptance</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.handoff_records %}
+<tr>
+<td>{{ r.lineage_id }}</td>
+<td><b>{{ r.ticket_number }}</b></td>
+<td>{{ r.ci_reference }}<br>{{ r.equipment_name }}</td>
+<td>{{ r.outgoing_technician_name }}<br>{{ r.outgoing_shift }}</td>
+<td>{{ r.incoming_technician_name }}<br>{{ r.incoming_shift }}</td>
+<td>{{ r.evidence_status }}</td>
+<td>{{ r.acceptance_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No formal handoff records yet.</p>
+{% endif %}
+</div>
+
+<div class="two">
+<div class="card">
+<h2>ServiceNow CI Readiness</h2>
+{% if metrics.ci_readiness_records %}
+<table>
+<tr><th>Ticket</th><th>CI</th><th>Evidence</th><th>Readiness</th><th>Risk</th></tr>
+{% for r in metrics.ci_readiness_records %}
+<tr>
+<td><b>{{ r.ticket_number }}</b></td>
+<td>{{ r.ci_reference }}<br>{{ r.ci_name }}</td>
+<td>{{ r.evidence_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No CI readiness records yet.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>KB Usage Lineage</h2>
+{% if metrics.kb_usage_records %}
+<table>
+<tr><th>Ticket</th><th>KB</th><th>Technician</th><th>Helpful</th><th>Evidence</th><th>Readiness</th></tr>
+{% for r in metrics.kb_usage_records %}
+<tr>
+<td><b>{{ r.ticket_number }}</b></td>
+<td>{{ r.kb_id }}<br>{{ r.kb_title }}</td>
+<td>{{ r.technician_name }}</td>
+<td>{{ r.helpfulness_status }}</td>
+<td>{{ r.evidence_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No KB usage records yet.</p>
+{% endif %}
+</div>
+</div>
+
+<div class="two">
+<div class="card">
+<h2>Knowledge Governance</h2>
+{% if metrics.knowledge_records %}
+<table>
+<tr><th>ID</th><th>Ticket / CI</th><th>Title</th><th>Status</th><th>Risk</th></tr>
+{% for r in metrics.knowledge_records %}
+<tr>
+<td>{{ r.knowledge_lineage_id }}</td>
+<td><b>{{ r.related_ticket }}</b><br>{{ r.ci_reference }}</td>
+<td>{{ r.knowledge_title }}</td>
+<td>{{ r.workflow_status }}</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No knowledge governance records yet.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Supervisor Review Events</h2>
+{% if metrics.review_records %}
+<table>
+<tr><th>Review</th><th>Knowledge ID</th><th>Reviewer</th><th>Status</th><th>Risk</th></tr>
+{% for r in metrics.review_records %}
+<tr>
+<td>{{ r.review_event_id }}</td>
+<td>{{ r.knowledge_lineage_id }}</td>
+<td>{{ r.reviewer_name }}</td>
+<td>{{ r.review_status }}</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No supervisor review events yet.</p>
+{% endif %}
+</div>
+</div>
+
+<div class="warning">
+<b>Commercial meaning:</b> this page proves the integrated operational chain: ServiceNow ticket, CI context, Entra identity, shift responsibility, handoff acceptance, evidence readiness, KB use, knowledge improvement, supervisor review, and audit lineage.
+</div>
+
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics)
 
 if __name__ == "__main__":
     app.run(debug=True)
