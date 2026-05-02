@@ -9346,5 +9346,424 @@ AssuranceLayer™ connects the ticket, CI, technician, shift, evidence, hash, an
 
     return render_template_string(html, technicians=technicians, error=error)
 
+
+# ============================================================
+# SHIFT ASSURANCE ENTRA TEST ACTIVE
+# ShiftTrust page using Microsoft Entra technician dropdown.
+# Does not replace /shift-assurance yet.
+# ============================================================
+
+SHIFT_ENTRA_FILE = "shift_entra_handoffs.csv"
+
+
+def prepare_shift_entra_handoffs():
+    df = load_csv(SHIFT_ENTRA_FILE)
+    return ensure_cols(df, [
+        "handoff_id", "timestamp", "ticket_number", "ci_reference",
+        "equipment_name", "shift_name", "shift_status", "risk_level",
+        "technician_id", "technician_name", "technician_upn", "technician_role",
+        "evidence_status", "handoff_status", "open_issue_risk",
+        "next_action", "readiness_status", "readiness_score",
+        "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def parse_selected_technician(value):
+    value = clean(value)
+    parts = value.split("||")
+    while len(parts) < 4:
+        parts.append("")
+    return {
+        "id": parts[0],
+        "displayName": parts[1],
+        "userPrincipalName": parts[2],
+        "jobTitle": parts[3]
+    }
+
+
+def calculate_shift_entra_readiness(ticket_number, ci_reference, shift_status,
+                                    risk_level, technician_name, evidence_status,
+                                    handoff_status, open_issue_risk, next_action):
+    score = 100
+    signals = []
+
+    ticket_number = clean(ticket_number)
+    ci_reference = clean(ci_reference)
+    shift_status = clean(shift_status)
+    risk_level = clean(risk_level)
+    technician_name = clean(technician_name)
+    evidence_status = clean(evidence_status)
+    handoff_status = clean(handoff_status)
+    open_issue_risk = clean(open_issue_risk)
+    next_action = clean(next_action)
+
+    if not ticket_number:
+        score -= 20
+        signals.append("Ticket/work item reference is missing.")
+
+    if not ci_reference:
+        score -= 20
+        signals.append("CI/equipment reference is missing.")
+
+    if not technician_name:
+        score -= 30
+        signals.append("No approved Entra technician selected.")
+
+    if shift_status in ["Blocked", "Incomplete"]:
+        score -= 25
+        signals.append("Shift status indicates blocked or incomplete work.")
+
+    if risk_level == "HIGH":
+        score -= 25
+        signals.append("High-risk shift item requires leadership or QA visibility.")
+    elif risk_level == "MEDIUM":
+        score -= 10
+        signals.append("Medium-risk shift item requires monitored follow-up.")
+
+    if evidence_status in ["Missing", "Not Verified", "Rejected"]:
+        score -= 30
+        signals.append("Evidence is missing, not verified, or rejected.")
+
+    if handoff_status in ["Not Started", "Incomplete"]:
+        score -= 25
+        signals.append("Shift handoff is not complete.")
+
+    if open_issue_risk in ["Unresolved", "Escalation Required", "Potential Deviation"]:
+        score -= 25
+        signals.append("Open issue may require escalation or pre-deviation review.")
+
+    if score < 85 and not next_action:
+        score -= 10
+        signals.append("Readiness issue exists but next action/carryover instruction is missing.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        readiness = "SHIFT READY"
+        final_risk = "LOW"
+    elif score >= 60:
+        readiness = "CONDITIONALLY READY"
+        final_risk = "MEDIUM"
+    else:
+        readiness = "NOT READY"
+        final_risk = "HIGH"
+
+    if not signals:
+        signals.append("No major shift governance risk detected.")
+
+    return readiness, score, final_risk, signals
+
+
+def save_shift_entra_handoff(req):
+    df = prepare_shift_entra_handoffs()
+
+    ticket_number = clean(req.form.get("ticket_number"))
+    ci_reference = clean(req.form.get("ci_reference"))
+    equipment_name = clean(req.form.get("equipment_name"))
+    shift_name = clean(req.form.get("shift_name"))
+    shift_status = clean(req.form.get("shift_status"))
+    risk_level = clean(req.form.get("risk_level"))
+    selected_technician = parse_selected_technician(req.form.get("selected_technician"))
+    evidence_status = clean(req.form.get("evidence_status"))
+    handoff_status = clean(req.form.get("handoff_status"))
+    open_issue_risk = clean(req.form.get("open_issue_risk"))
+    next_action = clean(req.form.get("next_action"))
+
+    required = [
+        ticket_number, ci_reference, equipment_name, shift_name,
+        shift_status, risk_level, selected_technician["displayName"],
+        evidence_status, handoff_status, open_issue_risk
+    ]
+
+    if not all(required):
+        return {
+            "error": "Ticket, CI/equipment, shift, risk, approved technician, evidence status, handoff status, and open issue risk are required."
+        }
+
+    readiness_status, readiness_score, calculated_risk, signals = calculate_shift_entra_readiness(
+        ticket_number, ci_reference, shift_status, risk_level,
+        selected_technician["displayName"], evidence_status,
+        handoff_status, open_issue_risk, next_action
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    handoff_id = "SENTRA-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        handoff_id + timestamp + ticket_number + ci_reference + equipment_name +
+        shift_name + selected_technician["id"] + selected_technician["displayName"] +
+        evidence_status + handoff_status + readiness_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "handoff_id": handoff_id,
+        "timestamp": timestamp,
+        "ticket_number": ticket_number,
+        "ci_reference": ci_reference,
+        "equipment_name": equipment_name,
+        "shift_name": shift_name,
+        "shift_status": shift_status,
+        "risk_level": calculated_risk,
+        "technician_id": selected_technician["id"],
+        "technician_name": selected_technician["displayName"],
+        "technician_upn": selected_technician["userPrincipalName"],
+        "technician_role": selected_technician["jobTitle"],
+        "evidence_status": evidence_status,
+        "handoff_status": handoff_status,
+        "open_issue_risk": open_issue_risk,
+        "next_action": next_action,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, SHIFT_ENTRA_FILE)
+
+    return {
+        "error": "",
+        "handoff_id": handoff_id,
+        "readiness_status": readiness_status,
+        "readiness_score": readiness_score,
+        "risk_level": calculated_risk,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_shift_entra_metrics():
+    df = prepare_shift_entra_handoffs()
+    if df.empty:
+        return {"total": 0, "ready": 0, "conditional": 0, "not_ready": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "SHIFT READY"]),
+        "conditional": len(df[df["readiness_status"] == "CONDITIONALLY READY"]),
+        "not_ready": len(df[df["readiness_status"] == "NOT READY"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(12).to_dict("records")
+    }
+
+
+@app.route("/shift-assurance-entra-test", methods=["GET", "POST"])
+def shift_assurance_entra_test():
+    # SHIFT_ASSURANCE_ENTRA_TEST_ACTIVE
+    result = None
+    technician_error = ""
+    technicians = []
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        technician_error = str(e)
+
+    if request.method == "POST":
+        result = save_shift_entra_handoff(request)
+
+    metrics = get_shift_entra_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ ShiftTrust Entra Test</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#2563eb);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:90px}
+button{border:none;background:linear-gradient(135deg,#2563eb,#0f766e);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ ShiftTrust™ — Entra-Controlled Assignment</h1>
+<p>ServiceNow-style ticket + CI reference + Microsoft Entra technician dropdown + evidence readiness + handoff lineage.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/shift-assurance">Shift Current</a>
+<a class="active" href="/shift-assurance-entra-test">Shift Entra Test</a>
+<a href="/technicians">Technicians</a>
+<a href="/qc-ops-intake">QC Ops Intake</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+{% if technician_error %}
+<div class="error">
+<b>Technician directory connection issue:</b><br>
+{{ technician_error }}
+</div>
+{% else %}
+<div class="notice">
+<b>Microsoft Entra connected.</b>
+{{ technicians|length }} approved active technician(s) available for assignment.
+</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved:</b> {{ result.handoff_id }} —
+<b>{{ result.readiness_status }}</b> —
+Score <b>{{ result.readiness_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Handoffs</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Conditional</div><div class="metric-value" style="color:#f59e0b">{{ metrics.conditional }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Entra-Controlled Shift Handoff</h2>
+<form method="POST" action="/shift-assurance-entra-test">
+<input name="ticket_number" placeholder="Ticket / Work Item e.g. INC-DEMO-0001 or WO-DEMO-0001" required>
+<input name="ci_reference" placeholder="CI Reference e.g. CI-DEMO-1803" required>
+<input name="equipment_name" placeholder="Equipment / System Name e.g. Demo Isolator Integrity Tester" required>
+
+<select name="shift_name" required>
+<option value="">Select Shift</option>
+<option value="Morning Shift">Morning Shift</option>
+<option value="Night Shift">Night Shift</option>
+<option value="Weekend Coverage">Weekend Coverage</option>
+<option value="Critical Handoff Queue">Critical Handoff Queue</option>
+</select>
+
+<select name="selected_technician" required>
+<option value="">Select approved Entra technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="shift_status" required>
+<option value="">Shift Status</option>
+<option value="Complete">Complete</option>
+<option value="In Progress">In Progress</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Blocked">Blocked</option>
+</select>
+
+<select name="risk_level" required>
+<option value="">Initial Risk Level</option>
+<option value="LOW">LOW</option>
+<option value="MEDIUM">MEDIUM</option>
+<option value="HIGH">HIGH</option>
+</select>
+
+<select name="evidence_status" required>
+<option value="">Evidence Status</option>
+<option value="Verified">Verified</option>
+<option value="Pending Review">Pending Review</option>
+<option value="Missing">Missing</option>
+<option value="Not Verified">Not Verified</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<select name="handoff_status" required>
+<option value="">Handoff Status</option>
+<option value="Complete">Complete</option>
+<option value="In Progress">In Progress</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Not Started">Not Started</option>
+</select>
+
+<select name="open_issue_risk" required>
+<option value="">Open Issue / Risk</option>
+<option value="No Open Issue">No Open Issue</option>
+<option value="Unresolved">Unresolved</option>
+<option value="Escalation Required">Escalation Required</option>
+<option value="Potential Deviation">Potential Deviation</option>
+</select>
+
+<textarea name="next_action" placeholder="Next action / carryover instruction"></textarea>
+
+<button type="submit">Save Shift Handoff</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Entra-Controlled Shift Handoffs</h2>
+{% if metrics.recent %}
+<table>
+<tr>
+<th>ID</th><th>Ticket</th><th>CI / Equipment</th><th>Shift</th><th>Technician</th><th>Evidence</th><th>Readiness</th><th>Risk</th>
+</tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.handoff_id }}</td>
+<td><b>{{ r.ticket_number }}</b></td>
+<td><b>{{ r.ci_reference }}</b><br>{{ r.equipment_name }}</td>
+<td>{{ r.shift_name }}</td>
+<td><b>{{ r.technician_name }}</b><br>{{ r.technician_role }}<br>{{ r.technician_upn }}</td>
+<td>{{ r.evidence_status }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No Entra-controlled shift handoffs saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Commercial Meaning</h2>
+<p>
+Technician names are not typed manually. Microsoft Entra ID controls who is eligible for shift assignment.
+AssuranceLayer™ then links technician, ticket, CI, shift, evidence status, handoff status, readiness score, and record hash into one governed operational lineage.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        technicians=technicians,
+        technician_error=technician_error,
+        result=result,
+        metrics=metrics
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
