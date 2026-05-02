@@ -1,3 +1,4 @@
+# KNOWLEDGE_PASSPORT_ACTIVE
 # KB_USAGE_LINEAGE_ACTIVE
 # INCIDENT_SPECIFIC_KB_ACTIVE
 # SERVICENOW_LIVE_NAV_UPDATE_ACTIVE
@@ -12372,6 +12373,7 @@ td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:br
 <td>{{ kb.supervisor_approved }}</td>
 <td>{{ kb.resolution_steps }}</td>
 <td class="action">
+<a href="/knowledge-passport/{{ kb.kb_id }}">Passport</a>
 <a href="/kb-usage/{{ ticket.number }}/{{ kb.kb_id }}">Record Use</a>
 <a href="/knowledge-governance">Suggest Update</a>
 <a href="/shift-handoff-lineage">Create Handoff</a>
@@ -12774,6 +12776,348 @@ This closes the loop: ServiceNow incident → suggested KB → technician use �
         technician_error=technician_error,
         result=result
     )
+
+
+# ============================================================
+# KNOWLEDGE PASSPORT ACTIVE
+# Shows full governance life of one KB article:
+# ServiceNow incident matches, KB usage, feedback, evidence,
+# knowledge updates, supervisor reviews, and sync readiness.
+# ============================================================
+
+def get_knowledge_passport_data(kb_id):
+    kb_id = clean(kb_id)
+    kb = find_kb_article_by_id(kb_id)
+
+    if not kb:
+        kb = {
+            "kb_id": kb_id,
+            "title": "KB article not found",
+            "category": "",
+            "keywords": "",
+            "resolution_steps": "",
+            "supervisor_approved": "Unknown",
+            "integrity_score": "0",
+            "risk_level": "HIGH",
+            "last_reviewed": ""
+        }
+
+    # 1. Live ServiceNow tickets that appear to match this KB recommendation.
+    matched_tickets = []
+    try:
+        tickets = fetch_servicenow_live_incidents(limit=50)
+        for t in tickets:
+            rec = clean(t.get("recommended_kb"))
+            if kb_id in rec:
+                matched_tickets.append(t)
+    except Exception:
+        matched_tickets = []
+
+    # 2. KB usage lineage records.
+    usage_df = prepare_kb_usage_lineage().fillna("")
+    usage_records = []
+    if not usage_df.empty:
+        usage_records = usage_df[usage_df["kb_id"] == kb_id].tail(20).to_dict("records")
+
+    # 3. Knowledge governance suggestions related to this KB.
+    kg_df = prepare_knowledge_governance_register().fillna("")
+    knowledge_records = []
+    if not kg_df.empty:
+        title = clean(kb.get("title")).lower()
+        for _, row in kg_df.iterrows():
+            current_ref = clean(row.get("current_article_ref"))
+            ktitle = clean(row.get("knowledge_title")).lower()
+            if current_ref == kb_id or (title and title in ktitle) or (kb_id and kb_id in current_ref):
+                knowledge_records.append(row.to_dict())
+
+    knowledge_ids = set([clean(r.get("knowledge_lineage_id")) for r in knowledge_records])
+
+    # 4. Supervisor review events tied to those knowledge governance suggestions.
+    review_df = prepare_knowledge_review_events().fillna("")
+    review_records = []
+    if not review_df.empty and knowledge_ids:
+        for _, row in review_df.iterrows():
+            if clean(row.get("knowledge_lineage_id")) in knowledge_ids:
+                review_records.append(row.to_dict())
+
+    # 5. Metrics.
+    usage_count = len(usage_records)
+    helpful_count = len([r for r in usage_records if clean(r.get("helpfulness_status")) == "Helpful"])
+    not_helpful_count = len([r for r in usage_records if clean(r.get("helpfulness_status")) == "Not Helpful"])
+    evidence_verified_count = len([r for r in usage_records if clean(r.get("evidence_status")) == "Verified"])
+    update_needed_count = len([r for r in usage_records if clean(r.get("knowledge_update_needed")) == "Yes"])
+
+    approved_reviews = len([r for r in review_records if "APPROVED" in clean(r.get("review_status")).upper() or "SYNC" in clean(r.get("review_status")).upper()])
+    revision_reviews = len([r for r in review_records if "REVISION" in clean(r.get("review_status")).upper()])
+    rejected_reviews = len([r for r in review_records if "REJECTED" in clean(r.get("review_status")).upper()])
+
+    # 6. Passport score.
+    try:
+        base_score = int(float(clean(kb.get("integrity_score")) or 0))
+    except Exception:
+        base_score = 0
+
+    score = base_score
+    signals = []
+
+    if clean(kb.get("supervisor_approved")).lower() == "yes":
+        score += 5
+        signals.append("KB article is supervisor-approved.")
+    else:
+        score -= 20
+        signals.append("KB article is not supervisor-approved.")
+
+    if usage_count > 0:
+        score += 5
+        signals.append(f"KB has {usage_count} recorded usage event(s).")
+    else:
+        score -= 15
+        signals.append("No KB usage lineage records yet.")
+
+    if helpful_count > 0:
+        score += min(10, helpful_count * 3)
+        signals.append(f"KB was marked helpful {helpful_count} time(s).")
+
+    if not_helpful_count > 0:
+        score -= min(25, not_helpful_count * 10)
+        signals.append(f"KB was marked not helpful {not_helpful_count} time(s).")
+
+    if evidence_verified_count > 0:
+        score += min(10, evidence_verified_count * 3)
+        signals.append(f"Verified evidence exists for {evidence_verified_count} KB usage event(s).")
+    elif usage_count > 0:
+        score -= 15
+        signals.append("KB has usage records but no verified evidence yet.")
+
+    if update_needed_count > 0:
+        score -= min(25, update_needed_count * 8)
+        signals.append(f"{update_needed_count} usage event(s) indicate knowledge update is needed.")
+
+    if approved_reviews > 0:
+        score += min(10, approved_reviews * 4)
+        signals.append("Supervisor approval or ServiceNow PDI sync readiness exists.")
+
+    if revision_reviews > 0:
+        score -= min(15, revision_reviews * 5)
+        signals.append("One or more supervisor reviews requested revision.")
+
+    if rejected_reviews > 0:
+        score -= min(20, rejected_reviews * 10)
+        signals.append("One or more supervisor reviews rejected the knowledge update.")
+
+    score = max(0, min(score, 100))
+
+    if score >= 85:
+        status = "KNOWLEDGE PASSPORT STRONG"
+        risk = "LOW"
+    elif score >= 60:
+        status = "KNOWLEDGE PASSPORT CONDITIONAL"
+        risk = "MEDIUM"
+    else:
+        status = "KNOWLEDGE PASSPORT WEAK"
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("Knowledge passport has limited governance activity so far.")
+
+    return {
+        "kb": kb,
+        "matched_tickets": matched_tickets,
+        "usage_records": list(reversed(usage_records)),
+        "knowledge_records": list(reversed(knowledge_records)),
+        "review_records": list(reversed(review_records)),
+        "usage_count": usage_count,
+        "helpful_count": helpful_count,
+        "not_helpful_count": not_helpful_count,
+        "evidence_verified_count": evidence_verified_count,
+        "update_needed_count": update_needed_count,
+        "approved_reviews": approved_reviews,
+        "revision_reviews": revision_reviews,
+        "rejected_reviews": rejected_reviews,
+        "passport_score": score,
+        "passport_status": status,
+        "passport_risk": risk,
+        "signals": signals
+    }
+
+
+@app.route("/knowledge-passport/<kb_id>")
+def knowledge_passport_page(kb_id):
+    # KNOWLEDGE_PASSPORT_ACTIVE
+    data = get_knowledge_passport_data(kb_id)
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Knowledge Passport</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#6d28d9);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:28px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ok{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.risk{background:#fee2e2;color:#991b1b}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Knowledge Passport</h1>
+<p>Full governance life of one KB article: incident matches, technician usage, evidence, feedback, supervisor review, and ServiceNow PDI readiness.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+<a class="active" href="/knowledge-passport/{{ data.kb.kb_id }}">Knowledge Passport</a>
+</nav>
+
+<div class="notice">
+<b>{{ data.passport_status }}</b> —
+Score <b>{{ data.passport_score }}%</b> —
+Risk <b class="{% if data.passport_risk == 'LOW' %}low{% elif data.passport_risk == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ data.passport_risk }}</b>
+<ul>{% for s in data.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">KB ID</div><div class="metric-value">{{ data.kb.kb_id }}</div></div>
+<div class="metric"><div class="metric-label">Usage Records</div><div class="metric-value">{{ data.usage_count }}</div></div>
+<div class="metric"><div class="metric-label">Helpful</div><div class="metric-value" style="color:#16a34a">{{ data.helpful_count }}</div></div>
+<div class="metric"><div class="metric-label">Update Needed</div><div class="metric-value" style="color:#f59e0b">{{ data.update_needed_count }}</div></div>
+</section>
+
+<div class="card">
+<h2>KB Article Profile</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>KB ID</td><td><b>{{ data.kb.kb_id }}</b></td></tr>
+<tr><td>Title</td><td>{{ data.kb.title }}</td></tr>
+<tr><td>Category</td><td>{{ data.kb.category }}</td></tr>
+<tr><td>Keywords</td><td>{{ data.kb.keywords }}</td></tr>
+<tr><td>Resolution Steps</td><td>{{ data.kb.resolution_steps }}</td></tr>
+<tr><td>Supervisor Approved</td><td>{{ data.kb.supervisor_approved }}</td></tr>
+<tr><td>Last Reviewed</td><td>{{ data.kb.last_reviewed }}</td></tr>
+<tr><td>Base Integrity Score</td><td>{{ data.kb.integrity_score }}%</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Matched ServiceNow Incidents</h2>
+{% if data.matched_tickets %}
+<table>
+<tr><th>Ticket</th><th>CI</th><th>Description</th><th>Priority</th><th>State</th><th>Action</th></tr>
+{% for t in data.matched_tickets %}
+<tr>
+<td><b>{{ t.number }}</b></td>
+<td>{{ t.cmdb_ci }}</td>
+<td>{{ t.short_description }}</td>
+<td>{{ t.priority }}</td>
+<td>{{ t.state }}</td>
+<td class="action"><a href="/suggested-kb/{{ t.number }}">Open Suggested KB</a></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No live ServiceNow incidents currently match this KB recommendation.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>KB Usage Lineage</h2>
+{% if data.usage_records %}
+<table>
+<tr><th>ID</th><th>Ticket</th><th>Technician</th><th>Used</th><th>Helpful</th><th>Outcome</th><th>Evidence</th><th>Update Needed</th><th>Readiness</th></tr>
+{% for r in data.usage_records %}
+<tr>
+<td>{{ r.kb_usage_id }}</td>
+<td><b>{{ r.ticket_number }}</b><br>{{ r.ci_reference }}</td>
+<td>{{ r.technician_name }}<br>{{ r.technician_role }}</td>
+<td>{{ r.kb_used_status }}</td>
+<td>{{ r.helpfulness_status }}</td>
+<td>{{ r.resolution_outcome }}</td>
+<td>{{ r.evidence_status }}<br>{{ r.evidence_reference }}</td>
+<td>{{ r.knowledge_update_needed }}</td>
+<td><b>{{ r.readiness_status }}</b><br>{{ r.readiness_score }}%</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No KB usage lineage records yet. Use the “Record Use” action from Suggested KB.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Knowledge Governance Suggestions</h2>
+{% if data.knowledge_records %}
+<table>
+<tr><th>ID</th><th>Ticket / CI</th><th>Title</th><th>Technician</th><th>Status</th><th>ServiceNow Sync</th><th>Risk</th></tr>
+{% for r in data.knowledge_records %}
+<tr>
+<td>{{ r.knowledge_lineage_id }}</td>
+<td><b>{{ r.related_ticket }}</b><br>{{ r.ci_reference }}</td>
+<td>{{ r.knowledge_title }}<br>{{ r.knowledge_type }}</td>
+<td>{{ r.technician_name }}<br>{{ r.technician_role }}</td>
+<td><b>{{ r.workflow_status }}</b></td>
+<td>{{ r.service_now_sync_status }}</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No knowledge governance suggestions are linked to this KB yet.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Supervisor Review Events</h2>
+{% if data.review_records %}
+<table>
+<tr><th>Review ID</th><th>Knowledge ID</th><th>Reviewer</th><th>Action</th><th>Status</th><th>Comment</th><th>Risk</th></tr>
+{% for r in data.review_records %}
+<tr>
+<td>{{ r.review_event_id }}</td>
+<td>{{ r.knowledge_lineage_id }}</td>
+<td>{{ r.reviewer_name }}<br>{{ r.reviewer_role }}</td>
+<td>{{ r.review_action }}</td>
+<td><b>{{ r.review_status }}</b></td>
+<td>{{ r.review_comment }}</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No supervisor review events linked to this KB yet.</p>
+{% endif %}
+</div>
+
+<div class="warning">
+<b>Commercial meaning:</b> This passport proves whether a knowledge article is merely documented, or whether it is actually used, helpful, evidence-backed, reviewed, and ready for ServiceNow knowledge governance.
+</div>
+
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, data=data)
 
 if __name__ == "__main__":
     app.run(debug=True)
