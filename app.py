@@ -1,3 +1,4 @@
+# INCIDENT_SPECIFIC_KB_ACTIVE
 # SERVICENOW_LIVE_NAV_UPDATE_ACTIVE
 # KNOWLEDGE_REVIEW_NAV_AND_HEALTH_ACTIVE
 # KNOWLEDGE_GOVERNANCE_NAV_UPDATE_ACTIVE
@@ -12077,13 +12078,14 @@ Check Azure App Service settings: SERVICENOW_INSTANCE, SERVICENOW_USERNAME, SERV
 <td><span class="badge {% if '1' in t.priority or 'High' in t.priority %}risk{% else %}warn{% endif %}">{{ t.priority }}</span></td>
 <td>{{ t.state }}</td>
 <td>{{ t.assignment_group }}</td>
-<td>{{ t.recommended_kb }}</td>
+<td><a href="/suggested-kb/{{ t.number }}" style="font-weight:900;color:#2563eb;text-decoration:none">{{ t.recommended_kb }}</a></td>
 <td><span class="badge warn">{{ t.evidence_status }}</span></td>
 <td>{{ t.governance_status }}</td>
 <td class="action">
+<a href="/suggested-kb/{{ t.number }}">Suggested KB</a><br>
 <a href="/shift-assurance-enterprise">Assign Shift</a><br>
 <a href="/shift-handoff-lineage">Create Handoff</a><br>
-<a href="/knowledge-governance">Suggest KB</a>
+<a href="/knowledge-governance">Suggest KB Update</a>
 </td>
 </tr>
 {% endfor %}
@@ -12105,6 +12107,295 @@ This page proves the platform is no longer only using demo-local records. It can
     """
 
     return render_template_string(html, tickets=tickets, error=error)
+
+
+# ============================================================
+# INCIDENT SPECIFIC KB ACTIVE
+# Suggested KB recommendations for one ServiceNow incident only.
+# ============================================================
+
+KB_ARTICLES_FILE = "kb_articles.csv"
+
+
+def prepare_kb_articles():
+    df = load_csv(KB_ARTICLES_FILE)
+    df = ensure_cols(df, [
+        "kb_id", "title", "category", "keywords", "ci_class",
+        "resolution_steps", "supervisor_approved", "last_reviewed",
+        "integrity_score", "risk_level"
+    ])
+
+    if df.empty:
+        seed = pd.DataFrame([
+            {
+                "kb_id": "KB-DEMO-001",
+                "title": "How to verify audit trail export evidence",
+                "category": "Audit Trail",
+                "keywords": "audit,audit trail,export,evidence,review,log",
+                "ci_class": "Controlled Equipment",
+                "resolution_steps": "Confirm ticket and CI. Export audit trail. Verify date range, system name, reviewer, file name, and evidence hash. Attach evidence to the governed ticket or handoff record.",
+                "supervisor_approved": "Yes",
+                "last_reviewed": "2026-05-01",
+                "integrity_score": "92",
+                "risk_level": "LOW"
+            },
+            {
+                "kb_id": "KB-DEMO-002",
+                "title": "Monthly backup review evidence checklist",
+                "category": "Backup Review",
+                "keywords": "backup,monthly backup,restore,veeam,evidence,missing",
+                "ci_class": "Validated Workstation",
+                "resolution_steps": "Confirm backup status. Capture review evidence. Verify backup date, target system, success/failure status, reviewer, and exception notes. Upload and hash supporting evidence.",
+                "supervisor_approved": "Yes",
+                "last_reviewed": "2026-05-01",
+                "integrity_score": "90",
+                "risk_level": "LOW"
+            },
+            {
+                "kb_id": "KB-DEMO-003",
+                "title": "Quarterly access review remediation process",
+                "category": "Access Governance",
+                "keywords": "access,quarterly access,user review,remediation,disable,approval",
+                "ci_class": "Computerized System",
+                "resolution_steps": "Review user access list. Confirm owner approval. Identify users requiring removal or role correction. Document remediation evidence and supervisor confirmation before audit-ready closure.",
+                "supervisor_approved": "Yes",
+                "last_reviewed": "2026-05-01",
+                "integrity_score": "88",
+                "risk_level": "LOW"
+            },
+            {
+                "kb_id": "KB-DEMO-004",
+                "title": "Pre-deviation escalation for missing GMP evidence",
+                "category": "Pre-Deviation",
+                "keywords": "missing evidence,potential deviation,escalation,gmp,quality risk",
+                "ci_class": "GxP System",
+                "resolution_steps": "If required evidence is missing, document the gap, notify the responsible owner, assess data integrity impact, and escalate before closing or handing off the ticket.",
+                "supervisor_approved": "Yes",
+                "last_reviewed": "2026-05-01",
+                "integrity_score": "86",
+                "risk_level": "MEDIUM"
+            }
+        ])
+        save_csv(seed, KB_ARTICLES_FILE)
+        return seed
+
+    return df.fillna("")
+
+
+def find_servicenow_ticket_by_number(ticket_number):
+    ticket_number = clean(ticket_number)
+
+    try:
+        tickets = fetch_servicenow_live_incidents(limit=50)
+        for ticket in tickets:
+            if clean(ticket.get("number")) == ticket_number:
+                return ticket
+    except Exception:
+        pass
+
+    return {
+        "number": ticket_number,
+        "short_description": "",
+        "description": "",
+        "cmdb_ci": "",
+        "priority": "",
+        "state": "",
+        "assignment_group": "",
+        "recommended_kb": "",
+        "evidence_status": "Unknown",
+        "governance_status": "Ticket not found from live PDI during this request"
+    }
+
+
+def score_kb_for_ticket(ticket, kb_row):
+    ticket_text = " ".join([
+        clean(ticket.get("number")),
+        clean(ticket.get("short_description")),
+        clean(ticket.get("description")),
+        clean(ticket.get("cmdb_ci")),
+        clean(ticket.get("priority")),
+        clean(ticket.get("state")),
+        clean(ticket.get("assignment_group"))
+    ]).lower()
+
+    keywords = [k.strip().lower() for k in clean(kb_row.get("keywords")).split(",") if k.strip()]
+    title = clean(kb_row.get("title")).lower()
+    category = clean(kb_row.get("category")).lower()
+
+    score = 0
+    reasons = []
+
+    for kw in keywords:
+        if kw and kw in ticket_text:
+            score += 18
+            reasons.append(f"Keyword match: {kw}")
+
+    if category and category in ticket_text:
+        score += 15
+        reasons.append(f"Category match: {category}")
+
+    for token in title.split():
+        if len(token) > 4 and token in ticket_text:
+            score += 5
+
+    if clean(kb_row.get("supervisor_approved")).lower() == "yes":
+        score += 10
+        reasons.append("Supervisor-approved article")
+
+    try:
+        score += min(int(float(clean(kb_row.get("integrity_score")))) // 10, 10)
+    except Exception:
+        pass
+
+    score = min(score, 100)
+
+    if not reasons:
+        reasons.append("General fallback article; limited direct keyword match")
+
+    return score, reasons
+
+
+def get_suggested_kb_for_ticket(ticket_number):
+    ticket = find_servicenow_ticket_by_number(ticket_number)
+    kb_df = prepare_kb_articles()
+
+    matches = []
+    for _, row in kb_df.iterrows():
+        row_dict = row.to_dict()
+        score, reasons = score_kb_for_ticket(ticket, row_dict)
+        if score > 0:
+            row_dict["match_score"] = score
+            row_dict["match_reason"] = " | ".join(reasons)
+            matches.append(row_dict)
+
+    matches = sorted(matches, key=lambda x: int(x.get("match_score", 0)), reverse=True)
+    return ticket, matches[:5]
+
+
+@app.route("/suggested-kb/<ticket_number>")
+def suggested_kb_for_incident(ticket_number):
+    # INCIDENT_SPECIFIC_KB_ACTIVE
+    ticket, matches = get_suggested_kb_for_ticket(ticket_number)
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Suggested KB</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#7c3aed);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:28px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ok{background:#dcfce7;color:#166534}
+.warn{background:#fef3c7;color:#92400e}
+.risk{background:#fee2e2;color:#991b1b}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Incident-Specific Suggested KB</h1>
+<p>Knowledge recommendations for one ServiceNow incident only, based on ticket description, CI, keywords, and approved KB content.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a class="active" href="/suggested-kb/{{ ticket.number }}">Suggested KB</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+</nav>
+
+<div class="notice">
+<b>Incident-specific mode:</b> This page is for ticket <b>{{ ticket.number }}</b> only. It does not show unrelated knowledge articles unless they match the ticket context.
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Ticket</div><div class="metric-value">{{ ticket.number }}</div></div>
+<div class="metric"><div class="metric-label">CI</div><div class="metric-value" style="font-size:18px">{{ ticket.cmdb_ci or "Not supplied" }}</div></div>
+<div class="metric"><div class="metric-label">Matched KBs</div><div class="metric-value">{{ matches|length }}</div></div>
+<div class="metric"><div class="metric-label">Evidence</div><div class="metric-value" style="font-size:18px;color:#f59e0b">{{ ticket.evidence_status }}</div></div>
+</section>
+
+<div class="card">
+<h2>Incident Summary</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Ticket</td><td><b>{{ ticket.number }}</b></td></tr>
+<tr><td>Short Description</td><td>{{ ticket.short_description }}</td></tr>
+<tr><td>Description</td><td>{{ ticket.description }}</td></tr>
+<tr><td>CI</td><td>{{ ticket.cmdb_ci }}</td></tr>
+<tr><td>Priority</td><td>{{ ticket.priority }}</td></tr>
+<tr><td>State</td><td>{{ ticket.state }}</td></tr>
+<tr><td>Assignment Group</td><td>{{ ticket.assignment_group }}</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Recommended Knowledge Articles</h2>
+{% if matches %}
+<table>
+<tr>
+<th>KB ID</th>
+<th>Title</th>
+<th>Category</th>
+<th>Match Score</th>
+<th>Why Matched</th>
+<th>Approved</th>
+<th>Resolution Steps</th>
+<th>Action</th>
+</tr>
+{% for kb in matches %}
+<tr>
+<td><b>{{ kb.kb_id }}</b></td>
+<td>{{ kb.title }}</td>
+<td>{{ kb.category }}</td>
+<td><span class="badge {% if kb.match_score|int >= 70 %}ok{% elif kb.match_score|int >= 40 %}warn{% else %}risk{% endif %}">{{ kb.match_score }}%</span></td>
+<td>{{ kb.match_reason }}</td>
+<td>{{ kb.supervisor_approved }}</td>
+<td>{{ kb.resolution_steps }}</td>
+<td class="action">
+<a href="/knowledge-governance">Suggest Update</a>
+<a href="/shift-handoff-lineage">Create Handoff</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No KB match found. Use Knowledge Governance to request a new article.</p>
+{% endif %}
+</div>
+
+<div class="warning">
+<b>Governance meaning:</b> The KB is not just a help article. It is linked to a ServiceNow ticket, CI context, technician action, evidence readiness, and future supervisor-reviewed knowledge governance.
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, ticket=ticket, matches=matches)
+
+
+@app.route("/incident-register-kb")
+def incident_register_kb_page():
+    return redirect("/servicenow-tickets-live")
 
 if __name__ == "__main__":
     app.run(debug=True)
