@@ -11578,5 +11578,235 @@ approval/revision decision, ServiceNow sync readiness, timestamp, and cryptograp
         metrics=metrics
     )
 
+
+# ============================================================
+# MONDAY DEMO PAGE ACTIVE
+# Guided presentation mode for leadership demo.
+# ============================================================
+
+@app.route("/monday-demo")
+def monday_demo_page():
+    # MONDAY_DEMO_PAGE_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Monday Demo Mode</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:40px 44px 54px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.card a{display:inline-block;margin-top:10px;text-decoration:none;background:#0f172a;color:white;padding:9px 12px;border-radius:999px;font-weight:900;font-size:13px}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}
+.opening{background:#eff6ff;color:#1d4ed8}
+.demo{background:#ecfdf5;color:#047857}
+.risk{background:#fff7ed;color:#c2410c}
+.ask{background:#faf5ff;color:#7e22ce}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:18px;padding:16px;line-height:1.55;margin-bottom:20px}
+.script{background:#f8fafc;border-left:7px solid #2563eb;border-radius:18px;padding:16px;line-height:1.65;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
+.stepno{font-size:22px;font-weight:1000;color:#1d4ed8}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Monday Demo Mode</h1>
+<p>Guided presentation path for operational governance, shift continuity, ServiceNow CI readiness, knowledge governance, evidence integrity, and executive visibility.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a class="active" href="/monday-demo">Monday Demo</a>
+<a href="/qc-ops-intake">QC Ops Intake</a>
+<a href="/technicians">Technicians</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI</a>
+<a href="/knowledge-governance">Knowledge Governance</a>
+<a href="/knowledge-review">Knowledge Review</a>
+<a href="/executive-overview">Executive</a>
+<a href="/architecture">Architecture</a>
+</nav>
+
+<div class="warning">
+<b>Presentation rule:</b> Do not present this as a replacement for existing validated systems. Present it as a governance assurance layer that strengthens continuity between existing systems, operational datasets, tickets, CIs, technician identity, evidence, and review decisions.
+</div>
+
+<div class="section">
+<h2>1. Opening Message</h2>
+<div class="script">
+AssuranceLayer™ is a governance assurance workspace designed to convert fragmented operational records into traceable, fingerprinted, audit-ready governance evidence. 
+The goal is not to replace existing enterprise systems. The goal is to strengthen operational continuity between them.
+</div>
+<div class="script">
+The platform demonstrates how operational datasets, technician identity, ticket/CI context, shift handoff, evidence readiness, pre-deviation risk, and knowledge review can be connected into one governed lineage model.
+</div>
+</div>
+
+<div class="section">
+<h2>2. The Operational Challenge</h2>
+<div class="grid">
+<div class="card"><span class="badge opening">PAIN POINT</span><h3>Fragmented evidence</h3><p>Operational evidence exists across spreadsheets, tickets, handoffs, binders, SOP references, work orders, and local files.</p></div>
+<div class="card"><span class="badge opening">PAIN POINT</span><h3>Manual continuity</h3><p>Shift transfer and task ownership often depend on manual notes, memory, or separate communication channels.</p></div>
+<div class="card"><span class="badge opening">PAIN POINT</span><h3>Reactive governance</h3><p>Risks are often discovered after escalation, audit preparation, or deviation review instead of during work execution.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>3. Live Demo Path</h2>
+<table>
+<tr><th>Step</th><th>Open Page</th><th>What It Proves</th><th>What To Say</th></tr>
+
+<tr>
+<td class="stepno">1</td>
+<td><a href="/command-center">Command Center</a></td>
+<td>Full platform navigation hub.</td>
+<td>“This is the governed workspace that connects the modules into one operational assurance flow.”</td>
+</tr>
+
+<tr>
+<td class="stepno">2</td>
+<td><a href="/qc-ops-intake">QC Ops Intake</a></td>
+<td>Excel/CSV becomes governed operational dataset.</td>
+<td>“We are not replacing spreadsheets. We are fingerprinting and transforming them into governed datasets.”</td>
+</tr>
+
+<tr>
+<td class="stepno">3</td>
+<td><a href="/technicians">Technicians</a></td>
+<td>Technician dropdown is controlled by Microsoft Entra ID.</td>
+<td>“Technician names are not typed manually. Eligibility comes from a controlled identity group.”</td>
+</tr>
+
+<tr>
+<td class="stepno">4</td>
+<td><a href="/shift-assurance-enterprise">Shift Enterprise</a></td>
+<td>Ticket + CI + approved technician + readiness score.</td>
+<td>“Shift work now links work context, CI reference, identity, evidence state, and governance readiness.”</td>
+</tr>
+
+<tr>
+<td class="stepno">5</td>
+<td><a href="/shift-handoff-lineage">Handoff Lineage</a></td>
+<td>Outgoing-to-incoming handoff lineage.</td>
+<td>“Operational responsibility transfer becomes a governed record with acceptance, risk, timestamp, and hash.”</td>
+</tr>
+
+<tr>
+<td class="stepno">6</td>
+<td><a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a></td>
+<td>ServiceNow-style ticket/CI readiness model.</td>
+<td>“ServiceNow can own tickets and CIs. AssuranceLayer verifies whether the CI context is governance-ready.”</td>
+</tr>
+
+<tr>
+<td class="stepno">7</td>
+<td><a href="/knowledge-governance">Knowledge Governance</a></td>
+<td>Technician field knowledge becomes governed.</td>
+<td>“Field learning becomes linked to ticket, CI, technician, evidence, and future ServiceNow knowledge sync.”</td>
+</tr>
+
+<tr>
+<td class="stepno">8</td>
+<td><a href="/knowledge-review">Knowledge Review</a></td>
+<td>Supervisor review and approval lineage.</td>
+<td>“Knowledge is not published informally. It goes through review, comment, approval, revision, and hash lineage.”</td>
+</tr>
+
+<tr>
+<td class="stepno">9</td>
+<td><a href="/platform-health">Platform Health</a></td>
+<td>All module registers and record counts.</td>
+<td>“Each workflow has a separate evidence register, which protects modularity and traceability.”</td>
+</tr>
+
+<tr>
+<td class="stepno">10</td>
+<td><a href="/executive-overview">Executive Overview</a></td>
+<td>Leadership-level risk/readiness view.</td>
+<td>“This gives leaders visibility into operational governance posture, not only task status.”</td>
+</tr>
+
+<tr>
+<td class="stepno">11</td>
+<td><a href="/architecture">Architecture</a></td>
+<td>Architecture and innovation explanation.</td>
+<td>“This is a non-invasive assurance layer over existing enterprise systems.”</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Core Message By Audience</h2>
+<div class="grid">
+<div class="card"><span class="badge demo">Operations</span><h3>Shift continuity</h3><p>Ticket, CI, technician, evidence, open risk, and carryover instructions are connected into one lineage.</p></div>
+<div class="card"><span class="badge demo">IT / Service Management</span><h3>CI governance readiness</h3><p>ServiceNow remains the work and CI source. AssuranceLayer adds evidence readiness, lineage, and governance scoring.</p></div>
+<div class="card"><span class="badge demo">Quality / Governance</span><h3>Pre-deviation visibility</h3><p>The system flags missing evidence, unclear impact, SOP gaps, and handoff risks before they become bigger governance issues.</p></div>
+<div class="card"><span class="badge demo">Leadership</span><h3>Operational assurance</h3><p>Leaders see readiness posture, high-risk items, and governance continuity across modules.</p></div>
+<div class="card"><span class="badge demo">Knowledge Owners</span><h3>Controlled field learning</h3><p>Technician knowledge suggestions become reviewable, approvable, evidence-linked, and ServiceNow PDI-ready.</p></div>
+<div class="card"><span class="badge demo">Integration Team</span><h3>System-safe architecture</h3><p>The design preserves existing systems and adds a governance assurance layer around them.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>5. ServiceNow PDI Future Integration Note</h2>
+<div class="script">
+The current ServiceNow CI page uses demo-safe ServiceNow-style records. The architecture is ready for a real ServiceNow PDI connection. 
+The next integration stage will pull incidents, CIs, assignment groups, and knowledge articles from a ServiceNow PDI through API, then connect those records to Entra technicians, shift handoff, evidence fingerprinting, and governance review.
+</div>
+</div>
+
+<div class="section">
+<h2>6. What This Demonstrates</h2>
+<table>
+<tr><th>Capability</th><th>Demonstrated By</th><th>Strategic Value</th></tr>
+<tr><td>Governed dataset intake</td><td>QC Ops Intake</td><td>Transforms Excel/CSV into fingerprinted governance assets.</td></tr>
+<tr><td>Controlled identity</td><td>Technicians page</td><td>Technician dropdown is controlled by Microsoft Entra ID group membership.</td></tr>
+<tr><td>Operational continuity</td><td>Shift Enterprise</td><td>Connects ticket, CI, technician, evidence, risk, and readiness.</td></tr>
+<tr><td>Formal handoff</td><td>Handoff Lineage</td><td>Creates outgoing-to-incoming accountability with hash lineage.</td></tr>
+<tr><td>ServiceNow readiness</td><td>ServiceNow CI Readiness</td><td>Prepares ticket/CI governance model for real ServiceNow PDI integration.</td></tr>
+<tr><td>Knowledge governance</td><td>Knowledge Governance + Review</td><td>Converts field learning into reviewed, approved, evidence-linked operational knowledge.</td></tr>
+<tr><td>Executive visibility</td><td>Executive Overview + Platform Health</td><td>Shows readiness, risk, and register health across modules.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>7. Final Leadership Ask</h2>
+<div class="two">
+<div class="card"><span class="badge ask">ASK 1</span><h3>Allow a controlled demo pilot</h3><p>Use sanitized/demo data first. Keep the platform read-only and non-invasive while evaluating governance value.</p></div>
+<div class="card"><span class="badge ask">ASK 2</span><h3>Select one pilot workflow</h3><p>Best candidate: shift handoff + ticket/CI readiness + knowledge suggestion review.</p></div>
+<div class="card"><span class="badge ask">ASK 3</span><h3>Connect ServiceNow PDI next</h3><p>Use a PDI first, then evaluate enterprise API integration only after governance and security review.</p></div>
+<div class="card"><span class="badge ask">ASK 4</span><h3>Review IP and disclosure boundaries</h3><p>Keep company-specific data out of the demo and protect the architecture as an independent governance assurance concept.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>8. Closing Statement</h2>
+<div class="script">
+AssuranceLayer™ shows how operational governance can move from fragmented records and manual reconstruction to continuous, identity-controlled, evidence-backed, reviewable, and audit-ready lineage.
+</div>
+<div class="script">
+The strongest next step is a small controlled pilot using sanitized data, ServiceNow PDI records, Microsoft Entra technician identity, and one operational workflow such as shift handoff and knowledge governance.
+</div>
+</div>
+
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
 if __name__ == "__main__":
     app.run(debug=True)
