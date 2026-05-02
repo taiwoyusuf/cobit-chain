@@ -10672,5 +10672,449 @@ ticket, CI, evidence state, open risk, acceptance, timestamp, readiness score, a
         metrics=metrics
     )
 
+
+# ============================================================
+# KNOWLEDGE GOVERNANCE ACTIVE
+# Technician knowledge suggestion + supervisor review lineage.
+# ServiceNow PDI-ready, demo-safe local governance register.
+# ============================================================
+
+KNOWLEDGE_GOVERNANCE_FILE = "knowledge_governance_register.csv"
+
+
+def prepare_knowledge_governance_register():
+    df = load_csv(KNOWLEDGE_GOVERNANCE_FILE)
+    return ensure_cols(df, [
+        "knowledge_lineage_id", "timestamp", "related_ticket", "ci_reference",
+        "knowledge_title", "current_article_ref", "knowledge_type",
+        "problem_observed", "suggested_update", "evidence_reference",
+        "technician_id", "technician_name", "technician_upn", "technician_role",
+        "reviewer_id", "reviewer_name", "reviewer_upn", "reviewer_role",
+        "workflow_action", "workflow_status", "review_comment",
+        "service_now_sync_status", "knowledge_integrity_score", "risk_level",
+        "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def parse_knowledge_person(value):
+    value = clean(value)
+    parts = value.split("||")
+    while len(parts) < 4:
+        parts.append("")
+    return {
+        "id": parts[0],
+        "displayName": parts[1],
+        "userPrincipalName": parts[2],
+        "jobTitle": parts[3]
+    }
+
+
+def calculate_knowledge_integrity(related_ticket, ci_reference, knowledge_title,
+                                  current_article_ref, problem_observed,
+                                  suggested_update, evidence_reference,
+                                  technician, reviewer, workflow_action,
+                                  review_comment, service_now_sync_status):
+    score = 100
+    signals = []
+
+    related_ticket = clean(related_ticket)
+    ci_reference = clean(ci_reference)
+    knowledge_title = clean(knowledge_title)
+    current_article_ref = clean(current_article_ref)
+    problem_observed = clean(problem_observed)
+    suggested_update = clean(suggested_update)
+    evidence_reference = clean(evidence_reference)
+    workflow_action = clean(workflow_action)
+    review_comment = clean(review_comment)
+    service_now_sync_status = clean(service_now_sync_status)
+
+    if not related_ticket:
+        score -= 15
+        signals.append("Knowledge suggestion is not linked to a ticket/work item.")
+
+    if not ci_reference:
+        score -= 15
+        signals.append("Knowledge suggestion is not linked to a CI/equipment/system.")
+
+    if not knowledge_title:
+        score -= 20
+        signals.append("Knowledge title is missing.")
+
+    if not problem_observed:
+        score -= 20
+        signals.append("Problem observed / operational gap is missing.")
+
+    if not suggested_update:
+        score -= 25
+        signals.append("Suggested knowledge update is missing.")
+
+    if not technician.get("displayName"):
+        score -= 20
+        signals.append("Submitting technician is not selected from approved Entra technician list.")
+
+    if workflow_action in ["Approve", "Reject", "Request Revision", "Publish Candidate"]:
+        if not reviewer.get("displayName"):
+            score -= 25
+            signals.append("Reviewer/supervisor is required for review actions.")
+        if not review_comment:
+            score -= 15
+            signals.append("Review comment is missing for the selected workflow action.")
+
+    if workflow_action == "Approve" and not evidence_reference:
+        score -= 15
+        signals.append("Approved knowledge should reference supporting evidence or lineage.")
+
+    if service_now_sync_status in ["Sync Failed", "Not Ready for Sync"]:
+        score -= 15
+        signals.append("ServiceNow knowledge sync status is not ready.")
+
+    if current_article_ref and workflow_action == "Draft Submitted":
+        signals.append("Existing article reference detected; this may be an article improvement rather than a new article.")
+
+    if "workaround" in suggested_update.lower() or "bypass" in suggested_update.lower():
+        score -= 10
+        signals.append("Suggested update may describe a workaround; supervisor should verify SOP alignment.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        risk = "LOW"
+    elif score >= 60:
+        risk = "MEDIUM"
+    else:
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("Knowledge governance record appears complete and review-ready.")
+
+    return score, risk, signals
+
+
+def determine_knowledge_workflow_status(workflow_action):
+    workflow_action = clean(workflow_action)
+
+    if workflow_action == "Draft Submitted":
+        return "DRAFT SUBMITTED / AWAITING REVIEW"
+    if workflow_action == "Request Revision":
+        return "REVISION REQUIRED"
+    if workflow_action == "Approve":
+        return "APPROVED BY REVIEWER"
+    if workflow_action == "Reject":
+        return "REJECTED BY REVIEWER"
+    if workflow_action == "Publish Candidate":
+        return "APPROVED / READY FOR SERVICENOW PDI SYNC"
+
+    return "DRAFT SUBMITTED / AWAITING REVIEW"
+
+
+def save_knowledge_governance(req):
+    df = prepare_knowledge_governance_register()
+
+    related_ticket = clean(req.form.get("related_ticket"))
+    ci_reference = clean(req.form.get("ci_reference"))
+    knowledge_title = clean(req.form.get("knowledge_title"))
+    current_article_ref = clean(req.form.get("current_article_ref"))
+    knowledge_type = clean(req.form.get("knowledge_type"))
+    problem_observed = clean(req.form.get("problem_observed"))
+    suggested_update = clean(req.form.get("suggested_update"))
+    evidence_reference = clean(req.form.get("evidence_reference"))
+
+    technician = parse_knowledge_person(req.form.get("technician"))
+    reviewer = parse_knowledge_person(req.form.get("reviewer"))
+
+    workflow_action = clean(req.form.get("workflow_action"))
+    review_comment = clean(req.form.get("review_comment"))
+    service_now_sync_status = clean(req.form.get("service_now_sync_status")) or "Demo local governance / future ServiceNow PDI sync"
+
+    required = [
+        related_ticket, ci_reference, knowledge_title, knowledge_type,
+        problem_observed, suggested_update, technician["displayName"],
+        workflow_action
+    ]
+
+    if not all(required):
+        return {"error": "Ticket, CI, title, type, problem observed, suggested update, submitting technician, and workflow action are required."}
+
+    workflow_status = determine_knowledge_workflow_status(workflow_action)
+
+    integrity_score, risk_level, signals = calculate_knowledge_integrity(
+        related_ticket, ci_reference, knowledge_title, current_article_ref,
+        problem_observed, suggested_update, evidence_reference,
+        technician, reviewer, workflow_action, review_comment,
+        service_now_sync_status
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    knowledge_lineage_id = "KLIN-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        knowledge_lineage_id + timestamp + related_ticket + ci_reference +
+        knowledge_title + knowledge_type + technician["id"] + reviewer["id"] +
+        workflow_action + workflow_status + service_now_sync_status + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "knowledge_lineage_id": knowledge_lineage_id,
+        "timestamp": timestamp,
+        "related_ticket": related_ticket,
+        "ci_reference": ci_reference,
+        "knowledge_title": knowledge_title,
+        "current_article_ref": current_article_ref,
+        "knowledge_type": knowledge_type,
+        "problem_observed": problem_observed,
+        "suggested_update": suggested_update,
+        "evidence_reference": evidence_reference,
+        "technician_id": technician["id"],
+        "technician_name": technician["displayName"],
+        "technician_upn": technician["userPrincipalName"],
+        "technician_role": technician["jobTitle"],
+        "reviewer_id": reviewer["id"],
+        "reviewer_name": reviewer["displayName"],
+        "reviewer_upn": reviewer["userPrincipalName"],
+        "reviewer_role": reviewer["jobTitle"],
+        "workflow_action": workflow_action,
+        "workflow_status": workflow_status,
+        "review_comment": review_comment,
+        "service_now_sync_status": service_now_sync_status,
+        "knowledge_integrity_score": integrity_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, KNOWLEDGE_GOVERNANCE_FILE)
+
+    return {
+        "error": "",
+        "knowledge_lineage_id": knowledge_lineage_id,
+        "workflow_status": workflow_status,
+        "knowledge_integrity_score": integrity_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_knowledge_governance_metrics():
+    df = prepare_knowledge_governance_register()
+    if df.empty:
+        return {"total": 0, "approved": 0, "revision": 0, "high": 0, "recent": []}
+
+    df = df.fillna("")
+    return {
+        "total": len(df),
+        "approved": len(df[df["workflow_status"].str.contains("APPROVED", case=False, na=False)]),
+        "revision": len(df[df["workflow_status"] == "REVISION REQUIRED"]),
+        "high": len(df[df["risk_level"] == "HIGH"]),
+        "recent": df.tail(12).to_dict("records")
+    }
+
+
+@app.route("/knowledge-governance", methods=["GET", "POST"])
+def knowledge_governance_page():
+    # KNOWLEDGE_GOVERNANCE_ACTIVE
+    result = None
+    technician_error = ""
+    technicians = []
+
+    try:
+        technicians = get_entra_shift_technicians()
+    except Exception as e:
+        technician_error = str(e)
+
+    if request.method == "POST":
+        result = save_knowledge_governance(request)
+
+    metrics = get_knowledge_governance_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ Knowledge Governance</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#7c3aed);color:white;padding:38px 44px 50px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-24px auto 50px;padding:0 26px}
+.nav,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.layout{display:grid;grid-template-columns:460px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:32px;font-weight:900;margin-top:6px}
+input,select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:95px}
+button{border:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-weight:900;cursor:pointer}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ Knowledge Governance</h1>
+<p>Technician knowledge suggestion → supervisor review → CI/ticket linkage → evidence reference → ServiceNow PDI-ready knowledge lineage.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/shift-assurance-enterprise">Shift Enterprise</a>
+<a href="/shift-handoff-lineage">Handoff Lineage</a>
+<a href="/servicenow-ci-readiness">ServiceNow CI</a>
+<a href="/technicians">Technicians</a>
+<a class="active" href="/knowledge-governance">Knowledge Governance</a>
+</nav>
+
+<div class="warning">
+<b>Enterprise model:</b> ServiceNow remains the future knowledge system of record. AssuranceLayer™ governs how knowledge is suggested, reviewed, linked to tickets/CIs, supported by evidence, and prepared for future ServiceNow PDI sync.
+</div>
+
+{% if technician_error %}
+<div class="error"><b>Technician directory connection issue:</b><br>{{ technician_error }}</div>
+{% else %}
+<div class="notice"><b>Microsoft Entra connected.</b> {{ technicians|length }} approved user(s) available for technician/reviewer workflow.</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved Knowledge Lineage:</b> {{ result.knowledge_lineage_id }} —
+<b>{{ result.workflow_status }}</b> —
+Integrity Score <b>{{ result.knowledge_integrity_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Knowledge Records</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Approved / Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.approved }}</div></div>
+<div class="metric"><div class="metric-label">Revision Required</div><div class="metric-value" style="color:#f59e0b">{{ metrics.revision }}</div></div>
+<div class="metric"><div class="metric-label">High Risk</div><div class="metric-value" style="color:#dc2626">{{ metrics.high }}</div></div>
+</section>
+
+<section class="layout">
+<aside class="panel">
+<h2>Create Knowledge Governance Record</h2>
+<form method="POST" action="/knowledge-governance">
+<input name="related_ticket" placeholder="Related Ticket e.g. INC-DEMO-0001" required>
+<input name="ci_reference" placeholder="CI Reference e.g. CI-DEMO-1803" required>
+<input name="knowledge_title" placeholder="Knowledge Title e.g. Audit trail export recovery steps" required>
+<input name="current_article_ref" placeholder="Existing Article Ref e.g. KB-DEMO-0001, or leave blank for new article">
+
+<select name="knowledge_type" required>
+<option value="">Knowledge Type</option>
+<option value="New Article Suggestion">New Article Suggestion</option>
+<option value="Article Improvement">Article Improvement</option>
+<option value="SOP / Reality Drift">SOP / Reality Drift</option>
+<option value="Known Failure Mode">Known Failure Mode</option>
+<option value="Evidence Handling Instruction">Evidence Handling Instruction</option>
+</select>
+
+<select name="technician" required>
+<option value="">Submitting Technician</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<textarea name="problem_observed" placeholder="Problem observed / gap discovered during ticket, CI review, handoff, or evidence collection" required></textarea>
+<textarea name="suggested_update" placeholder="Suggested knowledge article content or update" required></textarea>
+<input name="evidence_reference" placeholder="Evidence Reference e.g. EV-DEMO-0001 / file hash / screenshot ref">
+
+<select name="workflow_action" required>
+<option value="">Workflow Action</option>
+<option value="Draft Submitted">Draft Submitted</option>
+<option value="Request Revision">Request Revision</option>
+<option value="Approve">Approve</option>
+<option value="Reject">Reject</option>
+<option value="Publish Candidate">Publish Candidate</option>
+</select>
+
+<select name="reviewer">
+<option value="">Reviewer / Supervisor Optional for Draft, Required for Review</option>
+{% for t in technicians %}
+<option value="{{ t.id }}||{{ t.displayName }}||{{ t.userPrincipalName }}||{{ t.jobTitle }}">{{ t.displayName }} | {{ t.jobTitle }} | {{ t.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<textarea name="review_comment" placeholder="Supervisor / reviewer comment"></textarea>
+
+<select name="service_now_sync_status">
+<option value="Demo local governance / future ServiceNow PDI sync">ServiceNow Sync: Demo local governance / future ServiceNow PDI sync</option>
+<option value="Not Ready for Sync">Not Ready for Sync</option>
+<option value="Ready for PDI Sync">Ready for PDI Sync</option>
+<option value="Sync Failed">Sync Failed</option>
+<option value="Synced to ServiceNow PDI">Synced to ServiceNow PDI</option>
+</select>
+
+<button type="submit">Save Knowledge Governance Lineage</button>
+</form>
+</aside>
+
+<section class="card">
+<h2>Recent Knowledge Governance Records</h2>
+{% if metrics.recent %}
+<table>
+<tr>
+<th>ID</th><th>Ticket / CI</th><th>Title</th><th>Technician</th><th>Reviewer</th><th>Status</th><th>Score</th><th>Risk</th>
+</tr>
+{% for r in metrics.recent %}
+<tr>
+<td>{{ r.knowledge_lineage_id }}</td>
+<td><b>{{ r.related_ticket }}</b><br>{{ r.ci_reference }}</td>
+<td><b>{{ r.knowledge_title }}</b><br>{{ r.knowledge_type }}</td>
+<td>{{ r.technician_name }}<br>{{ r.technician_role }}</td>
+<td>{{ r.reviewer_name }}<br>{{ r.reviewer_role }}</td>
+<td><b>{{ r.workflow_status }}</b><br>{{ r.service_now_sync_status }}</td>
+<td>{{ r.knowledge_integrity_score }}%</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No knowledge governance records saved yet.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="card">
+<h2>Commercial Meaning</h2>
+<p>
+This is not just a knowledge base. It is a governed knowledge lineage workflow:
+ticket → CI → technician observation → knowledge suggestion → supervisor review → evidence reference → approval status → future ServiceNow PDI sync → hash-backed audit lineage.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        technicians=technicians,
+        technician_error=technician_error,
+        result=result,
+        metrics=metrics
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
