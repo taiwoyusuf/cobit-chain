@@ -1,3 +1,4 @@
+# KNOWLEDGE_PASSPORT_NAV_HEALTH_ACTIVE
 # KNOWLEDGE_PASSPORT_ACTIVE
 # KB_USAGE_LINEAGE_ACTIVE
 # INCIDENT_SPECIFIC_KB_ACTIVE
@@ -7642,6 +7643,7 @@ DSCSA TrustChain™ remains a separate supporting pharma supply-chain module. Co
 <div class="card"><span class="badge strategy">FUTURE API</span><h3>ServiceNow PDI Ready</h3><p>Current page uses demo records. Future version will pull incidents, CIs, assignment groups, and knowledge articles from a real ServiceNow PDI.</p><a href="/servicenow-ci-readiness">View API-Ready Model</a></div>
 <div class="card"><span class="badge strategy">KNOWLEDGE</span><h3>Knowledge Governance</h3><p>Technician knowledge suggestion, CI/ticket linkage, evidence reference, and future ServiceNow PDI knowledge sync preparation.</p><a href="/knowledge-governance">Open Knowledge Governance</a></div>
 <div class="card"><span class="badge strategy">REVIEW</span><h3>Knowledge Review Queue</h3><p>Supervisor review queue for approving, rejecting, requesting revision, or marking knowledge suggestions ready for ServiceNow PDI sync.</p><a href="/knowledge-review">Open Knowledge Review</a></div>
+<div class="card"><span class="badge strategy">PASSPORT</span><h3>Knowledge Passport</h3><p>Shows one KB article’s governance life: incident matches, technician use, helpfulness feedback, evidence status, update requests, supervisor reviews, and ServiceNow sync readiness.</p><a href="/knowledge-passport/KB-DEMO-001">Open Knowledge Passport</a></div>
 </div>
 </div>
 
@@ -8655,6 +8657,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <a href="/servicenow-ci-readiness">ServiceNow CI</a>
 <a href="/knowledge-governance">Knowledge Governance</a>
 <a href="/knowledge-review">Knowledge Review</a>
+<a href="/knowledge-passport/KB-DEMO-001">Knowledge Passport</a>
 </nav>
 
 <div class="notice">
@@ -8725,7 +8728,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </div>
 
 <div class="warning">
-<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow Live Tickets → ServiceNow CI Readiness → Knowledge Governance → Knowledge Review → Executive Overview → Architecture → Roadmap.
+<b>Suggested demo path:</b> Command Center → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow Live Tickets → ServiceNow CI Readiness → Suggested KB → KB Usage → Knowledge Governance → Knowledge Review → Knowledge Passport → Executive Overview → Architecture → Roadmap.
 </div>
 </main>
 </body>
@@ -11643,6 +11646,7 @@ td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
 <a href="/servicenow-ci-readiness">ServiceNow CI</a>
 <a href="/knowledge-governance">Knowledge Governance</a>
 <a href="/knowledge-review">Knowledge Review</a>
+<a href="/knowledge-passport/KB-DEMO-001">Knowledge Passport</a>
 <a href="/executive-overview">Executive</a>
 <a href="/architecture">Architecture</a>
 </nav>
