@@ -9765,5 +9765,17 @@ AssuranceLayer™ then links technician, ticket, CI, shift, evidence status, han
         metrics=metrics
     )
 
+
+# ============================================================
+# SHIFT ENTERPRISE ALIAS ACTIVE
+# Clean enterprise demo route for ShiftTrust with Entra dropdown.
+# Protected /shift-assurance remains unchanged.
+# ============================================================
+
+@app.route("/shift-assurance-enterprise")
+def shift_assurance_enterprise_page():
+    # SHIFT_ENTERPRISE_ALIAS_ACTIVE
+    return redirect("/shift-assurance-entra-test")
+
 if __name__ == "__main__":
     app.run(debug=True)
