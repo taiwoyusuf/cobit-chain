@@ -36690,5 +36690,1088 @@ def sterile_compounding_closure_simulator_dashboard_injection(response):
         print(f"Sterile closure simulator dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INSPECTION_READINESS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 24: Inspection Readiness Bundle + Auditor Q&A Pack
+#
+# New Routes:
+#   /sterile-compounding/inspection-readiness
+#   /sterile-compounding/inspection-readiness/<record_id>
+#   /sterile-compounding/inspection-readiness/export
+#   /sterile-compounding/auditor-qa-pack
+#   /sterile-compounding/auditor-qa-pack/export
+#
+# New Registers:
+#   sterile_compounding_inspection_readiness_register.csv
+#   sterile_compounding_auditor_qa_register.csv
+#
+# Boundary:
+#   This creates auditor-facing inspection readiness summaries and
+#   question/answer packs from existing sterile governance signals.
+#   It does not perform release, QA disposition, QMS approval, or replace
+#   validated systems. It does not touch protected Manufacturing/Wole,
+#   ServiceNow, Entra, CI Candidate Factory, CI Review Board,
+#   CI Submission Pack, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_ir_pd
+    import json as sterile_ir_json
+    from flask import request as sterile_ir_request
+    from flask import Response as sterile_ir_Response
+except Exception as sterile_ir_import_error:
+    raise RuntimeError(f"Sterile inspection readiness import failed: {sterile_ir_import_error}")
+
+
+STERILE_INSPECTION_READINESS_REGISTER = "sterile_compounding_inspection_readiness_register.csv"
+STERILE_AUDITOR_QA_REGISTER = "sterile_compounding_auditor_qa_register.csv"
+
+STERILE_INSPECTION_READINESS_COLUMNS = [
+    "readiness_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "master_assurance_status",
+    "master_assurance_score",
+    "no_release_gate_status",
+    "audit_pack_status",
+    "signoff_status",
+    "seal_health_status",
+    "latest_seal_verification",
+    "custody_audit_status",
+    "sop_drift_status",
+    "personnel_drift_status",
+    "equipment_room_drift_status",
+    "prework_gate_status",
+    "environmental_drift_status",
+    "regulatory_impact_status",
+    "recovery_projected_status",
+    "recovery_projected_score",
+    "next_best_action",
+    "inspection_status",
+    "inspection_score",
+    "inspection_decision",
+    "auditor_summary",
+    "expected_questions",
+    "required_evidence_focus",
+    "source_routes",
+    "last_checked",
+    "inspection_hash"
+]
+
+STERILE_AUDITOR_QA_COLUMNS = [
+    "qa_id",
+    "record_id",
+    "question_domain",
+    "auditor_question",
+    "answer_summary",
+    "evidence_route",
+    "question_status",
+    "risk_signal",
+    "recommended_response",
+    "last_checked",
+    "qa_hash"
+]
+
+
+def sterile_ir_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_MASTER_ASSURANCE_COLUMNS",
+        "STERILE_NO_RELEASE_COMPOSITE_COLUMNS",
+        "sterile_ma_build_register",
+        "sterile_ma_build_no_release",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile inspection readiness dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ir_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ir_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_ir_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ir_status_badge(status):
+    status = sterile_ir_safe(status).upper()
+
+    if status in ["GREEN", "GO", "READY", "HASH MATCH", "INSPECTION READY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "PENDING", "NO VERIFICATION", "NO BASELINE", "NO SIGNOFF", "UNKNOWN"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "NOT READY"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ir_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_ir_pd.DataFrame(columns=columns)
+
+
+def sterile_ir_latest(df, record_id, timestamp_col=None):
+    if df is None or df.empty or "record_id" not in df.columns:
+        return {}
+
+    match = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return {}
+
+    if timestamp_col and timestamp_col in match.columns:
+        try:
+            match = match.sort_values(by=timestamp_col, ascending=False)
+        except Exception:
+            pass
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_ir_build_master():
+    sterile_ir_require_dependencies()
+
+    try:
+        df = sterile_ma_build_register()
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, STERILE_MASTER_ASSURANCE_COLUMNS)
+    except Exception:
+        pass
+
+    return sterile_read_register(
+        "sterile_compounding_master_assurance_register.csv",
+        STERILE_MASTER_ASSURANCE_COLUMNS
+    )
+
+
+def sterile_ir_build_gate(master_df):
+    try:
+        df = sterile_ma_build_no_release(master_df)
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+    except Exception:
+        pass
+
+    return sterile_read_register(
+        "sterile_compounding_no_release_composite_register.csv",
+        STERILE_NO_RELEASE_COMPOSITE_COLUMNS
+    )
+
+
+def sterile_ir_build_recovery(master_df):
+    try:
+        builder_sim = globals().get("sterile_cs_build_simulator")
+        builder_plan = globals().get("sterile_cs_build_recovery_plan")
+        if callable(builder_sim) and callable(builder_plan):
+            sim_df = builder_sim()
+            plan_df = builder_plan(sim_df, master_df)
+            if plan_df is not None and hasattr(plan_df, "columns"):
+                return plan_df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_ir_read_optional(
+        "sterile_compounding_recovery_plan_register.csv",
+        "STERILE_RECOVERY_PLAN_COLUMNS"
+    )
+
+
+def sterile_ir_signal_bucket(status):
+    status = sterile_ir_safe(status).upper()
+
+    if status in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "REJECTED"]:
+        return "RED"
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "PENDING", "NO VERIFICATION", "NO BASELINE", "NO SIGNOFF", "UNKNOWN", ""]:
+        return "YELLOW"
+    return "GREEN"
+
+
+def sterile_ir_question_status_from_signal(signal):
+    bucket = sterile_ir_signal_bucket(signal)
+    if bucket == "RED":
+        return "RED"
+    if bucket == "YELLOW":
+        return "YELLOW"
+    return "GREEN"
+
+
+def sterile_ir_add_qa(rows, record_id, domain, question, answer, route, signal, response):
+    payload = {
+        "qa_id": sterile_ir_make_id("ST-QA", record_id, domain, question),
+        "record_id": record_id,
+        "question_domain": domain,
+        "auditor_question": question,
+        "answer_summary": answer,
+        "evidence_route": route,
+        "question_status": sterile_ir_question_status_from_signal(signal),
+        "risk_signal": sterile_ir_safe(signal),
+        "recommended_response": response,
+        "last_checked": sterile_now(),
+    }
+
+    payload["qa_hash"] = sterile_hash_text(
+        sterile_ir_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_ir_questions_for_record(row, gate_row, recovery_row):
+    record_id = sterile_ir_safe(row.get("record_id", ""))
+    csp_name = sterile_ir_safe(row.get("csp_name", ""))
+
+    qa_rows = []
+
+    master_status = sterile_ir_safe(row.get("master_assurance_status", "UNKNOWN"))
+    master_score = sterile_ir_safe(row.get("master_assurance_score", ""))
+    master_decision = sterile_ir_safe(row.get("master_assurance_decision", ""))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Master Assurance",
+        "What is the overall governance readiness status for this CSP?",
+        f"{record_id} / {csp_name} has Master Assurance status {master_status}, score {master_score}, and decision: {master_decision}",
+        f"/sterile-compounding/master-assurance/{record_id}",
+        master_status,
+        "Open the Master Assurance passport and explain the composite evidence, risk, and no-release logic."
+    )
+
+    gate_status = sterile_ir_safe(gate_row.get("gate_status", "UNKNOWN"))
+    gate_decision = sterile_ir_safe(gate_row.get("gate_decision", ""))
+    blocker_summary = sterile_ir_safe(gate_row.get("blocker_summary", ""))
+    conditional_summary = sterile_ir_safe(gate_row.get("conditional_summary", ""))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Composite No-Release Gate",
+        "Is this CSP blocked, conditional, or governance-ready?",
+        f"The composite gate status is {gate_status}. Decision: {gate_decision}. Blockers: {blocker_summary}. Conditional signals: {conditional_summary}.",
+        "/sterile-compounding/no-release-composite",
+        gate_status,
+        "Use the composite no-release gate to show whether the record is GREEN, YELLOW, or RED from governance view."
+    )
+
+    evidence_signal = sterile_ir_safe(row.get("evidence_matrix_status", "UNKNOWN"))
+    missing = sterile_ir_safe(row.get("evidence_missing", "0"))
+    rejected = sterile_ir_safe(row.get("evidence_rejected", "0"))
+    pending = sterile_ir_safe(row.get("evidence_pending", "0"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Evidence Matrix",
+        "What evidence is missing, rejected, or pending for this CSP?",
+        f"Evidence matrix status is {evidence_signal}. Missing: {missing}; rejected: {rejected}; pending: {pending}.",
+        f"/sterile-compounding/evidence-matrix/{record_id}",
+        evidence_signal,
+        "Show the Evidence Matrix, then open linked Evidence Vault records or upload/approve missing evidence."
+    )
+
+    audit_signal = sterile_ir_safe(row.get("audit_pack_status", "UNKNOWN"))
+    audit_score = sterile_ir_safe(row.get("audit_pack_score", ""))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Audit Pack",
+        "Is there an inspection-ready audit pack for this CSP?",
+        f"Audit Pack status is {audit_signal} with audit-pack score {audit_score}.",
+        f"/sterile-compounding/audit-pack/{record_id}",
+        audit_signal,
+        "Open the Audit Pack to show consolidated CSP readiness, controls, evidence, findings, deviations, custody, and seal context."
+    )
+
+    signoff_signal = sterile_ir_safe(row.get("signoff_status", "NO SIGNOFF"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Governance Sign-Off",
+        "Has a reviewer signed off or placed conditions on the audit pack?",
+        f"Current governance sign-off signal is {signoff_signal}.",
+        f"/sterile-compounding/signoff/{record_id}",
+        signoff_signal,
+        "Show the Sign-Off page and explain whether approval, conditional approval, hold, or rejection has been recorded."
+    )
+
+    seal_signal = sterile_ir_safe(row.get("seal_health_status", "UNKNOWN"))
+    seal_verify = sterile_ir_safe(row.get("latest_seal_verification", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Cryptographic Dossier Seal",
+        "Has the dossier been sealed and does the seal still verify?",
+        f"Seal health is {seal_signal}; latest seal verification is {seal_verify}.",
+        f"/sterile-compounding/seal/{record_id}",
+        seal_signal if sterile_ir_signal_bucket(seal_signal) != "GREEN" else seal_verify,
+        "Open the Dossier Seal page and Seal Health view to show the baseline hash and latest verification result."
+    )
+
+    custody_signal = sterile_ir_safe(row.get("custody_audit_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Custody",
+        "Can the custody and handoff path be explained for this CSP?",
+        f"Custody audit-link status is {custody_signal}.",
+        f"/sterile-compounding/custody/{record_id}",
+        custody_signal,
+        "Use Custody Passport and Custody Audit-Link to explain custodian, location, handoff evidence, and hold/quarantine status."
+    )
+
+    sop_signal = sterile_ir_safe(row.get("sop_drift_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "SOP / Formula",
+        "Was the CSP prepared under a traceable SOP/formula version?",
+        f"SOP/formula drift status is {sop_signal}.",
+        "/sterile-compounding/sop-drift",
+        sop_signal,
+        "Use SOP / Formula Drift and the CSP passport to show version linkage and formula evidence status."
+    )
+
+    personnel_signal = sterile_ir_safe(row.get("personnel_drift_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Personnel Competency",
+        "Were the assigned personnel qualified and supported by competency evidence?",
+        f"Personnel competency drift status is {personnel_signal}.",
+        "/sterile-compounding/personnel-drift",
+        personnel_signal,
+        "Use Personnel Competency Drift to show qualification, aseptic competency evidence, and workload-risk signals."
+    )
+
+    equipment_signal = sterile_ir_safe(row.get("equipment_room_drift_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Equipment / Room Readiness",
+        "Was the hood, cleanroom, or equipment readiness acceptable for this CSP?",
+        f"Equipment/room drift status is {equipment_signal}.",
+        "/sterile-compounding/equipment-room-drift",
+        equipment_signal,
+        "Use Equipment / Room Drift to show certification, environmental, cleaning, and readiness evidence."
+    )
+
+    env_signal = sterile_ir_safe(row.get("environmental_drift_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Environmental Monitoring",
+        "Were there environmental or cleanroom drift signals connected to this CSP?",
+        f"Environmental drift status is {env_signal}.",
+        "/sterile-compounding/environmental-drift",
+        env_signal,
+        "Use Environmental Drift and Equipment / Room views to explain EM alerts, excursions, or review signals."
+    )
+
+    reg_signal = sterile_ir_safe(row.get("regulatory_impact_status", "UNKNOWN"))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Regulatory / Supplier Watch",
+        "Is there any regulatory, supplier, or external-watch signal affecting this CSP?",
+        f"Regulatory impact status is {reg_signal}.",
+        "/sterile-compounding/regulatory-impact",
+        reg_signal,
+        "Use regulatory impact/watch views where available, or explain that no linked watch signal exists."
+    )
+
+    recovery_status = sterile_ir_safe(recovery_row.get("projected_status", "UNKNOWN"))
+    next_action = sterile_ir_safe(recovery_row.get("next_best_action", ""))
+
+    sterile_ir_add_qa(
+        qa_rows,
+        record_id,
+        "Recovery Plan",
+        "If this CSP is not GREEN, what is the next closure action?",
+        f"Recovery projected status is {recovery_status}. Next best action: {next_action or 'No recovery action required.'}",
+        f"/sterile-compounding/closure-simulator/{record_id}",
+        recovery_status,
+        "Use the Closure Simulator and Recovery Plan to show what-if closure sequencing before records are changed."
+    )
+
+    return qa_rows
+
+
+def sterile_ir_expected_questions(row):
+    questions = [
+        "What is the overall assurance status?",
+        "Are there any no-release blockers?",
+        "Which evidence requirements are missing, rejected, or pending?",
+        "Is the audit pack complete?",
+        "Has governance sign-off been recorded?",
+        "Does the cryptographic dossier seal verify?",
+        "Can custody and handoff be explained?",
+        "Is SOP/formula version evidence controlled?",
+        "Are personnel competency records acceptable?",
+        "Are room/equipment/environmental conditions acceptable?",
+        "What is the recovery plan for any RED/YELLOW signals?"
+    ]
+
+    if sterile_ir_safe(row.get("regulatory_impact_status", "")).upper() in ["RED", "YELLOW"]:
+        questions.append("What regulatory or supplier-watch impact is affecting this CSP?")
+
+    return "; ".join(questions)
+
+
+def sterile_ir_evidence_focus(row):
+    focus = []
+
+    if sterile_ir_numeric(row.get("evidence_missing", 0), 0):
+        focus.append("Missing required evidence")
+    if sterile_ir_numeric(row.get("evidence_rejected", 0), 0):
+        focus.append("Rejected evidence")
+    if sterile_ir_safe(row.get("signoff_status", "")).upper() in ["NO SIGNOFF", "YELLOW", "RED", "UNKNOWN"]:
+        focus.append("Governance sign-off")
+    if sterile_ir_safe(row.get("latest_seal_verification", "")).upper() != "HASH MATCH":
+        focus.append("Dossier seal verification")
+    if sterile_ir_safe(row.get("custody_audit_status", "")).upper() != "GREEN":
+        focus.append("Custody / handoff")
+    if sterile_ir_safe(row.get("sop_drift_status", "")).upper() != "GREEN":
+        focus.append("SOP / formula version")
+    if sterile_ir_safe(row.get("personnel_drift_status", "")).upper() != "GREEN":
+        focus.append("Personnel competency")
+    if sterile_ir_safe(row.get("equipment_room_drift_status", "")).upper() != "GREEN":
+        focus.append("Equipment / room readiness")
+    if sterile_ir_safe(row.get("environmental_drift_status", "")).upper() != "GREEN":
+        focus.append("Environmental monitoring")
+
+    return "; ".join(focus) if focus else "Standard audit pack and master assurance evidence."
+
+
+def sterile_ir_build_registers():
+    sterile_ir_require_dependencies()
+
+    master_df = sterile_ir_build_master()
+    gate_df = sterile_ir_build_gate(master_df)
+    recovery_df = sterile_ir_build_recovery(master_df)
+
+    if master_df is None or master_df.empty:
+        empty_inspection = sterile_ir_pd.DataFrame(columns=STERILE_INSPECTION_READINESS_COLUMNS)
+        empty_qa = sterile_ir_pd.DataFrame(columns=STERILE_AUDITOR_QA_COLUMNS)
+        sterile_write_register(STERILE_INSPECTION_READINESS_REGISTER, empty_inspection, STERILE_INSPECTION_READINESS_COLUMNS)
+        sterile_write_register(STERILE_AUDITOR_QA_REGISTER, empty_qa, STERILE_AUDITOR_QA_COLUMNS)
+        return empty_inspection, empty_qa
+
+    inspection_rows = []
+    qa_rows = []
+
+    for _, master_row in master_df.iterrows():
+        row = master_row.to_dict()
+        record_id = sterile_ir_safe(row.get("record_id", ""))
+
+        gate_row = sterile_ir_latest(gate_df, record_id, "last_checked")
+        recovery_row = sterile_ir_latest(recovery_df, record_id, "last_checked")
+
+        master_status = sterile_ir_safe(row.get("master_assurance_status", "UNKNOWN"))
+        master_score = sterile_ir_numeric(row.get("master_assurance_score", 0), 0)
+        gate_status = sterile_ir_safe(gate_row.get("gate_status", "UNKNOWN"))
+        projected_status = sterile_ir_safe(recovery_row.get("projected_status", master_status))
+        projected_score = sterile_ir_numeric(recovery_row.get("projected_score", master_score), master_score)
+
+        criticals = sterile_ir_numeric(row.get("critical_blocker_count", 0), 0)
+        reviews = sterile_ir_numeric(row.get("review_signal_count", 0), 0)
+
+        inspection_score = master_score
+
+        if gate_status.upper() == "RED":
+            inspection_score = min(inspection_score, 50)
+        elif gate_status.upper() == "YELLOW":
+            inspection_score = min(inspection_score, 85)
+
+        if sterile_ir_safe(row.get("latest_seal_verification", "")).upper() == "HASH MISMATCH":
+            inspection_score = min(inspection_score, 45)
+
+        if criticals:
+            inspection_score = max(0, inspection_score - criticals * 2)
+
+        if reviews:
+            inspection_score = max(0, inspection_score - reviews)
+
+        if inspection_score >= 90 and master_status.upper() == "GREEN" and gate_status.upper() == "GREEN":
+            inspection_status = "GREEN"
+            inspection_decision = "INSPECTION READY FROM GOVERNANCE VIEW"
+        elif inspection_score >= 60 and master_status.upper() != "RED" and gate_status.upper() != "RED":
+            inspection_status = "YELLOW"
+            inspection_decision = "INSPECTION REVIEW PACK NEEDED BEFORE RELIANCE"
+        else:
+            inspection_status = "RED"
+            inspection_decision = "INSPECTION PACK NOT READY / CLOSURE REQUIRED"
+
+        auditor_summary = (
+            f"CSP {record_id} has Master Assurance {master_status} with score {master_score}. "
+            f"No-release gate is {gate_status}. Projected recovery status is {projected_status} "
+            f"with projected score {projected_score}. Critical blockers: {criticals}; review signals: {reviews}."
+        )
+
+        source_routes = [
+            f"/sterile-compounding/inspection-readiness/{record_id}",
+            f"/sterile-compounding/master-assurance/{record_id}",
+            "/sterile-compounding/no-release-composite",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/release-dossier/{record_id}",
+            f"/sterile-compounding/signoff/{record_id}",
+            f"/sterile-compounding/seal/{record_id}",
+            f"/sterile-compounding/closure-simulator/{record_id}",
+        ]
+
+        payload = {
+            "readiness_id": sterile_ir_make_id("ST-INSP", record_id, inspection_status, inspection_score),
+            "record_id": record_id,
+            "csp_name": sterile_ir_safe(row.get("csp_name", "")),
+            "batch_or_rx_id": sterile_ir_safe(row.get("batch_or_rx_id", "")),
+            "facility_type": sterile_ir_safe(row.get("facility_type", "")),
+            "master_assurance_status": master_status,
+            "master_assurance_score": master_score,
+            "no_release_gate_status": gate_status,
+            "audit_pack_status": sterile_ir_safe(row.get("audit_pack_status", "")),
+            "signoff_status": sterile_ir_safe(row.get("signoff_status", "")),
+            "seal_health_status": sterile_ir_safe(row.get("seal_health_status", "")),
+            "latest_seal_verification": sterile_ir_safe(row.get("latest_seal_verification", "")),
+            "custody_audit_status": sterile_ir_safe(row.get("custody_audit_status", "")),
+            "sop_drift_status": sterile_ir_safe(row.get("sop_drift_status", "")),
+            "personnel_drift_status": sterile_ir_safe(row.get("personnel_drift_status", "")),
+            "equipment_room_drift_status": sterile_ir_safe(row.get("equipment_room_drift_status", "")),
+            "prework_gate_status": sterile_ir_safe(row.get("prework_gate_status", "")),
+            "environmental_drift_status": sterile_ir_safe(row.get("environmental_drift_status", "")),
+            "regulatory_impact_status": sterile_ir_safe(row.get("regulatory_impact_status", "")),
+            "recovery_projected_status": projected_status,
+            "recovery_projected_score": projected_score,
+            "next_best_action": sterile_ir_safe(recovery_row.get("next_best_action", "")) or "No recovery action required.",
+            "inspection_status": inspection_status,
+            "inspection_score": inspection_score,
+            "inspection_decision": inspection_decision,
+            "auditor_summary": auditor_summary,
+            "expected_questions": sterile_ir_expected_questions(row),
+            "required_evidence_focus": sterile_ir_evidence_focus(row),
+            "source_routes": "; ".join(source_routes),
+            "last_checked": sterile_now(),
+        }
+
+        payload["inspection_hash"] = sterile_hash_text(
+            sterile_ir_json.dumps(payload, sort_keys=True)
+        )
+
+        inspection_rows.append(payload)
+        qa_rows.extend(sterile_ir_questions_for_record(row, gate_row, recovery_row))
+
+    inspection_df = sterile_ir_pd.DataFrame(inspection_rows)
+    inspection_df = sterile_ensure_cols(inspection_df, STERILE_INSPECTION_READINESS_COLUMNS)
+
+    qa_df = sterile_ir_pd.DataFrame(qa_rows)
+    qa_df = sterile_ensure_cols(qa_df, STERILE_AUDITOR_QA_COLUMNS)
+
+    sterile_write_register(STERILE_INSPECTION_READINESS_REGISTER, inspection_df, STERILE_INSPECTION_READINESS_COLUMNS)
+    sterile_write_register(STERILE_AUDITOR_QA_REGISTER, qa_df, STERILE_AUDITOR_QA_COLUMNS)
+
+    return inspection_df, qa_df
+
+
+@app.route("/sterile-compounding/inspection-readiness")
+def sterile_compounding_inspection_readiness():
+    inspection_df, qa_df = sterile_ir_build_registers()
+
+    status_filter = sterile_ir_safe(sterile_ir_request.args.get("status", ""))
+    filtered = inspection_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["inspection_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["inspection_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["inspection_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["inspection_status"] == "RED").sum()) if total else 0
+    qa_count = len(qa_df)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Inspection Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["inspection_status", "inspection_score"], ascending=[False, True]).iterrows():
+            rid = sterile_ir_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ir_status_badge(row.get("inspection_status", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-readiness/{rid}">{rid}</a></td>
+                <td>{sterile_ir_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_ir_safe(row.get("inspection_score", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("master_assurance_status", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("no_release_gate_status", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("signoff_status", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("seal_health_status", ""))}</td>
+                <td>{sterile_ir_status_badge(row.get("custody_audit_status", ""))}</td>
+                <td>{sterile_ir_safe(row.get("inspection_decision", ""))}</td>
+                <td>{sterile_ir_safe(row.get("required_evidence_focus", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspection readiness rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Readiness Bundle</h1>
+        <p>
+            Auditor-facing readiness layer that consolidates Master Assurance, No-Release Gate, Audit Pack,
+            Sign-Off, Dossier Seal, Custody, SOP, Personnel, Equipment/Room, Environmental, Regulatory,
+            and Recovery Plan signals into one inspection summary.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Inspection Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Auditor Q&A Rows</div><div class="st-value">{qa_count}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Filters</h2>
+        <form method="GET" action="/sterile-compounding/inspection-readiness">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Inspection Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-qa-pack">Auditor Q&A Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness/export">Export Inspection Readiness</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Readiness Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Inspection</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>Master</th>
+                        <th>No-Release</th>
+                        <th>Audit</th>
+                        <th>Sign-Off</th>
+                        <th>Seal</th>
+                        <th>Custody</th>
+                        <th>Decision</th>
+                        <th>Evidence Focus</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTION-READINESS",
+            "STERILE_INSPECTION_READINESS_VIEW",
+            "Sterile inspection readiness bundle viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/inspection-readiness",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Inspection Readiness Bundle", body)
+
+
+@app.route("/sterile-compounding/inspection-readiness/<record_id>")
+def sterile_compounding_inspection_readiness_record(record_id):
+    inspection_df, qa_df = sterile_ir_build_registers()
+    record_id = sterile_ir_safe(record_id)
+
+    match = inspection_df[inspection_df["record_id"].astype(str) == str(record_id)] if not inspection_df.empty else inspection_df
+
+    if match.empty:
+        return sterile_ir_Response("Inspection readiness record not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    record_qa = qa_df[qa_df["record_id"].astype(str) == str(record_id)].copy() if not qa_df.empty else qa_df
+
+    detail_rows = ""
+    for key in STERILE_INSPECTION_READINESS_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ir_safe(row.get(key, ""))
+
+        if key == "inspection_status":
+            value = sterile_ir_status_badge(value)
+        elif key == "inspection_hash":
+            value = f"<code>{value}</code>"
+        elif key == "source_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    qa_rows = ""
+    if not record_qa.empty:
+        for _, qa in record_qa.sort_values(by=["question_status", "question_domain"], ascending=[False, True]).iterrows():
+            route = sterile_ir_safe(qa.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+            qa_rows += f"""
+            <tr>
+                <td>{sterile_ir_status_badge(qa.get("question_status", ""))}</td>
+                <td>{sterile_ir_safe(qa.get("question_domain", ""))}</td>
+                <td>{sterile_ir_safe(qa.get("auditor_question", ""))}</td>
+                <td>{sterile_ir_safe(qa.get("answer_summary", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ir_safe(qa.get("recommended_response", ""))}</td>
+            </tr>
+            """
+    else:
+        qa_rows = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No Q&A rows found for this CSP.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Readiness Passport: {record_id}</h1>
+        <p>
+            Auditor-facing readiness bundle for this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_ir_status_badge(row.get("inspection_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ir_safe(row.get("inspection_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Readiness Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Auditor Q&A for This CSP</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Domain</th>
+                        <th>Auditor Question</th>
+                        <th>Answer Summary</th>
+                        <th>Evidence Route</th>
+                        <th>Recommended Response</th>
+                    </tr>
+                </thead>
+                <tbody>{qa_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/master-assurance/{record_id}">Master Assurance</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier/{record_id}">Release Dossier</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator/{record_id}">Closure Simulator</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness">Back to Inspection Readiness</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_INSPECTION_READINESS_RECORD_VIEW",
+            "Record-level sterile inspection readiness passport viewed",
+            actor="system",
+            source_route="/sterile-compounding/inspection-readiness/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Inspection Readiness - {record_id}", body)
+
+
+@app.route("/sterile-compounding/auditor-qa-pack")
+def sterile_compounding_auditor_qa_pack():
+    inspection_df, qa_df = sterile_ir_build_registers()
+
+    status_filter = sterile_ir_safe(sterile_ir_request.args.get("status", ""))
+    filtered = qa_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["question_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["question_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["question_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["question_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Q&A Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, qa in filtered.sort_values(by=["question_status", "record_id", "question_domain"], ascending=[False, True, True]).iterrows():
+            rid = sterile_ir_safe(qa.get("record_id", ""))
+            route = sterile_ir_safe(qa.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ir_status_badge(qa.get("question_status", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-readiness/{rid}">{rid}</a></td>
+                <td>{sterile_ir_safe(qa.get("question_domain", ""))}</td>
+                <td>{sterile_ir_safe(qa.get("auditor_question", ""))}</td>
+                <td>{sterile_ir_safe(qa.get("answer_summary", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ir_safe(qa.get("recommended_response", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+                No auditor Q&A rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Auditor Q&A Pack</h1>
+        <p>
+            Inspection-question register generated from sterile governance signals. Each question links to the
+            route that supports the answer.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Q&A Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Q&A Filters</h2>
+        <form method="GET" action="/sterile-compounding/auditor-qa-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Question Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-qa-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness">Inspection Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-qa-pack/export">Export Q&A Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Auditor Q&A Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Domain</th>
+                        <th>Question</th>
+                        <th>Answer Summary</th>
+                        <th>Evidence Route</th>
+                        <th>Recommended Response</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "AUDITOR-QA-PACK",
+            "STERILE_AUDITOR_QA_PACK_VIEW",
+            "Sterile auditor Q&A pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/auditor-qa-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Auditor Q&A Pack", body)
+
+
+@app.route("/sterile-compounding/inspection-readiness/export")
+def sterile_compounding_inspection_readiness_export():
+    inspection_df, qa_df = sterile_ir_build_registers()
+
+    if inspection_df.empty:
+        inspection_df = sterile_ir_pd.DataFrame(columns=STERILE_INSPECTION_READINESS_COLUMNS)
+
+    csv_data = inspection_df.to_csv(index=False)
+
+    return sterile_ir_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspection_readiness_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/auditor-qa-pack/export")
+def sterile_compounding_auditor_qa_pack_export():
+    inspection_df, qa_df = sterile_ir_build_registers()
+
+    if qa_df.empty:
+        qa_df = sterile_ir_pd.DataFrame(columns=STERILE_AUDITOR_QA_COLUMNS)
+
+    csv_data = qa_df.to_csv(index=False)
+
+    return sterile_ir_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_auditor_qa_pack_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_inspection_readiness_dashboard_injection(response):
+    try:
+        if sterile_ir_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+            "/sterile-compounding/closure-simulator",
+            "/sterile-compounding/recovery-plan",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-inspection-readiness-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-inspection-readiness-panel">
+            <h2>Inspection Readiness Bundle + Auditor Q&A Pack</h2>
+            <p class="st-note">
+                Converts sterile governance signals into auditor-facing readiness summaries, expected inspection
+                questions, answer summaries, evidence routes, and recovery focus areas.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/inspection-readiness">Inspection Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-qa-pack">Auditor Q&A Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness/export">Export Inspection Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-qa-pack/export">Export Q&A Pack</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile inspection readiness dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
