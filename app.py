@@ -52907,5 +52907,295 @@ def sterile_compounding_poc_results_dashboard_injection(response):
         print(f"Sterile POC results dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_COMMAND_CENTER_ENTRY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 42: Command Center Entry Bridge
+#
+# New Routes:
+#   /sterile-compounding/command-center-entry
+#   /sterile-compounding/command-center-entry/export
+#
+# New Register:
+#   sterile_compounding_command_center_entry.csv
+#
+# Boundary:
+#   This adds a small sterile vertical entry bridge into /command-center
+#   using after_request injection. It does not overwrite the existing
+#   /command-center route and does not touch Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI, Knowledge,
+#   Operational Lineage, or other protected modules.
+# ============================================================
+
+try:
+    import pandas as sterile_cce_pd
+    import json as sterile_cce_json
+    from flask import request as sterile_cce_request
+    from flask import Response as sterile_cce_Response
+except Exception as sterile_cce_import_error:
+    raise RuntimeError(f"Sterile Command Center entry import failed: {sterile_cce_import_error}")
+
+
+STERILE_COMMAND_CENTER_ENTRY_REGISTER = "sterile_compounding_command_center_entry.csv"
+
+STERILE_COMMAND_CENTER_ENTRY_COLUMNS = [
+    "entry_id",
+    "entry_name",
+    "entry_status",
+    "entry_route",
+    "primary_demo_route",
+    "readiness_route",
+    "evidence_packet_route",
+    "maturity_route",
+    "integration_route",
+    "module_scope",
+    "leadership_message",
+    "demo_value",
+    "governance_boundary",
+    "protected_area_impact",
+    "recommended_next_click",
+    "last_checked",
+    "entry_hash"
+]
+
+
+def sterile_cce_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Command Center entry dependencies missing: " + ", ".join(missing))
+
+
+def sterile_cce_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_cce_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_cce_badge(status):
+    status = sterile_cce_safe(status).upper()
+
+    if status in ["GREEN", "ACTIVE", "READY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_cce_build_entry():
+    sterile_cce_require_dependencies()
+
+    payload = {
+        "entry_id": sterile_cce_make_id("ST-CC-ENTRY", "compound-sterile-assurancelayer"),
+        "entry_name": "Compound Sterile AssuranceLayer™",
+        "entry_status": "GREEN",
+        "entry_route": "/sterile-compounding",
+        "primary_demo_route": "/sterile-compounding/demo-walkthrough",
+        "readiness_route": "/sterile-compounding/go-live-readiness",
+        "evidence_packet_route": "/sterile-compounding/poc-evidence-packet",
+        "maturity_route": "/sterile-compounding/maturity-model",
+        "integration_route": "/sterile-compounding/integration-blueprint",
+        "module_scope": "Sterile compounding evidence governance, inspection readiness, assurance scoring, POC planning, and connector governance blueprint.",
+        "leadership_message": "This vertical shows how AssuranceLayer can turn sterile compounding records into governed evidence, inspection packets, readiness gates, and future integration plans without replacing validated systems.",
+        "demo_value": "One controlled entry point from Command Center into the sterile vertical, with demo walkthrough, presentation lock, go-live readiness, POC evidence, and integration roadmap.",
+        "governance_boundary": "Assurance support only. Not a QA release engine, QMS replacement, pharmacy release decision, validated source of truth, or production connector.",
+        "protected_area_impact": "No existing Command Center route overwrite. This phase injects an entry panel only and does not modify Monday Demo, Release Notes, Platform Health, ServiceNow, Entra, CI, Knowledge, Operational Lineage, or Manufacturing/Wole.",
+        "recommended_next_click": "/sterile-compounding/demo-walkthrough",
+        "last_checked": sterile_now(),
+    }
+
+    payload["entry_hash"] = sterile_hash_text(
+        sterile_cce_json.dumps(payload, sort_keys=True)
+    )
+
+    df = sterile_cce_pd.DataFrame([payload])
+    df = df.reindex(columns=STERILE_COMMAND_CENTER_ENTRY_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_COMMAND_CENTER_ENTRY_REGISTER,
+        df,
+        STERILE_COMMAND_CENTER_ENTRY_COLUMNS
+    )
+
+    return df
+
+
+@app.route("/sterile-compounding/command-center-entry")
+def sterile_compounding_command_center_entry():
+    entry_df = sterile_cce_build_entry()
+    row = entry_df.iloc[0].to_dict() if not entry_df.empty else {}
+
+    route_buttons = f"""
+        <a class="st-button" href="{sterile_cce_safe(row.get("entry_route", ""))}">Open Sterile Home</a>
+        <a class="st-button st-button-dark" href="{sterile_cce_safe(row.get("primary_demo_route", ""))}">Demo Walkthrough</a>
+        <a class="st-button st-button-dark" href="{sterile_cce_safe(row.get("readiness_route", ""))}">Go-Live Readiness</a>
+        <a class="st-button st-button-dark" href="{sterile_cce_safe(row.get("evidence_packet_route", ""))}">POC Evidence Packet</a>
+        <a class="st-button st-button-dark" href="{sterile_cce_safe(row.get("maturity_route", ""))}">Maturity Model</a>
+        <a class="st-button st-button-dark" href="{sterile_cce_safe(row.get("integration_route", ""))}">Integration Blueprint</a>
+    """
+
+    detail_rows = ""
+    for key in STERILE_COMMAND_CENTER_ENTRY_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_cce_safe(row.get(key, ""))
+
+        if key == "entry_status":
+            value = sterile_cce_badge(value)
+        elif key == "entry_hash":
+            value = f"<code>{value}</code>"
+        elif key.endswith("_route") or key == "entry_route":
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Command Center Entry Bridge</h1>
+        <p>
+            Controlled entry bridge for exposing Compound Sterile AssuranceLayer™ from the global Command Center
+            without overwriting the existing Command Center route.
+        </p>
+        <div style="margin-top:16px;">{sterile_cce_badge(row.get("entry_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_cce_safe(row.get("entry_name", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Open Sterile Vertical</h2>
+        <p class="st-note">{sterile_cce_safe(row.get("leadership_message", ""))}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            {route_buttons}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Entry Register Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Protected Boundary</h2>
+        <p>{sterile_cce_safe(row.get("protected_area_impact", ""))}</p>
+        <p><b>Governance boundary:</b> {sterile_cce_safe(row.get("governance_boundary", ""))}</p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "COMMAND-CENTER-ENTRY",
+            "STERILE_COMMAND_CENTER_ENTRY_VIEW",
+            "Sterile Command Center entry bridge viewed",
+            actor="system",
+            source_route="/sterile-compounding/command-center-entry",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Command Center Entry Bridge", body)
+
+
+@app.route("/sterile-compounding/command-center-entry/export")
+def sterile_compounding_command_center_entry_export():
+    entry_df = sterile_cce_build_entry()
+
+    if entry_df.empty:
+        entry_df = sterile_cce_pd.DataFrame(columns=STERILE_COMMAND_CENTER_ENTRY_COLUMNS)
+
+    csv_data = entry_df.to_csv(index=False)
+
+    return sterile_cce_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_command_center_entry_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_command_center_entry_injection(response):
+    try:
+        if sterile_cce_request.path != "/command-center":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-command-center-entry-panel" in html:
+            return response
+
+        panel = """
+        <section id="sterile-command-center-entry-panel" style="margin:24px 0; padding:22px; border:1px solid #dbeafe; border-radius:18px; background:linear-gradient(135deg,#eff6ff,#ffffff); box-shadow:0 8px 24px rgba(15,23,42,0.08);">
+            <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+                <div style="max-width:850px;">
+                    <div style="font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#1d4ed8;">New AssuranceLayer Vertical</div>
+                    <h2 style="margin:8px 0 8px 0; font-size:28px; line-height:1.15;">Compound Sterile AssuranceLayer™</h2>
+                    <p style="margin:0; color:#334155; font-size:15px; line-height:1.55;">
+                        Sterile compounding evidence governance, inspection readiness, POC evidence packeting,
+                        integration blueprinting, and maturity roadmap. This entry is injected safely and does not
+                        overwrite the existing Command Center route.
+                    </p>
+                </div>
+                <div style="font-weight:900; color:#166534; background:#dcfce7; border:1px solid #86efac; padding:8px 12px; border-radius:999px;">GREEN</div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;">
+                <a href="/sterile-compounding" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#1d4ed8; color:#fff; text-decoration:none; font-weight:800;">Open Sterile Home</a>
+                <a href="/sterile-compounding/demo-walkthrough" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Demo Walkthrough</a>
+                <a href="/sterile-compounding/go-live-readiness" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Go-Live Readiness</a>
+                <a href="/sterile-compounding/poc-results-summary" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">POC Results</a>
+                <a href="/sterile-compounding/integration-blueprint" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Integration Blueprint</a>
+                <a href="/sterile-compounding/command-center-entry" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#ffffff; color:#1d4ed8; border:1px solid #bfdbfe; text-decoration:none; font-weight:800;">Entry Register</a>
+            </div>
+            <p style="margin:14px 0 0 0; color:#64748b; font-size:13px;">
+                Boundary: this is an entry bridge only. It does not modify Monday Demo, Release Notes, Platform Health,
+                ServiceNow, Entra, CI, Knowledge, Operational Lineage, or Manufacturing/Wole.
+            </p>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Command Center entry injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
