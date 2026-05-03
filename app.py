@@ -28938,5 +28938,535 @@ def sterile_compounding_dossier_seal_dashboard_injection(response):
         print(f"Sterile dossier seal dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_SEAL_HEALTH_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 16: Dossier Seal Health + Executive Integration
+#
+# New Routes:
+#   /sterile-compounding/seal-health
+#   /sterile-compounding/seal-health/export
+#
+# New Register:
+#   sterile_compounding_seal_health_register.csv
+#
+# Integrates seal summary panels into:
+#   /sterile-compounding/control-tower
+#   /sterile-compounding/executive-pack
+#   /sterile-compounding/module-health
+#   /sterile-compounding/audit-pack
+#   /sterile-compounding/signoff-board
+#
+# Safety:
+#   - Does not overwrite existing routes
+#   - Uses response injection only for existing pages
+#   - Does not touch protected Manufacturing/Wole, ServiceNow, Entra,
+#     CI Candidate Factory, Knowledge Governance, Operational Lineage,
+#     Release Notes, Monday Demo, Command Center, or Platform Health
+# ============================================================
+
+try:
+    import pandas as sterile_sh_pd
+    import json as sterile_sh_json
+    from flask import request as sterile_sh_request
+    from flask import Response as sterile_sh_Response
+except Exception as sterile_sh_import_error:
+    raise RuntimeError(f"Sterile seal health import failed: {sterile_sh_import_error}")
+
+
+STERILE_SEAL_HEALTH_REGISTER = "sterile_compounding_seal_health_register.csv"
+
+STERILE_SEAL_HEALTH_COLUMNS = [
+    "health_id",
+    "record_id",
+    "csp_name",
+    "governance_status",
+    "audit_pack_status",
+    "latest_seal_id",
+    "latest_seal_status",
+    "latest_seal_timestamp",
+    "latest_seal_hash",
+    "latest_verification_status",
+    "latest_verification_timestamp",
+    "seal_age_signal",
+    "seal_health_status",
+    "seal_health_decision",
+    "recommended_action",
+    "last_checked",
+    "seal_health_hash"
+]
+
+
+def sterile_sh_require_dependencies():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+        "STERILE_DOSSIER_SEAL_COLUMNS",
+        "STERILE_DOSSIER_SEAL_VERIFICATION_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile seal health dependencies missing: " + ", ".join(missing))
+
+
+def sterile_sh_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_sh_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_sh_read_optional(register_name, columns):
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, columns)
+    except Exception:
+        pass
+    return sterile_sh_pd.DataFrame(columns=columns)
+
+
+def sterile_sh_read_seals():
+    return sterile_sh_read_optional(
+        "sterile_compounding_dossier_seal_register.csv",
+        STERILE_DOSSIER_SEAL_COLUMNS
+    )
+
+
+def sterile_sh_read_verifications():
+    return sterile_sh_read_optional(
+        "sterile_compounding_dossier_seal_verification_register.csv",
+        STERILE_DOSSIER_SEAL_VERIFICATION_COLUMNS
+    )
+
+
+def sterile_sh_read_audit_packs():
+    try:
+        builder = globals().get("sterile_pack_build_register")
+        if callable(builder):
+            df = builder()
+            if df is not None and hasattr(df, "columns"):
+                return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_sh_read_optional(
+        "sterile_compounding_audit_pack_register.csv",
+        globals().get("STERILE_AUDIT_PACK_COLUMNS", [])
+    )
+
+
+def sterile_sh_latest_by_record(df, record_id, timestamp_col):
+    if df is None or df.empty or "record_id" not in df.columns:
+        return None
+
+    match = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return None
+
+    try:
+        match = match.sort_values(by=timestamp_col, ascending=False)
+    except Exception:
+        pass
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_sh_status_badge(status):
+    status = sterile_sh_safe(status).upper()
+
+    if status in ["GREEN", "SEALED", "HASH MATCH", "HEALTHY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "NO VERIFICATION", "NO SEAL", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "HASH MISMATCH", "SEAL BROKEN", "FAILED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_sh_build_health():
+    sterile_sh_require_dependencies()
+
+    csp_df = sterile_prepare_dashboard_df()
+    seal_df = sterile_sh_read_seals()
+    verification_df = sterile_sh_read_verifications()
+    pack_df = sterile_sh_read_audit_packs()
+
+    if csp_df.empty:
+        empty_df = sterile_sh_pd.DataFrame(columns=STERILE_SEAL_HEALTH_COLUMNS)
+        sterile_write_register(STERILE_SEAL_HEALTH_REGISTER, empty_df, STERILE_SEAL_HEALTH_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, csp in csp_df.iterrows():
+        record_id = sterile_sh_safe(csp.get("record_id", ""))
+        latest_seal = sterile_sh_latest_by_record(seal_df, record_id, "seal_timestamp")
+        latest_ver = sterile_sh_latest_by_record(verification_df, record_id, "verification_timestamp")
+        latest_pack = sterile_sh_latest_by_record(pack_df, record_id, "created_at")
+
+        latest_seal_id = ""
+        latest_seal_status = "NO SEAL"
+        latest_seal_timestamp = ""
+        latest_seal_hash = ""
+
+        if latest_seal:
+            latest_seal_id = sterile_sh_safe(latest_seal.get("seal_id", ""))
+            latest_seal_status = sterile_sh_safe(latest_seal.get("seal_status", "")) or "YELLOW"
+            latest_seal_timestamp = sterile_sh_safe(latest_seal.get("seal_timestamp", ""))
+            latest_seal_hash = sterile_sh_safe(latest_seal.get("dossier_seal_hash", ""))
+
+        latest_ver_status = "NO VERIFICATION"
+        latest_ver_timestamp = ""
+
+        if latest_ver:
+            latest_ver_status = sterile_sh_safe(latest_ver.get("verification_status", ""))
+            latest_ver_timestamp = sterile_sh_safe(latest_ver.get("verification_timestamp", ""))
+
+        audit_pack_status = ""
+        if latest_pack:
+            audit_pack_status = sterile_sh_safe(latest_pack.get("audit_pack_status", ""))
+
+        if latest_seal_timestamp:
+            seal_age_signal = "BASELINE EXISTS"
+        else:
+            seal_age_signal = "NO BASELINE SEAL"
+
+        recommended_action = "No seal-health action required."
+        health_status = "GREEN"
+        health_decision = "SEAL HEALTHY"
+
+        if not latest_seal:
+            health_status = "YELLOW"
+            health_decision = "NO BASELINE SEAL"
+            recommended_action = "Create a dossier baseline seal for this CSP."
+        elif latest_ver_status == "HASH MISMATCH":
+            health_status = "RED"
+            health_decision = "SEAL VERIFICATION FAILED"
+            recommended_action = "Investigate changed dossier components and reseal only after governance review."
+        elif latest_ver_status == "NO VERIFICATION":
+            health_status = "YELLOW"
+            health_decision = "SEAL EXISTS / VERIFICATION NOT YET PERFORMED"
+            recommended_action = "Run dossier seal verification."
+        elif latest_ver_status == "HASH MATCH":
+            if sterile_sh_safe(audit_pack_status).upper() == "RED":
+                health_status = "YELLOW"
+                health_decision = "SEAL MATCHES BUT AUDIT PACK IS RED"
+                recommended_action = "Resolve audit-pack issues and reseal after closure."
+            else:
+                health_status = "GREEN"
+                health_decision = "SEAL VERIFIED"
+                recommended_action = "No seal-health action required."
+        else:
+            health_status = "YELLOW"
+            health_decision = "SEAL STATUS NEEDS REVIEW"
+            recommended_action = "Review seal and verification history."
+
+        payload = {
+            "health_id": sterile_sh_make_id("ST-SHLTH", record_id, latest_seal_hash, latest_ver_status),
+            "record_id": record_id,
+            "csp_name": sterile_sh_safe(csp.get("csp_name", "")),
+            "governance_status": sterile_sh_safe(csp.get("governance_status", "")),
+            "audit_pack_status": audit_pack_status,
+            "latest_seal_id": latest_seal_id,
+            "latest_seal_status": latest_seal_status,
+            "latest_seal_timestamp": latest_seal_timestamp,
+            "latest_seal_hash": latest_seal_hash,
+            "latest_verification_status": latest_ver_status,
+            "latest_verification_timestamp": latest_ver_timestamp,
+            "seal_age_signal": seal_age_signal,
+            "seal_health_status": health_status,
+            "seal_health_decision": health_decision,
+            "recommended_action": recommended_action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["seal_health_hash"] = sterile_hash_text(
+            sterile_sh_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    health_df = sterile_sh_pd.DataFrame(rows)
+    health_df = sterile_ensure_cols(health_df, STERILE_SEAL_HEALTH_COLUMNS)
+    sterile_write_register(STERILE_SEAL_HEALTH_REGISTER, health_df, STERILE_SEAL_HEALTH_COLUMNS)
+
+    return health_df
+
+
+def sterile_sh_summary_counts():
+    health_df = sterile_sh_build_health()
+
+    total = len(health_df)
+    green = int((health_df["seal_health_status"] == "GREEN").sum()) if total else 0
+    yellow = int((health_df["seal_health_status"] == "YELLOW").sum()) if total else 0
+    red = int((health_df["seal_health_status"] == "RED").sum()) if total else 0
+    no_seal = int((health_df["latest_seal_status"] == "NO SEAL").sum()) if total else 0
+    no_verification = int((health_df["latest_verification_status"] == "NO VERIFICATION").sum()) if total else 0
+    mismatches = int((health_df["latest_verification_status"] == "HASH MISMATCH").sum()) if total else 0
+    matches = int((health_df["latest_verification_status"] == "HASH MATCH").sum()) if total else 0
+
+    if red or mismatches:
+        overall_status = "RED"
+        overall_decision = "DOSSIER SEAL HEALTH REQUIRES INVESTIGATION"
+    elif yellow or no_seal or no_verification:
+        overall_status = "YELLOW"
+        overall_decision = "DOSSIER SEAL HEALTH NEEDS COMPLETION / VERIFICATION"
+    else:
+        overall_status = "GREEN"
+        overall_decision = "DOSSIER SEAL HEALTH ACCEPTABLE"
+
+    return {
+        "health_df": health_df,
+        "total": total,
+        "green": green,
+        "yellow": yellow,
+        "red": red,
+        "no_seal": no_seal,
+        "no_verification": no_verification,
+        "mismatches": mismatches,
+        "matches": matches,
+        "overall_status": overall_status,
+        "overall_decision": overall_decision,
+    }
+
+
+@app.route("/sterile-compounding/seal-health")
+def sterile_compounding_seal_health():
+    summary = sterile_sh_summary_counts()
+    health_df = summary["health_df"]
+
+    status_filter = sterile_sh_safe(sterile_sh_request.args.get("status", ""))
+    filtered = health_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["seal_health_status"].astype(str) == status_filter]
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["seal_health_status", "record_id"], ascending=[False, True]).iterrows():
+            rid = sterile_sh_safe(row.get("record_id", ""))
+            seal_id = sterile_sh_safe(row.get("latest_seal_id", ""))
+
+            seal_link = f'<a href="/sterile-compounding/seal/{rid}">{seal_id}</a>' if seal_id else f'<a href="/sterile-compounding/seal/{rid}">Create Seal</a>'
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sh_status_badge(row.get("seal_health_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_sh_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_sh_status_badge(row.get("audit_pack_status", ""))}</td>
+                <td>{seal_link}</td>
+                <td>{sterile_sh_safe(row.get("latest_seal_timestamp", ""))}</td>
+                <td>{sterile_sh_status_badge(row.get("latest_verification_status", ""))} {sterile_sh_safe(row.get("latest_verification_status", ""))}</td>
+                <td>{sterile_sh_safe(row.get("seal_health_decision", ""))}</td>
+                <td>{sterile_sh_safe(row.get("recommended_action", ""))}</td>
+                <td><a href="/sterile-compounding/seal-verify?record_id={rid}">Verify</a></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No seal-health rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Dossier Seal Health</h1>
+        <p>
+            Health view for cryptographic dossier seals. It shows which CSPs have baseline seals,
+            which have been verified, which are missing verification, and which have hash mismatches.
+        </p>
+        <div style="margin-top:16px;">{sterile_sh_status_badge(summary["overall_status"])}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {summary["overall_decision"]}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">CSP Seal Health Rows</div><div class="st-value">{summary["total"]}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{summary["green"]}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{summary["yellow"]}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{summary["red"]}</div></div>
+        <div class="st-card"><div class="st-label">No Seal</div><div class="st-value">{summary["no_seal"]}</div></div>
+        <div class="st-card"><div class="st-label">No Verification</div><div class="st-value">{summary["no_verification"]}</div></div>
+        <div class="st-card"><div class="st-label">Hash Matches</div><div class="st-value">{summary["matches"]}</div></div>
+        <div class="st-card"><div class="st-label">Hash Mismatches</div><div class="st-value">{summary["mismatches"]}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Seal Health Filters</h2>
+        <form method="GET" action="/sterile-compounding/seal-health">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Seal Health Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/seal-health">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/seal-ledger">Seal Ledger</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/seal-verify">Verify Seals</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/seal-health/export">Export Seal Health</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dossier Seal Health Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Health</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Audit Pack</th>
+                        <th>Latest Seal</th>
+                        <th>Seal Timestamp</th>
+                        <th>Verification</th>
+                        <th>Health Decision</th>
+                        <th>Action</th>
+                        <th>Verify</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "SEAL-HEALTH",
+            "STERILE_SEAL_HEALTH_VIEW",
+            "Sterile dossier seal health viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/seal-health",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Dossier Seal Health", body)
+
+
+@app.route("/sterile-compounding/seal-health/export")
+def sterile_compounding_seal_health_export():
+    health_df = sterile_sh_build_health()
+
+    if health_df.empty:
+        health_df = sterile_sh_pd.DataFrame(columns=STERILE_SEAL_HEALTH_COLUMNS)
+
+    csv_data = health_df.to_csv(index=False)
+
+    return sterile_sh_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_seal_health_export.csv"}
+    )
+
+
+def sterile_sh_summary_panel():
+    s = sterile_sh_summary_counts()
+
+    return f"""
+    <section class="st-panel" id="sterile-seal-health-integration-panel">
+        <h2>Dossier Seal Health + Executive Integration</h2>
+        <p class="st-note">
+            Tracks whether sterile compounding dossiers have cryptographic baseline seals,
+            whether those seals have been verified, and whether any dossier components changed after sealing.
+        </p>
+        <div>{sterile_sh_status_badge(s["overall_status"])} <b>{s["overall_decision"]}</b></div>
+        <div class="st-cards" style="margin-top:14px;">
+            <div class="st-card"><div class="st-label">Seal Health Rows</div><div class="st-value">{s["total"]}</div></div>
+            <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{s["green"]}</div></div>
+            <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{s["yellow"]}</div></div>
+            <div class="st-card"><div class="st-label">RED</div><div class="st-value">{s["red"]}</div></div>
+            <div class="st-card"><div class="st-label">No Seal</div><div class="st-value">{s["no_seal"]}</div></div>
+            <div class="st-card"><div class="st-label">No Verification</div><div class="st-value">{s["no_verification"]}</div></div>
+            <div class="st-card"><div class="st-label">Hash Matches</div><div class="st-value">{s["matches"]}</div></div>
+            <div class="st-card"><div class="st-label">Hash Mismatches</div><div class="st-value">{s["mismatches"]}</div></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            <a class="st-button" href="/sterile-compounding/seal-health">Seal Health</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/seal-ledger">Seal Ledger</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/seal-verify">Verify Seals</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/seal-health/export">Export Seal Health</a>
+        </div>
+    </section>
+    """
+
+
+@app.after_request
+def sterile_compounding_seal_health_summary_injection(response):
+    try:
+        if sterile_sh_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/signoff-board",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-seal-health-integration-panel" in html:
+            return response
+
+        panel = sterile_sh_summary_panel()
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile seal health summary injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
