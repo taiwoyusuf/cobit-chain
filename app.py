@@ -22140,5 +22140,1095 @@ def sterile_compounding_prework_drift_dashboard_injection(response):
         print(f"Sterile pre-work/drift dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_ENTERPRISE_REGWATCH_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 8: Enterprise Scorecard + Regulatory Watch Intake
+#
+# New Routes:
+#   /sterile-compounding/enterprise-scorecard
+#   /sterile-compounding/enterprise-scorecard/export
+#   /sterile-compounding/regulatory-watch
+#   /sterile-compounding/regulatory-watch/export
+#   /sterile-compounding/regulatory-impact/<watch_id>
+#   /sterile-compounding/regulatory-impact/export
+#
+# New Registers:
+#   sterile_compounding_enterprise_scorecard_register.csv
+#   sterile_compounding_regulatory_watch_register.csv
+#   sterile_compounding_regulatory_impact_register.csv
+#
+# Boundary:
+#   This module does not call external regulatory sites or APIs.
+#   It creates a manual/sanitized intake layer for regulatory, supplier,
+#   shortage, recall, and internal quality alerts and maps them to CSP records.
+#   It does not replace QA, pharmacy disposition, QMS, regulatory affairs,
+#   FDA/USP/state board review, ServiceNow, Blue Mountain, Veeva, Entra,
+#   CI, Knowledge, Operational Lineage, Release Notes, Monday Demo,
+#   Command Center, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_ent_pd
+    import json as sterile_ent_json
+    from flask import request as sterile_ent_request
+    from flask import redirect as sterile_ent_redirect
+    from flask import Response as sterile_ent_Response
+except Exception as sterile_ent_import_error:
+    raise RuntimeError(f"Sterile enterprise/regwatch import failed: {sterile_ent_import_error}")
+
+
+STERILE_ENTERPRISE_SCORECARD_REGISTER = "sterile_compounding_enterprise_scorecard_register.csv"
+STERILE_REGWATCH_REGISTER = "sterile_compounding_regulatory_watch_register.csv"
+STERILE_REGWATCH_IMPACT_REGISTER = "sterile_compounding_regulatory_impact_register.csv"
+
+STERILE_ENTERPRISE_SCORECARD_COLUMNS = [
+    "scorecard_id",
+    "facility_type",
+    "hood_or_cleanroom_id",
+    "total_csp",
+    "green_csp",
+    "yellow_csp",
+    "red_csp",
+    "avg_readiness_score",
+    "environmental_alerts",
+    "environmental_failures",
+    "equipment_due_or_expired",
+    "personnel_gaps",
+    "ingredient_blocks",
+    "approval_blocks",
+    "open_deviations",
+    "regulatory_watch_hits",
+    "enterprise_status",
+    "enterprise_score",
+    "enterprise_decision",
+    "risk_summary",
+    "recommended_action",
+    "last_updated",
+    "scorecard_hash"
+]
+
+STERILE_REGWATCH_COLUMNS = [
+    "watch_id",
+    "watch_type",
+    "title",
+    "severity",
+    "source_system",
+    "alert_date",
+    "target_scope",
+    "facility_type",
+    "ingredient_lot",
+    "csp_keyword",
+    "hazardous_drug",
+    "action_required",
+    "owner",
+    "status",
+    "notes",
+    "created_at",
+    "watch_hash"
+]
+
+STERILE_REGWATCH_IMPACT_COLUMNS = [
+    "impact_id",
+    "watch_id",
+    "watch_title",
+    "watch_type",
+    "severity",
+    "record_id",
+    "facility_type",
+    "csp_name",
+    "batch_or_rx_id",
+    "ingredient_lot",
+    "hazardous_drug",
+    "hood_or_cleanroom_id",
+    "governance_status",
+    "readiness_score",
+    "match_reason",
+    "impact_status",
+    "recommended_action",
+    "created_at",
+    "impact_hash"
+]
+
+
+def sterile_ent_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_ent_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_ent_lower(value):
+    return sterile_ent_safe(value).lower()
+
+
+def sterile_ent_entity(value, fallback):
+    value = sterile_ent_safe(value)
+    return value if value else fallback
+
+
+def sterile_ent_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ent_count_values(group, column, values):
+    if group is None or group.empty or column not in group.columns:
+        return 0
+    return int(group[column].astype(str).str.lower().isin(values).sum())
+
+
+def sterile_ent_avg_score(group):
+    if group is None or group.empty or "readiness_score" not in group.columns:
+        return 0
+    return round(sterile_ent_pd.to_numeric(group["readiness_score"], errors="coerce").fillna(0).mean(), 1)
+
+
+def sterile_ent_status_badge(status):
+    status = sterile_ent_safe(status).upper()
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ent_regwatch_df():
+    df = sterile_read_register(STERILE_REGWATCH_REGISTER, STERILE_REGWATCH_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_REGWATCH_COLUMNS)
+
+
+def sterile_ent_active_watch_df():
+    watch_df = sterile_ent_regwatch_df()
+    if watch_df.empty:
+        return watch_df
+    return watch_df[~watch_df["status"].astype(str).str.lower().isin(["closed", "resolved", "inactive", "cancelled"])].copy()
+
+
+def sterile_ent_build_regwatch_impacts():
+    sterile_ent_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+    watch_df = sterile_ent_active_watch_df()
+
+    if csp_df.empty or watch_df.empty:
+        empty_df = sterile_ent_pd.DataFrame(columns=STERILE_REGWATCH_IMPACT_COLUMNS)
+        sterile_write_register(STERILE_REGWATCH_IMPACT_REGISTER, empty_df, STERILE_REGWATCH_IMPACT_COLUMNS)
+        return empty_df
+
+    impacts = []
+
+    for _, watch in watch_df.iterrows():
+        watch_id = sterile_ent_safe(watch.get("watch_id", ""))
+        title = sterile_ent_safe(watch.get("title", ""))
+        watch_type = sterile_ent_safe(watch.get("watch_type", ""))
+        severity = sterile_ent_safe(watch.get("severity", ""))
+        target_scope = sterile_ent_lower(watch.get("target_scope", ""))
+
+        watch_facility = sterile_ent_safe(watch.get("facility_type", ""))
+        watch_lot = sterile_ent_safe(watch.get("ingredient_lot", ""))
+        watch_keyword = sterile_ent_lower(watch.get("csp_keyword", ""))
+        watch_hazardous = sterile_ent_lower(watch.get("hazardous_drug", ""))
+
+        for _, record in csp_df.iterrows():
+            match_reasons = []
+
+            record_id = sterile_ent_safe(record.get("record_id", ""))
+            facility = sterile_ent_safe(record.get("facility_type", ""))
+            lot = sterile_ent_safe(record.get("ingredient_lot", ""))
+            csp_name = sterile_ent_safe(record.get("csp_name", ""))
+            hazardous = sterile_ent_lower(record.get("hazardous_drug", ""))
+
+            if target_scope in ["all", "all csp", "all records", "enterprise"]:
+                match_reasons.append("Enterprise/all-record watch")
+
+            if watch_facility and sterile_ent_lower(watch_facility) == sterile_ent_lower(facility):
+                match_reasons.append("Facility type match")
+
+            if watch_lot and sterile_ent_lower(watch_lot) == sterile_ent_lower(lot):
+                match_reasons.append("Ingredient lot match")
+
+            if watch_keyword and watch_keyword in sterile_ent_lower(csp_name):
+                match_reasons.append("CSP keyword match")
+
+            if watch_hazardous in ["yes", "true", "hazardous"] and hazardous in ["yes", "true", "hazardous"]:
+                match_reasons.append("Hazardous-drug watch match")
+
+            if not match_reasons:
+                continue
+
+            gov_status = sterile_ent_safe(record.get("governance_status", ""))
+            readiness = sterile_ent_safe(record.get("readiness_score", ""))
+
+            if sterile_ent_lower(severity) in ["critical", "high"] or gov_status.upper() == "RED":
+                impact_status = "RED"
+                recommended_action = "Immediate QA/pharmacy/regulatory review recommended before release-readiness reliance."
+            elif gov_status.upper() == "YELLOW" or sterile_ent_lower(severity) in ["medium", "moderate"]:
+                impact_status = "YELLOW"
+                recommended_action = "Review watch impact before treating record as release-ready."
+            else:
+                impact_status = "GREEN"
+                recommended_action = "Document watch review; no immediate governance block detected."
+
+            payload = {
+                "impact_id": sterile_ent_make_id("ST-RGI", watch_id, record_id),
+                "watch_id": watch_id,
+                "watch_title": title,
+                "watch_type": watch_type,
+                "severity": severity,
+                "record_id": record_id,
+                "facility_type": facility,
+                "csp_name": csp_name,
+                "batch_or_rx_id": sterile_ent_safe(record.get("batch_or_rx_id", "")),
+                "ingredient_lot": lot,
+                "hazardous_drug": sterile_ent_safe(record.get("hazardous_drug", "")),
+                "hood_or_cleanroom_id": sterile_ent_safe(record.get("hood_or_cleanroom_id", "")),
+                "governance_status": gov_status,
+                "readiness_score": readiness,
+                "match_reason": "; ".join(match_reasons),
+                "impact_status": impact_status,
+                "recommended_action": recommended_action,
+                "created_at": sterile_now(),
+            }
+
+            payload["impact_hash"] = sterile_hash_text(
+                sterile_ent_json.dumps(payload, sort_keys=True)
+            )
+
+            impacts.append(payload)
+
+    impact_df = sterile_ent_pd.DataFrame(impacts) if impacts else sterile_ent_pd.DataFrame(columns=STERILE_REGWATCH_IMPACT_COLUMNS)
+    impact_df = sterile_ensure_cols(impact_df, STERILE_REGWATCH_IMPACT_COLUMNS)
+    sterile_write_register(STERILE_REGWATCH_IMPACT_REGISTER, impact_df, STERILE_REGWATCH_IMPACT_COLUMNS)
+    return impact_df
+
+
+def sterile_ent_build_scorecard():
+    sterile_ent_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        empty_df = sterile_ent_pd.DataFrame(columns=STERILE_ENTERPRISE_SCORECARD_COLUMNS)
+        sterile_write_register(STERILE_ENTERPRISE_SCORECARD_REGISTER, empty_df, STERILE_ENTERPRISE_SCORECARD_COLUMNS)
+        return empty_df
+
+    impact_df = sterile_ent_build_regwatch_impacts()
+
+    df = df.copy()
+    df["facility_type"] = df["facility_type"].astype(str).apply(lambda v: sterile_ent_entity(v, "UNSPECIFIED-FACILITY"))
+    df["hood_or_cleanroom_id"] = df["hood_or_cleanroom_id"].astype(str).apply(lambda v: sterile_ent_entity(v, "UNASSIGNED-HOOD-ROOM"))
+
+    rows = []
+
+    for (facility_type, hood_id), group in df.groupby(["facility_type", "hood_or_cleanroom_id"]):
+        total = len(group)
+        green = int((group["governance_status"].astype(str) == "GREEN").sum()) if total else 0
+        yellow = int((group["governance_status"].astype(str) == "YELLOW").sum()) if total else 0
+        red = int((group["governance_status"].astype(str) == "RED").sum()) if total else 0
+        avg_score = sterile_ent_avg_score(group)
+
+        environmental_alerts = sterile_ent_count_values(group, "environmental_status", ["alert", "warning", "yellow", "review", "pending"])
+        environmental_failures = sterile_ent_count_values(group, "environmental_status", ["fail", "failed", "red", "excursion", "out of limit", "out of range"])
+        equipment_due_or_expired = sterile_ent_count_values(group, "equipment_status", ["due", "near due", "expired", "fail", "failed", "not current"])
+        personnel_gaps = sterile_ent_count_values(group, "personnel_qualified", ["no", "false", "expired", "not qualified", "fail", "failed", "pending", "review"])
+
+        ingredient_blocks = 0
+        ingredient_blocks += sterile_ent_count_values(group, "coa_attached", ["no", "false", "missing"])
+        ingredient_blocks += sterile_ent_count_values(group, "supplier_approved", ["no", "false", "not approved", "rejected"])
+        ingredient_blocks += sterile_ent_count_values(group, "ingredient_expiry_status", ["expired", "fail", "failed"])
+        ingredient_blocks += sterile_ent_count_values(group, "storage_condition_status", ["fail", "failed", "excursion", "out of range", "out of limit"])
+
+        approval_blocks = 0
+        approval_blocks += sterile_ent_count_values(group, "approval_status", ["rejected", "not approved", "denied"])
+        approval_blocks += sterile_ent_count_values(group, "pharmacist_verification", ["no", "false", "missing", "rejected"])
+        approval_blocks += sterile_ent_count_values(group, "qa_review_status", ["rejected", "failed", "fail"])
+
+        open_deviations = sterile_ent_count_values(group, "deviation_open", ["yes", "true", "open", "critical"])
+
+        regulatory_watch_hits = 0
+        if not impact_df.empty:
+            group_record_ids = set(group["record_id"].astype(str).tolist())
+            regulatory_watch_hits = int(impact_df[impact_df["record_id"].astype(str).isin(group_record_ids)]["watch_id"].nunique())
+
+        enterprise_score = 100
+        enterprise_score -= red * 18
+        enterprise_score -= yellow * 7
+        enterprise_score -= environmental_failures * 15
+        enterprise_score -= environmental_alerts * 6
+        enterprise_score -= equipment_due_or_expired * 8
+        enterprise_score -= personnel_gaps * 8
+        enterprise_score -= ingredient_blocks * 9
+        enterprise_score -= approval_blocks * 10
+        enterprise_score -= open_deviations * 12
+        enterprise_score -= regulatory_watch_hits * 8
+        enterprise_score = max(0, min(100, int(enterprise_score)))
+
+        risk_parts = []
+
+        if red:
+            risk_parts.append(f"RED CSP records: {red}")
+        if yellow:
+            risk_parts.append(f"YELLOW CSP records: {yellow}")
+        if environmental_failures:
+            risk_parts.append(f"Environmental failures/excursions: {environmental_failures}")
+        if environmental_alerts:
+            risk_parts.append(f"Environmental alerts/review signals: {environmental_alerts}")
+        if equipment_due_or_expired:
+            risk_parts.append(f"Equipment due/expired/failure signals: {equipment_due_or_expired}")
+        if personnel_gaps:
+            risk_parts.append(f"Personnel qualification gaps: {personnel_gaps}")
+        if ingredient_blocks:
+            risk_parts.append(f"Ingredient/COA/supplier/storage blocks: {ingredient_blocks}")
+        if approval_blocks:
+            risk_parts.append(f"Approval/pharmacist/QA blocks: {approval_blocks}")
+        if open_deviations:
+            risk_parts.append(f"Open deviations: {open_deviations}")
+        if regulatory_watch_hits:
+            risk_parts.append(f"Regulatory/supplier watch hits: {regulatory_watch_hits}")
+
+        if enterprise_score < 60 or red or environmental_failures or open_deviations or approval_blocks:
+            enterprise_status = "RED"
+            enterprise_decision = "ENTERPRISE GOVERNANCE REVIEW REQUIRED"
+            recommended_action = "Review affected CSPs, rooms/hoods, deviations, approvals, and watch-list impacts before release-readiness reliance."
+        elif enterprise_score < 90 or yellow or regulatory_watch_hits or environmental_alerts or equipment_due_or_expired:
+            enterprise_status = "YELLOW"
+            enterprise_decision = "CONDITIONAL ENTERPRISE READINESS / REVIEW REQUIRED"
+            recommended_action = "Review warning signals and document decision rationale before relying on this area as ready."
+        else:
+            enterprise_status = "GREEN"
+            enterprise_decision = "ENTERPRISE READINESS ACCEPTABLE FROM GOVERNANCE VIEW"
+            recommended_action = "Continue routine monitoring and evidence retention."
+
+        payload = {
+            "scorecard_id": sterile_ent_make_id("ST-ESC", facility_type, hood_id),
+            "facility_type": facility_type,
+            "hood_or_cleanroom_id": hood_id,
+            "total_csp": total,
+            "green_csp": green,
+            "yellow_csp": yellow,
+            "red_csp": red,
+            "avg_readiness_score": avg_score,
+            "environmental_alerts": environmental_alerts,
+            "environmental_failures": environmental_failures,
+            "equipment_due_or_expired": equipment_due_or_expired,
+            "personnel_gaps": personnel_gaps,
+            "ingredient_blocks": ingredient_blocks,
+            "approval_blocks": approval_blocks,
+            "open_deviations": open_deviations,
+            "regulatory_watch_hits": regulatory_watch_hits,
+            "enterprise_status": enterprise_status,
+            "enterprise_score": enterprise_score,
+            "enterprise_decision": enterprise_decision,
+            "risk_summary": "; ".join(risk_parts) if risk_parts else "No material enterprise risk signals detected.",
+            "recommended_action": recommended_action,
+            "last_updated": sterile_now(),
+        }
+
+        payload["scorecard_hash"] = sterile_hash_text(
+            sterile_ent_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    score_df = sterile_ent_pd.DataFrame(rows)
+    score_df = sterile_ensure_cols(score_df, STERILE_ENTERPRISE_SCORECARD_COLUMNS)
+    sterile_write_register(STERILE_ENTERPRISE_SCORECARD_REGISTER, score_df, STERILE_ENTERPRISE_SCORECARD_COLUMNS)
+    return score_df
+
+
+@app.route("/sterile-compounding/enterprise-scorecard")
+def sterile_compounding_enterprise_scorecard():
+    score_df = sterile_ent_build_scorecard()
+
+    facility_filter = sterile_ent_safe(sterile_ent_request.args.get("facility_type", ""))
+    status_filter = sterile_ent_safe(sterile_ent_request.args.get("status", ""))
+
+    filtered = score_df.copy()
+
+    if facility_filter and not filtered.empty:
+        filtered = filtered[filtered["facility_type"].astype(str) == facility_filter]
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["enterprise_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["enterprise_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["enterprise_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["enterprise_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+    if total:
+        avg_score = round(sterile_ent_pd.to_numeric(filtered["enterprise_score"], errors="coerce").fillna(0).mean(), 1)
+
+    facility_options = ['<option value="">All Facilities</option>']
+    if not score_df.empty:
+        for facility in sorted(score_df["facility_type"].dropna().astype(str).unique()):
+            selected = "selected" if facility == facility_filter else ""
+            facility_options.append(f'<option value="{facility}" {selected}>{facility}</option>')
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["enterprise_status", "enterprise_score"], ascending=[False, True]).iterrows():
+            hood_id = sterile_ent_safe(row.get("hood_or_cleanroom_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ent_status_badge(row.get("enterprise_status", ""))}</td>
+                <td>{sterile_ent_safe(row.get("facility_type", ""))}</td>
+                <td><a href="/sterile-compounding/risk-graph?target_type=EQUIPMENT_ROOM">{hood_id}</a></td>
+                <td>{sterile_ent_safe(row.get("enterprise_score", ""))}</td>
+                <td>{sterile_ent_safe(row.get("enterprise_decision", ""))}</td>
+                <td>{sterile_ent_safe(row.get("total_csp", ""))}</td>
+                <td>{sterile_ent_safe(row.get("green_csp", ""))}</td>
+                <td>{sterile_ent_safe(row.get("yellow_csp", ""))}</td>
+                <td>{sterile_ent_safe(row.get("red_csp", ""))}</td>
+                <td>{sterile_ent_safe(row.get("regulatory_watch_hits", ""))}</td>
+                <td>{sterile_ent_safe(row.get("risk_summary", ""))}</td>
+                <td>{sterile_ent_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No enterprise scorecard records found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Enterprise Sterile Governance Scorecard</h1>
+        <p>
+            Multi-facility / hood / room governance view for sterile compounding readiness.
+            It aggregates CSP readiness, environmental signals, equipment status, personnel gaps,
+            ingredient readiness, approvals, deviations, and regulatory-watch impacts into one scorecard.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Scorecard Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Enterprise Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Scorecard Filters</h2>
+        <form method="GET" action="/sterile-compounding/enterprise-scorecard">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:260px;">
+                    <label>Facility Type</label>
+                    <select name="facility_type">{''.join(facility_options)}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enterprise-scorecard">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enterprise-scorecard/export">Export Scorecard</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch">Regulatory Watch</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Enterprise Scorecard Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Facility</th>
+                        <th>Hood / Room</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Total CSP</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Watch Hits</th>
+                        <th>Risk Summary</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ENTERPRISE-SCORECARD",
+            "ENTERPRISE_SCORECARD_VIEW",
+            "Sterile enterprise scorecard viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/enterprise-scorecard",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Enterprise Sterile Governance Scorecard", body)
+
+
+@app.route("/sterile-compounding/enterprise-scorecard/export")
+def sterile_compounding_enterprise_scorecard_export():
+    score_df = sterile_ent_build_scorecard()
+
+    if score_df.empty:
+        score_df = sterile_ent_pd.DataFrame(columns=STERILE_ENTERPRISE_SCORECARD_COLUMNS)
+
+    csv_data = score_df.to_csv(index=False)
+
+    return sterile_ent_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_enterprise_scorecard_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/regulatory-watch", methods=["GET", "POST"])
+def sterile_compounding_regulatory_watch():
+    sterile_ent_require_phase1()
+
+    if sterile_ent_request.method == "POST":
+        watch_df = sterile_ent_regwatch_df()
+
+        title = sterile_ent_safe(sterile_ent_request.form.get("title", ""))
+        watch_type = sterile_ent_safe(sterile_ent_request.form.get("watch_type", ""))
+        severity = sterile_ent_safe(sterile_ent_request.form.get("severity", ""))
+        source_system = sterile_ent_safe(sterile_ent_request.form.get("source_system", ""))
+        alert_date = sterile_ent_safe(sterile_ent_request.form.get("alert_date", ""))
+        target_scope = sterile_ent_safe(sterile_ent_request.form.get("target_scope", ""))
+        facility_type = sterile_ent_safe(sterile_ent_request.form.get("facility_type", ""))
+        ingredient_lot = sterile_ent_safe(sterile_ent_request.form.get("ingredient_lot", ""))
+        csp_keyword = sterile_ent_safe(sterile_ent_request.form.get("csp_keyword", ""))
+        hazardous_drug = sterile_ent_safe(sterile_ent_request.form.get("hazardous_drug", ""))
+        action_required = sterile_ent_safe(sterile_ent_request.form.get("action_required", ""))
+        owner = sterile_ent_safe(sterile_ent_request.form.get("owner", ""))
+        status = sterile_ent_safe(sterile_ent_request.form.get("status", ""))
+        notes = sterile_ent_safe(sterile_ent_request.form.get("notes", ""))
+
+        if not title:
+            return sterile_ent_Response("title is required.", status=400)
+
+        if not target_scope:
+            target_scope = "All"
+
+        watch_payload = {
+            "watch_id": sterile_ent_make_id("ST-RGW", title, watch_type, severity, sterile_now()),
+            "watch_type": watch_type or "Manual Watch",
+            "title": title,
+            "severity": severity or "Medium",
+            "source_system": source_system or "Manual / Demo-Safe Intake",
+            "alert_date": alert_date or sterile_now().split(" ")[0],
+            "target_scope": target_scope,
+            "facility_type": facility_type,
+            "ingredient_lot": ingredient_lot,
+            "csp_keyword": csp_keyword,
+            "hazardous_drug": hazardous_drug,
+            "action_required": action_required or "Review linked CSP impact before release-readiness reliance.",
+            "owner": owner or "Unassigned",
+            "status": status or "Open",
+            "notes": notes,
+            "created_at": sterile_now(),
+        }
+
+        watch_payload["watch_hash"] = sterile_hash_text(
+            sterile_ent_json.dumps(watch_payload, sort_keys=True)
+        )
+
+        watch_df = sterile_ent_pd.concat([watch_df, sterile_ent_pd.DataFrame([watch_payload])], ignore_index=True)
+        watch_df = sterile_ensure_cols(watch_df, STERILE_REGWATCH_COLUMNS)
+        sterile_write_register(STERILE_REGWATCH_REGISTER, watch_df, STERILE_REGWATCH_COLUMNS)
+
+        try:
+            sterile_add_lineage(
+                watch_payload["watch_id"],
+                "REGULATORY_WATCH_CREATED",
+                f"Regulatory/supplier watch created: {title}",
+                actor=watch_payload["owner"],
+                source_route="/sterile-compounding/regulatory-watch",
+            )
+        except Exception:
+            pass
+
+        return sterile_ent_redirect("/sterile-compounding/regulatory-watch")
+
+    if sterile_ent_request.args.get("sample") == "1":
+        watch_df = sterile_ent_regwatch_df()
+        sample_payloads = [
+            {
+                "watch_id": "ST-RGW-SAMPLE-LOT003",
+                "watch_type": "Supplier / Ingredient Watch",
+                "title": "Sample watch: LOT-003 requires QA review",
+                "severity": "High",
+                "source_system": "Manual / Demo-Safe Intake",
+                "alert_date": sterile_now().split(" ")[0],
+                "target_scope": "Ingredient Lot",
+                "facility_type": "",
+                "ingredient_lot": "LOT-003",
+                "csp_keyword": "",
+                "hazardous_drug": "",
+                "action_required": "Review all CSPs linked to LOT-003 before relying on release readiness.",
+                "owner": "QA / Pharmacy Review",
+                "status": "Open",
+                "notes": "Demo-safe watch item; not a live external regulatory alert.",
+                "created_at": sterile_now(),
+            },
+            {
+                "watch_id": "ST-RGW-SAMPLE-HAZ",
+                "watch_type": "Hazardous Drug Governance Watch",
+                "title": "Sample watch: hazardous-drug CSPs need enhanced evidence review",
+                "severity": "Medium",
+                "source_system": "Manual / Demo-Safe Intake",
+                "alert_date": sterile_now().split(" ")[0],
+                "target_scope": "Hazardous Drug",
+                "facility_type": "",
+                "ingredient_lot": "",
+                "csp_keyword": "",
+                "hazardous_drug": "Yes",
+                "action_required": "Confirm hazardous-drug handling evidence before release-readiness reliance.",
+                "owner": "QA / Pharmacy Review",
+                "status": "Open",
+                "notes": "Demo-safe watch item; not a live external regulatory alert.",
+                "created_at": sterile_now(),
+            }
+        ]
+
+        for payload in sample_payloads:
+            payload["watch_hash"] = sterile_hash_text(sterile_ent_json.dumps(payload, sort_keys=True))
+
+        watch_df = watch_df[~watch_df["watch_id"].astype(str).isin([p["watch_id"] for p in sample_payloads])]
+        watch_df = sterile_ent_pd.concat([watch_df, sterile_ent_pd.DataFrame(sample_payloads)], ignore_index=True)
+        watch_df = sterile_ensure_cols(watch_df, STERILE_REGWATCH_COLUMNS)
+        sterile_write_register(STERILE_REGWATCH_REGISTER, watch_df, STERILE_REGWATCH_COLUMNS)
+
+        try:
+            sterile_add_lineage(
+                "REGWATCH-SAMPLE",
+                "REGULATORY_WATCH_SAMPLE",
+                "Sample regulatory/supplier watch records loaded",
+                actor="system",
+                source_route="/sterile-compounding/regulatory-watch?sample=1",
+            )
+        except Exception:
+            pass
+
+        return sterile_ent_redirect("/sterile-compounding/regulatory-watch")
+
+    watch_df = sterile_ent_regwatch_df()
+    impact_df = sterile_ent_build_regwatch_impacts()
+
+    total_watch = len(watch_df)
+    open_watch = int(~watch_df["status"].astype(str).str.lower().isin(["closed", "resolved", "inactive", "cancelled"]).sum()) if False else 0
+    if total_watch:
+        open_watch = int((~watch_df["status"].astype(str).str.lower().isin(["closed", "resolved", "inactive", "cancelled"])).sum())
+    critical_watch = int(watch_df["severity"].astype(str).str.lower().isin(["critical"]).sum()) if total_watch else 0
+    high_watch = int(watch_df["severity"].astype(str).str.lower().isin(["high"]).sum()) if total_watch else 0
+    impact_count = len(impact_df)
+
+    rows_html = ""
+
+    if not watch_df.empty:
+        for _, row in watch_df.sort_values(by="created_at", ascending=False).iterrows():
+            wid = sterile_ent_safe(row.get("watch_id", ""))
+            impact_num = 0
+            if not impact_df.empty:
+                impact_num = int((impact_df["watch_id"].astype(str) == wid).sum())
+
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/regulatory-impact/{wid}">{wid}</a></td>
+                <td>{sterile_ent_safe(row.get("watch_type", ""))}</td>
+                <td>{sterile_ent_safe(row.get("title", ""))}</td>
+                <td>{sterile_ent_safe(row.get("severity", ""))}</td>
+                <td>{sterile_ent_safe(row.get("target_scope", ""))}</td>
+                <td>{sterile_ent_safe(row.get("facility_type", ""))}</td>
+                <td>{sterile_ent_safe(row.get("ingredient_lot", ""))}</td>
+                <td>{sterile_ent_safe(row.get("hazardous_drug", ""))}</td>
+                <td>{impact_num}</td>
+                <td>{sterile_ent_safe(row.get("owner", ""))}</td>
+                <td>{sterile_ent_safe(row.get("status", ""))}</td>
+                <td>{sterile_ent_safe(row.get("action_required", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No regulatory/supplier watch items yet. Add one manually or load demo-safe sample watches.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Regulatory / Supplier Watch Intake</h1>
+        <p>
+            Manual/sanitized watch layer for regulatory, supplier, shortage, recall, hazardous-drug, or internal
+            quality alerts. This does not call external regulatory sites. It lets you capture a watch item and
+            map its impact to CSP records by facility type, ingredient lot, CSP keyword, hazardous-drug flag,
+            or enterprise-wide scope.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Watch Items</div><div class="st-value">{total_watch}</div></div>
+        <div class="st-card"><div class="st-label">Open Watch Items</div><div class="st-value">{open_watch}</div></div>
+        <div class="st-card"><div class="st-label">Critical Watch</div><div class="st-value">{critical_watch}</div></div>
+        <div class="st-card"><div class="st-label">High Watch</div><div class="st-value">{high_watch}</div></div>
+        <div class="st-card"><div class="st-label">Impacted CSP Links</div><div class="st-value">{impact_count}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Add Watch Item</h2>
+        <form method="POST" action="/sterile-compounding/regulatory-watch">
+            <div class="st-form-grid">
+                <div>
+                    <label>Title</label>
+                    <input name="title" placeholder="Example: Supplier lot requires QA review" required>
+                </div>
+                <div>
+                    <label>Watch Type</label>
+                    <select name="watch_type">
+                        <option>Regulatory Watch</option>
+                        <option>Supplier Watch</option>
+                        <option>Recall Watch</option>
+                        <option>Shortage Watch</option>
+                        <option>Hazardous Drug Watch</option>
+                        <option>Internal Quality Watch</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Severity</label>
+                    <select name="severity">
+                        <option>Medium</option>
+                        <option>High</option>
+                        <option>Critical</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Source System</label>
+                    <input name="source_system" placeholder="Manual / Regulatory Affairs / Supplier / QA">
+                </div>
+                <div>
+                    <label>Alert Date</label>
+                    <input name="alert_date" placeholder="YYYY-MM-DD">
+                </div>
+                <div>
+                    <label>Target Scope</label>
+                    <select name="target_scope">
+                        <option>All</option>
+                        <option>Facility Type</option>
+                        <option>Ingredient Lot</option>
+                        <option>CSP Keyword</option>
+                        <option>Hazardous Drug</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Facility Type Match</label>
+                    <input name="facility_type" placeholder="Example: 503B Outsourcing Facility">
+                </div>
+                <div>
+                    <label>Ingredient Lot Match</label>
+                    <input name="ingredient_lot" placeholder="Example: LOT-003">
+                </div>
+                <div>
+                    <label>CSP Keyword Match</label>
+                    <input name="csp_keyword" placeholder="Example: Preparation C">
+                </div>
+                <div>
+                    <label>Hazardous Drug Match</label>
+                    <select name="hazardous_drug">
+                        <option></option>
+                        <option>Yes</option>
+                        <option>No</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Owner</label>
+                    <input name="owner" placeholder="QA / Pharmacy / Regulatory">
+                </div>
+                <div>
+                    <label>Status</label>
+                    <select name="status">
+                        <option>Open</option>
+                        <option>Under Review</option>
+                        <option>Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Action Required</label>
+                <textarea name="action_required" rows="3" placeholder="What should reviewers do with linked CSPs?"></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Notes</label>
+                <textarea name="notes" rows="3" placeholder="Sanitized note only. Do not enter PHI or confidential source data."></textarea>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="st-button" type="submit">Save Watch Item</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch?sample=1">Load Demo Watch Items</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch/export">Export Watch Register</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-impact/export">Export Impact Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Watch Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Watch ID</th>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Severity</th>
+                        <th>Scope</th>
+                        <th>Facility</th>
+                        <th>Lot</th>
+                        <th>Hazardous</th>
+                        <th>Impacts</th>
+                        <th>Owner</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "REGULATORY-WATCH",
+            "REGULATORY_WATCH_VIEW",
+            "Regulatory/supplier watch intake viewed and impact map rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/regulatory-watch",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Regulatory / Supplier Watch Intake", body)
+
+
+@app.route("/sterile-compounding/regulatory-watch/export")
+def sterile_compounding_regulatory_watch_export():
+    watch_df = sterile_ent_regwatch_df()
+
+    if watch_df.empty:
+        watch_df = sterile_ent_pd.DataFrame(columns=STERILE_REGWATCH_COLUMNS)
+
+    csv_data = watch_df.to_csv(index=False)
+
+    return sterile_ent_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_regulatory_watch_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/regulatory-impact/<watch_id>")
+def sterile_compounding_regulatory_impact(watch_id):
+    impact_df = sterile_ent_build_regwatch_impacts()
+
+    watch_id = sterile_ent_safe(watch_id)
+
+    if impact_df.empty:
+        filtered = impact_df
+    else:
+        filtered = impact_df[impact_df["watch_id"].astype(str) == watch_id].copy()
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["impact_status", "record_id"], ascending=[False, True]).iterrows():
+            rid = sterile_ent_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ent_status_badge(row.get("impact_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_ent_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_ent_safe(row.get("batch_or_rx_id", ""))}</td>
+                <td>{sterile_ent_safe(row.get("facility_type", ""))}</td>
+                <td>{sterile_ent_safe(row.get("ingredient_lot", ""))}</td>
+                <td>{sterile_ent_safe(row.get("hazardous_drug", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_ent_safe(row.get("match_reason", ""))}</td>
+                <td>{sterile_ent_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No impacted CSP records found for this watch item.
+            </td>
+        </tr>
+        """
+
+    watch_title = watch_id
+    if not filtered.empty:
+        watch_title = sterile_ent_safe(filtered.iloc[0].get("watch_title", watch_id))
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Regulatory / Supplier Watch Impact</h1>
+        <p>
+            Impact map for watch item <b>{watch_id}</b>: {watch_title}.
+            This maps a manual/sanitized watch item to linked CSP records and recommends review action.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Impact Actions</h2>
+        <a class="st-button" href="/sterile-compounding/regulatory-watch">Back to Watch Register</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/enterprise-scorecard">Enterprise Scorecard</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-impact/export">Export Impact Register</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Impacted CSP Records</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Impact</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Batch/Rx ID</th>
+                        <th>Facility</th>
+                        <th>Lot</th>
+                        <th>Hazardous</th>
+                        <th>CSP Status</th>
+                        <th>Match Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            watch_id,
+            "REGULATORY_IMPACT_VIEW",
+            f"Regulatory/supplier watch impact viewed for {watch_id}",
+            actor="system",
+            source_route="/sterile-compounding/regulatory-impact/<watch_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Regulatory / Supplier Watch Impact", body)
+
+
+@app.route("/sterile-compounding/regulatory-impact/export")
+def sterile_compounding_regulatory_impact_export():
+    impact_df = sterile_ent_build_regwatch_impacts()
+
+    if impact_df.empty:
+        impact_df = sterile_ent_pd.DataFrame(columns=STERILE_REGWATCH_IMPACT_COLUMNS)
+
+    csv_data = impact_df.to_csv(index=False)
+
+    return sterile_ent_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_regulatory_impact_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_enterprise_regwatch_dashboard_injection(response):
+    try:
+        if sterile_ent_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-enterprise-regwatch-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-enterprise-regwatch-panel">
+            <h2>Enterprise Scorecard + Regulatory Watch Intake</h2>
+            <p class="st-note">
+                Multi-site/facility governance scorecard and manual/sanitized regulatory, supplier,
+                shortage, recall, hazardous-drug, or internal quality watch intake. This does not call
+                external regulatory APIs; it maps captured watch items to CSP records.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/enterprise-scorecard">Enterprise Scorecard</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch">Regulatory Watch</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch?sample=1">Load Demo Watch Items</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enterprise-scorecard/export">Export Scorecard</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-impact/export">Export Watch Impacts</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile enterprise/regwatch dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
