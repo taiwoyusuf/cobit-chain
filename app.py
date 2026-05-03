@@ -41285,5 +41285,1004 @@ def sterile_compounding_navigation_hub_dashboard_injection(response):
         print(f"Sterile navigation hub dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_DEMO_WALKTHROUGH_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 29: Demo Walkthrough + Leadership Talk Track
+#
+# New Routes:
+#   /sterile-compounding/demo-walkthrough
+#   /sterile-compounding/demo-walkthrough/<record_id>
+#   /sterile-compounding/demo-walkthrough/export
+#   /sterile-compounding/demo-script
+#   /sterile-compounding/demo-script/export
+#
+# New Registers:
+#   sterile_compounding_demo_walkthrough_register.csv
+#   sterile_compounding_demo_script_register.csv
+#
+# Boundary:
+#   This creates a demo and leadership walkthrough inside the sterile
+#   vertical only. It does not touch Command Center, Monday Demo,
+#   Release Notes, Platform Health, Manufacturing/Wole, ServiceNow,
+#   Entra, CI, Knowledge Governance, Operational Lineage, or other
+#   protected app areas.
+# ============================================================
+
+try:
+    import pandas as sterile_demo_pd
+    import json as sterile_demo_json
+    from flask import request as sterile_demo_request
+    from flask import Response as sterile_demo_Response
+except Exception as sterile_demo_import_error:
+    raise RuntimeError(f"Sterile demo walkthrough import failed: {sterile_demo_import_error}")
+
+
+STERILE_DEMO_WALKTHROUGH_REGISTER = "sterile_compounding_demo_walkthrough_register.csv"
+STERILE_DEMO_SCRIPT_REGISTER = "sterile_compounding_demo_script_register.csv"
+
+STERILE_DEMO_WALKTHROUGH_COLUMNS = [
+    "walkthrough_id",
+    "record_id",
+    "csp_name",
+    "demo_stage",
+    "demo_title",
+    "route",
+    "route_type",
+    "demo_status",
+    "leadership_message",
+    "what_to_click",
+    "what_to_say",
+    "proof_point",
+    "expected_outcome",
+    "display_order",
+    "last_checked",
+    "walkthrough_hash"
+]
+
+STERILE_DEMO_SCRIPT_COLUMNS = [
+    "script_id",
+    "script_scope",
+    "script_stage",
+    "script_title",
+    "talk_track",
+    "supporting_route",
+    "demo_status",
+    "leadership_value",
+    "risk_message",
+    "next_action",
+    "display_order",
+    "last_checked",
+    "script_hash"
+]
+
+
+def sterile_demo_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_INSPECTION_BINDER_COLUMNS",
+        "STERILE_PACKET_MANIFEST_COLUMNS",
+        "STERILE_INSPECTION_NARRATIVE_COLUMNS",
+        "STERILE_EXECUTIVE_BRIEF_COLUMNS",
+        "sterile_ib_build_binders",
+        "sterile_in_build_narratives",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile demo walkthrough dependencies missing: " + ", ".join(missing))
+
+
+def sterile_demo_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_demo_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_demo_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_demo_status_bucket(value):
+    value = sterile_demo_safe(value).upper()
+
+    if value in ["GREEN", "GO", "READY", "HASH MATCH", "INSPECTION READY", "SUPPORTED"]:
+        return "GREEN"
+
+    if value in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "REJECTED", "NOT READY", "GAP / BLOCKER"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_demo_status_badge(status):
+    bucket = sterile_demo_status_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_demo_build_sources():
+    sterile_demo_require_dependencies()
+
+    try:
+        binder_df, manifest_df = sterile_ib_build_binders()
+    except Exception:
+        binder_df = sterile_read_register(
+            "sterile_compounding_inspection_binder_register.csv",
+            STERILE_INSPECTION_BINDER_COLUMNS
+        )
+        manifest_df = sterile_read_register(
+            "sterile_compounding_packet_manifest_register.csv",
+            STERILE_PACKET_MANIFEST_COLUMNS
+        )
+
+    try:
+        narrative_df, brief_df = sterile_in_build_narratives()
+    except Exception:
+        narrative_df = sterile_read_register(
+            "sterile_compounding_inspection_narrative_register.csv",
+            STERILE_INSPECTION_NARRATIVE_COLUMNS
+        )
+        brief_df = sterile_read_register(
+            "sterile_compounding_executive_brief_register.csv",
+            STERILE_EXECUTIVE_BRIEF_COLUMNS
+        )
+
+    binder_df = sterile_ensure_cols(binder_df, STERILE_INSPECTION_BINDER_COLUMNS)
+    manifest_df = sterile_ensure_cols(manifest_df, STERILE_PACKET_MANIFEST_COLUMNS)
+    narrative_df = sterile_ensure_cols(narrative_df, STERILE_INSPECTION_NARRATIVE_COLUMNS)
+    brief_df = sterile_ensure_cols(brief_df, STERILE_EXECUTIVE_BRIEF_COLUMNS)
+
+    return binder_df, manifest_df, narrative_df, brief_df
+
+
+def sterile_demo_latest(df, record_id):
+    if df is None or df.empty or "record_id" not in df.columns:
+        return {}
+
+    match = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_demo_add_walkthrough(rows, record_id, csp_name, stage, title, route, route_type, status, message, click, say, proof, outcome, order):
+    payload = {
+        "walkthrough_id": sterile_demo_make_id("ST-DEMO", record_id, stage, title, order),
+        "record_id": record_id,
+        "csp_name": csp_name,
+        "demo_stage": stage,
+        "demo_title": title,
+        "route": route,
+        "route_type": route_type,
+        "demo_status": sterile_demo_status_bucket(status),
+        "leadership_message": message,
+        "what_to_click": click,
+        "what_to_say": say,
+        "proof_point": proof,
+        "expected_outcome": outcome,
+        "display_order": order,
+        "last_checked": sterile_now(),
+    }
+
+    payload["walkthrough_hash"] = sterile_hash_text(
+        sterile_demo_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_demo_build_record_walkthrough(binder_row, narrative_row):
+    rows = []
+
+    record_id = sterile_demo_safe(binder_row.get("record_id", ""))
+    csp_name = sterile_demo_safe(binder_row.get("csp_name", ""))
+
+    binder_status = sterile_demo_safe(binder_row.get("binder_status", "UNKNOWN"))
+    inspection_status = sterile_demo_safe(binder_row.get("inspection_status", "UNKNOWN"))
+    master_status = sterile_demo_safe(binder_row.get("master_assurance_status", "UNKNOWN"))
+    coverage_status = sterile_demo_safe(binder_row.get("coverage_status", "UNKNOWN"))
+    gate_status = sterile_demo_safe(binder_row.get("no_release_gate_status", "UNKNOWN"))
+
+    binder_score = sterile_demo_safe(binder_row.get("binder_score", ""))
+    inspection_score = sterile_demo_safe(binder_row.get("inspection_score", ""))
+    master_score = sterile_demo_safe(binder_row.get("master_assurance_score", ""))
+    coverage_score = sterile_demo_safe(binder_row.get("coverage_score", ""))
+
+    executive_summary = sterile_demo_safe(narrative_row.get("executive_summary", ""))
+    risk_story = sterile_demo_safe(narrative_row.get("risk_story", ""))
+    closure_story = sterile_demo_safe(narrative_row.get("closure_story", ""))
+    readiness_statement = sterile_demo_safe(narrative_row.get("final_readiness_statement", ""))
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "01 Opening",
+        "Open the Sterile Home",
+        "/sterile-compounding",
+        "Landing Page",
+        binder_status,
+        "Start from the sterile vertical, not the global app. This keeps the demo focused and avoids touching protected modules.",
+        "Click Compound Sterile AssuranceLayer home.",
+        "This is a self-contained sterile compounding governance vertical. It does not replace QA or formal release; it shows evidence readiness and governance confidence.",
+        "Sterile landing page opens.",
+        "Audience understands this is a standalone assurance layer.",
+        10,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "02 Executive Context",
+        "Show the Executive Brief",
+        "/sterile-compounding/executive-brief",
+        "Executive",
+        binder_status,
+        "Translate the technical build into a leadership-ready posture summary.",
+        "Click Executive Brief.",
+        "This page turns all CSP records into leadership KPIs: inspection status, master assurance, coverage, and top risks.",
+        f"Binder={binder_status}; binder score={binder_score}.",
+        "Audience sees the big picture before drilling into record details.",
+        20,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "03 Binder",
+        "Open the Inspection Binder",
+        f"/sterile-compounding/inspection-binder/{record_id}",
+        "Record Binder",
+        binder_status,
+        "Show one CSP as a complete packet instead of jumping randomly across screens.",
+        f"Open binder for {record_id}.",
+        f"This binder gives a reviewer one controlled route map for {record_id}: narrative, inspection readiness, crosswalk, assurance, audit pack, sign-off, seal, and recovery plan.",
+        f"Manifest items={sterile_demo_safe(binder_row.get('manifest_item_count', ''))}.",
+        "Audience sees the inspection packet structure.",
+        30,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "04 Narrative",
+        "Tell the Inspection Story",
+        f"/sterile-compounding/inspection-narrative/{record_id}",
+        "Narrative",
+        inspection_status,
+        "Convert the evidence into a human-readable inspection story.",
+        "Click Inspection Narrative from the binder.",
+        executive_summary or f"{record_id} has inspection status {inspection_status}, master assurance {master_status}, and control coverage {coverage_status}.",
+        risk_story or "Risk story is generated from crosswalk and QA signals.",
+        "Audience hears the story in plain English.",
+        40,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "05 Assurance",
+        "Show the Master Assurance Passport",
+        f"/sterile-compounding/master-assurance/{record_id}",
+        "Assurance",
+        master_status,
+        "Show the composite governance engine behind the narrative.",
+        "Click Master Assurance.",
+        f"Master Assurance consolidates evidence, audit pack, sign-off, seal, custody, SOP, personnel, equipment, environmental, regulatory, and recovery signals into one decision. Current status is {master_status}, score {master_score}.",
+        f"Master status={master_status}; score={master_score}.",
+        "Audience understands how the final governance decision is calculated.",
+        50,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "06 Control Crosswalk",
+        "Show Regulatory Crosswalk and Evidence Coverage",
+        f"/sterile-compounding/regulatory-crosswalk/{record_id}",
+        "Crosswalk",
+        coverage_status,
+        "Show the audit/control language behind the technology.",
+        "Click Regulatory Crosswalk.",
+        f"The crosswalk explains each control domain, the supporting evidence route, the auditor question, the gap summary, and the next action. Coverage status is {coverage_status}, score {coverage_score}.",
+        f"Coverage={coverage_status}; coverage score={coverage_score}.",
+        "Audience sees this is control-to-evidence governance, not just a dashboard.",
+        60,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "07 No-Release Logic",
+        "Show the Composite No-Release Gate",
+        "/sterile-compounding/no-release-composite",
+        "Gate",
+        gate_status,
+        "Explain that AssuranceLayer supports release governance but does not perform formal release.",
+        "Click Composite No-Release Gate.",
+        f"The no-release gate separates governance reliance from formal QA/pharmacy release. Current gate signal for this record is {gate_status}.",
+        f"No-release gate={gate_status}.",
+        "Audience understands the safety boundary.",
+        70,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "08 Closure Plan",
+        "Show Closure Simulator",
+        f"/sterile-compounding/closure-simulator/{record_id}",
+        "Recovery",
+        inspection_status,
+        "Show how the system recommends closure actions instead of only showing RED/YELLOW.",
+        "Click Closure Simulator.",
+        closure_story or "The closure simulator shows the next best action and projected recovery status before any records are changed.",
+        "Recovery plan exists for RED/YELLOW records.",
+        "Audience sees actionability, not just reporting.",
+        80,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "09 Route Integrity",
+        "Show Route Health and Module Map",
+        "/sterile-compounding/route-health",
+        "Route Health",
+        "GREEN",
+        "Close by showing the vertical is internally mapped and testable.",
+        "Click Route Health.",
+        "Route Health shows the sterile endpoints registered in Flask at runtime, helping confirm Azure is serving the expected module set.",
+        "Runtime route map is visible.",
+        "Audience sees the build is modular and testable.",
+        90,
+    )
+
+    sterile_demo_add_walkthrough(
+        rows,
+        record_id,
+        csp_name,
+        "10 Closing",
+        "Close With Readiness Statement",
+        f"/sterile-compounding/inspection-binder/{record_id}",
+        "Close",
+        binder_status,
+        "End with the exact readiness statement for this CSP.",
+        "Return to the Inspection Binder.",
+        readiness_statement or f"Final readiness statement: binder status is {binder_status}, inspection status is {inspection_status}.",
+        f"Binder={binder_status}; Inspection={inspection_status}; Master={master_status}; Coverage={coverage_status}.",
+        "Audience leaves with a clear final message and next action.",
+        100,
+    )
+
+    return rows
+
+
+def sterile_demo_build_walkthroughs():
+    binder_df, manifest_df, narrative_df, brief_df = sterile_demo_build_sources()
+
+    if binder_df.empty:
+        empty_walkthrough = sterile_demo_pd.DataFrame(columns=STERILE_DEMO_WALKTHROUGH_COLUMNS)
+        empty_script = sterile_demo_pd.DataFrame(columns=STERILE_DEMO_SCRIPT_COLUMNS)
+        sterile_write_register(STERILE_DEMO_WALKTHROUGH_REGISTER, empty_walkthrough, STERILE_DEMO_WALKTHROUGH_COLUMNS)
+        sterile_write_register(STERILE_DEMO_SCRIPT_REGISTER, empty_script, STERILE_DEMO_SCRIPT_COLUMNS)
+        return empty_walkthrough, empty_script
+
+    rows = []
+
+    for _, binder in binder_df.iterrows():
+        record_id = sterile_demo_safe(binder.get("record_id", ""))
+        narrative = sterile_demo_latest(narrative_df, record_id)
+        rows.extend(sterile_demo_build_record_walkthrough(binder.to_dict(), narrative))
+
+    walkthrough_df = sterile_demo_pd.DataFrame(rows)
+    walkthrough_df = sterile_ensure_cols(walkthrough_df, STERILE_DEMO_WALKTHROUGH_COLUMNS)
+
+    script_df = sterile_demo_build_script(walkthrough_df, brief_df)
+
+    sterile_write_register(STERILE_DEMO_WALKTHROUGH_REGISTER, walkthrough_df, STERILE_DEMO_WALKTHROUGH_COLUMNS)
+    sterile_write_register(STERILE_DEMO_SCRIPT_REGISTER, script_df, STERILE_DEMO_SCRIPT_COLUMNS)
+
+    return walkthrough_df, script_df
+
+
+def sterile_demo_add_script(rows, scope, stage, title, talk_track, route, status, value, risk, action, order):
+    payload = {
+        "script_id": sterile_demo_make_id("ST-SCRIPT", scope, stage, title, order),
+        "script_scope": scope,
+        "script_stage": stage,
+        "script_title": title,
+        "talk_track": talk_track,
+        "supporting_route": route,
+        "demo_status": sterile_demo_status_bucket(status),
+        "leadership_value": value,
+        "risk_message": risk,
+        "next_action": action,
+        "display_order": order,
+        "last_checked": sterile_now(),
+    }
+
+    payload["script_hash"] = sterile_hash_text(
+        sterile_demo_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_demo_build_script(walkthrough_df, brief_df):
+    rows = []
+
+    brief = brief_df.iloc[0].to_dict() if brief_df is not None and not brief_df.empty else {}
+
+    readiness = sterile_demo_safe(brief.get("top_readiness_message", "Compound Sterile AssuranceLayer demo is available."))
+    risk = sterile_demo_safe(brief.get("top_risk_message", "Review sterile assurance records for RED/YELLOW signals."))
+    leadership_summary = sterile_demo_safe(brief.get("leadership_summary", "The sterile vertical consolidates evidence, assurance, inspection, and route-health views."))
+    action = sterile_demo_safe(brief.get("recommended_leadership_action", "Open the inspection binder and walk through one CSP record."))
+
+    total_steps = len(walkthrough_df)
+    green_steps = int((walkthrough_df["demo_status"].astype(str) == "GREEN").sum()) if total_steps else 0
+    yellow_steps = int((walkthrough_df["demo_status"].astype(str) == "YELLOW").sum()) if total_steps else 0
+    red_steps = int((walkthrough_df["demo_status"].astype(str) == "RED").sum()) if total_steps else 0
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "01 Opening",
+        "What This Is",
+        "This is Compound Sterile AssuranceLayer: a governance-first assurance vertical for sterile compounding records. It does not replace QA, pharmacy release, or QMS. It connects operational data to evidence, audit readiness, and inspection narrative.",
+        "/sterile-compounding",
+        "GREEN",
+        "Positions the build as a controlled assurance layer, not a replacement for validated systems.",
+        "The risk is not lack of data; the risk is not being able to prove readiness quickly and consistently.",
+        "Open the sterile home page.",
+        10,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "02 Executive View",
+        "Leadership Summary",
+        leadership_summary,
+        "/sterile-compounding/executive-brief",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        readiness,
+        risk,
+        action,
+        20,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "03 Binder Story",
+        "One CSP, One Binder",
+        "Instead of asking an auditor or leader to jump across many screens, the inspection binder gives one CSP-specific packet with narrative, readiness, crosswalk, assurance, audit pack, seal, sign-off, recovery plan, and route manifest.",
+        "/sterile-compounding/inspection-binder",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        "Reduces inspection friction and makes evidence routes explainable.",
+        "Without a binder, evidence is scattered and difficult to defend under time pressure.",
+        "Open one CSP binder, preferably CSP-001 first.",
+        30,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "04 Assurance Logic",
+        "Why This Is Different",
+        "The key value is not another dashboard. The value is the chain from control objective to evidence route to assurance status to inspection question to closure action.",
+        "/sterile-compounding/master-assurance-index",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        "Shows an evidence-backed governance engine rather than static reporting.",
+        "Traditional trackers may show records, but they often do not prove control coverage or explain readiness.",
+        "Open Master Assurance and Regulatory Crosswalk.",
+        40,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "05 Closure Logic",
+        "What Happens When Something Is RED or YELLOW",
+        "The Closure Simulator shows what needs to be closed and the projected movement toward GREEN. This turns audit readiness into a work plan.",
+        "/sterile-compounding/closure-simulator",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        "Makes remediation specific, explainable, and measurable.",
+        "A RED/YELLOW status without a closure path creates confusion and delays.",
+        "Open Recovery Plan after showing a RED or YELLOW record.",
+        50,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "06 Route Health",
+        "How We Know the Vertical Is Registered",
+        f"The sterile route-health map shows runtime registered routes. Current demo steps: total={total_steps}, GREEN={green_steps}, YELLOW={yellow_steps}, RED={red_steps}.",
+        "/sterile-compounding/route-health",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        "Gives a quick technical confidence check after deployment.",
+        "If Azure redeploys an older commit, route health helps identify missing endpoints.",
+        "Open Route Health and Module Map.",
+        60,
+    )
+
+    sterile_demo_add_script(
+        rows,
+        "Leadership Demo",
+        "07 Close",
+        "Final Message",
+        "The final message is: AssuranceLayer helps teams prove whether sterile compounding records are inspection-ready, what evidence supports them, where the gaps are, and what should be closed next.",
+        "/sterile-compounding/demo-walkthrough",
+        "GREEN" if red_steps == 0 else "YELLOW",
+        "Clear leadership close: evidence readiness, audit readiness, and actionability.",
+        "The residual risk remains under formal QA/QMS/pharmacy governance, not inside this demo app.",
+        "Ask whether they want the sterile vertical added to broader app navigation later.",
+        70,
+    )
+
+    script_df = sterile_demo_pd.DataFrame(rows)
+    script_df = sterile_ensure_cols(script_df, STERILE_DEMO_SCRIPT_COLUMNS)
+
+    return script_df
+
+
+@app.route("/sterile-compounding/demo-walkthrough")
+def sterile_compounding_demo_walkthrough():
+    walkthrough_df, script_df = sterile_demo_build_walkthroughs()
+
+    status_filter = sterile_demo_safe(sterile_demo_request.args.get("status", ""))
+    record_filter = sterile_demo_safe(sterile_demo_request.args.get("record_id", ""))
+
+    filtered = walkthrough_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["demo_status"].astype(str) == status_filter]
+
+    if record_filter and not filtered.empty:
+        filtered = filtered[filtered["record_id"].astype(str) == record_filter]
+
+    total = len(filtered)
+    green = int((filtered["demo_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["demo_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["demo_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Demo Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    record_options = '<option value="">All Records</option>'
+    for rid in sorted(walkthrough_df["record_id"].dropna().unique().tolist()) if not walkthrough_df.empty else []:
+        selected = "selected" if rid == record_filter else ""
+        record_options += f'<option value="{rid}" {selected}>{rid}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["record_id", "display_order"], ascending=[True, True]).iterrows():
+            rid = sterile_demo_safe(row.get("record_id", ""))
+            route = sterile_demo_safe(row.get("route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_demo_status_badge(row.get("demo_status", ""))}</td>
+                <td><a href="/sterile-compounding/demo-walkthrough/{rid}">{rid}</a></td>
+                <td>{sterile_demo_safe(row.get("demo_stage", ""))}</td>
+                <td>{sterile_demo_safe(row.get("demo_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_demo_safe(row.get("leadership_message", ""))}</td>
+                <td>{sterile_demo_safe(row.get("what_to_say", ""))}</td>
+                <td>{sterile_demo_safe(row.get("expected_outcome", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No demo walkthrough rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Demo Walkthrough</h1>
+        <p>
+            Leadership-ready walkthrough for demonstrating the Compound Sterile AssuranceLayer vertical.
+            It gives what to click, what to say, the proof point, and the expected outcome.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Demo Steps</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Demo Filters</h2>
+        <form method="GET" action="/sterile-compounding/demo-walkthrough">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Demo Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Record</label>
+                    <select name="record_id">{record_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-script">Demo Script</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough/export">Export Walkthrough</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Demo Walkthrough Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Stage</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Leadership Message</th>
+                        <th>What To Say</th>
+                        <th>Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DEMO-WALKTHROUGH",
+            "STERILE_DEMO_WALKTHROUGH_VIEW",
+            "Sterile demo walkthrough viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/demo-walkthrough",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Demo Walkthrough", body)
+
+
+@app.route("/sterile-compounding/demo-walkthrough/<record_id>")
+def sterile_compounding_demo_walkthrough_record(record_id):
+    walkthrough_df, script_df = sterile_demo_build_walkthroughs()
+    record_id = sterile_demo_safe(record_id)
+
+    record_steps = walkthrough_df[walkthrough_df["record_id"].astype(str) == str(record_id)].copy() if not walkthrough_df.empty else walkthrough_df
+
+    if record_steps.empty:
+        return sterile_demo_Response("Demo walkthrough record not found.", status=404)
+
+    first = record_steps.iloc[0].to_dict()
+
+    rows_html = ""
+
+    for _, row in record_steps.sort_values(by="display_order", ascending=True).iterrows():
+        route = sterile_demo_safe(row.get("route", ""))
+        route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+        rows_html += f"""
+        <tr>
+            <td>{sterile_demo_safe(row.get("display_order", ""))}</td>
+            <td>{sterile_demo_status_badge(row.get("demo_status", ""))}</td>
+            <td>{sterile_demo_safe(row.get("demo_stage", ""))}</td>
+            <td>{sterile_demo_safe(row.get("demo_title", ""))}</td>
+            <td>{route_link}</td>
+            <td>{sterile_demo_safe(row.get("what_to_click", ""))}</td>
+            <td>{sterile_demo_safe(row.get("what_to_say", ""))}</td>
+            <td>{sterile_demo_safe(row.get("proof_point", ""))}</td>
+            <td>{sterile_demo_safe(row.get("expected_outcome", ""))}</td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Demo Walkthrough: {record_id}</h1>
+        <p>
+            Record-level demo script for <b>{sterile_demo_safe(first.get("csp_name", ""))}</b>.
+        </p>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            Use this page as your live speaking guide.
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Walkthrough Actions</h2>
+        <a class="st-button" href="/sterile-compounding/inspection-binder/{record_id}">Open Binder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-narrative/{record_id}">Open Narrative</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/{record_id}">Open Master Assurance</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk/{record_id}">Open Crosswalk</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator/{record_id}">Open Closure Simulator</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Step-by-Step Demo</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Stage</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Click</th>
+                        <th>Say</th>
+                        <th>Proof Point</th>
+                        <th>Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/demo-walkthrough">Back to Walkthrough Index</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/demo-script">Demo Script</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/navigation-hub">Navigation Hub</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_DEMO_WALKTHROUGH_RECORD_VIEW",
+            "Record-level sterile demo walkthrough viewed",
+            actor="system",
+            source_route="/sterile-compounding/demo-walkthrough/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Demo Walkthrough - {record_id}", body)
+
+
+@app.route("/sterile-compounding/demo-script")
+def sterile_compounding_demo_script():
+    walkthrough_df, script_df = sterile_demo_build_walkthroughs()
+
+    rows_html = ""
+
+    if not script_df.empty:
+        for _, row in script_df.sort_values(by="display_order", ascending=True).iterrows():
+            route = sterile_demo_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_demo_safe(row.get("display_order", ""))}</td>
+                <td>{sterile_demo_status_badge(row.get("demo_status", ""))}</td>
+                <td>{sterile_demo_safe(row.get("script_stage", ""))}</td>
+                <td>{sterile_demo_safe(row.get("script_title", ""))}</td>
+                <td>{sterile_demo_safe(row.get("talk_track", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_demo_safe(row.get("leadership_value", ""))}</td>
+                <td>{sterile_demo_safe(row.get("risk_message", ""))}</td>
+                <td>{sterile_demo_safe(row.get("next_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No demo script rows found.
+            </td>
+        </tr>
+        """
+
+    total = len(script_df)
+    green = int((script_df["demo_status"] == "GREEN").sum()) if total else 0
+    yellow = int((script_df["demo_status"] == "YELLOW").sum()) if total else 0
+    red = int((script_df["demo_status"] == "RED").sum()) if total else 0
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Leadership Demo Script</h1>
+        <p>
+            Short leadership talk track for presenting the sterile vertical in a structured sequence.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Script Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/demo-script/export">Export Demo Script</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Leadership Demo Script Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Stage</th>
+                        <th>Title</th>
+                        <th>Talk Track</th>
+                        <th>Route</th>
+                        <th>Leadership Value</th>
+                        <th>Risk Message</th>
+                        <th>Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DEMO-SCRIPT",
+            "STERILE_DEMO_SCRIPT_VIEW",
+            "Sterile leadership demo script viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/demo-script",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Leadership Demo Script", body)
+
+
+@app.route("/sterile-compounding/demo-walkthrough/export")
+def sterile_compounding_demo_walkthrough_export():
+    walkthrough_df, script_df = sterile_demo_build_walkthroughs()
+
+    if walkthrough_df.empty:
+        walkthrough_df = sterile_demo_pd.DataFrame(columns=STERILE_DEMO_WALKTHROUGH_COLUMNS)
+
+    csv_data = walkthrough_df.to_csv(index=False)
+
+    return sterile_demo_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_demo_walkthrough_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/demo-script/export")
+def sterile_compounding_demo_script_export():
+    walkthrough_df, script_df = sterile_demo_build_walkthroughs()
+
+    if script_df.empty:
+        script_df = sterile_demo_pd.DataFrame(columns=STERILE_DEMO_SCRIPT_COLUMNS)
+
+    csv_data = script_df.to_csv(index=False)
+
+    return sterile_demo_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_demo_script_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_demo_walkthrough_dashboard_injection(response):
+    try:
+        if sterile_demo_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/navigation-hub",
+            "/sterile-compounding/module-map",
+            "/sterile-compounding/route-health",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/packet-manifest",
+            "/sterile-compounding/inspection-narrative",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/control-evidence-coverage",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-demo-walkthrough-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-demo-walkthrough-panel">
+            <h2>Demo Walkthrough + Leadership Talk Track</h2>
+            <p class="st-note">
+                Opens a structured demo guide with what to click, what to say, proof points,
+                leadership value, risk message, and next action.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-script">Demo Script</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough/export">Export Walkthrough</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-script/export">Export Script</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile demo walkthrough dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
