@@ -47201,5 +47201,902 @@ def sterile_compounding_integration_blueprint_dashboard_injection(response):
         print(f"Sterile integration blueprint dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_DATA_CONTRACTS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 36: Integration Data Contracts + Field Mapping Matrix
+#
+# New Routes:
+#   /sterile-compounding/data-contracts
+#   /sterile-compounding/data-contracts/<system_key>
+#   /sterile-compounding/data-contracts/export
+#   /sterile-compounding/field-mapping-matrix
+#   /sterile-compounding/field-mapping-matrix/export
+#
+# New Registers:
+#   sterile_compounding_data_contract_register.csv
+#   sterile_compounding_field_mapping_matrix.csv
+#
+# Boundary:
+#   This is a sterile-only data contract and field mapping blueprint.
+#   It does not call APIs, does not change ServiceNow, Veeva, Blue Mountain,
+#   myAccess, Entra, Azure, Power BI, CI, Knowledge, Command Center,
+#   Monday Demo, Release Notes, Platform Health, Manufacturing/Wole,
+#   or any protected global module.
+# ============================================================
+
+try:
+    import pandas as sterile_dc_pd
+    import json as sterile_dc_json
+    from flask import request as sterile_dc_request
+    from flask import Response as sterile_dc_Response
+except Exception as sterile_dc_import_error:
+    raise RuntimeError(f"Sterile data contracts import failed: {sterile_dc_import_error}")
+
+
+STERILE_DATA_CONTRACT_REGISTER = "sterile_compounding_data_contract_register.csv"
+STERILE_FIELD_MAPPING_MATRIX_REGISTER = "sterile_compounding_field_mapping_matrix.csv"
+
+STERILE_DATA_CONTRACT_COLUMNS = [
+    "contract_id",
+    "system_key",
+    "system_name",
+    "contract_name",
+    "contract_type",
+    "data_direction",
+    "primary_key_strategy",
+    "refresh_pattern",
+    "minimum_fields",
+    "sensitive_data_position",
+    "source_of_truth_boundary",
+    "writeback_allowed",
+    "contract_status",
+    "contract_score",
+    "approval_needed",
+    "safe_first_test",
+    "failure_mode",
+    "last_checked",
+    "contract_hash"
+]
+
+STERILE_FIELD_MAPPING_COLUMNS = [
+    "mapping_id",
+    "system_key",
+    "system_name",
+    "source_object",
+    "source_field",
+    "target_register",
+    "target_field",
+    "mapping_type",
+    "required_for_mvp",
+    "data_quality_rule",
+    "governance_use",
+    "risk_if_missing",
+    "mapping_status",
+    "mapping_score",
+    "last_checked",
+    "mapping_hash"
+]
+
+
+STERILE_DATA_CONTRACT_SEED = [
+    {
+        "system_key": "servicenow",
+        "system_name": "ServiceNow",
+        "contract_name": "Ticket / Change / CI Reference Contract",
+        "contract_type": "Reference and workflow linkage",
+        "data_direction": "Read reference first; writeback only after approval",
+        "primary_key": "ticket_number, change_number, ci_sys_id, task_sys_id",
+        "refresh": "Manual CSV or read-only API pull after approval",
+        "fields": "ticket_number; short_description; assignment_group; status; change_number; ci_reference; knowledge_article; opened_at; closed_at",
+        "sensitive": "Avoid PHI/PII. Store only reference metadata and route links.",
+        "boundary": "ServiceNow remains workflow/source system. AssuranceLayer stores evidence linkage only.",
+        "writeback": "NO in current phase",
+        "status": "YELLOW",
+        "score": 65,
+        "approval": "ITSM owner, application owner, QA/Governance reviewer",
+        "test": "Load sample ticket reference CSV and map ticket_number to CSP record_id.",
+        "failure": "Ticket linkage may be missing or stale; do not block CSP readiness solely from unapproved ServiceNow data.",
+    },
+    {
+        "system_key": "veeva",
+        "system_name": "Veeva Vault / QMS",
+        "contract_name": "Controlled Document / Deviation / CAPA Reference Contract",
+        "contract_type": "Controlled document and QMS evidence reference",
+        "data_direction": "Read-only reference",
+        "primary_key": "document_id, document_version, deviation_id, capa_id",
+        "refresh": "Controlled export or approved read-only reference",
+        "fields": "document_id; document_title; version; lifecycle_state; deviation_id; capa_id; approval_status; effective_date",
+        "sensitive": "Do not store controlled document content. Store IDs, titles, versions, and approval state only.",
+        "boundary": "Veeva remains controlled document/QMS source of truth.",
+        "writeback": "NO",
+        "status": "YELLOW",
+        "score": 60,
+        "approval": "QA, Document Control, Veeva owner, CSV/validation reviewer",
+        "test": "Map SOP/formula version evidence to sterile SOP drift register using document_id and version.",
+        "failure": "If Veeva references are missing, SOP/formula readiness must remain YELLOW or require manual reviewer rationale.",
+    },
+    {
+        "system_key": "blue-mountain",
+        "system_name": "Blue Mountain RAM",
+        "contract_name": "Asset / Equipment / Room Readiness Contract",
+        "contract_type": "Validated asset readiness reference",
+        "data_direction": "Read-only reference",
+        "primary_key": "asset_id, equipment_id, room_id, work_order_id",
+        "refresh": "Controlled export or approved read-only API",
+        "fields": "asset_id; asset_name; equipment_id; room_id; calibration_status; maintenance_status; work_order_id; due_date; review_status",
+        "sensitive": "Equipment/asset metadata only. No product or patient data.",
+        "boundary": "Blue Mountain remains validated asset/equipment source of truth.",
+        "writeback": "NO",
+        "status": "YELLOW",
+        "score": 62,
+        "approval": "System owner, validation owner, QA, equipment/process owner",
+        "test": "Map hood/room/equipment IDs to sterile equipment-room drift register.",
+        "failure": "If asset status is unavailable, equipment/room readiness remains conditional.",
+    },
+    {
+        "system_key": "myaccess",
+        "system_name": "myAccess",
+        "contract_name": "Access Evidence Contract",
+        "contract_type": "Access governance reference",
+        "data_direction": "Read-only reference or controlled CSV",
+        "primary_key": "user_id, access_role, application_name",
+        "refresh": "Controlled CSV export first; API later only after approval",
+        "fields": "user_id; display_name; access_role; access_status; approval_state; last_review_date; reviewer; exception_flag",
+        "sensitive": "User identity metadata. Avoid unnecessary personal attributes.",
+        "boundary": "myAccess remains access governance source of truth.",
+        "writeback": "NO",
+        "status": "YELLOW",
+        "score": 60,
+        "approval": "IAM owner, access governance owner, QA/Governance reviewer",
+        "test": "Map technician role/access evidence to sterile personnel competency drift register.",
+        "failure": "If access evidence is missing, personnel/access readiness should be review-required.",
+    },
+    {
+        "system_key": "entra",
+        "system_name": "Microsoft Entra ID",
+        "contract_name": "Identity Normalization Contract",
+        "contract_type": "Identity metadata reference",
+        "data_direction": "Read-only lookup after approval",
+        "primary_key": "user_principal_name, object_id, email",
+        "refresh": "Read-only Graph lookup or controlled directory export",
+        "fields": "user_principal_name; display_name; email; object_id; account_enabled; department; group_membership",
+        "sensitive": "Identity metadata only. Do not collect unnecessary HR or personal data.",
+        "boundary": "Entra remains identity source of truth.",
+        "writeback": "NO",
+        "status": "YELLOW",
+        "score": 62,
+        "approval": "IAM owner, security owner, app owner",
+        "test": "Normalize reviewer, custodian, technician, and sign-off actors.",
+        "failure": "If identity cannot be verified, sign-off/custody/personnel records should show identity-review required.",
+    },
+    {
+        "system_key": "azure-blob",
+        "system_name": "Azure Blob Storage",
+        "contract_name": "Evidence Register Storage Contract",
+        "contract_type": "Register and evidence metadata storage",
+        "data_direction": "Target storage",
+        "primary_key": "register_name, evidence_id, snapshot_id, blob_path",
+        "refresh": "Application write/read within approved storage container",
+        "fields": "register_name; blob_path; file_name; content_hash; uploaded_by; created_at; retention_label; evidence_id",
+        "sensitive": "Do not store secrets in blob metadata. Sensitive evidence requires approved controls.",
+        "boundary": "Blob stores evidence/register artifacts; authoritative source remains defined per data object.",
+        "writeback": "YES after approved storage design",
+        "status": "GREEN",
+        "score": 78,
+        "approval": "Azure owner, security owner, records/retention reviewer",
+        "test": "Store exported sterile register snapshots in controlled folder pattern.",
+        "failure": "If storage is unavailable, exports remain local/runtime only and should not be treated as retained records.",
+    },
+    {
+        "system_key": "azure-confidential-ledger",
+        "system_name": "Azure Confidential Ledger",
+        "contract_name": "Hash Anchoring Contract",
+        "contract_type": "Immutable hash anchoring",
+        "data_direction": "Target ledger",
+        "primary_key": "hash_id, ledger_transaction_id, snapshot_id, dossier_id",
+        "refresh": "Write hash-only transaction after approval",
+        "fields": "hash_id; evidence_hash; snapshot_hash; dossier_hash; ledger_transaction_id; anchored_at; verification_status",
+        "sensitive": "Hash-only payload. Never write PHI, PII, secrets, or evidence content to ledger.",
+        "boundary": "Ledger proves hash anchoring only; it does not store source evidence.",
+        "writeback": "YES after approved ledger design",
+        "status": "YELLOW",
+        "score": 68,
+        "approval": "Security owner, cloud owner, QA/Governance reviewer",
+        "test": "Anchor freeze snapshot hash and verify transaction reference.",
+        "failure": "If ledger is unavailable, local hash verification continues but external immutability is not proven.",
+    },
+    {
+        "system_key": "power-bi",
+        "system_name": "Power BI",
+        "contract_name": "Sterile Assurance Analytics Contract",
+        "contract_type": "Analytics dataset",
+        "data_direction": "Target analytics",
+        "primary_key": "record_id, register_name, snapshot_id",
+        "refresh": "Controlled CSV/dataflow refresh",
+        "fields": "record_id; csp_name; assurance_status; inspection_status; binder_status; maturity_score; route_health_count; readiness_score",
+        "sensitive": "Use de-identified/metadata-only dashboard fields unless approved.",
+        "boundary": "Power BI is reporting layer only. It is not source of truth.",
+        "writeback": "NO",
+        "status": "GREEN",
+        "score": 75,
+        "approval": "Analytics owner, data governance reviewer, business owner",
+        "test": "Load register exports into a sterile readiness dashboard dataset.",
+        "failure": "Dashboard may lag source registers; use refresh timestamp and snapshot hash for context.",
+    },
+]
+
+
+STERILE_FIELD_MAPPING_SEED = [
+    ("servicenow", "ServiceNow", "incident/change/task", "number", "sterile_compounding_register.csv", "external_reference_id", "Reference", "YES", "Must be unique if provided", "Link CSP to ticket/change/task evidence", "Cannot trace operational workflow reference", 80),
+    ("servicenow", "ServiceNow", "incident/change/task", "state", "sterile_compounding_review_register.csv", "workflow_status", "Status", "NO", "Must map to controlled status values", "Show workflow state in review context", "Workflow evidence may be stale", 70),
+    ("servicenow", "ServiceNow", "kb_knowledge", "number", "sterile_compounding_auditor_qa_register.csv", "evidence_route", "Reference", "NO", "Route or article reference must be resolvable", "Link Q&A to supporting knowledge", "Auditor answer may lack support link", 65),
+
+    ("veeva", "Veeva Vault / QMS", "document", "document_id", "sterile_compounding_sop_formula_register.csv", "sop_id", "Reference", "YES", "Document ID must be controlled and versioned", "Map CSP to controlled SOP/formula", "SOP linkage becomes manual", 85),
+    ("veeva", "Veeva Vault / QMS", "document", "version", "sterile_compounding_sop_formula_register.csv", "sop_version", "Version", "YES", "Version must match effective controlled document", "Detect SOP/formula drift", "Version mismatch may be missed", 85),
+    ("veeva", "Veeva Vault / QMS", "deviation", "deviation_id", "sterile_compounding_master_assurance_register.csv", "deviation_reference", "Reference", "NO", "Deviation ID must be valid when present", "Show deviation/CAPA dependency in assurance", "Open deviations may not be visible", 75),
+    ("veeva", "Veeva Vault / QMS", "capa", "capa_id", "sterile_compounding_recovery_plan_register.csv", "blocker_summary", "Reference", "NO", "CAPA reference should be linked to closure action", "Connect recovery plan to QMS action", "Recovery may not align to QMS", 70),
+
+    ("blue-mountain", "Blue Mountain RAM", "asset", "asset_id", "sterile_compounding_equipment_room_register.csv", "equipment_id", "Reference", "YES", "Asset ID must match validated asset record", "Map CSP to equipment/room readiness", "Equipment readiness cannot be proven", 85),
+    ("blue-mountain", "Blue Mountain RAM", "work_order", "work_order_id", "sterile_compounding_equipment_room_drift_register.csv", "maintenance_reference", "Reference", "NO", "Work order must be complete or justified", "Support maintenance/calibration readiness", "Maintenance evidence gap", 75),
+    ("blue-mountain", "Blue Mountain RAM", "asset", "calibration_status", "sterile_compounding_equipment_room_drift_register.csv", "equipment_room_drift_status", "Status", "YES", "Map valid/expired/due status to GREEN/YELLOW/RED", "Drive equipment drift decision", "Incorrect room/equipment status", 85),
+
+    ("myaccess", "myAccess", "access_review", "user_id", "sterile_compounding_personnel_competency_register.csv", "person_key", "Identity", "YES", "User ID must resolve to approved personnel", "Link personnel to access/role evidence", "Personnel access evidence missing", 80),
+    ("myaccess", "myAccess", "access_review", "access_status", "sterile_compounding_personnel_drift_register.csv", "personnel_drift_status", "Status", "YES", "Approved/active required for GREEN", "Drive personnel readiness status", "Unauthorized or stale access may be missed", 85),
+    ("myaccess", "myAccess", "access_review", "last_review_date", "sterile_compounding_personnel_competency_register.csv", "last_review_date", "Date", "NO", "Date must be within approved review window", "Support access review evidence", "Review evidence may be outdated", 70),
+
+    ("entra", "Microsoft Entra ID", "user", "userPrincipalName", "sterile_compounding_signoff_register.csv", "signed_by", "Identity", "YES", "UPN must match authenticated reviewer identity", "Normalize reviewer/sign-off identity", "Reviewer identity ambiguity", 80),
+    ("entra", "Microsoft Entra ID", "user", "displayName", "sterile_compounding_custody_chain_register.csv", "custodian_name", "Identity", "NO", "Display name must align to UPN/email", "Normalize custodian identity", "Custody actor ambiguity", 70),
+    ("entra", "Microsoft Entra ID", "user", "accountEnabled", "sterile_compounding_personnel_drift_register.csv", "identity_status", "Status", "NO", "Disabled accounts must trigger review", "Prevent inactive identity reliance", "Inactive accounts may be relied on", 75),
+
+    ("azure-blob", "Azure Blob Storage", "blob", "name", "sterile_compounding_evidence_vault_register.csv", "file_name", "Storage", "YES", "File name must follow sterile naming convention", "Link evidence metadata to stored file", "Evidence file cannot be located", 80),
+    ("azure-blob", "Azure Blob Storage", "blob", "content_md5_or_sha256", "sterile_compounding_evidence_vault_register.csv", "evidence_hash", "Hash", "YES", "Hash must verify after upload", "Support tamper-evident evidence", "Evidence integrity cannot be checked", 90),
+    ("azure-blob", "Azure Blob Storage", "blob", "metadata.retention_label", "sterile_compounding_register_catalog.csv", "risk_note", "Retention", "NO", "Retention metadata must be controlled if used", "Support records governance", "Retention expectations unclear", 65),
+
+    ("azure-confidential-ledger", "Azure Confidential Ledger", "transaction", "transactionId", "sterile_compounding_seal_verification_register.csv", "ledger_transaction_id", "Ledger", "NO", "Transaction ID must verify against hash payload", "Prove external hash anchoring", "Hash anchor cannot be independently verified", 75),
+    ("azure-confidential-ledger", "Azure Confidential Ledger", "transaction", "contents_hash", "sterile_compounding_freeze_snapshot_register.csv", "snapshot_hash", "Hash", "NO", "Ledger payload must contain hash only", "Anchor freeze/presentation evidence", "Snapshot immutability weaker", 80),
+
+    ("power-bi", "Power BI", "dataset", "record_id", "sterile_compounding_inspection_binder_register.csv", "record_id", "Analytics Key", "YES", "Record ID must join across registers", "Enable dashboard drill-through", "Dashboard cannot drill by CSP", 85),
+    ("power-bi", "Power BI", "dataset", "inspection_status", "sterile_compounding_inspection_readiness_register.csv", "inspection_status", "KPI", "YES", "Status values must be GREEN/YELLOW/RED", "Show inspection readiness KPI", "Leadership readiness KPI unavailable", 85),
+    ("power-bi", "Power BI", "dataset", "maturity_score", "sterile_compounding_maturity_model_register.csv", "maturity_score", "KPI", "NO", "Score must remain numeric 0-100", "Show roadmap/maturity progression", "Maturity dashboard incomplete", 75),
+]
+
+
+def sterile_dc_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile data contract dependencies missing: " + ", ".join(missing))
+
+
+def sterile_dc_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_dc_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_dc_bucket(value):
+    value = sterile_dc_safe(value).upper()
+
+    if value in ["GREEN", "READY", "APPROVED", "YES"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "NO", "FAILED"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_dc_badge(status):
+    bucket = sterile_dc_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_dc_build_contracts():
+    sterile_dc_require_dependencies()
+
+    contract_rows = []
+    mapping_rows = []
+
+    for item in STERILE_DATA_CONTRACT_SEED:
+        payload = {
+            "contract_id": sterile_dc_make_id("ST-CONTRACT", item["system_key"], item["contract_name"]),
+            "system_key": item["system_key"],
+            "system_name": item["system_name"],
+            "contract_name": item["contract_name"],
+            "contract_type": item["contract_type"],
+            "data_direction": item["data_direction"],
+            "primary_key_strategy": item["primary_key"],
+            "refresh_pattern": item["refresh"],
+            "minimum_fields": item["fields"],
+            "sensitive_data_position": item["sensitive"],
+            "source_of_truth_boundary": item["boundary"],
+            "writeback_allowed": item["writeback"],
+            "contract_status": item["status"],
+            "contract_score": item["score"],
+            "approval_needed": item["approval"],
+            "safe_first_test": item["test"],
+            "failure_mode": item["failure"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["contract_hash"] = sterile_hash_text(
+            sterile_dc_json.dumps(payload, sort_keys=True)
+        )
+
+        contract_rows.append(payload)
+
+    for (
+        system_key,
+        system_name,
+        source_object,
+        source_field,
+        target_register,
+        target_field,
+        mapping_type,
+        required_for_mvp,
+        data_quality_rule,
+        governance_use,
+        risk_if_missing,
+        mapping_score,
+    ) in STERILE_FIELD_MAPPING_SEED:
+
+        if int(mapping_score) >= 80:
+            mapping_status = "GREEN"
+        elif int(mapping_score) >= 65:
+            mapping_status = "YELLOW"
+        else:
+            mapping_status = "RED"
+
+        payload = {
+            "mapping_id": sterile_dc_make_id("ST-MAP", system_key, source_object, source_field, target_register, target_field),
+            "system_key": system_key,
+            "system_name": system_name,
+            "source_object": source_object,
+            "source_field": source_field,
+            "target_register": target_register,
+            "target_field": target_field,
+            "mapping_type": mapping_type,
+            "required_for_mvp": required_for_mvp,
+            "data_quality_rule": data_quality_rule,
+            "governance_use": governance_use,
+            "risk_if_missing": risk_if_missing,
+            "mapping_status": mapping_status,
+            "mapping_score": mapping_score,
+            "last_checked": sterile_now(),
+        }
+
+        payload["mapping_hash"] = sterile_hash_text(
+            sterile_dc_json.dumps(payload, sort_keys=True)
+        )
+
+        mapping_rows.append(payload)
+
+    contract_df = sterile_dc_pd.DataFrame(contract_rows)
+    contract_df = sterile_ensure_cols(contract_df, STERILE_DATA_CONTRACT_COLUMNS)
+
+    mapping_df = sterile_dc_pd.DataFrame(mapping_rows)
+    mapping_df = sterile_ensure_cols(mapping_df, STERILE_FIELD_MAPPING_COLUMNS)
+
+    sterile_write_register(STERILE_DATA_CONTRACT_REGISTER, contract_df, STERILE_DATA_CONTRACT_COLUMNS)
+    sterile_write_register(STERILE_FIELD_MAPPING_MATRIX_REGISTER, mapping_df, STERILE_FIELD_MAPPING_COLUMNS)
+
+    return contract_df, mapping_df
+
+
+@app.route("/sterile-compounding/data-contracts")
+def sterile_compounding_data_contracts():
+    contract_df, mapping_df = sterile_dc_build_contracts()
+
+    status_filter = sterile_dc_safe(sterile_dc_request.args.get("status", ""))
+    system_filter = sterile_dc_safe(sterile_dc_request.args.get("system", ""))
+
+    filtered = contract_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["contract_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["contract_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["contract_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["contract_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Contract Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(contract_df["system_key"].dropna().unique().tolist()) if not contract_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["contract_status", "system_key"], ascending=[False, True]).iterrows():
+            system_key = sterile_dc_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dc_badge(row.get("contract_status", ""))}</td>
+                <td><a href="/sterile-compounding/data-contracts/{system_key}">{sterile_dc_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_dc_safe(row.get("contract_name", ""))}</td>
+                <td>{sterile_dc_safe(row.get("contract_type", ""))}</td>
+                <td>{sterile_dc_safe(row.get("data_direction", ""))}</td>
+                <td>{sterile_dc_safe(row.get("contract_score", ""))}</td>
+                <td>{sterile_dc_safe(row.get("writeback_allowed", ""))}</td>
+                <td>{sterile_dc_safe(row.get("primary_key_strategy", ""))}</td>
+                <td>{sterile_dc_safe(row.get("safe_first_test", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No data contract rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Integration Data Contracts</h1>
+        <p>
+            Proposed data contracts for future sterile integrations. These define keys, fields, source-of-truth
+            boundaries, writeback limits, sensitive-data position, approval requirements, and first safe tests.
+            No external system is connected or modified by this module.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Contracts</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Contract Filters</h2>
+        <form method="GET" action="/sterile-compounding/data-contracts">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Contract Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix">Field Mapping Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts/export">Export Contracts</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Data Contract Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Contract</th>
+                        <th>Type</th>
+                        <th>Direction</th>
+                        <th>Score</th>
+                        <th>Writeback</th>
+                        <th>Primary Key Strategy</th>
+                        <th>First Safe Test</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DATA-CONTRACTS",
+            "STERILE_DATA_CONTRACTS_VIEW",
+            "Sterile integration data contracts viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/data-contracts",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Integration Data Contracts", body)
+
+
+@app.route("/sterile-compounding/data-contracts/<system_key>")
+def sterile_compounding_data_contract_detail(system_key):
+    contract_df, mapping_df = sterile_dc_build_contracts()
+    system_key = sterile_dc_safe(system_key)
+
+    match = contract_df[contract_df["system_key"].astype(str) == str(system_key)].copy() if not contract_df.empty else contract_df
+
+    if match.empty:
+        return sterile_dc_Response("Data contract not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    system_maps = mapping_df[mapping_df["system_key"].astype(str) == str(system_key)].copy() if not mapping_df.empty else mapping_df
+
+    detail_rows = ""
+
+    for key in STERILE_DATA_CONTRACT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_dc_safe(row.get(key, ""))
+
+        if key == "contract_status":
+            value = sterile_dc_badge(value)
+        elif key == "contract_hash":
+            value = f"<code>{value}</code>"
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    mapping_rows = ""
+
+    if not system_maps.empty:
+        for _, item in system_maps.sort_values(by=["required_for_mvp", "mapping_score"], ascending=[False, False]).iterrows():
+            mapping_rows += f"""
+            <tr>
+                <td>{sterile_dc_badge(item.get("mapping_status", ""))}</td>
+                <td>{sterile_dc_safe(item.get("source_object", ""))}</td>
+                <td><code>{sterile_dc_safe(item.get("source_field", ""))}</code></td>
+                <td><code>{sterile_dc_safe(item.get("target_register", ""))}</code></td>
+                <td><code>{sterile_dc_safe(item.get("target_field", ""))}</code></td>
+                <td>{sterile_dc_safe(item.get("required_for_mvp", ""))}</td>
+                <td>{sterile_dc_safe(item.get("data_quality_rule", ""))}</td>
+                <td>{sterile_dc_safe(item.get("governance_use", ""))}</td>
+            </tr>
+            """
+    else:
+        mapping_rows = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No mappings found for this system.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Data Contract: {sterile_dc_safe(row.get("system_name", ""))}</h1>
+        <p>
+            Proposed data contract and field mappings for this future integration. Documentation only.
+        </p>
+        <div style="margin-top:16px;">{sterile_dc_badge(row.get("contract_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_dc_safe(row.get("safe_first_test", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Contract Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Field Mappings for This System</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Source Object</th>
+                        <th>Source Field</th>
+                        <th>Target Register</th>
+                        <th>Target Field</th>
+                        <th>MVP</th>
+                        <th>Quality Rule</th>
+                        <th>Governance Use</th>
+                    </tr>
+                </thead>
+                <tbody>{mapping_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/data-contracts">Back to Data Contracts</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix">Field Mapping Matrix</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint/{system_key}">Integration Blueprint</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness?system={system_key}">Connector Readiness</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_DATA_CONTRACT_DETAIL_VIEW",
+            "Sterile data contract detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/data-contracts/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Data Contract - {system_key}", body)
+
+
+@app.route("/sterile-compounding/field-mapping-matrix")
+def sterile_compounding_field_mapping_matrix():
+    contract_df, mapping_df = sterile_dc_build_contracts()
+
+    system_filter = sterile_dc_safe(sterile_dc_request.args.get("system", ""))
+    required_filter = sterile_dc_safe(sterile_dc_request.args.get("required", ""))
+    status_filter = sterile_dc_safe(sterile_dc_request.args.get("status", ""))
+
+    filtered = mapping_df.copy()
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    if required_filter and not filtered.empty:
+        filtered = filtered[filtered["required_for_mvp"].astype(str) == required_filter]
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["mapping_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["mapping_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["mapping_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["mapping_status"] == "RED").sum()) if total else 0
+    required = int((filtered["required_for_mvp"] == "YES").sum()) if total else 0
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(mapping_df["system_key"].dropna().unique().tolist()) if not mapping_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    required_options = ""
+    for option in ["", "YES", "NO"]:
+        label = "All MVP Flags" if option == "" else option
+        selected = "selected" if option == required_filter else ""
+        required_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Mapping Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["required_for_mvp", "mapping_status", "system_key"], ascending=[False, False, True]).iterrows():
+            system_key = sterile_dc_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dc_badge(row.get("mapping_status", ""))}</td>
+                <td><a href="/sterile-compounding/data-contracts/{system_key}">{sterile_dc_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_dc_safe(row.get("source_object", ""))}</td>
+                <td><code>{sterile_dc_safe(row.get("source_field", ""))}</code></td>
+                <td><code>{sterile_dc_safe(row.get("target_register", ""))}</code></td>
+                <td><code>{sterile_dc_safe(row.get("target_field", ""))}</code></td>
+                <td>{sterile_dc_safe(row.get("mapping_type", ""))}</td>
+                <td>{sterile_dc_safe(row.get("required_for_mvp", ""))}</td>
+                <td>{sterile_dc_safe(row.get("mapping_score", ""))}</td>
+                <td>{sterile_dc_safe(row.get("risk_if_missing", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No field mapping rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Field Mapping Matrix</h1>
+        <p>
+            System-to-sterile-register mapping matrix for future integrations. This is the field-level bridge
+            between enterprise systems and the sterile assurance registers.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Mappings</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Required for MVP</div><div class="st-value">{required}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Mapping Filters</h2>
+        <form method="GET" action="/sterile-compounding/field-mapping-matrix">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Required for MVP</label>
+                    <select name="required">{required_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Mapping Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts">Data Contracts</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix/export">Export Mappings</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Field Mapping Matrix Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Source Object</th>
+                        <th>Source Field</th>
+                        <th>Target Register</th>
+                        <th>Target Field</th>
+                        <th>Type</th>
+                        <th>MVP</th>
+                        <th>Score</th>
+                        <th>Risk if Missing</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "FIELD-MAPPING-MATRIX",
+            "STERILE_FIELD_MAPPING_MATRIX_VIEW",
+            "Sterile field mapping matrix viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/field-mapping-matrix",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Field Mapping Matrix", body)
+
+
+@app.route("/sterile-compounding/data-contracts/export")
+def sterile_compounding_data_contracts_export():
+    contract_df, mapping_df = sterile_dc_build_contracts()
+
+    if contract_df.empty:
+        contract_df = sterile_dc_pd.DataFrame(columns=STERILE_DATA_CONTRACT_COLUMNS)
+
+    csv_data = contract_df.to_csv(index=False)
+
+    return sterile_dc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_data_contracts_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/field-mapping-matrix/export")
+def sterile_compounding_field_mapping_matrix_export():
+    contract_df, mapping_df = sterile_dc_build_contracts()
+
+    if mapping_df.empty:
+        mapping_df = sterile_dc_pd.DataFrame(columns=STERILE_FIELD_MAPPING_COLUMNS)
+
+    csv_data = mapping_df.to_csv(index=False)
+
+    return sterile_dc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_field_mapping_matrix_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_data_contracts_dashboard_injection(response):
+    try:
+        if sterile_dc_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-data-contracts-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-data-contracts-panel">
+            <h2>Integration Data Contracts + Field Mapping Matrix</h2>
+            <p class="st-note">
+                Defines proposed keys, fields, source-of-truth boundaries, writeback limits,
+                and system-to-register field mappings for future sterile integrations. No external system is called.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/data-contracts">Data Contracts</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix">Field Mapping Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts/export">Export Contracts</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/field-mapping-matrix/export">Export Mappings</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile data contracts dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
