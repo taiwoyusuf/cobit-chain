@@ -1,3 +1,4 @@
+# CI_MYACCESS_NAV_HEALTH_ACTIVE
 # CI_MYACCESS_BLUEPRINT_ACTIVE
 # RELEASE_NOTES_PAGE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_HEALTH_ACTIVE
@@ -7893,6 +7894,14 @@ def get_platform_health_rows():
             "purpose": "Read-only composite control tower showing ServiceNow tickets, Entra technicians, shift handoffs, CI readiness, KB usage, knowledge governance, supervisor review, and audit lineage."
         },
         {
+            "tier": "Strategic Blueprint",
+            "module": "CI + MyAccess Readiness Blueprint",
+            "route": "/ci-myaccess-blueprint",
+            "test_route": "",
+            "register": "COMPOSITE_VIEW:ci-myaccess-blueprint",
+            "purpose": "Static future-state blueprint for binder/Excel certification, Blue Mountain asset-to-CI readiness, MyAccess mapping, SuccessFactors training reference, CI Passport, Access Passport, and audit lineage."
+        },
+        {
             "tier": "Knowledge Governance",
             "module": "Knowledge Governance",
             "route": "/knowledge-governance",
@@ -8702,6 +8711,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 <h2>Strategic Platform Pages</h2>
 <div class="grid">
 <div class="card"><span class="badge strategy">CONTROL TOWER</span><h3>Operational Lineage</h3><p>One-page view of the full governed chain from ServiceNow live ticket to CI, Entra technician, shift handoff, evidence readiness, KB usage, supervisor review, and audit lineage.</p><a href="/operational-lineage">Open Operational Lineage</a></div>
+<div class="card"><span class="badge strategy">NEXT EXPANSION</span><h3>CI + MyAccess Blueprint</h3><p>Future-state blueprint for binder/Excel certification, Blue Mountain asset-to-CI readiness, MyAccess mapping, SuccessFactors training reference, CI Passport, Access Passport, and audit lineage.</p><a href="/ci-myaccess-blueprint">Open CI + MyAccess Blueprint</a></div>
 <div class="card"><span class="badge strategy">CONTROL TOWER</span><h3>Executive Overview</h3><p>Full enterprise + vertical dashboard showing module records, readiness, conditional items, and high-risk signals.</p><a href="/executive-overview">Open Executive Overview</a></div>
 <div class="card"><span class="badge strategy">PRODUCT SUITE</span><h3>Modules Directory</h3><p>Clean product-suite page showing core enterprise modules, life sciences modules, RLT flagship, DSCSA, and HomeCare.</p><a href="/modules">Open Modules</a></div>
 <div class="card"><span class="badge strategy">SYSTEM HEALTH</span><h3>Platform Health</h3><p>Route registry and register-health page showing each module, route, CSV register, record count, and status.</p><a href="/platform-health">Open Platform Health</a></div>
@@ -8751,7 +8761,7 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;col
 </div>
 
 <div class="warning">
-<b>Suggested demo path:</b> Command Center → Operational Lineage → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow Live Tickets → ServiceNow CI Readiness → Suggested KB → KB Usage → Knowledge Governance → Knowledge Review → Knowledge Passport → Executive Overview → Architecture → Roadmap.
+<b>Suggested demo path:</b> Command Center → Operational Lineage → CI + MyAccess Blueprint → QC Ops Intake → Technicians → Shift Enterprise → Handoff Lineage → ServiceNow Live Tickets → ServiceNow CI Readiness → Suggested KB → KB Usage → Knowledge Governance → Knowledge Review → Knowledge Passport → Executive Overview → Architecture → Roadmap.
 </div>
 </main>
 </body>
@@ -11663,6 +11673,7 @@ td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top}
 <a href="/command-center">Command Center</a>
 <a class="active" href="/monday-demo">Monday Demo</a>
 <a href="/operational-lineage">Operational Lineage</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess</a>
 <a href="/qc-ops-intake">QC Ops Intake</a>
 <a href="/technicians">Technicians</a>
 <a href="/shift-assurance-enterprise">Shift Enterprise</a>
@@ -11720,76 +11731,83 @@ The platform demonstrates how operational datasets, technician identity, ticket/
 
 <tr>
 <td class="stepno">3</td>
+<td><a href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a></td>
+<td>Future-state expansion for CI creation and access governance.</td>
+<td>“We have proven live ticket-to-audit lineage. The next controlled expansion is binder/Excel-to-CI and MyAccess readiness: Blue Mountain asset, SuccessFactors training, MyAccess approval, ServiceNow CI, CI Passport, Access Passport, and audit lineage.”</td>
+</tr>
+
+<tr>
+<td class="stepno">4</td>
 <td><a href="/qc-ops-intake">QC Ops Intake</a></td>
 <td>Excel/CSV becomes governed operational dataset.</td>
 <td>“We are not replacing spreadsheets. We are fingerprinting and transforming them into governed datasets.”</td>
 </tr>
 
 <tr>
-<td class="stepno">4</td>
+<td class="stepno">5</td>
 <td><a href="/technicians">Technicians</a></td>
 <td>Technician dropdown is controlled by Microsoft Entra ID.</td>
 <td>“Technician names are not typed manually. Eligibility comes from a controlled identity group.”</td>
 </tr>
 
 <tr>
-<td class="stepno">5</td>
+<td class="stepno">6</td>
 <td><a href="/shift-assurance-enterprise">Shift Enterprise</a></td>
 <td>Ticket + CI + approved technician + readiness score.</td>
 <td>“Shift work now links work context, CI reference, identity, evidence state, and governance readiness.”</td>
 </tr>
 
 <tr>
-<td class="stepno">6</td>
+<td class="stepno">7</td>
 <td><a href="/shift-handoff-lineage">Handoff Lineage</a></td>
 <td>Outgoing-to-incoming handoff lineage.</td>
 <td>“Operational responsibility transfer becomes a governed record with acceptance, risk, timestamp, and hash.”</td>
 </tr>
 
 <tr>
-<td class="stepno">7</td>
+<td class="stepno">8</td>
 <td><a href="/servicenow-tickets-live">ServiceNow Live Tickets</a></td>
 <td>Live read-only pull from ServiceNow PDI.</td>
 <td>“This is no longer only a mockup. AssuranceLayer is reading live PDI tickets and preparing them for CI readiness, handoff, evidence, and knowledge governance.”</td>
 </tr>
 
 <tr>
-<td class="stepno">8</td>
+<td class="stepno">9</td>
 <td><a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a></td>
 <td>Ticket/CI governance readiness model.</td>
 <td>“ServiceNow owns the ticket and CI. AssuranceLayer verifies whether the CI context is governance-ready.”</td>
 </tr>
 
 <tr>
-<td class="stepno">9</td>
+<td class="stepno">10</td>
 <td><a href="/knowledge-governance">Knowledge Governance</a></td>
 <td>Technician field knowledge becomes governed.</td>
 <td>“Field learning becomes linked to ticket, CI, technician, evidence, and future ServiceNow knowledge sync.”</td>
 </tr>
 
 <tr>
-<td class="stepno">10</td>
+<td class="stepno">11</td>
 <td><a href="/knowledge-review">Knowledge Review</a></td>
 <td>Supervisor review and approval lineage.</td>
 <td>“Knowledge is not published informally. It goes through review, comment, approval, revision, and hash lineage.”</td>
 </tr>
 
 <tr>
-<td class="stepno">11</td>
+<td class="stepno">12</td>
 <td><a href="/platform-health">Platform Health</a></td>
 <td>All module registers and record counts.</td>
 <td>“Each workflow has a separate evidence register, which protects modularity and traceability.”</td>
 </tr>
 
 <tr>
-<td class="stepno">12</td>
+<td class="stepno">13</td>
 <td><a href="/executive-overview">Executive Overview</a></td>
 <td>Leadership-level risk/readiness view.</td>
 <td>“This gives leaders visibility into operational governance posture, not only task status.”</td>
 </tr>
 
 <tr>
-<td class="stepno">13</td>
+<td class="stepno">14</td>
 <td><a href="/architecture">Architecture</a></td>
 <td>Architecture and innovation explanation.</td>
 <td>“This is a non-invasive assurance layer over existing enterprise systems.”</td>
@@ -13618,8 +13636,10 @@ td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top;word-break:br
 <a href="/command-center">Command Center</a>
 <a href="/monday-demo">Monday Demo</a>
 <a href="/operational-lineage">Operational Lineage</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess</a>
 <a href="/servicenow-tickets-live">ServiceNow Live</a>
 <a href="/platform-health">Platform Health</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess</a>
 <a class="active" href="/release-notes">Release Notes</a>
 </nav>
 
@@ -13729,6 +13749,7 @@ It is a governance assurance layer that connects the operational evidence around
 <div class="action">
 <a href="/monday-demo">Monday Demo</a>
 <a href="/operational-lineage">Operational Lineage</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a>
 <a href="/servicenow-tickets-live">ServiceNow Live</a>
 <a href="/technicians">Technicians</a>
 <a href="/shift-handoff-lineage">Handoff Lineage</a>
