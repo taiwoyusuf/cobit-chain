@@ -45387,5 +45387,977 @@ def sterile_compounding_freeze_snapshot_dashboard_injection(response):
         print(f"Sterile freeze snapshot dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_MATURITY_ROADMAP_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 34: Sterile Maturity Model + Roadmap
+#
+# New Routes:
+#   /sterile-compounding/maturity-model
+#   /sterile-compounding/maturity-model/<domain_id>
+#   /sterile-compounding/maturity-model/export
+#   /sterile-compounding/roadmap
+#   /sterile-compounding/roadmap/export
+#
+# New Registers:
+#   sterile_compounding_maturity_model_register.csv
+#   sterile_compounding_roadmap_register.csv
+#
+# Boundary:
+#   This creates a sterile-only maturity and roadmap layer.
+#   It does not touch Command Center, Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, or other protected areas.
+# ============================================================
+
+try:
+    import pandas as sterile_mm_pd
+    import json as sterile_mm_json
+    from flask import request as sterile_mm_request
+    from flask import Response as sterile_mm_Response
+except Exception as sterile_mm_import_error:
+    raise RuntimeError(f"Sterile maturity roadmap import failed: {sterile_mm_import_error}")
+
+
+STERILE_MATURITY_MODEL_REGISTER = "sterile_compounding_maturity_model_register.csv"
+STERILE_ROADMAP_REGISTER = "sterile_compounding_roadmap_register.csv"
+
+STERILE_MATURITY_MODEL_COLUMNS = [
+    "domain_id",
+    "domain_name",
+    "capability_area",
+    "current_maturity_level",
+    "target_maturity_level",
+    "maturity_status",
+    "maturity_score",
+    "evidence_available",
+    "supporting_route",
+    "current_state_summary",
+    "gap_summary",
+    "next_capability_needed",
+    "leadership_message",
+    "risk_if_not_advanced",
+    "last_checked",
+    "maturity_hash"
+]
+
+STERILE_ROADMAP_COLUMNS = [
+    "roadmap_id",
+    "domain_id",
+    "roadmap_phase",
+    "roadmap_item",
+    "priority",
+    "dependency",
+    "business_value",
+    "technical_value",
+    "governance_value",
+    "implementation_boundary",
+    "recommended_sequence",
+    "target_route_or_output",
+    "roadmap_status",
+    "last_checked",
+    "roadmap_hash"
+]
+
+
+STERILE_MATURITY_SEED = [
+    {
+        "domain_id": "MM-001",
+        "domain_name": "Core CSP Record Governance",
+        "capability_area": "Sterile compounding record passport, review, blast radius, lineage, and export",
+        "target": 4,
+        "route": "/sterile-compounding",
+        "current_state": "Core CSP register and record-level routes exist for sterile compounding governance.",
+        "gap": "Needs connection to real controlled source systems if moved beyond demo.",
+        "next": "Map real sterile compounding source records into controlled ingestion workflow.",
+        "risk": "Without source-system linkage, the vertical remains a strong demo but not an operational evidence layer.",
+    },
+    {
+        "domain_id": "MM-002",
+        "domain_name": "Evidence Matrix and Audit Pack",
+        "capability_area": "Evidence vault, evidence matrix, audit pack, and release dossier governance",
+        "target": 5,
+        "route": "/sterile-compounding/audit-pack",
+        "current_state": "Evidence matrix, audit pack, and release dossier layers support inspection readiness and record-level review.",
+        "gap": "Needs direct evidence upload controls, reviewer workflows, and source-of-truth integrations for production usage.",
+        "next": "Add governed upload/review workflow and link to validated evidence repositories.",
+        "risk": "Without governed evidence ingestion, evidence quality may depend on manual data entry.",
+    },
+    {
+        "domain_id": "MM-003",
+        "domain_name": "Cryptographic Seal and Integrity Verification",
+        "capability_area": "Dossier seal, seal ledger, seal verification, and seal health",
+        "target": 5,
+        "route": "/sterile-compounding/seal-health",
+        "current_state": "Cryptographic seal logic demonstrates tamper-evident dossier governance.",
+        "gap": "Needs production-grade immutable ledger anchoring if adopted operationally.",
+        "next": "Anchor dossier hashes to Azure Confidential Ledger or equivalent immutable ledger.",
+        "risk": "Without immutable anchoring, seal evidence is useful but not as strong as externalized ledger assurance.",
+    },
+    {
+        "domain_id": "MM-004",
+        "domain_name": "Custody and Handoff Assurance",
+        "capability_area": "Custody chain, custody health, and custody-to-audit linkage",
+        "target": 4,
+        "route": "/sterile-compounding/custody-audit-link",
+        "current_state": "Custody chain and custody audit-link show how ownership, location, hold, and handoff can be governed.",
+        "gap": "Needs integration with actual inventory, storage, chain-of-custody, and hold/quarantine systems.",
+        "next": "Connect custody records to real inventory/location sources and exception workflow.",
+        "risk": "Manual custody records can miss real-time movement or hold status changes.",
+    },
+    {
+        "domain_id": "MM-005",
+        "domain_name": "SOP, Formula, Personnel, Equipment, and Room Drift",
+        "capability_area": "SOP/formula version, personnel competency, and equipment/room readiness drift",
+        "target": 5,
+        "route": "/sterile-compounding/sop-formula-governance",
+        "current_state": "The vertical models drift between CSP records and SOP/formula/personnel/equipment/room readiness.",
+        "gap": "Needs controlled integration to training, SOP, equipment, room certification, and environmental systems.",
+        "next": "Create source connectors and pre-work readiness checks before compounding execution.",
+        "risk": "Without source integration, drift detection remains a governance simulation rather than a live control.",
+    },
+    {
+        "domain_id": "MM-006",
+        "domain_name": "Master Assurance and No-Release Gate",
+        "capability_area": "Composite assurance index and no-release governance gate",
+        "target": 5,
+        "route": "/sterile-compounding/master-assurance-index",
+        "current_state": "Master Assurance and Composite No-Release Gate consolidate evidence, sign-off, seal, custody, SOP, personnel, equipment, environmental, and regulatory signals.",
+        "gap": "Needs validated scoring governance, approved thresholds, and independent reviewer sign-off if used operationally.",
+        "next": "Define approved scoring thresholds, reviewer roles, and exception handling SOP.",
+        "risk": "Without approved scoring governance, users may over-trust the score.",
+    },
+    {
+        "domain_id": "MM-007",
+        "domain_name": "Inspection Readiness and Auditor Q&A",
+        "capability_area": "Inspection readiness bundle, auditor Q&A, narrative report, and binder",
+        "target": 5,
+        "route": "/sterile-compounding/inspection-binder",
+        "current_state": "Inspection readiness, auditor Q&A, narrative, and binder layers provide a strong reviewer-facing demonstration.",
+        "gap": "Needs controlled evidence packet export, reviewer approval, and document retention rules for operational use.",
+        "next": "Add controlled PDF/packet generation and retention metadata.",
+        "risk": "Without controlled packet retention, inspection evidence could become inconsistent across versions.",
+    },
+    {
+        "domain_id": "MM-008",
+        "domain_name": "Regulatory Crosswalk and Control-Evidence Coverage",
+        "capability_area": "Control-domain mapping, evidence routes, auditor questions, and coverage score",
+        "target": 5,
+        "route": "/sterile-compounding/regulatory-crosswalk",
+        "current_state": "Regulatory crosswalk and control-evidence coverage explain each CSP by control domain and supporting route.",
+        "gap": "Needs organization-approved control taxonomy and mapping to internal SOPs or standards.",
+        "next": "Map the crosswalk to approved internal sterile compounding controls, SOP IDs, and evidence requirements.",
+        "risk": "Without approved taxonomy, crosswalk is persuasive but not formally authoritative.",
+    },
+    {
+        "domain_id": "MM-009",
+        "domain_name": "Demo, Navigation, Acceptance, and Presentation Lock",
+        "capability_area": "Demo walkthrough, navigation hub, route health, build acceptance, go-live readiness, freeze snapshot",
+        "target": 4,
+        "route": "/sterile-compounding/presentation-lock",
+        "current_state": "The vertical has strong internal demo navigation, route health, acceptance, go-live, and presentation lock pages.",
+        "gap": "Needs global navigation integration only when explicitly approved.",
+        "next": "Add controlled entry points to global Command Center, Monday Demo, Release Notes, and Platform Health as a separate approved patch.",
+        "risk": "Without global navigation, users must know the sterile URLs directly.",
+    },
+    {
+        "domain_id": "MM-010",
+        "domain_name": "Enterprise Integration Readiness",
+        "capability_area": "Potential integration with ServiceNow, Veeva, Blue Mountain, myAccess, Entra, and validated evidence stores",
+        "target": 5,
+        "route": "/sterile-compounding/roadmap",
+        "current_state": "The vertical is modular and ready for an integration roadmap but does not touch protected enterprise modules.",
+        "gap": "Needs explicit approval before integrating with enterprise/protected systems.",
+        "next": "Create integration blueprint without modifying protected modules until authorized.",
+        "risk": "Premature integration could break protected app areas or create governance confusion.",
+    },
+]
+
+
+def sterile_mm_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile maturity roadmap dependencies missing: " + ", ".join(missing))
+
+
+def sterile_mm_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_mm_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_mm_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_mm_bucket(value):
+    value = sterile_mm_safe(value).upper()
+
+    if value in ["GREEN", "READY", "GO", "MATURE"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "NO-GO", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_mm_badge(status):
+    bucket = sterile_mm_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_mm_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_mm_pd.DataFrame(columns=columns)
+
+
+def sterile_mm_route_exists(route):
+    try:
+        rules = set(str(rule) for rule in app.url_map.iter_rules())
+        return route in rules
+    except Exception:
+        return False
+
+
+def sterile_mm_status_from_evidence(route, target):
+    exists = sterile_mm_route_exists(route)
+
+    if not exists:
+        return 1, "RED", 20, "No"
+
+    if target >= 5:
+        return 4, "YELLOW", 80, "Yes"
+
+    return 4, "GREEN", 85, "Yes"
+
+
+def sterile_mm_build_maturity():
+    sterile_mm_require_dependencies()
+
+    go_live_df = sterile_mm_read_optional(
+        "sterile_compounding_go_live_readiness_register.csv",
+        "STERILE_GO_LIVE_READINESS_COLUMNS"
+    )
+    freeze_df = sterile_mm_read_optional(
+        "sterile_compounding_freeze_snapshot_register.csv",
+        "STERILE_FREEZE_SNAPSHOT_COLUMNS"
+    )
+    lock_df = sterile_mm_read_optional(
+        "sterile_compounding_presentation_lock_register.csv",
+        "STERILE_PRESENTATION_LOCK_COLUMNS"
+    )
+
+    go_live_status = "YELLOW"
+    if not go_live_df.empty and "status" in go_live_df.columns:
+        red = int((go_live_df["status"].astype(str) == "RED").sum())
+        yellow = int((go_live_df["status"].astype(str) == "YELLOW").sum())
+        go_live_status = "RED" if red else "YELLOW" if yellow else "GREEN"
+
+    lock_status = "YELLOW"
+    if not lock_df.empty and "lock_status" in lock_df.columns:
+        lock_status = sterile_mm_safe(lock_df.iloc[0].get("lock_status", "YELLOW"))
+
+    rows = []
+
+    for item in STERILE_MATURITY_SEED:
+        current_level, base_status, base_score, evidence_available = sterile_mm_status_from_evidence(
+            item["route"],
+            item["target"]
+        )
+
+        maturity_status = base_status
+        score = base_score
+
+        if item["domain_id"] in ["MM-009", "MM-010"]:
+            if sterile_mm_bucket(lock_status) == "GREEN":
+                maturity_status = "GREEN"
+                score = max(score, 90)
+            elif sterile_mm_bucket(lock_status) == "RED":
+                maturity_status = "RED"
+                score = min(score, 50)
+
+        if item["domain_id"] in ["MM-006", "MM-007", "MM-008"]:
+            if sterile_mm_bucket(go_live_status) == "GREEN":
+                score = max(score, 85)
+            elif sterile_mm_bucket(go_live_status) == "RED":
+                maturity_status = "YELLOW" if maturity_status == "GREEN" else maturity_status
+                score = min(score, 70)
+
+        leadership_message = (
+            f"{item['domain_name']} is at maturity level {current_level} of target {item['target']}. "
+            f"Current status is {maturity_status}. The next meaningful move is: {item['next']}"
+        )
+
+        payload = {
+            "domain_id": item["domain_id"],
+            "domain_name": item["domain_name"],
+            "capability_area": item["capability_area"],
+            "current_maturity_level": current_level,
+            "target_maturity_level": item["target"],
+            "maturity_status": maturity_status,
+            "maturity_score": score,
+            "evidence_available": evidence_available,
+            "supporting_route": item["route"],
+            "current_state_summary": item["current_state"],
+            "gap_summary": item["gap"],
+            "next_capability_needed": item["next"],
+            "leadership_message": leadership_message,
+            "risk_if_not_advanced": item["risk"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["maturity_hash"] = sterile_hash_text(
+            sterile_mm_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    maturity_df = sterile_mm_pd.DataFrame(rows)
+    maturity_df = sterile_ensure_cols(maturity_df, STERILE_MATURITY_MODEL_COLUMNS)
+
+    roadmap_df = sterile_mm_build_roadmap(maturity_df)
+
+    sterile_write_register(STERILE_MATURITY_MODEL_REGISTER, maturity_df, STERILE_MATURITY_MODEL_COLUMNS)
+    sterile_write_register(STERILE_ROADMAP_REGISTER, roadmap_df, STERILE_ROADMAP_COLUMNS)
+
+    return maturity_df, roadmap_df
+
+
+def sterile_mm_add_roadmap(rows, domain_id, phase, item, priority, dependency, business_value, technical_value, governance_value, boundary, sequence, target, status):
+    payload = {
+        "roadmap_id": sterile_mm_make_id("ST-ROADMAP", domain_id, phase, item),
+        "domain_id": domain_id,
+        "roadmap_phase": phase,
+        "roadmap_item": item,
+        "priority": priority,
+        "dependency": dependency,
+        "business_value": business_value,
+        "technical_value": technical_value,
+        "governance_value": governance_value,
+        "implementation_boundary": boundary,
+        "recommended_sequence": sequence,
+        "target_route_or_output": target,
+        "roadmap_status": status,
+        "last_checked": sterile_now(),
+    }
+
+    payload["roadmap_hash"] = sterile_hash_text(
+        sterile_mm_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_mm_build_roadmap(maturity_df):
+    rows = []
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-009",
+        "Phase A",
+        "Add sterile vertical to global Command Center, Monday Demo, Release Notes, and Platform Health",
+        "High",
+        "Requires explicit approval because these are protected global modules",
+        "Makes the sterile vertical visible to leaders without direct URL knowledge.",
+        "Adds controlled global entry points and health visibility.",
+        "Improves demo discoverability while preserving governance boundaries.",
+        "Do not implement until explicitly requested.",
+        10,
+        "Command Center / Monday Demo / Release Notes / Platform Health sterile entry points",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-002",
+        "Phase B",
+        "Create governed evidence upload and reviewer approval workflow",
+        "High",
+        "Depends on agreement on evidence categories and reviewer roles",
+        "Moves the vertical from demonstration data toward controlled operational review.",
+        "Adds workflow state, uploader identity, reviewer identity, and evidence lifecycle controls.",
+        "Strengthens ALCOA+ evidence completeness and traceability.",
+        "Sterile module only unless enterprise evidence repository integration is approved.",
+        20,
+        "/sterile-compounding/evidence-workflow",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-003",
+        "Phase C",
+        "Anchor dossier hashes to immutable ledger",
+        "High",
+        "Depends on Azure Confidential Ledger or approved immutable ledger setup",
+        "Gives stronger independent proof that evidence packs were not silently changed.",
+        "Moves from local hash assurance to externally anchored integrity assurance.",
+        "Strengthens tamper-evident audit posture.",
+        "Do not connect to production ledger until design is approved.",
+        30,
+        "Azure Confidential Ledger integration blueprint",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-005",
+        "Phase D",
+        "Add pre-work readiness gate before compounding execution",
+        "High",
+        "Depends on SOP/formula, personnel, equipment/room, and environmental readiness data",
+        "Prevents teams from discovering missing readiness evidence late in the process.",
+        "Creates pre-execution gate logic for sterile compounding readiness.",
+        "Turns audit-readiness logic into preventive governance.",
+        "Sterile-only pre-work logic first; external integration later.",
+        40,
+        "/sterile-compounding/prework-execution-gate",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-010",
+        "Phase E",
+        "Create integration blueprint for ServiceNow, Veeva, Blue Mountain, myAccess, Entra, and evidence repositories",
+        "Medium",
+        "Requires explicit approval and source-system access model",
+        "Shows enterprise scalability and CIO/QA relevance.",
+        "Defines clean integration boundaries before touching protected modules.",
+        "Prevents uncontrolled system coupling.",
+        "Blueprint first; no protected module changes until separately approved.",
+        50,
+        "/sterile-compounding/integration-blueprint",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-007",
+        "Phase F",
+        "Generate controlled inspection packet export",
+        "Medium",
+        "Depends on approved narrative, binder, and retention requirements",
+        "Creates a cleaner handoff artifact for reviewers and auditors.",
+        "Adds exportable inspection pack with manifest, hash, and version information.",
+        "Improves inspection consistency and evidence retention.",
+        "Sterile module only; no QMS replacement.",
+        60,
+        "/sterile-compounding/controlled-inspection-pack",
+        "PLANNED"
+    )
+
+    sterile_mm_add_roadmap(
+        rows,
+        "MM-006",
+        "Phase G",
+        "Formalize scoring thresholds and reviewer governance",
+        "Medium",
+        "Depends on stakeholder agreement on GREEN/YELLOW/RED thresholds",
+        "Makes the scoring model easier to defend to QA/leadership.",
+        "Adds threshold configuration and reviewer rationale capture.",
+        "Reduces over-reliance on unapproved automated scores.",
+        "Governance configuration only; no formal QA disposition.",
+        70,
+        "/sterile-compounding/score-governance",
+        "PLANNED"
+    )
+
+    roadmap_df = sterile_mm_pd.DataFrame(rows)
+    roadmap_df = sterile_ensure_cols(roadmap_df, STERILE_ROADMAP_COLUMNS)
+
+    return roadmap_df
+
+
+@app.route("/sterile-compounding/maturity-model")
+def sterile_compounding_maturity_model():
+    maturity_df, roadmap_df = sterile_mm_build_maturity()
+
+    status_filter = sterile_mm_safe(sterile_mm_request.args.get("status", ""))
+    filtered = maturity_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["maturity_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["maturity_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["maturity_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["maturity_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_mm_pd.to_numeric(filtered["maturity_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Maturity Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["maturity_status", "domain_id"], ascending=[False, True]).iterrows():
+            domain_id = sterile_mm_safe(row.get("domain_id", ""))
+            route = sterile_mm_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mm_badge(row.get("maturity_status", ""))}</td>
+                <td><a href="/sterile-compounding/maturity-model/{domain_id}">{domain_id}</a></td>
+                <td>{sterile_mm_safe(row.get("domain_name", ""))}</td>
+                <td>{sterile_mm_safe(row.get("current_maturity_level", ""))}</td>
+                <td>{sterile_mm_safe(row.get("target_maturity_level", ""))}</td>
+                <td>{sterile_mm_safe(row.get("maturity_score", ""))}</td>
+                <td>{sterile_mm_safe(row.get("evidence_available", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_mm_safe(row.get("next_capability_needed", ""))}</td>
+                <td>{sterile_mm_safe(row.get("leadership_message", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No maturity model rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Maturity Model</h1>
+        <p>
+            Capability maturity model for the Compound Sterile AssuranceLayer vertical.
+            This explains what is already mature, what remains conditional, and what should be built next.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Domains</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Maturity Filters</h2>
+        <form method="GET" action="/sterile-compounding/maturity-model">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/roadmap">Roadmap</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/presentation-lock">Presentation Lock</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model/export">Export Maturity</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Maturity Model Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Domain ID</th>
+                        <th>Domain</th>
+                        <th>Current</th>
+                        <th>Target</th>
+                        <th>Score</th>
+                        <th>Evidence</th>
+                        <th>Route</th>
+                        <th>Next Capability</th>
+                        <th>Leadership Message</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MATURITY-MODEL",
+            "STERILE_MATURITY_MODEL_VIEW",
+            "Sterile maturity model viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/maturity-model",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Maturity Model", body)
+
+
+@app.route("/sterile-compounding/maturity-model/<domain_id>")
+def sterile_compounding_maturity_model_detail(domain_id):
+    maturity_df, roadmap_df = sterile_mm_build_maturity()
+    domain_id = sterile_mm_safe(domain_id)
+
+    match = maturity_df[maturity_df["domain_id"].astype(str) == str(domain_id)].copy() if not maturity_df.empty else maturity_df
+
+    if match.empty:
+        return sterile_mm_Response("Maturity domain not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    domain_roadmap = roadmap_df[roadmap_df["domain_id"].astype(str) == str(domain_id)].copy() if not roadmap_df.empty else roadmap_df
+
+    detail_rows = ""
+    for key in STERILE_MATURITY_MODEL_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_mm_safe(row.get(key, ""))
+
+        if key == "maturity_status":
+            value = sterile_mm_badge(value)
+        elif key == "maturity_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_route":
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    roadmap_rows = ""
+    if not domain_roadmap.empty:
+        for _, road in domain_roadmap.sort_values(by="recommended_sequence").iterrows():
+            roadmap_rows += f"""
+            <tr>
+                <td>{sterile_mm_safe(road.get("roadmap_phase", ""))}</td>
+                <td>{sterile_mm_safe(road.get("priority", ""))}</td>
+                <td>{sterile_mm_safe(road.get("roadmap_item", ""))}</td>
+                <td>{sterile_mm_safe(road.get("business_value", ""))}</td>
+                <td>{sterile_mm_safe(road.get("governance_value", ""))}</td>
+                <td>{sterile_mm_safe(road.get("implementation_boundary", ""))}</td>
+            </tr>
+            """
+    else:
+        roadmap_rows = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No roadmap items assigned to this maturity domain.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Maturity Domain: {domain_id}</h1>
+        <p>{sterile_mm_safe(row.get("domain_name", ""))}</p>
+        <div style="margin-top:16px;">{sterile_mm_badge(row.get("maturity_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            Level {sterile_mm_safe(row.get("current_maturity_level", ""))} of target {sterile_mm_safe(row.get("target_maturity_level", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Maturity Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Assigned Roadmap Items</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Priority</th>
+                        <th>Roadmap Item</th>
+                        <th>Business Value</th>
+                        <th>Governance Value</th>
+                        <th>Boundary</th>
+                    </tr>
+                </thead>
+                <tbody>{roadmap_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/maturity-model">Back to Maturity Model</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/roadmap">Roadmap</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            domain_id,
+            "STERILE_MATURITY_DOMAIN_VIEW",
+            "Sterile maturity domain viewed",
+            actor="system",
+            source_route="/sterile-compounding/maturity-model/<domain_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Maturity Domain - {domain_id}", body)
+
+
+@app.route("/sterile-compounding/roadmap")
+def sterile_compounding_roadmap():
+    maturity_df, roadmap_df = sterile_mm_build_maturity()
+
+    priority_filter = sterile_mm_safe(sterile_mm_request.args.get("priority", ""))
+    filtered = roadmap_df.copy()
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    high = int((filtered["priority"] == "High").sum()) if total else 0
+    medium = int((filtered["priority"] == "Medium").sum()) if total else 0
+    planned = int((filtered["roadmap_status"] == "PLANNED").sum()) if total else 0
+
+    priority_options = ""
+    for option in ["", "High", "Medium", "Low"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by="recommended_sequence", ascending=True).iterrows():
+            target = sterile_mm_safe(row.get("target_route_or_output", ""))
+            target_cell = f'<code>{target}</code>' if target.startswith("/") else target
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mm_safe(row.get("recommended_sequence", ""))}</td>
+                <td>{sterile_mm_safe(row.get("roadmap_phase", ""))}</td>
+                <td>{sterile_mm_safe(row.get("priority", ""))}</td>
+                <td><a href="/sterile-compounding/maturity-model/{sterile_mm_safe(row.get("domain_id", ""))}">{sterile_mm_safe(row.get("domain_id", ""))}</a></td>
+                <td>{sterile_mm_safe(row.get("roadmap_item", ""))}</td>
+                <td>{sterile_mm_safe(row.get("dependency", ""))}</td>
+                <td>{sterile_mm_safe(row.get("business_value", ""))}</td>
+                <td>{sterile_mm_safe(row.get("governance_value", ""))}</td>
+                <td>{sterile_mm_safe(row.get("implementation_boundary", ""))}</td>
+                <td>{target_cell}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No roadmap rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Roadmap</h1>
+        <p>
+            Next-phase roadmap for advancing the sterile vertical after the current demo build.
+            This keeps future work sequenced and prevents accidental changes to protected global modules.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Roadmap Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">High Priority</div><div class="st-value">{high}</div></div>
+        <div class="st-card"><div class="st-label">Medium Priority</div><div class="st-value">{medium}</div></div>
+        <div class="st-card"><div class="st-label">Planned</div><div class="st-value">{planned}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Roadmap Filters</h2>
+        <form method="GET" action="/sterile-compounding/roadmap">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/roadmap">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model">Maturity Model</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/roadmap/export">Export Roadmap</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Roadmap Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Seq</th>
+                        <th>Phase</th>
+                        <th>Priority</th>
+                        <th>Domain</th>
+                        <th>Roadmap Item</th>
+                        <th>Dependency</th>
+                        <th>Business Value</th>
+                        <th>Governance Value</th>
+                        <th>Boundary</th>
+                        <th>Target</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ROADMAP",
+            "STERILE_ROADMAP_VIEW",
+            "Sterile roadmap viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/roadmap",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Roadmap", body)
+
+
+@app.route("/sterile-compounding/maturity-model/export")
+def sterile_compounding_maturity_model_export():
+    maturity_df, roadmap_df = sterile_mm_build_maturity()
+
+    if maturity_df.empty:
+        maturity_df = sterile_mm_pd.DataFrame(columns=STERILE_MATURITY_MODEL_COLUMNS)
+
+    csv_data = maturity_df.to_csv(index=False)
+
+    return sterile_mm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_maturity_model_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/roadmap/export")
+def sterile_compounding_roadmap_export():
+    maturity_df, roadmap_df = sterile_mm_build_maturity()
+
+    if roadmap_df.empty:
+        roadmap_df = sterile_mm_pd.DataFrame(columns=STERILE_ROADMAP_COLUMNS)
+
+    csv_data = roadmap_df.to_csv(index=False)
+
+    return sterile_mm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_roadmap_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_maturity_roadmap_dashboard_injection(response):
+    try:
+        if sterile_mm_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/freeze-snapshot",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/change-control-pack",
+            "/sterile-compounding/build-acceptance",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/demo-script",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-maturity-roadmap-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-maturity-roadmap-panel">
+            <h2>Sterile Maturity Model + Roadmap</h2>
+            <p class="st-note">
+                Shows current capability maturity, target maturity, gaps, next capabilities, and the recommended
+                roadmap for advancing the sterile vertical after demo lock.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/maturity-model">Maturity Model</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/roadmap">Roadmap</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model/export">Export Maturity</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/roadmap/export">Export Roadmap</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile maturity roadmap dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
