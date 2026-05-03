@@ -53806,5 +53806,503 @@ def sterile_compounding_release_notes_entry_injection(response):
         print(f"Sterile Release Notes entry injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_PLATFORM_HEALTH_ENTRY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 45: Platform Health Entry Bridge
+#
+# New Routes:
+#   /sterile-compounding/platform-health-entry
+#   /sterile-compounding/platform-health-entry/export
+#
+# New Register:
+#   sterile_compounding_platform_health_entry.csv
+#
+# Boundary:
+#   This adds a small sterile register-health panel into /platform-health
+#   using after_request injection. It does not overwrite the existing
+#   /platform-health route and does not touch Command Center logic,
+#   Monday Demo logic, Release Notes logic, Manufacturing/Wole,
+#   ServiceNow, Entra, CI, Knowledge, Operational Lineage, or other
+#   protected modules.
+# ============================================================
+
+try:
+    import pandas as sterile_phe_pd
+    import json as sterile_phe_json
+    from pathlib import Path as sterile_phe_Path
+    from flask import request as sterile_phe_request
+    from flask import Response as sterile_phe_Response
+except Exception as sterile_phe_import_error:
+    raise RuntimeError(f"Sterile Platform Health entry import failed: {sterile_phe_import_error}")
+
+
+STERILE_PLATFORM_HEALTH_ENTRY_REGISTER = "sterile_compounding_platform_health_entry.csv"
+
+STERILE_PLATFORM_HEALTH_ENTRY_COLUMNS = [
+    "health_id",
+    "register_name",
+    "health_group",
+    "source_route",
+    "file_exists",
+    "row_count",
+    "column_count",
+    "health_status",
+    "risk_note",
+    "recommended_action",
+    "last_checked",
+    "health_hash"
+]
+
+
+STERILE_PLATFORM_EXPECTED_REGISTERS = [
+    ("sterile_compounding_register.csv", "01 Core", "/sterile-compounding"),
+    ("sterile_compounding_review_register.csv", "01 Core", "/sterile-compounding/review"),
+    ("sterile_compounding_lineage_register.csv", "01 Core", "/sterile-compounding/audit-lineage"),
+
+    ("sterile_compounding_evidence_vault_register.csv", "02 Evidence", "/sterile-compounding/evidence-vault"),
+    ("sterile_compounding_evidence_matrix_register.csv", "02 Evidence", "/sterile-compounding/evidence-matrix"),
+    ("sterile_compounding_audit_pack_register.csv", "03 Audit", "/sterile-compounding/audit-pack"),
+    ("sterile_compounding_release_dossier_register.csv", "03 Audit", "/sterile-compounding/release-dossier"),
+    ("sterile_compounding_signoff_register.csv", "03 Audit", "/sterile-compounding/signoff-board"),
+
+    ("sterile_compounding_seal_register.csv", "04 Seal", "/sterile-compounding/seal-ledger"),
+    ("sterile_compounding_seal_verification_register.csv", "04 Seal", "/sterile-compounding/seal-verify"),
+    ("sterile_compounding_seal_health_register.csv", "04 Seal", "/sterile-compounding/seal-health"),
+
+    ("sterile_compounding_custody_chain_register.csv", "05 Custody", "/sterile-compounding/custody-chain"),
+    ("sterile_compounding_custody_health_register.csv", "05 Custody", "/sterile-compounding/custody-health"),
+    ("sterile_compounding_custody_audit_link_register.csv", "05 Custody", "/sterile-compounding/custody-audit-link"),
+
+    ("sterile_compounding_sop_formula_register.csv", "06 Drift", "/sterile-compounding/sop-formula-governance"),
+    ("sterile_compounding_sop_drift_register.csv", "06 Drift", "/sterile-compounding/sop-drift"),
+    ("sterile_compounding_personnel_competency_register.csv", "06 Drift", "/sterile-compounding/personnel-competency"),
+    ("sterile_compounding_personnel_drift_register.csv", "06 Drift", "/sterile-compounding/personnel-drift"),
+    ("sterile_compounding_equipment_room_register.csv", "06 Drift", "/sterile-compounding/equipment-room-governance"),
+    ("sterile_compounding_equipment_room_drift_register.csv", "06 Drift", "/sterile-compounding/equipment-room-drift"),
+
+    ("sterile_compounding_master_assurance_register.csv", "07 Assurance", "/sterile-compounding/master-assurance-index"),
+    ("sterile_compounding_no_release_composite_register.csv", "07 Assurance", "/sterile-compounding/no-release-composite"),
+    ("sterile_compounding_closure_simulator_register.csv", "07 Assurance", "/sterile-compounding/closure-simulator"),
+    ("sterile_compounding_recovery_plan_register.csv", "07 Assurance", "/sterile-compounding/recovery-plan"),
+
+    ("sterile_compounding_inspection_readiness_register.csv", "08 Inspection", "/sterile-compounding/inspection-readiness"),
+    ("sterile_compounding_auditor_qa_register.csv", "08 Inspection", "/sterile-compounding/auditor-qa-pack"),
+    ("sterile_compounding_regulatory_crosswalk_register.csv", "08 Inspection", "/sterile-compounding/regulatory-crosswalk"),
+    ("sterile_compounding_control_evidence_coverage_register.csv", "08 Inspection", "/sterile-compounding/control-evidence-coverage"),
+    ("sterile_compounding_inspection_narrative_register.csv", "08 Inspection", "/sterile-compounding/inspection-narrative"),
+    ("sterile_compounding_executive_brief_register.csv", "08 Inspection", "/sterile-compounding/executive-brief"),
+    ("sterile_compounding_inspection_binder_register.csv", "08 Inspection", "/sterile-compounding/inspection-binder"),
+    ("sterile_compounding_packet_manifest_register.csv", "08 Inspection", "/sterile-compounding/packet-manifest"),
+
+    ("sterile_compounding_navigation_register.csv", "09 Navigation", "/sterile-compounding/navigation-hub"),
+    ("sterile_compounding_route_health_register.csv", "09 Navigation", "/sterile-compounding/route-health"),
+    ("sterile_compounding_demo_walkthrough_register.csv", "10 Demo", "/sterile-compounding/demo-walkthrough"),
+    ("sterile_compounding_demo_script_register.csv", "10 Demo", "/sterile-compounding/demo-script"),
+
+    ("sterile_compounding_register_catalog.csv", "11 Data Dictionary", "/sterile-compounding/register-catalog"),
+    ("sterile_compounding_data_dictionary.csv", "11 Data Dictionary", "/sterile-compounding/data-dictionary"),
+    ("sterile_compounding_build_acceptance_register.csv", "12 Build Health", "/sterile-compounding/build-acceptance"),
+    ("sterile_compounding_smoke_test_matrix.csv", "12 Build Health", "/sterile-compounding/smoke-test-matrix"),
+    ("sterile_compounding_go_live_readiness_register.csv", "12 Build Health", "/sterile-compounding/go-live-readiness"),
+    ("sterile_compounding_change_control_pack.csv", "12 Build Health", "/sterile-compounding/change-control-pack"),
+    ("sterile_compounding_freeze_snapshot_register.csv", "12 Build Health", "/sterile-compounding/freeze-snapshot"),
+    ("sterile_compounding_presentation_lock_register.csv", "12 Build Health", "/sterile-compounding/presentation-lock"),
+
+    ("sterile_compounding_maturity_model_register.csv", "13 Roadmap", "/sterile-compounding/maturity-model"),
+    ("sterile_compounding_roadmap_register.csv", "13 Roadmap", "/sterile-compounding/roadmap"),
+    ("sterile_compounding_integration_blueprint_register.csv", "14 Integration Blueprint", "/sterile-compounding/integration-blueprint"),
+    ("sterile_compounding_system_connector_readiness.csv", "14 Integration Blueprint", "/sterile-compounding/system-connector-readiness"),
+    ("sterile_compounding_data_contract_register.csv", "14 Integration Blueprint", "/sterile-compounding/data-contracts"),
+    ("sterile_compounding_field_mapping_matrix.csv", "14 Integration Blueprint", "/sterile-compounding/field-mapping-matrix"),
+    ("sterile_compounding_mock_ingestion_lab.csv", "14 Integration Blueprint", "/sterile-compounding/mock-ingestion-lab"),
+    ("sterile_compounding_pre_integration_risk_register.csv", "14 Integration Blueprint", "/sterile-compounding/pre-integration-risk"),
+    ("sterile_compounding_connector_approval_board.csv", "14 Integration Blueprint", "/sterile-compounding/connector-approval-board"),
+    ("sterile_compounding_implementation_decision_matrix.csv", "14 Integration Blueprint", "/sterile-compounding/implementation-decision-matrix"),
+    ("sterile_compounding_nonprod_poc_plan.csv", "14 Integration Blueprint", "/sterile-compounding/nonprod-poc-plan"),
+    ("sterile_compounding_connector_test_cases.csv", "14 Integration Blueprint", "/sterile-compounding/connector-test-cases"),
+    ("sterile_compounding_poc_test_execution.csv", "14 Integration Blueprint", "/sterile-compounding/poc-test-execution"),
+    ("sterile_compounding_poc_evidence_checklist.csv", "14 Integration Blueprint", "/sterile-compounding/poc-evidence-checklist"),
+    ("sterile_compounding_poc_results_summary.csv", "14 Integration Blueprint", "/sterile-compounding/poc-results-summary"),
+    ("sterile_compounding_poc_evidence_packet_manifest.csv", "14 Integration Blueprint", "/sterile-compounding/poc-evidence-packet"),
+
+    ("sterile_compounding_command_center_entry.csv", "15 Global Entry Bridges", "/sterile-compounding/command-center-entry"),
+    ("sterile_compounding_monday_demo_entry.csv", "15 Global Entry Bridges", "/sterile-compounding/monday-demo-entry"),
+    ("sterile_compounding_release_notes_entry.csv", "15 Global Entry Bridges", "/sterile-compounding/release-notes-entry"),
+    ("sterile_compounding_platform_health_entry.csv", "15 Global Entry Bridges", "/sterile-compounding/platform-health-entry"),
+]
+
+
+def sterile_phe_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Platform Health entry dependencies missing: " + ", ".join(missing))
+
+
+def sterile_phe_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_phe_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_phe_badge(status):
+    status = sterile_phe_safe(status).upper()
+
+    if status in ["GREEN", "ACTIVE", "READY", "HEALTHY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "EMPTY"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_phe_read_file_health(register_name):
+    file_path = sterile_phe_Path(register_name)
+
+    if not file_path.exists():
+        return "NO", 0, 0, "RED", "Expected register file does not exist yet.", "Open the supporting route or export page to generate the register."
+
+    try:
+        df = sterile_phe_pd.read_csv(file_path, dtype=str).fillna("")
+        row_count = len(df)
+        column_count = len(df.columns)
+
+        if row_count > 0 and column_count > 0:
+            return "YES", row_count, column_count, "GREEN", "Register exists and contains data rows.", "No action required."
+        if column_count > 0:
+            return "YES", row_count, column_count, "YELLOW", "Register exists but is header-only or empty.", "Open the supporting route to generate rows or confirm empty state is expected."
+
+        return "YES", row_count, column_count, "YELLOW", "Register exists but no columns were detected.", "Review register generation logic."
+
+    except Exception as exc:
+        return "YES", 0, 0, "RED", f"Register exists but could not be read: {exc}", "Review CSV formatting or regenerate from the supporting route."
+
+
+def sterile_phe_discover_extra_registers(expected_names):
+    extra = []
+
+    try:
+        for file_path in sterile_phe_Path(".").glob("sterile_compounding_*.csv"):
+            name = file_path.name
+            if name not in expected_names:
+                extra.append((name, "16 Discovered", "/sterile-compounding/register-catalog"))
+    except Exception:
+        pass
+
+    return sorted(extra, key=lambda item: item[0])
+
+
+def sterile_phe_build_entry():
+    sterile_phe_require_dependencies()
+
+    expected_names = set([item[0] for item in STERILE_PLATFORM_EXPECTED_REGISTERS])
+    register_items = list(STERILE_PLATFORM_EXPECTED_REGISTERS) + sterile_phe_discover_extra_registers(expected_names)
+
+    rows = []
+
+    for register_name, health_group, source_route in register_items:
+        file_exists, row_count, column_count, status, risk_note, recommended_action = sterile_phe_read_file_health(register_name)
+
+        payload = {
+            "health_id": sterile_phe_make_id("ST-PHEALTH", register_name),
+            "register_name": register_name,
+            "health_group": health_group,
+            "source_route": source_route,
+            "file_exists": file_exists,
+            "row_count": row_count,
+            "column_count": column_count,
+            "health_status": status,
+            "risk_note": risk_note,
+            "recommended_action": recommended_action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["health_hash"] = sterile_hash_text(
+            sterile_phe_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    df = sterile_phe_pd.DataFrame(rows)
+    df = df.reindex(columns=STERILE_PLATFORM_HEALTH_ENTRY_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_PLATFORM_HEALTH_ENTRY_REGISTER,
+        df,
+        STERILE_PLATFORM_HEALTH_ENTRY_COLUMNS
+    )
+
+    return df
+
+
+@app.route("/sterile-compounding/platform-health-entry")
+def sterile_compounding_platform_health_entry():
+    health_df = sterile_phe_build_entry()
+
+    status_filter = sterile_phe_safe(sterile_phe_request.args.get("status", ""))
+    group_filter = sterile_phe_safe(sterile_phe_request.args.get("group", ""))
+
+    filtered = health_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["health_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["health_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["health_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["health_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["health_status"] == "RED").sum()) if total else 0
+
+    total_rows = 0
+    if total:
+        total_rows = int(sterile_phe_pd.to_numeric(filtered["row_count"], errors="coerce").fillna(0).sum())
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Health Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Health Groups</option>'
+    for group in sorted(health_df["health_group"].dropna().unique().tolist()) if not health_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["health_status", "health_group", "register_name"], ascending=[False, True, True]).iterrows():
+            route = sterile_phe_safe(row.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_phe_badge(row.get("health_status", ""))}</td>
+                <td>{sterile_phe_safe(row.get("health_group", ""))}</td>
+                <td><code>{sterile_phe_safe(row.get("register_name", ""))}</code></td>
+                <td>{sterile_phe_safe(row.get("file_exists", ""))}</td>
+                <td>{sterile_phe_safe(row.get("row_count", ""))}</td>
+                <td>{sterile_phe_safe(row.get("column_count", ""))}</td>
+                <td>{sterile_phe_safe(row.get("risk_note", ""))}</td>
+                <td>{sterile_phe_safe(row.get("recommended_action", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No sterile platform health rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Platform Health Entry</h1>
+        <p>
+            Register-level health summary for the Compound Sterile AssuranceLayer™ vertical.
+            This page checks expected sterile CSV registers, discovered sterile CSV registers, file existence,
+            row count, column count, health status, and recommended action.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Registers Checked</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Total Rows</div><div class="st-value">{total_rows}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Health Filters</h2>
+        <form method="GET" action="/sterile-compounding/platform-health-entry">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Health Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Health Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/platform-health-entry">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/register-catalog">Register Catalog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/platform-health-entry/export">Export Health Entry</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sterile Register Health</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Register</th>
+                        <th>Exists</th>
+                        <th>Rows</th>
+                        <th>Columns</th>
+                        <th>Risk Note</th>
+                        <th>Recommended Action</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Protected Boundary</h2>
+        <p>
+            This route summarizes sterile registers only. It does not overwrite /platform-health and does not modify
+            ServiceNow, Entra, CI, Knowledge, Operational Lineage, Manufacturing/Wole, Command Center, Monday Demo,
+            or Release Notes logic.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PLATFORM-HEALTH-ENTRY",
+            "STERILE_PLATFORM_HEALTH_ENTRY_VIEW",
+            "Sterile Platform Health entry bridge viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/platform-health-entry",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Platform Health Entry", body)
+
+
+@app.route("/sterile-compounding/platform-health-entry/export")
+def sterile_compounding_platform_health_entry_export():
+    health_df = sterile_phe_build_entry()
+
+    if health_df.empty:
+        health_df = sterile_phe_pd.DataFrame(columns=STERILE_PLATFORM_HEALTH_ENTRY_COLUMNS)
+
+    csv_data = health_df.to_csv(index=False)
+
+    return sterile_phe_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_platform_health_entry_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_platform_health_entry_injection(response):
+    try:
+        if sterile_phe_request.path != "/platform-health":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-platform-health-entry-panel" in html:
+            return response
+
+        try:
+            health_df = sterile_phe_build_entry()
+            total = len(health_df)
+            green = int((health_df["health_status"] == "GREEN").sum()) if total else 0
+            yellow = int((health_df["health_status"] == "YELLOW").sum()) if total else 0
+            red = int((health_df["health_status"] == "RED").sum()) if total else 0
+            rows = int(sterile_phe_pd.to_numeric(health_df["row_count"], errors="coerce").fillna(0).sum()) if total else 0
+        except Exception:
+            total = 0
+            green = 0
+            yellow = 0
+            red = 0
+            rows = 0
+
+        panel = f"""
+        <section id="sterile-platform-health-entry-panel" style="margin:24px 0; padding:22px; border:1px solid #bae6fd; border-radius:18px; background:linear-gradient(135deg,#f0f9ff,#ffffff); box-shadow:0 8px 24px rgba(15,23,42,0.08);">
+            <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+                <div style="max-width:900px;">
+                    <div style="font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#0369a1;">Sterile Register Health</div>
+                    <h2 style="margin:8px 0 8px 0; font-size:28px; line-height:1.15;">Compound Sterile AssuranceLayer™ Platform Health</h2>
+                    <p style="margin:0; color:#334155; font-size:15px; line-height:1.55;">
+                        Sterile register health bridge checks expected CSV registers, discovered sterile registers,
+                        file existence, row count, column count, status, and recommended action.
+                    </p>
+                </div>
+                <div style="font-weight:900; color:#075985; background:#e0f2fe; border:1px solid #7dd3fc; padding:8px 12px; border-radius:999px;">{green} GREEN / {yellow} YELLOW / {red} RED</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:18px;">
+                <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid #e2e8f0;"><div style="font-size:12px; color:#64748b; font-weight:800;">Registers</div><div style="font-size:26px; font-weight:900;">{total}</div></div>
+                <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid #e2e8f0;"><div style="font-size:12px; color:#64748b; font-weight:800;">GREEN</div><div style="font-size:26px; font-weight:900;">{green}</div></div>
+                <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid #e2e8f0;"><div style="font-size:12px; color:#64748b; font-weight:800;">YELLOW</div><div style="font-size:26px; font-weight:900;">{yellow}</div></div>
+                <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid #e2e8f0;"><div style="font-size:12px; color:#64748b; font-weight:800;">RED</div><div style="font-size:26px; font-weight:900;">{red}</div></div>
+                <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid #e2e8f0;"><div style="font-size:12px; color:#64748b; font-weight:800;">Rows</div><div style="font-size:26px; font-weight:900;">{rows}</div></div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;">
+                <a href="/sterile-compounding/platform-health-entry" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0369a1; color:#fff; text-decoration:none; font-weight:800;">Open Sterile Health</a>
+                <a href="/sterile-compounding/register-catalog" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Register Catalog</a>
+                <a href="/sterile-compounding/build-acceptance" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Build Acceptance</a>
+                <a href="/sterile-compounding/go-live-readiness" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Go-Live Readiness</a>
+                <a href="/sterile-compounding/platform-health-entry/export" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#ffffff; color:#0369a1; border:1px solid #7dd3fc; text-decoration:none; font-weight:800;">Export Health</a>
+            </div>
+
+            <p style="margin:14px 0 0 0; color:#64748b; font-size:13px;">
+                Boundary: Platform Health entry bridge only. This does not overwrite /platform-health and does not modify protected modules.
+            </p>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Platform Health entry injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
