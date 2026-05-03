@@ -1,3 +1,4 @@
+# CI_CANDIDATE_REVIEW_BOARD_ACTIVE
 # CI_CANDIDATE_FACTORY_NAV_HEALTH_ACTIVE
 # CI_CANDIDATE_FACTORY_ACTIVE
 # CI_MYACCESS_NAV_HEALTH_ACTIVE
@@ -15015,6 +15016,516 @@ Score <b>{{ candidate.readiness_score }}%</b>.
     """
 
     return render_template_string(html, candidate=candidate)
+
+
+# ============================================================
+# CI CANDIDATE REVIEW BOARD ACTIVE
+# Owner/reviewer decision layer for CI candidates:
+# approve, reject, request more data, or mark ServiceNow-ready.
+# Append-only review event register with hash lineage.
+# ============================================================
+
+CI_CANDIDATE_REVIEW_FILE = "ci_candidate_review_events.csv"
+
+
+def prepare_ci_candidate_review_events():
+    df = load_csv(CI_CANDIDATE_REVIEW_FILE)
+    return ensure_cols(df, [
+        "review_event_id", "timestamp", "candidate_id", "candidate_name",
+        "asset_id", "source_file", "source_sheet", "source_row",
+        "candidate_readiness_status", "candidate_readiness_score",
+        "reviewer_id", "reviewer_name", "reviewer_upn", "reviewer_role",
+        "review_action", "review_status", "review_comment",
+        "servicenow_ready_status", "review_score", "risk_level",
+        "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def parse_ci_candidate_reviewer(value):
+    value = clean(value)
+    parts = value.split("||")
+    while len(parts) < 4:
+        parts.append("")
+    return {
+        "id": parts[0],
+        "displayName": parts[1],
+        "userPrincipalName": parts[2],
+        "jobTitle": parts[3]
+    }
+
+
+def determine_ci_candidate_review_status(review_action):
+    review_action = clean(review_action)
+
+    if review_action == "Approve for CI Review":
+        return "APPROVED FOR CI REVIEW"
+    if review_action == "Request More Data":
+        return "MORE DATA REQUIRED"
+    if review_action == "Reject Candidate":
+        return "REJECTED - DO NOT CREATE CI"
+    if review_action == "Mark ServiceNow-Ready":
+        return "SERVICENOW-READY CANDIDATE"
+    if review_action == "Hold for Duplicate Check":
+        return "ON HOLD - DUPLICATE CHECK REQUIRED"
+
+    return "UNDER REVIEW"
+
+
+def calculate_ci_candidate_review_score(candidate, reviewer, review_action, review_comment):
+    score = 100
+    signals = []
+
+    if not candidate:
+        score -= 50
+        signals.append("Original CI candidate could not be found.")
+
+    if not reviewer.get("displayName"):
+        score -= 25
+        signals.append("Reviewer is missing.")
+
+    if not clean(review_action):
+        score -= 25
+        signals.append("Review action is missing.")
+
+    if review_action in ["Approve for CI Review", "Request More Data", "Reject Candidate", "Mark ServiceNow-Ready", "Hold for Duplicate Check"]:
+        if not clean(review_comment):
+            score -= 20
+            signals.append("Reviewer comment is required for the selected decision.")
+
+    if candidate:
+        readiness = clean(candidate.get("readiness_status"))
+        duplicate = clean(candidate.get("duplicate_risk"))
+        missing = clean(candidate.get("missing_fields"))
+
+        try:
+            candidate_score = int(float(clean(candidate.get("readiness_score")) or 0))
+        except Exception:
+            candidate_score = 0
+
+        if candidate_score < 60:
+            score -= 25
+            signals.append("Candidate readiness score is below 60%.")
+
+        if readiness == "DO NOT CREATE CI YET" and review_action in ["Approve for CI Review", "Mark ServiceNow-Ready"]:
+            score -= 35
+            signals.append("Candidate is currently marked DO NOT CREATE CI YET but reviewer attempted approval.")
+
+        if readiness == "NEEDS DATA / OWNER REVIEW" and review_action == "Mark ServiceNow-Ready":
+            score -= 25
+            signals.append("Candidate needs data/owner review before ServiceNow-ready status.")
+
+        if duplicate == "Potential Duplicate" and review_action == "Mark ServiceNow-Ready":
+            score -= 30
+            signals.append("Potential duplicate must be resolved before ServiceNow-ready status.")
+
+        if missing and missing != "None" and review_action == "Mark ServiceNow-Ready":
+            score -= 20
+            signals.append("Candidate still has missing fields before ServiceNow-ready status.")
+
+        if review_action == "Request More Data":
+            score -= 10
+            signals.append("Reviewer requested more data before CI progression.")
+
+        if review_action == "Reject Candidate":
+            score -= 20
+            signals.append("Reviewer rejected candidate; CI creation should not proceed.")
+
+        if review_action == "Hold for Duplicate Check":
+            score -= 15
+            signals.append("Candidate is held for duplicate reconciliation.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        risk = "LOW"
+    elif score >= 60:
+        risk = "MEDIUM"
+    else:
+        risk = "HIGH"
+
+    if not signals:
+        signals.append("CI candidate review event appears complete and governance-ready.")
+
+    return score, risk, signals
+
+
+def save_ci_candidate_review_event(req):
+    df = prepare_ci_candidate_review_events()
+
+    candidate_id = clean(req.form.get("candidate_id"))
+    reviewer = parse_ci_candidate_reviewer(req.form.get("reviewer"))
+    review_action = clean(req.form.get("review_action"))
+    review_comment = clean(req.form.get("review_comment"))
+
+    if not candidate_id or not reviewer["displayName"] or not review_action:
+        return {"error": "Candidate, reviewer, and review action are required."}
+
+    candidate = get_ci_candidate_by_id(candidate_id)
+    if not candidate:
+        return {"error": "Selected CI candidate was not found in ci_candidate_factory.csv."}
+
+    review_status = determine_ci_candidate_review_status(review_action)
+
+    if review_status == "SERVICENOW-READY CANDIDATE":
+        servicenow_ready_status = "Ready for ServiceNow CMDB submission pack"
+    elif review_status == "APPROVED FOR CI REVIEW":
+        servicenow_ready_status = "Approved for owner/CMDB review, not yet final"
+    elif review_status == "MORE DATA REQUIRED":
+        servicenow_ready_status = "Not ready - missing data"
+    elif review_status == "REJECTED - DO NOT CREATE CI":
+        servicenow_ready_status = "Not ready - rejected"
+    elif review_status == "ON HOLD - DUPLICATE CHECK REQUIRED":
+        servicenow_ready_status = "Not ready - duplicate check required"
+    else:
+        servicenow_ready_status = "Under review"
+
+    review_score, risk_level, signals = calculate_ci_candidate_review_score(
+        candidate, reviewer, review_action, review_comment
+    )
+
+    timestamp = datetime.datetime.utcnow().isoformat()
+    review_event_id = "CIREV-" + datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    previous_hash = "GENESIS"
+    if not df.empty:
+        previous_hash = clean(df.iloc[-1].get("record_hash")) or "GENESIS"
+
+    record_hash = sha256_text(
+        review_event_id + timestamp + candidate_id +
+        clean(candidate.get("candidate_name")) + clean(candidate.get("asset_id")) +
+        reviewer["id"] + review_action + review_status +
+        servicenow_ready_status + clean(review_comment) + previous_hash
+    )
+
+    row = pd.DataFrame([{
+        "review_event_id": review_event_id,
+        "timestamp": timestamp,
+        "candidate_id": candidate_id,
+        "candidate_name": clean(candidate.get("candidate_name")),
+        "asset_id": clean(candidate.get("asset_id")),
+        "source_file": clean(candidate.get("source_file")),
+        "source_sheet": clean(candidate.get("source_sheet")),
+        "source_row": clean(candidate.get("source_row")),
+        "candidate_readiness_status": clean(candidate.get("readiness_status")),
+        "candidate_readiness_score": clean(candidate.get("readiness_score")),
+        "reviewer_id": reviewer["id"],
+        "reviewer_name": reviewer["displayName"],
+        "reviewer_upn": reviewer["userPrincipalName"],
+        "reviewer_role": reviewer["jobTitle"],
+        "review_action": review_action,
+        "review_status": review_status,
+        "review_comment": review_comment,
+        "servicenow_ready_status": servicenow_ready_status,
+        "review_score": review_score,
+        "risk_level": risk_level,
+        "governance_signals": " | ".join(signals),
+        "previous_hash": previous_hash,
+        "record_hash": record_hash
+    }])
+
+    df = pd.concat([df, row], ignore_index=True)
+    save_csv(df, CI_CANDIDATE_REVIEW_FILE)
+
+    return {
+        "error": "",
+        "review_event_id": review_event_id,
+        "review_status": review_status,
+        "servicenow_ready_status": servicenow_ready_status,
+        "review_score": review_score,
+        "risk_level": risk_level,
+        "signals": signals,
+        "record_hash": record_hash
+    }
+
+
+def get_latest_ci_candidate_review_map():
+    df = prepare_ci_candidate_review_events().fillna("")
+    latest = {}
+
+    if df.empty:
+        return latest
+
+    for _, row in df.iterrows():
+        latest[clean(row.get("candidate_id"))] = row.to_dict()
+
+    return latest
+
+
+def get_ci_candidate_review_metrics():
+    candidates = prepare_ci_candidate_factory().fillna("")
+    reviews = prepare_ci_candidate_review_events().fillna("")
+    latest_reviews = get_latest_ci_candidate_review_map()
+
+    queue = []
+    if not candidates.empty:
+        for _, row in candidates.tail(200).iterrows():
+            item = row.to_dict()
+            cid = clean(item.get("candidate_id"))
+            latest = latest_reviews.get(cid, {})
+            item["latest_review_status"] = clean(latest.get("review_status")) or "AWAITING REVIEW"
+            item["latest_reviewer"] = clean(latest.get("reviewer_name"))
+            item["latest_review_comment"] = clean(latest.get("review_comment"))
+            item["latest_review_score"] = clean(latest.get("review_score"))
+            item["latest_review_risk"] = clean(latest.get("risk_level")) or ""
+            item["latest_servicenow_ready_status"] = clean(latest.get("servicenow_ready_status"))
+            queue.append(item)
+
+    approved = 0
+    more_data = 0
+    rejected = 0
+    servicenow_ready = 0
+    duplicate_hold = 0
+
+    for item in queue:
+        status = clean(item.get("latest_review_status"))
+        if status == "APPROVED FOR CI REVIEW":
+            approved += 1
+        if status == "MORE DATA REQUIRED":
+            more_data += 1
+        if status == "REJECTED - DO NOT CREATE CI":
+            rejected += 1
+        if status == "SERVICENOW-READY CANDIDATE":
+            servicenow_ready += 1
+        if status == "ON HOLD - DUPLICATE CHECK REQUIRED":
+            duplicate_hold += 1
+
+    return {
+        "total_candidates": len(queue),
+        "review_events": len(reviews),
+        "approved": approved,
+        "more_data": more_data,
+        "rejected": rejected,
+        "servicenow_ready": servicenow_ready,
+        "duplicate_hold": duplicate_hold,
+        "queue": list(reversed(queue)),
+        "recent_reviews": reviews.tail(20).to_dict("records") if not reviews.empty else []
+    }
+
+
+@app.route("/ci-candidate-review", methods=["GET", "POST"])
+def ci_candidate_review_page():
+    # CI_CANDIDATE_REVIEW_BOARD_ACTIVE
+    result = None
+    reviewer_error = ""
+    reviewers = []
+
+    try:
+        reviewers = get_entra_shift_technicians()
+    except Exception as e:
+        reviewer_error = str(e)
+
+    if request.method == "POST":
+        result = save_ci_candidate_review_event(request)
+
+    metrics = get_ci_candidate_review_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ CI Candidate Review Board</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:42px 46px 56px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1550px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:430px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:28px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+select,textarea,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+textarea{min-height:110px}
+button{border:none;background:linear-gradient(135deg,#1d4ed8,#0f766e);color:white;font-weight:900;cursor:pointer}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ready{background:#dcfce7;color:#166534}.review{background:#fef3c7;color:#92400e}.blocked{background:#fee2e2;color:#991b1b}.info{background:#e0e7ff;color:#3730a3}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ CI Candidate Review Board</h1>
+<p>Owner/reviewer decision layer for draft CI candidates before ServiceNow CMDB submission.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/ci-candidate-factory">CI Candidate Factory</a>
+<a class="active" href="/ci-candidate-review">CI Review Board</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="warning">
+<b>Governance boundary:</b> this page approves CI candidates for review or marks them ServiceNow-ready. It still does not directly create ServiceNow CIs.
+</div>
+
+{% if reviewer_error %}
+<div class="error"><b>Reviewer directory issue:</b><br>{{ reviewer_error }}</div>
+{% endif %}
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Saved Review Event:</b> {{ result.review_event_id }} —
+<b>{{ result.review_status }}</b><br>
+{{ result.servicenow_ready_status }}<br>
+Review Score <b>{{ result.review_score }}%</b> —
+Risk <b>{{ result.risk_level }}</b>
+<ul>{% for s in result.signals %}<li>{{ s }}</li>{% endfor %}</ul>
+<div class="hash"><b>Record Hash:</b> {{ result.record_hash }}</div>
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Candidates</div><div class="metric-value">{{ metrics.total_candidates }}</div></div>
+<div class="metric"><div class="metric-label">Review Events</div><div class="metric-value">{{ metrics.review_events }}</div></div>
+<div class="metric"><div class="metric-label">Approved</div><div class="metric-value" style="color:#16a34a">{{ metrics.approved }}</div></div>
+<div class="metric"><div class="metric-label">More Data</div><div class="metric-value" style="color:#f59e0b">{{ metrics.more_data }}</div></div>
+<div class="metric"><div class="metric-label">ServiceNow-Ready</div><div class="metric-value" style="color:#2563eb">{{ metrics.servicenow_ready }}</div></div>
+<div class="metric"><div class="metric-label">Rejected</div><div class="metric-value" style="color:#dc2626">{{ metrics.rejected }}</div></div>
+</section>
+
+<section class="two">
+<aside class="panel">
+<h2>Review a CI Candidate</h2>
+<form method="POST" action="/ci-candidate-review">
+
+<select name="candidate_id" required>
+<option value="">Select CI candidate</option>
+{% for q in metrics.queue %}
+<option value="{{ q.candidate_id }}">{{ q.candidate_id }} | {{ q.candidate_name }} | {{ q.asset_id }} | {{ q.readiness_status }} {{ q.readiness_score }}%</option>
+{% endfor %}
+</select>
+
+<select name="reviewer" required>
+<option value="">Reviewer / Owner</option>
+{% for r in reviewers %}
+<option value="{{ r.id }}||{{ r.displayName }}||{{ r.userPrincipalName }}||{{ r.jobTitle }}">{{ r.displayName }} | {{ r.jobTitle }} | {{ r.userPrincipalName }}</option>
+{% endfor %}
+</select>
+
+<select name="review_action" required>
+<option value="">Review Action</option>
+<option value="Approve for CI Review">Approve for CI Review</option>
+<option value="Request More Data">Request More Data</option>
+<option value="Hold for Duplicate Check">Hold for Duplicate Check</option>
+<option value="Reject Candidate">Reject Candidate</option>
+<option value="Mark ServiceNow-Ready">Mark ServiceNow-Ready</option>
+</select>
+
+<textarea name="review_comment" placeholder="Reviewer comment: what is approved, missing, duplicated, or required before ServiceNow CI creation"></textarea>
+
+<button type="submit">Submit CI Candidate Review</button>
+</form>
+
+<div class="warning">
+<b>Best sequence:</b> first approve for CI review, then resolve missing data/duplicates, then mark ServiceNow-ready only when owner, location, criticality, access mapping, and evidence are acceptable.
+</div>
+</aside>
+
+<section class="card">
+<h2>CI Candidate Review Queue</h2>
+{% if metrics.queue %}
+<table>
+<tr>
+<th>Candidate</th>
+<th>Source</th>
+<th>Owner / Location</th>
+<th>CI Class / GMP</th>
+<th>Factory Status</th>
+<th>Latest Review</th>
+<th>Action</th>
+</tr>
+{% for q in metrics.queue %}
+<tr>
+<td><b>{{ q.candidate_id }}</b><br>{{ q.candidate_name }}<br>{{ q.asset_id }}</td>
+<td>{{ q.source_type }}<br>{{ q.source_file }} / {{ q.source_sheet }} row {{ q.source_row }}</td>
+<td>{{ q.owner }}<br>{{ q.location }}</td>
+<td>{{ q.recommended_ci_class }}<br>{{ q.gmp_impact }}</td>
+<td>
+<span class="badge {% if q.readiness_status == 'READY FOR CI REVIEW' %}ready{% elif q.readiness_status == 'NEEDS DATA / OWNER REVIEW' %}review{% else %}blocked{% endif %}">
+{{ q.readiness_status }}
+</span><br>{{ q.readiness_score }}%
+</td>
+<td><b>{{ q.latest_review_status }}</b><br>{{ q.latest_reviewer }}<br>{{ q.latest_servicenow_ready_status }}</td>
+<td class="action">
+<a href="/ci-candidate-passport/{{ q.candidate_id }}">Passport</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No CI candidates yet. Upload a file in CI Candidate Factory first.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="section">
+<h2>Recent Review Events</h2>
+{% if metrics.recent_reviews %}
+<table>
+<tr>
+<th>Review ID</th>
+<th>Candidate</th>
+<th>Reviewer</th>
+<th>Action</th>
+<th>Status</th>
+<th>ServiceNow Readiness</th>
+<th>Risk</th>
+</tr>
+{% for r in metrics.recent_reviews|reverse %}
+<tr>
+<td>{{ r.review_event_id }}</td>
+<td><b>{{ r.candidate_id }}</b><br>{{ r.candidate_name }}<br>{{ r.asset_id }}</td>
+<td>{{ r.reviewer_name }}<br>{{ r.reviewer_role }}</td>
+<td>{{ r.review_action }}</td>
+<td><b>{{ r.review_status }}</b><br>{{ r.review_score }}%</td>
+<td>{{ r.servicenow_ready_status }}</td>
+<td class="{% if r.risk_level == 'LOW' %}low{% elif r.risk_level == 'MEDIUM' %}medium{% else %}high{% endif %}">{{ r.risk_level }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No CI review events yet.</p>
+{% endif %}
+</div>
+
+<div class="section">
+<h2>Leadership Message</h2>
+<p>
+This review board turns uploaded Planner/Excel/Blue Mountain records into governed CI candidates that can be reviewed,
+approved, rejected, or marked ServiceNow-ready. It prevents weak or duplicate records from being pushed into the CMDB.
+</p>
+</div>
+
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(
+        html,
+        metrics=metrics,
+        reviewers=reviewers,
+        reviewer_error=reviewer_error,
+        result=result
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
