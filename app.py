@@ -1,3 +1,4 @@
+# CI_CANDIDATE_FACTORY_ACTIVE
 # CI_MYACCESS_NAV_HEALTH_ACTIVE
 # CI_MYACCESS_BLUEPRINT_ACTIVE
 # RELEASE_NOTES_PAGE_ACTIVE
@@ -14121,6 +14122,879 @@ AssuranceLayer™ / COBIT-Chain™ connects those records, checks gaps, hashes e
 </html>
     """
     return render_template_string(html)
+
+
+# ============================================================
+# CI CANDIDATE FACTORY ACTIVE
+# Upload Planner / Excel / Blue Mountain / generic CSV-XLSX files
+# and generate draft CI candidates with readiness scoring.
+# This does NOT create ServiceNow CIs directly.
+# ============================================================
+
+CI_CANDIDATE_FACTORY_FILE = "ci_candidate_factory.csv"
+
+
+def prepare_ci_candidate_factory():
+    df = load_csv(CI_CANDIDATE_FACTORY_FILE)
+    return ensure_cols(df, [
+        "candidate_id", "timestamp", "source_file", "source_sheet", "source_row",
+        "source_type", "candidate_name", "asset_id", "description", "owner",
+        "department", "location", "criticality", "gmp_impact", "validated_status",
+        "vendor", "model", "serial_number", "event_or_task", "due_date",
+        "assignee", "recommended_ci_class", "support_group", "access_required",
+        "myaccess_mapping_status", "evidence_source", "missing_fields",
+        "duplicate_risk", "readiness_status", "readiness_score",
+        "recommended_action", "governance_signals", "previous_hash", "record_hash"
+    ])
+
+
+def ci_normalize_text(value):
+    try:
+        if pd.isna(value):
+            return ""
+    except Exception:
+        pass
+    return str(value).strip()
+
+
+def ci_norm_key(value):
+    return ci_normalize_text(value).lower().replace("_", " ").replace("-", " ").strip()
+
+
+def ci_find_column(columns, keywords):
+    normalized = [(col, ci_norm_key(col)) for col in columns]
+    wanted = [ci_norm_key(k) for k in keywords]
+
+    # exact first
+    for col, col_norm in normalized:
+        for key in wanted:
+            if col_norm == key:
+                return col
+
+    # then contains
+    for col, col_norm in normalized:
+        for key in wanted:
+            if key and key in col_norm:
+                return col
+
+    return None
+
+
+def ci_extract(row, columns, keywords):
+    col = ci_find_column(columns, keywords)
+    if not col:
+        return ""
+    return clean(ci_normalize_text(row.get(col, "")))
+
+
+def ci_detect_source_type(columns, filename):
+    cols = " ".join([ci_norm_key(c) for c in columns])
+    fname = ci_norm_key(filename)
+
+    if "grace days" in cols or "event name" in cols or "schedule person" in cols or "scope" in cols:
+        return "Blue Mountain Asset/Schedule Export"
+
+    if "task name" in cols or "bucket" in cols or "planner" in fname or "progress" in cols:
+        return "Planner / Day-in-the-Life Export"
+
+    if "application name" in cols and ("connector" in cols or "custodian" in cols or "workgroup" in cols):
+        return "MyAccess / Application Portfolio Export"
+
+    if "uaf" in cols or "training accounted" in cols or "role assigned" in cols or "user access" in fname:
+        return "Access Baseline Excel"
+
+    if "ci name" in cols or "cmdb" in fname or "configuration item" in cols:
+        return "ServiceNow CMDB Export"
+
+    return "Generic Excel/CSV Upload"
+
+
+def ci_guess_asset_id(row_text):
+    import re
+    patterns = [
+        r"\bEQP[-\s]?\d+\b",
+        r"\bASSET[-\s]?\d+\b",
+        r"\bCI[-\s]?[A-Z0-9]+\b",
+        r"\bMWO[-\s]?\d+[-\s]?\d*\b"
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, row_text, flags=re.IGNORECASE)
+        if match:
+            return match.group(0).replace(" ", "-").upper()
+
+    return ""
+
+
+def ci_guess_gmp_impact(criticality, row_text):
+    text_value = (clean(criticality) + " " + clean(row_text)).lower()
+
+    if "gmp, direct" in text_value or "gmp direct" in text_value:
+        return "GMP Direct"
+    if "gmp, indirect" in text_value or "gmp indirect" in text_value:
+        return "GMP Indirect"
+    if "gmp" in text_value and "no impact" in text_value:
+        return "GMP No Impact"
+    if "non-gmp" in text_value or "non gmp" in text_value:
+        return "Non-GMP"
+    if "gmp" in text_value:
+        return "GMP Impact Mentioned"
+
+    return "Unknown"
+
+
+def ci_guess_validated_status(gmp_impact, row_text):
+    text_value = (clean(gmp_impact) + " " + clean(row_text)).lower()
+
+    if "validated" in text_value or "qualified" in text_value:
+        return "Validated / Qualified Mentioned"
+    if "gmp direct" in text_value or "gmp indirect" in text_value or "gmp impact" in text_value:
+        return "Likely Requires Validation/Qualification Review"
+
+    return "Not Assessed"
+
+
+def ci_guess_ci_class(candidate_name, description, row_text):
+    text_value = " ".join([clean(candidate_name), clean(description), clean(row_text)]).lower()
+
+    if "bms" in text_value or "niagara" in text_value or "honeywell" in text_value or "building management" in text_value:
+        return "Building Management / Facilities System"
+    if "blue mountain" in text_value or "cmms" in text_value:
+        return "Enterprise Application / CMMS"
+    if "chromeleon" in text_value or "empower" in text_value or "lab" in text_value or "analyzer" in text_value:
+        return "Lab Instrument / Computerized System"
+    if "speedy" in text_value or "glove" in text_value or "isolator" in text_value:
+        return "Controlled Manufacturing Equipment"
+    if "server" in text_value or "workstation" in text_value or "computer" in text_value:
+        return "Infrastructure / Workstation"
+    if "application" in text_value or "software" in text_value or "system" in text_value:
+        return "Application Service / Computerized System"
+
+    return "Controlled Equipment / CI Candidate"
+
+
+def ci_guess_access_required(row_text):
+    text_value = clean(row_text).lower()
+
+    access_words = [
+        "access", "user", "admin", "role", "entitlement", "account",
+        "login", "application", "software", "system", "workstation",
+        "audit trail", "backup", "bms", "niagara", "chromeleon",
+        "empower", "blue mountain", "speedy"
+    ]
+
+    for word in access_words:
+        if word in text_value:
+            return "Yes / Review MyAccess Mapping"
+
+    return "Not Assessed"
+
+
+def ci_determine_myaccess_status(source_type, access_required):
+    if "MyAccess" in clean(source_type):
+        return "Source includes MyAccess portfolio data"
+
+    if clean(access_required).startswith("Yes"):
+        return "Needs MyAccess mapping review"
+
+    return "Not assessed"
+
+
+def ci_calculate_readiness(candidate):
+    score = 100
+    missing = []
+    signals = []
+
+    if not clean(candidate.get("candidate_name")):
+        score -= 30
+        missing.append("candidate_name")
+        signals.append("Candidate name is missing.")
+
+    if not clean(candidate.get("asset_id")):
+        score -= 20
+        missing.append("asset_id_or_eqp")
+        signals.append("Asset ID / EQP / CI identifier is missing.")
+
+    if not clean(candidate.get("owner")):
+        score -= 15
+        missing.append("owner")
+        signals.append("Owner is missing.")
+
+    if not clean(candidate.get("location")):
+        score -= 10
+        missing.append("location")
+        signals.append("Physical or logical location is missing.")
+
+    if clean(candidate.get("gmp_impact")) in ["", "Unknown"]:
+        score -= 15
+        missing.append("gmp_impact_or_criticality")
+        signals.append("GMP impact / criticality is unknown.")
+
+    if not clean(candidate.get("recommended_ci_class")):
+        score -= 5
+        missing.append("ci_class")
+        signals.append("Recommended CI class is missing.")
+
+    if "Planner" in clean(candidate.get("source_type")) and not clean(candidate.get("asset_id")):
+        score -= 10
+        signals.append("Planner is task-level evidence; asset identity needs confirmation before CI creation.")
+
+    if clean(candidate.get("duplicate_risk")) == "Potential Duplicate":
+        score -= 25
+        signals.append("Potential duplicate detected based on asset ID or candidate name.")
+
+    if clean(candidate.get("access_required")).startswith("Yes") and "Needs MyAccess" in clean(candidate.get("myaccess_mapping_status")):
+        score -= 10
+        signals.append("Access appears relevant; MyAccess mapping should be reviewed.")
+
+    score = max(score, 0)
+
+    if score >= 85:
+        status = "READY FOR CI REVIEW"
+        action = "Route to system/asset owner review, then prepare ServiceNow CMDB mapping."
+    elif score >= 60:
+        status = "NEEDS DATA / OWNER REVIEW"
+        action = "Resolve missing fields before proposing ServiceNow CI creation."
+    else:
+        status = "DO NOT CREATE CI YET"
+        action = "Insufficient or conflicting asset evidence. Reconcile source data first."
+
+    if not signals:
+        signals.append("Candidate has strong baseline data for CI review.")
+
+    return status, score, action, missing, signals
+
+
+def ci_read_uploaded_tables(file_storage):
+    import io
+
+    filename = clean(file_storage.filename or "uploaded_file")
+    raw = file_storage.read()
+
+    if not raw:
+        raise RuntimeError("Uploaded file is empty.")
+
+    lower_name = filename.lower()
+
+    if lower_name.endswith(".csv"):
+        try:
+            df = pd.read_csv(io.BytesIO(raw))
+        except UnicodeDecodeError:
+            df = pd.read_csv(io.BytesIO(raw), encoding="latin-1")
+        return {filename: df}, filename
+
+    if lower_name.endswith(".xlsx") or lower_name.endswith(".xls"):
+        tables = pd.read_excel(io.BytesIO(raw), sheet_name=None)
+        return tables, filename
+
+    raise RuntimeError("Unsupported file type. Upload .csv, .xlsx, or .xls.")
+
+
+def ci_build_candidates_from_upload(file_storage):
+    import datetime as _dt
+
+    existing = prepare_ci_candidate_factory().fillna("")
+    tables, filename = ci_read_uploaded_tables(file_storage)
+
+    new_candidates = []
+    timestamp = _dt.datetime.utcnow().isoformat()
+    batch_stamp = _dt.datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+    for sheet_name, df in tables.items():
+        if df is None or df.empty:
+            continue
+
+        df = df.copy()
+        df.columns = [clean(str(c)) for c in df.columns]
+        columns = list(df.columns)
+        source_type = ci_detect_source_type(columns, filename)
+
+        for idx, row in df.iterrows():
+            row_values = [ci_normalize_text(v) for v in row.to_dict().values()]
+            row_text = " ".join(row_values)
+            if not clean(row_text):
+                continue
+
+            source_row = int(idx) + 2
+
+            asset_id = ci_extract(row, columns, [
+                "Asset ID", "Asset Tag", "EQP", "EQP #", "EQP Number", "Equipment ID",
+                "Equipment Number", "Asset Number", "Application ID", "CI ID", "Configuration Item ID"
+            ])
+
+            if not asset_id:
+                asset_id = ci_guess_asset_id(row_text)
+
+            candidate_name = ci_extract(row, columns, [
+                "Asset Name", "Equipment Name", "System Name", "Application Name",
+                "Device", "Name", "CI Name", "Configuration Item", "Task Name",
+                "Work Item", "Equipment Type"
+            ])
+
+            description = ci_extract(row, columns, [
+                "Description", "Short Description", "Notes", "Comments",
+                "Task Description", "Details", "Work Notes"
+            ])
+
+            if not candidate_name and description:
+                candidate_name = description[:100]
+
+            owner = ci_extract(row, columns, [
+                "Owner", "System Owner", "Application Owner", "Process Owner",
+                "Primary Registration Contact", "Managed By", "Owned By",
+                "Schedule Person", "Assignee", "Assigned To", "Custodian"
+            ])
+
+            department = ci_extract(row, columns, [
+                "Department", "Business Area", "Process Owner Department",
+                "System Owner Department", "Owner Department"
+            ])
+
+            location = ci_extract(row, columns, [
+                "Physical Location", "Location", "Site", "Room", "Area",
+                "Building", "Device by Location"
+            ])
+
+            criticality = ci_extract(row, columns, [
+                "Criticality", "GMP Impact", "Regulatory Status",
+                "Quality Status", "Impact", "Risk", "Validated Status"
+            ])
+
+            vendor = ci_extract(row, columns, [
+                "Vendor", "Manufacturer", "Supplier"
+            ])
+
+            model = ci_extract(row, columns, [
+                "Model", "Model Number", "Application Version", "Version"
+            ])
+
+            serial_number = ci_extract(row, columns, [
+                "Serial Number", "Serial", "S/N"
+            ])
+
+            event_or_task = ci_extract(row, columns, [
+                "Event Name", "Schedule", "Schedule Name", "Task Name",
+                "Type", "Activity Type", "Work Type", "Frequency"
+            ])
+
+            due_date = ci_extract(row, columns, [
+                "Due Date", "Planned Date", "Date", "Completion Date",
+                "Start Date", "Finish Date"
+            ])
+
+            assignee = ci_extract(row, columns, [
+                "Assignee", "Assigned To", "Schedule Person", "Technician",
+                "Owner", "Responsible Person"
+            ])
+
+            support_group = ci_extract(row, columns, [
+                "Support Group", "Assignment Group", "ServiceNow Assignment Group",
+                "Workgroup Name", "Work Group Owner", "Group"
+            ])
+
+            gmp_impact = ci_guess_gmp_impact(criticality, row_text)
+            validated_status = ci_guess_validated_status(gmp_impact, row_text)
+            recommended_ci_class = ci_guess_ci_class(candidate_name, description, row_text)
+            access_required = ci_guess_access_required(row_text)
+            myaccess_mapping_status = ci_determine_myaccess_status(source_type, access_required)
+
+            candidate_id = f"CIC-{batch_stamp}-{len(new_candidates)+1:04d}"
+
+            candidate = {
+                "candidate_id": candidate_id,
+                "timestamp": timestamp,
+                "source_file": filename,
+                "source_sheet": clean(str(sheet_name)),
+                "source_row": source_row,
+                "source_type": source_type,
+                "candidate_name": candidate_name,
+                "asset_id": asset_id,
+                "description": description,
+                "owner": owner,
+                "department": department,
+                "location": location,
+                "criticality": criticality,
+                "gmp_impact": gmp_impact,
+                "validated_status": validated_status,
+                "vendor": vendor,
+                "model": model,
+                "serial_number": serial_number,
+                "event_or_task": event_or_task,
+                "due_date": due_date,
+                "assignee": assignee,
+                "recommended_ci_class": recommended_ci_class,
+                "support_group": support_group,
+                "access_required": access_required,
+                "myaccess_mapping_status": myaccess_mapping_status,
+                "evidence_source": f"{filename} | sheet={clean(str(sheet_name))} | row={source_row}",
+                "missing_fields": "",
+                "duplicate_risk": "Not Assessed",
+                "readiness_status": "",
+                "readiness_score": "",
+                "recommended_action": "",
+                "governance_signals": "",
+                "previous_hash": "",
+                "record_hash": ""
+            }
+
+            new_candidates.append(candidate)
+
+    if not new_candidates:
+        raise RuntimeError("No candidate rows were extracted. Check whether the file has usable rows and headers.")
+
+    # Duplicate detection across existing + new batch.
+    existing_keys = set()
+    if not existing.empty:
+        for _, r in existing.iterrows():
+            key_asset = clean(r.get("asset_id")).lower()
+            key_name = clean(r.get("candidate_name")).lower()
+            if key_asset:
+                existing_keys.add("asset:" + key_asset)
+            if key_name:
+                existing_keys.add("name:" + key_name)
+
+    new_seen = set()
+
+    for candidate in new_candidates:
+        key_asset = clean(candidate.get("asset_id")).lower()
+        key_name = clean(candidate.get("candidate_name")).lower()
+
+        duplicate = False
+
+        if key_asset and ("asset:" + key_asset in existing_keys or "asset:" + key_asset in new_seen):
+            duplicate = True
+
+        if key_name and ("name:" + key_name in existing_keys or "name:" + key_name in new_seen):
+            duplicate = True
+
+        candidate["duplicate_risk"] = "Potential Duplicate" if duplicate else "No Duplicate Detected"
+
+        if key_asset:
+            new_seen.add("asset:" + key_asset)
+        if key_name:
+            new_seen.add("name:" + key_name)
+
+        status, score, action, missing, signals = ci_calculate_readiness(candidate)
+        candidate["readiness_status"] = status
+        candidate["readiness_score"] = score
+        candidate["recommended_action"] = action
+        candidate["missing_fields"] = " | ".join(missing) if missing else "None"
+        candidate["governance_signals"] = " | ".join(signals)
+
+    df_new = pd.DataFrame(new_candidates)
+
+    # Add hash chain.
+    if existing.empty:
+        previous_hash = "GENESIS"
+    else:
+        previous_hash = clean(existing.iloc[-1].get("record_hash")) or "GENESIS"
+
+    rows = []
+    for _, row in df_new.iterrows():
+        row_dict = row.to_dict()
+        row_dict["previous_hash"] = previous_hash
+
+        hash_payload = (
+            clean(row_dict.get("candidate_id")) +
+            clean(row_dict.get("timestamp")) +
+            clean(row_dict.get("source_file")) +
+            clean(row_dict.get("source_sheet")) +
+            clean(str(row_dict.get("source_row"))) +
+            clean(row_dict.get("candidate_name")) +
+            clean(row_dict.get("asset_id")) +
+            clean(row_dict.get("owner")) +
+            clean(row_dict.get("location")) +
+            clean(row_dict.get("gmp_impact")) +
+            clean(row_dict.get("readiness_status")) +
+            clean(str(row_dict.get("readiness_score"))) +
+            previous_hash
+        )
+
+        row_dict["record_hash"] = sha256_text(hash_payload)
+        previous_hash = row_dict["record_hash"]
+        rows.append(row_dict)
+
+    df_new = pd.DataFrame(rows)
+    combined = pd.concat([existing, df_new], ignore_index=True)
+    save_csv(combined, CI_CANDIDATE_FACTORY_FILE)
+
+    ready_count = len(df_new[df_new["readiness_status"] == "READY FOR CI REVIEW"])
+    review_count = len(df_new[df_new["readiness_status"] == "NEEDS DATA / OWNER REVIEW"])
+    blocked_count = len(df_new[df_new["readiness_status"] == "DO NOT CREATE CI YET"])
+
+    return {
+        "error": "",
+        "source_file": filename,
+        "created": len(df_new),
+        "ready": ready_count,
+        "review": review_count,
+        "blocked": blocked_count
+    }
+
+
+def get_ci_candidate_factory_metrics():
+    df = prepare_ci_candidate_factory().fillna("")
+
+    if df.empty:
+        return {
+            "total": 0,
+            "ready": 0,
+            "review": 0,
+            "blocked": 0,
+            "duplicates": 0,
+            "recent": [],
+            "by_source": []
+        }
+
+    by_source = []
+    try:
+        grouped = df.groupby("source_type").size().reset_index(name="count")
+        by_source = grouped.sort_values("count", ascending=False).to_dict("records")
+    except Exception:
+        by_source = []
+
+    return {
+        "total": len(df),
+        "ready": len(df[df["readiness_status"] == "READY FOR CI REVIEW"]),
+        "review": len(df[df["readiness_status"] == "NEEDS DATA / OWNER REVIEW"]),
+        "blocked": len(df[df["readiness_status"] == "DO NOT CREATE CI YET"]),
+        "duplicates": len(df[df["duplicate_risk"] == "Potential Duplicate"]),
+        "recent": df.tail(25).to_dict("records"),
+        "by_source": by_source
+    }
+
+
+def get_ci_candidate_by_id(candidate_id):
+    df = prepare_ci_candidate_factory().fillna("")
+    if df.empty:
+        return None
+
+    matches = df[df["candidate_id"] == clean(candidate_id)]
+    if matches.empty:
+        return None
+
+    return matches.tail(1).iloc[0].to_dict()
+
+
+@app.route("/ci-candidate-factory", methods=["GET", "POST"])
+def ci_candidate_factory_page():
+    # CI_CANDIDATE_FACTORY_ACTIVE
+    result = None
+
+    if request.method == "POST":
+        try:
+            uploaded = request.files.get("ci_file")
+            if not uploaded or not uploaded.filename:
+                result = {"error": "Please choose a CSV or Excel file to upload."}
+            else:
+                result = ci_build_candidates_from_upload(uploaded)
+        except Exception as e:
+            result = {"error": str(e)}
+
+    metrics = get_ci_candidate_factory_metrics()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ CI Candidate Factory</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:42px 46px 56px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1550px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card,.panel{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:420px 1fr;gap:20px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:30px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.error{background:#fee2e2;border-left:7px solid #dc2626;color:#991b1b;border-radius:16px;padding:14px;margin-bottom:16px;font-weight:900}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+input,button{width:100%;border-radius:13px;border:1px solid #dbe3ef;padding:11px;margin:6px 0;font-size:14px}
+button{border:none;background:linear-gradient(135deg,#0f766e,#2563eb);color:white;font-weight:900;cursor:pointer}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.low{color:#16a34a;font-weight:900}.medium{color:#d97706;font-weight:900}.high{color:#dc2626;font-weight:900}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ready{background:#dcfce7;color:#166534}.review{background:#fef3c7;color:#92400e}.blocked{background:#fee2e2;color:#991b1b}.info{background:#e0e7ff;color:#3730a3}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ CI Candidate Factory</h1>
+<p>Upload Planner, Excel, Blue Mountain, MyAccess, or generic CSV/XLSX files and convert them into governed CI candidates with readiness scoring and passport lineage.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/operational-lineage">Operational Lineage</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a>
+<a class="active" href="/ci-candidate-factory">CI Candidate Factory</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="warning">
+<b>Governance boundary:</b> This page creates <b>draft CI candidates</b>, not final ServiceNow CIs. Final CI creation should require owner review, duplicate check, and approval.
+</div>
+
+{% if result and result.error %}
+<div class="error">{{ result.error }}</div>
+{% elif result %}
+<div class="notice">
+<b>Upload processed:</b> {{ result.source_file }}<br>
+Created <b>{{ result.created }}</b> CI candidate(s):
+<b>{{ result.ready }}</b> ready,
+<b>{{ result.review }}</b> need review,
+<b>{{ result.blocked }}</b> blocked.
+</div>
+{% endif %}
+
+<section class="grid">
+<div class="metric"><div class="metric-label">Total Candidates</div><div class="metric-value">{{ metrics.total }}</div></div>
+<div class="metric"><div class="metric-label">Ready</div><div class="metric-value" style="color:#16a34a">{{ metrics.ready }}</div></div>
+<div class="metric"><div class="metric-label">Needs Review</div><div class="metric-value" style="color:#f59e0b">{{ metrics.review }}</div></div>
+<div class="metric"><div class="metric-label">Do Not Create Yet</div><div class="metric-value" style="color:#dc2626">{{ metrics.blocked }}</div></div>
+<div class="metric"><div class="metric-label">Duplicate Risk</div><div class="metric-value">{{ metrics.duplicates }}</div></div>
+</section>
+
+<section class="two">
+<aside class="panel">
+<h2>Upload CI Source File</h2>
+<form method="POST" action="/ci-candidate-factory" enctype="multipart/form-data">
+<input type="file" name="ci_file" accept=".csv,.xlsx,.xls" required>
+<button type="submit">Generate CI Candidates</button>
+</form>
+
+<div class="warning">
+<b>Best files to upload:</b>
+Blue Mountain asset export, Day-in-the-Life Planner export, equipment Excel, ServiceNow CI export, MyAccess application export, or binder-derived access/equipment register.
+</div>
+
+<h3>What COBIT-Chain extracts</h3>
+<ul>
+<li>Asset / EQP / CI identifiers</li>
+<li>System or equipment name</li>
+<li>Owner, department, location</li>
+<li>Criticality / GMP impact</li>
+<li>Recommended CI class</li>
+<li>Access / MyAccess mapping need</li>
+<li>Missing fields and duplicate risk</li>
+<li>CI readiness score and passport hash</li>
+</ul>
+</aside>
+
+<section class="card">
+<h2>Recent CI Candidates</h2>
+{% if metrics.recent %}
+<table>
+<tr>
+<th>ID</th>
+<th>Candidate</th>
+<th>Source</th>
+<th>Owner / Location</th>
+<th>GMP / Class</th>
+<th>Access</th>
+<th>Readiness</th>
+<th>Action</th>
+</tr>
+{% for r in metrics.recent|reverse %}
+<tr>
+<td><b>{{ r.candidate_id }}</b><br>{{ r.asset_id }}</td>
+<td><b>{{ r.candidate_name }}</b><br>{{ r.description }}</td>
+<td>{{ r.source_type }}<br>{{ r.source_file }} / {{ r.source_sheet }} row {{ r.source_row }}</td>
+<td>{{ r.owner }}<br>{{ r.location }}</td>
+<td>{{ r.gmp_impact }}<br>{{ r.recommended_ci_class }}</td>
+<td>{{ r.access_required }}<br>{{ r.myaccess_mapping_status }}</td>
+<td>
+<span class="badge {% if r.readiness_status == 'READY FOR CI REVIEW' %}ready{% elif r.readiness_status == 'NEEDS DATA / OWNER REVIEW' %}review{% else %}blocked{% endif %}">
+{{ r.readiness_status }}
+</span><br>
+{{ r.readiness_score }}%
+</td>
+<td class="action"><a href="/ci-candidate-passport/{{ r.candidate_id }}">Passport</a></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No CI candidates yet. Upload a Planner, Excel, Blue Mountain, or CSV file.</p>
+{% endif %}
+</section>
+</section>
+
+<div class="section">
+<h2>Source Mix</h2>
+{% if metrics.by_source %}
+<table>
+<tr><th>Source Type</th><th>Candidate Count</th></tr>
+{% for s in metrics.by_source %}
+<tr><td>{{ s.source_type }}</td><td><b>{{ s.count }}</b></td></tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No source mix yet.</p>
+{% endif %}
+</div>
+
+<div class="section">
+<h2>Leadership Message</h2>
+<p>
+Excel and Planner are not wasted. COBIT-Chain turns them into governed CI intelligence by extracting asset signals, checking data quality,
+detecting duplicates, scoring CI readiness, and generating a CI Candidate Passport before anything is proposed for ServiceNow CMDB.
+</p>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, metrics=metrics, result=result)
+
+
+@app.route("/ci-candidate-passport/<candidate_id>")
+def ci_candidate_passport_page(candidate_id):
+    # CI_CANDIDATE_FACTORY_ACTIVE
+    candidate = get_ci_candidate_by_id(candidate_id)
+
+    if not candidate:
+        return render_template_string("""
+        <h2>CI Candidate Not Found</h2>
+        <p>The candidate ID was not found in ci_candidate_factory.csv.</p>
+        <p><a href="/ci-candidate-factory">Back to CI Candidate Factory</a></p>
+        """), 404
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ CI Candidate Passport</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#2563eb);color:white;padding:42px 46px 56px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1450px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top;word-break:break-word}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ready{background:#dcfce7;color:#166534}.review{background:#fef3c7;color:#92400e}.blocked{background:#fee2e2;color:#991b1b}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ CI Candidate Passport</h1>
+<p>Draft CI candidate evidence profile before ServiceNow CMDB creation.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/command-center">Command Center</a>
+<a href="/ci-candidate-factory">CI Candidate Factory</a>
+<a class="active" href="/ci-candidate-passport/{{ candidate.candidate_id }}">Candidate Passport</a>
+<a href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="notice">
+<b>{{ candidate.readiness_status }}</b> —
+Score <b>{{ candidate.readiness_score }}%</b>.
+<br>{{ candidate.recommended_action }}
+</div>
+
+<div class="warning">
+<b>Important:</b> This is a draft candidate passport. It should be reviewed by asset/system owner before any ServiceNow CMDB creation.
+</div>
+
+<div class="section">
+<h2>Candidate Identity</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Candidate ID</td><td><b>{{ candidate.candidate_id }}</b></td></tr>
+<tr><td>Candidate Name</td><td>{{ candidate.candidate_name }}</td></tr>
+<tr><td>Asset / EQP / CI ID</td><td>{{ candidate.asset_id }}</td></tr>
+<tr><td>Description</td><td>{{ candidate.description }}</td></tr>
+<tr><td>Recommended CI Class</td><td>{{ candidate.recommended_ci_class }}</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Ownership and Risk</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Owner</td><td>{{ candidate.owner }}</td></tr>
+<tr><td>Department</td><td>{{ candidate.department }}</td></tr>
+<tr><td>Location</td><td>{{ candidate.location }}</td></tr>
+<tr><td>Criticality</td><td>{{ candidate.criticality }}</td></tr>
+<tr><td>GMP Impact</td><td>{{ candidate.gmp_impact }}</td></tr>
+<tr><td>Validated Status</td><td>{{ candidate.validated_status }}</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Access / MyAccess Readiness</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Access Required?</td><td>{{ candidate.access_required }}</td></tr>
+<tr><td>MyAccess Mapping Status</td><td>{{ candidate.myaccess_mapping_status }}</td></tr>
+<tr><td>Support Group</td><td>{{ candidate.support_group }}</td></tr>
+<tr><td>Event / Task</td><td>{{ candidate.event_or_task }}</td></tr>
+<tr><td>Due Date</td><td>{{ candidate.due_date }}</td></tr>
+<tr><td>Assignee</td><td>{{ candidate.assignee }}</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Data Quality and Lineage</h2>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td>Source Type</td><td>{{ candidate.source_type }}</td></tr>
+<tr><td>Source File</td><td>{{ candidate.source_file }}</td></tr>
+<tr><td>Source Sheet / Row</td><td>{{ candidate.source_sheet }} / {{ candidate.source_row }}</td></tr>
+<tr><td>Evidence Source</td><td>{{ candidate.evidence_source }}</td></tr>
+<tr><td>Missing Fields</td><td>{{ candidate.missing_fields }}</td></tr>
+<tr><td>Duplicate Risk</td><td>{{ candidate.duplicate_risk }}</td></tr>
+<tr><td>Governance Signals</td><td>{{ candidate.governance_signals }}</td></tr>
+<tr><td>Previous Hash</td><td class="hash">{{ candidate.previous_hash }}</td></tr>
+<tr><td>Record Hash</td><td class="hash">{{ candidate.record_hash }}</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Next Controlled Steps</h2>
+<ol>
+<li>Asset/system owner confirms candidate identity.</li>
+<li>Resolve missing EQP, owner, location, criticality, and access fields.</li>
+<li>Compare against existing ServiceNow CMDB to avoid duplicate CI creation.</li>
+<li>Confirm MyAccess mapping and access governance need.</li>
+<li>Generate approved ServiceNow-ready CI submission pack.</li>
+</ol>
+<div class="action">
+<a href="/ci-candidate-factory">Back to CI Candidate Factory</a>
+<a href="/servicenow-ci-readiness">Create CI Readiness Record</a>
+<a href="/ci-myaccess-blueprint">Open CI + MyAccess Blueprint</a>
+</div>
+</div>
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, candidate=candidate)
 
 if __name__ == "__main__":
     app.run(debug=True)
