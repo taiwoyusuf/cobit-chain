@@ -29468,5 +29468,942 @@ def sterile_compounding_seal_health_summary_injection(response):
         print(f"Sterile seal health summary injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CUSTODY_CHAIN_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 17: Sterile Chain-of-Custody + Custody Health
+#
+# New Routes:
+#   /sterile-compounding/custody-chain
+#   /sterile-compounding/custody/<record_id>
+#   /sterile-compounding/custody-transfer/<record_id>
+#   /sterile-compounding/custody-chain/export
+#   /sterile-compounding/custody-health
+#   /sterile-compounding/custody-health/export
+#
+# New Registers:
+#   sterile_compounding_custody_chain_register.csv
+#   sterile_compounding_custody_health_register.csv
+#
+# Boundary:
+#   This is a sterile compounding custody and handoff governance layer.
+#   It does not perform formal product release and does not replace QA/QMS,
+#   pharmacy disposition, inventory systems, courier systems, Veeva,
+#   Blue Mountain, ServiceNow, Entra, CI, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_cd_pd
+    import json as sterile_cd_json
+    from flask import request as sterile_cd_request
+    from flask import redirect as sterile_cd_redirect
+    from flask import Response as sterile_cd_Response
+except Exception as sterile_cd_import_error:
+    raise RuntimeError(f"Sterile custody chain import failed: {sterile_cd_import_error}")
+
+
+STERILE_CUSTODY_CHAIN_REGISTER = "sterile_compounding_custody_chain_register.csv"
+STERILE_CUSTODY_HEALTH_REGISTER = "sterile_compounding_custody_health_register.csv"
+
+STERILE_CUSTODY_CHAIN_COLUMNS = [
+    "custody_event_id",
+    "record_id",
+    "event_type",
+    "custody_status",
+    "from_custodian",
+    "to_custodian",
+    "location",
+    "storage_condition",
+    "temperature_signal",
+    "handoff_evidence_id",
+    "handoff_note",
+    "event_timestamp",
+    "entered_by",
+    "event_hash"
+]
+
+STERILE_CUSTODY_HEALTH_COLUMNS = [
+    "health_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "governance_status",
+    "custody_event_count",
+    "latest_event_type",
+    "latest_custody_status",
+    "current_custodian",
+    "latest_location",
+    "storage_condition",
+    "temperature_signal",
+    "missing_handoff_evidence",
+    "open_hold_signal",
+    "custody_health_status",
+    "custody_health_decision",
+    "recommended_action",
+    "last_checked",
+    "custody_health_hash"
+]
+
+
+def sterile_cd_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile custody dependencies missing: " + ", ".join(missing))
+
+
+def sterile_cd_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_cd_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_cd_read_chain():
+    df = sterile_read_register(STERILE_CUSTODY_CHAIN_REGISTER, STERILE_CUSTODY_CHAIN_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_CUSTODY_CHAIN_COLUMNS)
+
+
+def sterile_cd_read_health():
+    df = sterile_read_register(STERILE_CUSTODY_HEALTH_REGISTER, STERILE_CUSTODY_HEALTH_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_CUSTODY_HEALTH_COLUMNS)
+
+
+def sterile_cd_status_badge(status):
+    status = sterile_cd_safe(status).upper()
+
+    if status in ["GREEN", "RELEASED", "TRANSFERRED", "RECEIVED", "IN STORAGE", "COMPLETE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "IN TRANSIT", "PENDING", "UNDER REVIEW", "CONDITIONAL", "NO BASELINE"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "HOLD", "QUARANTINE", "REJECTED", "LOST", "TEMPERATURE EXCURSION", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_cd_record_options(selected=""):
+    csp_df = sterile_prepare_dashboard_df()
+    options = '<option value="">Select CSP Record</option>'
+
+    if csp_df is not None and not csp_df.empty:
+        for _, row in csp_df.iterrows():
+            rid = sterile_cd_safe(row.get("record_id", ""))
+            label = sterile_cd_safe(row.get("csp_name", ""))
+            sel = "selected" if rid == selected else ""
+            options += f'<option value="{rid}" {sel}>{rid} - {label}</option>'
+
+    return options
+
+
+def sterile_cd_latest_event(chain_df, record_id):
+    if chain_df.empty:
+        return None
+
+    match = chain_df[chain_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return None
+
+    try:
+        match = match.sort_values(by="event_timestamp", ascending=False)
+    except Exception:
+        pass
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_cd_event_count(chain_df, record_id):
+    if chain_df.empty:
+        return 0
+    return int((chain_df["record_id"].astype(str) == str(record_id)).sum())
+
+
+def sterile_cd_build_health():
+    sterile_cd_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+    chain_df = sterile_cd_read_chain()
+
+    if csp_df.empty:
+        empty_df = sterile_cd_pd.DataFrame(columns=STERILE_CUSTODY_HEALTH_COLUMNS)
+        sterile_write_register(STERILE_CUSTODY_HEALTH_REGISTER, empty_df, STERILE_CUSTODY_HEALTH_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, csp in csp_df.iterrows():
+        record_id = sterile_cd_safe(csp.get("record_id", ""))
+        latest = sterile_cd_latest_event(chain_df, record_id)
+        count = sterile_cd_event_count(chain_df, record_id)
+
+        latest_event_type = ""
+        latest_status = "NO BASELINE"
+        current_custodian = ""
+        latest_location = ""
+        storage_condition = ""
+        temperature_signal = ""
+        handoff_evidence_id = ""
+
+        if latest:
+            latest_event_type = sterile_cd_safe(latest.get("event_type", ""))
+            latest_status = sterile_cd_safe(latest.get("custody_status", ""))
+            current_custodian = sterile_cd_safe(latest.get("to_custodian", "")) or sterile_cd_safe(latest.get("from_custodian", ""))
+            latest_location = sterile_cd_safe(latest.get("location", ""))
+            storage_condition = sterile_cd_safe(latest.get("storage_condition", ""))
+            temperature_signal = sterile_cd_safe(latest.get("temperature_signal", ""))
+            handoff_evidence_id = sterile_cd_safe(latest.get("handoff_evidence_id", ""))
+
+        missing_handoff_evidence = "NO"
+        if count == 0:
+            missing_handoff_evidence = "YES"
+        elif latest_event_type.lower() in ["transfer", "handoff", "release", "quarantine transfer", "storage transfer"] and not handoff_evidence_id:
+            missing_handoff_evidence = "YES"
+
+        open_hold_signal = "NO"
+        if sterile_cd_safe(latest_status).upper() in ["HOLD", "QUARANTINE", "REJECTED", "LOST"]:
+            open_hold_signal = "YES"
+
+        temp_lower = sterile_cd_safe(temperature_signal).lower()
+        storage_lower = sterile_cd_safe(storage_condition).lower()
+        status_upper = sterile_cd_safe(latest_status).upper()
+
+        if (
+            count == 0
+            or missing_handoff_evidence == "YES"
+            or open_hold_signal == "YES"
+            or status_upper in ["HOLD", "QUARANTINE", "REJECTED", "LOST"]
+            or temp_lower in ["excursion", "out of range", "fail", "failed", "temperature excursion"]
+            or storage_lower in ["excursion", "out of range", "fail", "failed"]
+        ):
+            health_status = "RED" if open_hold_signal == "YES" or "excursion" in temp_lower or "out of range" in temp_lower else "YELLOW"
+        else:
+            health_status = "GREEN"
+
+        if health_status == "GREEN":
+            health_decision = "CUSTODY CHAIN ACCEPTABLE FROM GOVERNANCE VIEW"
+            recommended_action = "No custody action required."
+        elif health_status == "YELLOW":
+            health_decision = "CUSTODY CHAIN NEEDS COMPLETION / REVIEW"
+            recommended_action = "Add or review custody baseline, handoff evidence, custodian, location, or storage-condition data."
+        else:
+            health_decision = "CUSTODY HOLD / EXCEPTION REVIEW REQUIRED"
+            recommended_action = "Investigate hold, quarantine, rejection, loss, or temperature/storage excursion before reliance."
+
+        payload = {
+            "health_id": sterile_cd_make_id("ST-CDH", record_id, latest_status, count),
+            "record_id": record_id,
+            "csp_name": sterile_cd_safe(csp.get("csp_name", "")),
+            "batch_or_rx_id": sterile_cd_safe(csp.get("batch_or_rx_id", "")),
+            "facility_type": sterile_cd_safe(csp.get("facility_type", "")),
+            "governance_status": sterile_cd_safe(csp.get("governance_status", "")),
+            "custody_event_count": count,
+            "latest_event_type": latest_event_type,
+            "latest_custody_status": latest_status,
+            "current_custodian": current_custodian,
+            "latest_location": latest_location,
+            "storage_condition": storage_condition,
+            "temperature_signal": temperature_signal,
+            "missing_handoff_evidence": missing_handoff_evidence,
+            "open_hold_signal": open_hold_signal,
+            "custody_health_status": health_status,
+            "custody_health_decision": health_decision,
+            "recommended_action": recommended_action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["custody_health_hash"] = sterile_hash_text(
+            sterile_cd_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    health_df = sterile_cd_pd.DataFrame(rows)
+    health_df = sterile_ensure_cols(health_df, STERILE_CUSTODY_HEALTH_COLUMNS)
+    sterile_write_register(STERILE_CUSTODY_HEALTH_REGISTER, health_df, STERILE_CUSTODY_HEALTH_COLUMNS)
+
+    return health_df
+
+
+@app.route("/sterile-compounding/custody-transfer/<record_id>", methods=["GET", "POST"])
+def sterile_compounding_custody_transfer(record_id):
+    sterile_cd_require_phase1()
+    record_id = sterile_cd_safe(record_id)
+
+    csp_df = sterile_prepare_dashboard_df()
+    match = csp_df[csp_df["record_id"].astype(str) == str(record_id)] if not csp_df.empty else csp_df
+
+    if match.empty:
+        return sterile_cd_Response("CSP record not found.", status=404)
+
+    if sterile_cd_request.method == "POST":
+        event_type = sterile_cd_safe(sterile_cd_request.form.get("event_type", ""))
+        custody_status = sterile_cd_safe(sterile_cd_request.form.get("custody_status", ""))
+        from_custodian = sterile_cd_safe(sterile_cd_request.form.get("from_custodian", ""))
+        to_custodian = sterile_cd_safe(sterile_cd_request.form.get("to_custodian", ""))
+        location = sterile_cd_safe(sterile_cd_request.form.get("location", ""))
+        storage_condition = sterile_cd_safe(sterile_cd_request.form.get("storage_condition", ""))
+        temperature_signal = sterile_cd_safe(sterile_cd_request.form.get("temperature_signal", ""))
+        handoff_evidence_id = sterile_cd_safe(sterile_cd_request.form.get("handoff_evidence_id", ""))
+        handoff_note = sterile_cd_safe(sterile_cd_request.form.get("handoff_note", ""))
+        entered_by = sterile_cd_safe(sterile_cd_request.form.get("entered_by", ""))
+
+        if not event_type:
+            return sterile_cd_Response("event_type is required.", status=400)
+
+        if not custody_status:
+            return sterile_cd_Response("custody_status is required.", status=400)
+
+        payload = {
+            "custody_event_id": sterile_cd_make_id("ST-CUST", record_id, event_type, custody_status, sterile_now()),
+            "record_id": record_id,
+            "event_type": event_type,
+            "custody_status": custody_status,
+            "from_custodian": from_custodian,
+            "to_custodian": to_custodian,
+            "location": location,
+            "storage_condition": storage_condition,
+            "temperature_signal": temperature_signal,
+            "handoff_evidence_id": handoff_evidence_id,
+            "handoff_note": handoff_note,
+            "event_timestamp": sterile_now(),
+            "entered_by": entered_by or "Unspecified Custody User",
+        }
+
+        payload["event_hash"] = sterile_hash_text(
+            sterile_cd_json.dumps(payload, sort_keys=True)
+        )
+
+        chain_df = sterile_cd_read_chain()
+        chain_df = sterile_cd_pd.concat([chain_df, sterile_cd_pd.DataFrame([payload])], ignore_index=True)
+        chain_df = sterile_ensure_cols(chain_df, STERILE_CUSTODY_CHAIN_COLUMNS)
+        sterile_write_register(STERILE_CUSTODY_CHAIN_REGISTER, chain_df, STERILE_CUSTODY_CHAIN_COLUMNS)
+
+        try:
+            sterile_add_lineage(
+                record_id,
+                "STERILE_CUSTODY_EVENT",
+                f"Custody event recorded: {event_type} / {custody_status}",
+                actor=payload["entered_by"],
+                source_route="/sterile-compounding/custody-transfer/<record_id>",
+            )
+        except Exception:
+            pass
+
+        try:
+            sterile_cd_build_health()
+        except Exception:
+            pass
+
+        return sterile_cd_redirect(f"/sterile-compounding/custody/{record_id}")
+
+    row = match.iloc[0].to_dict()
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Record Custody Transfer: {record_id}</h1>
+        <p>
+            Add a custody, handoff, storage, hold, quarantine, transfer, or release governance event for this CSP.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>CSP Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">
+                <tr><th>Record ID</th><td>{record_id}</td></tr>
+                <tr><th>CSP Name</th><td>{sterile_cd_safe(row.get("csp_name", ""))}</td></tr>
+                <tr><th>Batch/Rx ID</th><td>{sterile_cd_safe(row.get("batch_or_rx_id", ""))}</td></tr>
+                <tr><th>Governance Status</th><td>{sterile_badge(row.get("governance_status", ""))}</td></tr>
+                <tr><th>Release Decision</th><td>{sterile_cd_safe(row.get("release_decision", ""))}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Add Custody Event</h2>
+        <form method="POST" action="/sterile-compounding/custody-transfer/{record_id}">
+            <div class="st-form-grid">
+                <div>
+                    <label>Event Type</label>
+                    <select name="event_type" required>
+                        <option>Custody Baseline</option>
+                        <option>Handoff</option>
+                        <option>Transfer</option>
+                        <option>Storage Transfer</option>
+                        <option>Quarantine Transfer</option>
+                        <option>Hold</option>
+                        <option>Release</option>
+                        <option>Disposal / Destruction</option>
+                        <option>Investigation Update</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Custody Status</label>
+                    <select name="custody_status" required>
+                        <option>In Storage</option>
+                        <option>Received</option>
+                        <option>Transferred</option>
+                        <option>In Transit</option>
+                        <option>Pending</option>
+                        <option>Under Review</option>
+                        <option>Hold</option>
+                        <option>Quarantine</option>
+                        <option>Released</option>
+                        <option>Rejected</option>
+                        <option>Lost</option>
+                    </select>
+                </div>
+                <div>
+                    <label>From Custodian</label>
+                    <input name="from_custodian" placeholder="Previous custodian / owner">
+                </div>
+                <div>
+                    <label>To Custodian</label>
+                    <input name="to_custodian" placeholder="Current custodian / owner">
+                </div>
+                <div>
+                    <label>Location</label>
+                    <input name="location" placeholder="Cleanroom / pharmacy / quarantine / storage location">
+                </div>
+                <div>
+                    <label>Storage Condition</label>
+                    <select name="storage_condition">
+                        <option>Acceptable</option>
+                        <option>Controlled Room Temp</option>
+                        <option>Refrigerated</option>
+                        <option>Frozen</option>
+                        <option>Quarantine Storage</option>
+                        <option>Excursion</option>
+                        <option>Out of Range</option>
+                        <option>Unknown</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Temperature Signal</label>
+                    <select name="temperature_signal">
+                        <option>Acceptable</option>
+                        <option>Pending Review</option>
+                        <option>Excursion</option>
+                        <option>Out of Range</option>
+                        <option>Not Applicable</option>
+                        <option>Unknown</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Handoff Evidence ID</label>
+                    <input name="handoff_evidence_id" placeholder="Optional ST-EVID-...">
+                </div>
+                <div>
+                    <label>Entered By</label>
+                    <input name="entered_by" placeholder="Person entering custody event">
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Handoff Note</label>
+                <textarea name="handoff_note" rows="4" placeholder="Custody note. Do not enter PHI."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="st-button" type="submit">Save Hashed Custody Event</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody/{record_id}">Back to Custody Passport</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+            </div>
+        </form>
+    </div>
+    """
+
+    return sterile_page_shell(f"Custody Transfer - {record_id}", body)
+
+
+@app.route("/sterile-compounding/custody/<record_id>")
+def sterile_compounding_custody_record(record_id):
+    sterile_cd_require_phase1()
+    record_id = sterile_cd_safe(record_id)
+
+    csp_df = sterile_prepare_dashboard_df()
+    chain_df = sterile_cd_read_chain()
+    health_df = sterile_cd_build_health()
+
+    csp_match = csp_df[csp_df["record_id"].astype(str) == str(record_id)] if not csp_df.empty else csp_df
+
+    if csp_match.empty:
+        return sterile_cd_Response("CSP record not found.", status=404)
+
+    record_events = chain_df[chain_df["record_id"].astype(str) == str(record_id)].copy() if not chain_df.empty else chain_df
+    health_match = health_df[health_df["record_id"].astype(str) == str(record_id)].copy() if not health_df.empty else health_df
+    health = health_match.iloc[0].to_dict() if not health_match.empty else {}
+
+    event_rows = ""
+
+    if not record_events.empty:
+        try:
+            record_events = record_events.sort_values(by="event_timestamp", ascending=False)
+        except Exception:
+            pass
+
+        for _, row in record_events.iterrows():
+            evidence_id = sterile_cd_safe(row.get("handoff_evidence_id", ""))
+            evidence_link = f'<a href="/sterile-compounding/evidence-passport/{evidence_id}">{evidence_id}</a>' if evidence_id else "Not linked"
+
+            event_rows += f"""
+            <tr>
+                <td>{sterile_cd_status_badge(row.get("custody_status", ""))}</td>
+                <td>{sterile_cd_safe(row.get("event_type", ""))}</td>
+                <td>{sterile_cd_safe(row.get("custody_status", ""))}</td>
+                <td>{sterile_cd_safe(row.get("from_custodian", ""))}</td>
+                <td>{sterile_cd_safe(row.get("to_custodian", ""))}</td>
+                <td>{sterile_cd_safe(row.get("location", ""))}</td>
+                <td>{sterile_cd_safe(row.get("storage_condition", ""))}</td>
+                <td>{sterile_cd_safe(row.get("temperature_signal", ""))}</td>
+                <td>{evidence_link}</td>
+                <td>{sterile_cd_safe(row.get("event_timestamp", ""))}</td>
+                <td><code>{sterile_cd_safe(row.get("event_hash", ""))[:18]}...</code></td>
+            </tr>
+            """
+    else:
+        event_rows = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No custody events recorded for this CSP yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Custody Passport: {record_id}</h1>
+        <p>
+            Chain-of-custody and handoff history for this sterile compounding record.
+        </p>
+        <div style="margin-top:16px;">{sterile_cd_status_badge(health.get("custody_health_status", "YELLOW"))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_cd_safe(health.get("custody_health_decision", "Custody health pending."))}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Custody Events</div><div class="st-value">{sterile_cd_safe(health.get("custody_event_count", 0))}</div></div>
+        <div class="st-card"><div class="st-label">Current Custodian</div><div class="st-value" style="font-size:18px;">{sterile_cd_safe(health.get("current_custodian", "")) or "N/A"}</div></div>
+        <div class="st-card"><div class="st-label">Latest Location</div><div class="st-value" style="font-size:18px;">{sterile_cd_safe(health.get("latest_location", "")) or "N/A"}</div></div>
+        <div class="st-card"><div class="st-label">Open Hold</div><div class="st-value">{sterile_cd_safe(health.get("open_hold_signal", "NO"))}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Actions</h2>
+        <a class="st-button" href="/sterile-compounding/custody-transfer/{record_id}">Add Custody Event</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain">Custody Chain</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/custody-health">Custody Health</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Event History</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Event</th>
+                        <th>Custody Status</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Location</th>
+                        <th>Storage</th>
+                        <th>Temp</th>
+                        <th>Evidence</th>
+                        <th>Timestamp</th>
+                        <th>Hash</th>
+                    </tr>
+                </thead>
+                <tbody>{event_rows}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_CUSTODY_PASSPORT_VIEW",
+            "Sterile custody passport viewed",
+            actor="system",
+            source_route="/sterile-compounding/custody/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Custody Passport - {record_id}", body)
+
+
+@app.route("/sterile-compounding/custody-chain")
+def sterile_compounding_custody_chain():
+    sterile_cd_require_phase1()
+
+    chain_df = sterile_cd_read_chain()
+    csp_df = sterile_prepare_dashboard_df()
+
+    total_events = len(chain_df)
+    unique_records = int(chain_df["record_id"].nunique()) if total_events else 0
+    holds = int(chain_df["custody_status"].astype(str).str.upper().isin(["HOLD", "QUARANTINE", "REJECTED", "LOST"]).sum()) if total_events else 0
+    missing_evidence = int((chain_df["handoff_evidence_id"].astype(str).str.strip() == "").sum()) if total_events else 0
+
+    rows_html = ""
+
+    if not chain_df.empty:
+        try:
+            chain_df = chain_df.sort_values(by="event_timestamp", ascending=False)
+        except Exception:
+            pass
+
+        for _, row in chain_df.iterrows():
+            rid = sterile_cd_safe(row.get("record_id", ""))
+            evidence_id = sterile_cd_safe(row.get("handoff_evidence_id", ""))
+            evidence_link = f'<a href="/sterile-compounding/evidence-passport/{evidence_id}">{evidence_id}</a>' if evidence_id else "Not linked"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_cd_status_badge(row.get("custody_status", ""))}</td>
+                <td><a href="/sterile-compounding/custody/{rid}">{rid}</a></td>
+                <td>{sterile_cd_safe(row.get("event_type", ""))}</td>
+                <td>{sterile_cd_safe(row.get("custody_status", ""))}</td>
+                <td>{sterile_cd_safe(row.get("from_custodian", ""))}</td>
+                <td>{sterile_cd_safe(row.get("to_custodian", ""))}</td>
+                <td>{sterile_cd_safe(row.get("location", ""))}</td>
+                <td>{sterile_cd_safe(row.get("storage_condition", ""))}</td>
+                <td>{sterile_cd_safe(row.get("temperature_signal", ""))}</td>
+                <td>{evidence_link}</td>
+                <td>{sterile_cd_safe(row.get("entered_by", ""))}</td>
+                <td>{sterile_cd_safe(row.get("event_timestamp", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No custody events recorded yet. Open a CSP custody passport to add a custody baseline.
+            </td>
+        </tr>
+        """
+
+    record_options = ""
+    if csp_df is not None and not csp_df.empty:
+        for _, row in csp_df.iterrows():
+            rid = sterile_cd_safe(row.get("record_id", ""))
+            csp_name = sterile_cd_safe(row.get("csp_name", ""))
+            record_options += f"""
+            <a class="st-button st-button-dark" href="/sterile-compounding/custody-transfer/{rid}">Add Event: {rid} - {csp_name}</a>
+            """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Chain-of-Custody Ledger</h1>
+        <p>
+            Custody and handoff ledger for sterile compounding records. Use this to record custody baselines,
+            transfers, holds, quarantine movement, storage status, temperature signals, and release handoffs.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Custody Events</div><div class="st-value">{total_events}</div></div>
+        <div class="st-card"><div class="st-label">CSPs With Events</div><div class="st-value">{unique_records}</div></div>
+        <div class="st-card"><div class="st-label">Hold / Quarantine Signals</div><div class="st-value">{holds}</div></div>
+        <div class="st-card"><div class="st-label">Events Missing Evidence ID</div><div class="st-value">{missing_evidence}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Actions</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+            <a class="st-button" href="/sterile-compounding/custody-health">Custody Health</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain/export">Export Custody Chain</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+            {record_options}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Event Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Event</th>
+                        <th>Custody Status</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Location</th>
+                        <th>Storage</th>
+                        <th>Temp</th>
+                        <th>Evidence</th>
+                        <th>Entered By</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CUSTODY-CHAIN",
+            "STERILE_CUSTODY_CHAIN_VIEW",
+            "Sterile chain-of-custody ledger viewed",
+            actor="system",
+            source_route="/sterile-compounding/custody-chain",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Chain-of-Custody Ledger", body)
+
+
+@app.route("/sterile-compounding/custody-health")
+def sterile_compounding_custody_health():
+    health_df = sterile_cd_build_health()
+
+    status_filter = sterile_cd_safe(sterile_cd_request.args.get("status", ""))
+    filtered = health_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["custody_health_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["custody_health_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["custody_health_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["custody_health_status"] == "RED").sum()) if total else 0
+    no_baseline = int((filtered["latest_custody_status"] == "NO BASELINE").sum()) if total else 0
+    open_hold = int((filtered["open_hold_signal"] == "YES").sum()) if total else 0
+    missing_evidence = int((filtered["missing_handoff_evidence"] == "YES").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["custody_health_status", "record_id"], ascending=[False, True]).iterrows():
+            rid = sterile_cd_safe(row.get("record_id", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_cd_status_badge(row.get("custody_health_status", ""))}</td>
+                <td><a href="/sterile-compounding/custody/{rid}">{rid}</a></td>
+                <td>{sterile_cd_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_cd_safe(row.get("custody_event_count", ""))}</td>
+                <td>{sterile_cd_safe(row.get("latest_custody_status", ""))}</td>
+                <td>{sterile_cd_safe(row.get("current_custodian", ""))}</td>
+                <td>{sterile_cd_safe(row.get("latest_location", ""))}</td>
+                <td>{sterile_cd_safe(row.get("storage_condition", ""))}</td>
+                <td>{sterile_cd_safe(row.get("temperature_signal", ""))}</td>
+                <td>{sterile_cd_safe(row.get("missing_handoff_evidence", ""))}</td>
+                <td>{sterile_cd_safe(row.get("open_hold_signal", ""))}</td>
+                <td>{sterile_cd_safe(row.get("custody_health_decision", ""))}</td>
+                <td>{sterile_cd_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="14" style="text-align:center; padding:24px; color:#6b7280;">
+                No custody health rows available.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Custody Health</h1>
+        <p>
+            Health view for CSP custody status, current custodian, location, storage state, temperature signal,
+            handoff evidence, and hold/quarantine status.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Custody Health Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">No Baseline</div><div class="st-value">{no_baseline}</div></div>
+        <div class="st-card"><div class="st-label">Open Hold</div><div class="st-value">{open_hold}</div></div>
+        <div class="st-card"><div class="st-label">Missing Handoff Evidence</div><div class="st-value">{missing_evidence}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Health Filters</h2>
+        <form method="GET" action="/sterile-compounding/custody-health">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Custody Health Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-health">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain">Custody Chain</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-health/export">Export Custody Health</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Health Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Health</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Events</th>
+                        <th>Latest Custody</th>
+                        <th>Current Custodian</th>
+                        <th>Location</th>
+                        <th>Storage</th>
+                        <th>Temp</th>
+                        <th>Missing Evidence</th>
+                        <th>Open Hold</th>
+                        <th>Decision</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CUSTODY-HEALTH",
+            "STERILE_CUSTODY_HEALTH_VIEW",
+            "Sterile custody health viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/custody-health",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Custody Health", body)
+
+
+@app.route("/sterile-compounding/custody-chain/export")
+def sterile_compounding_custody_chain_export():
+    chain_df = sterile_cd_read_chain()
+
+    if chain_df.empty:
+        chain_df = sterile_cd_pd.DataFrame(columns=STERILE_CUSTODY_CHAIN_COLUMNS)
+
+    csv_data = chain_df.to_csv(index=False)
+
+    return sterile_cd_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_custody_chain_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/custody-health/export")
+def sterile_compounding_custody_health_export():
+    health_df = sterile_cd_build_health()
+
+    if health_df.empty:
+        health_df = sterile_cd_pd.DataFrame(columns=STERILE_CUSTODY_HEALTH_COLUMNS)
+
+    csv_data = health_df.to_csv(index=False)
+
+    return sterile_cd_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_custody_health_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_custody_chain_dashboard_injection(response):
+    try:
+        if sterile_cd_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-custody-chain-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-custody-chain-panel">
+            <h2>Sterile Chain-of-Custody + Custody Health</h2>
+            <p class="st-note">
+                Records custody baselines, handoffs, storage movement, quarantine/hold events,
+                temperature/storage signals, current custodian, location, and hashed custody event history.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/custody-chain">Custody Chain</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-health">Custody Health</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain/export">Export Custody Chain</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-health/export">Export Custody Health</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile custody chain dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
