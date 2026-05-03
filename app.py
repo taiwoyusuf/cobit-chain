@@ -40563,5 +40563,727 @@ def sterile_compounding_inspection_binder_dashboard_injection(response):
         print(f"Sterile inspection binder dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_NAVIGATION_HUB_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 28: Sterile Internal Navigation Hub + Route Health Map
+#
+# New Routes:
+#   /sterile-compounding/navigation-hub
+#   /sterile-compounding/module-map
+#   /sterile-compounding/route-health
+#   /sterile-compounding/navigation-hub/export
+#   /sterile-compounding/route-health/export
+#
+# New Registers:
+#   sterile_compounding_navigation_register.csv
+#   sterile_compounding_route_health_register.csv
+#
+# Boundary:
+#   This creates an internal sterile-module navigation layer only.
+#   It does not touch Command Center, Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, or existing protected routes.
+# ============================================================
+
+try:
+    import pandas as sterile_nav_pd
+    import json as sterile_nav_json
+    from flask import request as sterile_nav_request
+    from flask import Response as sterile_nav_Response
+except Exception as sterile_nav_import_error:
+    raise RuntimeError(f"Sterile navigation hub import failed: {sterile_nav_import_error}")
+
+
+STERILE_NAVIGATION_REGISTER = "sterile_compounding_navigation_register.csv"
+STERILE_ROUTE_HEALTH_REGISTER = "sterile_compounding_route_health_register.csv"
+
+STERILE_NAVIGATION_COLUMNS = [
+    "nav_id",
+    "module_group",
+    "display_name",
+    "route",
+    "route_type",
+    "is_export",
+    "is_dynamic",
+    "recommended_use",
+    "registered_status",
+    "display_order",
+    "last_checked",
+    "nav_hash"
+]
+
+STERILE_ROUTE_HEALTH_COLUMNS = [
+    "route_health_id",
+    "route",
+    "endpoint",
+    "methods",
+    "route_family",
+    "registered_status",
+    "route_type",
+    "is_sterile_route",
+    "review_note",
+    "last_checked",
+    "route_health_hash"
+]
+
+
+STERILE_NAVIGATION_SEED = [
+    ("00 Home", "Sterile Home", "/sterile-compounding", "Home", "Main landing page for Compound Sterile AssuranceLayer.", 10),
+    ("00 Home", "Load Sample Data", "/sterile-compounding/sample", "Utility", "Loads demonstration sterile compounding records.", 20),
+    ("00 Home", "Export Main Register", "/sterile-compounding/export", "Export", "Exports the core sterile compounding register.", 30),
+
+    ("01 Core CSP", "CSP Passport", "/sterile-compounding/passport/<record_id>", "Dynamic", "Record-level sterile compounding passport.", 100),
+    ("01 Core CSP", "Review Board", "/sterile-compounding/review", "Review", "Review queue for sterile records.", 110),
+    ("01 Core CSP", "Blast Radius", "/sterile-compounding/blast-radius", "Risk", "Shows linked-risk impact around CSP records.", 120),
+    ("01 Core CSP", "Audit Lineage", "/sterile-compounding/audit-lineage", "Lineage", "Lineage trail for sterile governance activity.", 130),
+
+    ("02 Evidence", "Evidence Vault", "/sterile-compounding/evidence-vault", "Evidence", "Evidence inventory and linkage view.", 200),
+    ("02 Evidence", "Evidence Passport", "/sterile-compounding/evidence-passport/<evidence_id>", "Dynamic", "Record-level evidence passport.", 210),
+    ("02 Evidence", "Evidence Matrix", "/sterile-compounding/evidence-matrix/<record_id>", "Dynamic", "Required-vs-available evidence matrix for a CSP.", 220),
+    ("02 Evidence", "Evidence Matrix Export", "/sterile-compounding/evidence-matrix/export", "Export", "Exports evidence matrix data.", 230),
+
+    ("03 Control Tower", "Control Tower", "/sterile-compounding/control-tower", "Dashboard", "Sterile control tower view.", 300),
+    ("03 Control Tower", "Executive Pack", "/sterile-compounding/executive-pack", "Executive", "Executive dashboard pack for sterile assurance.", 310),
+    ("03 Control Tower", "Module Health", "/sterile-compounding/module-health", "Health", "Sterile module/register health summary.", 320),
+
+    ("04 Audit and Release", "Audit Pack", "/sterile-compounding/audit-pack", "Audit", "Audit-pack index.", 400),
+    ("04 Audit and Release", "Audit Pack Passport", "/sterile-compounding/audit-pack/<record_id>", "Dynamic", "Record-level audit pack.", 410),
+    ("04 Audit and Release", "Release Dossier", "/sterile-compounding/release-dossier", "Dossier", "Release-dossier index; governance view only.", 420),
+    ("04 Audit and Release", "Release Dossier Passport", "/sterile-compounding/release-dossier/<record_id>", "Dynamic", "Record-level release dossier; governance view only.", 430),
+
+    ("05 Sign-Off and Seal", "Sign-Off Board", "/sterile-compounding/signoff-board", "Sign-Off", "Sign-off queue and board.", 500),
+    ("05 Sign-Off and Seal", "Sign-Off Passport", "/sterile-compounding/signoff/<record_id>", "Dynamic", "Record-level governance sign-off.", 510),
+    ("05 Sign-Off and Seal", "Dossier Seal", "/sterile-compounding/seal/<record_id>", "Dynamic", "Creates/views dossier seal for a CSP.", 520),
+    ("05 Sign-Off and Seal", "Seal Ledger", "/sterile-compounding/seal-ledger", "Ledger", "Dossier seal ledger.", 530),
+    ("05 Sign-Off and Seal", "Seal Verify", "/sterile-compounding/seal-verify", "Verification", "Dossier seal verification view.", 540),
+    ("05 Sign-Off and Seal", "Seal Health", "/sterile-compounding/seal-health", "Health", "Seal-health index.", 550),
+    ("05 Sign-Off and Seal", "Seal Health Export", "/sterile-compounding/seal-health/export", "Export", "Exports seal-health register.", 560),
+
+    ("06 Custody", "Custody Chain", "/sterile-compounding/custody-chain", "Custody", "Chain-of-custody ledger.", 600),
+    ("06 Custody", "Custody Passport", "/sterile-compounding/custody/<record_id>", "Dynamic", "Record-level custody passport.", 610),
+    ("06 Custody", "Custody Transfer", "/sterile-compounding/custody-transfer/<record_id>", "Dynamic", "Add custody or handoff event.", 620),
+    ("06 Custody", "Custody Health", "/sterile-compounding/custody-health", "Health", "Custody health register.", 630),
+    ("06 Custody", "Custody Audit-Link", "/sterile-compounding/custody-audit-link", "Audit Link", "Links custody to audit/release reliance.", 640),
+
+    ("07 SOP and Formula", "SOP / Formula Governance", "/sterile-compounding/sop-formula-governance", "SOP", "SOP/formula version governance.", 700),
+    ("07 SOP and Formula", "SOP / Formula Passport", "/sterile-compounding/sop-formula/<sop_key>", "Dynamic", "Version-level SOP/formula passport.", 710),
+    ("07 SOP and Formula", "SOP Drift", "/sterile-compounding/sop-drift", "Drift", "Record-level SOP/formula drift.", 720),
+
+    ("08 Personnel", "Personnel Competency", "/sterile-compounding/personnel-competency", "Personnel", "Personnel competency governance.", 800),
+    ("08 Personnel", "Personnel Passport", "/sterile-compounding/personnel-competency/<person_key>", "Dynamic", "Person-level competency passport.", 810),
+    ("08 Personnel", "Personnel Drift", "/sterile-compounding/personnel-drift", "Drift", "Record-level personnel competency drift.", 820),
+
+    ("09 Equipment and Room", "Equipment / Room Governance", "/sterile-compounding/equipment-room-governance", "Equipment", "Room/hood/equipment readiness governance.", 900),
+    ("09 Equipment and Room", "Equipment / Room Passport", "/sterile-compounding/equipment-room/<room_key>", "Dynamic", "Room/hood/equipment passport.", 910),
+    ("09 Equipment and Room", "Equipment / Room Drift", "/sterile-compounding/equipment-room-drift", "Drift", "Record-level equipment/room drift.", 920),
+
+    ("10 Master Assurance", "Master Assurance Index", "/sterile-compounding/master-assurance-index", "Assurance", "Final composite assurance index.", 1000),
+    ("10 Master Assurance", "Master Assurance Passport", "/sterile-compounding/master-assurance/<record_id>", "Dynamic", "Record-level master assurance passport.", 1010),
+    ("10 Master Assurance", "Composite No-Release Gate", "/sterile-compounding/no-release-composite", "Gate", "Composite no-release/reliance gate.", 1020),
+
+    ("11 Recovery", "Closure Simulator", "/sterile-compounding/closure-simulator", "Simulator", "What-if closure simulator.", 1100),
+    ("11 Recovery", "Closure Simulator Passport", "/sterile-compounding/closure-simulator/<record_id>", "Dynamic", "Record-level closure simulator.", 1110),
+    ("11 Recovery", "Recovery Plan", "/sterile-compounding/recovery-plan", "Recovery", "Recovery plan index.", 1120),
+
+    ("12 Inspection", "Inspection Readiness", "/sterile-compounding/inspection-readiness", "Inspection", "Inspection readiness index.", 1200),
+    ("12 Inspection", "Inspection Readiness Passport", "/sterile-compounding/inspection-readiness/<record_id>", "Dynamic", "Record-level inspection readiness passport.", 1210),
+    ("12 Inspection", "Auditor Q&A Pack", "/sterile-compounding/auditor-qa-pack", "Q&A", "Auditor-facing Q&A register.", 1220),
+
+    ("13 Crosswalk", "Regulatory Crosswalk", "/sterile-compounding/regulatory-crosswalk", "Crosswalk", "Regulatory/control crosswalk index.", 1300),
+    ("13 Crosswalk", "Regulatory Crosswalk Passport", "/sterile-compounding/regulatory-crosswalk/<record_id>", "Dynamic", "Record-level regulatory crosswalk.", 1310),
+    ("13 Crosswalk", "Control-Evidence Coverage", "/sterile-compounding/control-evidence-coverage", "Coverage", "Control-domain evidence coverage summary.", 1320),
+
+    ("14 Narrative and Binder", "Inspection Narrative", "/sterile-compounding/inspection-narrative", "Narrative", "Human-readable inspection narrative index.", 1400),
+    ("14 Narrative and Binder", "Inspection Narrative Passport", "/sterile-compounding/inspection-narrative/<record_id>", "Dynamic", "Record-level inspection narrative.", 1410),
+    ("14 Narrative and Binder", "Executive Brief", "/sterile-compounding/executive-brief", "Executive", "Leadership-level sterile executive brief.", 1420),
+    ("14 Narrative and Binder", "Inspection Binder", "/sterile-compounding/inspection-binder", "Binder", "Inspection binder index.", 1430),
+    ("14 Narrative and Binder", "Inspection Binder Passport", "/sterile-compounding/inspection-binder/<record_id>", "Dynamic", "Record-level inspection binder.", 1440),
+    ("14 Narrative and Binder", "Packet Manifest", "/sterile-compounding/packet-manifest", "Manifest", "Full packet manifest.", 1450),
+
+    ("15 Navigation", "Navigation Hub", "/sterile-compounding/navigation-hub", "Navigation", "Internal sterile navigation hub.", 1500),
+    ("15 Navigation", "Module Map", "/sterile-compounding/module-map", "Navigation", "Grouped sterile module map.", 1510),
+    ("15 Navigation", "Route Health", "/sterile-compounding/route-health", "Health", "Runtime sterile route registration health.", 1520),
+]
+
+
+def sterile_nav_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile navigation dependencies missing: " + ", ".join(missing))
+
+
+def sterile_nav_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_nav_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_nav_status_badge(status):
+    status = sterile_nav_safe(status).upper()
+
+    if status in ["REGISTERED", "GREEN"]:
+        return '<span class="st-badge st-green">REGISTERED</span>'
+    if status in ["MISSING", "RED"]:
+        return '<span class="st-badge st-red">MISSING</span>'
+    if status in ["DYNAMIC", "YELLOW"]:
+        return '<span class="st-badge st-yellow">DYNAMIC</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_nav_registered_routes():
+    routes = set()
+    endpoint_map = {}
+
+    try:
+        for rule in app.url_map.iter_rules():
+            rule_text = str(rule)
+            routes.add(rule_text)
+            endpoint_map[rule_text] = {
+                "endpoint": sterile_nav_safe(rule.endpoint),
+                "methods": ",".join(sorted([m for m in rule.methods if m not in ["HEAD", "OPTIONS"]]))
+            }
+    except Exception:
+        pass
+
+    return routes, endpoint_map
+
+
+def sterile_nav_route_family(route):
+    route = sterile_nav_safe(route)
+
+    if route.startswith("/sterile-compounding"):
+        return "Compound Sterile AssuranceLayer"
+
+    return "Other"
+
+
+def sterile_nav_build_registers():
+    sterile_nav_require_dependencies()
+
+    registered_routes, endpoint_map = sterile_nav_registered_routes()
+
+    nav_rows = []
+
+    for group, display_name, route, route_type, recommended_use, order in STERILE_NAVIGATION_SEED:
+        is_export = "YES" if route.endswith("/export") or "/export" in route else "NO"
+        is_dynamic = "YES" if "<" in route and ">" in route else "NO"
+        registered_status = "REGISTERED" if route in registered_routes else "MISSING"
+
+        payload = {
+            "nav_id": sterile_nav_make_id("ST-NAV", route),
+            "module_group": group,
+            "display_name": display_name,
+            "route": route,
+            "route_type": route_type,
+            "is_export": is_export,
+            "is_dynamic": is_dynamic,
+            "recommended_use": recommended_use,
+            "registered_status": registered_status,
+            "display_order": order,
+            "last_checked": sterile_now(),
+        }
+
+        payload["nav_hash"] = sterile_hash_text(
+            sterile_nav_json.dumps(payload, sort_keys=True)
+        )
+
+        nav_rows.append(payload)
+
+    nav_df = sterile_nav_pd.DataFrame(nav_rows)
+    nav_df = sterile_ensure_cols(nav_df, STERILE_NAVIGATION_COLUMNS)
+
+    health_rows = []
+
+    for route in sorted(registered_routes):
+        if not route.startswith("/sterile-compounding"):
+            continue
+
+        info = endpoint_map.get(route, {})
+        route_type = "Export" if route.endswith("/export") else "Dynamic" if "<" in route and ">" in route else "Page"
+
+        payload = {
+            "route_health_id": sterile_nav_make_id("ST-RH", route),
+            "route": route,
+            "endpoint": sterile_nav_safe(info.get("endpoint", "")),
+            "methods": sterile_nav_safe(info.get("methods", "")),
+            "route_family": sterile_nav_route_family(route),
+            "registered_status": "REGISTERED",
+            "route_type": route_type,
+            "is_sterile_route": "YES",
+            "review_note": "Route is currently registered in Flask url_map.",
+            "last_checked": sterile_now(),
+        }
+
+        payload["route_health_hash"] = sterile_hash_text(
+            sterile_nav_json.dumps(payload, sort_keys=True)
+        )
+
+        health_rows.append(payload)
+
+    health_df = sterile_nav_pd.DataFrame(health_rows)
+    health_df = sterile_ensure_cols(health_df, STERILE_ROUTE_HEALTH_COLUMNS)
+
+    sterile_write_register(STERILE_NAVIGATION_REGISTER, nav_df, STERILE_NAVIGATION_COLUMNS)
+    sterile_write_register(STERILE_ROUTE_HEALTH_REGISTER, health_df, STERILE_ROUTE_HEALTH_COLUMNS)
+
+    return nav_df, health_df
+
+
+@app.route("/sterile-compounding/navigation-hub")
+def sterile_compounding_navigation_hub():
+    nav_df, health_df = sterile_nav_build_registers()
+
+    status_filter = sterile_nav_safe(sterile_nav_request.args.get("status", ""))
+    group_filter = sterile_nav_safe(sterile_nav_request.args.get("group", ""))
+
+    filtered = nav_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["registered_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["module_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    registered = int((filtered["registered_status"] == "REGISTERED").sum()) if total else 0
+    missing = int((filtered["registered_status"] == "MISSING").sum()) if total else 0
+    exports = int((filtered["is_export"] == "YES").sum()) if total else 0
+    dynamic = int((filtered["is_dynamic"] == "YES").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "REGISTERED", "MISSING"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Module Groups</option>'
+    for group in sorted(nav_df["module_group"].dropna().unique().tolist()) if not nav_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["display_order"], ascending=True).iterrows():
+            route = sterile_nav_safe(row.get("route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if "<" not in route else f'<code>{route}</code>'
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_nav_status_badge(row.get("registered_status", ""))}</td>
+                <td>{sterile_nav_safe(row.get("module_group", ""))}</td>
+                <td>{sterile_nav_safe(row.get("display_name", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_nav_safe(row.get("route_type", ""))}</td>
+                <td>{sterile_nav_safe(row.get("is_export", ""))}</td>
+                <td>{sterile_nav_safe(row.get("is_dynamic", ""))}</td>
+                <td>{sterile_nav_safe(row.get("recommended_use", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No navigation rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Navigation Hub</h1>
+        <p>
+            Internal route hub for Compound Sterile AssuranceLayer. Use this to find sterile pages,
+            dynamic passports, exports, and runtime route-registration status without touching global app navigation.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Navigation Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Registered</div><div class="st-value">{registered}</div></div>
+        <div class="st-card"><div class="st-label">Missing</div><div class="st-value">{missing}</div></div>
+        <div class="st-card"><div class="st-label">Exports</div><div class="st-value">{exports}</div></div>
+        <div class="st-card"><div class="st-label">Dynamic Routes</div><div class="st-value">{dynamic}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Navigation Filters</h2>
+        <form method="GET" action="/sterile-compounding/navigation-hub">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Registration Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:280px;">
+                    <label>Module Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/navigation-hub">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/module-map">Module Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-health">Route Health</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/navigation-hub/export">Export Navigation</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sterile Navigation Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Display Name</th>
+                        <th>Route</th>
+                        <th>Type</th>
+                        <th>Export</th>
+                        <th>Dynamic</th>
+                        <th>Recommended Use</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "NAVIGATION-HUB",
+            "STERILE_NAVIGATION_HUB_VIEW",
+            "Sterile navigation hub viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/navigation-hub",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Navigation Hub", body)
+
+
+@app.route("/sterile-compounding/module-map")
+def sterile_compounding_module_map():
+    nav_df, health_df = sterile_nav_build_registers()
+
+    sections_html = ""
+
+    if not nav_df.empty:
+        for group in sorted(nav_df["module_group"].dropna().unique().tolist()):
+            group_df = nav_df[nav_df["module_group"].astype(str) == group].sort_values(by="display_order")
+            cards_html = ""
+
+            for _, row in group_df.iterrows():
+                route = sterile_nav_safe(row.get("route", ""))
+                route_content = f'<a class="st-button" href="{route}">Open</a>' if "<" not in route else '<span class="st-badge st-yellow">Dynamic</span>'
+
+                cards_html += f"""
+                <div class="st-card" style="min-height:150px;">
+                    <div class="st-label">{sterile_nav_safe(row.get("route_type", ""))}</div>
+                    <div style="font-size:18px; font-weight:900; margin-top:8px;">{sterile_nav_safe(row.get("display_name", ""))}</div>
+                    <div style="font-size:12px; margin-top:8px;"><code>{route}</code></div>
+                    <div style="font-size:13px; margin-top:8px; color:#4b5563;">{sterile_nav_safe(row.get("recommended_use", ""))}</div>
+                    <div style="margin-top:12px;">{sterile_nav_status_badge(row.get("registered_status", ""))} {route_content}</div>
+                </div>
+                """
+
+            sections_html += f"""
+            <div class="st-panel">
+                <h2>{group}</h2>
+                <div class="st-cards">{cards_html}</div>
+            </div>
+            """
+    else:
+        sections_html = """
+        <div class="st-panel">
+            <p>No module-map data found.</p>
+        </div>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Module Map</h1>
+        <p>
+            Grouped map of the sterile vertical. Dynamic routes show as templates and should be opened
+            through a record-specific page such as CSP-001 or CSP-003.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/navigation-hub">Navigation Hub</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/route-health">Route Health</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+    </div>
+
+    {sections_html}
+    """
+
+    try:
+        sterile_add_lineage(
+            "MODULE-MAP",
+            "STERILE_MODULE_MAP_VIEW",
+            "Sterile module map viewed",
+            actor="system",
+            source_route="/sterile-compounding/module-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Module Map", body)
+
+
+@app.route("/sterile-compounding/route-health")
+def sterile_compounding_route_health():
+    nav_df, health_df = sterile_nav_build_registers()
+
+    total_runtime = len(health_df)
+    total_expected = len(nav_df)
+    missing_expected = int((nav_df["registered_status"] == "MISSING").sum()) if total_expected else 0
+    registered_expected = int((nav_df["registered_status"] == "REGISTERED").sum()) if total_expected else 0
+    export_runtime = int((health_df["route_type"] == "Export").sum()) if total_runtime else 0
+    dynamic_runtime = int((health_df["route_type"] == "Dynamic").sum()) if total_runtime else 0
+
+    rows_html = ""
+
+    if not health_df.empty:
+        for _, row in health_df.sort_values(by="route", ascending=True).iterrows():
+            route = sterile_nav_safe(row.get("route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if "<" not in route else f'<code>{route}</code>'
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_nav_status_badge(row.get("registered_status", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_nav_safe(row.get("endpoint", ""))}</td>
+                <td>{sterile_nav_safe(row.get("methods", ""))}</td>
+                <td>{sterile_nav_safe(row.get("route_type", ""))}</td>
+                <td>{sterile_nav_safe(row.get("review_note", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No route-health rows found.
+            </td>
+        </tr>
+        """
+
+    missing_rows = ""
+
+    missing_df = nav_df[nav_df["registered_status"].astype(str) == "MISSING"].copy() if not nav_df.empty else nav_df
+
+    if not missing_df.empty:
+        for _, row in missing_df.sort_values(by="display_order").iterrows():
+            missing_rows += f"""
+            <tr>
+                <td>{sterile_nav_safe(row.get("module_group", ""))}</td>
+                <td>{sterile_nav_safe(row.get("display_name", ""))}</td>
+                <td><code>{sterile_nav_safe(row.get("route", ""))}</code></td>
+                <td>{sterile_nav_safe(row.get("recommended_use", ""))}</td>
+            </tr>
+            """
+    else:
+        missing_rows = """
+        <tr>
+            <td colspan="4" style="text-align:center; padding:18px; color:#16a34a;">
+                No expected sterile routes are missing from the navigation seed.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Route Health</h1>
+        <p>
+            Runtime route map from Flask url_map for sterile compounding routes. This helps confirm whether
+            Azure is serving the expected registered endpoints after deployment.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Runtime Sterile Routes</div><div class="st-value">{total_runtime}</div></div>
+        <div class="st-card"><div class="st-label">Expected Routes</div><div class="st-value">{total_expected}</div></div>
+        <div class="st-card"><div class="st-label">Expected Registered</div><div class="st-value">{registered_expected}</div></div>
+        <div class="st-card"><div class="st-label">Expected Missing</div><div class="st-value">{missing_expected}</div></div>
+        <div class="st-card"><div class="st-label">Runtime Exports</div><div class="st-value">{export_runtime}</div></div>
+        <div class="st-card"><div class="st-label">Runtime Dynamic</div><div class="st-value">{dynamic_runtime}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/navigation-hub">Navigation Hub</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/module-map">Module Map</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/route-health/export">Export Route Health</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Missing Expected Routes</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Display Name</th>
+                        <th>Route</th>
+                        <th>Use</th>
+                    </tr>
+                </thead>
+                <tbody>{missing_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Runtime Sterile Route Map</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Route</th>
+                        <th>Endpoint</th>
+                        <th>Methods</th>
+                        <th>Type</th>
+                        <th>Review Note</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ROUTE-HEALTH",
+            "STERILE_ROUTE_HEALTH_VIEW",
+            "Sterile route health viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/route-health",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Route Health", body)
+
+
+@app.route("/sterile-compounding/navigation-hub/export")
+def sterile_compounding_navigation_hub_export():
+    nav_df, health_df = sterile_nav_build_registers()
+
+    if nav_df.empty:
+        nav_df = sterile_nav_pd.DataFrame(columns=STERILE_NAVIGATION_COLUMNS)
+
+    csv_data = nav_df.to_csv(index=False)
+
+    return sterile_nav_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_navigation_hub_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/route-health/export")
+def sterile_compounding_route_health_export():
+    nav_df, health_df = sterile_nav_build_registers()
+
+    if health_df.empty:
+        health_df = sterile_nav_pd.DataFrame(columns=STERILE_ROUTE_HEALTH_COLUMNS)
+
+    csv_data = health_df.to_csv(index=False)
+
+    return sterile_nav_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_route_health_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_navigation_hub_dashboard_injection(response):
+    try:
+        if sterile_nav_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/packet-manifest",
+            "/sterile-compounding/inspection-narrative",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/control-evidence-coverage",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-navigation-hub-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-navigation-hub-panel">
+            <h2>Sterile Internal Navigation Hub + Route Health Map</h2>
+            <p class="st-note">
+                Opens the internal sterile route hub, grouped module map, and runtime route-health register.
+                This stays inside the sterile vertical and does not modify global app navigation.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/navigation-hub">Navigation Hub</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/module-map">Module Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-health">Route Health</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/navigation-hub/export">Export Navigation</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-health/export">Export Route Health</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile navigation hub dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
