@@ -49062,5 +49062,963 @@ def sterile_compounding_mock_ingestion_dashboard_injection(response):
         print(f"Sterile mock ingestion dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CONNECTOR_APPROVAL_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 38: Connector Approval Board + Implementation Decision Matrix
+#
+# New Routes:
+#   /sterile-compounding/connector-approval-board
+#   /sterile-compounding/connector-approval-board/<system_key>
+#   /sterile-compounding/connector-approval-board/export
+#   /sterile-compounding/implementation-decision-matrix
+#   /sterile-compounding/implementation-decision-matrix/export
+#
+# New Registers:
+#   sterile_compounding_connector_approval_board.csv
+#   sterile_compounding_implementation_decision_matrix.csv
+#
+# Boundary:
+#   This is a sterile-only approval and implementation-decision layer.
+#   It does not approve real enterprise changes, does not call APIs,
+#   does not modify ServiceNow, Veeva, Blue Mountain, myAccess, Entra,
+#   Azure, Power BI, CI, Knowledge, Command Center, Monday Demo,
+#   Release Notes, Platform Health, Manufacturing/Wole, or any
+#   protected global module.
+# ============================================================
+
+try:
+    import pandas as sterile_ca_pd
+    import json as sterile_ca_json
+    from flask import request as sterile_ca_request
+    from flask import Response as sterile_ca_Response
+except Exception as sterile_ca_import_error:
+    raise RuntimeError(f"Sterile connector approval import failed: {sterile_ca_import_error}")
+
+
+STERILE_CONNECTOR_APPROVAL_REGISTER = "sterile_compounding_connector_approval_board.csv"
+STERILE_IMPLEMENTATION_DECISION_REGISTER = "sterile_compounding_implementation_decision_matrix.csv"
+
+STERILE_CONNECTOR_APPROVAL_COLUMNS = [
+    "approval_id",
+    "system_key",
+    "system_name",
+    "approval_area",
+    "approval_status",
+    "approval_score",
+    "required_approver",
+    "approval_evidence_needed",
+    "current_evidence_status",
+    "decision_position",
+    "blocker_summary",
+    "safe_implementation_position",
+    "supporting_route",
+    "last_checked",
+    "approval_hash"
+]
+
+STERILE_IMPLEMENTATION_DECISION_COLUMNS = [
+    "decision_id",
+    "system_key",
+    "system_name",
+    "current_stage",
+    "implementation_position",
+    "overall_status",
+    "overall_score",
+    "contract_status",
+    "mock_status",
+    "risk_red_count",
+    "risk_yellow_count",
+    "approval_red_count",
+    "approval_yellow_count",
+    "recommended_next_step",
+    "allowed_next_phase",
+    "not_allowed_actions",
+    "supporting_routes",
+    "last_checked",
+    "decision_hash"
+]
+
+
+STERILE_APPROVAL_DOMAINS = [
+    {
+        "area": "Business Owner Approval",
+        "approver": "Business/process owner",
+        "evidence": "Named process owner confirms the integration use case and business value.",
+        "weight": 15,
+    },
+    {
+        "area": "System Owner Approval",
+        "approver": "Source-system owner",
+        "evidence": "System owner confirms allowed data access pattern, fields, and source-of-truth boundary.",
+        "weight": 15,
+    },
+    {
+        "area": "QA / Governance Approval",
+        "approver": "QA, compliance, or governance reviewer",
+        "evidence": "QA/governance confirms the intended use is evidence support only and does not replace validated release or QMS controls.",
+        "weight": 15,
+    },
+    {
+        "area": "Security / Privacy Approval",
+        "approver": "Security, privacy, or IAM reviewer",
+        "evidence": "Security/privacy reviewer confirms metadata-only design, least privilege, and no unnecessary PHI/PII/secrets collection.",
+        "weight": 15,
+    },
+    {
+        "area": "Data Contract Approval",
+        "approver": "Data owner or integration architect",
+        "evidence": "Data contract, field mapping, keys, status values, quality rules, and failure modes are reviewed.",
+        "weight": 15,
+    },
+    {
+        "area": "Validation Boundary Approval",
+        "approver": "Validation/CSV reviewer if regulated use is intended",
+        "evidence": "Validated-system boundary, no-writeback rule, non-replacement statement, and documentation requirements are reviewed.",
+        "weight": 15,
+    },
+    {
+        "area": "Operational Support Approval",
+        "approver": "Support owner or application owner",
+        "evidence": "Support path, monitoring, rollback, and failure-mode handling are defined before live connector work.",
+        "weight": 10,
+    },
+]
+
+
+def sterile_ca_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "sterile_read_register",
+        "STERILE_DATA_CONTRACT_COLUMNS",
+        "STERILE_FIELD_MAPPING_COLUMNS",
+        "STERILE_MOCK_INGESTION_COLUMNS",
+        "STERILE_PRE_INTEGRATION_RISK_COLUMNS",
+        "sterile_dc_build_contracts",
+        "sterile_mi_build_mock_registers",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile connector approval dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ca_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ca_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_ca_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ca_bucket(value):
+    value = sterile_ca_safe(value).upper()
+
+    if value in ["GREEN", "READY", "GO", "APPROVED", "LOW"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "NO-GO", "REJECTED", "FAILED", "HIGH"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_ca_badge(status):
+    bucket = sterile_ca_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ca_build_sources():
+    sterile_ca_require_dependencies()
+
+    try:
+        contract_df, mapping_df = sterile_dc_build_contracts()
+    except Exception:
+        contract_df = sterile_read_register(
+            "sterile_compounding_data_contract_register.csv",
+            STERILE_DATA_CONTRACT_COLUMNS
+        )
+        mapping_df = sterile_read_register(
+            "sterile_compounding_field_mapping_matrix.csv",
+            STERILE_FIELD_MAPPING_COLUMNS
+        )
+
+    try:
+        mock_df, risk_df = sterile_mi_build_mock_registers()
+    except Exception:
+        mock_df = sterile_read_register(
+            "sterile_compounding_mock_ingestion_lab.csv",
+            STERILE_MOCK_INGESTION_COLUMNS
+        )
+        risk_df = sterile_read_register(
+            "sterile_compounding_pre_integration_risk_register.csv",
+            STERILE_PRE_INTEGRATION_RISK_COLUMNS
+        )
+
+    contract_df = sterile_ensure_cols(contract_df, STERILE_DATA_CONTRACT_COLUMNS)
+    mapping_df = sterile_ensure_cols(mapping_df, STERILE_FIELD_MAPPING_COLUMNS)
+    mock_df = sterile_ensure_cols(mock_df, STERILE_MOCK_INGESTION_COLUMNS)
+    risk_df = sterile_ensure_cols(risk_df, STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+
+    return contract_df, mapping_df, mock_df, risk_df
+
+
+def sterile_ca_latest_contract(contract_df, system_key):
+    if contract_df is None or contract_df.empty or "system_key" not in contract_df.columns:
+        return {}
+
+    match = contract_df[contract_df["system_key"].astype(str) == str(system_key)].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_ca_latest_mock(mock_df, system_key):
+    if mock_df is None or mock_df.empty or "system_key" not in mock_df.columns:
+        return {}
+
+    match = mock_df[mock_df["system_key"].astype(str) == str(system_key)].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_ca_system_risks(risk_df, system_key):
+    if risk_df is None or risk_df.empty or "system_key" not in risk_df.columns:
+        return sterile_ca_pd.DataFrame(columns=STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+
+    return risk_df[risk_df["system_key"].astype(str) == str(system_key)].copy()
+
+
+def sterile_ca_count_bucket(df, column, bucket):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+
+    return int((df[column].astype(str).apply(sterile_ca_bucket) == bucket).sum())
+
+
+def sterile_ca_approval_status_for_domain(domain_area, contract, mock, risks):
+    contract_status = sterile_ca_bucket(contract.get("contract_status", "YELLOW"))
+    mock_status = sterile_ca_bucket(mock.get("mock_payload_status", "YELLOW"))
+    system_key = sterile_ca_safe(contract.get("system_key", mock.get("system_key", "")))
+    risk_red = sterile_ca_count_bucket(risks, "risk_status", "RED")
+    risk_yellow = sterile_ca_count_bucket(risks, "risk_status", "YELLOW")
+
+    if domain_area == "Business Owner Approval":
+        return "YELLOW", 60, "Business owner has not been captured in the sterile app yet.", "CONDITIONAL"
+
+    if domain_area == "System Owner Approval":
+        if system_key in ["veeva", "blue-mountain", "myaccess", "entra"]:
+            return "YELLOW", 55, "System owner approval required before any live connector work.", "CONDITIONAL"
+        return "YELLOW", 65, "System owner review still required before live connector work.", "CONDITIONAL"
+
+    if domain_area == "QA / Governance Approval":
+        if system_key in ["veeva", "blue-mountain"]:
+            return "YELLOW", 55, "QA/governance approval required because this touches regulated source-of-truth boundaries.", "CONDITIONAL"
+        return "YELLOW", 65, "Governance approval needed before production use.", "CONDITIONAL"
+
+    if domain_area == "Security / Privacy Approval":
+        if system_key in ["myaccess", "entra", "veeva"]:
+            return "YELLOW", 55, "Identity, access, or QMS metadata requires security/privacy review.", "CONDITIONAL"
+        return "YELLOW", 70, "Security review required before credentials, tokens, or real data are used.", "CONDITIONAL"
+
+    if domain_area == "Data Contract Approval":
+        if contract_status == "GREEN" and mock_status != "RED":
+            return "GREEN", 80, "Data contract and mock payload are acceptable for blueprint-level review.", "GO FOR MOCK"
+        if contract_status == "RED" or mock_status == "RED":
+            return "RED", 40, "Data contract or mock payload has RED status.", "NO-GO"
+        return "YELLOW", 60, "Data contract needs review before implementation.", "CONDITIONAL"
+
+    if domain_area == "Validation Boundary Approval":
+        if sterile_ca_safe(contract.get("writeback_allowed", "")).upper() == "YES":
+            return "YELLOW", 55, "Writeback or target storage requires validation boundary review.", "CONDITIONAL"
+        return "GREEN", 78, "No-writeback boundary supports blueprint-stage review.", "GO FOR BLUEPRINT"
+
+    if domain_area == "Operational Support Approval":
+        if risk_red:
+            return "RED", 35, "Operational failure-mode risk has RED blocker(s).", "NO-GO"
+        if risk_yellow:
+            return "YELLOW", 60, "Operational fallback and support path need review.", "CONDITIONAL"
+        return "GREEN", 80, "Operational risk is acceptable for mock-stage planning.", "GO FOR MOCK"
+
+    return "YELLOW", 50, "Approval domain requires review.", "CONDITIONAL"
+
+
+def sterile_ca_build_approval_board():
+    contract_df, mapping_df, mock_df, risk_df = sterile_ca_build_sources()
+
+    approval_rows = []
+    decision_rows = []
+
+    if contract_df.empty and mock_df.empty:
+        empty_approval = sterile_ca_pd.DataFrame(columns=STERILE_CONNECTOR_APPROVAL_COLUMNS)
+        empty_decision = sterile_ca_pd.DataFrame(columns=STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+        sterile_write_register(STERILE_CONNECTOR_APPROVAL_REGISTER, empty_approval, STERILE_CONNECTOR_APPROVAL_COLUMNS)
+        sterile_write_register(STERILE_IMPLEMENTATION_DECISION_REGISTER, empty_decision, STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+        return empty_approval, empty_decision
+
+    system_keys = []
+
+    if not contract_df.empty and "system_key" in contract_df.columns:
+        system_keys.extend(contract_df["system_key"].dropna().astype(str).tolist())
+
+    if not mock_df.empty and "system_key" in mock_df.columns:
+        system_keys.extend(mock_df["system_key"].dropna().astype(str).tolist())
+
+    system_keys = sorted(list(dict.fromkeys(system_keys)))
+
+    for system_key in system_keys:
+        contract = sterile_ca_latest_contract(contract_df, system_key)
+        mock = sterile_ca_latest_mock(mock_df, system_key)
+        risks = sterile_ca_system_risks(risk_df, system_key)
+
+        system_name = sterile_ca_safe(contract.get("system_name", mock.get("system_name", system_key)))
+
+        for domain in STERILE_APPROVAL_DOMAINS:
+            approval_status, approval_score, blocker_summary, decision_position = sterile_ca_approval_status_for_domain(
+                domain["area"],
+                contract,
+                mock,
+                risks,
+            )
+
+            current_evidence_status = (
+                "Blueprint evidence available; formal approval evidence not captured."
+                if approval_status != "RED"
+                else "Required approval/control evidence is insufficient for live connector work."
+            )
+
+            safe_position = (
+                "Blueprint/mock only"
+                if approval_status in ["GREEN", "YELLOW"]
+                else "Do not implement live connector"
+            )
+
+            payload = {
+                "approval_id": sterile_ca_make_id("ST-APPROVAL", system_key, domain["area"]),
+                "system_key": system_key,
+                "system_name": system_name,
+                "approval_area": domain["area"],
+                "approval_status": approval_status,
+                "approval_score": approval_score,
+                "required_approver": domain["approver"],
+                "approval_evidence_needed": domain["evidence"],
+                "current_evidence_status": current_evidence_status,
+                "decision_position": decision_position,
+                "blocker_summary": blocker_summary,
+                "safe_implementation_position": safe_position,
+                "supporting_route": f"/sterile-compounding/data-contracts/{system_key}",
+                "last_checked": sterile_now(),
+            }
+
+            payload["approval_hash"] = sterile_hash_text(
+                sterile_ca_json.dumps(payload, sort_keys=True)
+            )
+
+            approval_rows.append(payload)
+
+    approval_df = sterile_ca_pd.DataFrame(approval_rows)
+    approval_df = sterile_ensure_cols(approval_df, STERILE_CONNECTOR_APPROVAL_COLUMNS)
+
+    for system_key in system_keys:
+        decision_rows.append(
+            sterile_ca_build_decision_row(
+                system_key,
+                contract_df,
+                mock_df,
+                risk_df,
+                approval_df,
+            )
+        )
+
+    decision_df = sterile_ca_pd.DataFrame(decision_rows)
+    decision_df = sterile_ensure_cols(decision_df, STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+
+    sterile_write_register(STERILE_CONNECTOR_APPROVAL_REGISTER, approval_df, STERILE_CONNECTOR_APPROVAL_COLUMNS)
+    sterile_write_register(STERILE_IMPLEMENTATION_DECISION_REGISTER, decision_df, STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+
+    return approval_df, decision_df
+
+
+def sterile_ca_build_decision_row(system_key, contract_df, mock_df, risk_df, approval_df):
+    contract = sterile_ca_latest_contract(contract_df, system_key)
+    mock = sterile_ca_latest_mock(mock_df, system_key)
+    risks = sterile_ca_system_risks(risk_df, system_key)
+
+    system_name = sterile_ca_safe(contract.get("system_name", mock.get("system_name", system_key)))
+    contract_status = sterile_ca_bucket(contract.get("contract_status", "YELLOW"))
+    mock_status = sterile_ca_bucket(mock.get("mock_payload_status", "YELLOW"))
+
+    system_approvals = approval_df[approval_df["system_key"].astype(str) == str(system_key)].copy() if approval_df is not None and not approval_df.empty else approval_df
+
+    risk_red = sterile_ca_count_bucket(risks, "risk_status", "RED")
+    risk_yellow = sterile_ca_count_bucket(risks, "risk_status", "YELLOW")
+    approval_red = sterile_ca_count_bucket(system_approvals, "approval_status", "RED")
+    approval_yellow = sterile_ca_count_bucket(system_approvals, "approval_status", "YELLOW")
+
+    contract_score = sterile_ca_numeric(contract.get("contract_score", 0), 0)
+    mock_score = sterile_ca_numeric(mock.get("mock_score", 0), 0)
+
+    approval_score = 0
+    if system_approvals is not None and not system_approvals.empty and "approval_score" in system_approvals.columns:
+        approval_score = round(sterile_ca_pd.to_numeric(system_approvals["approval_score"], errors="coerce").fillna(0).mean(), 1)
+
+    risk_score = 0
+    if risks is not None and not risks.empty and "risk_score" in risks.columns:
+        risk_score = round(sterile_ca_pd.to_numeric(risks["risk_score"], errors="coerce").fillna(0).mean(), 1)
+
+    score_parts = [x for x in [contract_score, mock_score, approval_score, risk_score] if x]
+    overall_score = int(round(sum(score_parts) / len(score_parts), 0)) if score_parts else 0
+
+    if risk_red or approval_red or contract_status == "RED" or mock_status == "RED":
+        overall_status = "RED"
+        implementation_position = "NO-GO FOR LIVE CONNECTOR"
+        current_stage = "Blueprint only with blockers"
+        recommended_next_step = "Resolve RED approval/risk/data-contract blockers before any live connector work."
+        allowed_next_phase = "Mock documentation only"
+        not_allowed = "No API connection; no credentials; no writeback; no protected-module patch; no production data pull."
+    elif risk_yellow or approval_yellow or contract_status == "YELLOW" or mock_status == "YELLOW":
+        overall_status = "YELLOW"
+        implementation_position = "CONDITIONAL BLUEPRINT / MOCK ONLY"
+        current_stage = "Pre-implementation review"
+        recommended_next_step = "Collect required approval evidence and close YELLOW connector readiness gaps."
+        allowed_next_phase = "Owner review, data-contract review, controlled mock CSV test"
+        not_allowed = "No live API connector; no writeback; no production automation until approvals are captured."
+    else:
+        overall_status = "GREEN"
+        implementation_position = "READY FOR CONTROLLED PROOF-OF-CONCEPT DESIGN"
+        current_stage = "Controlled POC planning"
+        recommended_next_step = "Draft a controlled proof-of-concept design with named owners and non-production data."
+        allowed_next_phase = "Non-production POC design, mock payload test, architecture review"
+        not_allowed = "No production writeback or source-of-truth change without separate approval."
+
+    supporting_routes = "; ".join([
+        f"/sterile-compounding/connector-approval-board/{system_key}",
+        f"/sterile-compounding/data-contracts/{system_key}",
+        f"/sterile-compounding/mock-ingestion-lab/{system_key}",
+        f"/sterile-compounding/pre-integration-risk?system={system_key}",
+        f"/sterile-compounding/integration-blueprint/{system_key}",
+    ])
+
+    payload = {
+        "decision_id": sterile_ca_make_id("ST-DECISION", system_key, overall_status, overall_score),
+        "system_key": system_key,
+        "system_name": system_name,
+        "current_stage": current_stage,
+        "implementation_position": implementation_position,
+        "overall_status": overall_status,
+        "overall_score": overall_score,
+        "contract_status": contract_status,
+        "mock_status": mock_status,
+        "risk_red_count": risk_red,
+        "risk_yellow_count": risk_yellow,
+        "approval_red_count": approval_red,
+        "approval_yellow_count": approval_yellow,
+        "recommended_next_step": recommended_next_step,
+        "allowed_next_phase": allowed_next_phase,
+        "not_allowed_actions": not_allowed,
+        "supporting_routes": supporting_routes,
+        "last_checked": sterile_now(),
+    }
+
+    payload["decision_hash"] = sterile_hash_text(
+        sterile_ca_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+@app.route("/sterile-compounding/connector-approval-board")
+def sterile_compounding_connector_approval_board():
+    approval_df, decision_df = sterile_ca_build_approval_board()
+
+    status_filter = sterile_ca_safe(sterile_ca_request.args.get("status", ""))
+    system_filter = sterile_ca_safe(sterile_ca_request.args.get("system", ""))
+
+    filtered = approval_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["approval_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["approval_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["approval_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["approval_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Approval Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(approval_df["system_key"].dropna().unique().tolist()) if not approval_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["approval_status", "system_key", "approval_area"], ascending=[False, True, True]).iterrows():
+            system_key = sterile_ca_safe(row.get("system_key", ""))
+            route = sterile_ca_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ca_badge(row.get("approval_status", ""))}</td>
+                <td><a href="/sterile-compounding/connector-approval-board/{system_key}">{sterile_ca_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_ca_safe(row.get("approval_area", ""))}</td>
+                <td>{sterile_ca_safe(row.get("approval_score", ""))}</td>
+                <td>{sterile_ca_safe(row.get("required_approver", ""))}</td>
+                <td>{sterile_ca_safe(row.get("approval_evidence_needed", ""))}</td>
+                <td>{sterile_ca_safe(row.get("decision_position", ""))}</td>
+                <td>{sterile_ca_safe(row.get("blocker_summary", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No connector approval rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Connector Approval Board</h1>
+        <p>
+            Sterile-only approval board for future integrations. This page shows which approvals would be
+            needed before moving from blueprint/mock stage to any controlled proof-of-concept or live connector work.
+            It does not grant real approval.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Approval Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Approval Filters</h2>
+        <form method="GET" action="/sterile-compounding/connector-approval-board">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Approval Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-approval-board">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix">Implementation Decision Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-approval-board/export">Export Approval Board</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Approval Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Approval Area</th>
+                        <th>Score</th>
+                        <th>Required Approver</th>
+                        <th>Evidence Needed</th>
+                        <th>Decision</th>
+                        <th>Blocker / Gap</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONNECTOR-APPROVAL-BOARD",
+            "STERILE_CONNECTOR_APPROVAL_BOARD_VIEW",
+            "Sterile connector approval board viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/connector-approval-board",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Connector Approval Board", body)
+
+
+@app.route("/sterile-compounding/connector-approval-board/<system_key>")
+def sterile_compounding_connector_approval_detail(system_key):
+    approval_df, decision_df = sterile_ca_build_approval_board()
+    system_key = sterile_ca_safe(system_key)
+
+    approvals = approval_df[approval_df["system_key"].astype(str) == str(system_key)].copy() if not approval_df.empty else approval_df
+    decisions = decision_df[decision_df["system_key"].astype(str) == str(system_key)].copy() if not decision_df.empty else decision_df
+
+    if approvals.empty:
+        return sterile_ca_Response("Connector approval system not found.", status=404)
+
+    decision = decisions.iloc[0].to_dict() if not decisions.empty else {}
+    system_name = sterile_ca_safe(approvals.iloc[0].get("system_name", system_key))
+
+    decision_rows = ""
+    for key in STERILE_IMPLEMENTATION_DECISION_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ca_safe(decision.get(key, ""))
+
+        if key in ["overall_status", "contract_status", "mock_status"]:
+            value = sterile_ca_badge(value)
+        elif key == "decision_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        decision_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    approval_rows = ""
+    for _, row in approvals.sort_values(by=["approval_status", "approval_area"], ascending=[False, True]).iterrows():
+        approval_rows += f"""
+        <tr>
+            <td>{sterile_ca_badge(row.get("approval_status", ""))}</td>
+            <td>{sterile_ca_safe(row.get("approval_area", ""))}</td>
+            <td>{sterile_ca_safe(row.get("approval_score", ""))}</td>
+            <td>{sterile_ca_safe(row.get("required_approver", ""))}</td>
+            <td>{sterile_ca_safe(row.get("approval_evidence_needed", ""))}</td>
+            <td>{sterile_ca_safe(row.get("current_evidence_status", ""))}</td>
+            <td>{sterile_ca_safe(row.get("safe_implementation_position", ""))}</td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Connector Approval: {system_name}</h1>
+        <p>
+            System-level approval and implementation decision view. This is a planning page only;
+            it does not approve or activate a real connector.
+        </p>
+        <div style="margin-top:16px;">{sterile_ca_badge(decision.get("overall_status", "YELLOW"))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ca_safe(decision.get("implementation_position", "Implementation decision not available."))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Implementation Decision</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{decision_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Approval Areas</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Approval Area</th>
+                        <th>Score</th>
+                        <th>Required Approver</th>
+                        <th>Evidence Needed</th>
+                        <th>Current Evidence</th>
+                        <th>Safe Position</th>
+                    </tr>
+                </thead>
+                <tbody>{approval_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/connector-approval-board">Back to Approval Board</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix">Decision Matrix</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts/{system_key}">Data Contract</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/mock-ingestion-lab/{system_key}">Mock Ingestion</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint/{system_key}">Integration Blueprint</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_CONNECTOR_APPROVAL_DETAIL_VIEW",
+            "Sterile connector approval detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/connector-approval-board/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Connector Approval - {system_key}", body)
+
+
+@app.route("/sterile-compounding/implementation-decision-matrix")
+def sterile_compounding_implementation_decision_matrix():
+    approval_df, decision_df = sterile_ca_build_approval_board()
+
+    status_filter = sterile_ca_safe(sterile_ca_request.args.get("status", ""))
+
+    filtered = decision_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["overall_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["overall_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["overall_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["overall_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Decision Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["overall_status", "overall_score"], ascending=[False, False]).iterrows():
+            system_key = sterile_ca_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ca_badge(row.get("overall_status", ""))}</td>
+                <td><a href="/sterile-compounding/connector-approval-board/{system_key}">{sterile_ca_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_ca_safe(row.get("current_stage", ""))}</td>
+                <td>{sterile_ca_safe(row.get("implementation_position", ""))}</td>
+                <td>{sterile_ca_safe(row.get("overall_score", ""))}</td>
+                <td>{sterile_ca_badge(row.get("contract_status", ""))}</td>
+                <td>{sterile_ca_badge(row.get("mock_status", ""))}</td>
+                <td>{sterile_ca_safe(row.get("risk_red_count", ""))}</td>
+                <td>{sterile_ca_safe(row.get("approval_red_count", ""))}</td>
+                <td>{sterile_ca_safe(row.get("recommended_next_step", ""))}</td>
+                <td>{sterile_ca_safe(row.get("not_allowed_actions", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No implementation decision rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Implementation Decision Matrix</h1>
+        <p>
+            Go / conditional / no-go decision matrix for future sterile integrations. This tells you
+            what can happen next and what is explicitly not allowed yet.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Systems</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Decision Filters</h2>
+        <form method="GET" action="/sterile-compounding/implementation-decision-matrix">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Overall Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-approval-board">Connector Approval Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix/export">Export Decision Matrix</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Implementation Decision Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Stage</th>
+                        <th>Position</th>
+                        <th>Score</th>
+                        <th>Contract</th>
+                        <th>Mock</th>
+                        <th>Risk RED</th>
+                        <th>Approval RED</th>
+                        <th>Next Step</th>
+                        <th>Not Allowed</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "IMPLEMENTATION-DECISION-MATRIX",
+            "STERILE_IMPLEMENTATION_DECISION_MATRIX_VIEW",
+            "Sterile implementation decision matrix viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/implementation-decision-matrix",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Implementation Decision Matrix", body)
+
+
+@app.route("/sterile-compounding/connector-approval-board/export")
+def sterile_compounding_connector_approval_board_export():
+    approval_df, decision_df = sterile_ca_build_approval_board()
+
+    if approval_df.empty:
+        approval_df = sterile_ca_pd.DataFrame(columns=STERILE_CONNECTOR_APPROVAL_COLUMNS)
+
+    csv_data = approval_df.to_csv(index=False)
+
+    return sterile_ca_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_connector_approval_board_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/implementation-decision-matrix/export")
+def sterile_compounding_implementation_decision_matrix_export():
+    approval_df, decision_df = sterile_ca_build_approval_board()
+
+    if decision_df.empty:
+        decision_df = sterile_ca_pd.DataFrame(columns=STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+
+    csv_data = decision_df.to_csv(index=False)
+
+    return sterile_ca_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_implementation_decision_matrix_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_connector_approval_dashboard_injection(response):
+    try:
+        if sterile_ca_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/mock-ingestion-lab",
+            "/sterile-compounding/pre-integration-risk",
+            "/sterile-compounding/data-contracts",
+            "/sterile-compounding/field-mapping-matrix",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-connector-approval-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-connector-approval-panel">
+            <h2>Connector Approval Board + Implementation Decision Matrix</h2>
+            <p class="st-note">
+                Shows approval gates, implementation position, allowed next phase, and not-allowed actions
+                before any future sterile connector work. This is planning only and does not approve or activate real integrations.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/connector-approval-board">Connector Approval Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix">Implementation Decision Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-approval-board/export">Export Approval Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix/export">Export Decision Matrix</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile connector approval dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
