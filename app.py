@@ -24100,5 +24100,867 @@ def sterile_compounding_control_tower_dashboard_injection(response):
         print(f"Sterile control tower dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_EVIDENCE_VAULT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 10: Sterile Evidence Vault + Hash Verification
+#
+# New Routes:
+#   /sterile-compounding/evidence-vault
+#   /sterile-compounding/evidence-passport/<evidence_id>
+#   /sterile-compounding/evidence-verify
+#   /sterile-compounding/evidence-vault/export
+#   /sterile-compounding/evidence-verify/export
+#
+# New Registers:
+#   sterile_compounding_evidence_vault_register.csv
+#   sterile_compounding_evidence_verification_register.csv
+#
+# Boundary:
+#   This adds sterile evidence metadata, SHA-256 baseline hashes,
+#   verification events, and evidence passports. It does not replace
+#   QMS, pharmacy disposition, Veeva, Blue Mountain, ServiceNow,
+#   Entra, CI, Knowledge, Operational Lineage, Release Notes,
+#   Monday Demo, Command Center, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import os as sterile_ev_os
+    import json as sterile_ev_json
+    import hashlib as sterile_ev_hashlib
+    import base64 as sterile_ev_base64
+    import pandas as sterile_ev_pd
+    from io import StringIO as sterile_ev_StringIO
+    from flask import request as sterile_ev_request
+    from flask import redirect as sterile_ev_redirect
+    from flask import Response as sterile_ev_Response
+except Exception as sterile_ev_import_error:
+    raise RuntimeError(f"Sterile evidence vault import failed: {sterile_ev_import_error}")
+
+
+STERILE_EVIDENCE_VAULT_REGISTER = "sterile_compounding_evidence_vault_register.csv"
+STERILE_EVIDENCE_VERIFICATION_REGISTER = "sterile_compounding_evidence_verification_register.csv"
+STERILE_EVIDENCE_LOCAL_DIR = "sterile_compounding_evidence_files"
+
+STERILE_EVIDENCE_VAULT_COLUMNS = [
+    "evidence_id",
+    "record_id",
+    "evidence_category",
+    "evidence_title",
+    "original_filename",
+    "stored_reference",
+    "storage_mode",
+    "mime_hint",
+    "file_size_bytes",
+    "sha256_hash",
+    "uploaded_by",
+    "signed_by",
+    "approval_status",
+    "evidence_status",
+    "linked_route",
+    "upload_timestamp",
+    "evidence_hash"
+]
+
+STERILE_EVIDENCE_VERIFICATION_COLUMNS = [
+    "verification_id",
+    "evidence_id",
+    "record_id",
+    "original_filename",
+    "baseline_hash",
+    "submitted_hash",
+    "verification_status",
+    "verification_message",
+    "verified_by",
+    "verification_timestamp",
+    "verification_hash"
+]
+
+
+def sterile_ev_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_ev_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_ev_blob_available():
+    try:
+        return (
+            "blob_service_client" in globals()
+            and "CONTAINER_NAME" in globals()
+            and globals().get("blob_service_client") is not None
+            and globals().get("CONTAINER_NAME") is not None
+        )
+    except Exception:
+        return False
+
+
+def sterile_ev_sha256_bytes(data):
+    return sterile_ev_hashlib.sha256(data or b"").hexdigest()
+
+
+def sterile_ev_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ev_read_vault():
+    df = sterile_read_register(STERILE_EVIDENCE_VAULT_REGISTER, STERILE_EVIDENCE_VAULT_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_EVIDENCE_VAULT_COLUMNS)
+
+
+def sterile_ev_read_verifications():
+    df = sterile_read_register(STERILE_EVIDENCE_VERIFICATION_REGISTER, STERILE_EVIDENCE_VERIFICATION_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_EVIDENCE_VERIFICATION_COLUMNS)
+
+
+def sterile_ev_store_file(evidence_id, filename, data):
+    safe_filename = sterile_ev_safe(filename).replace("/", "_").replace("\\", "_").replace(" ", "_")
+    stored_name = f"sterile_evidence/{evidence_id}_{safe_filename}"
+
+    if sterile_ev_blob_available():
+        try:
+            blob_client = globals()["blob_service_client"].get_blob_client(
+                container=globals()["CONTAINER_NAME"],
+                blob=stored_name
+            )
+            blob_client.upload_blob(data, overwrite=True)
+            return stored_name, "AZURE_BLOB"
+        except Exception:
+            pass
+
+    try:
+        sterile_ev_os.makedirs(STERILE_EVIDENCE_LOCAL_DIR, exist_ok=True)
+        local_name = f"{evidence_id}_{safe_filename}"
+        local_path = sterile_ev_os.path.join(STERILE_EVIDENCE_LOCAL_DIR, local_name)
+        with open(local_path, "wb") as handle:
+            handle.write(data)
+        return local_path, "LOCAL_FILE"
+    except Exception:
+        # Last-resort metadata-only storage: no file body persisted, but hash remains.
+        return "METADATA_ONLY_HASH_BASELINE", "METADATA_ONLY"
+
+
+def sterile_ev_evidence_status(approval_status):
+    approval = sterile_ev_safe(approval_status).lower()
+
+    if approval in ["approved", "verified", "accepted"]:
+        return "GREEN"
+    if approval in ["rejected", "failed", "not approved"]:
+        return "RED"
+    return "YELLOW"
+
+
+def sterile_ev_status_badge(status):
+    status = sterile_ev_safe(status).upper()
+
+    if status in ["GREEN", "HASH MATCH", "VERIFIED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "NO BASELINE", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "HASH MISMATCH", "FAILED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ev_record_options(selected=""):
+    csp_df = sterile_prepare_dashboard_df()
+    options = '<option value="">Unlinked / Select CSP Record</option>'
+
+    if csp_df is not None and not csp_df.empty:
+        for _, row in csp_df.iterrows():
+            rid = sterile_ev_safe(row.get("record_id", ""))
+            label = sterile_ev_safe(row.get("csp_name", ""))
+            sel = "selected" if rid == selected else ""
+            options += f'<option value="{rid}" {sel}>{rid} - {label}</option>'
+
+    return options
+
+
+def sterile_ev_category_options():
+    categories = [
+        "Batch / Rx Record",
+        "COA / Ingredient Evidence",
+        "Environmental Monitoring",
+        "Cleaning / Disinfection Log",
+        "Equipment Certification",
+        "Personnel Qualification",
+        "Pharmacist Verification",
+        "QA Review",
+        "Deviation / CAPA Evidence",
+        "SOP / Formula Evidence",
+        "Storage Condition Evidence",
+        "Other Evidence"
+    ]
+    return "".join([f"<option>{cat}</option>" for cat in categories])
+
+
+def sterile_ev_build_payload(form, uploaded_file):
+    data = uploaded_file.read()
+    original_filename = sterile_ev_safe(uploaded_file.filename)
+    sha256_hash = sterile_ev_sha256_bytes(data)
+    record_id = sterile_ev_safe(form.get("record_id", ""))
+    evidence_category = sterile_ev_safe(form.get("evidence_category", ""))
+    evidence_title = sterile_ev_safe(form.get("evidence_title", "")) or original_filename
+    uploaded_by = sterile_ev_safe(form.get("uploaded_by", "")) or "Unspecified Uploader"
+    signed_by = sterile_ev_safe(form.get("signed_by", ""))
+    approval_status = sterile_ev_safe(form.get("approval_status", "")) or "Pending"
+
+    evidence_id = sterile_ev_make_id(
+        "ST-EVID",
+        record_id,
+        original_filename,
+        sha256_hash,
+        sterile_now()
+    )
+
+    stored_reference, storage_mode = sterile_ev_store_file(evidence_id, original_filename, data)
+
+    linked_route = f"/sterile-compounding/passport/{record_id}" if record_id else "/sterile-compounding/evidence-vault"
+
+    payload = {
+        "evidence_id": evidence_id,
+        "record_id": record_id,
+        "evidence_category": evidence_category or "Other Evidence",
+        "evidence_title": evidence_title,
+        "original_filename": original_filename,
+        "stored_reference": stored_reference,
+        "storage_mode": storage_mode,
+        "mime_hint": sterile_ev_safe(getattr(uploaded_file, "mimetype", "")),
+        "file_size_bytes": len(data),
+        "sha256_hash": sha256_hash,
+        "uploaded_by": uploaded_by,
+        "signed_by": signed_by,
+        "approval_status": approval_status,
+        "evidence_status": sterile_ev_evidence_status(approval_status),
+        "linked_route": linked_route,
+        "upload_timestamp": sterile_now(),
+    }
+
+    payload["evidence_hash"] = sterile_hash_text(
+        sterile_ev_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_ev_link_summary(record_id):
+    vault_df = sterile_ev_read_vault()
+
+    if vault_df.empty or not record_id:
+        return {
+            "total_evidence": 0,
+            "green_evidence": 0,
+            "yellow_evidence": 0,
+            "red_evidence": 0,
+            "evidence_categories": "",
+        }
+
+    linked = vault_df[vault_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if linked.empty:
+        return {
+            "total_evidence": 0,
+            "green_evidence": 0,
+            "yellow_evidence": 0,
+            "red_evidence": 0,
+            "evidence_categories": "",
+        }
+
+    return {
+        "total_evidence": len(linked),
+        "green_evidence": int((linked["evidence_status"].astype(str) == "GREEN").sum()),
+        "yellow_evidence": int((linked["evidence_status"].astype(str) == "YELLOW").sum()),
+        "red_evidence": int((linked["evidence_status"].astype(str) == "RED").sum()),
+        "evidence_categories": "; ".join(sorted(set(linked["evidence_category"].astype(str).tolist()))),
+    }
+
+
+@app.route("/sterile-compounding/evidence-vault", methods=["GET", "POST"])
+def sterile_compounding_evidence_vault():
+    sterile_ev_require_phase1()
+
+    if sterile_ev_request.method == "POST":
+        uploaded_file = sterile_ev_request.files.get("file")
+
+        if not uploaded_file or not sterile_ev_safe(uploaded_file.filename):
+            return sterile_ev_Response("Evidence file is required.", status=400)
+
+        try:
+            payload = sterile_ev_build_payload(sterile_ev_request.form, uploaded_file)
+            vault_df = sterile_ev_read_vault()
+            vault_df = sterile_ev_pd.concat([vault_df, sterile_ev_pd.DataFrame([payload])], ignore_index=True)
+            vault_df = sterile_ensure_cols(vault_df, STERILE_EVIDENCE_VAULT_COLUMNS)
+            sterile_write_register(STERILE_EVIDENCE_VAULT_REGISTER, vault_df, STERILE_EVIDENCE_VAULT_COLUMNS)
+
+            try:
+                sterile_add_lineage(
+                    payload["record_id"] or payload["evidence_id"],
+                    "STERILE_EVIDENCE_UPLOADED",
+                    f"Evidence uploaded and SHA-256 baseline created: {payload['original_filename']}",
+                    actor=payload["uploaded_by"],
+                    source_route="/sterile-compounding/evidence-vault",
+                )
+            except Exception:
+                pass
+
+            return sterile_ev_redirect(f"/sterile-compounding/evidence-passport/{payload['evidence_id']}")
+
+        except Exception as exc:
+            return sterile_ev_Response(f"Evidence upload failed: {exc}", status=500)
+
+    vault_df = sterile_ev_read_vault()
+
+    total = len(vault_df)
+    green = int((vault_df["evidence_status"] == "GREEN").sum()) if total else 0
+    yellow = int((vault_df["evidence_status"] == "YELLOW").sum()) if total else 0
+    red = int((vault_df["evidence_status"] == "RED").sum()) if total else 0
+
+    rows_html = ""
+
+    if not vault_df.empty:
+        for _, row in vault_df.sort_values(by="upload_timestamp", ascending=False).iterrows():
+            evidence_id = sterile_ev_safe(row.get("evidence_id", ""))
+            record_id = sterile_ev_safe(row.get("record_id", ""))
+            record_link = f'<a href="/sterile-compounding/passport/{record_id}">{record_id}</a>' if record_id else "Unlinked"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ev_status_badge(row.get("evidence_status", ""))}</td>
+                <td><a href="/sterile-compounding/evidence-passport/{evidence_id}">{evidence_id}</a></td>
+                <td>{record_link}</td>
+                <td>{sterile_ev_safe(row.get("evidence_category", ""))}</td>
+                <td>{sterile_ev_safe(row.get("evidence_title", ""))}</td>
+                <td>{sterile_ev_safe(row.get("original_filename", ""))}</td>
+                <td>{sterile_ev_safe(row.get("approval_status", ""))}</td>
+                <td>{sterile_ev_safe(row.get("uploaded_by", ""))}</td>
+                <td>{sterile_ev_safe(row.get("file_size_bytes", ""))}</td>
+                <td><code>{sterile_ev_safe(row.get("sha256_hash", ""))[:18]}...</code></td>
+                <td>{sterile_ev_safe(row.get("upload_timestamp", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No sterile evidence uploaded yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Evidence Vault</h1>
+        <p>
+            Evidence upload and SHA-256 baseline register for sterile compounding records.
+            This creates an evidence passport and tamper-aware baseline hash for files such as COAs,
+            EM logs, cleaning logs, equipment certificates, personnel qualification evidence,
+            pharmacist verification, QA review, deviation evidence, and SOP/formula evidence.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Evidence Records</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN / Approved</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW / Pending</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED / Rejected</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Upload Evidence</h2>
+        <form method="POST" action="/sterile-compounding/evidence-vault" enctype="multipart/form-data">
+            <div class="st-form-grid">
+                <div>
+                    <label>Linked CSP Record</label>
+                    <select name="record_id">{sterile_ev_record_options()}</select>
+                </div>
+                <div>
+                    <label>Evidence Category</label>
+                    <select name="evidence_category">{sterile_ev_category_options()}</select>
+                </div>
+                <div>
+                    <label>Evidence Title</label>
+                    <input name="evidence_title" placeholder="Example: CSP-001 COA Pack">
+                </div>
+                <div>
+                    <label>Uploaded By</label>
+                    <input name="uploaded_by" placeholder="Uploader / technician / reviewer">
+                </div>
+                <div>
+                    <label>Signed By</label>
+                    <input name="signed_by" placeholder="Signer / reviewer if applicable">
+                </div>
+                <div>
+                    <label>Approval Status</label>
+                    <select name="approval_status">
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                        <option>Verified</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Evidence File</label>
+                <input type="file" name="file" required>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="st-button" type="submit">Upload Evidence + Create Hash Baseline</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-verify">Verify Evidence</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault/export">Export Evidence Register</a>
+            </div>
+        </form>
+        <p class="st-note">
+            Do not upload PHI or patient names. Use de-identified CSP/Rx/batch identifiers only.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Vault Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Evidence ID</th>
+                        <th>CSP Record</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>File</th>
+                        <th>Approval</th>
+                        <th>Uploaded By</th>
+                        <th>Size</th>
+                        <th>SHA-256</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EVIDENCE-VAULT",
+            "STERILE_EVIDENCE_VAULT_VIEW",
+            "Sterile evidence vault viewed",
+            actor="system",
+            source_route="/sterile-compounding/evidence-vault",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Evidence Vault", body)
+
+
+@app.route("/sterile-compounding/evidence-passport/<evidence_id>")
+def sterile_compounding_evidence_passport(evidence_id):
+    sterile_ev_require_phase1()
+
+    vault_df = sterile_ev_read_vault()
+    match = vault_df[vault_df["evidence_id"].astype(str) == str(evidence_id)] if not vault_df.empty else vault_df
+
+    if match.empty:
+        return sterile_ev_Response("Evidence passport not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    record_id = sterile_ev_safe(row.get("record_id", ""))
+
+    ver_df = sterile_ev_read_verifications()
+    related_ver = ver_df[ver_df["evidence_id"].astype(str) == str(evidence_id)] if not ver_df.empty else ver_df
+
+    passport_rows = ""
+    for key in STERILE_EVIDENCE_VAULT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ev_safe(row.get(key, ""))
+        if key == "evidence_status":
+            value = sterile_ev_status_badge(value)
+        elif key in ["sha256_hash", "evidence_hash"]:
+            value = f"<code>{value}</code>"
+        elif key == "record_id" and value:
+            value = f'<a href="/sterile-compounding/passport/{value}">{value}</a>'
+        passport_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    ver_rows = ""
+    if not related_ver.empty:
+        for _, ver in related_ver.sort_values(by="verification_timestamp", ascending=False).iterrows():
+            ver_rows += f"""
+            <tr>
+                <td>{sterile_ev_status_badge(ver.get("verification_status", ""))}</td>
+                <td>{sterile_ev_safe(ver.get("verification_id", ""))}</td>
+                <td>{sterile_ev_safe(ver.get("verification_message", ""))}</td>
+                <td><code>{sterile_ev_safe(ver.get("baseline_hash", ""))[:18]}...</code></td>
+                <td><code>{sterile_ev_safe(ver.get("submitted_hash", ""))[:18]}...</code></td>
+                <td>{sterile_ev_safe(ver.get("verified_by", ""))}</td>
+                <td>{sterile_ev_safe(ver.get("verification_timestamp", ""))}</td>
+            </tr>
+            """
+    else:
+        ver_rows = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:20px; color:#6b7280;">
+                No verification events yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Evidence Passport</h1>
+        <p>
+            Hash baseline and governance metadata for evidence item <b>{sterile_ev_safe(evidence_id)}</b>.
+        </p>
+        <div style="margin-top:16px;">{sterile_ev_status_badge(row.get("evidence_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            SHA-256 Baseline: {sterile_ev_safe(row.get("sha256_hash", ""))[:18]}...
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Passport</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{passport_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Verification History</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Verification ID</th>
+                        <th>Message</th>
+                        <th>Baseline</th>
+                        <th>Submitted</th>
+                        <th>Verified By</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>{ver_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/evidence-verify?evidence_id={sterile_ev_safe(evidence_id)}">Verify This Evidence</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Back to Evidence Vault</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/passport/{record_id}">Linked CSP Passport</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id or evidence_id,
+            "STERILE_EVIDENCE_PASSPORT_VIEW",
+            f"Evidence passport viewed: {evidence_id}",
+            actor="system",
+            source_route="/sterile-compounding/evidence-passport/<evidence_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Sterile Evidence Passport - {evidence_id}", body)
+
+
+@app.route("/sterile-compounding/evidence-verify", methods=["GET", "POST"])
+def sterile_compounding_evidence_verify():
+    sterile_ev_require_phase1()
+
+    vault_df = sterile_ev_read_vault()
+
+    if sterile_ev_request.method == "POST":
+        evidence_id = sterile_ev_safe(sterile_ev_request.form.get("evidence_id", ""))
+        verified_by = sterile_ev_safe(sterile_ev_request.form.get("verified_by", "")) or "Unspecified Verifier"
+        uploaded_file = sterile_ev_request.files.get("file")
+
+        if not evidence_id:
+            return sterile_ev_Response("evidence_id is required.", status=400)
+
+        if not uploaded_file or not sterile_ev_safe(uploaded_file.filename):
+            return sterile_ev_Response("Verification file is required.", status=400)
+
+        match = vault_df[vault_df["evidence_id"].astype(str) == str(evidence_id)] if not vault_df.empty else vault_df
+
+        if match.empty:
+            return sterile_ev_Response("Evidence baseline not found.", status=404)
+
+        baseline = match.iloc[0].to_dict()
+        baseline_hash = sterile_ev_safe(baseline.get("sha256_hash", ""))
+        data = uploaded_file.read()
+        submitted_hash = sterile_ev_sha256_bytes(data)
+
+        if baseline_hash and submitted_hash == baseline_hash:
+            status = "HASH MATCH"
+            message = "Submitted file hash matches the evidence baseline."
+        elif baseline_hash:
+            status = "HASH MISMATCH"
+            message = "Submitted file hash does not match the evidence baseline. Possible wrong file or tampering."
+        else:
+            status = "NO BASELINE"
+            message = "No baseline hash was available for this evidence item."
+
+        record_id = sterile_ev_safe(baseline.get("record_id", ""))
+
+        payload = {
+            "verification_id": sterile_ev_make_id("ST-EVCHK", evidence_id, submitted_hash, sterile_now()),
+            "evidence_id": evidence_id,
+            "record_id": record_id,
+            "original_filename": sterile_ev_safe(uploaded_file.filename),
+            "baseline_hash": baseline_hash,
+            "submitted_hash": submitted_hash,
+            "verification_status": status,
+            "verification_message": message,
+            "verified_by": verified_by,
+            "verification_timestamp": sterile_now(),
+        }
+
+        payload["verification_hash"] = sterile_hash_text(
+            sterile_ev_json.dumps(payload, sort_keys=True)
+        )
+
+        ver_df = sterile_ev_read_verifications()
+        ver_df = sterile_ev_pd.concat([ver_df, sterile_ev_pd.DataFrame([payload])], ignore_index=True)
+        ver_df = sterile_ensure_cols(ver_df, STERILE_EVIDENCE_VERIFICATION_COLUMNS)
+        sterile_write_register(STERILE_EVIDENCE_VERIFICATION_REGISTER, ver_df, STERILE_EVIDENCE_VERIFICATION_COLUMNS)
+
+        try:
+            sterile_add_lineage(
+                record_id or evidence_id,
+                "STERILE_EVIDENCE_VERIFICATION",
+                f"Evidence verification result: {status}",
+                actor=verified_by,
+                source_route="/sterile-compounding/evidence-verify",
+            )
+        except Exception:
+            pass
+
+        return sterile_ev_redirect(f"/sterile-compounding/evidence-passport/{evidence_id}")
+
+    selected_evidence_id = sterile_ev_safe(sterile_ev_request.args.get("evidence_id", ""))
+
+    options = '<option value="">Select Evidence Baseline</option>'
+    if not vault_df.empty:
+        for _, row in vault_df.sort_values(by="upload_timestamp", ascending=False).iterrows():
+            eid = sterile_ev_safe(row.get("evidence_id", ""))
+            title = sterile_ev_safe(row.get("evidence_title", ""))
+            record_id = sterile_ev_safe(row.get("record_id", ""))
+            selected = "selected" if eid == selected_evidence_id else ""
+            options += f'<option value="{eid}" {selected}>{eid} | {record_id} | {title}</option>'
+
+    ver_df = sterile_ev_read_verifications()
+
+    total = len(ver_df)
+    matches = int((ver_df["verification_status"] == "HASH MATCH").sum()) if total else 0
+    mismatches = int((ver_df["verification_status"] == "HASH MISMATCH").sum()) if total else 0
+    no_baseline = int((ver_df["verification_status"] == "NO BASELINE").sum()) if total else 0
+
+    rows_html = ""
+    if not ver_df.empty:
+        for _, row in ver_df.sort_values(by="verification_timestamp", ascending=False).iterrows():
+            eid = sterile_ev_safe(row.get("evidence_id", ""))
+            rid = sterile_ev_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ev_status_badge(row.get("verification_status", ""))}</td>
+                <td><a href="/sterile-compounding/evidence-passport/{eid}">{eid}</a></td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_ev_safe(row.get("verification_message", ""))}</td>
+                <td><code>{sterile_ev_safe(row.get("baseline_hash", ""))[:18]}...</code></td>
+                <td><code>{sterile_ev_safe(row.get("submitted_hash", ""))[:18]}...</code></td>
+                <td>{sterile_ev_safe(row.get("verified_by", ""))}</td>
+                <td>{sterile_ev_safe(row.get("verification_timestamp", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No evidence verification events yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Evidence Hash Verification</h1>
+        <p>
+            Upload a copy of an evidence file and compare its SHA-256 hash to the baseline in the Evidence Vault.
+            HASH MATCH means the file matches the stored baseline. HASH MISMATCH means the submitted file differs.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Verification Events</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">HASH MATCH</div><div class="st-value">{matches}</div></div>
+        <div class="st-card"><div class="st-label">HASH MISMATCH</div><div class="st-value">{mismatches}</div></div>
+        <div class="st-card"><div class="st-label">NO BASELINE</div><div class="st-value">{no_baseline}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Verify Evidence File</h2>
+        <form method="POST" action="/sterile-compounding/evidence-verify" enctype="multipart/form-data">
+            <div class="st-form-grid">
+                <div>
+                    <label>Evidence Baseline</label>
+                    <select name="evidence_id" required>{options}</select>
+                </div>
+                <div>
+                    <label>Verified By</label>
+                    <input name="verified_by" placeholder="Verifier / reviewer">
+                </div>
+                <div>
+                    <label>File to Verify</label>
+                    <input type="file" name="file" required>
+                </div>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="st-button" type="submit">Verify Hash</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-verify/export">Export Verification Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Verification Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Evidence ID</th>
+                        <th>CSP Record</th>
+                        <th>Message</th>
+                        <th>Baseline Hash</th>
+                        <th>Submitted Hash</th>
+                        <th>Verified By</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EVIDENCE-VERIFY",
+            "STERILE_EVIDENCE_VERIFY_VIEW",
+            "Sterile evidence verification page viewed",
+            actor="system",
+            source_route="/sterile-compounding/evidence-verify",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Evidence Hash Verification", body)
+
+
+@app.route("/sterile-compounding/evidence-vault/export")
+def sterile_compounding_evidence_vault_export():
+    vault_df = sterile_ev_read_vault()
+
+    if vault_df.empty:
+        vault_df = sterile_ev_pd.DataFrame(columns=STERILE_EVIDENCE_VAULT_COLUMNS)
+
+    csv_data = vault_df.to_csv(index=False)
+
+    return sterile_ev_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_evidence_vault_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/evidence-verify/export")
+def sterile_compounding_evidence_verify_export():
+    ver_df = sterile_ev_read_verifications()
+
+    if ver_df.empty:
+        ver_df = sterile_ev_pd.DataFrame(columns=STERILE_EVIDENCE_VERIFICATION_COLUMNS)
+
+    csv_data = ver_df.to_csv(index=False)
+
+    return sterile_ev_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_evidence_verification_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_evidence_vault_dashboard_injection(response):
+    try:
+        if sterile_ev_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-evidence-vault-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-evidence-vault-panel">
+            <h2>Sterile Evidence Vault + Hash Verification</h2>
+            <p class="st-note">
+                Upload sterile compounding evidence, generate SHA-256 baselines, create evidence passports,
+                and verify whether a submitted file still matches the original baseline hash.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-verify">Verify Evidence</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault/export">Export Evidence Register</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-verify/export">Export Verification Register</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile evidence vault dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
