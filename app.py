@@ -50999,5 +50999,934 @@ def sterile_compounding_nonprod_poc_dashboard_injection(response):
         print(f"Sterile non-production POC dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POC_TEST_EXECUTION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 40: POC Test Execution Ledger + Evidence Checklist
+#
+# New Routes:
+#   /sterile-compounding/poc-test-execution
+#   /sterile-compounding/poc-test-execution/<test_case_id>
+#   /sterile-compounding/poc-test-execution/export
+#   /sterile-compounding/poc-evidence-checklist
+#   /sterile-compounding/poc-evidence-checklist/export
+#
+# New Registers:
+#   sterile_compounding_poc_test_execution.csv
+#   sterile_compounding_poc_evidence_checklist.csv
+#
+# Boundary:
+#   This is a sterile-only non-production test execution planning layer.
+#   It does not execute tests, call APIs, store credentials, use production
+#   data, connect to ServiceNow, Veeva, Blue Mountain, myAccess, Entra,
+#   Azure, Power BI, ledger services, or modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_te_pd
+    import json as sterile_te_json
+    from flask import request as sterile_te_request
+    from flask import Response as sterile_te_Response
+except Exception as sterile_te_import_error:
+    raise RuntimeError(f"Sterile POC test execution import failed: {sterile_te_import_error}")
+
+
+STERILE_POC_TEST_EXECUTION_REGISTER = "sterile_compounding_poc_test_execution.csv"
+STERILE_POC_EVIDENCE_CHECKLIST_REGISTER = "sterile_compounding_poc_evidence_checklist.csv"
+
+STERILE_POC_TEST_EXECUTION_COLUMNS = [
+    "execution_id",
+    "test_case_id",
+    "system_key",
+    "system_name",
+    "test_group",
+    "test_name",
+    "priority",
+    "planned_test_status",
+    "execution_status",
+    "execution_score",
+    "execution_mode",
+    "test_input",
+    "expected_result",
+    "pass_criteria",
+    "fail_condition",
+    "manual_execution_instruction",
+    "not_allowed_action",
+    "evidence_required_count",
+    "evidence_ready_count",
+    "evidence_gap_count",
+    "execution_decision",
+    "supporting_route",
+    "last_checked",
+    "execution_hash"
+]
+
+STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS = [
+    "checklist_id",
+    "test_case_id",
+    "system_key",
+    "system_name",
+    "evidence_item",
+    "evidence_type",
+    "evidence_status",
+    "required_for_execution",
+    "capture_instruction",
+    "acceptable_format",
+    "reviewer_note",
+    "not_allowed_content",
+    "evidence_route",
+    "last_checked",
+    "checklist_hash"
+]
+
+
+def sterile_te_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "sterile_read_register",
+        "STERILE_NONPROD_POC_COLUMNS",
+        "STERILE_CONNECTOR_TEST_CASE_COLUMNS",
+        "sterile_poc_build_poc_plan",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile POC test execution dependencies missing: " + ", ".join(missing))
+
+
+def sterile_te_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_te_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_te_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_te_bucket(value):
+    value = sterile_te_safe(value).upper()
+
+    if value in ["GREEN", "READY", "PASS", "PASSED", "EXECUTION READY"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "FAIL", "FAILED", "NO-GO", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_te_badge(status):
+    bucket = sterile_te_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_te_build_sources():
+    sterile_te_require_dependencies()
+
+    try:
+        poc_df, test_df = sterile_poc_build_poc_plan()
+    except Exception:
+        poc_df = sterile_read_register(
+            "sterile_compounding_nonprod_poc_plan.csv",
+            STERILE_NONPROD_POC_COLUMNS
+        )
+        test_df = sterile_read_register(
+            "sterile_compounding_connector_test_cases.csv",
+            STERILE_CONNECTOR_TEST_CASE_COLUMNS
+        )
+
+    poc_df = sterile_ensure_cols(poc_df, STERILE_NONPROD_POC_COLUMNS)
+    test_df = sterile_ensure_cols(test_df, STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+
+    return poc_df, test_df
+
+
+def sterile_te_evidence_template(test):
+    test_group = sterile_te_safe(test.get("test_group", ""))
+    system_key = sterile_te_safe(test.get("system_key", ""))
+    supporting_route = sterile_te_safe(test.get("supporting_route", ""))
+
+    base_items = [
+        {
+            "item": "Route Screenshot",
+            "type": "Screenshot",
+            "required": "YES",
+            "instruction": "Capture screenshot of the sterile planning route that supports the test.",
+            "format": "PNG/JPG/PDF screenshot",
+            "note": "Use sterile-only page evidence. Do not capture protected production system screens.",
+            "not_allowed": "No production PHI/PII, secrets, tokens, credentials, or source-system admin screens.",
+            "route": supporting_route,
+        },
+        {
+            "item": "CSV Export",
+            "type": "CSV",
+            "required": "YES",
+            "instruction": "Export the relevant sterile register used by the test.",
+            "format": "CSV export from sterile route",
+            "note": "CSV should come from sterile module export route only.",
+            "not_allowed": "No uncontrolled export from enterprise source systems.",
+            "route": supporting_route,
+        },
+        {
+            "item": "Boundary Confirmation",
+            "type": "Governance Note",
+            "required": "YES",
+            "instruction": "Confirm that no API call, credential, production data, or writeback was used.",
+            "format": "Text note or review comment",
+            "note": "This is required for every non-production connector test.",
+            "not_allowed": "No real connector activation.",
+            "route": "/sterile-compounding/nonprod-poc-plan",
+        },
+    ]
+
+    if test_group.lower().startswith("02") or "data" in test_group.lower():
+        base_items.append(
+            {
+                "item": "Data Contract Evidence",
+                "type": "Register Export",
+                "required": "YES",
+                "instruction": "Export or screenshot the data contract and field mapping pages for this system.",
+                "format": "CSV/screenshot",
+                "note": "Shows keys, fields, source-of-truth boundary, and no-writeback rule.",
+                "not_allowed": "No live data pull.",
+                "route": f"/sterile-compounding/data-contracts/{system_key}",
+            }
+        )
+
+    if test_group.lower().startswith("03") or "mock" in test_group.lower():
+        base_items.append(
+            {
+                "item": "Mock Payload Evidence",
+                "type": "Mock Register",
+                "required": "YES",
+                "instruction": "Capture mock ingestion payload shape and quality gate for this system.",
+                "format": "CSV/screenshot",
+                "note": "Shows readiness without connecting to the source system.",
+                "not_allowed": "No external API request.",
+                "route": f"/sterile-compounding/mock-ingestion-lab/{system_key}",
+            }
+        )
+
+    if test_group.lower().startswith("04") or "approval" in test_group.lower():
+        base_items.append(
+            {
+                "item": "Approval Board Evidence",
+                "type": "Approval Register",
+                "required": "YES",
+                "instruction": "Capture connector approval board row for this system.",
+                "format": "CSV/screenshot",
+                "note": "Shows approval gaps and not-allowed actions.",
+                "not_allowed": "Do not treat this as formal enterprise approval.",
+                "route": f"/sterile-compounding/connector-approval-board/{system_key}",
+            }
+        )
+
+    if test_group.lower().startswith("05") or "failure" in test_group.lower():
+        base_items.append(
+            {
+                "item": "Failure Mode Evidence",
+                "type": "Risk Register",
+                "required": "YES",
+                "instruction": "Capture pre-integration risk register and false-GREEN prevention rule.",
+                "format": "CSV/screenshot",
+                "note": "Shows missing/stale connector data cannot create false GREEN.",
+                "not_allowed": "No silent pass when evidence is missing.",
+                "route": f"/sterile-compounding/pre-integration-risk?system={system_key}",
+            }
+        )
+
+    if test_group.lower().startswith("06") or "evidence" in test_group.lower():
+        base_items.append(
+            {
+                "item": "Evidence Package Summary",
+                "type": "Checklist",
+                "required": "YES",
+                "instruction": "Confirm all required evidence items are present for this test case.",
+                "format": "Checklist row / CSV export",
+                "note": "Used to decide whether the test is execution-ready.",
+                "not_allowed": "No evidence package built from production extracts unless separately approved.",
+                "route": "/sterile-compounding/poc-evidence-checklist",
+            }
+        )
+
+    return base_items
+
+
+def sterile_te_build_execution_registers():
+    poc_df, test_df = sterile_te_build_sources()
+
+    execution_rows = []
+    checklist_rows = []
+
+    if test_df.empty:
+        empty_execution = sterile_te_pd.DataFrame(columns=STERILE_POC_TEST_EXECUTION_COLUMNS)
+        empty_checklist = sterile_te_pd.DataFrame(columns=STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+        sterile_write_register(STERILE_POC_TEST_EXECUTION_REGISTER, empty_execution, STERILE_POC_TEST_EXECUTION_COLUMNS)
+        sterile_write_register(STERILE_POC_EVIDENCE_CHECKLIST_REGISTER, empty_checklist, STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+        return empty_execution, empty_checklist
+
+    for _, test_row in test_df.iterrows():
+        test = test_row.to_dict()
+
+        test_case_id = sterile_te_safe(test.get("test_case_id", ""))
+        system_key = sterile_te_safe(test.get("system_key", ""))
+        system_name = sterile_te_safe(test.get("system_name", system_key))
+        planned_status = sterile_te_bucket(test.get("test_status", "YELLOW"))
+        planned_score = sterile_te_numeric(test.get("test_score", 0), 0)
+        priority = sterile_te_safe(test.get("priority", ""))
+
+        evidence_items = sterile_te_evidence_template(test)
+
+        required_count = sum(1 for item in evidence_items if item["required"] == "YES")
+
+        if planned_status == "GREEN":
+            evidence_ready = required_count
+            evidence_gaps = 0
+            execution_status = "GREEN"
+            execution_score = max(80, planned_score)
+            decision = "READY FOR MANUAL NON-PRODUCTION TEST EXECUTION"
+        elif planned_status == "YELLOW":
+            evidence_ready = max(0, required_count - 1)
+            evidence_gaps = required_count - evidence_ready
+            execution_status = "YELLOW"
+            execution_score = min(75, max(55, planned_score))
+            decision = "CONDITIONAL: COMPLETE EVIDENCE CHECKLIST BEFORE EXECUTION"
+        else:
+            evidence_ready = 0
+            evidence_gaps = required_count
+            execution_status = "RED"
+            execution_score = min(45, planned_score)
+            decision = "BLOCKED: DO NOT EXECUTE UNTIL RED TEST STATUS IS RESOLVED"
+
+        if priority == "P0" and execution_status == "YELLOW":
+            decision = "P0 CONDITIONAL: COMPLETE REQUIRED EVIDENCE BEFORE DEMO OR POC REVIEW"
+
+        for item in evidence_items:
+            if execution_status == "GREEN":
+                evidence_status = "GREEN"
+            elif execution_status == "YELLOW":
+                evidence_status = "YELLOW"
+            else:
+                evidence_status = "RED"
+
+            checklist_payload = {
+                "checklist_id": sterile_te_make_id("ST-EVID", test_case_id, item["item"]),
+                "test_case_id": test_case_id,
+                "system_key": system_key,
+                "system_name": system_name,
+                "evidence_item": item["item"],
+                "evidence_type": item["type"],
+                "evidence_status": evidence_status,
+                "required_for_execution": item["required"],
+                "capture_instruction": item["instruction"],
+                "acceptable_format": item["format"],
+                "reviewer_note": item["note"],
+                "not_allowed_content": item["not_allowed"],
+                "evidence_route": item["route"],
+                "last_checked": sterile_now(),
+            }
+
+            checklist_payload["checklist_hash"] = sterile_hash_text(
+                sterile_te_json.dumps(checklist_payload, sort_keys=True)
+            )
+
+            checklist_rows.append(checklist_payload)
+
+        manual_instruction = (
+            "Open the supporting sterile route, capture allowed evidence only, confirm not-allowed actions are avoided, "
+            "then mark the test as pass/fail outside this demo app. This app does not execute the connector test."
+        )
+
+        payload = {
+            "execution_id": sterile_te_make_id("ST-EXEC", test_case_id, execution_status),
+            "test_case_id": test_case_id,
+            "system_key": system_key,
+            "system_name": system_name,
+            "test_group": sterile_te_safe(test.get("test_group", "")),
+            "test_name": sterile_te_safe(test.get("test_name", "")),
+            "priority": priority,
+            "planned_test_status": planned_status,
+            "execution_status": execution_status,
+            "execution_score": execution_score,
+            "execution_mode": "Manual non-production / mock evidence review only",
+            "test_input": sterile_te_safe(test.get("test_input", "")),
+            "expected_result": sterile_te_safe(test.get("expected_result", "")),
+            "pass_criteria": sterile_te_safe(test.get("pass_criteria", "")),
+            "fail_condition": sterile_te_safe(test.get("fail_condition", "")),
+            "manual_execution_instruction": manual_instruction,
+            "not_allowed_action": sterile_te_safe(test.get("not_allowed_action", "")),
+            "evidence_required_count": required_count,
+            "evidence_ready_count": evidence_ready,
+            "evidence_gap_count": evidence_gaps,
+            "execution_decision": decision,
+            "supporting_route": sterile_te_safe(test.get("supporting_route", "")),
+            "last_checked": sterile_now(),
+        }
+
+        payload["execution_hash"] = sterile_hash_text(
+            sterile_te_json.dumps(payload, sort_keys=True)
+        )
+
+        execution_rows.append(payload)
+
+    execution_df = sterile_te_pd.DataFrame(execution_rows)
+    execution_df = sterile_ensure_cols(execution_df, STERILE_POC_TEST_EXECUTION_COLUMNS)
+
+    checklist_df = sterile_te_pd.DataFrame(checklist_rows)
+    checklist_df = sterile_ensure_cols(checklist_df, STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+
+    sterile_write_register(STERILE_POC_TEST_EXECUTION_REGISTER, execution_df, STERILE_POC_TEST_EXECUTION_COLUMNS)
+    sterile_write_register(STERILE_POC_EVIDENCE_CHECKLIST_REGISTER, checklist_df, STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+
+    return execution_df, checklist_df
+
+
+@app.route("/sterile-compounding/poc-test-execution")
+def sterile_compounding_poc_test_execution():
+    execution_df, checklist_df = sterile_te_build_execution_registers()
+
+    status_filter = sterile_te_safe(sterile_te_request.args.get("status", ""))
+    system_filter = sterile_te_safe(sterile_te_request.args.get("system", ""))
+    priority_filter = sterile_te_safe(sterile_te_request.args.get("priority", ""))
+
+    filtered = execution_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["execution_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["execution_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["execution_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["execution_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Execution Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(execution_df["system_key"].dropna().unique().tolist()) if not execution_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["priority", "execution_status", "system_key"], ascending=[True, False, True]).iterrows():
+            test_case_id = sterile_te_safe(row.get("test_case_id", ""))
+            route = sterile_te_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_te_badge(row.get("execution_status", ""))}</td>
+                <td>{sterile_te_safe(row.get("priority", ""))}</td>
+                <td><a href="/sterile-compounding/poc-test-execution/{test_case_id}">{sterile_te_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_te_safe(row.get("test_group", ""))}</td>
+                <td>{sterile_te_safe(row.get("test_name", ""))}</td>
+                <td>{sterile_te_safe(row.get("execution_score", ""))}</td>
+                <td>{sterile_te_safe(row.get("evidence_required_count", ""))}</td>
+                <td>{sterile_te_safe(row.get("evidence_ready_count", ""))}</td>
+                <td>{sterile_te_safe(row.get("evidence_gap_count", ""))}</td>
+                <td>{sterile_te_safe(row.get("execution_decision", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No POC test execution rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Test Execution Ledger</h1>
+        <p>
+            Manual non-production execution ledger for future connector POC tests. This page does not run tests.
+            It shows readiness, evidence requirements, pass/fail criteria, and not-allowed actions.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Execution Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Execution Filters</h2>
+        <form method="GET" action="/sterile-compounding/poc-test-execution">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Execution Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-test-execution">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist">Evidence Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-test-execution/export">Export Execution Ledger</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Test Execution Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>System</th>
+                        <th>Group</th>
+                        <th>Test Name</th>
+                        <th>Score</th>
+                        <th>Evidence Required</th>
+                        <th>Evidence Ready</th>
+                        <th>Evidence Gap</th>
+                        <th>Decision</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POC-TEST-EXECUTION",
+            "STERILE_POC_TEST_EXECUTION_VIEW",
+            "Sterile POC test execution ledger viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/poc-test-execution",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("POC Test Execution Ledger", body)
+
+
+@app.route("/sterile-compounding/poc-test-execution/<test_case_id>")
+def sterile_compounding_poc_test_execution_detail(test_case_id):
+    execution_df, checklist_df = sterile_te_build_execution_registers()
+    test_case_id = sterile_te_safe(test_case_id)
+
+    match = execution_df[execution_df["test_case_id"].astype(str) == str(test_case_id)].copy() if not execution_df.empty else execution_df
+
+    if match.empty:
+        return sterile_te_Response("POC test execution record not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    evidence_rows_df = checklist_df[checklist_df["test_case_id"].astype(str) == str(test_case_id)].copy() if not checklist_df.empty else checklist_df
+
+    detail_rows = ""
+
+    for key in STERILE_POC_TEST_EXECUTION_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_te_safe(row.get(key, ""))
+
+        if key in ["planned_test_status", "execution_status"]:
+            value = sterile_te_badge(value)
+        elif key == "execution_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_route":
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    checklist_html = ""
+
+    if not evidence_rows_df.empty:
+        for _, item in evidence_rows_df.sort_values(by=["required_for_execution", "evidence_item"], ascending=[False, True]).iterrows():
+            route = sterile_te_safe(item.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            checklist_html += f"""
+            <tr>
+                <td>{sterile_te_badge(item.get("evidence_status", ""))}</td>
+                <td>{sterile_te_safe(item.get("required_for_execution", ""))}</td>
+                <td>{sterile_te_safe(item.get("evidence_item", ""))}</td>
+                <td>{sterile_te_safe(item.get("evidence_type", ""))}</td>
+                <td>{sterile_te_safe(item.get("capture_instruction", ""))}</td>
+                <td>{sterile_te_safe(item.get("acceptable_format", ""))}</td>
+                <td>{sterile_te_safe(item.get("not_allowed_content", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        checklist_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No evidence checklist rows found for this test case.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Test Execution Detail</h1>
+        <p>{test_case_id}</p>
+        <div style="margin-top:16px;">{sterile_te_badge(row.get("execution_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_te_safe(row.get("execution_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Execution Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Checklist for This Test</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Required</th>
+                        <th>Evidence Item</th>
+                        <th>Type</th>
+                        <th>Capture Instruction</th>
+                        <th>Format</th>
+                        <th>Not Allowed</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{checklist_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/poc-test-execution">Back to Execution Ledger</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist">Evidence Checklist</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases">Connector Test Cases</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/nonprod-poc-plan">Non-Production POC Plan</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            test_case_id,
+            "STERILE_POC_TEST_EXECUTION_DETAIL_VIEW",
+            "Sterile POC test execution detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/poc-test-execution/<test_case_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"POC Test Execution - {test_case_id}", body)
+
+
+@app.route("/sterile-compounding/poc-evidence-checklist")
+def sterile_compounding_poc_evidence_checklist():
+    execution_df, checklist_df = sterile_te_build_execution_registers()
+
+    status_filter = sterile_te_safe(sterile_te_request.args.get("status", ""))
+    system_filter = sterile_te_safe(sterile_te_request.args.get("system", ""))
+    required_filter = sterile_te_safe(sterile_te_request.args.get("required", ""))
+
+    filtered = checklist_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["evidence_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    if required_filter and not filtered.empty:
+        filtered = filtered[filtered["required_for_execution"].astype(str) == required_filter]
+
+    total = len(filtered)
+    green = int((filtered["evidence_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["evidence_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["evidence_status"] == "RED").sum()) if total else 0
+    required = int((filtered["required_for_execution"] == "YES").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Evidence Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(checklist_df["system_key"].dropna().unique().tolist()) if not checklist_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    required_options = ""
+    for option in ["", "YES", "NO"]:
+        label = "All Required Flags" if option == "" else option
+        selected = "selected" if option == required_filter else ""
+        required_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["required_for_execution", "evidence_status", "system_key"], ascending=[False, False, True]).iterrows():
+            test_case_id = sterile_te_safe(row.get("test_case_id", ""))
+            route = sterile_te_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_te_badge(row.get("evidence_status", ""))}</td>
+                <td>{sterile_te_safe(row.get("required_for_execution", ""))}</td>
+                <td><a href="/sterile-compounding/poc-test-execution/{test_case_id}">{sterile_te_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_te_safe(row.get("evidence_item", ""))}</td>
+                <td>{sterile_te_safe(row.get("evidence_type", ""))}</td>
+                <td>{sterile_te_safe(row.get("capture_instruction", ""))}</td>
+                <td>{sterile_te_safe(row.get("acceptable_format", ""))}</td>
+                <td>{sterile_te_safe(row.get("not_allowed_content", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No POC evidence checklist rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Evidence Checklist</h1>
+        <p>
+            Evidence checklist for non-production connector POC tests. This defines what evidence should be captured,
+            acceptable formats, reviewer notes, and content that must not be captured.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Checklist Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Required</div><div class="st-value">{required}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Checklist Filters</h2>
+        <form method="GET" action="/sterile-compounding/poc-evidence-checklist">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Evidence Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Required</label>
+                    <select name="required">{required_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-test-execution">POC Test Execution</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist/export">Export Checklist</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Evidence Checklist Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Required</th>
+                        <th>System</th>
+                        <th>Evidence Item</th>
+                        <th>Type</th>
+                        <th>Capture Instruction</th>
+                        <th>Format</th>
+                        <th>Not Allowed</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POC-EVIDENCE-CHECKLIST",
+            "STERILE_POC_EVIDENCE_CHECKLIST_VIEW",
+            "Sterile POC evidence checklist viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/poc-evidence-checklist",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("POC Evidence Checklist", body)
+
+
+@app.route("/sterile-compounding/poc-test-execution/export")
+def sterile_compounding_poc_test_execution_export():
+    execution_df, checklist_df = sterile_te_build_execution_registers()
+
+    if execution_df.empty:
+        execution_df = sterile_te_pd.DataFrame(columns=STERILE_POC_TEST_EXECUTION_COLUMNS)
+
+    csv_data = execution_df.to_csv(index=False)
+
+    return sterile_te_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_poc_test_execution_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/poc-evidence-checklist/export")
+def sterile_compounding_poc_evidence_checklist_export():
+    execution_df, checklist_df = sterile_te_build_execution_registers()
+
+    if checklist_df.empty:
+        checklist_df = sterile_te_pd.DataFrame(columns=STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+
+    csv_data = checklist_df.to_csv(index=False)
+
+    return sterile_te_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_poc_evidence_checklist_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_poc_test_execution_dashboard_injection(response):
+    try:
+        if sterile_te_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/nonprod-poc-plan",
+            "/sterile-compounding/connector-test-cases",
+            "/sterile-compounding/connector-approval-board",
+            "/sterile-compounding/implementation-decision-matrix",
+            "/sterile-compounding/mock-ingestion-lab",
+            "/sterile-compounding/pre-integration-risk",
+            "/sterile-compounding/data-contracts",
+            "/sterile-compounding/field-mapping-matrix",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-poc-test-execution-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-poc-test-execution-panel">
+            <h2>POC Test Execution Ledger + Evidence Checklist</h2>
+            <p class="st-note">
+                Converts connector test cases into manual non-production execution records and evidence checklists.
+                This does not run tests or connect to external systems.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/poc-test-execution">POC Test Execution</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist">Evidence Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-test-execution/export">Export Execution Ledger</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist/export">Export Checklist</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile POC test execution dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
