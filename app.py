@@ -15782,5 +15782,1351 @@ def ci_submission_pack_csv():
         }
     )
 
+
+# ============================================================
+# STERILE_COMPOUNDING_VERTICAL_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 1: CSP Release Readiness, Evidence Twin, Review,
+# Blast Radius, Audit Lineage, Export, and Sample Data
+# ============================================================
+
+try:
+    import os as sterile_os
+    import json as sterile_json
+    import hashlib as sterile_hashlib
+    from io import StringIO as sterile_StringIO
+    from datetime import datetime as sterile_datetime
+    import pandas as sterile_pd
+    from flask import request as sterile_request
+    from flask import redirect as sterile_redirect
+    from flask import Response as sterile_Response
+    from flask import render_template_string as sterile_render_template_string
+except Exception as sterile_import_error:
+    raise RuntimeError(f"Sterile compounding import failed: {sterile_import_error}")
+
+
+STERILE_COMPOUNDING_REGISTER = "sterile_compounding_register.csv"
+STERILE_COMPOUNDING_REVIEW_REGISTER = "sterile_compounding_review_register.csv"
+STERILE_COMPOUNDING_LINEAGE_REGISTER = "sterile_compounding_lineage_register.csv"
+
+
+STERILE_COMPOUNDING_COLUMNS = [
+    "record_id",
+    "facility_type",
+    "csp_name",
+    "batch_or_rx_id",
+    "csp_category",
+    "hazardous_drug",
+    "preparation_date",
+    "beyond_use_date",
+    "assigned_technician",
+    "verifying_pharmacist",
+    "hood_or_cleanroom_id",
+    "equipment_status",
+    "personnel_qualified",
+    "coa_attached",
+    "environmental_status",
+    "deviation_open",
+    "approval_status",
+    "evidence_file",
+    "sop_version",
+    "ingredient_lot",
+    "supplier_approved",
+    "ingredient_expiry_status",
+    "storage_condition_status",
+    "cleaning_log_status",
+    "em_log_reviewed",
+    "pharmacist_verification",
+    "qa_review_status",
+    "release_status",
+    "created_at",
+    "updated_at",
+    "governance_status",
+    "release_decision",
+    "readiness_score",
+    "critical_issues",
+    "warnings",
+    "evidence_twin_hash",
+    "lineage_id"
+]
+
+
+STERILE_REVIEW_COLUMNS = [
+    "review_id",
+    "record_id",
+    "reviewer",
+    "review_decision",
+    "review_comment",
+    "review_timestamp",
+    "review_hash"
+]
+
+
+STERILE_LINEAGE_COLUMNS = [
+    "lineage_id",
+    "record_id",
+    "event_type",
+    "event_summary",
+    "actor",
+    "source_route",
+    "event_timestamp",
+    "event_hash"
+]
+
+
+def sterile_clean(value):
+    return str(value or "").strip()
+
+
+def sterile_normalize_col(col):
+    return (
+        str(col or "")
+        .strip()
+        .lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+        .replace("/", "_")
+        .replace(".", "_")
+        .replace("__", "_")
+    )
+
+
+def sterile_now():
+    return sterile_datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+def sterile_hash_text(value):
+    return sterile_hashlib.sha256(str(value).encode("utf-8")).hexdigest()
+
+
+def sterile_blob_available():
+    try:
+        return (
+            "blob_service_client" in globals()
+            and "CONTAINER_NAME" in globals()
+            and globals().get("blob_service_client") is not None
+            and globals().get("CONTAINER_NAME") is not None
+        )
+    except Exception:
+        return False
+
+
+def sterile_empty_df(columns):
+    return sterile_pd.DataFrame(columns=columns)
+
+
+def sterile_ensure_cols(df, columns):
+    if df is None or not hasattr(df, "columns"):
+        df = sterile_empty_df(columns)
+
+    df.columns = [sterile_normalize_col(c) for c in df.columns]
+
+    for col in columns:
+        if col not in df.columns:
+            df[col] = ""
+
+    return df[columns].fillna("")
+
+
+def sterile_read_register(filename, columns):
+    if sterile_blob_available():
+        try:
+            blob_client = globals()["blob_service_client"].get_blob_client(
+                container=globals()["CONTAINER_NAME"],
+                blob=filename
+            )
+            data = blob_client.download_blob().readall().decode("utf-8")
+            return sterile_ensure_cols(sterile_pd.read_csv(sterile_StringIO(data)), columns)
+        except Exception:
+            return sterile_empty_df(columns)
+
+    if not sterile_os.path.exists(filename):
+        return sterile_empty_df(columns)
+
+    try:
+        return sterile_ensure_cols(sterile_pd.read_csv(filename), columns)
+    except Exception:
+        return sterile_empty_df(columns)
+
+
+def sterile_write_register(filename, df, columns):
+    df = sterile_ensure_cols(df, columns)
+    csv_data = df.to_csv(index=False)
+
+    if sterile_blob_available():
+        blob_client = globals()["blob_service_client"].get_blob_client(
+            container=globals()["CONTAINER_NAME"],
+            blob=filename
+        )
+        blob_client.upload_blob(csv_data, overwrite=True)
+    else:
+        df.to_csv(filename, index=False)
+
+
+def sterile_lineage_id(record_id):
+    return "ST-LIN-" + sterile_hash_text(f"{record_id}|{sterile_now()}")[:12].upper()
+
+
+def sterile_row_hash(row):
+    payload = {}
+    excluded = {
+        "governance_status",
+        "release_decision",
+        "readiness_score",
+        "critical_issues",
+        "warnings",
+        "evidence_twin_hash",
+        "lineage_id",
+        "created_at",
+        "updated_at",
+    }
+
+    for col in STERILE_COMPOUNDING_COLUMNS:
+        if col not in excluded:
+            payload[col] = sterile_clean(row.get(col, ""))
+
+    return sterile_hash_text(sterile_json.dumps(payload, sort_keys=True))
+
+
+def sterile_add_lineage(record_id, event_type, event_summary, actor="system", source_route="/sterile-compounding"):
+    line_df = sterile_read_register(STERILE_COMPOUNDING_LINEAGE_REGISTER, STERILE_LINEAGE_COLUMNS)
+
+    lineage_id = sterile_lineage_id(record_id)
+    event_timestamp = sterile_now()
+
+    event_payload = {
+        "lineage_id": lineage_id,
+        "record_id": record_id,
+        "event_type": event_type,
+        "event_summary": event_summary,
+        "actor": actor,
+        "source_route": source_route,
+        "event_timestamp": event_timestamp,
+    }
+
+    event_payload["event_hash"] = sterile_hash_text(sterile_json.dumps(event_payload, sort_keys=True))
+
+    line_df = sterile_pd.concat([line_df, sterile_pd.DataFrame([event_payload])], ignore_index=True)
+    sterile_write_register(STERILE_COMPOUNDING_LINEAGE_REGISTER, line_df, STERILE_LINEAGE_COLUMNS)
+
+
+def sterile_score_record(row):
+    issues = []
+    warnings = []
+
+    required_identity_fields = [
+        "record_id",
+        "facility_type",
+        "batch_or_rx_id",
+        "assigned_technician",
+        "verifying_pharmacist",
+        "hood_or_cleanroom_id",
+    ]
+
+    required_evidence_fields = [
+        "evidence_file",
+        "sop_version",
+        "ingredient_lot",
+    ]
+
+    for field in required_identity_fields:
+        if sterile_clean(row.get(field, "")) == "":
+            warnings.append(f"Missing {field}")
+
+    for field in required_evidence_fields:
+        if sterile_clean(row.get(field, "")) == "":
+            warnings.append(f"Missing {field}")
+
+    equipment_status = sterile_clean(row.get("equipment_status", "")).lower()
+    personnel_qualified = sterile_clean(row.get("personnel_qualified", "")).lower()
+    coa_attached = sterile_clean(row.get("coa_attached", "")).lower()
+    environmental_status = sterile_clean(row.get("environmental_status", "")).lower()
+    deviation_open = sterile_clean(row.get("deviation_open", "")).lower()
+    approval_status = sterile_clean(row.get("approval_status", "")).lower()
+    supplier_approved = sterile_clean(row.get("supplier_approved", "")).lower()
+    ingredient_expiry_status = sterile_clean(row.get("ingredient_expiry_status", "")).lower()
+    storage_condition_status = sterile_clean(row.get("storage_condition_status", "")).lower()
+    cleaning_log_status = sterile_clean(row.get("cleaning_log_status", "")).lower()
+    em_log_reviewed = sterile_clean(row.get("em_log_reviewed", "")).lower()
+    pharmacist_verification = sterile_clean(row.get("pharmacist_verification", "")).lower()
+    qa_review_status = sterile_clean(row.get("qa_review_status", "")).lower()
+
+    if equipment_status in ["expired", "fail", "failed", "not current"]:
+        issues.append("Equipment/certification is expired or failed")
+    elif equipment_status in ["due", "near due", "review", ""]:
+        warnings.append("Equipment status requires review")
+
+    if personnel_qualified in ["no", "false", "expired", "not qualified", "fail", "failed"]:
+        issues.append("Personnel qualification is missing, expired, or failed")
+    elif personnel_qualified in ["review", "pending", ""]:
+        warnings.append("Personnel qualification requires review")
+
+    if coa_attached in ["no", "false", "missing"]:
+        issues.append("COA is missing")
+    elif coa_attached in ["review", "pending", ""]:
+        warnings.append("COA status requires review")
+
+    if environmental_status in ["fail", "failed", "red", "excursion", "out of limit", "out of range"]:
+        issues.append("Environmental monitoring failed or excursion exists")
+    elif environmental_status in ["alert", "warning", "yellow", "review", ""]:
+        warnings.append("Environmental status requires review")
+
+    if deviation_open in ["yes", "true", "open", "critical"]:
+        issues.append("Open deviation exists")
+    elif deviation_open in ["review", "pending", ""]:
+        warnings.append("Deviation status requires review")
+
+    if approval_status in ["rejected", "not approved", "denied"]:
+        issues.append("Approval was rejected or not approved")
+    elif approval_status in ["pending", "review", ""]:
+        warnings.append("Approval is pending or missing")
+
+    if supplier_approved in ["no", "false", "not approved", "rejected"]:
+        issues.append("Supplier is not approved")
+    elif supplier_approved in ["pending", "review", ""]:
+        warnings.append("Supplier approval requires review")
+
+    if ingredient_expiry_status in ["expired", "fail", "failed"]:
+        issues.append("Ingredient expiry failure")
+    elif ingredient_expiry_status in ["due", "review", ""]:
+        warnings.append("Ingredient expiry status requires review")
+
+    if storage_condition_status in ["fail", "failed", "excursion", "out of range", "out of limit"]:
+        issues.append("Storage condition failure")
+    elif storage_condition_status in ["alert", "review", ""]:
+        warnings.append("Storage condition requires review")
+
+    if cleaning_log_status in ["missing", "incomplete", "fail", "failed"]:
+        issues.append("Cleaning log is missing or failed")
+    elif cleaning_log_status in ["review", "pending", ""]:
+        warnings.append("Cleaning log requires review")
+
+    if em_log_reviewed in ["no", "false", "missing"]:
+        issues.append("Environmental monitoring review is missing")
+    elif em_log_reviewed in ["review", "pending", ""]:
+        warnings.append("Environmental monitoring review requires review")
+
+    if pharmacist_verification in ["no", "false", "missing", "rejected"]:
+        issues.append("Pharmacist verification is missing or rejected")
+    elif pharmacist_verification in ["pending", "review", ""]:
+        warnings.append("Pharmacist verification requires review")
+
+    if qa_review_status in ["rejected", "failed", "fail"]:
+        issues.append("QA review failed or was rejected")
+    elif qa_review_status in ["pending", "review", ""]:
+        warnings.append("QA review pending or not applicable")
+
+    try:
+        bud_raw = sterile_clean(row.get("beyond_use_date", ""))
+        if bud_raw:
+            bud = sterile_pd.to_datetime(bud_raw, errors="coerce")
+            if sterile_pd.notna(bud):
+                today = sterile_pd.Timestamp(sterile_datetime.utcnow().date())
+                if bud < today:
+                    issues.append("Beyond-use date has passed")
+        else:
+            warnings.append("Beyond-use date missing")
+    except Exception:
+        warnings.append("Could not validate beyond-use date")
+
+    if issues:
+        return {
+            "governance_status": "RED",
+            "release_decision": "BLOCK RELEASE / QA REVIEW REQUIRED",
+            "readiness_score": 40,
+            "critical_issues": "; ".join(issues),
+            "warnings": "; ".join(warnings),
+        }
+
+    if warnings:
+        return {
+            "governance_status": "YELLOW",
+            "release_decision": "REVIEW REQUIRED BEFORE RELEASE",
+            "readiness_score": 75,
+            "critical_issues": "",
+            "warnings": "; ".join(warnings),
+        }
+
+    return {
+        "governance_status": "GREEN",
+        "release_decision": "RELEASE READY FROM GOVERNANCE VIEW",
+        "readiness_score": 100,
+        "critical_issues": "",
+        "warnings": "",
+    }
+
+
+def sterile_prepare_dashboard_df():
+    df = sterile_read_register(STERILE_COMPOUNDING_REGISTER, STERILE_COMPOUNDING_COLUMNS)
+
+    if df.empty:
+        return sterile_empty_df(STERILE_COMPOUNDING_COLUMNS)
+
+    prepared = []
+
+    for _, row in df.iterrows():
+        row_dict = row.to_dict()
+
+        if sterile_clean(row_dict.get("record_id", "")) == "":
+            row_dict["record_id"] = "CSP-" + sterile_hash_text(sterile_json.dumps(row_dict, sort_keys=True))[:8].upper()
+
+        if sterile_clean(row_dict.get("lineage_id", "")) == "":
+            row_dict["lineage_id"] = sterile_lineage_id(row_dict["record_id"])
+
+        if sterile_clean(row_dict.get("created_at", "")) == "":
+            row_dict["created_at"] = sterile_now()
+
+        row_dict["updated_at"] = sterile_now()
+
+        score = sterile_score_record(row_dict)
+        row_dict.update(score)
+        row_dict["evidence_twin_hash"] = sterile_row_hash(row_dict)
+
+        prepared.append(row_dict)
+
+    scored_df = sterile_ensure_cols(sterile_pd.DataFrame(prepared), STERILE_COMPOUNDING_COLUMNS)
+    sterile_write_register(STERILE_COMPOUNDING_REGISTER, scored_df, STERILE_COMPOUNDING_COLUMNS)
+
+    return scored_df
+
+
+def sterile_badge(status):
+    status = sterile_clean(status).upper()
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_page_shell(title, body_html):
+    return sterile_render_template_string(f"""
+    <!doctype html>
+    <html>
+    <head>
+        <title>{title}</title>
+        <style>
+            body {{
+                margin: 0;
+                background: #f5f7fb;
+                color: #111827;
+                font-family: Arial, sans-serif;
+            }}
+            .st-container {{
+                max-width: 1450px;
+                margin: 0 auto;
+                padding: 28px;
+            }}
+            .st-hero {{
+                background: linear-gradient(135deg, #0f172a, #1e3a8a);
+                color: white;
+                border-radius: 18px;
+                padding: 28px;
+                margin-bottom: 22px;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.22);
+            }}
+            .st-hero h1 {{
+                margin: 0 0 8px 0;
+                font-size: 30px;
+            }}
+            .st-hero p {{
+                margin: 0;
+                color: #dbeafe;
+                line-height: 1.5;
+                max-width: 1050px;
+            }}
+            .st-nav {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 18px;
+            }}
+            .st-button, button.st-button {{
+                display: inline-block;
+                background: #1d4ed8;
+                color: white;
+                padding: 10px 14px;
+                border: none;
+                border-radius: 10px;
+                text-decoration: none;
+                font-weight: 700;
+                cursor: pointer;
+                font-size: 13px;
+            }}
+            .st-button-dark {{
+                background: #111827;
+            }}
+            .st-panel {{
+                background: white;
+                border-radius: 16px;
+                padding: 20px;
+                margin-bottom: 22px;
+                box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+                border: 1px solid #e5e7eb;
+            }}
+            .st-panel h2 {{
+                margin-top: 0;
+                font-size: 20px;
+            }}
+            .st-cards {{
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 14px;
+                margin-bottom: 22px;
+            }}
+            .st-card {{
+                background: white;
+                border-radius: 16px;
+                padding: 18px;
+                box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+                border: 1px solid #e5e7eb;
+            }}
+            .st-label {{
+                color: #6b7280;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }}
+            .st-value {{
+                font-size: 28px;
+                font-weight: 800;
+                margin-top: 8px;
+            }}
+            .st-table-wrap {{
+                overflow-x: auto;
+                border: 1px solid #e5e7eb;
+                border-radius: 14px;
+                max-height: 640px;
+            }}
+            table.st-table {{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                background: white;
+            }}
+            .st-table th {{
+                background: #111827;
+                color: white;
+                padding: 10px;
+                text-align: left;
+                position: sticky;
+                top: 0;
+            }}
+            .st-table td {{
+                border-bottom: 1px solid #e5e7eb;
+                padding: 10px;
+                vertical-align: top;
+            }}
+            .st-kv th {{
+                width: 280px;
+                background: #f3f4f6;
+                color: #111827;
+                position: static;
+            }}
+            .st-badge {{
+                display: inline-block;
+                padding: 5px 9px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 800;
+            }}
+            .st-green {{
+                background: #dcfce7;
+                color: #166534;
+            }}
+            .st-yellow {{
+                background: #fef9c3;
+                color: #854d0e;
+            }}
+            .st-red {{
+                background: #fee2e2;
+                color: #991b1b;
+            }}
+            .st-gray {{
+                background: #e5e7eb;
+                color: #374151;
+            }}
+            .st-note {{
+                color: #6b7280;
+                font-size: 13px;
+                line-height: 1.45;
+            }}
+            .st-grid-two {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }}
+            .st-form-grid {{
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+            }}
+            input, select, textarea {{
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px;
+                border: 1px solid #d1d5db;
+                border-radius: 10px;
+                background: #f9fafb;
+            }}
+            label {{
+                display: block;
+                font-size: 12px;
+                color: #374151;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }}
+            code {{
+                background: #f3f4f6;
+                padding: 2px 6px;
+                border-radius: 6px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="st-container">
+            <div class="st-nav">
+                <a class="st-button st-button-dark" href="/command-center">Command Center</a>
+                <a class="st-button st-button-dark" href="/operational-lineage">Operational Lineage</a>
+                <a class="st-button st-button-dark" href="/platform-health">Platform Health</a>
+                <a class="st-button" href="/sterile-compounding">Sterile Compounding</a>
+                <a class="st-button" href="/sterile-compounding/review">Review</a>
+                <a class="st-button" href="/sterile-compounding/blast-radius">Blast Radius</a>
+                <a class="st-button" href="/sterile-compounding/audit-lineage">Audit Lineage</a>
+            </div>
+            {body_html}
+        </div>
+    </body>
+    </html>
+    """)
+
+
+@app.route("/sterile-compounding", methods=["GET", "POST"])
+def sterile_compounding_dashboard():
+    if sterile_request.method == "POST":
+        uploaded_file = sterile_request.files.get("file")
+
+        if uploaded_file:
+            filename = uploaded_file.filename.lower()
+
+            try:
+                if filename.endswith(".csv"):
+                    new_df = sterile_pd.read_csv(uploaded_file)
+                elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+                    new_df = sterile_pd.read_excel(uploaded_file)
+                else:
+                    return sterile_Response("Unsupported file type. Please upload CSV or Excel.", status=400)
+
+                new_df.columns = [sterile_normalize_col(c) for c in new_df.columns]
+                new_df = sterile_ensure_cols(new_df, STERILE_COMPOUNDING_COLUMNS)
+
+                now_value = sterile_now()
+
+                for idx, row in new_df.iterrows():
+                    if sterile_clean(new_df.at[idx, "record_id"]) == "":
+                        new_df.at[idx, "record_id"] = "CSP-" + sterile_hash_text(
+                            sterile_json.dumps(row.to_dict(), sort_keys=True)
+                        )[:8].upper()
+
+                    if sterile_clean(new_df.at[idx, "created_at"]) == "":
+                        new_df.at[idx, "created_at"] = now_value
+
+                    new_df.at[idx, "updated_at"] = now_value
+
+                existing_df = sterile_read_register(STERILE_COMPOUNDING_REGISTER, STERILE_COMPOUNDING_COLUMNS)
+                combined_df = sterile_pd.concat([existing_df, new_df], ignore_index=True).fillna("")
+                combined_df = sterile_ensure_cols(combined_df, STERILE_COMPOUNDING_COLUMNS)
+                combined_df = combined_df.drop_duplicates(subset=["record_id"], keep="last")
+
+                sterile_write_register(STERILE_COMPOUNDING_REGISTER, combined_df, STERILE_COMPOUNDING_COLUMNS)
+                sterile_add_lineage("BULK-UPLOAD", "UPLOAD", f"Uploaded sterile compounding file: {uploaded_file.filename}", source_route="/sterile-compounding")
+
+            except Exception as exc:
+                return sterile_Response(f"Upload failed: {exc}", status=500)
+
+        return sterile_redirect("/sterile-compounding")
+
+    df = sterile_prepare_dashboard_df()
+
+    total = len(df)
+    green = int((df["governance_status"] == "GREEN").sum()) if total else 0
+    yellow = int((df["governance_status"] == "YELLOW").sum()) if total else 0
+    red = int((df["governance_status"] == "RED").sum()) if total else 0
+
+    em_alerts = int(df["environmental_status"].astype(str).str.lower().isin(["alert", "warning", "yellow", "fail", "failed", "excursion"]).sum()) if total else 0
+    equipment_due = int(df["equipment_status"].astype(str).str.lower().isin(["due", "near due", "expired", "fail", "failed"]).sum()) if total else 0
+    personnel_gaps = int(df["personnel_qualified"].astype(str).str.lower().isin(["no", "false", "expired", "not qualified", "fail", "failed", "pending", "review"]).sum()) if total else 0
+    open_deviations = int(df["deviation_open"].astype(str).str.lower().isin(["yes", "true", "open", "critical"]).sum()) if total else 0
+
+    avg_score = 0
+    if total:
+        avg_score = round(sterile_pd.to_numeric(df["readiness_score"], errors="coerce").fillna(0).mean(), 1)
+
+    rows_html = ""
+
+    if total:
+        for _, row in df.iterrows():
+            record_id = sterile_clean(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/passport/{record_id}">{record_id}</a></td>
+                <td>{sterile_clean(row.get("facility_type", ""))}</td>
+                <td>{sterile_clean(row.get("csp_name", ""))}</td>
+                <td>{sterile_clean(row.get("batch_or_rx_id", ""))}</td>
+                <td>{sterile_clean(row.get("hood_or_cleanroom_id", ""))}</td>
+                <td>{sterile_clean(row.get("assigned_technician", ""))}</td>
+                <td>{sterile_clean(row.get("verifying_pharmacist", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_clean(row.get("readiness_score", ""))}</td>
+                <td>{sterile_clean(row.get("release_decision", ""))}</td>
+                <td>{sterile_clean(row.get("critical_issues", ""))}</td>
+                <td>{sterile_clean(row.get("warnings", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:28px; color:#6b7280;">
+                No sterile compounding records yet. Load sample data or upload a de-identified CSV/XLSX file.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Compound Sterile AssuranceLayer™</h1>
+        <p>
+            CSP Release Readiness & Evidence Twin. This vertical checks whether sterile compounding records are
+            evidence-complete, personnel-qualified, equipment-ready, environmentally acceptable, approved,
+            and audit-ready before release. It is a governance layer, not a pharmacy workflow replacement.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total CSP Records</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN / Ready</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW / Review</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED / Blocked</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Environmental Alerts</div><div class="st-value">{em_alerts}</div></div>
+        <div class="st-card"><div class="st-label">Expired / Due Equipment</div><div class="st-value">{equipment_due}</div></div>
+        <div class="st-card"><div class="st-label">Personnel Gaps</div><div class="st-value">{personnel_gaps}</div></div>
+        <div class="st-card"><div class="st-label">Open Deviations</div><div class="st-value">{open_deviations}</div></div>
+        <div class="st-card"><div class="st-label">Audit Integrity Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Upload CSP Readiness File</h2>
+        <form method="POST" action="/sterile-compounding" enctype="multipart/form-data">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <input style="max-width:420px;" type="file" name="file" accept=".csv,.xlsx,.xls" required>
+                <button class="st-button" type="submit">Upload & Score</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sample">Load Sample Data</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/export">Export Scored CSV</a>
+            </div>
+        </form>
+        <p class="st-note">
+            Do not upload patient names or PHI. Use de-identified identifiers such as
+            <code>batch_or_rx_id</code>, <code>record_id</code>, or coded patient/order references only.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>CSP Governance Readiness Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Facility Type</th>
+                        <th>CSP Name</th>
+                        <th>Batch/Rx ID</th>
+                        <th>Hood/Cleanroom</th>
+                        <th>Technician</th>
+                        <th>Pharmacist</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Critical Issues</th>
+                        <th>Warnings</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell("Compound Sterile AssuranceLayer", body)
+
+
+@app.route("/sterile-compounding/passport/<record_id>")
+def sterile_compounding_passport(record_id):
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        return sterile_Response("No sterile compounding records found.", status=404)
+
+    match = df[df["record_id"].astype(str) == str(record_id)]
+
+    if match.empty:
+        return sterile_Response("Sterile compounding record not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+
+    fields = [
+        ("Record ID", "record_id"),
+        ("Facility Type", "facility_type"),
+        ("CSP Name", "csp_name"),
+        ("Batch/Rx ID", "batch_or_rx_id"),
+        ("CSP Category", "csp_category"),
+        ("Hazardous Drug", "hazardous_drug"),
+        ("Preparation Date", "preparation_date"),
+        ("Beyond-Use Date", "beyond_use_date"),
+        ("Assigned Technician", "assigned_technician"),
+        ("Verifying Pharmacist", "verifying_pharmacist"),
+        ("Hood/Cleanroom ID", "hood_or_cleanroom_id"),
+        ("Equipment Status", "equipment_status"),
+        ("Personnel Qualified", "personnel_qualified"),
+        ("COA Attached", "coa_attached"),
+        ("Environmental Status", "environmental_status"),
+        ("Deviation Open", "deviation_open"),
+        ("Approval Status", "approval_status"),
+        ("Evidence File", "evidence_file"),
+        ("SOP Version", "sop_version"),
+        ("Ingredient Lot", "ingredient_lot"),
+        ("Supplier Approved", "supplier_approved"),
+        ("Ingredient Expiry Status", "ingredient_expiry_status"),
+        ("Storage Condition Status", "storage_condition_status"),
+        ("Cleaning Log Status", "cleaning_log_status"),
+        ("EM Log Reviewed", "em_log_reviewed"),
+        ("Pharmacist Verification", "pharmacist_verification"),
+        ("QA Review Status", "qa_review_status"),
+        ("Release Status", "release_status"),
+        ("Governance Status", "governance_status"),
+        ("Readiness Score", "readiness_score"),
+        ("Release Decision", "release_decision"),
+        ("Critical Issues", "critical_issues"),
+        ("Warnings", "warnings"),
+        ("Evidence Twin Hash", "evidence_twin_hash"),
+        ("Lineage ID", "lineage_id"),
+        ("Created At", "created_at"),
+        ("Updated At", "updated_at"),
+    ]
+
+    evidence_rows = ""
+
+    for label, key in fields:
+        value = sterile_clean(row.get(key, ""))
+        if key == "governance_status":
+            value = sterile_badge(value)
+        evidence_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>CSP Control Passport</h1>
+        <p>Evidence Twin and governance release-readiness profile for <b>{sterile_clean(record_id)}</b>.</p>
+        <div style="margin-top:16px;">{sterile_badge(row.get("governance_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_clean(row.get("release_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control-to-Evidence Passport</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{evidence_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Actions</h2>
+        <a class="st-button" href="/sterile-compounding/review?record_id={sterile_clean(record_id)}">Open Review Board</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/blast-radius?record_id={sterile_clean(record_id)}">Run Blast Radius View</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-lineage?record_id={sterile_clean(record_id)}">View Audit Lineage</a>
+    </div>
+    """
+
+    sterile_add_lineage(record_id, "PASSPORT_VIEW", "CSP Control Passport viewed", source_route="/sterile-compounding/passport")
+
+    return sterile_page_shell(f"CSP Control Passport - {record_id}", body)
+
+
+@app.route("/sterile-compounding/review", methods=["GET", "POST"])
+def sterile_compounding_review():
+    if sterile_request.method == "POST":
+        record_id = sterile_clean(sterile_request.form.get("record_id", ""))
+        reviewer = sterile_clean(sterile_request.form.get("reviewer", ""))
+        decision = sterile_clean(sterile_request.form.get("review_decision", ""))
+        comment = sterile_clean(sterile_request.form.get("review_comment", ""))
+
+        if record_id == "":
+            return sterile_Response("record_id is required.", status=400)
+
+        review_df = sterile_read_register(STERILE_COMPOUNDING_REVIEW_REGISTER, STERILE_REVIEW_COLUMNS)
+
+        review_payload = {
+            "review_id": "ST-REV-" + sterile_hash_text(f"{record_id}|{reviewer}|{decision}|{sterile_now()}")[:12].upper(),
+            "record_id": record_id,
+            "reviewer": reviewer or "Unspecified Reviewer",
+            "review_decision": decision or "Review Logged",
+            "review_comment": comment,
+            "review_timestamp": sterile_now(),
+        }
+
+        review_payload["review_hash"] = sterile_hash_text(sterile_json.dumps(review_payload, sort_keys=True))
+
+        review_df = sterile_pd.concat([review_df, sterile_pd.DataFrame([review_payload])], ignore_index=True)
+        sterile_write_register(STERILE_COMPOUNDING_REVIEW_REGISTER, review_df, STERILE_REVIEW_COLUMNS)
+
+        sterile_add_lineage(
+            record_id,
+            "REVIEW",
+            f"Review decision logged: {review_payload['review_decision']}",
+            actor=review_payload["reviewer"],
+            source_route="/sterile-compounding/review",
+        )
+
+        return sterile_redirect("/sterile-compounding/review")
+
+    record_filter = sterile_clean(sterile_request.args.get("record_id", ""))
+    df = sterile_prepare_dashboard_df()
+    review_df = sterile_read_register(STERILE_COMPOUNDING_REVIEW_REGISTER, STERILE_REVIEW_COLUMNS)
+
+    options_html = ""
+
+    if not df.empty:
+        for _, row in df.iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            selected = "selected" if rid == record_filter else ""
+            options_html += f'<option value="{rid}" {selected}>{rid} - {sterile_clean(row.get("csp_name", ""))}</option>'
+
+    rows_html = ""
+
+    if not review_df.empty:
+        for _, row in review_df.sort_values(by="review_timestamp", ascending=False).iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_clean(row.get("review_id", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_clean(row.get("reviewer", ""))}</td>
+                <td>{sterile_clean(row.get("review_decision", ""))}</td>
+                <td>{sterile_clean(row.get("review_comment", ""))}</td>
+                <td>{sterile_clean(row.get("review_timestamp", ""))}</td>
+                <td>{sterile_clean(row.get("review_hash", ""))[:16]}...</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">No review events yet.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Compounding Review Board</h1>
+        <p>
+            Supervisor, pharmacist, or QA-style review layer for CSP readiness decisions.
+            This does not release a product by itself; it records governance review events.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Log Review Decision</h2>
+        <form method="POST" action="/sterile-compounding/review">
+            <div class="st-form-grid">
+                <div>
+                    <label>Record</label>
+                    <select name="record_id" required>
+                        <option value="">Select CSP record</option>
+                        {options_html}
+                    </select>
+                </div>
+                <div>
+                    <label>Reviewer</label>
+                    <input name="reviewer" placeholder="Reviewer / Pharmacist / QA">
+                </div>
+                <div>
+                    <label>Decision</label>
+                    <select name="review_decision">
+                        <option>Approve Governance Readiness</option>
+                        <option>Request More Evidence</option>
+                        <option>Hold for Deviation Review</option>
+                        <option>Reject / Block Release</option>
+                        <option>Mark Ready for Audit Pack</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Comment</label>
+                <textarea name="review_comment" rows="4" placeholder="Add review rationale, missing evidence, or QA note."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="st-button" type="submit">Save Review Event</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Review Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Review ID</th>
+                        <th>Record ID</th>
+                        <th>Reviewer</th>
+                        <th>Decision</th>
+                        <th>Comment</th>
+                        <th>Timestamp</th>
+                        <th>Review Hash</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell("Sterile Compounding Review Board", body)
+
+
+@app.route("/sterile-compounding/blast-radius")
+def sterile_compounding_blast_radius():
+    df = sterile_prepare_dashboard_df()
+    record_filter = sterile_clean(sterile_request.args.get("record_id", ""))
+
+    target = None
+    impacted = sterile_empty_df(STERILE_COMPOUNDING_COLUMNS)
+
+    if not df.empty and record_filter:
+        match = df[df["record_id"].astype(str) == record_filter]
+
+        if not match.empty:
+            target = match.iloc[0].to_dict()
+
+            hood = sterile_clean(target.get("hood_or_cleanroom_id", ""))
+            tech = sterile_clean(target.get("assigned_technician", ""))
+            ingredient = sterile_clean(target.get("ingredient_lot", ""))
+            sop = sterile_clean(target.get("sop_version", ""))
+            env = sterile_clean(target.get("environmental_status", "")).lower()
+            equip = sterile_clean(target.get("equipment_status", "")).lower()
+
+            mask = sterile_pd.Series([False] * len(df), index=df.index)
+
+            if hood:
+                mask = mask | (df["hood_or_cleanroom_id"].astype(str) == hood)
+            if tech:
+                mask = mask | (df["assigned_technician"].astype(str) == tech)
+            if ingredient:
+                mask = mask | (df["ingredient_lot"].astype(str) == ingredient)
+            if sop:
+                mask = mask | (df["sop_version"].astype(str) == sop)
+
+            if env in ["fail", "failed", "excursion", "alert", "warning"]:
+                mask = mask | df["environmental_status"].astype(str).str.lower().isin(["fail", "failed", "excursion", "alert", "warning"])
+
+            if equip in ["expired", "fail", "failed", "due", "near due"]:
+                mask = mask | df["equipment_status"].astype(str).str.lower().isin(["expired", "fail", "failed", "due", "near due"])
+
+            impacted = df[mask].copy()
+
+    elif not df.empty:
+        impacted = df[
+            (df["governance_status"].astype(str) == "RED")
+            | (df["environmental_status"].astype(str).str.lower().isin(["fail", "failed", "excursion", "alert", "warning"]))
+            | (df["equipment_status"].astype(str).str.lower().isin(["expired", "fail", "failed", "due", "near due"]))
+            | (df["personnel_qualified"].astype(str).str.lower().isin(["no", "false", "expired", "not qualified"]))
+            | (df["deviation_open"].astype(str).str.lower().isin(["yes", "true", "open", "critical"]))
+        ].copy()
+
+    rows_html = ""
+
+    if not impacted.empty:
+        for _, row in impacted.iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_clean(row.get("csp_name", ""))}</td>
+                <td>{sterile_clean(row.get("hood_or_cleanroom_id", ""))}</td>
+                <td>{sterile_clean(row.get("assigned_technician", ""))}</td>
+                <td>{sterile_clean(row.get("ingredient_lot", ""))}</td>
+                <td>{sterile_clean(row.get("sop_version", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_clean(row.get("critical_issues", ""))}</td>
+                <td>{sterile_clean(row.get("warnings", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">No impacted records found. Load sample data first or select a CSP passport.</td></tr>'
+
+    selected_summary = ""
+
+    if target:
+        selected_summary = f"""
+        <div class="st-panel">
+            <h2>Selected Trigger Record</h2>
+            <p>
+                <b>{sterile_clean(target.get("record_id", ""))}</b> —
+                Hood/Cleanroom: <b>{sterile_clean(target.get("hood_or_cleanroom_id", ""))}</b>,
+                Technician: <b>{sterile_clean(target.get("assigned_technician", ""))}</b>,
+                Ingredient Lot: <b>{sterile_clean(target.get("ingredient_lot", ""))}</b>,
+                SOP: <b>{sterile_clean(target.get("sop_version", ""))}</b>
+            </p>
+        </div>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Contamination Blast-Radius Engine</h1>
+        <p>
+            Impact-analysis view. If a hood, technician, ingredient lot, environmental result,
+            equipment certification, or SOP version is questionable, this view identifies related CSP records.
+            Use only de-identified IDs.
+        </p>
+    </div>
+
+    {selected_summary}
+
+    <div class="st-panel">
+        <h2>Impacted / Related Records</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Hood/Cleanroom</th>
+                        <th>Technician</th>
+                        <th>Ingredient Lot</th>
+                        <th>SOP Version</th>
+                        <th>Status</th>
+                        <th>Critical Issues</th>
+                        <th>Warnings</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    if record_filter:
+        sterile_add_lineage(record_filter, "BLAST_RADIUS_VIEW", "Blast-radius analysis viewed", source_route="/sterile-compounding/blast-radius")
+
+    return sterile_page_shell("Sterile Compounding Blast Radius", body)
+
+
+@app.route("/sterile-compounding/audit-lineage")
+def sterile_compounding_audit_lineage():
+    record_filter = sterile_clean(sterile_request.args.get("record_id", ""))
+    line_df = sterile_read_register(STERILE_COMPOUNDING_LINEAGE_REGISTER, STERILE_LINEAGE_COLUMNS)
+
+    if record_filter and not line_df.empty:
+        line_df = line_df[line_df["record_id"].astype(str).isin([record_filter, "BULK-UPLOAD"])]
+
+    rows_html = ""
+
+    if not line_df.empty:
+        try:
+            line_df = line_df.sort_values(by="event_timestamp", ascending=False)
+        except Exception:
+            pass
+
+        for _, row in line_df.iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            record_link = rid
+
+            if rid and rid != "BULK-UPLOAD":
+                record_link = f'<a href="/sterile-compounding/passport/{rid}">{rid}</a>'
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_clean(row.get("lineage_id", ""))}</td>
+                <td>{record_link}</td>
+                <td>{sterile_clean(row.get("event_type", ""))}</td>
+                <td>{sterile_clean(row.get("event_summary", ""))}</td>
+                <td>{sterile_clean(row.get("actor", ""))}</td>
+                <td>{sterile_clean(row.get("source_route", ""))}</td>
+                <td>{sterile_clean(row.get("event_timestamp", ""))}</td>
+                <td>{sterile_clean(row.get("event_hash", ""))[:16]}...</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">No audit lineage events yet.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Compounding Audit Lineage</h1>
+        <p>
+            Tamper-aware event trail for upload, passport view, review decisions, and blast-radius analysis.
+            This register supports audit replay without modifying existing enterprise systems.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Lineage Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Lineage ID</th>
+                        <th>Record ID</th>
+                        <th>Event Type</th>
+                        <th>Summary</th>
+                        <th>Actor</th>
+                        <th>Source Route</th>
+                        <th>Timestamp</th>
+                        <th>Event Hash</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell("Sterile Compounding Audit Lineage", body)
+
+
+@app.route("/sterile-compounding/export")
+def sterile_compounding_export():
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        df = sterile_empty_df(STERILE_COMPOUNDING_COLUMNS)
+
+    csv_data = df.to_csv(index=False)
+
+    return sterile_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_scored_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/sample")
+def sterile_compounding_sample():
+    sample_rows = [
+        {
+            "record_id": "CSP-001",
+            "facility_type": "503A Pharmacy",
+            "csp_name": "De-identified Sterile Preparation A",
+            "batch_or_rx_id": "RX-2026-001",
+            "csp_category": "Category 2",
+            "hazardous_drug": "No",
+            "preparation_date": sterile_datetime.utcnow().strftime("%Y-%m-%d"),
+            "beyond_use_date": "2026-12-31",
+            "assigned_technician": "TECH-001",
+            "verifying_pharmacist": "RPH-001",
+            "hood_or_cleanroom_id": "ISO5-HOOD-001",
+            "equipment_status": "Current",
+            "personnel_qualified": "Yes",
+            "coa_attached": "Yes",
+            "environmental_status": "Pass",
+            "deviation_open": "No",
+            "approval_status": "Approved",
+            "evidence_file": "CSP-001_EvidencePack.pdf",
+            "sop_version": "SOP-CSP-001-v3",
+            "ingredient_lot": "LOT-001",
+            "supplier_approved": "Yes",
+            "ingredient_expiry_status": "Current",
+            "storage_condition_status": "Pass",
+            "cleaning_log_status": "Complete",
+            "em_log_reviewed": "Yes",
+            "pharmacist_verification": "Verified",
+            "qa_review_status": "Approved",
+            "release_status": "Ready",
+        },
+        {
+            "record_id": "CSP-002",
+            "facility_type": "Hospital Sterile Compounding",
+            "csp_name": "De-identified Sterile Preparation B",
+            "batch_or_rx_id": "RX-2026-002",
+            "csp_category": "Category 1",
+            "hazardous_drug": "No",
+            "preparation_date": sterile_datetime.utcnow().strftime("%Y-%m-%d"),
+            "beyond_use_date": "2026-12-31",
+            "assigned_technician": "TECH-002",
+            "verifying_pharmacist": "RPH-002",
+            "hood_or_cleanroom_id": "ISO5-HOOD-002",
+            "equipment_status": "Due",
+            "personnel_qualified": "Yes",
+            "coa_attached": "Yes",
+            "environmental_status": "Alert",
+            "deviation_open": "No",
+            "approval_status": "Pending",
+            "evidence_file": "CSP-002_EvidencePack.pdf",
+            "sop_version": "SOP-CSP-002-v1",
+            "ingredient_lot": "LOT-002",
+            "supplier_approved": "Yes",
+            "ingredient_expiry_status": "Current",
+            "storage_condition_status": "Pass",
+            "cleaning_log_status": "Complete",
+            "em_log_reviewed": "No",
+            "pharmacist_verification": "Pending",
+            "qa_review_status": "Pending",
+            "release_status": "Review",
+        },
+        {
+            "record_id": "CSP-003",
+            "facility_type": "503B Outsourcing Facility",
+            "csp_name": "De-identified Sterile Preparation C",
+            "batch_or_rx_id": "BATCH-2026-003",
+            "csp_category": "Category 3",
+            "hazardous_drug": "Yes",
+            "preparation_date": sterile_datetime.utcnow().strftime("%Y-%m-%d"),
+            "beyond_use_date": "2026-12-31",
+            "assigned_technician": "TECH-003",
+            "verifying_pharmacist": "RPH-003",
+            "hood_or_cleanroom_id": "ISO5-HOOD-003",
+            "equipment_status": "Expired",
+            "personnel_qualified": "No",
+            "coa_attached": "No",
+            "environmental_status": "Fail",
+            "deviation_open": "Yes",
+            "approval_status": "Rejected",
+            "evidence_file": "CSP-003_EvidencePack.pdf",
+            "sop_version": "SOP-CSP-003-v2",
+            "ingredient_lot": "LOT-003",
+            "supplier_approved": "No",
+            "ingredient_expiry_status": "Expired",
+            "storage_condition_status": "Excursion",
+            "cleaning_log_status": "Missing",
+            "em_log_reviewed": "No",
+            "pharmacist_verification": "Missing",
+            "qa_review_status": "Rejected",
+            "release_status": "Blocked",
+        },
+    ]
+
+    now_value = sterile_now()
+    sample_df = sterile_ensure_cols(sterile_pd.DataFrame(sample_rows), STERILE_COMPOUNDING_COLUMNS)
+
+    for idx, row in sample_df.iterrows():
+        sample_df.at[idx, "created_at"] = now_value
+        sample_df.at[idx, "updated_at"] = now_value
+        sample_df.at[idx, "lineage_id"] = sterile_lineage_id(sample_df.at[idx, "record_id"])
+
+    existing_df = sterile_read_register(STERILE_COMPOUNDING_REGISTER, STERILE_COMPOUNDING_COLUMNS)
+    combined_df = sterile_pd.concat([existing_df, sample_df], ignore_index=True).fillna("")
+    combined_df = sterile_ensure_cols(combined_df, STERILE_COMPOUNDING_COLUMNS)
+    combined_df = combined_df.drop_duplicates(subset=["record_id"], keep="last")
+
+    sterile_write_register(STERILE_COMPOUNDING_REGISTER, combined_df, STERILE_COMPOUNDING_COLUMNS)
+
+    for sample in sample_rows:
+        sterile_add_lineage(
+            sample["record_id"],
+            "SAMPLE_DATA",
+            "Sample sterile compounding record loaded",
+            actor="system",
+            source_route="/sterile-compounding/sample",
+        )
+
+    return sterile_redirect("/sterile-compounding")
+
 if __name__ == "__main__":
     app.run(debug=True)
