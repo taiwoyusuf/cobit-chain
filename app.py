@@ -50020,5 +50020,984 @@ def sterile_compounding_connector_approval_dashboard_injection(response):
         print(f"Sterile connector approval dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_NONPROD_POC_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 39: Non-Production POC Plan + Connector Test Cases
+#
+# New Routes:
+#   /sterile-compounding/nonprod-poc-plan
+#   /sterile-compounding/nonprod-poc-plan/<system_key>
+#   /sterile-compounding/nonprod-poc-plan/export
+#   /sterile-compounding/connector-test-cases
+#   /sterile-compounding/connector-test-cases/export
+#
+# New Registers:
+#   sterile_compounding_nonprod_poc_plan.csv
+#   sterile_compounding_connector_test_cases.csv
+#
+# Boundary:
+#   This is a sterile-only non-production planning layer. It does not
+#   call APIs, use credentials, move production data, write to enterprise
+#   systems, or modify ServiceNow, Veeva, Blue Mountain, myAccess, Entra,
+#   Azure, Power BI, CI, Knowledge, Command Center, Monday Demo,
+#   Release Notes, Platform Health, Manufacturing/Wole, or any protected
+#   global module.
+# ============================================================
+
+try:
+    import pandas as sterile_poc_pd
+    import json as sterile_poc_json
+    from flask import request as sterile_poc_request
+    from flask import Response as sterile_poc_Response
+except Exception as sterile_poc_import_error:
+    raise RuntimeError(f"Sterile non-production POC import failed: {sterile_poc_import_error}")
+
+
+STERILE_NONPROD_POC_REGISTER = "sterile_compounding_nonprod_poc_plan.csv"
+STERILE_CONNECTOR_TEST_CASE_REGISTER = "sterile_compounding_connector_test_cases.csv"
+
+STERILE_NONPROD_POC_COLUMNS = [
+    "poc_id",
+    "system_key",
+    "system_name",
+    "poc_stage",
+    "poc_position",
+    "poc_status",
+    "poc_score",
+    "poc_scope",
+    "allowed_data",
+    "not_allowed_data",
+    "environment_boundary",
+    "entry_criteria",
+    "exit_criteria",
+    "success_criteria",
+    "required_controls",
+    "rollback_or_abort_condition",
+    "recommended_next_step",
+    "supporting_routes",
+    "last_checked",
+    "poc_hash"
+]
+
+STERILE_CONNECTOR_TEST_CASE_COLUMNS = [
+    "test_case_id",
+    "system_key",
+    "system_name",
+    "test_group",
+    "test_name",
+    "test_type",
+    "priority",
+    "test_status",
+    "test_score",
+    "test_input",
+    "expected_result",
+    "pass_criteria",
+    "fail_condition",
+    "evidence_to_capture",
+    "not_allowed_action",
+    "supporting_route",
+    "last_checked",
+    "test_hash"
+]
+
+
+STERILE_POC_STAGE_RULES = {
+    "GREEN": {
+        "stage": "Controlled non-production POC design",
+        "position": "Eligible for controlled non-production POC design only",
+        "scope": "Design non-production connector pattern using mock data, synthetic data, or approved export files.",
+        "allowed": "Mock data; synthetic data; approved non-production metadata; controlled CSV exports if approved.",
+        "not_allowed": "No production writeback; no uncontrolled PHI/PII; no direct source-system modification; no protected-module patch.",
+        "entry": "Decision matrix GREEN, named owners identified, data contract reviewed, mock ingestion acceptable.",
+        "exit": "POC design reviewed; test cases passed; risks accepted; next phase separately approved.",
+        "success": "Field mapping proves feasible, failure modes are safe, and no source-of-truth boundary is violated.",
+        "controls": "Least privilege, metadata-only design, audit log, no-writeback rule, approved test dataset, rollback/abort plan.",
+    },
+    "YELLOW": {
+        "stage": "Pre-POC review",
+        "position": "Conditional blueprint/mock only",
+        "scope": "Close approval, risk, data-contract, and mock-ingestion gaps before any connector design.",
+        "allowed": "Documentation; mock payload review; field mapping review; owner approval collection.",
+        "not_allowed": "No live connector; no credentials; no production API calls; no writeback; no protected-module patch.",
+        "entry": "Decision matrix YELLOW and no unresolved critical security/validation blocker.",
+        "exit": "YELLOW approval/risk items are closed or accepted by the correct owner.",
+        "success": "System can move from conditional blueprint to controlled non-production POC design.",
+        "controls": "Approval evidence, data contract sign-off, validation boundary statement, safe test data definition.",
+    },
+    "RED": {
+        "stage": "Blocked",
+        "position": "No-go for connector implementation",
+        "scope": "Resolve blockers only. Do not design or run connector POC.",
+        "allowed": "Risk review; blocker resolution; correction of data contracts, mappings, approval evidence, and mock payloads.",
+        "not_allowed": "No live connector; no credentials; no API connection; no production data; no automation; no protected-module patch.",
+        "entry": "Decision matrix RED or approval/risk blocker exists.",
+        "exit": "RED blockers are removed and decision matrix is rebuilt.",
+        "success": "System returns to YELLOW or GREEN planning status.",
+        "controls": "Blocker log, owner review, formal no-go statement, corrected data contract, corrected mock ingestion result.",
+    },
+}
+
+
+def sterile_poc_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "sterile_read_register",
+        "STERILE_CONNECTOR_APPROVAL_COLUMNS",
+        "STERILE_IMPLEMENTATION_DECISION_COLUMNS",
+        "sterile_ca_build_approval_board",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile non-production POC dependencies missing: " + ", ".join(missing))
+
+
+def sterile_poc_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_poc_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_poc_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_poc_bucket(value):
+    value = sterile_poc_safe(value).upper()
+
+    if value in ["GREEN", "READY", "GO", "PASS", "APPROVED"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "NO-GO", "FAIL", "FAILED", "REJECTED"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_poc_badge(status):
+    bucket = sterile_poc_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_poc_build_sources():
+    sterile_poc_require_dependencies()
+
+    try:
+        approval_df, decision_df = sterile_ca_build_approval_board()
+    except Exception:
+        approval_df = sterile_read_register(
+            "sterile_compounding_connector_approval_board.csv",
+            STERILE_CONNECTOR_APPROVAL_COLUMNS
+        )
+        decision_df = sterile_read_register(
+            "sterile_compounding_implementation_decision_matrix.csv",
+            STERILE_IMPLEMENTATION_DECISION_COLUMNS
+        )
+
+    approval_df = sterile_ensure_cols(approval_df, STERILE_CONNECTOR_APPROVAL_COLUMNS)
+    decision_df = sterile_ensure_cols(decision_df, STERILE_IMPLEMENTATION_DECISION_COLUMNS)
+
+    return approval_df, decision_df
+
+
+def sterile_poc_system_approvals(approval_df, system_key):
+    if approval_df is None or approval_df.empty or "system_key" not in approval_df.columns:
+        return sterile_poc_pd.DataFrame(columns=STERILE_CONNECTOR_APPROVAL_COLUMNS)
+
+    return approval_df[approval_df["system_key"].astype(str) == str(system_key)].copy()
+
+
+def sterile_poc_count_bucket(df, column, bucket):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+
+    return int((df[column].astype(str).apply(sterile_poc_bucket) == bucket).sum())
+
+
+def sterile_poc_supporting_routes(system_key):
+    return "; ".join([
+        f"/sterile-compounding/nonprod-poc-plan/{system_key}",
+        f"/sterile-compounding/connector-approval-board/{system_key}",
+        f"/sterile-compounding/implementation-decision-matrix",
+        f"/sterile-compounding/mock-ingestion-lab/{system_key}",
+        f"/sterile-compounding/data-contracts/{system_key}",
+        f"/sterile-compounding/pre-integration-risk?system={system_key}",
+        f"/sterile-compounding/integration-blueprint/{system_key}",
+    ])
+
+
+def sterile_poc_build_poc_plan():
+    approval_df, decision_df = sterile_poc_build_sources()
+
+    poc_rows = []
+    test_rows = []
+
+    if decision_df.empty:
+        empty_poc = sterile_poc_pd.DataFrame(columns=STERILE_NONPROD_POC_COLUMNS)
+        empty_tests = sterile_poc_pd.DataFrame(columns=STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+        sterile_write_register(STERILE_NONPROD_POC_REGISTER, empty_poc, STERILE_NONPROD_POC_COLUMNS)
+        sterile_write_register(STERILE_CONNECTOR_TEST_CASE_REGISTER, empty_tests, STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+        return empty_poc, empty_tests
+
+    for _, decision_row in decision_df.iterrows():
+        decision = decision_row.to_dict()
+
+        system_key = sterile_poc_safe(decision.get("system_key", ""))
+        system_name = sterile_poc_safe(decision.get("system_name", system_key))
+        overall_status = sterile_poc_bucket(decision.get("overall_status", "YELLOW"))
+        overall_score = sterile_poc_numeric(decision.get("overall_score", 0), 0)
+
+        rules = STERILE_POC_STAGE_RULES.get(overall_status, STERILE_POC_STAGE_RULES["YELLOW"])
+
+        approvals = sterile_poc_system_approvals(approval_df, system_key)
+        approval_red = sterile_poc_count_bucket(approvals, "approval_status", "RED")
+        approval_yellow = sterile_poc_count_bucket(approvals, "approval_status", "YELLOW")
+
+        if overall_status == "GREEN":
+            recommended_next = "Draft controlled non-production POC design with mock/synthetic data and named owner review."
+            abort_condition = "Abort if production data, credentials, writeback, or protected-route modification is required."
+        elif overall_status == "YELLOW":
+            recommended_next = "Close approval and risk gaps before any connector POC design."
+            abort_condition = "Abort if owner approval, data contract review, or validation boundary cannot be obtained."
+        else:
+            recommended_next = "Resolve RED blockers; do not proceed with POC design."
+            abort_condition = "Abort all implementation activity until decision matrix is rebuilt as YELLOW or GREEN."
+
+        payload = {
+            "poc_id": sterile_poc_make_id("ST-POC", system_key, overall_status, overall_score),
+            "system_key": system_key,
+            "system_name": system_name,
+            "poc_stage": rules["stage"],
+            "poc_position": rules["position"],
+            "poc_status": overall_status,
+            "poc_score": overall_score,
+            "poc_scope": rules["scope"],
+            "allowed_data": rules["allowed"],
+            "not_allowed_data": rules["not_allowed"],
+            "environment_boundary": "Non-production / mock only. No live connector or production writeback in this phase.",
+            "entry_criteria": rules["entry"],
+            "exit_criteria": rules["exit"],
+            "success_criteria": rules["success"],
+            "required_controls": rules["controls"],
+            "rollback_or_abort_condition": abort_condition,
+            "recommended_next_step": recommended_next,
+            "supporting_routes": sterile_poc_supporting_routes(system_key),
+            "last_checked": sterile_now(),
+        }
+
+        payload["poc_hash"] = sterile_hash_text(
+            sterile_poc_json.dumps(payload, sort_keys=True)
+        )
+
+        poc_rows.append(payload)
+
+        test_rows.extend(
+            sterile_poc_build_tests_for_system(
+                decision,
+                approvals,
+                overall_status,
+                overall_score,
+                approval_red,
+                approval_yellow,
+            )
+        )
+
+    poc_df = sterile_poc_pd.DataFrame(poc_rows)
+    poc_df = sterile_ensure_cols(poc_df, STERILE_NONPROD_POC_COLUMNS)
+
+    test_df = sterile_poc_pd.DataFrame(test_rows)
+    test_df = sterile_ensure_cols(test_df, STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+
+    sterile_write_register(STERILE_NONPROD_POC_REGISTER, poc_df, STERILE_NONPROD_POC_COLUMNS)
+    sterile_write_register(STERILE_CONNECTOR_TEST_CASE_REGISTER, test_df, STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+
+    return poc_df, test_df
+
+
+def sterile_poc_add_test(rows, system_key, system_name, group, name, test_type, priority, status, score, test_input, expected, pass_criteria, fail_condition, evidence, not_allowed, route):
+    payload = {
+        "test_case_id": sterile_poc_make_id("ST-TEST", system_key, group, name),
+        "system_key": system_key,
+        "system_name": system_name,
+        "test_group": group,
+        "test_name": name,
+        "test_type": test_type,
+        "priority": priority,
+        "test_status": status,
+        "test_score": score,
+        "test_input": test_input,
+        "expected_result": expected,
+        "pass_criteria": pass_criteria,
+        "fail_condition": fail_condition,
+        "evidence_to_capture": evidence,
+        "not_allowed_action": not_allowed,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+
+    payload["test_hash"] = sterile_hash_text(
+        sterile_poc_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_poc_build_tests_for_system(decision, approvals, overall_status, overall_score, approval_red, approval_yellow):
+    rows = []
+
+    system_key = sterile_poc_safe(decision.get("system_key", ""))
+    system_name = sterile_poc_safe(decision.get("system_name", system_key))
+    contract_status = sterile_poc_bucket(decision.get("contract_status", "YELLOW"))
+    mock_status = sterile_poc_bucket(decision.get("mock_status", "YELLOW"))
+
+    no_live = "No production API call, no writeback, no credential storage, no protected-route modification."
+
+    base_status = overall_status
+    base_score = overall_score
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "01 Boundary",
+        "Confirm non-production boundary",
+        "Governance",
+        "P0",
+        "GREEN" if overall_status != "RED" else "YELLOW",
+        85 if overall_status != "RED" else 60,
+        "POC plan and implementation decision matrix",
+        "POC remains mock/non-production only.",
+        "Boundary states no production data, no writeback, no API activation, and no protected-module patch.",
+        "Any requirement for production connection or protected-module update fails the test.",
+        "Screenshot/export of Non-Production POC Plan.",
+        no_live,
+        f"/sterile-compounding/nonprod-poc-plan/{system_key}",
+    )
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "02 Data Contract",
+        "Validate data contract completeness",
+        "Data Contract",
+        "P0",
+        contract_status,
+        85 if contract_status == "GREEN" else 65 if contract_status == "YELLOW" else 40,
+        "Data contract route and field mapping matrix",
+        "Primary keys, minimum fields, source-of-truth boundary, failure mode, and first safe test are defined.",
+        "Contract status is GREEN/YELLOW with no unresolved RED blocker.",
+        "Missing primary key, missing boundary, or unclear writeback rule fails the test.",
+        "Export data contract and field mapping matrix.",
+        no_live,
+        f"/sterile-compounding/data-contracts/{system_key}",
+    )
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "03 Mock Payload",
+        "Validate mock ingestion payload",
+        "Mock Ingestion",
+        "P0",
+        mock_status,
+        85 if mock_status == "GREEN" else 65 if mock_status == "YELLOW" else 35,
+        "Mock ingestion payload shape",
+        "Mock payload includes MVP fields, mapped target registers, quality gate, and safe test instruction.",
+        "Mock status is not RED and failure behavior is documented.",
+        "Missing MVP fields or RED mock payload fails the test.",
+        "Export Mock Ingestion Lab row for system.",
+        no_live,
+        f"/sterile-compounding/mock-ingestion-lab/{system_key}",
+    )
+
+    approval_status = "RED" if approval_red else "YELLOW" if approval_yellow else "GREEN"
+    approval_score = 85 if approval_status == "GREEN" else 60 if approval_status == "YELLOW" else 35
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "04 Approval",
+        "Validate approval readiness",
+        "Approval",
+        "P0",
+        approval_status,
+        approval_score,
+        "Connector approval board",
+        "Business, system owner, QA/governance, security/privacy, data contract, validation boundary, and support approvals are represented.",
+        "No RED approval blocker exists for POC design.",
+        "Any RED approval blocker prevents controlled POC design.",
+        "Export Connector Approval Board filtered for system.",
+        no_live,
+        f"/sterile-compounding/connector-approval-board/{system_key}",
+    )
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "05 Failure Mode",
+        "Confirm safe failure mode",
+        "Risk",
+        "P1",
+        "GREEN" if overall_status == "GREEN" else "YELLOW" if overall_status == "YELLOW" else "RED",
+        80 if overall_status == "GREEN" else 60 if overall_status == "YELLOW" else 35,
+        "Pre-integration risk register and decision matrix",
+        "Missing/stale connector data cannot create false GREEN readiness.",
+        "Failure mode pushes incomplete evidence to YELLOW/RED rather than silent pass.",
+        "Any false GREEN behavior fails the test.",
+        "Export Pre-Integration Risk rows for system.",
+        no_live,
+        f"/sterile-compounding/pre-integration-risk?system={system_key}",
+    )
+
+    sterile_poc_add_test(
+        rows,
+        system_key,
+        system_name,
+        "06 Evidence",
+        "Confirm test evidence capture",
+        "Evidence",
+        "P1",
+        "YELLOW" if overall_status != "RED" else "RED",
+        65 if overall_status != "RED" else 35,
+        "Screenshots/CSV exports from sterile planning pages",
+        "POC evidence can be captured without accessing production data.",
+        "Evidence includes exports of POC plan, data contract, mock ingestion, approval board, and decision matrix.",
+        "If test evidence requires production access, the test fails.",
+        "CSV exports and screenshots from sterile-only routes.",
+        no_live,
+        f"/sterile-compounding/nonprod-poc-plan/{system_key}",
+    )
+
+    return rows
+
+
+@app.route("/sterile-compounding/nonprod-poc-plan")
+def sterile_compounding_nonprod_poc_plan():
+    poc_df, test_df = sterile_poc_build_poc_plan()
+
+    status_filter = sterile_poc_safe(sterile_poc_request.args.get("status", ""))
+    system_filter = sterile_poc_safe(sterile_poc_request.args.get("system", ""))
+
+    filtered = poc_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["poc_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["poc_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["poc_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["poc_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All POC Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(poc_df["system_key"].dropna().unique().tolist()) if not poc_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["poc_status", "poc_score"], ascending=[False, False]).iterrows():
+            system_key = sterile_poc_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_poc_badge(row.get("poc_status", ""))}</td>
+                <td><a href="/sterile-compounding/nonprod-poc-plan/{system_key}">{sterile_poc_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_poc_safe(row.get("poc_stage", ""))}</td>
+                <td>{sterile_poc_safe(row.get("poc_position", ""))}</td>
+                <td>{sterile_poc_safe(row.get("poc_score", ""))}</td>
+                <td>{sterile_poc_safe(row.get("allowed_data", ""))}</td>
+                <td>{sterile_poc_safe(row.get("not_allowed_data", ""))}</td>
+                <td>{sterile_poc_safe(row.get("recommended_next_step", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No non-production POC plan rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Non-Production POC Plan</h1>
+        <p>
+            Sterile-only plan for controlled non-production proof-of-concept work. This does not activate
+            any connector. It defines what is allowed, what is not allowed, entry/exit criteria,
+            success criteria, controls, and abort conditions.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">POC Plans</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Filters</h2>
+        <form method="GET" action="/sterile-compounding/nonprod-poc-plan">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>POC Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/nonprod-poc-plan">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases">Connector Test Cases</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/nonprod-poc-plan/export">Export POC Plan</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Non-Production POC Plan Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Stage</th>
+                        <th>Position</th>
+                        <th>Score</th>
+                        <th>Allowed Data</th>
+                        <th>Not Allowed</th>
+                        <th>Next Step</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "NONPROD-POC-PLAN",
+            "STERILE_NONPROD_POC_PLAN_VIEW",
+            "Sterile non-production POC plan viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/nonprod-poc-plan",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Non-Production POC Plan", body)
+
+
+@app.route("/sterile-compounding/nonprod-poc-plan/<system_key>")
+def sterile_compounding_nonprod_poc_plan_detail(system_key):
+    poc_df, test_df = sterile_poc_build_poc_plan()
+    system_key = sterile_poc_safe(system_key)
+
+    match = poc_df[poc_df["system_key"].astype(str) == str(system_key)].copy() if not poc_df.empty else poc_df
+
+    if match.empty:
+        return sterile_poc_Response("Non-production POC plan not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    system_tests = test_df[test_df["system_key"].astype(str) == str(system_key)].copy() if not test_df.empty else test_df
+
+    detail_rows = ""
+
+    for key in STERILE_NONPROD_POC_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_poc_safe(row.get(key, ""))
+
+        if key == "poc_status":
+            value = sterile_poc_badge(value)
+        elif key == "poc_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    test_rows = ""
+
+    if not system_tests.empty:
+        for _, test in system_tests.sort_values(by=["priority", "test_group"], ascending=[True, True]).iterrows():
+            test_rows += f"""
+            <tr>
+                <td>{sterile_poc_badge(test.get("test_status", ""))}</td>
+                <td>{sterile_poc_safe(test.get("priority", ""))}</td>
+                <td>{sterile_poc_safe(test.get("test_group", ""))}</td>
+                <td>{sterile_poc_safe(test.get("test_name", ""))}</td>
+                <td>{sterile_poc_safe(test.get("expected_result", ""))}</td>
+                <td>{sterile_poc_safe(test.get("pass_criteria", ""))}</td>
+                <td>{sterile_poc_safe(test.get("not_allowed_action", ""))}</td>
+            </tr>
+            """
+    else:
+        test_rows = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+                No connector test cases found for this system.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Non-Production POC Plan: {sterile_poc_safe(row.get("system_name", ""))}</h1>
+        <p>
+            System-level non-production POC plan. This is planning only and does not activate a connector.
+        </p>
+        <div style="margin-top:16px;">{sterile_poc_badge(row.get("poc_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_poc_safe(row.get("poc_position", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Plan Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Test Cases for This System</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>Test Name</th>
+                        <th>Expected Result</th>
+                        <th>Pass Criteria</th>
+                        <th>Not Allowed</th>
+                    </tr>
+                </thead>
+                <tbody>{test_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/nonprod-poc-plan">Back to POC Plan</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases?system={system_key}">Connector Test Cases</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/connector-approval-board/{system_key}">Approval Board</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/implementation-decision-matrix">Decision Matrix</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_NONPROD_POC_DETAIL_VIEW",
+            "Sterile non-production POC detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/nonprod-poc-plan/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Non-Production POC - {system_key}", body)
+
+
+@app.route("/sterile-compounding/connector-test-cases")
+def sterile_compounding_connector_test_cases():
+    poc_df, test_df = sterile_poc_build_poc_plan()
+
+    status_filter = sterile_poc_safe(sterile_poc_request.args.get("status", ""))
+    system_filter = sterile_poc_safe(sterile_poc_request.args.get("system", ""))
+    priority_filter = sterile_poc_safe(sterile_poc_request.args.get("priority", ""))
+
+    filtered = test_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["test_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["test_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["test_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["test_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Test Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(test_df["system_key"].dropna().unique().tolist()) if not test_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["priority", "test_status", "system_key"], ascending=[True, False, True]).iterrows():
+            system_key = sterile_poc_safe(row.get("system_key", ""))
+            route = sterile_poc_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_poc_badge(row.get("test_status", ""))}</td>
+                <td>{sterile_poc_safe(row.get("priority", ""))}</td>
+                <td><a href="/sterile-compounding/nonprod-poc-plan/{system_key}">{sterile_poc_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_poc_safe(row.get("test_group", ""))}</td>
+                <td>{sterile_poc_safe(row.get("test_name", ""))}</td>
+                <td>{sterile_poc_safe(row.get("test_type", ""))}</td>
+                <td>{sterile_poc_safe(row.get("test_score", ""))}</td>
+                <td>{sterile_poc_safe(row.get("expected_result", ""))}</td>
+                <td>{sterile_poc_safe(row.get("pass_criteria", ""))}</td>
+                <td>{sterile_poc_safe(row.get("fail_condition", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No connector test case rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Connector Test Cases</h1>
+        <p>
+            Sterile-only test case matrix for future non-production connector planning. These are governance
+            and mock-readiness tests only; they do not execute external API calls.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Test Cases</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Test Filters</h2>
+        <form method="GET" action="/sterile-compounding/connector-test-cases">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Test Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/nonprod-poc-plan">Non-Production POC Plan</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases/export">Export Test Cases</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Test Case Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>System</th>
+                        <th>Group</th>
+                        <th>Test Name</th>
+                        <th>Type</th>
+                        <th>Score</th>
+                        <th>Expected Result</th>
+                        <th>Pass Criteria</th>
+                        <th>Fail Condition</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONNECTOR-TEST-CASES",
+            "STERILE_CONNECTOR_TEST_CASES_VIEW",
+            "Sterile connector test cases viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/connector-test-cases",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Connector Test Cases", body)
+
+
+@app.route("/sterile-compounding/nonprod-poc-plan/export")
+def sterile_compounding_nonprod_poc_plan_export():
+    poc_df, test_df = sterile_poc_build_poc_plan()
+
+    if poc_df.empty:
+        poc_df = sterile_poc_pd.DataFrame(columns=STERILE_NONPROD_POC_COLUMNS)
+
+    csv_data = poc_df.to_csv(index=False)
+
+    return sterile_poc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_nonprod_poc_plan_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/connector-test-cases/export")
+def sterile_compounding_connector_test_cases_export():
+    poc_df, test_df = sterile_poc_build_poc_plan()
+
+    if test_df.empty:
+        test_df = sterile_poc_pd.DataFrame(columns=STERILE_CONNECTOR_TEST_CASE_COLUMNS)
+
+    csv_data = test_df.to_csv(index=False)
+
+    return sterile_poc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_connector_test_cases_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_nonprod_poc_dashboard_injection(response):
+    try:
+        if sterile_poc_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/connector-approval-board",
+            "/sterile-compounding/implementation-decision-matrix",
+            "/sterile-compounding/mock-ingestion-lab",
+            "/sterile-compounding/pre-integration-risk",
+            "/sterile-compounding/data-contracts",
+            "/sterile-compounding/field-mapping-matrix",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-nonprod-poc-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-nonprod-poc-panel">
+            <h2>Non-Production POC Plan + Connector Test Cases</h2>
+            <p class="st-note">
+                Defines what a future non-production connector POC may test, what data is allowed,
+                what is not allowed, and which test cases must pass before moving forward.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/nonprod-poc-plan">Non-Production POC Plan</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases">Connector Test Cases</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/nonprod-poc-plan/export">Export POC Plan</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/connector-test-cases/export">Export Test Cases</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile non-production POC dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
