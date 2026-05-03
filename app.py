@@ -51928,5 +51928,984 @@ def sterile_compounding_poc_test_execution_dashboard_injection(response):
         print(f"Sterile POC test execution dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POC_RESULTS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 41: POC Results Summary + Evidence Packet Manifest
+#
+# New Routes:
+#   /sterile-compounding/poc-results-summary
+#   /sterile-compounding/poc-results-summary/<system_key>
+#   /sterile-compounding/poc-results-summary/export
+#   /sterile-compounding/poc-evidence-packet
+#   /sterile-compounding/poc-evidence-packet/export
+#
+# New Registers:
+#   sterile_compounding_poc_results_summary.csv
+#   sterile_compounding_poc_evidence_packet_manifest.csv
+#
+# Boundary:
+#   This is a sterile-only non-production POC result summarization layer.
+#   It does not execute tests, call APIs, store credentials, use production
+#   data, connect to ServiceNow, Veeva, Blue Mountain, myAccess, Entra,
+#   Azure, Power BI, ledger services, or modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_pr_pd
+    import json as sterile_pr_json
+    from flask import request as sterile_pr_request
+    from flask import Response as sterile_pr_Response
+except Exception as sterile_pr_import_error:
+    raise RuntimeError(f"Sterile POC results summary import failed: {sterile_pr_import_error}")
+
+
+STERILE_POC_RESULTS_SUMMARY_REGISTER = "sterile_compounding_poc_results_summary.csv"
+STERILE_POC_EVIDENCE_PACKET_REGISTER = "sterile_compounding_poc_evidence_packet_manifest.csv"
+
+STERILE_POC_RESULTS_COLUMNS = [
+    "result_id",
+    "system_key",
+    "system_name",
+    "result_status",
+    "result_score",
+    "total_tests",
+    "p0_tests",
+    "green_tests",
+    "yellow_tests",
+    "red_tests",
+    "required_evidence_items",
+    "green_evidence_items",
+    "yellow_evidence_items",
+    "red_evidence_items",
+    "evidence_gap_count",
+    "p0_blocker_count",
+    "final_poc_position",
+    "result_summary",
+    "recommended_next_step",
+    "not_allowed_actions",
+    "supporting_routes",
+    "last_checked",
+    "result_hash"
+]
+
+STERILE_POC_EVIDENCE_PACKET_COLUMNS = [
+    "packet_id",
+    "system_key",
+    "system_name",
+    "packet_section",
+    "packet_item",
+    "packet_status",
+    "packet_score",
+    "source_register",
+    "source_route",
+    "evidence_type",
+    "required_for_packet",
+    "packet_note",
+    "not_allowed_content",
+    "last_checked",
+    "packet_hash"
+]
+
+
+def sterile_pr_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "sterile_read_register",
+        "STERILE_POC_TEST_EXECUTION_COLUMNS",
+        "STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS",
+        "sterile_te_build_execution_registers",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile POC results dependencies missing: " + ", ".join(missing))
+
+
+def sterile_pr_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_pr_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_pr_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_pr_bucket(value):
+    value = sterile_pr_safe(value).upper()
+
+    if value in ["GREEN", "READY", "PASS", "PASSED", "EXECUTION READY"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "FAIL", "FAILED", "NO-GO", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_pr_badge(status):
+    bucket = sterile_pr_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_pr_build_sources():
+    sterile_pr_require_dependencies()
+
+    try:
+        execution_df, checklist_df = sterile_te_build_execution_registers()
+    except Exception:
+        execution_df = sterile_read_register(
+            "sterile_compounding_poc_test_execution.csv",
+            STERILE_POC_TEST_EXECUTION_COLUMNS
+        )
+        checklist_df = sterile_read_register(
+            "sterile_compounding_poc_evidence_checklist.csv",
+            STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS
+        )
+
+    execution_df = sterile_ensure_cols(execution_df, STERILE_POC_TEST_EXECUTION_COLUMNS)
+    checklist_df = sterile_ensure_cols(checklist_df, STERILE_POC_EVIDENCE_CHECKLIST_COLUMNS)
+
+    return execution_df, checklist_df
+
+
+def sterile_pr_count_status(df, column, status):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return int((df[column].astype(str).apply(sterile_pr_bucket) == status).sum())
+
+
+def sterile_pr_count_exact(df, column, value):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return int((df[column].astype(str) == str(value)).sum())
+
+
+def sterile_pr_system_slice(df, system_key):
+    if df is None or df.empty or "system_key" not in df.columns:
+        return df
+    return df[df["system_key"].astype(str) == str(system_key)].copy()
+
+
+def sterile_pr_supporting_routes(system_key):
+    return "; ".join([
+        f"/sterile-compounding/poc-results-summary/{system_key}",
+        "/sterile-compounding/poc-test-execution",
+        "/sterile-compounding/poc-evidence-checklist",
+        f"/sterile-compounding/nonprod-poc-plan/{system_key}",
+        f"/sterile-compounding/connector-approval-board/{system_key}",
+        f"/sterile-compounding/mock-ingestion-lab/{system_key}",
+        f"/sterile-compounding/data-contracts/{system_key}",
+    ])
+
+
+def sterile_pr_build_results():
+    execution_df, checklist_df = sterile_pr_build_sources()
+
+    result_rows = []
+    packet_rows = []
+
+    if execution_df.empty:
+        empty_results = sterile_pr_pd.DataFrame(columns=STERILE_POC_RESULTS_COLUMNS)
+        empty_packet = sterile_pr_pd.DataFrame(columns=STERILE_POC_EVIDENCE_PACKET_COLUMNS)
+        sterile_write_register(STERILE_POC_RESULTS_SUMMARY_REGISTER, empty_results, STERILE_POC_RESULTS_COLUMNS)
+        sterile_write_register(STERILE_POC_EVIDENCE_PACKET_REGISTER, empty_packet, STERILE_POC_EVIDENCE_PACKET_COLUMNS)
+        return empty_results, empty_packet
+
+    system_keys = sorted(execution_df["system_key"].dropna().astype(str).unique().tolist())
+
+    for system_key in system_keys:
+        system_exec = sterile_pr_system_slice(execution_df, system_key)
+        system_check = sterile_pr_system_slice(checklist_df, system_key)
+
+        system_name = system_key
+        if not system_exec.empty:
+            system_name = sterile_pr_safe(system_exec.iloc[0].get("system_name", system_key))
+
+        total_tests = len(system_exec)
+        p0_tests = sterile_pr_count_exact(system_exec, "priority", "P0")
+        green_tests = sterile_pr_count_status(system_exec, "execution_status", "GREEN")
+        yellow_tests = sterile_pr_count_status(system_exec, "execution_status", "YELLOW")
+        red_tests = sterile_pr_count_status(system_exec, "execution_status", "RED")
+
+        required_evidence = 0
+        if not system_check.empty:
+            required_evidence = int((system_check["required_for_execution"].astype(str) == "YES").sum())
+
+        green_evidence = sterile_pr_count_status(system_check, "evidence_status", "GREEN")
+        yellow_evidence = sterile_pr_count_status(system_check, "evidence_status", "YELLOW")
+        red_evidence = sterile_pr_count_status(system_check, "evidence_status", "RED")
+
+        evidence_gap_count = yellow_evidence + red_evidence
+
+        p0_df = system_exec[system_exec["priority"].astype(str) == "P0"].copy() if not system_exec.empty else system_exec
+        p0_blockers = sterile_pr_count_status(p0_df, "execution_status", "RED")
+
+        avg_exec_score = 0
+        if not system_exec.empty and "execution_score" in system_exec.columns:
+            avg_exec_score = round(sterile_pr_pd.to_numeric(system_exec["execution_score"], errors="coerce").fillna(0).mean(), 1)
+
+        if total_tests:
+            pass_rate = int(round((green_tests / total_tests) * 100, 0))
+        else:
+            pass_rate = 0
+
+        if required_evidence:
+            evidence_rate = int(round((green_evidence / required_evidence) * 100, 0))
+        else:
+            evidence_rate = 0
+
+        result_score = int(round((avg_exec_score * 0.45) + (pass_rate * 0.30) + (evidence_rate * 0.25), 0))
+
+        if red_tests or red_evidence or p0_blockers:
+            result_status = "RED"
+            final_position = "NO-GO FOR POC EXECUTION"
+            recommended_next = "Resolve RED tests, RED evidence items, and P0 blockers before any non-production POC execution."
+        elif yellow_tests or yellow_evidence:
+            result_status = "YELLOW"
+            final_position = "CONDITIONAL: COMPLETE EVIDENCE AND REVIEW BEFORE EXECUTION"
+            recommended_next = "Close YELLOW execution/evidence gaps or document reviewer acceptance before POC review."
+        else:
+            result_status = "GREEN"
+            final_position = "READY FOR MANUAL NON-PRODUCTION POC REVIEW"
+            recommended_next = "Proceed to controlled manual POC review using mock/non-production evidence only."
+
+        not_allowed = (
+            "No production API calls; no credentials; no source-system writeback; no PHI/PII/secrets; "
+            "no protected-module patch; no production automation."
+        )
+
+        summary = (
+            f"{system_name}: status={result_status}; score={result_score}; tests={total_tests}; "
+            f"P0={p0_tests}; GREEN tests={green_tests}; YELLOW tests={yellow_tests}; RED tests={red_tests}; "
+            f"required evidence={required_evidence}; evidence gaps={evidence_gap_count}; P0 blockers={p0_blockers}."
+        )
+
+        result_payload = {
+            "result_id": sterile_pr_make_id("ST-RESULT", system_key, result_status, result_score),
+            "system_key": system_key,
+            "system_name": system_name,
+            "result_status": result_status,
+            "result_score": result_score,
+            "total_tests": total_tests,
+            "p0_tests": p0_tests,
+            "green_tests": green_tests,
+            "yellow_tests": yellow_tests,
+            "red_tests": red_tests,
+            "required_evidence_items": required_evidence,
+            "green_evidence_items": green_evidence,
+            "yellow_evidence_items": yellow_evidence,
+            "red_evidence_items": red_evidence,
+            "evidence_gap_count": evidence_gap_count,
+            "p0_blocker_count": p0_blockers,
+            "final_poc_position": final_position,
+            "result_summary": summary,
+            "recommended_next_step": recommended_next,
+            "not_allowed_actions": not_allowed,
+            "supporting_routes": sterile_pr_supporting_routes(system_key),
+            "last_checked": sterile_now(),
+        }
+
+        result_payload["result_hash"] = sterile_hash_text(
+            sterile_pr_json.dumps(result_payload, sort_keys=True)
+        )
+
+        result_rows.append(result_payload)
+
+        packet_rows.extend(
+            sterile_pr_build_packet_rows(
+                system_key,
+                system_name,
+                result_payload,
+                system_exec,
+                system_check,
+            )
+        )
+
+    results_df = sterile_pr_pd.DataFrame(result_rows)
+    results_df = sterile_ensure_cols(results_df, STERILE_POC_RESULTS_COLUMNS)
+
+    packet_df = sterile_pr_pd.DataFrame(packet_rows)
+    packet_df = sterile_ensure_cols(packet_df, STERILE_POC_EVIDENCE_PACKET_COLUMNS)
+
+    sterile_write_register(STERILE_POC_RESULTS_SUMMARY_REGISTER, results_df, STERILE_POC_RESULTS_COLUMNS)
+    sterile_write_register(STERILE_POC_EVIDENCE_PACKET_REGISTER, packet_df, STERILE_POC_EVIDENCE_PACKET_COLUMNS)
+
+    return results_df, packet_df
+
+
+def sterile_pr_add_packet(rows, system_key, system_name, section, item, status, score, source_register, route, evidence_type, required, note, not_allowed):
+    payload = {
+        "packet_id": sterile_pr_make_id("ST-PACKET", system_key, section, item),
+        "system_key": system_key,
+        "system_name": system_name,
+        "packet_section": section,
+        "packet_item": item,
+        "packet_status": status,
+        "packet_score": score,
+        "source_register": source_register,
+        "source_route": route,
+        "evidence_type": evidence_type,
+        "required_for_packet": required,
+        "packet_note": note,
+        "not_allowed_content": not_allowed,
+        "last_checked": sterile_now(),
+    }
+
+    payload["packet_hash"] = sterile_hash_text(
+        sterile_pr_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_pr_build_packet_rows(system_key, system_name, result_payload, system_exec, system_check):
+    rows = []
+
+    not_allowed = sterile_pr_safe(result_payload.get("not_allowed_actions", ""))
+
+    sterile_pr_add_packet(
+        rows,
+        system_key,
+        system_name,
+        "01 Result Summary",
+        "POC Results Summary",
+        sterile_pr_safe(result_payload.get("result_status", "YELLOW")),
+        sterile_pr_numeric(result_payload.get("result_score", 0), 0),
+        STERILE_POC_RESULTS_SUMMARY_REGISTER,
+        f"/sterile-compounding/poc-results-summary/{system_key}",
+        "Summary Register",
+        "YES",
+        sterile_pr_safe(result_payload.get("result_summary", "")),
+        not_allowed,
+    )
+
+    sterile_pr_add_packet(
+        rows,
+        system_key,
+        system_name,
+        "02 Execution Ledger",
+        "POC Test Execution Ledger",
+        "GREEN" if sterile_pr_count_status(system_exec, "execution_status", "RED") == 0 else "RED",
+        max(0, 100 - (sterile_pr_count_status(system_exec, "execution_status", "RED") * 20) - (sterile_pr_count_status(system_exec, "execution_status", "YELLOW") * 10)),
+        STERILE_POC_TEST_EXECUTION_REGISTER,
+        f"/sterile-compounding/poc-test-execution?system={system_key}",
+        "Execution Register",
+        "YES",
+        "Contains manual non-production test execution readiness, pass/fail criteria, and execution decisions.",
+        not_allowed,
+    )
+
+    sterile_pr_add_packet(
+        rows,
+        system_key,
+        system_name,
+        "03 Evidence Checklist",
+        "POC Evidence Checklist",
+        "GREEN" if sterile_pr_count_status(system_check, "evidence_status", "RED") == 0 and sterile_pr_count_status(system_check, "evidence_status", "YELLOW") == 0 else "YELLOW" if sterile_pr_count_status(system_check, "evidence_status", "RED") == 0 else "RED",
+        max(0, 100 - (sterile_pr_count_status(system_check, "evidence_status", "RED") * 15) - (sterile_pr_count_status(system_check, "evidence_status", "YELLOW") * 8)),
+        STERILE_POC_EVIDENCE_CHECKLIST_REGISTER,
+        f"/sterile-compounding/poc-evidence-checklist?system={system_key}",
+        "Evidence Checklist",
+        "YES",
+        "Contains screenshots, CSV exports, boundary confirmations, and system-specific evidence expectations.",
+        not_allowed,
+    )
+
+    sterile_pr_add_packet(
+        rows,
+        system_key,
+        system_name,
+        "04 Non-Production Boundary",
+        "Boundary and Not-Allowed Statement",
+        "GREEN",
+        100,
+        "sterile_compounding_nonprod_poc_plan.csv",
+        f"/sterile-compounding/nonprod-poc-plan/{system_key}",
+        "Governance Statement",
+        "YES",
+        "Confirms mock/non-production-only boundary and prohibits production connection, credentials, writeback, and protected-module changes.",
+        not_allowed,
+    )
+
+    sterile_pr_add_packet(
+        rows,
+        system_key,
+        system_name,
+        "05 Approval Trace",
+        "Connector Approval and Decision Trace",
+        "YELLOW" if sterile_pr_safe(result_payload.get("result_status", "")) != "RED" else "RED",
+        70 if sterile_pr_safe(result_payload.get("result_status", "")) != "RED" else 40,
+        "sterile_compounding_connector_approval_board.csv",
+        f"/sterile-compounding/connector-approval-board/{system_key}",
+        "Approval Planning Record",
+        "YES",
+        "Shows approval readiness, implementation position, and not-allowed actions before any real connector work.",
+        not_allowed,
+    )
+
+    if system_check is not None and not system_check.empty:
+        for _, evidence in system_check.iterrows():
+            evidence_item = sterile_pr_safe(evidence.get("evidence_item", "Evidence Item"))
+            evidence_status = sterile_pr_bucket(evidence.get("evidence_status", "YELLOW"))
+            evidence_route = sterile_pr_safe(evidence.get("evidence_route", ""))
+
+            sterile_pr_add_packet(
+                rows,
+                system_key,
+                system_name,
+                "06 Evidence Item Detail",
+                evidence_item,
+                evidence_status,
+                90 if evidence_status == "GREEN" else 60 if evidence_status == "YELLOW" else 30,
+                STERILE_POC_EVIDENCE_CHECKLIST_REGISTER,
+                evidence_route,
+                sterile_pr_safe(evidence.get("evidence_type", "")),
+                sterile_pr_safe(evidence.get("required_for_execution", "YES")),
+                sterile_pr_safe(evidence.get("capture_instruction", "")),
+                sterile_pr_safe(evidence.get("not_allowed_content", not_allowed)),
+            )
+
+    return rows
+
+
+@app.route("/sterile-compounding/poc-results-summary")
+def sterile_compounding_poc_results_summary():
+    results_df, packet_df = sterile_pr_build_results()
+
+    status_filter = sterile_pr_safe(sterile_pr_request.args.get("status", ""))
+    system_filter = sterile_pr_safe(sterile_pr_request.args.get("system", ""))
+
+    filtered = results_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["result_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["result_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["result_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["result_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Result Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(results_df["system_key"].dropna().unique().tolist()) if not results_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["result_status", "result_score"], ascending=[False, False]).iterrows():
+            system_key = sterile_pr_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pr_badge(row.get("result_status", ""))}</td>
+                <td><a href="/sterile-compounding/poc-results-summary/{system_key}">{sterile_pr_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_pr_safe(row.get("result_score", ""))}</td>
+                <td>{sterile_pr_safe(row.get("total_tests", ""))}</td>
+                <td>{sterile_pr_safe(row.get("p0_tests", ""))}</td>
+                <td>{sterile_pr_safe(row.get("green_tests", ""))}</td>
+                <td>{sterile_pr_safe(row.get("yellow_tests", ""))}</td>
+                <td>{sterile_pr_safe(row.get("red_tests", ""))}</td>
+                <td>{sterile_pr_safe(row.get("evidence_gap_count", ""))}</td>
+                <td>{sterile_pr_safe(row.get("p0_blocker_count", ""))}</td>
+                <td>{sterile_pr_safe(row.get("final_poc_position", ""))}</td>
+                <td>{sterile_pr_safe(row.get("recommended_next_step", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No POC result rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Results Summary</h1>
+        <p>
+            System-level summary of non-production connector POC readiness. This consolidates execution readiness,
+            evidence gaps, P0 blockers, final position, and recommended next step.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Systems</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Result Filters</h2>
+        <form method="GET" action="/sterile-compounding/poc-results-summary">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Result Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet">Evidence Packet Manifest</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary/export">Export Results</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Results Summary Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Score</th>
+                        <th>Total Tests</th>
+                        <th>P0</th>
+                        <th>GREEN Tests</th>
+                        <th>YELLOW Tests</th>
+                        <th>RED Tests</th>
+                        <th>Evidence Gaps</th>
+                        <th>P0 Blockers</th>
+                        <th>Position</th>
+                        <th>Next Step</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POC-RESULTS-SUMMARY",
+            "STERILE_POC_RESULTS_SUMMARY_VIEW",
+            "Sterile POC results summary viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/poc-results-summary",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("POC Results Summary", body)
+
+
+@app.route("/sterile-compounding/poc-results-summary/<system_key>")
+def sterile_compounding_poc_results_summary_detail(system_key):
+    results_df, packet_df = sterile_pr_build_results()
+    system_key = sterile_pr_safe(system_key)
+
+    match = results_df[results_df["system_key"].astype(str) == str(system_key)].copy() if not results_df.empty else results_df
+
+    if match.empty:
+        return sterile_pr_Response("POC results summary not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    system_packet = packet_df[packet_df["system_key"].astype(str) == str(system_key)].copy() if not packet_df.empty else packet_df
+
+    detail_rows = ""
+
+    for key in STERILE_POC_RESULTS_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_pr_safe(row.get(key, ""))
+
+        if key == "result_status":
+            value = sterile_pr_badge(value)
+        elif key == "result_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    packet_rows = ""
+
+    if not system_packet.empty:
+        for _, packet in system_packet.sort_values(by=["packet_section", "packet_item"]).iterrows():
+            route = sterile_pr_safe(packet.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            packet_rows += f"""
+            <tr>
+                <td>{sterile_pr_badge(packet.get("packet_status", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("packet_section", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("packet_item", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("packet_score", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("evidence_type", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("required_for_packet", ""))}</td>
+                <td>{sterile_pr_safe(packet.get("packet_note", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        packet_rows = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No evidence packet rows found for this system.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Results: {sterile_pr_safe(row.get("system_name", ""))}</h1>
+        <p>
+            System-level POC result detail and evidence packet manifest.
+        </p>
+        <div style="margin-top:16px;">{sterile_pr_badge(row.get("result_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_pr_safe(row.get("final_poc_position", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Result Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Packet Manifest for This System</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Section</th>
+                        <th>Packet Item</th>
+                        <th>Score</th>
+                        <th>Evidence Type</th>
+                        <th>Required</th>
+                        <th>Note</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{packet_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/poc-results-summary">Back to Results Summary</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet?system={system_key}">Evidence Packet Manifest</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/poc-test-execution?system={system_key}">POC Test Execution</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-checklist?system={system_key}">Evidence Checklist</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_POC_RESULTS_DETAIL_VIEW",
+            "Sterile POC results detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/poc-results-summary/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"POC Results - {system_key}", body)
+
+
+@app.route("/sterile-compounding/poc-evidence-packet")
+def sterile_compounding_poc_evidence_packet():
+    results_df, packet_df = sterile_pr_build_results()
+
+    status_filter = sterile_pr_safe(sterile_pr_request.args.get("status", ""))
+    system_filter = sterile_pr_safe(sterile_pr_request.args.get("system", ""))
+    required_filter = sterile_pr_safe(sterile_pr_request.args.get("required", ""))
+
+    filtered = packet_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["packet_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    if required_filter and not filtered.empty:
+        filtered = filtered[filtered["required_for_packet"].astype(str) == required_filter]
+
+    total = len(filtered)
+    green = int((filtered["packet_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["packet_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["packet_status"] == "RED").sum()) if total else 0
+    required = int((filtered["required_for_packet"] == "YES").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Packet Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(packet_df["system_key"].dropna().unique().tolist()) if not packet_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    required_options = ""
+    for option in ["", "YES", "NO"]:
+        label = "All Required Flags" if option == "" else option
+        selected = "selected" if option == required_filter else ""
+        required_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["required_for_packet", "packet_status", "system_key"], ascending=[False, False, True]).iterrows():
+            system_key = sterile_pr_safe(row.get("system_key", ""))
+            route = sterile_pr_safe(row.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pr_badge(row.get("packet_status", ""))}</td>
+                <td><a href="/sterile-compounding/poc-results-summary/{system_key}">{sterile_pr_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_pr_safe(row.get("packet_section", ""))}</td>
+                <td>{sterile_pr_safe(row.get("packet_item", ""))}</td>
+                <td>{sterile_pr_safe(row.get("packet_score", ""))}</td>
+                <td>{sterile_pr_safe(row.get("evidence_type", ""))}</td>
+                <td>{sterile_pr_safe(row.get("required_for_packet", ""))}</td>
+                <td>{sterile_pr_safe(row.get("packet_note", ""))}</td>
+                <td>{sterile_pr_safe(row.get("not_allowed_content", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No POC evidence packet rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>POC Evidence Packet Manifest</h1>
+        <p>
+            Packet manifest for non-production connector POC evidence. This organizes the result summary,
+            execution ledger, evidence checklist, approval trace, non-production boundary, and item-level evidence.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Packet Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Required</div><div class="st-value">{required}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Packet Filters</h2>
+        <form method="GET" action="/sterile-compounding/poc-evidence-packet">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Packet Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Required</label>
+                    <select name="required">{required_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary">POC Results Summary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet/export">Export Packet Manifest</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>POC Evidence Packet Manifest Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Section</th>
+                        <th>Packet Item</th>
+                        <th>Score</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Note</th>
+                        <th>Not Allowed</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POC-EVIDENCE-PACKET",
+            "STERILE_POC_EVIDENCE_PACKET_VIEW",
+            "Sterile POC evidence packet manifest viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/poc-evidence-packet",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("POC Evidence Packet Manifest", body)
+
+
+@app.route("/sterile-compounding/poc-results-summary/export")
+def sterile_compounding_poc_results_summary_export():
+    results_df, packet_df = sterile_pr_build_results()
+
+    if results_df.empty:
+        results_df = sterile_pr_pd.DataFrame(columns=STERILE_POC_RESULTS_COLUMNS)
+
+    csv_data = results_df.to_csv(index=False)
+
+    return sterile_pr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_poc_results_summary_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/poc-evidence-packet/export")
+def sterile_compounding_poc_evidence_packet_export():
+    results_df, packet_df = sterile_pr_build_results()
+
+    if packet_df.empty:
+        packet_df = sterile_pr_pd.DataFrame(columns=STERILE_POC_EVIDENCE_PACKET_COLUMNS)
+
+    csv_data = packet_df.to_csv(index=False)
+
+    return sterile_pr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_poc_evidence_packet_manifest_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_poc_results_dashboard_injection(response):
+    try:
+        if sterile_pr_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/poc-test-execution",
+            "/sterile-compounding/poc-evidence-checklist",
+            "/sterile-compounding/nonprod-poc-plan",
+            "/sterile-compounding/connector-test-cases",
+            "/sterile-compounding/connector-approval-board",
+            "/sterile-compounding/implementation-decision-matrix",
+            "/sterile-compounding/mock-ingestion-lab",
+            "/sterile-compounding/pre-integration-risk",
+            "/sterile-compounding/data-contracts",
+            "/sterile-compounding/field-mapping-matrix",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-poc-results-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-poc-results-panel">
+            <h2>POC Results Summary + Evidence Packet Manifest</h2>
+            <p class="st-note">
+                Consolidates non-production POC execution readiness, evidence gaps, P0 blockers,
+                final POC position, and packet manifest. No external system is called.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/poc-results-summary">POC Results Summary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet">Evidence Packet Manifest</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary/export">Export Results</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/poc-evidence-packet/export">Export Packet Manifest</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile POC results dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
