@@ -17128,5 +17128,435 @@ def sterile_compounding_sample():
 
     return sterile_redirect("/sterile-compounding")
 
+
+# ============================================================
+# STERILE_COMPOUNDING_NAV_HEALTH_ACTIVE
+# Phase 2: Sterile Compounding integration into:
+#   /command-center
+#   /monday-demo
+#   /release-notes
+#   /platform-health
+#
+# Safety:
+#   - Does not overwrite existing routes
+#   - Does not edit ServiceNow, Entra, CI Candidate Factory,
+#     CI Review Board, CI Submission Pack, Knowledge Governance,
+#     Operational Lineage, Release Notes, Monday Demo, Platform Health,
+#     or Manufacturing/Wole route code directly
+#   - Uses response injection only for the requested existing pages
+# ============================================================
+
+try:
+    from flask import request as sterile_nav_request
+except Exception as sterile_nav_import_error:
+    raise RuntimeError(f"Sterile nav/health integration import failed: {sterile_nav_import_error}")
+
+
+def sterile_nav_escape(value):
+    try:
+        return sterile_clean(value)
+    except Exception:
+        return str(value or "").strip()
+
+
+def sterile_nav_register_count(filename, columns=None):
+    try:
+        reader = globals().get("sterile_read_register")
+        if callable(reader) and columns:
+            df = reader(filename, columns)
+            return len(df) if df is not None else 0
+    except Exception:
+        pass
+
+    try:
+        import os
+        import pandas as pd
+
+        if os.path.exists(filename):
+            return len(pd.read_csv(filename))
+    except Exception:
+        pass
+
+    return 0
+
+
+def sterile_nav_css():
+    return """
+    <style id="sterile-compounding-nav-health-css">
+        .sterile-integration-panel {
+            margin: 24px auto;
+            max-width: 1400px;
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+            padding: 22px;
+            font-family: Arial, sans-serif;
+            color: #111827;
+        }
+        .sterile-integration-panel h2 {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+            color: #0f172a;
+        }
+        .sterile-integration-panel p {
+            margin: 0 0 14px 0;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        .sterile-integration-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .sterile-integration-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+        .sterile-integration-card .label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+        .sterile-integration-card .value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+        }
+        .sterile-link-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .sterile-link-row a {
+            display: inline-block;
+            background: #1d4ed8;
+            color: #ffffff !important;
+            padding: 10px 13px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .sterile-link-row a.dark {
+            background: #111827;
+        }
+        .sterile-link-row a.red {
+            background: #991b1b;
+        }
+        .sterile-mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 13px;
+        }
+        .sterile-mini-table th {
+            background: #111827;
+            color: #ffffff;
+            text-align: left;
+            padding: 9px;
+        }
+        .sterile-mini-table td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 9px;
+            vertical-align: top;
+        }
+        .sterile-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1e3a8a;
+            font-weight: 800;
+            font-size: 11px;
+        }
+    </style>
+    """
+
+
+def sterile_nav_links():
+    return """
+    <div class="sterile-link-row">
+        <a href="/sterile-compounding">Open Sterile Compounding</a>
+        <a class="dark" href="/sterile-compounding/sample">Load Sample Data</a>
+        <a class="dark" href="/sterile-compounding/review">Review Board</a>
+        <a class="dark" href="/sterile-compounding/blast-radius">Blast Radius</a>
+        <a class="dark" href="/sterile-compounding/audit-lineage">Audit Lineage</a>
+        <a class="dark" href="/sterile-compounding/export">Export Register</a>
+    </div>
+    """
+
+
+def sterile_command_center_panel():
+    return sterile_nav_css() + f"""
+    <section class="sterile-integration-panel" id="sterile-compounding-command-center-panel">
+        <span class="sterile-tag">NEW VERTICAL</span>
+        <h2>Compound Sterile AssuranceLayer™</h2>
+        <p>
+            Governance layer for sterile compounding readiness: CSP evidence twin, release-readiness scoring,
+            personnel/equipment/environment checks, review board, blast-radius analysis, audit lineage, and scored export.
+            This does not replace pharmacy, QMS, ServiceNow, Blue Mountain, Veeva, or existing validated systems.
+        </p>
+        {sterile_nav_links()}
+    </section>
+    """
+
+
+def sterile_monday_demo_panel():
+    return sterile_nav_css() + f"""
+    <section class="sterile-integration-panel" id="sterile-compounding-monday-demo-panel">
+        <span class="sterile-tag">DEMO STEP</span>
+        <h2>Demo Add-On: Compound Sterile AssuranceLayer™</h2>
+        <p>
+            Optional demo sequence after the core CI/ServiceNow/Knowledge flow:
+            show CSP dashboard → load sample data → open CSP-001 passport → open CSP-003 blast radius →
+            show audit lineage. The message is that AssuranceLayer™ proves whether a sterile compounding record
+            is evidence-complete, control-aligned, and audit-ready before release.
+        </p>
+        <table class="sterile-mini-table">
+            <thead>
+                <tr>
+                    <th>Step</th>
+                    <th>Route</th>
+                    <th>Show</th>
+                    <th>Talking Point</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>/sterile-compounding</td>
+                    <td>CSP readiness dashboard</td>
+                    <td>GREEN/YELLOW/RED governance release readiness.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>/sterile-compounding/sample</td>
+                    <td>Sample CSP records</td>
+                    <td>Three demo states: ready, review, blocked.</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>/sterile-compounding/passport/CSP-001</td>
+                    <td>Evidence Twin</td>
+                    <td>Single control-to-evidence view for one CSP.</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>/sterile-compounding/blast-radius?record_id=CSP-003</td>
+                    <td>Impact analysis</td>
+                    <td>Shows linked CSPs affected by equipment, EM, SOP, lot, or personnel issues.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>/sterile-compounding/audit-lineage</td>
+                    <td>Lineage register</td>
+                    <td>Shows tamper-aware audit replay events.</td>
+                </tr>
+            </tbody>
+        </table>
+        {sterile_nav_links()}
+    </section>
+    """
+
+
+def sterile_release_notes_panel():
+    return sterile_nav_css() + f"""
+    <section class="sterile-integration-panel" id="sterile-compounding-release-notes-panel">
+        <span class="sterile-tag">RELEASE NOTE</span>
+        <h2>Added: Compound Sterile AssuranceLayer™ Phase 1</h2>
+        <p>
+            Added a self-contained sterile compounding governance vertical with CSP Release Readiness,
+            Evidence Twin passport, Review Board, Contamination Blast-Radius view, Audit Lineage,
+            CSV export, and sample data. This is demo-safe and non-invasive.
+        </p>
+        <table class="sterile-mini-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Status</th>
+                    <th>Route / Register</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Main Dashboard</td>
+                    <td>Live</td>
+                    <td>/sterile-compounding</td>
+                </tr>
+                <tr>
+                    <td>CSP Passport</td>
+                    <td>Live</td>
+                    <td>/sterile-compounding/passport/&lt;record_id&gt;</td>
+                </tr>
+                <tr>
+                    <td>Review Board</td>
+                    <td>Live</td>
+                    <td>/sterile-compounding/review</td>
+                </tr>
+                <tr>
+                    <td>Blast Radius</td>
+                    <td>Live</td>
+                    <td>/sterile-compounding/blast-radius</td>
+                </tr>
+                <tr>
+                    <td>Audit Lineage</td>
+                    <td>Live</td>
+                    <td>/sterile-compounding/audit-lineage</td>
+                </tr>
+                <tr>
+                    <td>Registers</td>
+                    <td>Live</td>
+                    <td>sterile_compounding_register.csv, sterile_compounding_review_register.csv, sterile_compounding_lineage_register.csv</td>
+                </tr>
+            </tbody>
+        </table>
+        {sterile_nav_links()}
+    </section>
+    """
+
+
+def sterile_platform_health_panel():
+    record_count = sterile_nav_register_count(
+        "sterile_compounding_register.csv",
+        globals().get("STERILE_COMPOUNDING_COLUMNS")
+    )
+    review_count = sterile_nav_register_count(
+        "sterile_compounding_review_register.csv",
+        globals().get("STERILE_REVIEW_COLUMNS")
+    )
+    lineage_count = sterile_nav_register_count(
+        "sterile_compounding_lineage_register.csv",
+        globals().get("STERILE_LINEAGE_COLUMNS")
+    )
+
+    return sterile_nav_css() + f"""
+    <section class="sterile-integration-panel" id="sterile-compounding-platform-health-panel">
+        <span class="sterile-tag">REGISTER HEALTH</span>
+        <h2>Compound Sterile AssuranceLayer™ Register Health</h2>
+        <p>
+            Health view for the sterile compounding vertical. These registers are isolated from ServiceNow,
+            Entra, CI Candidate Factory, Knowledge Governance, Operational Lineage, Monday Demo, Release Notes,
+            and the Manufacturing/Wole homepage.
+        </p>
+        <div class="sterile-integration-grid">
+            <div class="sterile-integration-card">
+                <div class="label">CSP Register Rows</div>
+                <div class="value">{record_count}</div>
+            </div>
+            <div class="sterile-integration-card">
+                <div class="label">Review Rows</div>
+                <div class="value">{review_count}</div>
+            </div>
+            <div class="sterile-integration-card">
+                <div class="label">Lineage Rows</div>
+                <div class="value">{lineage_count}</div>
+            </div>
+            <div class="sterile-integration-card">
+                <div class="label">Vertical Marker</div>
+                <div class="value" style="font-size:16px;">ACTIVE</div>
+            </div>
+        </div>
+        <table class="sterile-mini-table">
+            <thead>
+                <tr>
+                    <th>Register</th>
+                    <th>Purpose</th>
+                    <th>Rows</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>sterile_compounding_register.csv</td>
+                    <td>CSP readiness, evidence twin, release decision, score, hash, lineage ID</td>
+                    <td>{record_count}</td>
+                </tr>
+                <tr>
+                    <td>sterile_compounding_review_register.csv</td>
+                    <td>Supervisor/pharmacist/QA-style governance review events</td>
+                    <td>{review_count}</td>
+                </tr>
+                <tr>
+                    <td>sterile_compounding_lineage_register.csv</td>
+                    <td>Upload, passport, review, blast-radius, and audit replay lineage events</td>
+                    <td>{lineage_count}</td>
+                </tr>
+            </tbody>
+        </table>
+        {sterile_nav_links()}
+    </section>
+    """
+
+
+def sterile_insert_before_body(html, panel):
+    if 'id="sterile-compounding-command-center-panel"' in html:
+        return html
+    if 'id="sterile-compounding-monday-demo-panel"' in html:
+        return html
+    if 'id="sterile-compounding-release-notes-panel"' in html:
+        return html
+    if 'id="sterile-compounding-platform-health-panel"' in html:
+        return html
+
+    lower_html = html.lower()
+
+    if "</body>" in lower_html:
+        index = lower_html.rfind("</body>")
+        return html[:index] + panel + html[index:]
+
+    return html + panel
+
+
+@app.after_request
+def sterile_compounding_nav_health_injection(response):
+    try:
+        path = sterile_nav_request.path
+
+        if path not in ["/command-center", "/monday-demo", "/release-notes", "/platform-health"]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html:
+            return response
+
+        if path == "/command-center":
+            panel = sterile_command_center_panel()
+        elif path == "/monday-demo":
+            panel = sterile_monday_demo_panel()
+        elif path == "/release-notes":
+            panel = sterile_release_notes_panel()
+        elif path == "/platform-health":
+            panel = sterile_platform_health_panel()
+        else:
+            return response
+
+        updated_html = sterile_insert_before_body(html, panel)
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+
+        return response
+
+    except Exception as exc:
+        print(f"Sterile compounding nav/health injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
