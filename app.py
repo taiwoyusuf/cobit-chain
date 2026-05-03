@@ -19130,5 +19130,1114 @@ def sterile_compounding_trust_passports_dashboard_injection(response):
         print(f"Sterile trust passport dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INSPECTOR_DEVIATION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 5: AI Inspector Mode + Deviation Auto-Assembler
+#
+# New Routes:
+#   /sterile-compounding/inspector-mode
+#   /sterile-compounding/inspector-mode/export
+#   /sterile-compounding/deviation-assembler
+#   /sterile-compounding/deviation-pack/<record_id>
+#   /sterile-compounding/deviation-pack/export
+#
+# New Register:
+#   sterile_compounding_deviation_pack_register.csv
+#
+# Boundary:
+#   This module derives inspector-style findings and deviation-ready packs
+#   from the sterile compounding register. It does not replace QA,
+#   pharmacy disposition, QMS deviation ownership, or validated systems.
+# ============================================================
+
+try:
+    import pandas as sterile_inspector_pd
+    import json as sterile_inspector_json
+    from flask import request as sterile_inspector_request
+    from flask import Response as sterile_inspector_Response
+except Exception as sterile_inspector_import_error:
+    raise RuntimeError(f"Sterile inspector/deviation import failed: {sterile_inspector_import_error}")
+
+
+STERILE_DEVIATION_PACK_REGISTER = "sterile_compounding_deviation_pack_register.csv"
+
+STERILE_DEVIATION_PACK_COLUMNS = [
+    "pack_id",
+    "record_id",
+    "pack_status",
+    "reason_code",
+    "event_summary",
+    "affected_csp_count",
+    "affected_records",
+    "equipment_or_room_id",
+    "technician_id",
+    "ingredient_lot",
+    "sop_version",
+    "governance_status",
+    "readiness_score",
+    "critical_issues",
+    "warnings",
+    "recommended_action",
+    "created_at",
+    "pack_hash"
+]
+
+STERILE_INSPECTOR_FINDING_COLUMNS = [
+    "finding_id",
+    "record_id",
+    "inspector_query",
+    "finding_domain",
+    "severity",
+    "finding_status",
+    "evidence_field",
+    "evidence_value",
+    "finding_summary",
+    "recommended_action"
+]
+
+
+def sterile_inspector_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_inspector_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_inspector_lower(row, field):
+    return sterile_inspector_safe(row.get(field, "")).lower()
+
+
+def sterile_inspector_make_finding_id(record_id, domain, field, summary):
+    raw = f"{record_id}|{domain}|{field}|{summary}"
+    return "ST-FIND-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_inspector_add_finding(findings, row, query, domain, severity, status, field, summary, action):
+    record_id = sterile_inspector_safe(row.get("record_id", ""))
+    evidence_value = sterile_inspector_safe(row.get(field, ""))
+
+    findings.append({
+        "finding_id": sterile_inspector_make_finding_id(record_id, domain, field, summary),
+        "record_id": record_id,
+        "inspector_query": query,
+        "finding_domain": domain,
+        "severity": severity,
+        "finding_status": status,
+        "evidence_field": field,
+        "evidence_value": evidence_value,
+        "finding_summary": summary,
+        "recommended_action": action,
+    })
+
+
+def sterile_inspector_findings_for_row(row):
+    findings = []
+
+    governance_status = sterile_inspector_lower(row, "governance_status")
+    release_decision = sterile_inspector_lower(row, "release_decision")
+    equipment_status = sterile_inspector_lower(row, "equipment_status")
+    personnel_qualified = sterile_inspector_lower(row, "personnel_qualified")
+    coa_attached = sterile_inspector_lower(row, "coa_attached")
+    environmental_status = sterile_inspector_lower(row, "environmental_status")
+    deviation_open = sterile_inspector_lower(row, "deviation_open")
+    approval_status = sterile_inspector_lower(row, "approval_status")
+    supplier_approved = sterile_inspector_lower(row, "supplier_approved")
+    ingredient_expiry_status = sterile_inspector_lower(row, "ingredient_expiry_status")
+    storage_condition_status = sterile_inspector_lower(row, "storage_condition_status")
+    cleaning_log_status = sterile_inspector_lower(row, "cleaning_log_status")
+    em_log_reviewed = sterile_inspector_lower(row, "em_log_reviewed")
+    pharmacist_verification = sterile_inspector_lower(row, "pharmacist_verification")
+    qa_review_status = sterile_inspector_lower(row, "qa_review_status")
+    hazardous_drug = sterile_inspector_lower(row, "hazardous_drug")
+    facility_type = sterile_inspector_lower(row, "facility_type")
+
+    if governance_status == "red" or "block" in release_decision:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs blocked from release.",
+            "Release Governance",
+            "CRITICAL",
+            "FINDING",
+            "governance_status",
+            "CSP is blocked or RED from a governance readiness standpoint.",
+            "Create deviation/QA review pack before any release decision."
+        )
+
+    if equipment_status in ["expired", "fail", "failed", "not current"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs linked to expired or failed equipment.",
+            "Equipment / Room Readiness",
+            "CRITICAL",
+            "FINDING",
+            "equipment_status",
+            "Equipment, hood, room, or certification status is expired or failed.",
+            "Hold record for equipment/room readiness investigation."
+        )
+    elif equipment_status in ["due", "near due", "review", "pending", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs linked to equipment due for review.",
+            "Equipment / Room Readiness",
+            "HIGH",
+            "REVIEW",
+            "equipment_status",
+            "Equipment, hood, room, or certification status requires review.",
+            "Verify equipment/room evidence before release readiness is accepted."
+        )
+
+    if personnel_qualified in ["no", "false", "expired", "not qualified", "fail", "failed"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs prepared by personnel with qualification gaps.",
+            "Personnel Qualification",
+            "CRITICAL",
+            "FINDING",
+            "personnel_qualified",
+            "Assigned personnel qualification is missing, expired, or failed.",
+            "Route to supervisor/pharmacist/QA review and verify training/authorization evidence."
+        )
+    elif personnel_qualified in ["review", "pending", "due", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs where personnel qualification needs review.",
+            "Personnel Qualification",
+            "HIGH",
+            "REVIEW",
+            "personnel_qualified",
+            "Personnel qualification is pending, due, or missing.",
+            "Confirm personnel qualification before release readiness is accepted."
+        )
+
+    if coa_attached in ["no", "false", "missing", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with missing COA evidence.",
+            "COA / Ingredient Evidence",
+            "HIGH",
+            "FINDING",
+            "coa_attached",
+            "COA evidence is missing or not attached.",
+            "Attach or verify COA evidence and ingredient lineage."
+        )
+
+    if environmental_status in ["fail", "failed", "red", "excursion", "out of limit", "out of range"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs compounded during environmental failures or excursions.",
+            "Environmental Monitoring",
+            "CRITICAL",
+            "FINDING",
+            "environmental_status",
+            "Environmental monitoring failed or indicates an excursion.",
+            "Run blast-radius analysis and assemble deviation pack."
+        )
+    elif environmental_status in ["alert", "warning", "yellow", "review", "pending", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs compounded during environmental alert periods.",
+            "Environmental Monitoring",
+            "HIGH",
+            "REVIEW",
+            "environmental_status",
+            "Environmental monitoring status is alert, warning, pending, or review.",
+            "Review environmental evidence before release readiness is accepted."
+        )
+
+    if deviation_open in ["yes", "true", "open", "critical"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with open deviations.",
+            "Deviation / CAPA",
+            "CRITICAL",
+            "FINDING",
+            "deviation_open",
+            "Open deviation exists for this CSP record.",
+            "Do not treat as release-ready until deviation disposition is reviewed."
+        )
+
+    if approval_status in ["rejected", "not approved", "denied"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with rejected or missing approval.",
+            "Approval Governance",
+            "CRITICAL",
+            "FINDING",
+            "approval_status",
+            "Approval status is rejected, denied, or not approved.",
+            "Escalate for formal review and disposition."
+        )
+    elif approval_status in ["pending", "review", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs pending approval.",
+            "Approval Governance",
+            "HIGH",
+            "REVIEW",
+            "approval_status",
+            "Approval is pending or missing.",
+            "Obtain required approval evidence before release readiness."
+        )
+
+    if supplier_approved in ["no", "false", "not approved", "rejected"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs linked to non-approved suppliers.",
+            "Supplier Governance",
+            "HIGH",
+            "FINDING",
+            "supplier_approved",
+            "Supplier approval is negative or rejected.",
+            "Verify supplier approval and route for QA/pharmacy review."
+        )
+
+    if ingredient_expiry_status in ["expired", "fail", "failed"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with ingredient expiry failures.",
+            "Ingredient Expiry",
+            "CRITICAL",
+            "FINDING",
+            "ingredient_expiry_status",
+            "Ingredient expiry status is expired or failed.",
+            "Block release readiness and assemble deviation pack."
+        )
+
+    if storage_condition_status in ["fail", "failed", "excursion", "out of range", "out of limit"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with storage condition failures.",
+            "Storage Conditions",
+            "HIGH",
+            "FINDING",
+            "storage_condition_status",
+            "Storage condition failure or excursion is present.",
+            "Review storage evidence and impact on linked CSPs."
+        )
+
+    if cleaning_log_status in ["missing", "incomplete", "fail", "failed", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with missing or failed cleaning evidence.",
+            "Cleaning / Disinfection Evidence",
+            "HIGH",
+            "FINDING",
+            "cleaning_log_status",
+            "Cleaning log evidence is missing, incomplete, or failed.",
+            "Review cleaning evidence before release readiness is accepted."
+        )
+
+    if em_log_reviewed in ["no", "false", "missing", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs without EM review evidence.",
+            "Environmental Monitoring Review",
+            "HIGH",
+            "FINDING",
+            "em_log_reviewed",
+            "Environmental monitoring review is missing or negative.",
+            "Complete EM review before release readiness."
+        )
+
+    if pharmacist_verification in ["no", "false", "missing", "rejected", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs without pharmacist verification.",
+            "Pharmacist Verification",
+            "CRITICAL",
+            "FINDING",
+            "pharmacist_verification",
+            "Pharmacist verification is missing, negative, or rejected.",
+            "Block governance release readiness until verification is resolved."
+        )
+    elif pharmacist_verification in ["pending", "review"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs pending pharmacist verification.",
+            "Pharmacist Verification",
+            "HIGH",
+            "REVIEW",
+            "pharmacist_verification",
+            "Pharmacist verification is pending or under review.",
+            "Complete verification before release readiness."
+        )
+
+    if qa_review_status in ["rejected", "failed", "fail"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs with failed QA review.",
+            "QA Review",
+            "CRITICAL",
+            "FINDING",
+            "qa_review_status",
+            "QA review failed or was rejected.",
+            "Escalate for QA disposition and evidence pack review."
+        )
+    elif qa_review_status in ["pending", "review", ""]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs pending QA review.",
+            "QA Review",
+            "MEDIUM",
+            "REVIEW",
+            "qa_review_status",
+            "QA review is pending, review, missing, or not yet documented.",
+            "Confirm whether QA review is required for this record."
+        )
+
+    if hazardous_drug in ["yes", "true", "hazardous"]:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all hazardous-drug CSPs requiring added evidence review.",
+            "Hazardous Drug Governance",
+            "HIGH",
+            "REVIEW",
+            "hazardous_drug",
+            "Hazardous drug flag is present.",
+            "Review additional hazardous-drug handling evidence requirements."
+        )
+
+    if "503b" in facility_type or "outsourcing" in facility_type:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all 503B / outsourcing facility records.",
+            "503B Governance Mode",
+            "HIGH",
+            "REVIEW",
+            "facility_type",
+            "503B or outsourcing facility mode detected.",
+            "Review enhanced quality/release governance expectations for this mode."
+        )
+
+    for field, label in [
+        ("evidence_file", "Evidence file reference"),
+        ("sop_version", "SOP/formula version"),
+        ("ingredient_lot", "Ingredient lot"),
+        ("beyond_use_date", "Beyond-use date"),
+    ]:
+        if sterile_inspector_safe(row.get(field, "")) == "":
+            sterile_inspector_add_finding(
+                findings, row,
+                "Show me all CSPs with missing core evidence metadata.",
+                "Core Evidence Metadata",
+                "MEDIUM",
+                "REVIEW",
+                field,
+                f"{label} is missing.",
+                "Complete core metadata for inspection readiness."
+            )
+
+    try:
+        bud_raw = sterile_inspector_safe(row.get("beyond_use_date", ""))
+        if bud_raw:
+            bud = sterile_inspector_pd.to_datetime(bud_raw, errors="coerce")
+            if sterile_inspector_pd.notna(bud):
+                today = sterile_inspector_pd.Timestamp(sterile_datetime.utcnow().date())
+                if bud < today:
+                    sterile_inspector_add_finding(
+                        findings, row,
+                        "Show me all CSPs with expired beyond-use date.",
+                        "Beyond-Use Date",
+                        "CRITICAL",
+                        "FINDING",
+                        "beyond_use_date",
+                        "Beyond-use date has passed.",
+                        "Block release readiness and review disposition."
+                    )
+    except Exception:
+        sterile_inspector_add_finding(
+            findings, row,
+            "Show me all CSPs where beyond-use date cannot be validated.",
+            "Beyond-Use Date",
+            "MEDIUM",
+            "REVIEW",
+            "beyond_use_date",
+            "Beyond-use date could not be validated.",
+            "Validate date format and BUD evidence."
+        )
+
+    return findings
+
+
+def sterile_inspector_build_findings():
+    sterile_inspector_require_phase1()
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        return sterile_inspector_pd.DataFrame(columns=STERILE_INSPECTOR_FINDING_COLUMNS)
+
+    findings = []
+    for _, row in df.iterrows():
+        findings.extend(sterile_inspector_findings_for_row(row.to_dict()))
+
+    if not findings:
+        return sterile_inspector_pd.DataFrame(columns=STERILE_INSPECTOR_FINDING_COLUMNS)
+
+    return sterile_inspector_pd.DataFrame(findings)[STERILE_INSPECTOR_FINDING_COLUMNS].fillna("")
+
+
+def sterile_inspector_query_catalog():
+    return {
+        "all": "All inspector findings",
+        "blocked": "Show me all CSPs blocked from release.",
+        "environmental": "Show me all CSPs compounded during environmental alert/failure periods.",
+        "equipment": "Show me all CSPs linked to equipment due, expired, or failed.",
+        "personnel": "Show me all CSPs with personnel qualification gaps.",
+        "coa": "Show me all CSPs with missing COA evidence.",
+        "deviation": "Show me all CSPs with open deviations.",
+        "pharmacist": "Show me all CSPs without pharmacist verification.",
+        "qa": "Show me all CSPs pending or failing QA review.",
+        "hazardous": "Show me all hazardous-drug CSPs requiring added evidence review.",
+        "facility_503b": "Show me all 503B / outsourcing facility records.",
+        "metadata": "Show me all CSPs with missing core evidence metadata.",
+    }
+
+
+def sterile_inspector_filter_findings(findings_df, query_key):
+    if findings_df.empty or query_key == "all":
+        return findings_df
+
+    query_key = sterile_inspector_safe(query_key).lower()
+
+    mapping = {
+        "blocked": ["Release Governance"],
+        "environmental": ["Environmental Monitoring", "Environmental Monitoring Review"],
+        "equipment": ["Equipment / Room Readiness"],
+        "personnel": ["Personnel Qualification"],
+        "coa": ["COA / Ingredient Evidence"],
+        "deviation": ["Deviation / CAPA"],
+        "pharmacist": ["Pharmacist Verification"],
+        "qa": ["QA Review"],
+        "hazardous": ["Hazardous Drug Governance"],
+        "facility_503b": ["503B Governance Mode"],
+        "metadata": ["Core Evidence Metadata", "Beyond-Use Date"],
+    }
+
+    domains = mapping.get(query_key, [])
+
+    if not domains:
+        return findings_df
+
+    return findings_df[findings_df["finding_domain"].isin(domains)].copy()
+
+
+def sterile_inspector_severity_badge(severity, status):
+    severity = sterile_inspector_safe(severity).upper()
+    status = sterile_inspector_safe(status).upper()
+
+    if severity == "CRITICAL" or status == "FINDING":
+        return '<span class="st-badge st-red">FINDING</span>'
+    if severity == "HIGH":
+        return '<span class="st-badge st-yellow">HIGH REVIEW</span>'
+    if status == "REVIEW":
+        return '<span class="st-badge st-yellow">REVIEW</span>'
+    return '<span class="st-badge st-gray">INFO</span>'
+
+
+def sterile_inspector_related_records(record):
+    df = sterile_prepare_dashboard_df()
+    if df.empty:
+        return sterile_inspector_pd.DataFrame(columns=STERILE_COMPOUNDING_COLUMNS)
+
+    hood = sterile_inspector_safe(record.get("hood_or_cleanroom_id", ""))
+    tech = sterile_inspector_safe(record.get("assigned_technician", ""))
+    lot = sterile_inspector_safe(record.get("ingredient_lot", ""))
+    sop = sterile_inspector_safe(record.get("sop_version", ""))
+
+    mask = sterile_inspector_pd.Series([False] * len(df), index=df.index)
+
+    if hood:
+        mask = mask | (df["hood_or_cleanroom_id"].astype(str) == hood)
+    if tech:
+        mask = mask | (df["assigned_technician"].astype(str) == tech)
+    if lot:
+        mask = mask | (df["ingredient_lot"].astype(str) == lot)
+    if sop:
+        mask = mask | (df["sop_version"].astype(str) == sop)
+
+    return df[mask].copy()
+
+
+def sterile_deviation_pack_for_record(record_id):
+    sterile_inspector_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+    if df.empty:
+        return None, "No CSP records found."
+
+    match = df[df["record_id"].astype(str) == str(record_id)]
+    if match.empty:
+        return None, "CSP record not found."
+
+    record = match.iloc[0].to_dict()
+    findings_df = sterile_inspector_build_findings()
+    record_findings = findings_df[findings_df["record_id"].astype(str) == str(record_id)] if not findings_df.empty else findings_df
+
+    related = sterile_inspector_related_records(record)
+    affected_records = []
+    if not related.empty:
+        affected_records = [sterile_inspector_safe(v) for v in related["record_id"].astype(str).tolist() if sterile_inspector_safe(v)]
+
+    critical_count = 0
+    high_count = 0
+
+    if not record_findings.empty:
+        critical_count = int((record_findings["severity"] == "CRITICAL").sum())
+        high_count = int((record_findings["severity"] == "HIGH").sum())
+
+    governance_status = sterile_inspector_safe(record.get("governance_status", ""))
+    reason_parts = []
+
+    if governance_status.upper() == "RED":
+        reason_parts.append("RED governance status")
+    if critical_count:
+        reason_parts.append(f"{critical_count} critical inspector finding(s)")
+    if high_count:
+        reason_parts.append(f"{high_count} high-severity inspector finding(s)")
+
+    critical_issues = sterile_inspector_safe(record.get("critical_issues", ""))
+    warnings = sterile_inspector_safe(record.get("warnings", ""))
+
+    if critical_issues:
+        reason_parts.append("Critical issues present")
+    if warnings:
+        reason_parts.append("Warnings present")
+
+    if not reason_parts:
+        reason_parts.append("No critical deviation trigger detected; pack generated for inspection readiness.")
+
+    if critical_count > 0 or governance_status.upper() == "RED":
+        pack_status = "DEVIATION PACK REQUIRED"
+        recommended_action = "Open formal QA/pharmacy review workflow and attach this evidence pack."
+    elif high_count > 0 or governance_status.upper() == "YELLOW":
+        pack_status = "REVIEW PACK REQUIRED"
+        recommended_action = "Route for reviewer/pharmacist/QA assessment before release readiness is accepted."
+    else:
+        pack_status = "INSPECTION-READY SUMMARY"
+        recommended_action = "No immediate governance deviation trigger detected; retain for audit readiness."
+
+    event_summary = (
+        f"CSP {record_id} deviation/inspection pack generated. "
+        f"Status={pack_status}. Reasons: {'; '.join(reason_parts)}."
+    )
+
+    pack_payload = {
+        "pack_id": "ST-DPK-" + sterile_hash_text(f"{record_id}|{event_summary}")[:12].upper(),
+        "record_id": sterile_inspector_safe(record_id),
+        "pack_status": pack_status,
+        "reason_code": "; ".join(reason_parts),
+        "event_summary": event_summary,
+        "affected_csp_count": len(set(affected_records)),
+        "affected_records": "; ".join(sorted(set(affected_records))),
+        "equipment_or_room_id": sterile_inspector_safe(record.get("hood_or_cleanroom_id", "")),
+        "technician_id": sterile_inspector_safe(record.get("assigned_technician", "")),
+        "ingredient_lot": sterile_inspector_safe(record.get("ingredient_lot", "")),
+        "sop_version": sterile_inspector_safe(record.get("sop_version", "")),
+        "governance_status": governance_status,
+        "readiness_score": sterile_inspector_safe(record.get("readiness_score", "")),
+        "critical_issues": critical_issues,
+        "warnings": warnings,
+        "recommended_action": recommended_action,
+        "created_at": sterile_now(),
+    }
+
+    pack_payload["pack_hash"] = sterile_hash_text(
+        sterile_inspector_json.dumps(pack_payload, sort_keys=True)
+    )
+
+    return pack_payload, None
+
+
+def sterile_deviation_upsert_pack(pack_payload):
+    pack_df = sterile_read_register(STERILE_DEVIATION_PACK_REGISTER, STERILE_DEVIATION_PACK_COLUMNS)
+
+    if pack_df.empty:
+        pack_df = sterile_inspector_pd.DataFrame(columns=STERILE_DEVIATION_PACK_COLUMNS)
+
+    pack_df = pack_df[pack_df["record_id"].astype(str) != str(pack_payload["record_id"])]
+    pack_df = sterile_inspector_pd.concat([pack_df, sterile_inspector_pd.DataFrame([pack_payload])], ignore_index=True)
+    sterile_write_register(STERILE_DEVIATION_PACK_REGISTER, pack_df, STERILE_DEVIATION_PACK_COLUMNS)
+
+
+def sterile_deviation_rebuild_all():
+    df = sterile_prepare_dashboard_df()
+    if df.empty:
+        empty_df = sterile_inspector_pd.DataFrame(columns=STERILE_DEVIATION_PACK_COLUMNS)
+        sterile_write_register(STERILE_DEVIATION_PACK_REGISTER, empty_df, STERILE_DEVIATION_PACK_COLUMNS)
+        return empty_df
+
+    packs = []
+    for _, row in df.iterrows():
+        record_id = sterile_inspector_safe(row.get("record_id", ""))
+        if not record_id:
+            continue
+        pack, error = sterile_deviation_pack_for_record(record_id)
+        if pack and not error:
+            if (
+                sterile_inspector_safe(pack.get("pack_status", "")) in ["DEVIATION PACK REQUIRED", "REVIEW PACK REQUIRED"]
+                or sterile_inspector_safe(row.get("governance_status", "")).upper() in ["RED", "YELLOW"]
+            ):
+                packs.append(pack)
+
+    pack_df = sterile_inspector_pd.DataFrame(packs) if packs else sterile_inspector_pd.DataFrame(columns=STERILE_DEVIATION_PACK_COLUMNS)
+    pack_df = sterile_ensure_cols(pack_df, STERILE_DEVIATION_PACK_COLUMNS)
+    sterile_write_register(STERILE_DEVIATION_PACK_REGISTER, pack_df, STERILE_DEVIATION_PACK_COLUMNS)
+    return pack_df
+
+
+@app.route("/sterile-compounding/inspector-mode")
+def sterile_compounding_inspector_mode():
+    query_key = sterile_inspector_safe(sterile_inspector_request.args.get("query", "all")) or "all"
+    findings_df = sterile_inspector_build_findings()
+    filtered_df = sterile_inspector_filter_findings(findings_df, query_key)
+    catalog = sterile_inspector_query_catalog()
+
+    total = len(filtered_df)
+    affected = int(filtered_df["record_id"].nunique()) if total else 0
+    critical = int((filtered_df["severity"] == "CRITICAL").sum()) if total else 0
+    high = int((filtered_df["severity"] == "HIGH").sum()) if total else 0
+    review = int((filtered_df["finding_status"] == "REVIEW").sum()) if total else 0
+
+    options_html = ""
+    for key, label in catalog.items():
+        selected = "selected" if key == query_key else ""
+        options_html += f'<option value="{key}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered_df.empty:
+        for _, row in filtered_df.iterrows():
+            rid = sterile_inspector_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_inspector_severity_badge(row.get("severity", ""), row.get("finding_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_inspector_safe(row.get("inspector_query", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("finding_domain", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("severity", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("evidence_field", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("evidence_value", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("finding_summary", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("recommended_action", ""))}</td>
+                <td><a href="/sterile-compounding/deviation-pack/{rid}">Build Pack</a></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspector findings for this query. Load sample data first if the register is empty.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>AI Inspector Mode™</h1>
+        <p>
+            Inspector-style query engine for sterile compounding evidence. It asks the questions an auditor,
+            pharmacist, or QA reviewer may ask: blocked records, environmental alerts, missing COAs,
+            equipment issues, personnel qualification gaps, open deviations, and missing verification evidence.
+            This is governance intelligence, not formal QA disposition.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Findings</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Affected CSPs</div><div class="st-value">{affected}</div></div>
+        <div class="st-card"><div class="st-label">Critical</div><div class="st-value">{critical}</div></div>
+        <div class="st-card"><div class="st-label">High</div><div class="st-value">{high}</div></div>
+        <div class="st-card"><div class="st-label">Review Signals</div><div class="st-value">{review}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspector Query</h2>
+        <form method="GET" action="/sterile-compounding/inspector-mode">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:420px;">
+                    <label>Ask Inspector Mode</label>
+                    <select name="query">{options_html}</select>
+                </div>
+                <button class="st-button" type="submit">Run Query</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/deviation-assembler">Deviation Auto-Assembler</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspector-mode/export">Export Findings</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspector Findings</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Inspector Query</th>
+                        <th>Domain</th>
+                        <th>Severity</th>
+                        <th>Evidence Field</th>
+                        <th>Evidence Value</th>
+                        <th>Finding</th>
+                        <th>Recommended Action</th>
+                        <th>Pack</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTOR-MODE",
+            "INSPECTOR_MODE_VIEW",
+            f"Inspector Mode viewed with query={query_key}",
+            actor="system",
+            source_route="/sterile-compounding/inspector-mode",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("AI Inspector Mode", body)
+
+
+@app.route("/sterile-compounding/inspector-mode/export")
+def sterile_compounding_inspector_mode_export():
+    findings_df = sterile_inspector_build_findings()
+    if findings_df.empty:
+        findings_df = sterile_inspector_pd.DataFrame(columns=STERILE_INSPECTOR_FINDING_COLUMNS)
+
+    csv_data = findings_df.to_csv(index=False)
+
+    return sterile_inspector_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspector_findings_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/deviation-assembler")
+def sterile_compounding_deviation_assembler():
+    pack_df = sterile_deviation_rebuild_all()
+
+    total = len(pack_df)
+    deviation_required = int((pack_df["pack_status"] == "DEVIATION PACK REQUIRED").sum()) if total else 0
+    review_required = int((pack_df["pack_status"] == "REVIEW PACK REQUIRED").sum()) if total else 0
+
+    rows_html = ""
+    if not pack_df.empty:
+        for _, row in pack_df.sort_values(by=["pack_status", "record_id"], ascending=[True, True]).iterrows():
+            rid = sterile_inspector_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/deviation-pack/{rid}">{sterile_inspector_safe(row.get("pack_id", ""))}</a></td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_inspector_safe(row.get("pack_status", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("reason_code", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("affected_csp_count", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("equipment_or_room_id", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("technician_id", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("ingredient_lot", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No deviation/review packs required based on current CSP register.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Deviation Auto-Assembler</h1>
+        <p>
+            Automatically assembles deviation-ready or review-ready evidence packs from sterile compounding records,
+            inspector findings, blast-radius relationships, and readiness signals. It does not open a formal QMS
+            deviation by itself; it prepares the evidence package.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Generated Packs</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Deviation Required</div><div class="st-value">{deviation_required}</div></div>
+        <div class="st-card"><div class="st-label">Review Required</div><div class="st-value">{review_required}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Assembler Actions</h2>
+        <a class="st-button" href="/sterile-compounding/inspector-mode">Open Inspector Mode</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/deviation-pack/export">Export Pack Register</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/blast-radius">Open Blast Radius</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Deviation / Review Pack Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Pack ID</th>
+                        <th>Record ID</th>
+                        <th>Pack Status</th>
+                        <th>Reason</th>
+                        <th>Affected CSPs</th>
+                        <th>Equipment / Room</th>
+                        <th>Technician</th>
+                        <th>Ingredient Lot</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DEVIATION-ASSEMBLER",
+            "DEVIATION_ASSEMBLER_VIEW",
+            "Deviation Auto-Assembler viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/deviation-assembler",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Deviation Auto-Assembler", body)
+
+
+@app.route("/sterile-compounding/deviation-pack/<record_id>")
+def sterile_compounding_deviation_pack(record_id):
+    pack, error = sterile_deviation_pack_for_record(record_id)
+
+    if error:
+        return sterile_inspector_Response(error, status=404)
+
+    sterile_deviation_upsert_pack(pack)
+
+    df = sterile_prepare_dashboard_df()
+    record_match = df[df["record_id"].astype(str) == str(record_id)]
+    record = record_match.iloc[0].to_dict() if not record_match.empty else {}
+
+    findings_df = sterile_inspector_build_findings()
+    record_findings = findings_df[findings_df["record_id"].astype(str) == str(record_id)] if not findings_df.empty else findings_df
+
+    related = sterile_inspector_related_records(record) if record else sterile_inspector_pd.DataFrame(columns=STERILE_COMPOUNDING_COLUMNS)
+
+    pack_rows = ""
+    for key in STERILE_DEVIATION_PACK_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_inspector_safe(pack.get(key, ""))
+        pack_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    finding_rows = ""
+    if not record_findings.empty:
+        for _, row in record_findings.iterrows():
+            finding_rows += f"""
+            <tr>
+                <td>{sterile_inspector_severity_badge(row.get("severity", ""), row.get("finding_status", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("finding_domain", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("severity", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("evidence_field", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("evidence_value", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("finding_summary", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        finding_rows = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#6b7280;">No inspector findings for this record.</td></tr>'
+
+    related_rows = ""
+    if not related.empty:
+        for _, row in related.iterrows():
+            rid = sterile_inspector_safe(row.get("record_id", ""))
+            related_rows += f"""
+            <tr>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_inspector_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("hood_or_cleanroom_id", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("assigned_technician", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("ingredient_lot", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("sop_version", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_inspector_safe(row.get("release_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        related_rows = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#6b7280;">No related blast-radius records found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Deviation / Review Evidence Pack</h1>
+        <p>
+            Auto-assembled evidence package for <b>{sterile_inspector_safe(record_id)}</b>.
+            This is designed to support QA/pharmacy review; it does not replace formal QMS deviation handling.
+        </p>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_inspector_safe(pack.get("pack_status", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Pack Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{pack_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspector Findings for This Record</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Domain</th>
+                        <th>Severity</th>
+                        <th>Evidence Field</th>
+                        <th>Evidence Value</th>
+                        <th>Finding</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>{finding_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Blast-Radius Related CSPs</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Hood / Room</th>
+                        <th>Technician</th>
+                        <th>Ingredient Lot</th>
+                        <th>SOP Version</th>
+                        <th>Status</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{related_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/deviation-assembler">Back to Deviation Assembler</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspector-mode">Inspector Mode</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/passport/{sterile_inspector_safe(record_id)}">CSP Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/blast-radius?record_id={sterile_inspector_safe(record_id)}">Blast Radius</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "DEVIATION_PACK_VIEW",
+            f"Deviation/review evidence pack generated: {pack.get('pack_status', '')}",
+            actor="system",
+            source_route="/sterile-compounding/deviation-pack/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Deviation Pack - {record_id}", body)
+
+
+@app.route("/sterile-compounding/deviation-pack/export")
+def sterile_compounding_deviation_pack_export():
+    pack_df = sterile_deviation_rebuild_all()
+
+    if pack_df.empty:
+        pack_df = sterile_inspector_pd.DataFrame(columns=STERILE_DEVIATION_PACK_COLUMNS)
+
+    csv_data = pack_df.to_csv(index=False)
+
+    return sterile_inspector_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_deviation_pack_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_inspector_dashboard_injection(response):
+    try:
+        if sterile_inspector_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-inspector-deviation-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-inspector-deviation-panel">
+            <h2>AI Inspector Mode™ + Deviation Auto-Assembler</h2>
+            <p class="st-note">
+                Inspector-style query engine and deviation-ready evidence pack builder for CSP records.
+                It helps identify blocked records, environmental alerts, missing COAs, equipment issues,
+                personnel qualification gaps, missing verification, and blast-radius impact.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/inspector-mode">AI Inspector Mode</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/deviation-assembler">Deviation Auto-Assembler</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspector-mode/export">Export Findings</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/deviation-pack/export">Export Packs</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile inspector/deviation dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
