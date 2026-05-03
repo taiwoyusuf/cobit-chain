@@ -42284,5 +42284,699 @@ def sterile_compounding_demo_walkthrough_dashboard_injection(response):
         print(f"Sterile demo walkthrough dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_REGISTER_CATALOG_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 30: Register Catalog + Data Dictionary
+#
+# New Routes:
+#   /sterile-compounding/register-catalog
+#   /sterile-compounding/data-dictionary
+#   /sterile-compounding/register-catalog/export
+#   /sterile-compounding/data-dictionary/export
+#
+# New Registers:
+#   sterile_compounding_register_catalog.csv
+#   sterile_compounding_data_dictionary.csv
+#
+# Boundary:
+#   This creates an internal sterile register catalog and data dictionary.
+#   It does not touch Command Center, Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, or other protected areas.
+# ============================================================
+
+try:
+    import pandas as sterile_dict_pd
+    import json as sterile_dict_json
+    from pathlib import Path as sterile_dict_Path
+    from flask import request as sterile_dict_request
+    from flask import Response as sterile_dict_Response
+except Exception as sterile_dict_import_error:
+    raise RuntimeError(f"Sterile register catalog import failed: {sterile_dict_import_error}")
+
+
+STERILE_REGISTER_CATALOG_REGISTER = "sterile_compounding_register_catalog.csv"
+STERILE_DATA_DICTIONARY_REGISTER = "sterile_compounding_data_dictionary.csv"
+
+STERILE_REGISTER_CATALOG_COLUMNS = [
+    "catalog_id",
+    "register_name",
+    "register_group",
+    "purpose",
+    "column_constant",
+    "file_exists",
+    "row_count",
+    "column_count",
+    "status",
+    "risk_note",
+    "source_route",
+    "last_checked",
+    "catalog_hash"
+]
+
+STERILE_DATA_DICTIONARY_COLUMNS = [
+    "dictionary_id",
+    "register_name",
+    "register_group",
+    "column_name",
+    "column_position",
+    "in_declared_schema",
+    "observed_non_empty_count",
+    "sample_value",
+    "data_dictionary_status",
+    "usage_note",
+    "last_checked",
+    "dictionary_hash"
+]
+
+
+STERILE_REGISTER_SEED = [
+    ("sterile_compounding_register.csv", "01 Core CSP", "Primary sterile compounding record register.", "STERILE_COMPOUNDING_COLUMNS", "/sterile-compounding"),
+    ("sterile_compounding_review_register.csv", "01 Core CSP", "Review queue and decision support register.", "", "/sterile-compounding/review"),
+    ("sterile_compounding_lineage_register.csv", "01 Core CSP", "Lineage/audit trail for sterile governance activity.", "", "/sterile-compounding/audit-lineage"),
+
+    ("sterile_compounding_evidence_vault_register.csv", "02 Evidence", "Evidence vault and evidence metadata register.", "STERILE_EVIDENCE_VAULT_COLUMNS", "/sterile-compounding/evidence-vault"),
+    ("sterile_compounding_evidence_matrix_register.csv", "02 Evidence", "Required-vs-available evidence matrix.", "STERILE_EVIDENCE_MATRIX_COLUMNS", "/sterile-compounding/evidence-matrix/export"),
+
+    ("sterile_compounding_audit_pack_register.csv", "03 Audit Pack", "Consolidated audit pack scoring and status register.", "STERILE_AUDIT_PACK_COLUMNS", "/sterile-compounding/audit-pack"),
+    ("sterile_compounding_release_dossier_register.csv", "03 Audit Pack", "Release dossier governance register.", "STERILE_RELEASE_DOSSIER_COLUMNS", "/sterile-compounding/release-dossier"),
+    ("sterile_compounding_signoff_register.csv", "03 Audit Pack", "Reviewer sign-off and governance attestation register.", "STERILE_SIGNOFF_COLUMNS", "/sterile-compounding/signoff-board"),
+
+    ("sterile_compounding_seal_register.csv", "04 Seal", "Cryptographic dossier seal register.", "STERILE_SEAL_COLUMNS", "/sterile-compounding/seal-ledger"),
+    ("sterile_compounding_seal_verification_register.csv", "04 Seal", "Seal verification event register.", "STERILE_SEAL_VERIFY_COLUMNS", "/sterile-compounding/seal-verify"),
+    ("sterile_compounding_seal_health_register.csv", "04 Seal", "Seal health rollup register.", "STERILE_SEAL_HEALTH_COLUMNS", "/sterile-compounding/seal-health"),
+
+    ("sterile_compounding_custody_chain_register.csv", "05 Custody", "Custody and handoff event register.", "STERILE_CUSTODY_COLUMNS", "/sterile-compounding/custody-chain"),
+    ("sterile_compounding_custody_health_register.csv", "05 Custody", "Custody health and missing-handoff status register.", "STERILE_CUSTODY_HEALTH_COLUMNS", "/sterile-compounding/custody-health"),
+    ("sterile_compounding_custody_audit_link_register.csv", "05 Custody", "Custody-to-audit/release reliance register.", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS", "/sterile-compounding/custody-audit-link"),
+
+    ("sterile_compounding_sop_formula_register.csv", "06 SOP / Formula", "SOP/formula version governance register.", "STERILE_SOP_FORMULA_COLUMNS", "/sterile-compounding/sop-formula-governance"),
+    ("sterile_compounding_sop_drift_register.csv", "06 SOP / Formula", "Record-level SOP/formula drift register.", "STERILE_SOP_DRIFT_COLUMNS", "/sterile-compounding/sop-drift"),
+
+    ("sterile_compounding_personnel_competency_register.csv", "07 Personnel", "Personnel competency governance register.", "STERILE_PERSONNEL_COMPETENCY_COLUMNS", "/sterile-compounding/personnel-competency"),
+    ("sterile_compounding_personnel_drift_register.csv", "07 Personnel", "Personnel competency drift register.", "STERILE_PERSONNEL_DRIFT_COLUMNS", "/sterile-compounding/personnel-drift"),
+
+    ("sterile_compounding_equipment_room_register.csv", "08 Equipment / Room", "Equipment, room, hood, and cleanroom readiness register.", "STERILE_EQUIPMENT_ROOM_COLUMNS", "/sterile-compounding/equipment-room-governance"),
+    ("sterile_compounding_equipment_room_drift_register.csv", "08 Equipment / Room", "Equipment/room drift register.", "STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS", "/sterile-compounding/equipment-room-drift"),
+
+    ("sterile_compounding_master_assurance_register.csv", "09 Master Assurance", "Master Assurance Index register.", "STERILE_MASTER_ASSURANCE_COLUMNS", "/sterile-compounding/master-assurance-index"),
+    ("sterile_compounding_no_release_composite_register.csv", "09 Master Assurance", "Composite no-release gate register.", "STERILE_NO_RELEASE_COMPOSITE_COLUMNS", "/sterile-compounding/no-release-composite"),
+
+    ("sterile_compounding_closure_simulator_register.csv", "10 Recovery", "What-if closure simulator register.", "STERILE_CLOSURE_SIMULATOR_COLUMNS", "/sterile-compounding/closure-simulator"),
+    ("sterile_compounding_recovery_plan_register.csv", "10 Recovery", "Recovery plan register.", "STERILE_RECOVERY_PLAN_COLUMNS", "/sterile-compounding/recovery-plan"),
+
+    ("sterile_compounding_inspection_readiness_register.csv", "11 Inspection", "Inspection readiness bundle register.", "STERILE_INSPECTION_READINESS_COLUMNS", "/sterile-compounding/inspection-readiness"),
+    ("sterile_compounding_auditor_qa_register.csv", "11 Inspection", "Auditor Q&A pack register.", "STERILE_AUDITOR_QA_COLUMNS", "/sterile-compounding/auditor-qa-pack"),
+
+    ("sterile_compounding_regulatory_crosswalk_register.csv", "12 Crosswalk", "Regulatory/control crosswalk register.", "STERILE_REGULATORY_CROSSWALK_COLUMNS", "/sterile-compounding/regulatory-crosswalk"),
+    ("sterile_compounding_control_evidence_coverage_register.csv", "12 Crosswalk", "Control-evidence coverage register.", "STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS", "/sterile-compounding/control-evidence-coverage"),
+
+    ("sterile_compounding_inspection_narrative_register.csv", "13 Narrative", "Human-readable inspection narrative register.", "STERILE_INSPECTION_NARRATIVE_COLUMNS", "/sterile-compounding/inspection-narrative"),
+    ("sterile_compounding_executive_brief_register.csv", "13 Narrative", "Executive brief register.", "STERILE_EXECUTIVE_BRIEF_COLUMNS", "/sterile-compounding/executive-brief"),
+
+    ("sterile_compounding_inspection_binder_register.csv", "14 Binder", "Inspection binder register.", "STERILE_INSPECTION_BINDER_COLUMNS", "/sterile-compounding/inspection-binder"),
+    ("sterile_compounding_packet_manifest_register.csv", "14 Binder", "Packet manifest register.", "STERILE_PACKET_MANIFEST_COLUMNS", "/sterile-compounding/packet-manifest"),
+
+    ("sterile_compounding_navigation_register.csv", "15 Navigation", "Internal sterile navigation register.", "STERILE_NAVIGATION_COLUMNS", "/sterile-compounding/navigation-hub"),
+    ("sterile_compounding_route_health_register.csv", "15 Navigation", "Runtime sterile route health register.", "STERILE_ROUTE_HEALTH_COLUMNS", "/sterile-compounding/route-health"),
+
+    ("sterile_compounding_demo_walkthrough_register.csv", "16 Demo", "Demo walkthrough register.", "STERILE_DEMO_WALKTHROUGH_COLUMNS", "/sterile-compounding/demo-walkthrough"),
+    ("sterile_compounding_demo_script_register.csv", "16 Demo", "Leadership demo script register.", "STERILE_DEMO_SCRIPT_COLUMNS", "/sterile-compounding/demo-script"),
+
+    ("sterile_compounding_register_catalog.csv", "17 Dictionary", "Register catalog generated by this module.", "STERILE_REGISTER_CATALOG_COLUMNS", "/sterile-compounding/register-catalog"),
+    ("sterile_compounding_data_dictionary.csv", "17 Dictionary", "Column-level data dictionary generated by this module.", "STERILE_DATA_DICTIONARY_COLUMNS", "/sterile-compounding/data-dictionary"),
+]
+
+
+def sterile_dict_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile register catalog dependencies missing: " + ", ".join(missing))
+
+
+def sterile_dict_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_dict_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_dict_status_badge(status):
+    status = sterile_dict_safe(status).upper()
+
+    if status in ["GREEN", "EXISTS", "SUPPORTED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "EMPTY", "SCHEMA ONLY", "FILE ONLY"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_dict_declared_columns(column_constant):
+    if not column_constant:
+        return []
+
+    cols = globals().get(column_constant, [])
+
+    if cols is None:
+        return []
+
+    try:
+        return [sterile_dict_safe(c) for c in list(cols)]
+    except Exception:
+        return []
+
+
+def sterile_dict_file_columns(register_name):
+    register_path = sterile_dict_Path(register_name)
+
+    if not register_path.exists():
+        return [], 0, False
+
+    try:
+        df = sterile_dict_pd.read_csv(register_path, dtype=str).fillna("")
+        return list(df.columns), len(df), True
+    except Exception:
+        try:
+            df = sterile_dict_pd.read_csv(register_path, nrows=0)
+            return list(df.columns), 0, True
+        except Exception:
+            return [], 0, True
+
+
+def sterile_dict_sample_value(register_name, column_name):
+    register_path = sterile_dict_Path(register_name)
+
+    if not register_path.exists():
+        return "", 0
+
+    try:
+        df = sterile_dict_pd.read_csv(register_path, dtype=str).fillna("")
+        if column_name not in df.columns:
+            return "", 0
+
+        series = df[column_name].astype(str)
+        non_empty = series[series.str.strip() != ""]
+        sample = non_empty.iloc[0] if len(non_empty) else ""
+        return sterile_dict_safe(sample)[:150], int(len(non_empty))
+    except Exception:
+        return "", 0
+
+
+def sterile_dict_usage_note(register_group, column_name):
+    col = sterile_dict_safe(column_name).lower()
+
+    if "hash" in col:
+        return "Integrity/hash field used for tamper-evident assurance or register consistency."
+    if "status" in col:
+        return "Status field used for GREEN/YELLOW/RED or workflow state interpretation."
+    if "score" in col:
+        return "Score field used for readiness, risk, coverage, or assurance calculations."
+    if "record_id" in col:
+        return "Primary CSP record linkage field."
+    if "route" in col:
+        return "Navigation/evidence route field used to open supporting pages."
+    if "decision" in col:
+        return "Decision narrative field used by reviewer/auditor-facing pages."
+    if "recommended" in col or "action" in col:
+        return "Action guidance field used for closure planning or reviewer next steps."
+    if "last_checked" in col:
+        return "Timestamp showing when the derived register was last rebuilt."
+    return f"Column used by {register_group} register logic."
+
+
+def sterile_dict_build_catalogs():
+    sterile_dict_require_dependencies()
+
+    catalog_rows = []
+    dictionary_rows = []
+
+    for register_name, register_group, purpose, column_constant, source_route in STERILE_REGISTER_SEED:
+        declared_cols = sterile_dict_declared_columns(column_constant)
+        file_cols, row_count, exists = sterile_dict_file_columns(register_name)
+
+        merged_cols = []
+        for col in declared_cols + file_cols:
+            if col not in merged_cols:
+                merged_cols.append(col)
+
+        file_exists = "YES" if exists else "NO"
+        column_count = len(merged_cols)
+
+        if exists and row_count > 0 and column_count > 0:
+            status = "GREEN"
+            risk_note = "Register file exists and contains rows."
+        elif exists and column_count > 0:
+            status = "YELLOW"
+            risk_note = "Register file exists but appears empty or header-only."
+        elif declared_cols:
+            status = "YELLOW"
+            risk_note = "Declared schema exists but register file has not been created yet."
+        else:
+            status = "RED"
+            risk_note = "Register file and declared schema were not found."
+
+        catalog_payload = {
+            "catalog_id": sterile_dict_make_id("ST-CATALOG", register_name),
+            "register_name": register_name,
+            "register_group": register_group,
+            "purpose": purpose,
+            "column_constant": column_constant,
+            "file_exists": file_exists,
+            "row_count": row_count,
+            "column_count": column_count,
+            "status": status,
+            "risk_note": risk_note,
+            "source_route": source_route,
+            "last_checked": sterile_now(),
+        }
+
+        catalog_payload["catalog_hash"] = sterile_hash_text(
+            sterile_dict_json.dumps(catalog_payload, sort_keys=True)
+        )
+
+        catalog_rows.append(catalog_payload)
+
+        for idx, col in enumerate(merged_cols, start=1):
+            in_schema = "YES" if col in declared_cols else "NO"
+            sample, non_empty = sterile_dict_sample_value(register_name, col)
+
+            if in_schema == "YES" and exists:
+                dict_status = "GREEN"
+            elif in_schema == "YES":
+                dict_status = "YELLOW"
+            else:
+                dict_status = "YELLOW"
+
+            dict_payload = {
+                "dictionary_id": sterile_dict_make_id("ST-DICT", register_name, col),
+                "register_name": register_name,
+                "register_group": register_group,
+                "column_name": col,
+                "column_position": idx,
+                "in_declared_schema": in_schema,
+                "observed_non_empty_count": non_empty,
+                "sample_value": sample,
+                "data_dictionary_status": dict_status,
+                "usage_note": sterile_dict_usage_note(register_group, col),
+                "last_checked": sterile_now(),
+            }
+
+            dict_payload["dictionary_hash"] = sterile_hash_text(
+                sterile_dict_json.dumps(dict_payload, sort_keys=True)
+            )
+
+            dictionary_rows.append(dict_payload)
+
+    catalog_df = sterile_dict_pd.DataFrame(catalog_rows)
+    catalog_df = sterile_ensure_cols(catalog_df, STERILE_REGISTER_CATALOG_COLUMNS)
+
+    dictionary_df = sterile_dict_pd.DataFrame(dictionary_rows)
+    dictionary_df = sterile_ensure_cols(dictionary_df, STERILE_DATA_DICTIONARY_COLUMNS)
+
+    sterile_write_register(STERILE_REGISTER_CATALOG_REGISTER, catalog_df, STERILE_REGISTER_CATALOG_COLUMNS)
+    sterile_write_register(STERILE_DATA_DICTIONARY_REGISTER, dictionary_df, STERILE_DATA_DICTIONARY_COLUMNS)
+
+    return catalog_df, dictionary_df
+
+
+@app.route("/sterile-compounding/register-catalog")
+def sterile_compounding_register_catalog():
+    catalog_df, dictionary_df = sterile_dict_build_catalogs()
+
+    status_filter = sterile_dict_safe(sterile_dict_request.args.get("status", ""))
+    group_filter = sterile_dict_safe(sterile_dict_request.args.get("group", ""))
+
+    filtered = catalog_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["register_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["status"] == "RED").sum()) if total else 0
+    total_rows = int(sterile_dict_pd.to_numeric(filtered["row_count"], errors="coerce").fillna(0).sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Register Groups</option>'
+    for group in sorted(catalog_df["register_group"].dropna().unique().tolist()) if not catalog_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["register_group", "register_name"], ascending=[True, True]).iterrows():
+            route = sterile_dict_safe(row.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dict_status_badge(row.get("status", ""))}</td>
+                <td>{sterile_dict_safe(row.get("register_group", ""))}</td>
+                <td><code>{sterile_dict_safe(row.get("register_name", ""))}</code></td>
+                <td>{sterile_dict_safe(row.get("purpose", ""))}</td>
+                <td><code>{sterile_dict_safe(row.get("column_constant", ""))}</code></td>
+                <td>{sterile_dict_safe(row.get("file_exists", ""))}</td>
+                <td>{sterile_dict_safe(row.get("row_count", ""))}</td>
+                <td>{sterile_dict_safe(row.get("column_count", ""))}</td>
+                <td>{sterile_dict_safe(row.get("risk_note", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No register catalog rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Register Catalog</h1>
+        <p>
+            Internal catalog of sterile compounding CSV registers, row counts, schema status, file existence,
+            source route, and risk note. Use this to understand the data backbone behind the sterile vertical.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Registers</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Total Rows</div><div class="st-value">{total_rows}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Catalog Filters</h2>
+        <form method="GET" action="/sterile-compounding/register-catalog">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Register Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/register-catalog">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-dictionary">Data Dictionary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/register-catalog/export">Export Catalog</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sterile Register Catalog</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Register</th>
+                        <th>Purpose</th>
+                        <th>Schema Constant</th>
+                        <th>Exists</th>
+                        <th>Rows</th>
+                        <th>Columns</th>
+                        <th>Risk Note</th>
+                        <th>Source Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "REGISTER-CATALOG",
+            "STERILE_REGISTER_CATALOG_VIEW",
+            "Sterile register catalog viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/register-catalog",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Register Catalog", body)
+
+
+@app.route("/sterile-compounding/data-dictionary")
+def sterile_compounding_data_dictionary():
+    catalog_df, dictionary_df = sterile_dict_build_catalogs()
+
+    register_filter = sterile_dict_safe(sterile_dict_request.args.get("register", ""))
+    group_filter = sterile_dict_safe(sterile_dict_request.args.get("group", ""))
+
+    filtered = dictionary_df.copy()
+
+    if register_filter and not filtered.empty:
+        filtered = filtered[filtered["register_name"].astype(str) == register_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["register_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    declared = int((filtered["in_declared_schema"] == "YES").sum()) if total else 0
+    observed_values = int(sterile_dict_pd.to_numeric(filtered["observed_non_empty_count"], errors="coerce").fillna(0).sum()) if total else 0
+
+    register_options = '<option value="">All Registers</option>'
+    for reg in sorted(dictionary_df["register_name"].dropna().unique().tolist()) if not dictionary_df.empty else []:
+        selected = "selected" if reg == register_filter else ""
+        register_options += f'<option value="{reg}" {selected}>{reg}</option>'
+
+    group_options = '<option value="">All Register Groups</option>'
+    for group in sorted(dictionary_df["register_group"].dropna().unique().tolist()) if not dictionary_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["register_group", "register_name", "column_position"], ascending=[True, True, True]).iterrows():
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dict_status_badge(row.get("data_dictionary_status", ""))}</td>
+                <td>{sterile_dict_safe(row.get("register_group", ""))}</td>
+                <td><code>{sterile_dict_safe(row.get("register_name", ""))}</code></td>
+                <td>{sterile_dict_safe(row.get("column_position", ""))}</td>
+                <td><code>{sterile_dict_safe(row.get("column_name", ""))}</code></td>
+                <td>{sterile_dict_safe(row.get("in_declared_schema", ""))}</td>
+                <td>{sterile_dict_safe(row.get("observed_non_empty_count", ""))}</td>
+                <td>{sterile_dict_safe(row.get("sample_value", ""))}</td>
+                <td>{sterile_dict_safe(row.get("usage_note", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No data dictionary rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Data Dictionary</h1>
+        <p>
+            Column-level dictionary across sterile compounding registers. This shows schema membership,
+            sample values, observed non-empty counts, and usage notes.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Dictionary Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Declared Schema Columns</div><div class="st-value">{declared}</div></div>
+        <div class="st-card"><div class="st-label">Observed Non-Empty Values</div><div class="st-value">{observed_values}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dictionary Filters</h2>
+        <form method="GET" action="/sterile-compounding/data-dictionary">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:280px;">
+                    <label>Register</label>
+                    <select name="register">{register_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Register Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-dictionary">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/register-catalog">Register Catalog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-dictionary/export">Export Dictionary</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sterile Data Dictionary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Register</th>
+                        <th>Position</th>
+                        <th>Column</th>
+                        <th>Declared</th>
+                        <th>Non-Empty</th>
+                        <th>Sample</th>
+                        <th>Usage Note</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DATA-DICTIONARY",
+            "STERILE_DATA_DICTIONARY_VIEW",
+            "Sterile data dictionary viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/data-dictionary",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Data Dictionary", body)
+
+
+@app.route("/sterile-compounding/register-catalog/export")
+def sterile_compounding_register_catalog_export():
+    catalog_df, dictionary_df = sterile_dict_build_catalogs()
+
+    if catalog_df.empty:
+        catalog_df = sterile_dict_pd.DataFrame(columns=STERILE_REGISTER_CATALOG_COLUMNS)
+
+    csv_data = catalog_df.to_csv(index=False)
+
+    return sterile_dict_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_register_catalog_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/data-dictionary/export")
+def sterile_compounding_data_dictionary_export():
+    catalog_df, dictionary_df = sterile_dict_build_catalogs()
+
+    if dictionary_df.empty:
+        dictionary_df = sterile_dict_pd.DataFrame(columns=STERILE_DATA_DICTIONARY_COLUMNS)
+
+    csv_data = dictionary_df.to_csv(index=False)
+
+    return sterile_dict_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_data_dictionary_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_register_catalog_dashboard_injection(response):
+    try:
+        if sterile_dict_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/navigation-hub",
+            "/sterile-compounding/module-map",
+            "/sterile-compounding/route-health",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/demo-script",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/packet-manifest",
+            "/sterile-compounding/executive-brief",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-register-catalog-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-register-catalog-panel">
+            <h2>Register Catalog + Data Dictionary</h2>
+            <p class="st-note">
+                Shows every sterile CSV register, row count, schema constant, data dictionary,
+                sample values, and register health. This helps explain the data backbone behind the vertical.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/register-catalog">Register Catalog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-dictionary">Data Dictionary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/register-catalog/export">Export Catalog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/data-dictionary/export">Export Dictionary</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile register catalog dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
