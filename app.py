@@ -27145,5 +27145,920 @@ def sterile_compounding_audit_pack_dashboard_injection(response):
         print(f"Sterile audit pack dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_SIGNOFF_CLOSURE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 14: Governance Sign-Off Board + Exception Closure Log
+#
+# New Routes:
+#   /sterile-compounding/signoff-board
+#   /sterile-compounding/signoff/<record_id>
+#   /sterile-compounding/signoff/export
+#   /sterile-compounding/exception-closure
+#   /sterile-compounding/exception-closure/<record_id>
+#   /sterile-compounding/exception-closure/export
+#
+# New Registers:
+#   sterile_compounding_signoff_register.csv
+#   sterile_compounding_exception_closure_register.csv
+#
+# Boundary:
+#   This is a governance attestation and exception-closure layer.
+#   It does not perform formal pharmacy release, does not replace QA/QMS,
+#   and does not touch protected Manufacturing/Wole, ServiceNow, Entra,
+#   CI Candidate Factory, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_so_pd
+    import json as sterile_so_json
+    from flask import request as sterile_so_request
+    from flask import redirect as sterile_so_redirect
+    from flask import Response as sterile_so_Response
+except Exception as sterile_so_import_error:
+    raise RuntimeError(f"Sterile signoff/closure import failed: {sterile_so_import_error}")
+
+
+STERILE_SIGNOFF_REGISTER = "sterile_compounding_signoff_register.csv"
+STERILE_EXCEPTION_CLOSURE_REGISTER = "sterile_compounding_exception_closure_register.csv"
+
+STERILE_SIGNOFF_COLUMNS = [
+    "signoff_id",
+    "record_id",
+    "audit_pack_id",
+    "audit_pack_status",
+    "audit_pack_score",
+    "reviewer_name",
+    "reviewer_role",
+    "review_decision",
+    "review_comment",
+    "conditions_or_limitations",
+    "attestation_statement",
+    "signed_timestamp",
+    "source_pack_hash",
+    "signoff_status",
+    "signoff_hash"
+]
+
+STERILE_EXCEPTION_CLOSURE_COLUMNS = [
+    "closure_id",
+    "record_id",
+    "exception_category",
+    "exception_source",
+    "exception_summary",
+    "closure_owner",
+    "closure_action",
+    "closure_status",
+    "closure_comment",
+    "linked_evidence_id",
+    "closed_timestamp",
+    "closure_hash"
+]
+
+
+def sterile_so_require_dependencies():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+        "STERILE_AUDIT_PACK_COLUMNS",
+        "sterile_pack_build_register",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile signoff dependencies missing: " + ", ".join(missing))
+
+
+def sterile_so_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_so_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_so_read_signoffs():
+    df = sterile_read_register(STERILE_SIGNOFF_REGISTER, STERILE_SIGNOFF_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_SIGNOFF_COLUMNS)
+
+
+def sterile_so_read_closures():
+    df = sterile_read_register(STERILE_EXCEPTION_CLOSURE_REGISTER, STERILE_EXCEPTION_CLOSURE_COLUMNS)
+    return sterile_ensure_cols(df, STERILE_EXCEPTION_CLOSURE_COLUMNS)
+
+
+def sterile_so_status_badge(status):
+    status = sterile_so_safe(status).upper()
+
+    if status in ["GREEN", "APPROVED", "SIGNED APPROVED", "CLOSED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "SIGNED CONDITIONAL", "OPEN", "IN PROGRESS", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "REJECTED", "HOLD", "SIGNED HOLD", "FAILED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_so_pack_df():
+    sterile_so_require_dependencies()
+    try:
+        return sterile_pack_build_register()
+    except Exception:
+        return sterile_read_register("sterile_compounding_audit_pack_register.csv", STERILE_AUDIT_PACK_COLUMNS)
+
+
+def sterile_so_pack_for_record(record_id):
+    pack_df = sterile_so_pack_df()
+    if pack_df.empty:
+        return None
+    match = pack_df[pack_df["record_id"].astype(str) == str(record_id)]
+    if match.empty:
+        return None
+    return match.iloc[0].to_dict()
+
+
+def sterile_so_latest_signoff(record_id):
+    sign_df = sterile_so_read_signoffs()
+    if sign_df.empty:
+        return None
+    match = sign_df[sign_df["record_id"].astype(str) == str(record_id)].copy()
+    if match.empty:
+        return None
+    try:
+        match = match.sort_values(by="signed_timestamp", ascending=False)
+    except Exception:
+        pass
+    return match.iloc[0].to_dict()
+
+
+def sterile_so_signoff_status(decision):
+    decision_l = sterile_so_safe(decision).lower()
+
+    if "approve" in decision_l and "condition" not in decision_l:
+        return "GREEN"
+    if "conditional" in decision_l or "more evidence" in decision_l or "review" in decision_l:
+        return "YELLOW"
+    if "hold" in decision_l or "reject" in decision_l or "block" in decision_l:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_so_closure_status_summary(record_id):
+    closure_df = sterile_so_read_closures()
+    if closure_df.empty:
+        return {"total": 0, "closed": 0, "open": 0, "in_progress": 0}
+
+    match = closure_df[closure_df["record_id"].astype(str) == str(record_id)].copy()
+    if match.empty:
+        return {"total": 0, "closed": 0, "open": 0, "in_progress": 0}
+
+    status = match["closure_status"].astype(str).str.lower()
+
+    return {
+        "total": len(match),
+        "closed": int(status.isin(["closed", "resolved", "complete", "completed"]).sum()),
+        "open": int(status.isin(["open", "new"]).sum()),
+        "in_progress": int(status.isin(["in progress", "review", "pending"]).sum()),
+    }
+
+
+def sterile_so_open_action_rows_from_pack(pack):
+    actions = sterile_so_safe(pack.get("open_actions", ""))
+    if not actions or actions == "No open audit-pack actions detected.":
+        return []
+
+    parts = [p.strip() for p in actions.split(";") if p.strip()]
+    rows = []
+
+    for action in parts:
+        category = "General Governance Exception"
+
+        lower = action.lower()
+        if "evidence" in lower or "hash" in lower:
+            category = "Evidence Exception"
+        elif "control" in lower:
+            category = "Control Exception"
+        elif "finding" in lower:
+            category = "Inspector Finding"
+        elif "risk" in lower:
+            category = "Risk Graph Exception"
+        elif "replay" in lower:
+            category = "Auditor Replay Exception"
+        elif "deviation" in lower:
+            category = "Deviation Exception"
+        elif "regulatory" in lower or "supplier" in lower:
+            category = "Regulatory / Supplier Watch Exception"
+
+        rows.append({
+            "exception_category": category,
+            "exception_source": "Audit Pack Open Actions",
+            "exception_summary": action,
+        })
+
+    return rows
+
+
+@app.route("/sterile-compounding/signoff-board")
+def sterile_compounding_signoff_board():
+    pack_df = sterile_so_pack_df()
+    sign_df = sterile_so_read_signoffs()
+
+    total = len(pack_df)
+    signed_records = int(sign_df["record_id"].nunique()) if not sign_df.empty else 0
+    unsigned = max(0, total - signed_records)
+
+    green_pack = int((pack_df["audit_pack_status"] == "GREEN").sum()) if total else 0
+    yellow_pack = int((pack_df["audit_pack_status"] == "YELLOW").sum()) if total else 0
+    red_pack = int((pack_df["audit_pack_status"] == "RED").sum()) if total else 0
+
+    rows_html = ""
+
+    if not pack_df.empty:
+        for _, row in pack_df.sort_values(by=["audit_pack_status", "audit_pack_score"], ascending=[False, True]).iterrows():
+            rid = sterile_so_safe(row.get("record_id", ""))
+            latest = sterile_so_latest_signoff(rid)
+
+            if latest:
+                signoff_status = latest.get("signoff_status", "")
+                reviewer = latest.get("reviewer_name", "")
+                decision = latest.get("review_decision", "")
+                timestamp = latest.get("signed_timestamp", "")
+            else:
+                signoff_status = "YELLOW"
+                reviewer = "Not signed"
+                decision = "Pending governance sign-off"
+                timestamp = ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_so_status_badge(signoff_status)}</td>
+                <td><a href="/sterile-compounding/signoff/{rid}">{rid}</a></td>
+                <td>{sterile_so_status_badge(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_so_safe(row.get("audit_pack_score", ""))}</td>
+                <td>{sterile_so_safe(row.get("audit_pack_decision", ""))}</td>
+                <td>{reviewer}</td>
+                <td>{decision}</td>
+                <td>{timestamp}</td>
+                <td>{sterile_so_safe(row.get("open_actions", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No audit packs available. Load sample data and build audit packs first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Governance Sign-Off Board</h1>
+        <p>
+            Human governance attestation layer for sterile audit packs. Reviewers can approve, conditionally approve,
+            request more evidence, or hold a CSP pack. Each sign-off is hashed for traceability.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Audit Packs</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Signed Records</div><div class="st-value">{signed_records}</div></div>
+        <div class="st-card"><div class="st-label">Unsigned</div><div class="st-value">{unsigned}</div></div>
+        <div class="st-card"><div class="st-label">GREEN Packs</div><div class="st-value">{green_pack}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW Packs</div><div class="st-value">{yellow_pack}</div></div>
+        <div class="st-card"><div class="st-label">RED Packs</div><div class="st-value">{red_pack}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sign-Off Actions</h2>
+        <a class="st-button" href="/sterile-compounding/audit-pack">Audit Pack Builder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/exception-closure">Exception Closure Log</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/signoff/export">Export Sign-Off Register</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sign-Off Board</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Sign-Off</th>
+                        <th>Record ID</th>
+                        <th>Pack Status</th>
+                        <th>Pack Score</th>
+                        <th>Pack Decision</th>
+                        <th>Reviewer</th>
+                        <th>Review Decision</th>
+                        <th>Signed Timestamp</th>
+                        <th>Open Actions</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "SIGNOFF-BOARD",
+            "STERILE_SIGNOFF_BOARD_VIEW",
+            "Sterile governance sign-off board viewed",
+            actor="system",
+            source_route="/sterile-compounding/signoff-board",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Governance Sign-Off Board", body)
+
+
+@app.route("/sterile-compounding/signoff/<record_id>", methods=["GET", "POST"])
+def sterile_compounding_signoff_record(record_id):
+    record_id = sterile_so_safe(record_id)
+    pack = sterile_so_pack_for_record(record_id)
+
+    if not pack:
+        return sterile_so_Response("Audit pack not found for this CSP record.", status=404)
+
+    if sterile_so_request.method == "POST":
+        reviewer_name = sterile_so_safe(sterile_so_request.form.get("reviewer_name", ""))
+        reviewer_role = sterile_so_safe(sterile_so_request.form.get("reviewer_role", ""))
+        review_decision = sterile_so_safe(sterile_so_request.form.get("review_decision", ""))
+        review_comment = sterile_so_safe(sterile_so_request.form.get("review_comment", ""))
+        conditions = sterile_so_safe(sterile_so_request.form.get("conditions_or_limitations", ""))
+
+        if not reviewer_name:
+            return sterile_so_Response("reviewer_name is required.", status=400)
+
+        if not review_decision:
+            return sterile_so_Response("review_decision is required.", status=400)
+
+        source_pack_hash = sterile_so_safe(pack.get("audit_pack_hash", ""))
+
+        attestation = (
+            "I reviewed the sterile compounding audit pack from a governance evidence perspective. "
+            "This sign-off records review status only and does not replace formal pharmacy release, QA disposition, or QMS approval."
+        )
+
+        payload = {
+            "signoff_id": sterile_so_make_id("ST-SIGN", record_id, reviewer_name, review_decision, sterile_now()),
+            "record_id": record_id,
+            "audit_pack_id": sterile_so_safe(pack.get("audit_pack_id", "")),
+            "audit_pack_status": sterile_so_safe(pack.get("audit_pack_status", "")),
+            "audit_pack_score": sterile_so_safe(pack.get("audit_pack_score", "")),
+            "reviewer_name": reviewer_name,
+            "reviewer_role": reviewer_role or "Unspecified Reviewer Role",
+            "review_decision": review_decision,
+            "review_comment": review_comment,
+            "conditions_or_limitations": conditions,
+            "attestation_statement": attestation,
+            "signed_timestamp": sterile_now(),
+            "source_pack_hash": source_pack_hash,
+            "signoff_status": sterile_so_signoff_status(review_decision),
+        }
+
+        payload["signoff_hash"] = sterile_hash_text(
+            sterile_so_json.dumps(payload, sort_keys=True)
+        )
+
+        sign_df = sterile_so_read_signoffs()
+        sign_df = sterile_so_pd.concat([sign_df, sterile_so_pd.DataFrame([payload])], ignore_index=True)
+        sign_df = sterile_ensure_cols(sign_df, STERILE_SIGNOFF_COLUMNS)
+        sterile_write_register(STERILE_SIGNOFF_REGISTER, sign_df, STERILE_SIGNOFF_COLUMNS)
+
+        try:
+            sterile_add_lineage(
+                record_id,
+                "STERILE_GOVERNANCE_SIGNOFF",
+                f"Governance sign-off recorded: {review_decision}",
+                actor=reviewer_name,
+                source_route="/sterile-compounding/signoff/<record_id>",
+            )
+        except Exception:
+            pass
+
+        return sterile_so_redirect(f"/sterile-compounding/signoff/{record_id}")
+
+    latest = sterile_so_latest_signoff(record_id)
+    closure_summary = sterile_so_closure_status_summary(record_id)
+    open_actions = sterile_so_open_action_rows_from_pack(pack)
+
+    latest_html = ""
+    if latest:
+        latest_html = f"""
+        <div class="st-panel">
+            <h2>Latest Sign-Off</h2>
+            <div class="st-table-wrap">
+                <table class="st-table st-kv">
+                    <tr><th>Status</th><td>{sterile_so_status_badge(latest.get("signoff_status", ""))}</td></tr>
+                    <tr><th>Reviewer</th><td>{sterile_so_safe(latest.get("reviewer_name", ""))}</td></tr>
+                    <tr><th>Role</th><td>{sterile_so_safe(latest.get("reviewer_role", ""))}</td></tr>
+                    <tr><th>Decision</th><td>{sterile_so_safe(latest.get("review_decision", ""))}</td></tr>
+                    <tr><th>Comment</th><td>{sterile_so_safe(latest.get("review_comment", ""))}</td></tr>
+                    <tr><th>Conditions</th><td>{sterile_so_safe(latest.get("conditions_or_limitations", ""))}</td></tr>
+                    <tr><th>Signed Timestamp</th><td>{sterile_so_safe(latest.get("signed_timestamp", ""))}</td></tr>
+                    <tr><th>Sign-Off Hash</th><td><code>{sterile_so_safe(latest.get("signoff_hash", ""))}</code></td></tr>
+                </table>
+            </div>
+        </div>
+        """
+
+    open_action_rows = ""
+    if open_actions:
+        for action in open_actions:
+            open_action_rows += f"""
+            <tr>
+                <td>{sterile_so_safe(action.get("exception_category", ""))}</td>
+                <td>{sterile_so_safe(action.get("exception_source", ""))}</td>
+                <td>{sterile_so_safe(action.get("exception_summary", ""))}</td>
+                <td><a href="/sterile-compounding/exception-closure/{record_id}">Close / Log Action</a></td>
+            </tr>
+            """
+    else:
+        open_action_rows = """
+        <tr>
+            <td colspan="4" style="text-align:center; padding:20px; color:#6b7280;">
+                No open audit-pack actions detected.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Governance Sign-Off: {record_id}</h1>
+        <p>
+            Review and attest the sterile audit pack for this CSP record.
+        </p>
+        <div style="margin-top:16px;">{sterile_so_status_badge(pack.get("audit_pack_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            Audit Pack Decision: {sterile_so_safe(pack.get("audit_pack_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Audit Pack Score</div><div class="st-value">{sterile_so_safe(pack.get("audit_pack_score", ""))}%</div></div>
+        <div class="st-card"><div class="st-label">Closure Items</div><div class="st-value">{closure_summary["total"]}</div></div>
+        <div class="st-card"><div class="st-label">Closed</div><div class="st-value">{closure_summary["closed"]}</div></div>
+        <div class="st-card"><div class="st-label">Open / In Progress</div><div class="st-value">{closure_summary["open"] + closure_summary["in_progress"]}</div></div>
+    </div>
+
+    {latest_html}
+
+    <div class="st-panel">
+        <h2>Record Sign-Off</h2>
+        <form method="POST" action="/sterile-compounding/signoff/{record_id}">
+            <div class="st-form-grid">
+                <div>
+                    <label>Reviewer Name</label>
+                    <input name="reviewer_name" placeholder="Reviewer name" required>
+                </div>
+                <div>
+                    <label>Reviewer Role</label>
+                    <select name="reviewer_role">
+                        <option>Pharmacist Reviewer</option>
+                        <option>QA Reviewer</option>
+                        <option>Supervisor</option>
+                        <option>Operations Reviewer</option>
+                        <option>Governance Reviewer</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Review Decision</label>
+                    <select name="review_decision" required>
+                        <option>Approve Governance Reliance</option>
+                        <option>Conditional Approval - Evidence Closure Required</option>
+                        <option>Request More Evidence</option>
+                        <option>Hold / Block Governance Reliance</option>
+                        <option>Reject Audit Pack</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Review Comment</label>
+                <textarea name="review_comment" rows="4" placeholder="Explain rationale. Do not enter PHI."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Conditions or Limitations</label>
+                <textarea name="conditions_or_limitations" rows="3" placeholder="Any conditions before reliance, if applicable."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="st-button" type="submit">Save Hashed Sign-Off</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/exception-closure/{record_id}">Exception Closure</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Open Audit-Pack Actions</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Source</th>
+                        <th>Summary</th>
+                        <th>Closure</th>
+                    </tr>
+                </thead>
+                <tbody>{open_action_rows}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell(f"Governance Sign-Off - {record_id}", body)
+
+
+@app.route("/sterile-compounding/exception-closure", methods=["GET", "POST"])
+def sterile_compounding_exception_closure():
+    if sterile_so_request.method == "POST":
+        return sterile_so_save_exception_closure()
+
+    closure_df = sterile_so_read_closures()
+
+    total = len(closure_df)
+    closed = int(closure_df["closure_status"].astype(str).str.lower().isin(["closed", "resolved", "complete", "completed"]).sum()) if total else 0
+    open_count = int(closure_df["closure_status"].astype(str).str.lower().isin(["open", "new"]).sum()) if total else 0
+    progress = int(closure_df["closure_status"].astype(str).str.lower().isin(["in progress", "review", "pending"]).sum()) if total else 0
+
+    rows_html = ""
+    if not closure_df.empty:
+        for _, row in closure_df.sort_values(by="closed_timestamp", ascending=False).iterrows():
+            rid = sterile_so_safe(row.get("record_id", ""))
+            status = sterile_so_safe(row.get("closure_status", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_so_status_badge(status)}</td>
+                <td><a href="/sterile-compounding/exception-closure/{rid}">{rid}</a></td>
+                <td>{sterile_so_safe(row.get("exception_category", ""))}</td>
+                <td>{sterile_so_safe(row.get("exception_summary", ""))}</td>
+                <td>{sterile_so_safe(row.get("closure_owner", ""))}</td>
+                <td>{sterile_so_safe(row.get("closure_action", ""))}</td>
+                <td>{status}</td>
+                <td>{sterile_so_safe(row.get("linked_evidence_id", ""))}</td>
+                <td>{sterile_so_safe(row.get("closed_timestamp", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No exception closure records yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Exception Closure Log</h1>
+        <p>
+            Closure register for audit-pack exceptions, evidence gaps, control failures, inspector findings,
+            risk graph exceptions, and regulatory-watch impacts.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Closure Records</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Closed</div><div class="st-value">{closed}</div></div>
+        <div class="st-card"><div class="st-label">Open</div><div class="st-value">{open_count}</div></div>
+        <div class="st-card"><div class="st-label">In Progress</div><div class="st-value">{progress}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Closure Actions</h2>
+        <a class="st-button" href="/sterile-compounding/signoff-board">Sign-Off Board</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack">Audit Packs</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/exception-closure/export">Export Closure Register</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Exception Closure Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Category</th>
+                        <th>Exception</th>
+                        <th>Owner</th>
+                        <th>Closure Action</th>
+                        <th>Closure Status</th>
+                        <th>Linked Evidence</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell("Sterile Exception Closure Log", body)
+
+
+def sterile_so_save_exception_closure():
+    record_id = sterile_so_safe(sterile_so_request.form.get("record_id", ""))
+    exception_category = sterile_so_safe(sterile_so_request.form.get("exception_category", ""))
+    exception_source = sterile_so_safe(sterile_so_request.form.get("exception_source", ""))
+    exception_summary = sterile_so_safe(sterile_so_request.form.get("exception_summary", ""))
+    closure_owner = sterile_so_safe(sterile_so_request.form.get("closure_owner", ""))
+    closure_action = sterile_so_safe(sterile_so_request.form.get("closure_action", ""))
+    closure_status = sterile_so_safe(sterile_so_request.form.get("closure_status", ""))
+    closure_comment = sterile_so_safe(sterile_so_request.form.get("closure_comment", ""))
+    linked_evidence_id = sterile_so_safe(sterile_so_request.form.get("linked_evidence_id", ""))
+
+    if not record_id:
+        return sterile_so_Response("record_id is required.", status=400)
+
+    payload = {
+        "closure_id": sterile_so_make_id("ST-CLOSE", record_id, exception_category, exception_summary, sterile_now()),
+        "record_id": record_id,
+        "exception_category": exception_category or "General Governance Exception",
+        "exception_source": exception_source or "Manual Closure Entry",
+        "exception_summary": exception_summary or "Exception closure logged",
+        "closure_owner": closure_owner or "Unassigned",
+        "closure_action": closure_action or "Closure action not specified",
+        "closure_status": closure_status or "In Progress",
+        "closure_comment": closure_comment,
+        "linked_evidence_id": linked_evidence_id,
+        "closed_timestamp": sterile_now(),
+    }
+
+    payload["closure_hash"] = sterile_hash_text(
+        sterile_so_json.dumps(payload, sort_keys=True)
+    )
+
+    closure_df = sterile_so_read_closures()
+    closure_df = sterile_so_pd.concat([closure_df, sterile_so_pd.DataFrame([payload])], ignore_index=True)
+    closure_df = sterile_ensure_cols(closure_df, STERILE_EXCEPTION_CLOSURE_COLUMNS)
+    sterile_write_register(STERILE_EXCEPTION_CLOSURE_REGISTER, closure_df, STERILE_EXCEPTION_CLOSURE_COLUMNS)
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_EXCEPTION_CLOSURE",
+            f"Exception closure logged: {payload['closure_status']} - {payload['exception_category']}",
+            actor=payload["closure_owner"],
+            source_route="/sterile-compounding/exception-closure",
+        )
+    except Exception:
+        pass
+
+    return sterile_so_redirect(f"/sterile-compounding/exception-closure/{record_id}")
+
+
+@app.route("/sterile-compounding/exception-closure/<record_id>", methods=["GET", "POST"])
+def sterile_compounding_exception_closure_record(record_id):
+    record_id = sterile_so_safe(record_id)
+
+    if sterile_so_request.method == "POST":
+        return sterile_so_save_exception_closure()
+
+    pack = sterile_so_pack_for_record(record_id)
+    if not pack:
+        return sterile_so_Response("Audit pack not found for this CSP record.", status=404)
+
+    closure_df = sterile_so_read_closures()
+    record_closures = closure_df[closure_df["record_id"].astype(str) == record_id].copy() if not closure_df.empty else closure_df
+    open_actions = sterile_so_open_action_rows_from_pack(pack)
+
+    action_options = ""
+    if open_actions:
+        for action in open_actions:
+            cat = sterile_so_safe(action.get("exception_category", ""))
+            summary = sterile_so_safe(action.get("exception_summary", ""))
+            action_options += f'<option value="{cat}|||{summary}">{cat} - {summary}</option>'
+    else:
+        action_options = '<option value="General Governance Exception|||Manual closure entry">Manual closure entry</option>'
+
+    closure_rows = ""
+    if not record_closures.empty:
+        for _, row in record_closures.sort_values(by="closed_timestamp", ascending=False).iterrows():
+            closure_rows += f"""
+            <tr>
+                <td>{sterile_so_status_badge(row.get("closure_status", ""))}</td>
+                <td>{sterile_so_safe(row.get("exception_category", ""))}</td>
+                <td>{sterile_so_safe(row.get("exception_summary", ""))}</td>
+                <td>{sterile_so_safe(row.get("closure_owner", ""))}</td>
+                <td>{sterile_so_safe(row.get("closure_action", ""))}</td>
+                <td>{sterile_so_safe(row.get("closure_status", ""))}</td>
+                <td>{sterile_so_safe(row.get("linked_evidence_id", ""))}</td>
+                <td>{sterile_so_safe(row.get("closed_timestamp", ""))}</td>
+                <td><code>{sterile_so_safe(row.get("closure_hash", ""))[:18]}...</code></td>
+            </tr>
+            """
+    else:
+        closure_rows = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:20px; color:#6b7280;">
+                No closure records for this CSP yet.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Exception Closure: {record_id}</h1>
+        <p>
+            Log and hash closure actions for audit-pack exceptions tied to this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_so_status_badge(pack.get("audit_pack_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_so_safe(pack.get("audit_pack_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Log Closure Action</h2>
+        <form method="POST" action="/sterile-compounding/exception-closure/{record_id}">
+            <input type="hidden" name="record_id" value="{record_id}">
+            <div class="st-form-grid">
+                <div>
+                    <label>Open Exception</label>
+                    <select name="exception_picker" onchange="const p=this.value.split('|||'); this.form.exception_category.value=p[0]||''; this.form.exception_summary.value=p[1]||'';">
+                        {action_options}
+                    </select>
+                </div>
+                <div>
+                    <label>Exception Category</label>
+                    <input name="exception_category" placeholder="Evidence Exception / Control Exception">
+                </div>
+                <div>
+                    <label>Exception Source</label>
+                    <input name="exception_source" value="Audit Pack Open Actions">
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Exception Summary</label>
+                <textarea name="exception_summary" rows="3" placeholder="Describe exception being closed."></textarea>
+            </div>
+            <div class="st-form-grid" style="margin-top:12px;">
+                <div>
+                    <label>Closure Owner</label>
+                    <input name="closure_owner" placeholder="Owner / reviewer">
+                </div>
+                <div>
+                    <label>Closure Status</label>
+                    <select name="closure_status">
+                        <option>In Progress</option>
+                        <option>Closed</option>
+                        <option>Open</option>
+                        <option>Pending</option>
+                        <option>Resolved</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Linked Evidence ID</label>
+                    <input name="linked_evidence_id" placeholder="Optional ST-EVID-...">
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Closure Action</label>
+                <textarea name="closure_action" rows="3" placeholder="What was done to close or mitigate the exception?"></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Closure Comment</label>
+                <textarea name="closure_comment" rows="3" placeholder="Additional rationale. Do not enter PHI."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="st-button" type="submit">Save Hashed Closure</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/signoff/{record_id}">Back to Sign-Off</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Closure History</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Category</th>
+                        <th>Exception</th>
+                        <th>Owner</th>
+                        <th>Action</th>
+                        <th>Closure Status</th>
+                        <th>Evidence</th>
+                        <th>Timestamp</th>
+                        <th>Hash</th>
+                    </tr>
+                </thead>
+                <tbody>{closure_rows}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    return sterile_page_shell(f"Exception Closure - {record_id}", body)
+
+
+@app.route("/sterile-compounding/signoff/export")
+def sterile_compounding_signoff_export():
+    sign_df = sterile_so_read_signoffs()
+
+    if sign_df.empty:
+        sign_df = sterile_so_pd.DataFrame(columns=STERILE_SIGNOFF_COLUMNS)
+
+    csv_data = sign_df.to_csv(index=False)
+
+    return sterile_so_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_signoff_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/exception-closure/export")
+def sterile_compounding_exception_closure_export():
+    closure_df = sterile_so_read_closures()
+
+    if closure_df.empty:
+        closure_df = sterile_so_pd.DataFrame(columns=STERILE_EXCEPTION_CLOSURE_COLUMNS)
+
+    csv_data = closure_df.to_csv(index=False)
+
+    return sterile_so_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_exception_closure_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_signoff_closure_dashboard_injection(response):
+    try:
+        if sterile_so_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/executive-pack",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-signoff-closure-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-signoff-closure-panel">
+            <h2>Governance Sign-Off Board + Exception Closure Log</h2>
+            <p class="st-note">
+                Controlled human-review layer for sterile audit packs. Reviewers can record hashed sign-offs,
+                conditional approvals, holds, and exception closure actions without replacing formal QA/QMS or pharmacy release.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/signoff-board">Sign-Off Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/exception-closure">Exception Closure Log</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/signoff/export">Export Sign-Offs</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/exception-closure/export">Export Closures</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile signoff/closure dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
