@@ -37773,5 +37773,1020 @@ def sterile_compounding_inspection_readiness_dashboard_injection(response):
         print(f"Sterile inspection readiness dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_REGULATORY_CROSSWALK_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 25: Regulatory Crosswalk + Control-Evidence Coverage
+#
+# New Routes:
+#   /sterile-compounding/regulatory-crosswalk
+#   /sterile-compounding/regulatory-crosswalk/<record_id>
+#   /sterile-compounding/regulatory-crosswalk/export
+#   /sterile-compounding/control-evidence-coverage
+#   /sterile-compounding/control-evidence-coverage/export
+#
+# New Registers:
+#   sterile_compounding_regulatory_crosswalk_register.csv
+#   sterile_compounding_control_evidence_coverage_register.csv
+#
+# Boundary:
+#   This is a governance crosswalk and evidence-coverage view.
+#   It does not provide legal/regulatory advice, does not certify compliance,
+#   does not perform release, QA disposition, QMS approval, or replace
+#   validated systems. It does not touch protected Manufacturing/Wole,
+#   ServiceNow, Entra, CI Candidate Factory, CI Review Board,
+#   CI Submission Pack, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_rc_pd
+    import json as sterile_rc_json
+    from flask import request as sterile_rc_request
+    from flask import Response as sterile_rc_Response
+except Exception as sterile_rc_import_error:
+    raise RuntimeError(f"Sterile regulatory crosswalk import failed: {sterile_rc_import_error}")
+
+
+STERILE_REGULATORY_CROSSWALK_REGISTER = "sterile_compounding_regulatory_crosswalk_register.csv"
+STERILE_CONTROL_EVIDENCE_COVERAGE_REGISTER = "sterile_compounding_control_evidence_coverage_register.csv"
+
+STERILE_REGULATORY_CROSSWALK_COLUMNS = [
+    "crosswalk_id",
+    "record_id",
+    "csp_name",
+    "control_domain",
+    "control_objective",
+    "regulatory_reference_family",
+    "governance_signal",
+    "signal_status",
+    "evidence_status",
+    "coverage_status",
+    "auditor_question",
+    "answer_summary",
+    "evidence_route",
+    "inspection_route",
+    "gap_summary",
+    "recommended_action",
+    "last_checked",
+    "crosswalk_hash"
+]
+
+STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS = [
+    "coverage_id",
+    "record_id",
+    "csp_name",
+    "master_assurance_status",
+    "inspection_status",
+    "total_control_domains",
+    "green_control_domains",
+    "yellow_control_domains",
+    "red_control_domains",
+    "evidence_supported_domains",
+    "partial_evidence_domains",
+    "gap_domains",
+    "coverage_score",
+    "coverage_status",
+    "coverage_decision",
+    "priority_gap_summary",
+    "next_best_control_action",
+    "source_routes",
+    "last_checked",
+    "coverage_hash"
+]
+
+
+STERILE_RC_CONTROL_DOMAINS = [
+    {
+        "domain": "CSP Master Assurance",
+        "objective": "Show whether the CSP is governance-ready, conditional, or blocked across all linked assurance signals.",
+        "reference": "Internal governance framework; ALCOA+ evidence integrity; sterile compounding assurance principles",
+        "signal_col": "master_assurance_status",
+        "qa_domain": "Master Assurance",
+        "route_template": "/sterile-compounding/master-assurance/{record_id}",
+    },
+    {
+        "domain": "Composite No-Release Gate",
+        "objective": "Show whether critical blockers or conditional review items prevent governance reliance.",
+        "reference": "Internal no-release governance gate; QA review support; risk-based release governance",
+        "signal_col": "no_release_gate_status",
+        "qa_domain": "Composite No-Release Gate",
+        "route_template": "/sterile-compounding/no-release-composite",
+    },
+    {
+        "domain": "Evidence Completeness",
+        "objective": "Show missing, rejected, pending, and approved evidence needed for CSP review.",
+        "reference": "ALCOA+ evidence completeness; 21 CFR Part 11-style electronic evidence integrity; internal evidence matrix",
+        "signal_col": "master_assurance_status",
+        "qa_domain": "Evidence Matrix",
+        "route_template": "/sterile-compounding/evidence-matrix/{record_id}",
+    },
+    {
+        "domain": "Audit Pack Readiness",
+        "objective": "Show whether the CSP has an inspection-ready audit pack and consolidated evidence narrative.",
+        "reference": "Inspection readiness pack; audit trail support; documented evidence review",
+        "signal_col": "audit_pack_status",
+        "qa_domain": "Audit Pack",
+        "route_template": "/sterile-compounding/audit-pack/{record_id}",
+    },
+    {
+        "domain": "Governance Sign-Off",
+        "objective": "Show whether a reviewer has approved, conditionally approved, held, or rejected governance reliance.",
+        "reference": "Electronic attestation governance; review accountability; approval traceability",
+        "signal_col": "signoff_status",
+        "qa_domain": "Governance Sign-Off",
+        "route_template": "/sterile-compounding/signoff/{record_id}",
+    },
+    {
+        "domain": "Cryptographic Dossier Seal",
+        "objective": "Show whether dossier components were sealed and whether the current dossier still matches the baseline hash.",
+        "reference": "Tamper-evident evidence assurance; 21 CFR Part 11-style integrity support; ALCOA+ enduring/consistent evidence",
+        "signal_col": "seal_health_status",
+        "qa_domain": "Cryptographic Dossier Seal",
+        "route_template": "/sterile-compounding/seal/{record_id}",
+    },
+    {
+        "domain": "Custody and Handoff",
+        "objective": "Show who had custody, where the CSP was located, whether handoff evidence exists, and whether hold/quarantine exists.",
+        "reference": "Chain-of-custody governance; traceability; segregation/hold controls",
+        "signal_col": "custody_audit_status",
+        "qa_domain": "Custody",
+        "route_template": "/sterile-compounding/custody/{record_id}",
+    },
+    {
+        "domain": "SOP / Formula Version",
+        "objective": "Show whether the CSP is linked to controlled SOP/formula version evidence and whether version drift exists.",
+        "reference": "Controlled procedure governance; formulation traceability; version control",
+        "signal_col": "sop_drift_status",
+        "qa_domain": "SOP / Formula",
+        "route_template": "/sterile-compounding/sop-drift",
+    },
+    {
+        "domain": "Personnel Competency",
+        "objective": "Show whether assigned personnel have competency/qualification evidence and whether workload risk exists.",
+        "reference": "Aseptic competency governance; training evidence; personnel qualification traceability",
+        "signal_col": "personnel_drift_status",
+        "qa_domain": "Personnel Competency",
+        "route_template": "/sterile-compounding/personnel-drift",
+    },
+    {
+        "domain": "Equipment / Room Readiness",
+        "objective": "Show whether the hood, room, equipment, certification, cleaning, and environmental readiness are acceptable.",
+        "reference": "Cleanroom/equipment readiness governance; certification evidence; cleaning and environmental controls",
+        "signal_col": "equipment_room_drift_status",
+        "qa_domain": "Equipment / Room Readiness",
+        "route_template": "/sterile-compounding/equipment-room-drift",
+    },
+    {
+        "domain": "Environmental Monitoring",
+        "objective": "Show whether environmental drift, excursion, or monitoring review signals affect the CSP.",
+        "reference": "Environmental monitoring governance; cleanroom condition evidence; excursion review",
+        "signal_col": "environmental_drift_status",
+        "qa_domain": "Environmental Monitoring",
+        "route_template": "/sterile-compounding/environmental-drift",
+    },
+    {
+        "domain": "Regulatory / Supplier Watch",
+        "objective": "Show whether regulatory or supplier-watch signals affect the CSP and require reviewer disposition.",
+        "reference": "Regulatory-watch governance; supplier quality signal review; external-impact monitoring",
+        "signal_col": "regulatory_impact_status",
+        "qa_domain": "Regulatory / Supplier Watch",
+        "route_template": "/sterile-compounding/regulatory-impact",
+    },
+    {
+        "domain": "Recovery Planning",
+        "objective": "Show the next best closure action and projected status after simulated remediation.",
+        "reference": "CAPA-style closure planning; risk-based remediation; inspection preparation",
+        "signal_col": "recovery_projected_status",
+        "qa_domain": "Recovery Plan",
+        "route_template": "/sterile-compounding/closure-simulator/{record_id}",
+    },
+]
+
+
+def sterile_rc_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_INSPECTION_READINESS_COLUMNS",
+        "STERILE_AUDITOR_QA_COLUMNS",
+        "sterile_ir_build_registers",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile regulatory crosswalk dependencies missing: " + ", ".join(missing))
+
+
+def sterile_rc_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_rc_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_rc_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_rc_status_bucket(value):
+    value = sterile_rc_safe(value).upper()
+
+    if value in ["GREEN", "GO", "READY", "HASH MATCH", "INSPECTION READY"]:
+        return "GREEN"
+
+    if value in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "REJECTED", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_rc_status_badge(status):
+    status = sterile_rc_status_bucket(status)
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_rc_build_inspection_and_qa():
+    sterile_rc_require_dependencies()
+
+    try:
+        inspection_df, qa_df = sterile_ir_build_registers()
+    except Exception:
+        inspection_df = sterile_read_register(
+            "sterile_compounding_inspection_readiness_register.csv",
+            STERILE_INSPECTION_READINESS_COLUMNS
+        )
+        qa_df = sterile_read_register(
+            "sterile_compounding_auditor_qa_register.csv",
+            STERILE_AUDITOR_QA_COLUMNS
+        )
+
+    inspection_df = sterile_ensure_cols(inspection_df, STERILE_INSPECTION_READINESS_COLUMNS)
+    qa_df = sterile_ensure_cols(qa_df, STERILE_AUDITOR_QA_COLUMNS)
+
+    return inspection_df, qa_df
+
+
+def sterile_rc_latest_qa(qa_df, record_id, domain):
+    if qa_df is None or qa_df.empty:
+        return {}
+
+    if "record_id" not in qa_df.columns or "question_domain" not in qa_df.columns:
+        return {}
+
+    match = qa_df[
+        (qa_df["record_id"].astype(str) == str(record_id))
+        & (qa_df["question_domain"].astype(str) == str(domain))
+    ].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_rc_domain_signal(inspection_row, domain_spec, qa_row):
+    signal_col = domain_spec["signal_col"]
+    raw_signal = sterile_rc_safe(inspection_row.get(signal_col, ""))
+
+    if domain_spec["domain"] == "Evidence Completeness":
+        missing_focus = sterile_rc_safe(inspection_row.get("required_evidence_focus", ""))
+        if "Missing" in missing_focus or "Rejected" in missing_focus:
+            raw_signal = "RED"
+        elif "evidence" in missing_focus.lower():
+            raw_signal = "YELLOW"
+        else:
+            raw_signal = "GREEN"
+
+    if domain_spec["domain"] == "Cryptographic Dossier Seal":
+        verification = sterile_rc_safe(inspection_row.get("latest_seal_verification", ""))
+        if verification.upper() == "HASH MISMATCH":
+            raw_signal = "RED"
+        elif verification.upper() != "HASH MATCH":
+            raw_signal = "YELLOW"
+
+    if not raw_signal and qa_row:
+        raw_signal = sterile_rc_safe(qa_row.get("question_status", ""))
+
+    return raw_signal or "UNKNOWN"
+
+
+def sterile_rc_coverage_from_signal(signal, qa_row):
+    bucket = sterile_rc_status_bucket(signal)
+
+    qa_status = sterile_rc_safe(qa_row.get("question_status", "")) if qa_row else ""
+    if qa_status:
+        qa_bucket = sterile_rc_status_bucket(qa_status)
+        if qa_bucket == "RED":
+            bucket = "RED"
+        elif qa_bucket == "YELLOW" and bucket == "GREEN":
+            bucket = "YELLOW"
+
+    if bucket == "GREEN":
+        return "GREEN", "SUPPORTED"
+    if bucket == "YELLOW":
+        return "YELLOW", "PARTIAL / REVIEW"
+    return "RED", "GAP / BLOCKER"
+
+
+def sterile_rc_route_for(domain_spec, record_id, qa_row):
+    qa_route = sterile_rc_safe(qa_row.get("evidence_route", "")) if qa_row else ""
+
+    if qa_route:
+        return qa_route
+
+    return domain_spec["route_template"].format(record_id=record_id)
+
+
+def sterile_rc_gap_summary(domain, signal, coverage_status):
+    bucket = sterile_rc_status_bucket(signal)
+
+    if bucket == "GREEN":
+        return f"{domain} appears supported from current governance data."
+
+    if bucket == "YELLOW":
+        return f"{domain} requires review, conditional rationale, or completion before clean inspection reliance."
+
+    return f"{domain} has a blocker or gap that should be closed before inspection reliance."
+
+
+def sterile_rc_recommended_action(domain, signal, route):
+    bucket = sterile_rc_status_bucket(signal)
+
+    if bucket == "GREEN":
+        return f"Maintain evidence and open {route} if an auditor asks for support."
+
+    if bucket == "YELLOW":
+        return f"Review {domain}, document rationale, and use {route} to show supporting evidence."
+
+    return f"Close the {domain} gap/blocker, rebuild the relevant module, then verify the crosswalk again."
+
+
+def sterile_rc_build_crosswalk():
+    inspection_df, qa_df = sterile_rc_build_inspection_and_qa()
+
+    if inspection_df.empty:
+        empty_crosswalk = sterile_rc_pd.DataFrame(columns=STERILE_REGULATORY_CROSSWALK_COLUMNS)
+        empty_coverage = sterile_rc_pd.DataFrame(columns=STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+        sterile_write_register(STERILE_REGULATORY_CROSSWALK_REGISTER, empty_crosswalk, STERILE_REGULATORY_CROSSWALK_COLUMNS)
+        sterile_write_register(STERILE_CONTROL_EVIDENCE_COVERAGE_REGISTER, empty_coverage, STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+        return empty_crosswalk, empty_coverage
+
+    crosswalk_rows = []
+
+    for _, insp in inspection_df.iterrows():
+        record_id = sterile_rc_safe(insp.get("record_id", ""))
+        csp_name = sterile_rc_safe(insp.get("csp_name", ""))
+
+        for domain_spec in STERILE_RC_CONTROL_DOMAINS:
+            qa_row = sterile_rc_latest_qa(
+                qa_df,
+                record_id,
+                domain_spec["qa_domain"]
+            )
+
+            signal = sterile_rc_domain_signal(insp.to_dict(), domain_spec, qa_row)
+            signal_status = sterile_rc_status_bucket(signal)
+            coverage_status, evidence_status = sterile_rc_coverage_from_signal(signal, qa_row)
+            route = sterile_rc_route_for(domain_spec, record_id, qa_row)
+            inspection_route = f"/sterile-compounding/inspection-readiness/{record_id}"
+
+            question = sterile_rc_safe(qa_row.get("auditor_question", ""))
+            if not question:
+                question = f"How is {domain_spec['domain']} supported for this CSP?"
+
+            answer = sterile_rc_safe(qa_row.get("answer_summary", ""))
+            if not answer:
+                answer = f"{domain_spec['domain']} signal is {signal_status}. Evidence route: {route}."
+
+            payload = {
+                "crosswalk_id": sterile_rc_make_id("ST-RCX", record_id, domain_spec["domain"]),
+                "record_id": record_id,
+                "csp_name": csp_name,
+                "control_domain": domain_spec["domain"],
+                "control_objective": domain_spec["objective"],
+                "regulatory_reference_family": domain_spec["reference"],
+                "governance_signal": signal,
+                "signal_status": signal_status,
+                "evidence_status": evidence_status,
+                "coverage_status": coverage_status,
+                "auditor_question": question,
+                "answer_summary": answer,
+                "evidence_route": route,
+                "inspection_route": inspection_route,
+                "gap_summary": sterile_rc_gap_summary(domain_spec["domain"], signal, coverage_status),
+                "recommended_action": sterile_rc_recommended_action(domain_spec["domain"], signal, route),
+                "last_checked": sterile_now(),
+            }
+
+            payload["crosswalk_hash"] = sterile_hash_text(
+                sterile_rc_json.dumps(payload, sort_keys=True)
+            )
+
+            crosswalk_rows.append(payload)
+
+    crosswalk_df = sterile_rc_pd.DataFrame(crosswalk_rows)
+    crosswalk_df = sterile_ensure_cols(crosswalk_df, STERILE_REGULATORY_CROSSWALK_COLUMNS)
+
+    coverage_df = sterile_rc_build_coverage_from_crosswalk(crosswalk_df, inspection_df)
+
+    sterile_write_register(STERILE_REGULATORY_CROSSWALK_REGISTER, crosswalk_df, STERILE_REGULATORY_CROSSWALK_COLUMNS)
+    sterile_write_register(STERILE_CONTROL_EVIDENCE_COVERAGE_REGISTER, coverage_df, STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+
+    return crosswalk_df, coverage_df
+
+
+def sterile_rc_build_coverage_from_crosswalk(crosswalk_df, inspection_df):
+    rows = []
+
+    if inspection_df is None or inspection_df.empty:
+        return sterile_rc_pd.DataFrame(columns=STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+
+    for _, insp in inspection_df.iterrows():
+        record_id = sterile_rc_safe(insp.get("record_id", ""))
+        csp_name = sterile_rc_safe(insp.get("csp_name", ""))
+        record_crosswalk = crosswalk_df[crosswalk_df["record_id"].astype(str) == str(record_id)].copy() if not crosswalk_df.empty else crosswalk_df
+
+        total = len(record_crosswalk)
+        green = int((record_crosswalk["coverage_status"].astype(str) == "GREEN").sum()) if total else 0
+        yellow = int((record_crosswalk["coverage_status"].astype(str) == "YELLOW").sum()) if total else 0
+        red = int((record_crosswalk["coverage_status"].astype(str) == "RED").sum()) if total else 0
+
+        supported = int((record_crosswalk["evidence_status"].astype(str) == "SUPPORTED").sum()) if total else 0
+        partial = int((record_crosswalk["evidence_status"].astype(str) == "PARTIAL / REVIEW").sum()) if total else 0
+        gaps = int((record_crosswalk["evidence_status"].astype(str) == "GAP / BLOCKER").sum()) if total else 0
+
+        score = 0
+        if total:
+            score = int(round(((green * 100) + (yellow * 55)) / total, 0))
+
+        if red:
+            coverage_status = "RED"
+            decision = "CONTROL-EVIDENCE COVERAGE HAS BLOCKERS"
+        elif yellow:
+            coverage_status = "YELLOW"
+            decision = "CONTROL-EVIDENCE COVERAGE NEEDS REVIEW"
+        else:
+            coverage_status = "GREEN"
+            decision = "CONTROL-EVIDENCE COVERAGE SUPPORTED"
+
+        priority_gaps = []
+        next_action = "No control-evidence action required."
+
+        if not record_crosswalk.empty:
+            red_rows = record_crosswalk[record_crosswalk["coverage_status"].astype(str) == "RED"]
+            yellow_rows = record_crosswalk[record_crosswalk["coverage_status"].astype(str) == "YELLOW"]
+
+            if not red_rows.empty:
+                priority_gaps = red_rows["control_domain"].astype(str).tolist()
+                first_gap = sterile_rc_safe(red_rows.iloc[0].get("recommended_action", ""))
+                next_action = first_gap or "Close RED control-evidence gaps."
+            elif not yellow_rows.empty:
+                priority_gaps = yellow_rows["control_domain"].astype(str).tolist()
+                first_review = sterile_rc_safe(yellow_rows.iloc[0].get("recommended_action", ""))
+                next_action = first_review or "Review YELLOW control-evidence domains."
+
+        source_routes = [
+            f"/sterile-compounding/regulatory-crosswalk/{record_id}",
+            f"/sterile-compounding/inspection-readiness/{record_id}",
+            f"/sterile-compounding/master-assurance/{record_id}",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/release-dossier/{record_id}",
+        ]
+
+        payload = {
+            "coverage_id": sterile_rc_make_id("ST-COV", record_id, coverage_status, score),
+            "record_id": record_id,
+            "csp_name": csp_name,
+            "master_assurance_status": sterile_rc_safe(insp.get("master_assurance_status", "")),
+            "inspection_status": sterile_rc_safe(insp.get("inspection_status", "")),
+            "total_control_domains": total,
+            "green_control_domains": green,
+            "yellow_control_domains": yellow,
+            "red_control_domains": red,
+            "evidence_supported_domains": supported,
+            "partial_evidence_domains": partial,
+            "gap_domains": gaps,
+            "coverage_score": score,
+            "coverage_status": coverage_status,
+            "coverage_decision": decision,
+            "priority_gap_summary": "; ".join(priority_gaps) if priority_gaps else "No priority gaps detected.",
+            "next_best_control_action": next_action,
+            "source_routes": "; ".join(source_routes),
+            "last_checked": sterile_now(),
+        }
+
+        payload["coverage_hash"] = sterile_hash_text(
+            sterile_rc_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    coverage_df = sterile_rc_pd.DataFrame(rows)
+    coverage_df = sterile_ensure_cols(coverage_df, STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+
+    return coverage_df
+
+
+@app.route("/sterile-compounding/regulatory-crosswalk")
+def sterile_compounding_regulatory_crosswalk():
+    crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+
+    status_filter = sterile_rc_safe(sterile_rc_request.args.get("status", ""))
+    domain_filter = sterile_rc_safe(sterile_rc_request.args.get("domain", ""))
+
+    filtered = crosswalk_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["coverage_status"].astype(str) == status_filter]
+
+    if domain_filter and not filtered.empty:
+        filtered = filtered[filtered["control_domain"].astype(str) == domain_filter]
+
+    total = len(filtered)
+    green = int((filtered["coverage_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["coverage_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["coverage_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Coverage Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    domain_options = '<option value="">All Control Domains</option>'
+    for domain in [d["domain"] for d in STERILE_RC_CONTROL_DOMAINS]:
+        selected = "selected" if domain == domain_filter else ""
+        domain_options += f'<option value="{domain}" {selected}>{domain}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["coverage_status", "record_id", "control_domain"], ascending=[False, True, True]).iterrows():
+            rid = sterile_rc_safe(row.get("record_id", ""))
+            route = sterile_rc_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_rc_status_badge(row.get("coverage_status", ""))}</td>
+                <td><a href="/sterile-compounding/regulatory-crosswalk/{rid}">{rid}</a></td>
+                <td>{sterile_rc_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_rc_safe(row.get("control_domain", ""))}</td>
+                <td>{sterile_rc_safe(row.get("regulatory_reference_family", ""))}</td>
+                <td>{sterile_rc_status_badge(row.get("signal_status", ""))}</td>
+                <td>{sterile_rc_safe(row.get("evidence_status", ""))}</td>
+                <td>{sterile_rc_safe(row.get("auditor_question", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_rc_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No regulatory crosswalk rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Regulatory Crosswalk</h1>
+        <p>
+            Control-domain crosswalk that connects sterile compounding governance signals to evidence routes,
+            auditor questions, and inspection-ready explanations. This is a governance support view only.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Crosswalk Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Crosswalk Filters</h2>
+        <form method="GET" action="/sterile-compounding/regulatory-crosswalk">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Coverage Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:280px;">
+                    <label>Control Domain</label>
+                    <select name="domain">{domain_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage">Coverage Summary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk/export">Export Crosswalk</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Regulatory Crosswalk Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Coverage</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Control Domain</th>
+                        <th>Reference Family</th>
+                        <th>Signal</th>
+                        <th>Evidence</th>
+                        <th>Auditor Question</th>
+                        <th>Evidence Route</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "REGULATORY-CROSSWALK",
+            "STERILE_REGULATORY_CROSSWALK_VIEW",
+            "Sterile regulatory crosswalk viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/regulatory-crosswalk",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Regulatory Crosswalk", body)
+
+
+@app.route("/sterile-compounding/regulatory-crosswalk/<record_id>")
+def sterile_compounding_regulatory_crosswalk_record(record_id):
+    crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+    record_id = sterile_rc_safe(record_id)
+
+    record_rows = crosswalk_df[crosswalk_df["record_id"].astype(str) == str(record_id)].copy() if not crosswalk_df.empty else crosswalk_df
+    coverage_match = coverage_df[coverage_df["record_id"].astype(str) == str(record_id)].copy() if not coverage_df.empty else coverage_df
+
+    if record_rows.empty:
+        return sterile_rc_Response("Regulatory crosswalk record not found.", status=404)
+
+    coverage = coverage_match.iloc[0].to_dict() if not coverage_match.empty else {}
+
+    detail_rows = ""
+    if coverage:
+        for key in STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS:
+            label = key.replace("_", " ").title()
+            value = sterile_rc_safe(coverage.get(key, ""))
+
+            if key == "coverage_status":
+                value = sterile_rc_status_badge(value)
+            elif key == "coverage_hash":
+                value = f"<code>{value}</code>"
+            elif key == "source_routes":
+                routes = [r.strip() for r in value.split(";") if r.strip()]
+                value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+            detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    crosswalk_rows = ""
+    for _, row in record_rows.sort_values(by=["coverage_status", "control_domain"], ascending=[False, True]).iterrows():
+        route = sterile_rc_safe(row.get("evidence_route", ""))
+        route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+        crosswalk_rows += f"""
+        <tr>
+            <td>{sterile_rc_status_badge(row.get("coverage_status", ""))}</td>
+            <td>{sterile_rc_safe(row.get("control_domain", ""))}</td>
+            <td>{sterile_rc_safe(row.get("control_objective", ""))}</td>
+            <td>{sterile_rc_safe(row.get("regulatory_reference_family", ""))}</td>
+            <td>{sterile_rc_safe(row.get("auditor_question", ""))}</td>
+            <td>{sterile_rc_safe(row.get("answer_summary", ""))}</td>
+            <td>{route_link}</td>
+            <td>{sterile_rc_safe(row.get("gap_summary", ""))}</td>
+            <td>{sterile_rc_safe(row.get("recommended_action", ""))}</td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Regulatory Crosswalk: {record_id}</h1>
+        <p>
+            Record-level control/evidence crosswalk for this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_rc_status_badge(coverage.get("coverage_status", "UNKNOWN"))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_rc_safe(coverage.get("coverage_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control-Evidence Coverage Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Record Crosswalk Domains</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Coverage</th>
+                        <th>Domain</th>
+                        <th>Objective</th>
+                        <th>Reference Family</th>
+                        <th>Auditor Question</th>
+                        <th>Answer Summary</th>
+                        <th>Evidence Route</th>
+                        <th>Gap Summary</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{crosswalk_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/inspection-readiness/{record_id}">Inspection Readiness</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/{record_id}">Master Assurance</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage">Coverage Summary</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk">Back to Crosswalk</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_REGULATORY_CROSSWALK_RECORD_VIEW",
+            "Record-level sterile regulatory crosswalk viewed",
+            actor="system",
+            source_route="/sterile-compounding/regulatory-crosswalk/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Regulatory Crosswalk - {record_id}", body)
+
+
+@app.route("/sterile-compounding/control-evidence-coverage")
+def sterile_compounding_control_evidence_coverage():
+    crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+
+    status_filter = sterile_rc_safe(sterile_rc_request.args.get("status", ""))
+    filtered = coverage_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["coverage_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["coverage_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["coverage_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["coverage_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_rc_pd.to_numeric(filtered["coverage_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Coverage Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["coverage_status", "coverage_score"], ascending=[False, True]).iterrows():
+            rid = sterile_rc_safe(row.get("record_id", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_rc_status_badge(row.get("coverage_status", ""))}</td>
+                <td><a href="/sterile-compounding/regulatory-crosswalk/{rid}">{rid}</a></td>
+                <td>{sterile_rc_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_rc_safe(row.get("coverage_score", ""))}</td>
+                <td>{sterile_rc_safe(row.get("total_control_domains", ""))}</td>
+                <td>{sterile_rc_safe(row.get("green_control_domains", ""))}</td>
+                <td>{sterile_rc_safe(row.get("yellow_control_domains", ""))}</td>
+                <td>{sterile_rc_safe(row.get("red_control_domains", ""))}</td>
+                <td>{sterile_rc_safe(row.get("priority_gap_summary", ""))}</td>
+                <td>{sterile_rc_safe(row.get("next_best_control_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No control-evidence coverage rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Control-Evidence Coverage</h1>
+        <p>
+            CSP-level summary of control domains, evidence coverage, gaps, review items, and next best control action.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Coverage Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Coverage Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Coverage Filters</h2>
+        <form method="GET" action="/sterile-compounding/control-evidence-coverage">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Coverage Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk">Regulatory Crosswalk</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage/export">Export Coverage</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control-Evidence Coverage Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Coverage</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>Total Domains</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Priority Gaps</th>
+                        <th>Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONTROL-EVIDENCE-COVERAGE",
+            "STERILE_CONTROL_EVIDENCE_COVERAGE_VIEW",
+            "Sterile control-evidence coverage viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/control-evidence-coverage",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Control-Evidence Coverage", body)
+
+
+@app.route("/sterile-compounding/regulatory-crosswalk/export")
+def sterile_compounding_regulatory_crosswalk_export():
+    crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+
+    if crosswalk_df.empty:
+        crosswalk_df = sterile_rc_pd.DataFrame(columns=STERILE_REGULATORY_CROSSWALK_COLUMNS)
+
+    csv_data = crosswalk_df.to_csv(index=False)
+
+    return sterile_rc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_regulatory_crosswalk_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/control-evidence-coverage/export")
+def sterile_compounding_control_evidence_coverage_export():
+    crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+
+    if coverage_df.empty:
+        coverage_df = sterile_rc_pd.DataFrame(columns=STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+
+    csv_data = coverage_df.to_csv(index=False)
+
+    return sterile_rc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_control_evidence_coverage_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_regulatory_crosswalk_dashboard_injection(response):
+    try:
+        if sterile_rc_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+            "/sterile-compounding/closure-simulator",
+            "/sterile-compounding/recovery-plan",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/auditor-qa-pack",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-regulatory-crosswalk-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-regulatory-crosswalk-panel">
+            <h2>Regulatory Crosswalk + Control-Evidence Coverage</h2>
+            <p class="st-note">
+                Maps each CSP to control domains, governance signals, evidence routes, auditor questions,
+                gap summaries, and next best control actions. This is a governance support view, not a legal compliance certification.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/regulatory-crosswalk">Regulatory Crosswalk</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage">Control-Evidence Coverage</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk/export">Export Crosswalk</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-evidence-coverage/export">Export Coverage</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile regulatory crosswalk dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
