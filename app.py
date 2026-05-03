@@ -26248,5 +26248,902 @@ def sterile_compounding_evidence_matrix_dashboard_injection(response):
         print(f"Sterile evidence matrix dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_AUDIT_PACK_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 13: Audit Pack Builder + Release Dossier
+#
+# New Routes:
+#   /sterile-compounding/audit-pack
+#   /sterile-compounding/audit-pack/<record_id>
+#   /sterile-compounding/audit-pack/export
+#   /sterile-compounding/release-dossier
+#   /sterile-compounding/release-dossier/<record_id>
+#   /sterile-compounding/release-dossier/export
+#
+# New Derived Register:
+#   sterile_compounding_audit_pack_register.csv
+#
+# Boundary:
+#   This consolidates sterile compounding evidence into an inspection-ready
+#   pack/dossier. It does not replace QA, pharmacy disposition, QMS,
+#   Veeva, Blue Mountain, ServiceNow, Entra, CI, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_pack_pd
+    import json as sterile_pack_json
+    from flask import request as sterile_pack_request
+    from flask import Response as sterile_pack_Response
+except Exception as sterile_pack_import_error:
+    raise RuntimeError(f"Sterile audit pack import failed: {sterile_pack_import_error}")
+
+
+STERILE_AUDIT_PACK_REGISTER = "sterile_compounding_audit_pack_register.csv"
+
+STERILE_AUDIT_PACK_COLUMNS = [
+    "audit_pack_id",
+    "record_id",
+    "facility_type",
+    "csp_name",
+    "batch_or_rx_id",
+    "csp_category",
+    "hazardous_drug",
+    "governance_status",
+    "readiness_score",
+    "release_decision",
+    "control_checks_total",
+    "control_pass",
+    "control_review",
+    "control_fail",
+    "evidence_requirements_total",
+    "evidence_complete",
+    "evidence_pending",
+    "evidence_missing",
+    "evidence_rejected",
+    "evidence_vault_files",
+    "evidence_hash_matches",
+    "evidence_hash_mismatches",
+    "inspector_findings",
+    "critical_findings",
+    "high_findings",
+    "deviation_pack_status",
+    "risk_graph_edges",
+    "red_risk_edges",
+    "yellow_risk_edges",
+    "replay_events",
+    "red_replay_events",
+    "yellow_replay_events",
+    "audit_pack_status",
+    "audit_pack_score",
+    "audit_pack_decision",
+    "open_actions",
+    "source_routes",
+    "created_at",
+    "audit_pack_hash"
+]
+
+
+def sterile_pack_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile audit pack dependencies are missing: " + ", ".join(missing))
+
+
+def sterile_pack_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_pack_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_pack_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, columns) if columns else df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_pack_pd.DataFrame(columns=columns)
+
+
+def sterile_pack_status_badge(status):
+    status = sterile_pack_safe(status).upper()
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_pack_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_pack_subset(df, column, value):
+    if df is None or df.empty or column not in df.columns:
+        return sterile_pack_pd.DataFrame(columns=df.columns if df is not None and hasattr(df, "columns") else [])
+    return df[df[column].astype(str) == str(value)].copy()
+
+
+def sterile_pack_build_all_supporting():
+    # Trigger rebuilds if optional functions exist, then read derived registers.
+    optional_builders = [
+        "sterile_control_build_map",
+        "sterile_trust_build_passports",
+        "sterile_inspector_build_findings",
+        "sterile_deviation_rebuild_all",
+        "sterile_graph_build_edges",
+        "sterile_replay_build_events",
+        "sterile_prework_build_gate",
+        "sterile_drift_build_register",
+        "sterile_ent_build_scorecard",
+        "sterile_ent_build_regwatch_impacts",
+        "sterile_mx_build_matrix",
+    ]
+
+    for builder_name in optional_builders:
+        try:
+            builder = globals().get(builder_name)
+            if callable(builder):
+                builder()
+        except Exception as exc:
+            print(f"Audit pack optional builder skipped: {builder_name}: {exc}")
+
+    return {
+        "control_map": sterile_pack_read_optional("sterile_compounding_control_map_register.csv", "STERILE_CONTROL_MAP_COLUMNS"),
+        "evidence_matrix": sterile_pack_read_optional("sterile_compounding_evidence_matrix_register.csv", "STERILE_EVIDENCE_MATRIX_COLUMNS"),
+        "evidence_vault": sterile_pack_read_optional("sterile_compounding_evidence_vault_register.csv", "STERILE_EVIDENCE_VAULT_COLUMNS"),
+        "evidence_verify": sterile_pack_read_optional("sterile_compounding_evidence_verification_register.csv", "STERILE_EVIDENCE_VERIFICATION_COLUMNS"),
+        "findings": sterile_pack_read_optional("sterile_compounding_inspector_findings_register.csv", "STERILE_INSPECTOR_FINDING_COLUMNS"),
+        "deviation_packs": sterile_pack_read_optional("sterile_compounding_deviation_pack_register.csv", "STERILE_DEVIATION_PACK_COLUMNS"),
+        "risk_graph": sterile_pack_read_optional("sterile_compounding_risk_graph_register.csv", "STERILE_RISK_GRAPH_COLUMNS"),
+        "replay": sterile_pack_read_optional("sterile_compounding_auditor_replay_register.csv", "STERILE_AUDITOR_REPLAY_COLUMNS"),
+        "worklist": sterile_pack_read_optional("sterile_compounding_evidence_worklist_register.csv", "STERILE_EVIDENCE_WORKLIST_COLUMNS"),
+        "reg_impact": sterile_pack_read_optional("sterile_compounding_regulatory_impact_register.csv", "STERILE_REGWATCH_IMPACT_COLUMNS"),
+    }
+
+
+def sterile_pack_get_findings_df(support):
+    findings_df = support.get("findings")
+
+    if findings_df is not None and not findings_df.empty:
+        return findings_df
+
+    try:
+        builder = globals().get("sterile_inspector_build_findings")
+        if callable(builder):
+            findings_df = builder()
+            if findings_df is not None and hasattr(findings_df, "columns"):
+                return findings_df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_pack_pd.DataFrame(columns=globals().get("STERILE_INSPECTOR_FINDING_COLUMNS", []))
+
+
+def sterile_pack_for_record(record, support):
+    record_id = sterile_pack_safe(record.get("record_id", ""))
+
+    control_df = sterile_pack_subset(support["control_map"], "record_id", record_id)
+    matrix_df = sterile_pack_subset(support["evidence_matrix"], "record_id", record_id)
+    vault_df = sterile_pack_subset(support["evidence_vault"], "record_id", record_id)
+    verify_df = sterile_pack_subset(support["evidence_verify"], "record_id", record_id)
+    findings_df = sterile_pack_subset(sterile_pack_get_findings_df(support), "record_id", record_id)
+    deviation_df = sterile_pack_subset(support["deviation_packs"], "record_id", record_id)
+    risk_df = sterile_pack_subset(support["risk_graph"], "record_id", record_id)
+    replay_df = sterile_pack_subset(support["replay"], "record_id", record_id)
+    worklist_df = sterile_pack_subset(support["worklist"], "record_id", record_id)
+    reg_impact_df = sterile_pack_subset(support["reg_impact"], "record_id", record_id)
+
+    control_total = len(control_df)
+    control_pass = int((control_df["control_status"].astype(str) == "PASS").sum()) if control_total and "control_status" in control_df.columns else 0
+    control_review = int((control_df["control_status"].astype(str) == "REVIEW").sum()) if control_total and "control_status" in control_df.columns else 0
+    control_fail = int((control_df["control_status"].astype(str) == "FAIL").sum()) if control_total and "control_status" in control_df.columns else 0
+
+    matrix_total = len(matrix_df)
+    evidence_complete = int((matrix_df["evidence_status"].astype(str) == "PRESENT_APPROVED").sum()) if matrix_total and "evidence_status" in matrix_df.columns else 0
+    evidence_pending = int((matrix_df["evidence_status"].astype(str) == "PRESENT_PENDING").sum()) if matrix_total and "evidence_status" in matrix_df.columns else 0
+    evidence_missing = int((matrix_df["evidence_status"].astype(str) == "MISSING").sum()) if matrix_total and "evidence_status" in matrix_df.columns else 0
+    evidence_rejected = int((matrix_df["evidence_status"].astype(str) == "REJECTED").sum()) if matrix_total and "evidence_status" in matrix_df.columns else 0
+
+    evidence_files = len(vault_df)
+
+    hash_matches = int((verify_df["verification_status"].astype(str) == "HASH MATCH").sum()) if not verify_df.empty and "verification_status" in verify_df.columns else 0
+    hash_mismatches = int((verify_df["verification_status"].astype(str) == "HASH MISMATCH").sum()) if not verify_df.empty and "verification_status" in verify_df.columns else 0
+
+    inspector_findings = len(findings_df)
+    critical_findings = int((findings_df["severity"].astype(str) == "CRITICAL").sum()) if inspector_findings and "severity" in findings_df.columns else 0
+    high_findings = int((findings_df["severity"].astype(str) == "HIGH").sum()) if inspector_findings and "severity" in findings_df.columns else 0
+
+    deviation_pack_status = ""
+    if not deviation_df.empty and "pack_status" in deviation_df.columns:
+        deviation_pack_status = sterile_pack_safe(deviation_df.iloc[0].get("pack_status", ""))
+
+    risk_edges = len(risk_df)
+    red_risk_edges = int((risk_df["risk_status"].astype(str) == "RED").sum()) if risk_edges and "risk_status" in risk_df.columns else 0
+    yellow_risk_edges = int((risk_df["risk_status"].astype(str) == "YELLOW").sum()) if risk_edges and "risk_status" in risk_df.columns else 0
+
+    replay_events = len(replay_df)
+    red_replay_events = int((replay_df["stage_status"].astype(str) == "RED").sum()) if replay_events and "stage_status" in replay_df.columns else 0
+    yellow_replay_events = int((replay_df["stage_status"].astype(str) == "YELLOW").sum()) if replay_events and "stage_status" in replay_df.columns else 0
+
+    regulatory_hits = len(reg_impact_df)
+
+    open_actions = []
+
+    gov_status = sterile_pack_safe(record.get("governance_status", "")).upper()
+    readiness_score = sterile_pack_numeric(record.get("readiness_score", 0), 0)
+
+    if gov_status == "RED":
+        open_actions.append("CSP governance status is RED")
+    if control_fail:
+        open_actions.append(f"Failed control checks: {control_fail}")
+    if control_review:
+        open_actions.append(f"Review-required control checks: {control_review}")
+    if evidence_missing:
+        open_actions.append(f"Missing required evidence: {evidence_missing}")
+    if evidence_rejected:
+        open_actions.append(f"Rejected evidence requirements: {evidence_rejected}")
+    if evidence_pending:
+        open_actions.append(f"Pending evidence review: {evidence_pending}")
+    if hash_mismatches:
+        open_actions.append(f"Evidence hash mismatches: {hash_mismatches}")
+    if critical_findings:
+        open_actions.append(f"Critical inspector findings: {critical_findings}")
+    if high_findings:
+        open_actions.append(f"High-severity inspector findings: {high_findings}")
+    if "DEVIATION PACK REQUIRED" in deviation_pack_status.upper():
+        open_actions.append("Deviation pack required")
+    if red_risk_edges:
+        open_actions.append(f"RED risk graph relationships: {red_risk_edges}")
+    if red_replay_events:
+        open_actions.append(f"RED auditor replay events: {red_replay_events}")
+    if regulatory_hits:
+        open_actions.append(f"Regulatory/supplier watch impacts: {regulatory_hits}")
+    if not worklist_df.empty:
+        open_actions.append(f"Evidence closure worklist items: {len(worklist_df)}")
+
+    score = 100
+    score -= 20 if gov_status == "RED" else 0
+    score -= 8 if gov_status == "YELLOW" else 0
+    score -= control_fail * 8
+    score -= control_review * 3
+    score -= evidence_missing * 8
+    score -= evidence_rejected * 10
+    score -= evidence_pending * 3
+    score -= hash_mismatches * 15
+    score -= critical_findings * 8
+    score -= high_findings * 4
+    score -= red_risk_edges * 3
+    score -= yellow_risk_edges * 1
+    score -= red_replay_events * 4
+    score -= yellow_replay_events * 1
+    score -= regulatory_hits * 4
+    score = max(0, min(100, int(score)))
+
+    if (
+        gov_status == "RED"
+        or control_fail > 0
+        or evidence_missing > 0
+        or evidence_rejected > 0
+        or hash_mismatches > 0
+        or critical_findings > 0
+        or red_risk_edges > 0
+        or red_replay_events > 0
+        or score < 60
+    ):
+        pack_status = "RED"
+        pack_decision = "AUDIT PACK NOT READY / GOVERNANCE CLOSURE REQUIRED"
+    elif (
+        gov_status == "YELLOW"
+        or control_review > 0
+        or evidence_pending > 0
+        or high_findings > 0
+        or yellow_risk_edges > 0
+        or yellow_replay_events > 0
+        or regulatory_hits > 0
+        or score < 90
+    ):
+        pack_status = "YELLOW"
+        pack_decision = "AUDIT PACK REVIEW REQUIRED BEFORE RELIANCE"
+    else:
+        pack_status = "GREEN"
+        pack_decision = "AUDIT PACK READY FROM GOVERNANCE VIEW"
+
+    source_routes = [
+        f"/sterile-compounding/passport/{record_id}",
+        f"/sterile-compounding/control-mapper/{record_id}",
+        f"/sterile-compounding/evidence-matrix/{record_id}",
+        f"/sterile-compounding/deviation-pack/{record_id}",
+        f"/sterile-compounding/risk-graph?record_id={record_id}",
+        f"/sterile-compounding/auditor-replay/{record_id}",
+    ]
+
+    payload = {
+        "audit_pack_id": sterile_pack_make_id("ST-AP", record_id),
+        "record_id": record_id,
+        "facility_type": sterile_pack_safe(record.get("facility_type", "")),
+        "csp_name": sterile_pack_safe(record.get("csp_name", "")),
+        "batch_or_rx_id": sterile_pack_safe(record.get("batch_or_rx_id", "")),
+        "csp_category": sterile_pack_safe(record.get("csp_category", "")),
+        "hazardous_drug": sterile_pack_safe(record.get("hazardous_drug", "")),
+        "governance_status": sterile_pack_safe(record.get("governance_status", "")),
+        "readiness_score": sterile_pack_safe(record.get("readiness_score", "")),
+        "release_decision": sterile_pack_safe(record.get("release_decision", "")),
+        "control_checks_total": control_total,
+        "control_pass": control_pass,
+        "control_review": control_review,
+        "control_fail": control_fail,
+        "evidence_requirements_total": matrix_total,
+        "evidence_complete": evidence_complete,
+        "evidence_pending": evidence_pending,
+        "evidence_missing": evidence_missing,
+        "evidence_rejected": evidence_rejected,
+        "evidence_vault_files": evidence_files,
+        "evidence_hash_matches": hash_matches,
+        "evidence_hash_mismatches": hash_mismatches,
+        "inspector_findings": inspector_findings,
+        "critical_findings": critical_findings,
+        "high_findings": high_findings,
+        "deviation_pack_status": deviation_pack_status,
+        "risk_graph_edges": risk_edges,
+        "red_risk_edges": red_risk_edges,
+        "yellow_risk_edges": yellow_risk_edges,
+        "replay_events": replay_events,
+        "red_replay_events": red_replay_events,
+        "yellow_replay_events": yellow_replay_events,
+        "audit_pack_status": pack_status,
+        "audit_pack_score": score,
+        "audit_pack_decision": pack_decision,
+        "open_actions": "; ".join(open_actions) if open_actions else "No open audit-pack actions detected.",
+        "source_routes": "; ".join(source_routes),
+        "created_at": sterile_now(),
+    }
+
+    payload["audit_pack_hash"] = sterile_hash_text(
+        sterile_pack_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_pack_build_register():
+    sterile_pack_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+
+    if csp_df.empty:
+        empty_df = sterile_pack_pd.DataFrame(columns=STERILE_AUDIT_PACK_COLUMNS)
+        sterile_write_register(STERILE_AUDIT_PACK_REGISTER, empty_df, STERILE_AUDIT_PACK_COLUMNS)
+        return empty_df
+
+    support = sterile_pack_build_all_supporting()
+
+    rows = []
+
+    for _, record in csp_df.iterrows():
+        rows.append(sterile_pack_for_record(record.to_dict(), support))
+
+    pack_df = sterile_pack_pd.DataFrame(rows)
+    pack_df = sterile_ensure_cols(pack_df, STERILE_AUDIT_PACK_COLUMNS)
+    sterile_write_register(STERILE_AUDIT_PACK_REGISTER, pack_df, STERILE_AUDIT_PACK_COLUMNS)
+
+    return pack_df
+
+
+def sterile_pack_pack_table_rows(pack_df):
+    if pack_df.empty:
+        return """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No audit packs found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    rows_html = ""
+
+    for _, row in pack_df.sort_values(by=["audit_pack_status", "audit_pack_score"], ascending=[False, True]).iterrows():
+        rid = sterile_pack_safe(row.get("record_id", ""))
+
+        rows_html += f"""
+        <tr>
+            <td>{sterile_pack_status_badge(row.get("audit_pack_status", ""))}</td>
+            <td><a href="/sterile-compounding/audit-pack/{rid}">{rid}</a></td>
+            <td>{sterile_pack_safe(row.get("csp_name", ""))}</td>
+            <td>{sterile_pack_safe(row.get("facility_type", ""))}</td>
+            <td>{sterile_pack_safe(row.get("audit_pack_score", ""))}</td>
+            <td>{sterile_pack_safe(row.get("audit_pack_decision", ""))}</td>
+            <td>{sterile_pack_safe(row.get("control_fail", ""))}</td>
+            <td>{sterile_pack_safe(row.get("evidence_missing", ""))}</td>
+            <td>{sterile_pack_safe(row.get("evidence_rejected", ""))}</td>
+            <td>{sterile_pack_safe(row.get("critical_findings", ""))}</td>
+            <td>{sterile_pack_safe(row.get("red_risk_edges", ""))}</td>
+            <td>{sterile_pack_safe(row.get("open_actions", ""))}</td>
+        </tr>
+        """
+
+    return rows_html
+
+
+@app.route("/sterile-compounding/audit-pack")
+def sterile_compounding_audit_pack():
+    pack_df = sterile_pack_build_register()
+
+    status_filter = sterile_pack_safe(sterile_pack_request.args.get("status", ""))
+    filtered = pack_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["audit_pack_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["audit_pack_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["audit_pack_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["audit_pack_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_pack_pd.to_numeric(filtered["audit_pack_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Audit Pack Builder</h1>
+        <p>
+            Builds an inspection-ready audit pack for each CSP by consolidating release readiness, control mapping,
+            evidence matrix, evidence vault, hash verification, inspector findings, deviation pack, risk graph,
+            auditor replay, and open evidence actions.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Audit Packs</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Pack Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Audit Pack Filters</h2>
+        <form method="GET" action="/sterile-compounding/audit-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Pack Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier">Release Dossier</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/export">Export Audit Packs</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Audit Pack Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Facility</th>
+                        <th>Pack Score</th>
+                        <th>Decision</th>
+                        <th>Control Fails</th>
+                        <th>Evidence Missing</th>
+                        <th>Evidence Rejected</th>
+                        <th>Critical Findings</th>
+                        <th>RED Risk Edges</th>
+                        <th>Open Actions</th>
+                    </tr>
+                </thead>
+                <tbody>{sterile_pack_pack_table_rows(filtered)}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "AUDIT-PACK",
+            "STERILE_AUDIT_PACK_VIEW",
+            "Sterile audit pack register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/audit-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Audit Pack Builder", body)
+
+
+@app.route("/sterile-compounding/audit-pack/<record_id>")
+def sterile_compounding_audit_pack_record(record_id):
+    pack_df = sterile_pack_build_register()
+    record_id = sterile_pack_safe(record_id)
+
+    match = pack_df[pack_df["record_id"].astype(str) == record_id] if not pack_df.empty else pack_df
+
+    if match.empty:
+        return sterile_pack_Response("Audit pack not found for this CSP record.", status=404)
+
+    pack = match.iloc[0].to_dict()
+
+    pack_rows = ""
+    for key in STERILE_AUDIT_PACK_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_pack_safe(pack.get(key, ""))
+
+        if key == "audit_pack_status":
+            value = sterile_pack_status_badge(value)
+        elif key in ["audit_pack_hash"]:
+            value = f"<code>{value}</code>"
+        elif key == "source_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        pack_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Audit Pack: {record_id}</h1>
+        <p>
+            Consolidated inspection-ready pack for this CSP record.
+        </p>
+        <div style="margin-top:16px;">{sterile_pack_status_badge(pack.get("audit_pack_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_pack_safe(pack.get("audit_pack_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Audit Pack Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{pack_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Pack Actions</h2>
+        <a class="st-button" href="/sterile-compounding/release-dossier/{record_id}">Open Release Dossier</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/passport/{record_id}">CSP Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix/{record_id}">Evidence Matrix</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/deviation-pack/{record_id}">Deviation Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay/{record_id}">Auditor Replay</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack">Back to Audit Packs</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_AUDIT_PACK_RECORD_VIEW",
+            "Record-level sterile audit pack viewed",
+            actor="system",
+            source_route="/sterile-compounding/audit-pack/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Audit Pack - {record_id}", body)
+
+
+@app.route("/sterile-compounding/release-dossier")
+def sterile_compounding_release_dossier():
+    pack_df = sterile_pack_build_register()
+
+    rows_html = ""
+
+    if not pack_df.empty:
+        for _, row in pack_df.sort_values(by=["audit_pack_status", "audit_pack_score"], ascending=[False, True]).iterrows():
+            rid = sterile_pack_safe(row.get("record_id", ""))
+            dossier_status = sterile_pack_safe(row.get("audit_pack_status", ""))
+            if dossier_status == "GREEN":
+                dossier_decision = "Dossier ready for governance reliance"
+            elif dossier_status == "YELLOW":
+                dossier_decision = "Dossier needs review before reliance"
+            else:
+                dossier_decision = "Dossier not ready; closure required"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pack_status_badge(dossier_status)}</td>
+                <td><a href="/sterile-compounding/release-dossier/{rid}">{rid}</a></td>
+                <td>{sterile_pack_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_pack_safe(row.get("batch_or_rx_id", ""))}</td>
+                <td>{sterile_pack_safe(row.get("audit_pack_score", ""))}</td>
+                <td>{dossier_decision}</td>
+                <td>{sterile_pack_safe(row.get("release_decision", ""))}</td>
+                <td>{sterile_pack_safe(row.get("open_actions", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No release dossiers found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Release Dossier</h1>
+        <p>
+            Leadership and reviewer-facing dossier index. It uses the audit pack status to show whether each CSP
+            has enough governance evidence to support review/reliance. It does not perform formal pharmacy release.
+        </p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dossier Actions</h2>
+        <a class="st-button" href="/sterile-compounding/audit-pack">Audit Pack Builder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier/export">Export Release Dossier</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/control-tower">Control Tower</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Release Dossier Index</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Batch/Rx</th>
+                        <th>Pack Score</th>
+                        <th>Dossier Decision</th>
+                        <th>Release Readiness Decision</th>
+                        <th>Open Actions</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "RELEASE-DOSSIER",
+            "STERILE_RELEASE_DOSSIER_VIEW",
+            "Sterile release dossier index viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/release-dossier",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Release Dossier", body)
+
+
+@app.route("/sterile-compounding/release-dossier/<record_id>")
+def sterile_compounding_release_dossier_record(record_id):
+    pack_df = sterile_pack_build_register()
+    record_id = sterile_pack_safe(record_id)
+    match = pack_df[pack_df["record_id"].astype(str) == record_id] if not pack_df.empty else pack_df
+
+    if match.empty:
+        return sterile_pack_Response("Release dossier not found for this CSP record.", status=404)
+
+    pack = match.iloc[0].to_dict()
+
+    dossier_sections = [
+        ("CSP Passport", f"/sterile-compounding/passport/{record_id}", "Core CSP readiness and evidence twin"),
+        ("Control Mapper", f"/sterile-compounding/control-mapper/{record_id}", "Control-to-evidence map"),
+        ("No-Release Gate", "/sterile-compounding/no-release-gate", "Release gate view"),
+        ("Evidence Matrix", f"/sterile-compounding/evidence-matrix/{record_id}", "Required evidence coverage"),
+        ("Evidence Vault", "/sterile-compounding/evidence-vault", "Linked evidence files and hashes"),
+        ("Deviation Pack", f"/sterile-compounding/deviation-pack/{record_id}", "Deviation/review pack"),
+        ("Risk Graph", f"/sterile-compounding/risk-graph?record_id={record_id}", "Relationship risk graph"),
+        ("Auditor Replay", f"/sterile-compounding/auditor-replay/{record_id}", "Timeline replay"),
+        ("Audit Pack", f"/sterile-compounding/audit-pack/{record_id}", "Consolidated audit pack"),
+    ]
+
+    section_rows = ""
+    for title, route, note in dossier_sections:
+        section_rows += f"""
+        <tr>
+            <td>{title}</td>
+            <td>{note}</td>
+            <td><a href="{route}">{route}</a></td>
+        </tr>
+        """
+
+    summary = f"""
+    <table class="st-table st-kv">
+        <tr><th>Record ID</th><td>{record_id}</td></tr>
+        <tr><th>CSP Name</th><td>{sterile_pack_safe(pack.get("csp_name", ""))}</td></tr>
+        <tr><th>Batch/Rx ID</th><td>{sterile_pack_safe(pack.get("batch_or_rx_id", ""))}</td></tr>
+        <tr><th>Facility Type</th><td>{sterile_pack_safe(pack.get("facility_type", ""))}</td></tr>
+        <tr><th>Audit Pack Status</th><td>{sterile_pack_status_badge(pack.get("audit_pack_status", ""))}</td></tr>
+        <tr><th>Audit Pack Score</th><td>{sterile_pack_safe(pack.get("audit_pack_score", ""))}</td></tr>
+        <tr><th>Audit Pack Decision</th><td>{sterile_pack_safe(pack.get("audit_pack_decision", ""))}</td></tr>
+        <tr><th>Open Actions</th><td>{sterile_pack_safe(pack.get("open_actions", ""))}</td></tr>
+        <tr><th>Pack Hash</th><td><code>{sterile_pack_safe(pack.get("audit_pack_hash", ""))}</code></td></tr>
+    </table>
+    """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Release Dossier: {record_id}</h1>
+        <p>
+            Reviewer-ready navigation packet for this CSP record.
+        </p>
+        <div style="margin-top:16px;">{sterile_pack_status_badge(pack.get("audit_pack_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_pack_safe(pack.get("audit_pack_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dossier Summary</h2>
+        <div class="st-table-wrap">{summary}</div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dossier Sections</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>Purpose</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{section_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/release-dossier">Back to Dossier Index</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/control-tower">Control Tower</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack">Executive Pack</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_RELEASE_DOSSIER_RECORD_VIEW",
+            "Record-level sterile release dossier viewed",
+            actor="system",
+            source_route="/sterile-compounding/release-dossier/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Release Dossier - {record_id}", body)
+
+
+@app.route("/sterile-compounding/audit-pack/export")
+def sterile_compounding_audit_pack_export():
+    pack_df = sterile_pack_build_register()
+
+    if pack_df.empty:
+        pack_df = sterile_pack_pd.DataFrame(columns=STERILE_AUDIT_PACK_COLUMNS)
+
+    csv_data = pack_df.to_csv(index=False)
+
+    return sterile_pack_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_audit_pack_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/release-dossier/export")
+def sterile_compounding_release_dossier_export():
+    pack_df = sterile_pack_build_register()
+
+    if pack_df.empty:
+        pack_df = sterile_pack_pd.DataFrame(columns=STERILE_AUDIT_PACK_COLUMNS)
+
+    csv_data = pack_df.to_csv(index=False)
+
+    return sterile_pack_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_release_dossier_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_audit_pack_dashboard_injection(response):
+    try:
+        if sterile_pack_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-audit-pack-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-audit-pack-panel">
+            <h2>Sterile Audit Pack Builder + Release Dossier</h2>
+            <p class="st-note">
+                Consolidates CSP readiness, controls, evidence matrix, evidence vault, hash verification,
+                inspector findings, deviation packs, risk graph, auditor replay, and open actions into
+                inspection-ready audit packs and reviewer-friendly release dossiers.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/audit-pack">Audit Pack Builder</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier">Release Dossier</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/export">Export Audit Packs</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier/export">Export Dossiers</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile audit pack dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
