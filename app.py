@@ -42978,5 +42978,819 @@ def sterile_compounding_register_catalog_dashboard_injection(response):
         print(f"Sterile register catalog dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_BUILD_ACCEPTANCE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 31: Build Acceptance Gate + Smoke Test Matrix
+#
+# New Routes:
+#   /sterile-compounding/build-acceptance
+#   /sterile-compounding/smoke-test-matrix
+#   /sterile-compounding/build-acceptance/export
+#   /sterile-compounding/smoke-test-matrix/export
+#
+# New Registers:
+#   sterile_compounding_build_acceptance_register.csv
+#   sterile_compounding_smoke_test_matrix.csv
+#
+# Boundary:
+#   This creates a sterile-only acceptance and smoke-test layer.
+#   It does not touch Command Center, Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, or other protected areas.
+# ============================================================
+
+try:
+    import pandas as sterile_ba_pd
+    import json as sterile_ba_json
+    from flask import request as sterile_ba_request
+    from flask import Response as sterile_ba_Response
+except Exception as sterile_ba_import_error:
+    raise RuntimeError(f"Sterile build acceptance import failed: {sterile_ba_import_error}")
+
+
+STERILE_BUILD_ACCEPTANCE_REGISTER = "sterile_compounding_build_acceptance_register.csv"
+STERILE_SMOKE_TEST_MATRIX_REGISTER = "sterile_compounding_smoke_test_matrix.csv"
+
+STERILE_BUILD_ACCEPTANCE_COLUMNS = [
+    "acceptance_id",
+    "acceptance_area",
+    "acceptance_check",
+    "status",
+    "score",
+    "evidence_value",
+    "risk_note",
+    "recommended_action",
+    "source_route",
+    "last_checked",
+    "acceptance_hash"
+]
+
+STERILE_SMOKE_TEST_MATRIX_COLUMNS = [
+    "smoke_test_id",
+    "test_group",
+    "test_name",
+    "route",
+    "route_type",
+    "priority",
+    "expected_result",
+    "registered_status",
+    "test_status",
+    "manual_test_instruction",
+    "last_checked",
+    "smoke_test_hash"
+]
+
+
+STERILE_SMOKE_TEST_SEED = [
+    ("01 Landing", "Open sterile home", "/sterile-compounding", "Page", "P0", "Sterile landing page opens."),
+    ("01 Landing", "Load sample records", "/sterile-compounding/sample", "Utility", "P0", "Sample records load or refresh without error."),
+    ("01 Landing", "Open navigation hub", "/sterile-compounding/navigation-hub", "Page", "P0", "Navigation hub opens and lists routes."),
+    ("01 Landing", "Open route health", "/sterile-compounding/route-health", "Page", "P0", "Runtime route map opens."),
+
+    ("02 Core Assurance", "Open master assurance index", "/sterile-compounding/master-assurance-index", "Page", "P0", "Master Assurance Index opens."),
+    ("02 Core Assurance", "Open master assurance CSP-001", "/sterile-compounding/master-assurance/CSP-001", "Dynamic Test", "P0", "CSP-001 Master Assurance passport opens."),
+    ("02 Core Assurance", "Open no-release composite", "/sterile-compounding/no-release-composite", "Page", "P0", "Composite No-Release Gate opens."),
+
+    ("03 Inspection", "Open inspection readiness", "/sterile-compounding/inspection-readiness", "Page", "P0", "Inspection Readiness opens."),
+    ("03 Inspection", "Open inspection readiness CSP-001", "/sterile-compounding/inspection-readiness/CSP-001", "Dynamic Test", "P0", "CSP-001 Inspection Readiness passport opens."),
+    ("03 Inspection", "Open auditor Q&A pack", "/sterile-compounding/auditor-qa-pack", "Page", "P1", "Auditor Q&A Pack opens."),
+
+    ("04 Crosswalk", "Open regulatory crosswalk", "/sterile-compounding/regulatory-crosswalk", "Page", "P0", "Regulatory Crosswalk opens."),
+    ("04 Crosswalk", "Open regulatory crosswalk CSP-001", "/sterile-compounding/regulatory-crosswalk/CSP-001", "Dynamic Test", "P0", "CSP-001 Regulatory Crosswalk opens."),
+    ("04 Crosswalk", "Open control evidence coverage", "/sterile-compounding/control-evidence-coverage", "Page", "P1", "Control-Evidence Coverage opens."),
+
+    ("05 Narrative and Binder", "Open inspection narrative", "/sterile-compounding/inspection-narrative", "Page", "P0", "Inspection Narrative index opens."),
+    ("05 Narrative and Binder", "Open inspection narrative CSP-001", "/sterile-compounding/inspection-narrative/CSP-001", "Dynamic Test", "P0", "CSP-001 Inspection Narrative opens."),
+    ("05 Narrative and Binder", "Open executive brief", "/sterile-compounding/executive-brief", "Page", "P0", "Executive Brief opens."),
+    ("05 Narrative and Binder", "Open inspection binder", "/sterile-compounding/inspection-binder", "Page", "P0", "Inspection Binder index opens."),
+    ("05 Narrative and Binder", "Open inspection binder CSP-001", "/sterile-compounding/inspection-binder/CSP-001", "Dynamic Test", "P0", "CSP-001 Inspection Binder opens."),
+    ("05 Narrative and Binder", "Open packet manifest", "/sterile-compounding/packet-manifest", "Page", "P1", "Packet Manifest opens."),
+
+    ("06 Demo", "Open demo walkthrough", "/sterile-compounding/demo-walkthrough", "Page", "P0", "Demo Walkthrough opens."),
+    ("06 Demo", "Open demo walkthrough CSP-001", "/sterile-compounding/demo-walkthrough/CSP-001", "Dynamic Test", "P0", "CSP-001 Demo Walkthrough opens."),
+    ("06 Demo", "Open demo script", "/sterile-compounding/demo-script", "Page", "P0", "Leadership Demo Script opens."),
+
+    ("07 Data Backbone", "Open register catalog", "/sterile-compounding/register-catalog", "Page", "P0", "Register Catalog opens."),
+    ("07 Data Backbone", "Open data dictionary", "/sterile-compounding/data-dictionary", "Page", "P0", "Data Dictionary opens."),
+
+    ("08 Exports", "Export navigation hub", "/sterile-compounding/navigation-hub/export", "Export", "P1", "CSV export downloads."),
+    ("08 Exports", "Export route health", "/sterile-compounding/route-health/export", "Export", "P1", "CSV export downloads."),
+    ("08 Exports", "Export register catalog", "/sterile-compounding/register-catalog/export", "Export", "P1", "CSV export downloads."),
+    ("08 Exports", "Export data dictionary", "/sterile-compounding/data-dictionary/export", "Export", "P1", "CSV export downloads."),
+    ("08 Exports", "Export inspection binder", "/sterile-compounding/inspection-binder/export", "Export", "P1", "CSV export downloads."),
+    ("08 Exports", "Export demo walkthrough", "/sterile-compounding/demo-walkthrough/export", "Export", "P1", "CSV export downloads."),
+]
+
+
+def sterile_ba_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_NAVIGATION_COLUMNS",
+        "STERILE_ROUTE_HEALTH_COLUMNS",
+        "STERILE_REGISTER_CATALOG_COLUMNS",
+        "STERILE_DATA_DICTIONARY_COLUMNS",
+        "sterile_nav_build_registers",
+        "sterile_dict_build_catalogs",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile build acceptance dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ba_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ba_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_ba_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ba_status_bucket(value):
+    value = sterile_ba_safe(value).upper()
+
+    if value in ["GREEN", "PASS", "PASSED", "REGISTERED", "READY", "SUPPORTED"]:
+        return "GREEN"
+
+    if value in ["RED", "FAIL", "FAILED", "MISSING", "BLOCKED", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_ba_status_badge(status):
+    bucket = sterile_ba_status_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ba_registered_routes():
+    routes = set()
+
+    try:
+        for rule in app.url_map.iter_rules():
+            routes.add(str(rule))
+    except Exception:
+        pass
+
+    return routes
+
+
+def sterile_ba_route_registered(route, registered_routes):
+    if route in registered_routes:
+        return "REGISTERED"
+
+    if "<record_id>" in route:
+        template = route
+        return "REGISTERED" if template in registered_routes else "MISSING"
+
+    return "MISSING"
+
+
+def sterile_ba_build_sources():
+    sterile_ba_require_dependencies()
+
+    try:
+        nav_df, route_health_df = sterile_nav_build_registers()
+    except Exception:
+        nav_df = sterile_read_register(
+            "sterile_compounding_navigation_register.csv",
+            STERILE_NAVIGATION_COLUMNS
+        )
+        route_health_df = sterile_read_register(
+            "sterile_compounding_route_health_register.csv",
+            STERILE_ROUTE_HEALTH_COLUMNS
+        )
+
+    try:
+        catalog_df, dictionary_df = sterile_dict_build_catalogs()
+    except Exception:
+        catalog_df = sterile_read_register(
+            "sterile_compounding_register_catalog.csv",
+            STERILE_REGISTER_CATALOG_COLUMNS
+        )
+        dictionary_df = sterile_read_register(
+            "sterile_compounding_data_dictionary.csv",
+            STERILE_DATA_DICTIONARY_COLUMNS
+        )
+
+    nav_df = sterile_ensure_cols(nav_df, STERILE_NAVIGATION_COLUMNS)
+    route_health_df = sterile_ensure_cols(route_health_df, STERILE_ROUTE_HEALTH_COLUMNS)
+    catalog_df = sterile_ensure_cols(catalog_df, STERILE_REGISTER_CATALOG_COLUMNS)
+    dictionary_df = sterile_ensure_cols(dictionary_df, STERILE_DATA_DICTIONARY_COLUMNS)
+
+    return nav_df, route_health_df, catalog_df, dictionary_df
+
+
+def sterile_ba_acceptance_row(area, check, status, score, evidence, risk, action, route):
+    payload = {
+        "acceptance_id": sterile_ba_make_id("ST-ACCEPT", area, check),
+        "acceptance_area": area,
+        "acceptance_check": check,
+        "status": sterile_ba_status_bucket(status),
+        "score": score,
+        "evidence_value": evidence,
+        "risk_note": risk,
+        "recommended_action": action,
+        "source_route": route,
+        "last_checked": sterile_now(),
+    }
+
+    payload["acceptance_hash"] = sterile_hash_text(
+        sterile_ba_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_ba_build_smoke_matrix(registered_routes):
+    rows = []
+
+    for group, name, route, route_type, priority, expected in STERILE_SMOKE_TEST_SEED:
+        registered_status = sterile_ba_route_registered(route, registered_routes)
+        test_status = "GREEN" if registered_status == "REGISTERED" else "RED"
+
+        instruction = (
+            f"Open {route} and confirm: {expected}"
+            if registered_status == "REGISTERED"
+            else f"Route is not registered. Check patch deployment and Flask url_map for {route}."
+        )
+
+        payload = {
+            "smoke_test_id": sterile_ba_make_id("ST-SMOKE", group, name, route),
+            "test_group": group,
+            "test_name": name,
+            "route": route,
+            "route_type": route_type,
+            "priority": priority,
+            "expected_result": expected,
+            "registered_status": registered_status,
+            "test_status": test_status,
+            "manual_test_instruction": instruction,
+            "last_checked": sterile_now(),
+        }
+
+        payload["smoke_test_hash"] = sterile_hash_text(
+            sterile_ba_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    smoke_df = sterile_ba_pd.DataFrame(rows)
+    smoke_df = sterile_ensure_cols(smoke_df, STERILE_SMOKE_TEST_MATRIX_COLUMNS)
+
+    return smoke_df
+
+
+def sterile_ba_build_acceptance():
+    nav_df, route_health_df, catalog_df, dictionary_df = sterile_ba_build_sources()
+    registered_routes = sterile_ba_registered_routes()
+    smoke_df = sterile_ba_build_smoke_matrix(registered_routes)
+
+    rows = []
+
+    expected_nav = len(nav_df)
+    nav_registered = int((nav_df["registered_status"].astype(str) == "REGISTERED").sum()) if expected_nav else 0
+    nav_missing = int((nav_df["registered_status"].astype(str) == "MISSING").sum()) if expected_nav else 0
+    nav_score = int(round((nav_registered / expected_nav) * 100, 0)) if expected_nav else 0
+    nav_status = "GREEN" if nav_missing == 0 and expected_nav else "RED" if nav_missing > 0 else "YELLOW"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Route Registration",
+            "Expected sterile navigation routes are registered",
+            nav_status,
+            nav_score,
+            f"expected={expected_nav}; registered={nav_registered}; missing={nav_missing}",
+            "Missing registered routes may mean Azure deployed an older commit or a patch did not apply.",
+            "Open Route Health and confirm missing expected routes before continuing demo.",
+            "/sterile-compounding/route-health",
+        )
+    )
+
+    runtime_routes = len(route_health_df)
+    runtime_status = "GREEN" if runtime_routes >= nav_registered and runtime_routes > 0 else "YELLOW"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Runtime Route Map",
+            "Flask url_map exposes sterile routes at runtime",
+            runtime_status,
+            min(100, runtime_routes),
+            f"runtime_sterile_routes={runtime_routes}",
+            "If runtime route count is unexpectedly low, the app may be serving an old build.",
+            "Refresh Azure page and open /sterile-compounding/route-health.",
+            "/sterile-compounding/route-health",
+        )
+    )
+
+    total_registers = len(catalog_df)
+    catalog_green = int((catalog_df["status"].astype(str) == "GREEN").sum()) if total_registers else 0
+    catalog_yellow = int((catalog_df["status"].astype(str) == "YELLOW").sum()) if total_registers else 0
+    catalog_red = int((catalog_df["status"].astype(str) == "RED").sum()) if total_registers else 0
+    catalog_score = int(round((catalog_green + (catalog_yellow * 0.5)) / total_registers * 100, 0)) if total_registers else 0
+    catalog_status = "RED" if catalog_red else "YELLOW" if catalog_yellow else "GREEN"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Register Catalog",
+            "Sterile CSV registers are visible and cataloged",
+            catalog_status,
+            catalog_score,
+            f"registers={total_registers}; green={catalog_green}; yellow={catalog_yellow}; red={catalog_red}",
+            "Yellow usually means schema exists but data has not yet been generated; Red means missing file and schema.",
+            "Open Register Catalog, load sample data, and open key module pages to generate derived registers.",
+            "/sterile-compounding/register-catalog",
+        )
+    )
+
+    dictionary_rows = len(dictionary_df)
+    declared = int((dictionary_df["in_declared_schema"].astype(str) == "YES").sum()) if dictionary_rows else 0
+    dictionary_status = "GREEN" if dictionary_rows > 0 and declared > 0 else "YELLOW"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Data Dictionary",
+            "Column-level sterile data dictionary is generated",
+            dictionary_status,
+            min(100, dictionary_rows),
+            f"dictionary_rows={dictionary_rows}; declared_schema_columns={declared}",
+            "If dictionary is empty, register schema constants may not be available or catalog was not generated.",
+            "Open Data Dictionary and confirm critical registers have columns.",
+            "/sterile-compounding/data-dictionary",
+        )
+    )
+
+    smoke_total = len(smoke_df)
+    smoke_green = int((smoke_df["test_status"].astype(str) == "GREEN").sum()) if smoke_total else 0
+    smoke_red = int((smoke_df["test_status"].astype(str) == "RED").sum()) if smoke_total else 0
+    smoke_score = int(round((smoke_green / smoke_total) * 100, 0)) if smoke_total else 0
+    smoke_status = "GREEN" if smoke_red == 0 and smoke_total else "RED" if smoke_red else "YELLOW"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Smoke Test Matrix",
+            "Priority smoke-test routes are registered",
+            smoke_status,
+            smoke_score,
+            f"tests={smoke_total}; registered={smoke_green}; missing={smoke_red}",
+            "A RED smoke test means a demo/test route is not registered.",
+            "Open Smoke Test Matrix and run P0 routes manually in the browser.",
+            "/sterile-compounding/smoke-test-matrix",
+        )
+    )
+
+    p0_df = smoke_df[smoke_df["priority"].astype(str) == "P0"].copy() if not smoke_df.empty else smoke_df
+    p0_total = len(p0_df)
+    p0_green = int((p0_df["test_status"].astype(str) == "GREEN").sum()) if p0_total else 0
+    p0_red = int((p0_df["test_status"].astype(str) == "RED").sum()) if p0_total else 0
+    p0_score = int(round((p0_green / p0_total) * 100, 0)) if p0_total else 0
+    p0_status = "GREEN" if p0_red == 0 and p0_total else "RED" if p0_red else "YELLOW"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "P0 Demo Readiness",
+            "Critical P0 demo routes are registered",
+            p0_status,
+            p0_score,
+            f"p0_tests={p0_total}; p0_registered={p0_green}; p0_missing={p0_red}",
+            "Missing P0 routes will interrupt live demo flow.",
+            "Run P0 browser tests before presenting.",
+            "/sterile-compounding/smoke-test-matrix?priority=P0",
+        )
+    )
+
+    demo_route_status = "GREEN" if "/sterile-compounding/demo-walkthrough" in registered_routes and "/sterile-compounding/demo-script" in registered_routes else "RED"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Leadership Demo",
+            "Demo walkthrough and script routes are available",
+            demo_route_status,
+            100 if demo_route_status == "GREEN" else 0,
+            "demo-walkthrough and demo-script route registration checked",
+            "If demo routes are missing, leadership walk-through cannot be opened from sterile vertical.",
+            "Open Demo Walkthrough and Demo Script.",
+            "/sterile-compounding/demo-walkthrough",
+        )
+    )
+
+    binder_route_status = "GREEN" if "/sterile-compounding/inspection-binder" in registered_routes and "/sterile-compounding/packet-manifest" in registered_routes else "RED"
+
+    rows.append(
+        sterile_ba_acceptance_row(
+            "Inspection Binder",
+            "Inspection binder and packet manifest routes are available",
+            binder_route_status,
+            100 if binder_route_status == "GREEN" else 0,
+            "inspection-binder and packet-manifest route registration checked",
+            "If binder routes are missing, the auditor packet cannot be opened.",
+            "Open Inspection Binder and Packet Manifest.",
+            "/sterile-compounding/inspection-binder",
+        )
+    )
+
+    acceptance_df = sterile_ba_pd.DataFrame(rows)
+    acceptance_df = sterile_ensure_cols(acceptance_df, STERILE_BUILD_ACCEPTANCE_COLUMNS)
+
+    sterile_write_register(STERILE_BUILD_ACCEPTANCE_REGISTER, acceptance_df, STERILE_BUILD_ACCEPTANCE_COLUMNS)
+    sterile_write_register(STERILE_SMOKE_TEST_MATRIX_REGISTER, smoke_df, STERILE_SMOKE_TEST_MATRIX_COLUMNS)
+
+    return acceptance_df, smoke_df
+
+
+@app.route("/sterile-compounding/build-acceptance")
+def sterile_compounding_build_acceptance():
+    acceptance_df, smoke_df = sterile_ba_build_acceptance()
+
+    status_filter = sterile_ba_safe(sterile_ba_request.args.get("status", ""))
+    filtered = acceptance_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_ba_pd.to_numeric(filtered["score"], errors="coerce").fillna(0).mean(), 1)
+
+    if red:
+        overall_status = "RED"
+        overall_message = "Build acceptance has blockers. Do not use this for live demo until RED checks are resolved."
+    elif yellow:
+        overall_status = "YELLOW"
+        overall_message = "Build acceptance is conditional. Review YELLOW checks before demo."
+    else:
+        overall_status = "GREEN"
+        overall_message = "Build acceptance is GREEN from the sterile internal checks."
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Acceptance Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["status", "acceptance_area"], ascending=[False, True]).iterrows():
+            route = sterile_ba_safe(row.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ba_status_badge(row.get("status", ""))}</td>
+                <td>{sterile_ba_safe(row.get("acceptance_area", ""))}</td>
+                <td>{sterile_ba_safe(row.get("acceptance_check", ""))}</td>
+                <td>{sterile_ba_safe(row.get("score", ""))}</td>
+                <td>{sterile_ba_safe(row.get("evidence_value", ""))}</td>
+                <td>{sterile_ba_safe(row.get("risk_note", ""))}</td>
+                <td>{sterile_ba_safe(row.get("recommended_action", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No build acceptance rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Build Acceptance Gate</h1>
+        <p>
+            Deployment acceptance page for the Compound Sterile AssuranceLayer vertical. It checks route registration,
+            runtime route health, register catalog, data dictionary, smoke-test routes, P0 demo readiness,
+            inspection binder, and leadership demo availability.
+        </p>
+        <div style="margin-top:16px;">{sterile_ba_status_badge(overall_status)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">{overall_message}</div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Acceptance Checks</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Acceptance Filters</h2>
+        <form method="GET" action="/sterile-compounding/build-acceptance">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/smoke-test-matrix">Smoke Test Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance/export">Export Acceptance</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Build Acceptance Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Area</th>
+                        <th>Check</th>
+                        <th>Score</th>
+                        <th>Evidence</th>
+                        <th>Risk Note</th>
+                        <th>Recommended Action</th>
+                        <th>Source Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "BUILD-ACCEPTANCE",
+            "STERILE_BUILD_ACCEPTANCE_VIEW",
+            "Sterile build acceptance gate viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/build-acceptance",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Build Acceptance Gate", body)
+
+
+@app.route("/sterile-compounding/smoke-test-matrix")
+def sterile_compounding_smoke_test_matrix():
+    acceptance_df, smoke_df = sterile_ba_build_acceptance()
+
+    priority_filter = sterile_ba_safe(sterile_ba_request.args.get("priority", ""))
+    status_filter = sterile_ba_safe(sterile_ba_request.args.get("status", ""))
+
+    filtered = smoke_df.copy()
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["priority"].astype(str) == priority_filter]
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["test_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["test_status"] == "GREEN").sum()) if total else 0
+    red = int((filtered["test_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["priority"] == "P0").sum()) if total else 0
+    p1 = int((filtered["priority"] == "P1").sum()) if total else 0
+
+    priority_options = ""
+    for option in ["", "P0", "P1"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    status_options = ""
+    for option in ["", "GREEN", "RED"]:
+        label = "All Test Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["priority", "test_group", "test_name"], ascending=[True, True, True]).iterrows():
+            route = sterile_ba_safe(row.get("route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ba_status_badge(row.get("test_status", ""))}</td>
+                <td>{sterile_ba_safe(row.get("priority", ""))}</td>
+                <td>{sterile_ba_safe(row.get("test_group", ""))}</td>
+                <td>{sterile_ba_safe(row.get("test_name", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ba_safe(row.get("route_type", ""))}</td>
+                <td>{sterile_ba_safe(row.get("registered_status", ""))}</td>
+                <td>{sterile_ba_safe(row.get("expected_result", ""))}</td>
+                <td>{sterile_ba_safe(row.get("manual_test_instruction", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No smoke-test rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Smoke Test Matrix</h1>
+        <p>
+            Browser test matrix for sterile deployment verification. P0 routes should be manually opened before
+            presenting the vertical. GREEN means the route is registered in Flask; browser testing still confirms page behavior.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Tests</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">P1</div><div class="st-value">{p1}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Smoke Test Filters</h2>
+        <form method="GET" action="/sterile-compounding/smoke-test-matrix">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Test Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/smoke-test-matrix">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance">Build Acceptance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/smoke-test-matrix/export">Export Matrix</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Smoke Test Matrix Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>Test Name</th>
+                        <th>Route</th>
+                        <th>Type</th>
+                        <th>Registered</th>
+                        <th>Expected Result</th>
+                        <th>Manual Test Instruction</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "SMOKE-TEST-MATRIX",
+            "STERILE_SMOKE_TEST_MATRIX_VIEW",
+            "Sterile smoke test matrix viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/smoke-test-matrix",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Smoke Test Matrix", body)
+
+
+@app.route("/sterile-compounding/build-acceptance/export")
+def sterile_compounding_build_acceptance_export():
+    acceptance_df, smoke_df = sterile_ba_build_acceptance()
+
+    if acceptance_df.empty:
+        acceptance_df = sterile_ba_pd.DataFrame(columns=STERILE_BUILD_ACCEPTANCE_COLUMNS)
+
+    csv_data = acceptance_df.to_csv(index=False)
+
+    return sterile_ba_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_build_acceptance_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/smoke-test-matrix/export")
+def sterile_compounding_smoke_test_matrix_export():
+    acceptance_df, smoke_df = sterile_ba_build_acceptance()
+
+    if smoke_df.empty:
+        smoke_df = sterile_ba_pd.DataFrame(columns=STERILE_SMOKE_TEST_MATRIX_COLUMNS)
+
+    csv_data = smoke_df.to_csv(index=False)
+
+    return sterile_ba_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_smoke_test_matrix_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_build_acceptance_dashboard_injection(response):
+    try:
+        if sterile_ba_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/navigation-hub",
+            "/sterile-compounding/module-map",
+            "/sterile-compounding/route-health",
+            "/sterile-compounding/register-catalog",
+            "/sterile-compounding/data-dictionary",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/demo-script",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/executive-brief",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-build-acceptance-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-build-acceptance-panel">
+            <h2>Build Acceptance Gate + Smoke Test Matrix</h2>
+            <p class="st-note">
+                Confirms route registration, register catalog, data dictionary, P0 demo readiness,
+                binder availability, and smoke-test routes for the sterile vertical.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/build-acceptance">Build Acceptance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/smoke-test-matrix">Smoke Test Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance/export">Export Acceptance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/smoke-test-matrix/export">Export Smoke Tests</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile build acceptance dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
