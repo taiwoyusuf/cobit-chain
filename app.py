@@ -21284,5 +21284,861 @@ def sterile_compounding_risk_graph_replay_dashboard_injection(response):
         print(f"Sterile risk graph/replay dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_PREWORK_DRIFT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 7: Pre-Compounding Start Gate + Environmental Drift Monitor
+#
+# New Routes:
+#   /sterile-compounding/pre-work-gate
+#   /sterile-compounding/pre-work-gate/export
+#   /sterile-compounding/environmental-drift
+#   /sterile-compounding/environmental-drift/export
+#
+# New Derived Registers:
+#   sterile_compounding_prework_gate_register.csv
+#   sterile_compounding_environmental_drift_register.csv
+#
+# Boundary:
+#   This module derives start-readiness and drift signals from sterile
+#   compounding records. It does not replace QA, pharmacy disposition,
+#   environmental monitoring systems, QMS, Blue Mountain, ServiceNow,
+#   Veeva, Entra, CI, Knowledge, Operational Lineage, Release Notes,
+#   Monday Demo, Command Center, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_prework_pd
+    import json as sterile_prework_json
+    from flask import request as sterile_prework_request
+    from flask import Response as sterile_prework_Response
+except Exception as sterile_prework_import_error:
+    raise RuntimeError(f"Sterile pre-work/drift import failed: {sterile_prework_import_error}")
+
+
+STERILE_PREWORK_GATE_REGISTER = "sterile_compounding_prework_gate_register.csv"
+STERILE_ENV_DRIFT_REGISTER = "sterile_compounding_environmental_drift_register.csv"
+
+STERILE_PREWORK_GATE_COLUMNS = [
+    "gate_id",
+    "facility_type",
+    "hood_or_cleanroom_id",
+    "shift_window",
+    "total_linked_csp",
+    "green_csp",
+    "yellow_csp",
+    "red_csp",
+    "equipment_status_signal",
+    "environmental_status_signal",
+    "cleaning_status_signal",
+    "em_review_signal",
+    "personnel_signal",
+    "deviation_signal",
+    "ingredient_signal",
+    "approval_signal",
+    "start_gate_status",
+    "start_gate_decision",
+    "readiness_score",
+    "blocking_reasons",
+    "recommended_action",
+    "last_updated",
+    "gate_hash"
+]
+
+STERILE_ENV_DRIFT_COLUMNS = [
+    "drift_id",
+    "facility_type",
+    "hood_or_cleanroom_id",
+    "total_linked_csp",
+    "environmental_alerts",
+    "environmental_failures",
+    "equipment_due_or_expired",
+    "cleaning_gaps",
+    "em_review_gaps",
+    "storage_alerts_or_failures",
+    "open_deviations",
+    "drift_status",
+    "drift_risk_score",
+    "drift_prediction",
+    "drift_reason",
+    "recommended_action",
+    "last_updated",
+    "drift_hash"
+]
+
+
+def sterile_prework_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_prework_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_prework_safe_entity(value, fallback):
+    value = sterile_prework_safe(value)
+    return value if value else fallback
+
+
+def sterile_prework_make_id(prefix, facility_type, hood_id, shift_window):
+    raw = f"{prefix}|{facility_type}|{hood_id}|{shift_window}"
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_prework_count_values(group, column, values):
+    if column not in group.columns:
+        return 0
+    return int(group[column].astype(str).str.lower().isin(values).sum())
+
+
+def sterile_prework_signal(group, column, fail_values, review_values, pass_values):
+    fail_count = sterile_prework_count_values(group, column, fail_values)
+    review_count = sterile_prework_count_values(group, column, review_values)
+    pass_count = sterile_prework_count_values(group, column, pass_values)
+    blank_count = int((group[column].astype(str).str.strip() == "").sum()) if column in group.columns else 0
+
+    if fail_count > 0:
+        return "RED", fail_count, f"{fail_count} fail/block signal(s)"
+    if review_count > 0 or blank_count > 0:
+        return "YELLOW", review_count + blank_count, f"{review_count + blank_count} review/missing signal(s)"
+    if pass_count > 0:
+        return "GREEN", pass_count, f"{pass_count} acceptable signal(s)"
+    return "YELLOW", 0, "No clear signal found"
+
+
+def sterile_prework_group_key_df():
+    sterile_prework_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        return df
+
+    df = df.copy()
+    df["facility_type"] = df["facility_type"].astype(str).apply(lambda v: sterile_prework_safe_entity(v, "UNSPECIFIED-FACILITY"))
+    df["hood_or_cleanroom_id"] = df["hood_or_cleanroom_id"].astype(str).apply(lambda v: sterile_prework_safe_entity(v, "UNASSIGNED-HOOD-ROOM"))
+
+    # The current CSP register does not yet have true shift timestamps.
+    # This creates a deterministic governance shift window from the current data state.
+    df["shift_window"] = "CURRENT-GOVERNANCE-WINDOW"
+
+    return df
+
+
+def sterile_prework_build_gate():
+    df = sterile_prework_group_key_df()
+
+    if df.empty:
+        empty_df = sterile_prework_pd.DataFrame(columns=STERILE_PREWORK_GATE_COLUMNS)
+        sterile_write_register(STERILE_PREWORK_GATE_REGISTER, empty_df, STERILE_PREWORK_GATE_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for (facility_type, hood_id, shift_window), group in df.groupby(["facility_type", "hood_or_cleanroom_id", "shift_window"]):
+        total = len(group)
+        green = int((group["governance_status"].astype(str) == "GREEN").sum()) if total else 0
+        yellow = int((group["governance_status"].astype(str) == "YELLOW").sum()) if total else 0
+        red = int((group["governance_status"].astype(str) == "RED").sum()) if total else 0
+
+        equipment_status, equipment_signal_count, equipment_summary = sterile_prework_signal(
+            group,
+            "equipment_status",
+            fail_values=["expired", "fail", "failed", "not current"],
+            review_values=["due", "near due", "review", "pending", ""],
+            pass_values=["current", "yes", "pass", "passed", "approved", "verified"]
+        )
+
+        environmental_status, environmental_signal_count, environmental_summary = sterile_prework_signal(
+            group,
+            "environmental_status",
+            fail_values=["fail", "failed", "red", "excursion", "out of limit", "out of range"],
+            review_values=["alert", "warning", "yellow", "review", "pending", ""],
+            pass_values=["pass", "passed", "green", "acceptable", "approved"]
+        )
+
+        cleaning_status, cleaning_signal_count, cleaning_summary = sterile_prework_signal(
+            group,
+            "cleaning_log_status",
+            fail_values=["missing", "incomplete", "fail", "failed"],
+            review_values=["review", "pending", "due", ""],
+            pass_values=["complete", "completed", "yes", "pass", "passed", "approved"]
+        )
+
+        em_review_status, em_review_count, em_review_summary = sterile_prework_signal(
+            group,
+            "em_log_reviewed",
+            fail_values=["no", "false", "missing"],
+            review_values=["review", "pending", ""],
+            pass_values=["yes", "true", "reviewed", "complete", "approved"]
+        )
+
+        personnel_status, personnel_count, personnel_summary = sterile_prework_signal(
+            group,
+            "personnel_qualified",
+            fail_values=["no", "false", "expired", "not qualified", "fail", "failed"],
+            review_values=["review", "pending", "due", ""],
+            pass_values=["yes", "true", "current", "qualified", "pass", "passed", "approved", "verified"]
+        )
+
+        deviation_status, deviation_count, deviation_summary = sterile_prework_signal(
+            group,
+            "deviation_open",
+            fail_values=["yes", "true", "open", "critical"],
+            review_values=["review", "pending", ""],
+            pass_values=["no", "false", "closed", "none", "no deviation"]
+        )
+
+        ingredient_block_count = 0
+        ingredient_review_count = 0
+        ingredient_parts = []
+
+        for column, fail_values, review_values, label in [
+            ("coa_attached", ["no", "false", "missing"], ["review", "pending", ""], "COA"),
+            ("supplier_approved", ["no", "false", "not approved", "rejected"], ["review", "pending", ""], "Supplier"),
+            ("ingredient_expiry_status", ["expired", "fail", "failed"], ["due", "near due", "review", "pending", ""], "Ingredient expiry"),
+            ("storage_condition_status", ["fail", "failed", "excursion", "out of range", "out of limit"], ["alert", "review", "pending", ""], "Storage"),
+        ]:
+            fail_count = sterile_prework_count_values(group, column, fail_values)
+            review_count = sterile_prework_count_values(group, column, review_values)
+            ingredient_block_count += fail_count
+            ingredient_review_count += review_count
+            if fail_count:
+                ingredient_parts.append(f"{label}: {fail_count} fail/block")
+            if review_count:
+                ingredient_parts.append(f"{label}: {review_count} review/missing")
+
+        if ingredient_block_count:
+            ingredient_status = "RED"
+        elif ingredient_review_count:
+            ingredient_status = "YELLOW"
+        else:
+            ingredient_status = "GREEN"
+        ingredient_signal = "; ".join(ingredient_parts) if ingredient_parts else "Ingredient signals acceptable"
+
+        approval_block_count = 0
+        approval_review_count = 0
+        approval_parts = []
+
+        for column, fail_values, review_values, label in [
+            ("approval_status", ["rejected", "not approved", "denied"], ["pending", "review", ""], "Approval"),
+            ("pharmacist_verification", ["no", "false", "missing", "rejected"], ["pending", "review", ""], "Pharmacist verification"),
+            ("qa_review_status", ["rejected", "failed", "fail"], ["pending", "review", ""], "QA review"),
+        ]:
+            fail_count = sterile_prework_count_values(group, column, fail_values)
+            review_count = sterile_prework_count_values(group, column, review_values)
+            approval_block_count += fail_count
+            approval_review_count += review_count
+            if fail_count:
+                approval_parts.append(f"{label}: {fail_count} fail/block")
+            if review_count:
+                approval_parts.append(f"{label}: {review_count} review/missing")
+
+        if approval_block_count:
+            approval_status = "RED"
+        elif approval_review_count:
+            approval_status = "YELLOW"
+        else:
+            approval_status = "GREEN"
+        approval_signal = "; ".join(approval_parts) if approval_parts else "Approval/verification signals acceptable"
+
+        signal_statuses = [
+            equipment_status,
+            environmental_status,
+            cleaning_status,
+            em_review_status,
+            personnel_status,
+            deviation_status,
+            ingredient_status,
+            approval_status,
+        ]
+
+        blocking_reasons = []
+
+        if equipment_status == "RED":
+            blocking_reasons.append(f"Equipment/room readiness: {equipment_summary}")
+        if environmental_status == "RED":
+            blocking_reasons.append(f"Environmental monitoring: {environmental_summary}")
+        if cleaning_status == "RED":
+            blocking_reasons.append(f"Cleaning/disinfection: {cleaning_summary}")
+        if em_review_status == "RED":
+            blocking_reasons.append(f"EM review: {em_review_summary}")
+        if personnel_status == "RED":
+            blocking_reasons.append(f"Personnel qualification: {personnel_summary}")
+        if deviation_status == "RED":
+            blocking_reasons.append(f"Deviation status: {deviation_summary}")
+        if ingredient_status == "RED":
+            blocking_reasons.append(f"Ingredient readiness: {ingredient_signal}")
+        if approval_status == "RED":
+            blocking_reasons.append(f"Approval/verification: {approval_signal}")
+
+        review_reasons = []
+
+        if equipment_status == "YELLOW":
+            review_reasons.append(f"Equipment/room readiness: {equipment_summary}")
+        if environmental_status == "YELLOW":
+            review_reasons.append(f"Environmental monitoring: {environmental_summary}")
+        if cleaning_status == "YELLOW":
+            review_reasons.append(f"Cleaning/disinfection: {cleaning_summary}")
+        if em_review_status == "YELLOW":
+            review_reasons.append(f"EM review: {em_review_summary}")
+        if personnel_status == "YELLOW":
+            review_reasons.append(f"Personnel qualification: {personnel_summary}")
+        if deviation_status == "YELLOW":
+            review_reasons.append(f"Deviation status: {deviation_summary}")
+        if ingredient_status == "YELLOW":
+            review_reasons.append(f"Ingredient readiness: {ingredient_signal}")
+        if approval_status == "YELLOW":
+            review_reasons.append(f"Approval/verification: {approval_signal}")
+
+        readiness_score = 100
+        readiness_score -= red * 20
+        readiness_score -= yellow * 8
+        readiness_score -= len([s for s in signal_statuses if s == "RED"]) * 12
+        readiness_score -= len([s for s in signal_statuses if s == "YELLOW"]) * 5
+        readiness_score = max(0, min(100, int(readiness_score)))
+
+        if blocking_reasons:
+            start_gate_status = "RED"
+            start_gate_decision = "DO NOT START COMPOUNDING / GOVERNANCE BLOCK"
+            recommended_action = "Resolve release-blocking readiness gaps or route to pharmacist/QA review before work starts."
+        elif review_reasons:
+            start_gate_status = "YELLOW"
+            start_gate_decision = "CONDITIONAL START ONLY AFTER REVIEW"
+            recommended_action = "Review readiness signals before compounding activity begins."
+        else:
+            start_gate_status = "GREEN"
+            start_gate_decision = "START READY FROM GOVERNANCE VIEW"
+            recommended_action = "No start-blocking governance signal detected."
+
+        payload = {
+            "gate_id": sterile_prework_make_id("ST-PWG", facility_type, hood_id, shift_window),
+            "facility_type": facility_type,
+            "hood_or_cleanroom_id": hood_id,
+            "shift_window": shift_window,
+            "total_linked_csp": total,
+            "green_csp": green,
+            "yellow_csp": yellow,
+            "red_csp": red,
+            "equipment_status_signal": f"{equipment_status}: {equipment_summary}",
+            "environmental_status_signal": f"{environmental_status}: {environmental_summary}",
+            "cleaning_status_signal": f"{cleaning_status}: {cleaning_summary}",
+            "em_review_signal": f"{em_review_status}: {em_review_summary}",
+            "personnel_signal": f"{personnel_status}: {personnel_summary}",
+            "deviation_signal": f"{deviation_status}: {deviation_summary}",
+            "ingredient_signal": f"{ingredient_status}: {ingredient_signal}",
+            "approval_signal": f"{approval_status}: {approval_signal}",
+            "start_gate_status": start_gate_status,
+            "start_gate_decision": start_gate_decision,
+            "readiness_score": readiness_score,
+            "blocking_reasons": "; ".join(blocking_reasons + review_reasons),
+            "recommended_action": recommended_action,
+            "last_updated": sterile_now(),
+        }
+
+        payload["gate_hash"] = sterile_hash_text(
+            sterile_prework_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    gate_df = sterile_prework_pd.DataFrame(rows)
+    gate_df = sterile_ensure_cols(gate_df, STERILE_PREWORK_GATE_COLUMNS)
+    sterile_write_register(STERILE_PREWORK_GATE_REGISTER, gate_df, STERILE_PREWORK_GATE_COLUMNS)
+
+    return gate_df
+
+
+def sterile_drift_build_register():
+    df = sterile_prework_group_key_df()
+
+    if df.empty:
+        empty_df = sterile_prework_pd.DataFrame(columns=STERILE_ENV_DRIFT_COLUMNS)
+        sterile_write_register(STERILE_ENV_DRIFT_REGISTER, empty_df, STERILE_ENV_DRIFT_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for (facility_type, hood_id), group in df.groupby(["facility_type", "hood_or_cleanroom_id"]):
+        total = len(group)
+
+        environmental_alerts = sterile_prework_count_values(group, "environmental_status", ["alert", "warning", "yellow", "review", "pending"])
+        environmental_failures = sterile_prework_count_values(group, "environmental_status", ["fail", "failed", "red", "excursion", "out of limit", "out of range"])
+        equipment_due_or_expired = sterile_prework_count_values(group, "equipment_status", ["due", "near due", "expired", "fail", "failed", "not current"])
+        cleaning_gaps = sterile_prework_count_values(group, "cleaning_log_status", ["missing", "incomplete", "fail", "failed", "review", "pending", "due"])
+        em_review_gaps = sterile_prework_count_values(group, "em_log_reviewed", ["no", "false", "missing", "review", "pending"])
+        storage_alerts_or_failures = sterile_prework_count_values(group, "storage_condition_status", ["alert", "review", "pending", "fail", "failed", "excursion", "out of range", "out of limit"])
+        open_deviations = sterile_prework_count_values(group, "deviation_open", ["yes", "true", "open", "critical", "review", "pending"])
+
+        drift_score = 0
+        drift_score += environmental_alerts * 12
+        drift_score += environmental_failures * 25
+        drift_score += equipment_due_or_expired * 10
+        drift_score += cleaning_gaps * 8
+        drift_score += em_review_gaps * 8
+        drift_score += storage_alerts_or_failures * 8
+        drift_score += open_deviations * 15
+        drift_score = max(0, min(100, int(drift_score)))
+
+        reasons = []
+
+        if environmental_failures:
+            reasons.append(f"Environmental failure/excursion signals: {environmental_failures}")
+        if environmental_alerts:
+            reasons.append(f"Environmental alert/review signals: {environmental_alerts}")
+        if equipment_due_or_expired:
+            reasons.append(f"Equipment due/expired/failure signals: {equipment_due_or_expired}")
+        if cleaning_gaps:
+            reasons.append(f"Cleaning evidence gaps: {cleaning_gaps}")
+        if em_review_gaps:
+            reasons.append(f"EM review gaps: {em_review_gaps}")
+        if storage_alerts_or_failures:
+            reasons.append(f"Storage alert/failure signals: {storage_alerts_or_failures}")
+        if open_deviations:
+            reasons.append(f"Deviation signals: {open_deviations}")
+
+        if drift_score >= 75 or environmental_failures > 0:
+            drift_status = "RED"
+            drift_prediction = "CRITICAL DRIFT / COMPOUNDING SHOULD BE HELD FOR REVIEW"
+            recommended_action = "Investigate environmental/equipment/cleaning/deviation signals before use."
+        elif drift_score >= 35 or environmental_alerts > 0 or equipment_due_or_expired > 0:
+            drift_status = "YELLOW"
+            drift_prediction = "DRIFT RISK DETECTED / MONITOR AND REVIEW"
+            recommended_action = "Review trend signals and readiness evidence before starting or releasing related CSPs."
+        else:
+            drift_status = "GREEN"
+            drift_prediction = "ENVIRONMENT STABLE FROM GOVERNANCE VIEW"
+            recommended_action = "Continue routine monitoring; no drift block detected."
+
+        payload = {
+            "drift_id": sterile_prework_make_id("ST-DRIFT", facility_type, hood_id, "CURRENT"),
+            "facility_type": facility_type,
+            "hood_or_cleanroom_id": hood_id,
+            "total_linked_csp": total,
+            "environmental_alerts": environmental_alerts,
+            "environmental_failures": environmental_failures,
+            "equipment_due_or_expired": equipment_due_or_expired,
+            "cleaning_gaps": cleaning_gaps,
+            "em_review_gaps": em_review_gaps,
+            "storage_alerts_or_failures": storage_alerts_or_failures,
+            "open_deviations": open_deviations,
+            "drift_status": drift_status,
+            "drift_risk_score": drift_score,
+            "drift_prediction": drift_prediction,
+            "drift_reason": "; ".join(reasons) if reasons else "No material drift signal detected.",
+            "recommended_action": recommended_action,
+            "last_updated": sterile_now(),
+        }
+
+        payload["drift_hash"] = sterile_hash_text(
+            sterile_prework_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    drift_df = sterile_prework_pd.DataFrame(rows)
+    drift_df = sterile_ensure_cols(drift_df, STERILE_ENV_DRIFT_COLUMNS)
+    sterile_write_register(STERILE_ENV_DRIFT_REGISTER, drift_df, STERILE_ENV_DRIFT_COLUMNS)
+
+    return drift_df
+
+
+def sterile_prework_status_badge(status):
+    status = sterile_prework_safe(status).upper()
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+@app.route("/sterile-compounding/pre-work-gate")
+def sterile_compounding_pre_work_gate():
+    gate_df = sterile_prework_build_gate()
+
+    facility_filter = sterile_prework_safe(sterile_prework_request.args.get("facility_type", ""))
+    hood_filter = sterile_prework_safe(sterile_prework_request.args.get("hood_or_cleanroom_id", ""))
+
+    filtered = gate_df.copy()
+
+    if facility_filter and not filtered.empty:
+        filtered = filtered[filtered["facility_type"].astype(str) == facility_filter]
+
+    if hood_filter and not filtered.empty:
+        filtered = filtered[filtered["hood_or_cleanroom_id"].astype(str) == hood_filter]
+
+    total = len(filtered)
+    green = int((filtered["start_gate_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["start_gate_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["start_gate_status"] == "RED").sum()) if total else 0
+
+    facility_options = ['<option value="">All Facilities</option>']
+    hood_options = ['<option value="">All Hoods / Rooms</option>']
+
+    if not gate_df.empty:
+        for facility in sorted(gate_df["facility_type"].dropna().astype(str).unique()):
+            selected = "selected" if facility == facility_filter else ""
+            facility_options.append(f'<option value="{facility}" {selected}>{facility}</option>')
+
+        for hood in sorted(gate_df["hood_or_cleanroom_id"].dropna().astype(str).unique()):
+            selected = "selected" if hood == hood_filter else ""
+            hood_options.append(f'<option value="{hood}" {selected}>{hood}</option>')
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["start_gate_status", "readiness_score"], ascending=[False, True]).iterrows():
+            hood_id = sterile_prework_safe(row.get("hood_or_cleanroom_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_prework_status_badge(row.get("start_gate_status", ""))}</td>
+                <td>{sterile_prework_safe(row.get("facility_type", ""))}</td>
+                <td><a href="/sterile-compounding/risk-graph?target_type=EQUIPMENT_ROOM">{hood_id}</a></td>
+                <td>{sterile_prework_safe(row.get("shift_window", ""))}</td>
+                <td>{sterile_prework_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_prework_safe(row.get("start_gate_decision", ""))}</td>
+                <td>{sterile_prework_safe(row.get("total_linked_csp", ""))}</td>
+                <td>{sterile_prework_safe(row.get("green_csp", ""))}</td>
+                <td>{sterile_prework_safe(row.get("yellow_csp", ""))}</td>
+                <td>{sterile_prework_safe(row.get("red_csp", ""))}</td>
+                <td>{sterile_prework_safe(row.get("blocking_reasons", ""))}</td>
+                <td>{sterile_prework_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No pre-work gate records found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Pre-Compounding Start Gate</h1>
+        <p>
+            Start-readiness gate for sterile compounding areas. It checks whether a hood/room/facility is ready
+            from a governance standpoint before work begins: equipment, environment, cleaning, EM review,
+            personnel qualification, deviation status, ingredient readiness, and approvals.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Gate Records</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN / Start Ready</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW / Review</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED / Do Not Start</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Gate Filters</h2>
+        <form method="GET" action="/sterile-compounding/pre-work-gate">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:260px;">
+                    <label>Facility Type</label>
+                    <select name="facility_type">{''.join(facility_options)}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Hood / Cleanroom</label>
+                    <select name="hood_or_cleanroom_id">{''.join(hood_options)}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-work-gate">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-work-gate/export">Export Gate</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/environmental-drift">Environmental Drift</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Start Gate Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Facility</th>
+                        <th>Hood / Room</th>
+                        <th>Shift Window</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Total CSP</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Reasons</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PRE-WORK-GATE",
+            "PRE_WORK_GATE_VIEW",
+            "Sterile pre-compounding start gate viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/pre-work-gate",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Pre-Compounding Start Gate", body)
+
+
+@app.route("/sterile-compounding/pre-work-gate/export")
+def sterile_compounding_pre_work_gate_export():
+    gate_df = sterile_prework_build_gate()
+
+    if gate_df.empty:
+        gate_df = sterile_prework_pd.DataFrame(columns=STERILE_PREWORK_GATE_COLUMNS)
+
+    csv_data = gate_df.to_csv(index=False)
+
+    return sterile_prework_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_prework_gate_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/environmental-drift")
+def sterile_compounding_environmental_drift():
+    drift_df = sterile_drift_build_register()
+
+    facility_filter = sterile_prework_safe(sterile_prework_request.args.get("facility_type", ""))
+    hood_filter = sterile_prework_safe(sterile_prework_request.args.get("hood_or_cleanroom_id", ""))
+
+    filtered = drift_df.copy()
+
+    if facility_filter and not filtered.empty:
+        filtered = filtered[filtered["facility_type"].astype(str) == facility_filter]
+
+    if hood_filter and not filtered.empty:
+        filtered = filtered[filtered["hood_or_cleanroom_id"].astype(str) == hood_filter]
+
+    total = len(filtered)
+    green = int((filtered["drift_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["drift_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["drift_status"] == "RED").sum()) if total else 0
+
+    facility_options = ['<option value="">All Facilities</option>']
+    hood_options = ['<option value="">All Hoods / Rooms</option>']
+
+    if not drift_df.empty:
+        for facility in sorted(drift_df["facility_type"].dropna().astype(str).unique()):
+            selected = "selected" if facility == facility_filter else ""
+            facility_options.append(f'<option value="{facility}" {selected}>{facility}</option>')
+
+        for hood in sorted(drift_df["hood_or_cleanroom_id"].dropna().astype(str).unique()):
+            selected = "selected" if hood == hood_filter else ""
+            hood_options.append(f'<option value="{hood}" {selected}>{hood}</option>')
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["drift_status", "drift_risk_score"], ascending=[False, False]).iterrows():
+            hood_id = sterile_prework_safe(row.get("hood_or_cleanroom_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_prework_status_badge(row.get("drift_status", ""))}</td>
+                <td>{sterile_prework_safe(row.get("facility_type", ""))}</td>
+                <td><a href="/sterile-compounding/risk-graph?target_type=EQUIPMENT_ROOM">{hood_id}</a></td>
+                <td>{sterile_prework_safe(row.get("drift_risk_score", ""))}</td>
+                <td>{sterile_prework_safe(row.get("drift_prediction", ""))}</td>
+                <td>{sterile_prework_safe(row.get("environmental_alerts", ""))}</td>
+                <td>{sterile_prework_safe(row.get("environmental_failures", ""))}</td>
+                <td>{sterile_prework_safe(row.get("equipment_due_or_expired", ""))}</td>
+                <td>{sterile_prework_safe(row.get("cleaning_gaps", ""))}</td>
+                <td>{sterile_prework_safe(row.get("em_review_gaps", ""))}</td>
+                <td>{sterile_prework_safe(row.get("storage_alerts_or_failures", ""))}</td>
+                <td>{sterile_prework_safe(row.get("open_deviations", ""))}</td>
+                <td>{sterile_prework_safe(row.get("drift_reason", ""))}</td>
+                <td>{sterile_prework_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="14" style="text-align:center; padding:24px; color:#6b7280;">
+                No environmental drift records found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Environmental Drift Monitor</h1>
+        <p>
+            Predictive governance view for sterile compounding environments. It does not replace an environmental
+            monitoring system; it uses CSP evidence signals to flag whether a room/hood is trending toward
+            review, hold, or do-not-start conditions.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Drift Records</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN / Stable</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW / Drift Risk</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED / Critical Drift</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Drift Filters</h2>
+        <form method="GET" action="/sterile-compounding/environmental-drift">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:260px;">
+                    <label>Facility Type</label>
+                    <select name="facility_type">{''.join(facility_options)}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Hood / Cleanroom</label>
+                    <select name="hood_or_cleanroom_id">{''.join(hood_options)}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/environmental-drift">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/environmental-drift/export">Export Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-work-gate">Pre-Work Gate</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Drift Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Facility</th>
+                        <th>Hood / Room</th>
+                        <th>Risk Score</th>
+                        <th>Prediction</th>
+                        <th>EM Alerts</th>
+                        <th>EM Failures</th>
+                        <th>Equip Due/Expired</th>
+                        <th>Cleaning Gaps</th>
+                        <th>EM Review Gaps</th>
+                        <th>Storage Signals</th>
+                        <th>Deviation Signals</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ENVIRONMENTAL-DRIFT",
+            "ENVIRONMENTAL_DRIFT_VIEW",
+            "Sterile environmental drift monitor viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/environmental-drift",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Environmental Drift Monitor", body)
+
+
+@app.route("/sterile-compounding/environmental-drift/export")
+def sterile_compounding_environmental_drift_export():
+    drift_df = sterile_drift_build_register()
+
+    if drift_df.empty:
+        drift_df = sterile_prework_pd.DataFrame(columns=STERILE_ENV_DRIFT_COLUMNS)
+
+    csv_data = drift_df.to_csv(index=False)
+
+    return sterile_prework_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_environmental_drift_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_prework_drift_dashboard_injection(response):
+    try:
+        if sterile_prework_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-prework-drift-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-prework-drift-panel">
+            <h2>Pre-Compounding Start Gate + Environmental Drift Monitor</h2>
+            <p class="st-note">
+                Start-readiness and drift monitoring for sterile compounding areas. This answers whether a hood,
+                room, or facility appears ready to start from a governance standpoint and whether environmental
+                signals are trending toward review or hold.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/pre-work-gate">Pre-Work Gate</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/environmental-drift">Environmental Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-work-gate/export">Export Gate</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/environmental-drift/export">Export Drift</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile pre-work/drift dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
