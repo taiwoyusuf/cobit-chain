@@ -30943,5 +30943,1115 @@ def sterile_compounding_custody_audit_link_injection(response):
         print(f"Sterile custody audit-link injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_SOP_FORMULA_DRIFT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 19: SOP / Formula Drift Governance + Version Passport
+#
+# New Routes:
+#   /sterile-compounding/sop-formula-governance
+#   /sterile-compounding/sop-formula/<sop_key>
+#   /sterile-compounding/sop-formula/export
+#   /sterile-compounding/sop-drift
+#   /sterile-compounding/sop-drift/export
+#
+# New Registers:
+#   sterile_compounding_sop_formula_register.csv
+#   sterile_compounding_sop_drift_register.csv
+#
+# Boundary:
+#   This is a governance view over SOP/formula version evidence and drift.
+#   It does not replace Veeva, QMS, pharmacy formula approval, QA release,
+#   ServiceNow, Blue Mountain, Entra, CI, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_sop_pd
+    import json as sterile_sop_json
+    from urllib.parse import quote as sterile_sop_quote
+    from flask import request as sterile_sop_request
+    from flask import Response as sterile_sop_Response
+except Exception as sterile_sop_import_error:
+    raise RuntimeError(f"Sterile SOP/formula drift import failed: {sterile_sop_import_error}")
+
+
+STERILE_SOP_FORMULA_REGISTER = "sterile_compounding_sop_formula_register.csv"
+STERILE_SOP_DRIFT_REGISTER = "sterile_compounding_sop_drift_register.csv"
+
+STERILE_SOP_FORMULA_COLUMNS = [
+    "sop_key",
+    "sop_version",
+    "formula_family",
+    "facility_type",
+    "csp_category",
+    "linked_csp_count",
+    "green_csp",
+    "yellow_csp",
+    "red_csp",
+    "hazardous_csp_count",
+    "open_deviation_count",
+    "evidence_file_count",
+    "sop_evidence_count",
+    "approved_sop_evidence_count",
+    "pending_sop_evidence_count",
+    "rejected_sop_evidence_count",
+    "audit_pack_red_count",
+    "custody_block_count",
+    "seal_mismatch_count",
+    "sop_formula_status",
+    "sop_formula_score",
+    "sop_formula_decision",
+    "risk_summary",
+    "recommended_action",
+    "last_checked",
+    "sop_formula_hash"
+]
+
+STERILE_SOP_DRIFT_COLUMNS = [
+    "drift_id",
+    "record_id",
+    "sop_key",
+    "sop_version",
+    "formula_family",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "csp_category",
+    "governance_status",
+    "readiness_score",
+    "audit_pack_status",
+    "evidence_matrix_status",
+    "sop_evidence_status",
+    "deviation_signal",
+    "hazardous_drug",
+    "drift_status",
+    "drift_score",
+    "drift_reason",
+    "recommended_action",
+    "source_routes",
+    "last_checked",
+    "drift_hash"
+]
+
+
+def sterile_sop_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile SOP/formula dependencies missing: " + ", ".join(missing))
+
+
+def sterile_sop_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_sop_lower(value):
+    return sterile_sop_safe(value).lower()
+
+
+def sterile_sop_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_sop_status_badge(status):
+    status = sterile_sop_safe(status).upper()
+
+    if status in ["GREEN", "CONTROLLED", "COMPLETE", "CURRENT"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "PENDING", "UNKNOWN"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "DRIFT", "MISSING", "REJECTED", "BLOCKED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_sop_key(value):
+    value = sterile_sop_safe(value)
+
+    if not value:
+        return "UNSPECIFIED-SOP"
+
+    safe = value.replace("/", "_").replace("\\", "_").replace(" ", "_").replace("#", "").replace("?", "")
+    safe = safe.replace("&", "AND").replace(":", "_").replace(";", "_")
+    return safe[:120] if safe else "UNSPECIFIED-SOP"
+
+
+def sterile_sop_formula_family(row):
+    csp_category = sterile_sop_safe(row.get("csp_category", ""))
+    csp_name = sterile_sop_safe(row.get("csp_name", ""))
+    sop_version = sterile_sop_safe(row.get("sop_version", ""))
+
+    if csp_category:
+        return csp_category
+
+    if csp_name:
+        parts = csp_name.replace("-", " ").replace("_", " ").split()
+        if parts:
+            return " ".join(parts[:3])
+
+    if sop_version:
+        return sop_version.split("-")[0]
+
+    return "Unspecified Formula Family"
+
+
+def sterile_sop_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_sop_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_sop_pd.DataFrame(columns=columns)
+
+
+def sterile_sop_subset(df, column, value):
+    if df is None or df.empty or column not in df.columns:
+        return sterile_sop_pd.DataFrame(columns=df.columns if df is not None and hasattr(df, "columns") else [])
+    return df[df[column].astype(str) == str(value)].copy()
+
+
+def sterile_sop_build_support():
+    support = {}
+
+    try:
+        if callable(globals().get("sterile_pack_build_register")):
+            support["audit_pack"] = sterile_pack_build_register()
+        else:
+            support["audit_pack"] = sterile_sop_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+    except Exception:
+        support["audit_pack"] = sterile_sop_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_mx_build_matrix")):
+            support["evidence_matrix"] = sterile_mx_build_matrix()
+        else:
+            support["evidence_matrix"] = sterile_sop_read_optional("sterile_compounding_evidence_matrix_register.csv", "STERILE_EVIDENCE_MATRIX_COLUMNS")
+    except Exception:
+        support["evidence_matrix"] = sterile_sop_read_optional("sterile_compounding_evidence_matrix_register.csv", "STERILE_EVIDENCE_MATRIX_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_cal_build_link")):
+            support["custody_audit"] = sterile_cal_build_link()
+        else:
+            support["custody_audit"] = sterile_sop_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+    except Exception:
+        support["custody_audit"] = sterile_sop_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_sh_build_health")):
+            support["seal_health"] = sterile_sh_build_health()
+        else:
+            support["seal_health"] = sterile_sop_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+    except Exception:
+        support["seal_health"] = sterile_sop_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+
+    support["evidence_vault"] = sterile_sop_read_optional("sterile_compounding_evidence_vault_register.csv", "STERILE_EVIDENCE_VAULT_COLUMNS")
+    support["deviation_pack"] = sterile_sop_read_optional("sterile_compounding_deviation_pack_register.csv", "STERILE_DEVIATION_PACK_COLUMNS")
+
+    return support
+
+
+def sterile_sop_record_sop_evidence(vault_df, record_id):
+    if vault_df is None or vault_df.empty:
+        return sterile_sop_pd.DataFrame(columns=vault_df.columns if vault_df is not None and hasattr(vault_df, "columns") else [])
+
+    linked = vault_df[vault_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if linked.empty:
+        return linked
+
+    mask = sterile_sop_pd.Series([False] * len(linked), index=linked.index)
+
+    for col in ["evidence_category", "evidence_title", "original_filename"]:
+        if col in linked.columns:
+            mask = mask | linked[col].astype(str).str.lower().str.contains("sop", na=False)
+            mask = mask | linked[col].astype(str).str.lower().str.contains("formula", na=False)
+            mask = mask | linked[col].astype(str).str.lower().str.contains("procedure", na=False)
+
+    return linked[mask].copy()
+
+
+def sterile_sop_evidence_matrix_status(matrix_df, record_id):
+    if matrix_df is None or matrix_df.empty:
+        return "UNKNOWN"
+
+    linked = matrix_df[matrix_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if linked.empty:
+        return "UNKNOWN"
+
+    if "required_evidence_category" in linked.columns:
+        linked = linked[
+            linked["required_evidence_category"].astype(str).str.lower().str.contains("sop", na=False)
+            | linked["required_evidence_category"].astype(str).str.lower().str.contains("formula", na=False)
+        ]
+
+    if linked.empty:
+        return "UNKNOWN"
+
+    statuses = set(linked["evidence_status"].astype(str).str.upper().tolist())
+
+    if "MISSING" in statuses or "REJECTED" in statuses:
+        return "RED"
+    if "PRESENT_PENDING" in statuses:
+        return "YELLOW"
+    if "PRESENT_APPROVED" in statuses:
+        return "GREEN"
+
+    return "UNKNOWN"
+
+
+def sterile_sop_record_drift(row, support):
+    record_id = sterile_sop_safe(row.get("record_id", ""))
+    sop_version = sterile_sop_safe(row.get("sop_version", ""))
+    sop_key = sterile_sop_key(sop_version)
+    formula_family = sterile_sop_formula_family(row)
+
+    audit_pack = sterile_sop_subset(support.get("audit_pack"), "record_id", record_id)
+    audit_pack_status = ""
+    if audit_pack is not None and not audit_pack.empty and "audit_pack_status" in audit_pack.columns:
+        audit_pack_status = sterile_sop_safe(audit_pack.iloc[0].get("audit_pack_status", ""))
+
+    matrix_status = sterile_sop_evidence_matrix_status(support.get("evidence_matrix"), record_id)
+
+    sop_evidence = sterile_sop_record_sop_evidence(support.get("evidence_vault"), record_id)
+    sop_evidence_status = "UNKNOWN"
+
+    if sop_evidence is not None and not sop_evidence.empty:
+        if "evidence_status" in sop_evidence.columns:
+            statuses = set(sop_evidence["evidence_status"].astype(str).str.upper().tolist())
+            if "RED" in statuses:
+                sop_evidence_status = "RED"
+            elif "YELLOW" in statuses:
+                sop_evidence_status = "YELLOW"
+            elif "GREEN" in statuses:
+                sop_evidence_status = "GREEN"
+        else:
+            sop_evidence_status = "YELLOW"
+    else:
+        sop_evidence_status = "MISSING"
+
+    deviation_signal = sterile_sop_safe(row.get("deviation_open", ""))
+    hazardous = sterile_sop_safe(row.get("hazardous_drug", ""))
+    governance_status = sterile_sop_safe(row.get("governance_status", ""))
+    readiness_score = sterile_sop_numeric(row.get("readiness_score", 0), 0)
+
+    reasons = []
+    score = 0
+
+    if not sop_version:
+        reasons.append("Missing SOP/formula version")
+        score += 35
+
+    if sop_key == "UNSPECIFIED-SOP":
+        reasons.append("Unspecified SOP key")
+        score += 25
+
+    if matrix_status == "RED":
+        reasons.append("SOP/formula evidence requirement missing or rejected")
+        score += 25
+    elif matrix_status in ["YELLOW", "UNKNOWN"]:
+        reasons.append("SOP/formula evidence requirement pending or unknown")
+        score += 12
+
+    if sop_evidence_status in ["MISSING", "RED"]:
+        reasons.append("No approved SOP/formula evidence linked in Evidence Vault")
+        score += 25
+    elif sop_evidence_status in ["YELLOW", "UNKNOWN"]:
+        reasons.append("SOP/formula evidence pending or unknown")
+        score += 10
+
+    if audit_pack_status.upper() == "RED":
+        reasons.append("Audit pack is RED")
+        score += 20
+    elif audit_pack_status.upper() == "YELLOW":
+        reasons.append("Audit pack requires review")
+        score += 8
+
+    if governance_status.upper() == "RED":
+        reasons.append("CSP governance status is RED")
+        score += 20
+    elif governance_status.upper() == "YELLOW":
+        reasons.append("CSP governance status requires review")
+        score += 8
+
+    if readiness_score and readiness_score < 60:
+        reasons.append("Low readiness score")
+        score += 15
+    elif readiness_score and readiness_score < 90:
+        reasons.append("Readiness score below clean release threshold")
+        score += 6
+
+    if sterile_sop_lower(deviation_signal) in ["yes", "true", "open", "critical"]:
+        reasons.append("Open deviation linked to CSP")
+        score += 18
+
+    if sterile_sop_lower(hazardous) in ["yes", "true", "hazardous"]:
+        reasons.append("Hazardous-drug CSP requires stronger formula/SOP assurance")
+        score += 8
+
+    score = max(0, min(100, score))
+
+    if score >= 60:
+        drift_status = "RED"
+        recommended_action = "Do not rely on SOP/formula readiness until missing/rejected evidence, deviation, or audit-pack blockers are reviewed."
+    elif score >= 20:
+        drift_status = "YELLOW"
+        recommended_action = "Review SOP/formula evidence, version linkage, and audit-pack signals before final reliance."
+    else:
+        drift_status = "GREEN"
+        recommended_action = "No SOP/formula drift action required from governance view."
+
+    payload = {
+        "drift_id": sterile_sop_make_id("ST-SOPDRIFT", record_id, sop_key),
+        "record_id": record_id,
+        "sop_key": sop_key,
+        "sop_version": sop_version,
+        "formula_family": formula_family,
+        "csp_name": sterile_sop_safe(row.get("csp_name", "")),
+        "batch_or_rx_id": sterile_sop_safe(row.get("batch_or_rx_id", "")),
+        "facility_type": sterile_sop_safe(row.get("facility_type", "")),
+        "csp_category": sterile_sop_safe(row.get("csp_category", "")),
+        "governance_status": governance_status,
+        "readiness_score": sterile_sop_safe(row.get("readiness_score", "")),
+        "audit_pack_status": audit_pack_status,
+        "evidence_matrix_status": matrix_status,
+        "sop_evidence_status": sop_evidence_status,
+        "deviation_signal": deviation_signal,
+        "hazardous_drug": hazardous,
+        "drift_status": drift_status,
+        "drift_score": score,
+        "drift_reason": "; ".join(reasons) if reasons else "No material SOP/formula drift signal detected.",
+        "recommended_action": recommended_action,
+        "source_routes": "; ".join([
+            f"/sterile-compounding/passport/{record_id}",
+            f"/sterile-compounding/evidence-matrix/{record_id}",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/sop-formula/{sop_key}",
+        ]),
+        "last_checked": sterile_now(),
+    }
+
+    payload["drift_hash"] = sterile_hash_text(
+        sterile_sop_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_sop_build_drift():
+    sterile_sop_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+    support = sterile_sop_build_support()
+
+    if csp_df.empty:
+        empty_df = sterile_sop_pd.DataFrame(columns=STERILE_SOP_DRIFT_COLUMNS)
+        sterile_write_register(STERILE_SOP_DRIFT_REGISTER, empty_df, STERILE_SOP_DRIFT_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, row in csp_df.iterrows():
+        rows.append(sterile_sop_record_drift(row.to_dict(), support))
+
+    drift_df = sterile_sop_pd.DataFrame(rows)
+    drift_df = sterile_ensure_cols(drift_df, STERILE_SOP_DRIFT_COLUMNS)
+    sterile_write_register(STERILE_SOP_DRIFT_REGISTER, drift_df, STERILE_SOP_DRIFT_COLUMNS)
+
+    return drift_df
+
+
+def sterile_sop_build_formula_register():
+    sterile_sop_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+    drift_df = sterile_sop_build_drift()
+    support = sterile_sop_build_support()
+    vault_df = support.get("evidence_vault")
+    audit_pack_df = support.get("audit_pack")
+    custody_df = support.get("custody_audit")
+    seal_df = support.get("seal_health")
+
+    if csp_df.empty:
+        empty_df = sterile_sop_pd.DataFrame(columns=STERILE_SOP_FORMULA_COLUMNS)
+        sterile_write_register(STERILE_SOP_FORMULA_REGISTER, empty_df, STERILE_SOP_FORMULA_COLUMNS)
+        return empty_df
+
+    csp_df = csp_df.copy()
+    csp_df["sop_key_calc"] = csp_df["sop_version"].astype(str).apply(sterile_sop_key)
+    csp_df["formula_family_calc"] = csp_df.apply(lambda r: sterile_sop_formula_family(r.to_dict()), axis=1)
+
+    rows = []
+
+    for (sop_key, sop_version, formula_family, facility_type, csp_category), group in csp_df.groupby(
+        ["sop_key_calc", "sop_version", "formula_family_calc", "facility_type", "csp_category"],
+        dropna=False
+    ):
+        record_ids = [sterile_sop_safe(v) for v in group["record_id"].astype(str).tolist()]
+        linked_count = len(group)
+
+        green_csp = int((group["governance_status"].astype(str).str.upper() == "GREEN").sum()) if "governance_status" in group.columns else 0
+        yellow_csp = int((group["governance_status"].astype(str).str.upper() == "YELLOW").sum()) if "governance_status" in group.columns else 0
+        red_csp = int((group["governance_status"].astype(str).str.upper() == "RED").sum()) if "governance_status" in group.columns else 0
+        hazardous_count = int(group["hazardous_drug"].astype(str).str.lower().isin(["yes", "true", "hazardous"]).sum()) if "hazardous_drug" in group.columns else 0
+        open_dev_count = int(group["deviation_open"].astype(str).str.lower().isin(["yes", "true", "open", "critical"]).sum()) if "deviation_open" in group.columns else 0
+
+        evidence_file_count = int((group["evidence_file"].astype(str).str.strip() != "").sum()) if "evidence_file" in group.columns else 0
+
+        sop_evidence_count = 0
+        approved_sop_evidence_count = 0
+        pending_sop_evidence_count = 0
+        rejected_sop_evidence_count = 0
+
+        for rid in record_ids:
+            sop_ev = sterile_sop_record_sop_evidence(vault_df, rid)
+            sop_evidence_count += len(sop_ev)
+            if sop_ev is not None and not sop_ev.empty and "evidence_status" in sop_ev.columns:
+                approved_sop_evidence_count += int((sop_ev["evidence_status"].astype(str).str.upper() == "GREEN").sum())
+                pending_sop_evidence_count += int((sop_ev["evidence_status"].astype(str).str.upper() == "YELLOW").sum())
+                rejected_sop_evidence_count += int((sop_ev["evidence_status"].astype(str).str.upper() == "RED").sum())
+
+        audit_pack_red_count = 0
+        if audit_pack_df is not None and not audit_pack_df.empty and "record_id" in audit_pack_df.columns:
+            audit_pack_red_count = int(
+                audit_pack_df[
+                    audit_pack_df["record_id"].astype(str).isin(record_ids)
+                    & (audit_pack_df["audit_pack_status"].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        custody_block_count = 0
+        if custody_df is not None and not custody_df.empty and "record_id" in custody_df.columns:
+            custody_block_count = int(
+                custody_df[
+                    custody_df["record_id"].astype(str).isin(record_ids)
+                    & (custody_df["custody_audit_status"].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        seal_mismatch_count = 0
+        if seal_df is not None and not seal_df.empty and "record_id" in seal_df.columns:
+            seal_mismatch_count = int(
+                seal_df[
+                    seal_df["record_id"].astype(str).isin(record_ids)
+                    & (seal_df["latest_verification_status"].astype(str).str.upper() == "HASH MISMATCH")
+                ].shape[0]
+            )
+
+        drift_subset = drift_df[drift_df["record_id"].astype(str).isin(record_ids)].copy() if not drift_df.empty else drift_df
+        red_drift = int((drift_subset["drift_status"].astype(str).str.upper() == "RED").sum()) if not drift_subset.empty else 0
+        yellow_drift = int((drift_subset["drift_status"].astype(str).str.upper() == "YELLOW").sum()) if not drift_subset.empty else 0
+
+        risk_parts = []
+
+        score = 100
+
+        if sop_key == "UNSPECIFIED-SOP" or not sterile_sop_safe(sop_version):
+            score -= 35
+            risk_parts.append("Missing or unspecified SOP/formula version")
+
+        if red_csp:
+            score -= red_csp * 12
+            risk_parts.append(f"RED CSPs: {red_csp}")
+
+        if yellow_csp:
+            score -= yellow_csp * 5
+            risk_parts.append(f"YELLOW CSPs: {yellow_csp}")
+
+        if open_dev_count:
+            score -= open_dev_count * 10
+            risk_parts.append(f"Open deviations: {open_dev_count}")
+
+        if hazardous_count:
+            score -= hazardous_count * 4
+            risk_parts.append(f"Hazardous-drug CSPs: {hazardous_count}")
+
+        if sop_evidence_count == 0:
+            score -= 20
+            risk_parts.append("No SOP/formula evidence found in Evidence Vault")
+
+        if rejected_sop_evidence_count:
+            score -= rejected_sop_evidence_count * 15
+            risk_parts.append(f"Rejected SOP/formula evidence: {rejected_sop_evidence_count}")
+
+        if pending_sop_evidence_count:
+            score -= pending_sop_evidence_count * 5
+            risk_parts.append(f"Pending SOP/formula evidence: {pending_sop_evidence_count}")
+
+        if audit_pack_red_count:
+            score -= audit_pack_red_count * 12
+            risk_parts.append(f"RED audit packs linked to this SOP/formula: {audit_pack_red_count}")
+
+        if custody_block_count:
+            score -= custody_block_count * 10
+            risk_parts.append(f"Custody blocks linked to this SOP/formula: {custody_block_count}")
+
+        if seal_mismatch_count:
+            score -= seal_mismatch_count * 15
+            risk_parts.append(f"Seal mismatches linked to this SOP/formula: {seal_mismatch_count}")
+
+        if red_drift:
+            score -= red_drift * 10
+            risk_parts.append(f"RED SOP/formula drift records: {red_drift}")
+
+        if yellow_drift:
+            score -= yellow_drift * 4
+            risk_parts.append(f"YELLOW SOP/formula drift records: {yellow_drift}")
+
+        score = max(0, min(100, int(score)))
+
+        if score < 60 or red_drift or rejected_sop_evidence_count or seal_mismatch_count:
+            status = "RED"
+            decision = "SOP / FORMULA VERSION DRIFT REQUIRES GOVERNANCE REVIEW"
+            action = "Review SOP/formula version, controlled evidence, linked CSPs, audit packs, custody, and seal status before reliance."
+        elif score < 90 or yellow_drift or pending_sop_evidence_count or not approved_sop_evidence_count:
+            status = "YELLOW"
+            decision = "SOP / FORMULA VERSION NEEDS EVIDENCE REVIEW"
+            action = "Confirm SOP/formula evidence, approval status, and linked CSP readiness."
+        else:
+            status = "GREEN"
+            decision = "SOP / FORMULA VERSION CONTROLLED FROM GOVERNANCE VIEW"
+            action = "No SOP/formula action required."
+
+        payload = {
+            "sop_key": sterile_sop_safe(sop_key),
+            "sop_version": sterile_sop_safe(sop_version),
+            "formula_family": sterile_sop_safe(formula_family),
+            "facility_type": sterile_sop_safe(facility_type),
+            "csp_category": sterile_sop_safe(csp_category),
+            "linked_csp_count": linked_count,
+            "green_csp": green_csp,
+            "yellow_csp": yellow_csp,
+            "red_csp": red_csp,
+            "hazardous_csp_count": hazardous_count,
+            "open_deviation_count": open_dev_count,
+            "evidence_file_count": evidence_file_count,
+            "sop_evidence_count": sop_evidence_count,
+            "approved_sop_evidence_count": approved_sop_evidence_count,
+            "pending_sop_evidence_count": pending_sop_evidence_count,
+            "rejected_sop_evidence_count": rejected_sop_evidence_count,
+            "audit_pack_red_count": audit_pack_red_count,
+            "custody_block_count": custody_block_count,
+            "seal_mismatch_count": seal_mismatch_count,
+            "sop_formula_status": status,
+            "sop_formula_score": score,
+            "sop_formula_decision": decision,
+            "risk_summary": "; ".join(risk_parts) if risk_parts else "No material SOP/formula risk signal detected.",
+            "recommended_action": action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["sop_formula_hash"] = sterile_hash_text(
+            sterile_sop_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    formula_df = sterile_sop_pd.DataFrame(rows)
+    formula_df = sterile_ensure_cols(formula_df, STERILE_SOP_FORMULA_COLUMNS)
+    sterile_write_register(STERILE_SOP_FORMULA_REGISTER, formula_df, STERILE_SOP_FORMULA_COLUMNS)
+
+    return formula_df
+
+
+@app.route("/sterile-compounding/sop-formula-governance")
+def sterile_compounding_sop_formula_governance():
+    formula_df = sterile_sop_build_formula_register()
+
+    status_filter = sterile_sop_safe(sterile_sop_request.args.get("status", ""))
+    filtered = formula_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["sop_formula_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["sop_formula_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["sop_formula_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["sop_formula_status"] == "RED").sum()) if total else 0
+    linked_csp = int(sterile_sop_pd.to_numeric(filtered["linked_csp_count"], errors="coerce").fillna(0).sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["sop_formula_status", "sop_formula_score"], ascending=[False, True]).iterrows():
+            sop_key = sterile_sop_safe(row.get("sop_key", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sop_status_badge(row.get("sop_formula_status", ""))}</td>
+                <td><a href="/sterile-compounding/sop-formula/{sterile_sop_quote(sop_key)}">{sterile_sop_safe(row.get("sop_version", "")) or "UNSPECIFIED"}</a></td>
+                <td>{sterile_sop_safe(row.get("formula_family", ""))}</td>
+                <td>{sterile_sop_safe(row.get("facility_type", ""))}</td>
+                <td>{sterile_sop_safe(row.get("csp_category", ""))}</td>
+                <td>{sterile_sop_safe(row.get("linked_csp_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("sop_formula_score", ""))}</td>
+                <td>{sterile_sop_safe(row.get("sop_evidence_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("approved_sop_evidence_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("open_deviation_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("audit_pack_red_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("custody_block_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("seal_mismatch_count", ""))}</td>
+                <td>{sterile_sop_safe(row.get("sop_formula_decision", ""))}</td>
+                <td>{sterile_sop_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="15" style="text-align:center; padding:24px; color:#6b7280;">
+                No SOP/formula rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>SOP / Formula Governance</h1>
+        <p>
+            Governance view for sterile compounding SOP/formula versions. It groups CSPs by SOP/formula version,
+            checks linked evidence, audit-pack status, custody blocks, seal mismatches, deviations, and hazardous-drug signals.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">SOP / Formula Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Linked CSPs</div><div class="st-value">{linked_csp}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>SOP / Formula Filters</h2>
+        <form method="GET" action="/sterile-compounding/sop-formula-governance">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-formula-governance">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-drift">SOP Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-formula/export">Export SOP / Formula</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>SOP / Formula Governance Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>SOP Version</th>
+                        <th>Formula Family</th>
+                        <th>Facility</th>
+                        <th>CSP Category</th>
+                        <th>Linked CSPs</th>
+                        <th>Score</th>
+                        <th>SOP Evidence</th>
+                        <th>Approved Evidence</th>
+                        <th>Open Deviations</th>
+                        <th>RED Audit Packs</th>
+                        <th>Custody Blocks</th>
+                        <th>Seal Mismatches</th>
+                        <th>Decision</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "SOP-FORMULA-GOVERNANCE",
+            "STERILE_SOP_FORMULA_GOVERNANCE_VIEW",
+            "Sterile SOP/formula governance viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/sop-formula-governance",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("SOP / Formula Governance", body)
+
+
+@app.route("/sterile-compounding/sop-formula/<sop_key>")
+def sterile_compounding_sop_formula_passport(sop_key):
+    formula_df = sterile_sop_build_formula_register()
+    drift_df = sterile_sop_build_drift()
+    sop_key = sterile_sop_safe(sop_key)
+
+    match = formula_df[formula_df["sop_key"].astype(str) == str(sop_key)] if not formula_df.empty else formula_df
+
+    if match.empty:
+        return sterile_sop_Response("SOP/formula passport not found.", status=404)
+
+    formula = match.iloc[0].to_dict()
+    linked_drift = drift_df[drift_df["sop_key"].astype(str) == str(sop_key)].copy() if not drift_df.empty else drift_df
+
+    formula_rows = ""
+    for key in STERILE_SOP_FORMULA_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_sop_safe(formula.get(key, ""))
+
+        if key == "sop_formula_status":
+            value = sterile_sop_status_badge(value)
+        elif key == "sop_formula_hash":
+            value = f"<code>{value}</code>"
+
+        formula_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    drift_rows = ""
+    if not linked_drift.empty:
+        for _, row in linked_drift.sort_values(by=["drift_status", "record_id"], ascending=[False, True]).iterrows():
+            rid = sterile_sop_safe(row.get("record_id", ""))
+            drift_rows += f"""
+            <tr>
+                <td>{sterile_sop_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_sop_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_sop_safe(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("evidence_matrix_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("sop_evidence_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_sop_safe(row.get("drift_reason", ""))}</td>
+            </tr>
+            """
+    else:
+        drift_rows = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No linked drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>SOP / Formula Passport</h1>
+        <p>
+            Version passport for SOP/formula key <b>{sop_key}</b>.
+        </p>
+        <div style="margin-top:16px;">{sterile_sop_status_badge(formula.get("sop_formula_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_sop_safe(formula.get("sop_formula_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>SOP / Formula Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{formula_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Linked CSP Drift Records</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Readiness</th>
+                        <th>Audit Pack</th>
+                        <th>Evidence Matrix</th>
+                        <th>SOP Evidence</th>
+                        <th>Drift Score</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>{drift_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/sop-drift">SOP Drift Register</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/sop-formula-governance">Back to SOP / Formula Governance</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            sop_key,
+            "STERILE_SOP_FORMULA_PASSPORT_VIEW",
+            f"SOP/formula passport viewed for {sop_key}",
+            actor="system",
+            source_route="/sterile-compounding/sop-formula/<sop_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"SOP / Formula Passport - {sop_key}", body)
+
+
+@app.route("/sterile-compounding/sop-drift")
+def sterile_compounding_sop_drift():
+    drift_df = sterile_sop_build_drift()
+
+    status_filter = sterile_sop_safe(sterile_sop_request.args.get("status", ""))
+    filtered = drift_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["drift_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["drift_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["drift_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["drift_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["drift_status", "drift_score"], ascending=[False, False]).iterrows():
+            rid = sterile_sop_safe(row.get("record_id", ""))
+            sop_key = sterile_sop_safe(row.get("sop_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sop_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_sop_safe(row.get("csp_name", ""))}</td>
+                <td><a href="/sterile-compounding/sop-formula/{sterile_sop_quote(sop_key)}">{sterile_sop_safe(row.get("sop_version", "")) or "UNSPECIFIED"}</a></td>
+                <td>{sterile_sop_safe(row.get("formula_family", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("evidence_matrix_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("sop_evidence_status", ""))}</td>
+                <td>{sterile_sop_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_sop_safe(row.get("drift_reason", ""))}</td>
+                <td>{sterile_sop_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No SOP/formula drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>SOP / Formula Drift Register</h1>
+        <p>
+            Record-level drift view showing missing SOP versions, missing SOP/formula evidence, evidence matrix gaps,
+            audit-pack blockers, deviations, hazardous-drug signals, and readiness impact.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Drift Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Drift Filters</h2>
+        <form method="GET" action="/sterile-compounding/sop-drift">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Drift Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-drift">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-formula-governance">SOP / Formula Governance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-drift/export">Export Drift</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>SOP / Formula Drift Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>SOP Version</th>
+                        <th>Formula Family</th>
+                        <th>CSP Status</th>
+                        <th>Audit Pack</th>
+                        <th>Evidence Matrix</th>
+                        <th>SOP Evidence</th>
+                        <th>Drift Score</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "SOP-DRIFT",
+            "STERILE_SOP_DRIFT_VIEW",
+            "Sterile SOP/formula drift register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/sop-drift",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("SOP / Formula Drift Register", body)
+
+
+@app.route("/sterile-compounding/sop-formula/export")
+def sterile_compounding_sop_formula_export():
+    formula_df = sterile_sop_build_formula_register()
+
+    if formula_df.empty:
+        formula_df = sterile_sop_pd.DataFrame(columns=STERILE_SOP_FORMULA_COLUMNS)
+
+    csv_data = formula_df.to_csv(index=False)
+
+    return sterile_sop_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_sop_formula_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/sop-drift/export")
+def sterile_compounding_sop_drift_export():
+    drift_df = sterile_sop_build_drift()
+
+    if drift_df.empty:
+        drift_df = sterile_sop_pd.DataFrame(columns=STERILE_SOP_DRIFT_COLUMNS)
+
+    csv_data = drift_df.to_csv(index=False)
+
+    return sterile_sop_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_sop_drift_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_sop_formula_dashboard_injection(response):
+    try:
+        if sterile_sop_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-sop-formula-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-sop-formula-panel">
+            <h2>SOP / Formula Drift Governance</h2>
+            <p class="st-note">
+                Tracks SOP/formula version completeness, linked evidence, audit-pack impact, custody blocks,
+                seal mismatches, deviation signals, and hazardous-drug formula assurance risk.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/sop-formula-governance">SOP / Formula Governance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-drift">SOP Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-formula/export">Export SOP / Formula</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/sop-drift/export">Export SOP Drift</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile SOP/formula dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
