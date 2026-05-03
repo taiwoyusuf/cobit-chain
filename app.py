@@ -39655,5 +39655,913 @@ def sterile_compounding_inspection_narrative_dashboard_injection(response):
         print(f"Sterile inspection narrative dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INSPECTION_BINDER_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 27: Inspection Binder Builder + Packet Manifest
+#
+# New Routes:
+#   /sterile-compounding/inspection-binder
+#   /sterile-compounding/inspection-binder/<record_id>
+#   /sterile-compounding/inspection-binder/export
+#   /sterile-compounding/packet-manifest
+#   /sterile-compounding/packet-manifest/export
+#
+# New Registers:
+#   sterile_compounding_inspection_binder_register.csv
+#   sterile_compounding_packet_manifest_register.csv
+#
+# Boundary:
+#   This creates a route-level inspection binder and packet manifest.
+#   It does not generate downloadable code patches, does not perform QA
+#   release/disposition, does not replace QMS/validated systems, and does
+#   not touch protected Manufacturing/Wole, ServiceNow, Entra,
+#   CI Candidate Factory, CI Review Board, CI Submission Pack,
+#   Knowledge Governance, Operational Lineage, Release Notes,
+#   Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_ib_pd
+    import json as sterile_ib_json
+    from flask import request as sterile_ib_request
+    from flask import Response as sterile_ib_Response
+except Exception as sterile_ib_import_error:
+    raise RuntimeError(f"Sterile inspection binder import failed: {sterile_ib_import_error}")
+
+
+STERILE_INSPECTION_BINDER_REGISTER = "sterile_compounding_inspection_binder_register.csv"
+STERILE_PACKET_MANIFEST_REGISTER = "sterile_compounding_packet_manifest_register.csv"
+
+STERILE_INSPECTION_BINDER_COLUMNS = [
+    "binder_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "inspection_status",
+    "inspection_score",
+    "master_assurance_status",
+    "master_assurance_score",
+    "no_release_gate_status",
+    "coverage_status",
+    "coverage_score",
+    "qa_red_count",
+    "qa_yellow_count",
+    "crosswalk_red_count",
+    "crosswalk_yellow_count",
+    "manifest_item_count",
+    "binder_status",
+    "binder_score",
+    "binder_decision",
+    "binder_summary",
+    "first_route",
+    "primary_routes",
+    "last_checked",
+    "binder_hash"
+]
+
+STERILE_PACKET_MANIFEST_COLUMNS = [
+    "manifest_id",
+    "record_id",
+    "csp_name",
+    "packet_section",
+    "packet_item",
+    "item_route",
+    "item_type",
+    "item_status",
+    "evidence_focus",
+    "reviewer_note",
+    "display_order",
+    "last_checked",
+    "manifest_hash"
+]
+
+
+def sterile_ib_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_INSPECTION_NARRATIVE_COLUMNS",
+        "STERILE_EXECUTIVE_BRIEF_COLUMNS",
+        "sterile_in_build_narratives",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile inspection binder dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ib_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ib_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_ib_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ib_status_bucket(value):
+    value = sterile_ib_safe(value).upper()
+
+    if value in ["GREEN", "GO", "READY", "HASH MATCH", "INSPECTION READY", "SUPPORTED"]:
+        return "GREEN"
+
+    if value in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "REJECTED", "NOT READY", "GAP / BLOCKER"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_ib_status_badge(status):
+    bucket = sterile_ib_status_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ib_build_sources():
+    sterile_ib_require_dependencies()
+
+    try:
+        narrative_df, brief_df = sterile_in_build_narratives()
+    except Exception:
+        narrative_df = sterile_read_register(
+            "sterile_compounding_inspection_narrative_register.csv",
+            STERILE_INSPECTION_NARRATIVE_COLUMNS
+        )
+        brief_df = sterile_read_register(
+            "sterile_compounding_executive_brief_register.csv",
+            STERILE_EXECUTIVE_BRIEF_COLUMNS
+        )
+
+    narrative_df = sterile_ensure_cols(narrative_df, STERILE_INSPECTION_NARRATIVE_COLUMNS)
+    brief_df = sterile_ensure_cols(brief_df, STERILE_EXECUTIVE_BRIEF_COLUMNS)
+
+    return narrative_df, brief_df
+
+
+def sterile_ib_manifest_item(record_id, csp_name, section, item, route, item_type, status, focus, note, order):
+    payload = {
+        "manifest_id": sterile_ib_make_id("ST-MAN", record_id, section, item, order),
+        "record_id": record_id,
+        "csp_name": csp_name,
+        "packet_section": section,
+        "packet_item": item,
+        "item_route": route,
+        "item_type": item_type,
+        "item_status": sterile_ib_status_bucket(status),
+        "evidence_focus": focus,
+        "reviewer_note": note,
+        "display_order": order,
+        "last_checked": sterile_now(),
+    }
+
+    payload["manifest_hash"] = sterile_hash_text(
+        sterile_ib_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_ib_manifest_for_narrative(row):
+    record_id = sterile_ib_safe(row.get("record_id", ""))
+    csp_name = sterile_ib_safe(row.get("csp_name", ""))
+    inspection_status = sterile_ib_safe(row.get("inspection_status", "UNKNOWN"))
+    master_status = sterile_ib_safe(row.get("master_assurance_status", "UNKNOWN"))
+    gate_status = sterile_ib_safe(row.get("no_release_gate_status", "UNKNOWN"))
+    coverage_status = sterile_ib_safe(row.get("coverage_status", "UNKNOWN"))
+    focus = sterile_ib_safe(row.get("evidence_story", "")) or sterile_ib_safe(row.get("risk_story", ""))
+
+    items = [
+        (
+            "01 Executive Narrative",
+            "Inspection Narrative",
+            f"/sterile-compounding/inspection-narrative/{record_id}",
+            "Narrative",
+            inspection_status,
+            "Human-readable inspection story, evidence story, risk story, and auditor talk track.",
+        ),
+        (
+            "02 Inspection Readiness",
+            "Inspection Readiness Passport",
+            f"/sterile-compounding/inspection-readiness/{record_id}",
+            "Inspection",
+            inspection_status,
+            "Auditor-facing readiness status, expected questions, and evidence focus.",
+        ),
+        (
+            "03 Regulatory Crosswalk",
+            "Regulatory Crosswalk",
+            f"/sterile-compounding/regulatory-crosswalk/{record_id}",
+            "Crosswalk",
+            coverage_status,
+            "Control-domain mapping to evidence routes, auditor questions, and gap summary.",
+        ),
+        (
+            "04 Master Assurance",
+            "Master Assurance Passport",
+            f"/sterile-compounding/master-assurance/{record_id}",
+            "Assurance",
+            master_status,
+            "Composite score across evidence, audit pack, sign-off, seal, custody, SOP, personnel, equipment, environmental, and regulatory signals.",
+        ),
+        (
+            "05 No-Release Gate",
+            "Composite No-Release Gate",
+            "/sterile-compounding/no-release-composite",
+            "Gate",
+            gate_status,
+            "Final governance reliance gate showing blockers and conditional review signals.",
+        ),
+        (
+            "06 Audit Pack",
+            "Audit Pack",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            "Audit",
+            master_status,
+            "Consolidated audit pack for record-level review.",
+        ),
+        (
+            "07 Release Dossier",
+            "Release Dossier",
+            f"/sterile-compounding/release-dossier/{record_id}",
+            "Dossier",
+            master_status,
+            "Governance dossier view; not formal product release.",
+        ),
+        (
+            "08 Sign-Off",
+            "Governance Sign-Off",
+            f"/sterile-compounding/signoff/{record_id}",
+            "Attestation",
+            sterile_ib_safe(row.get("no_release_gate_status", "UNKNOWN")),
+            "Reviewer sign-off, conditional approval, hold, or rejection route.",
+        ),
+        (
+            "09 Dossier Seal",
+            "Cryptographic Dossier Seal",
+            f"/sterile-compounding/seal/{record_id}",
+            "Hash Seal",
+            master_status,
+            "Baseline seal and verification route for dossier integrity.",
+        ),
+        (
+            "10 Closure Planning",
+            "Closure Simulator",
+            f"/sterile-compounding/closure-simulator/{record_id}",
+            "Recovery",
+            inspection_status,
+            "What-if closure sequence and projected recovery status.",
+        ),
+        (
+            "11 Auditor Q&A",
+            "Auditor Q&A Pack",
+            "/sterile-compounding/auditor-qa-pack",
+            "Q&A",
+            inspection_status,
+            "Generated auditor questions, answer summaries, and evidence routes.",
+        ),
+        (
+            "12 Coverage Summary",
+            "Control-Evidence Coverage",
+            "/sterile-compounding/control-evidence-coverage",
+            "Coverage",
+            coverage_status,
+            "CSP-level control-domain evidence coverage and priority gaps.",
+        ),
+    ]
+
+    rows = []
+
+    for index, item in enumerate(items, start=10):
+        section, packet_item, route, item_type, status, note = item
+
+        rows.append(
+            sterile_ib_manifest_item(
+                record_id=record_id,
+                csp_name=csp_name,
+                section=section,
+                item=packet_item,
+                route=route,
+                item_type=item_type,
+                status=status,
+                focus=focus,
+                note=note,
+                order=index,
+            )
+        )
+
+    return rows
+
+
+def sterile_ib_build_binders():
+    narrative_df, brief_df = sterile_ib_build_sources()
+
+    if narrative_df.empty:
+        empty_binder = sterile_ib_pd.DataFrame(columns=STERILE_INSPECTION_BINDER_COLUMNS)
+        empty_manifest = sterile_ib_pd.DataFrame(columns=STERILE_PACKET_MANIFEST_COLUMNS)
+        sterile_write_register(STERILE_INSPECTION_BINDER_REGISTER, empty_binder, STERILE_INSPECTION_BINDER_COLUMNS)
+        sterile_write_register(STERILE_PACKET_MANIFEST_REGISTER, empty_manifest, STERILE_PACKET_MANIFEST_COLUMNS)
+        return empty_binder, empty_manifest
+
+    binder_rows = []
+    manifest_rows = []
+
+    for _, narrative in narrative_df.iterrows():
+        row = narrative.to_dict()
+        record_id = sterile_ib_safe(row.get("record_id", ""))
+        csp_name = sterile_ib_safe(row.get("csp_name", ""))
+
+        record_manifest = sterile_ib_manifest_for_narrative(row)
+        manifest_rows.extend(record_manifest)
+
+        inspection_status = sterile_ib_safe(row.get("inspection_status", "UNKNOWN"))
+        master_status = sterile_ib_safe(row.get("master_assurance_status", "UNKNOWN"))
+        gate_status = sterile_ib_safe(row.get("no_release_gate_status", "UNKNOWN"))
+        coverage_status = sterile_ib_safe(row.get("coverage_status", "UNKNOWN"))
+
+        inspection_score = sterile_ib_numeric(row.get("inspection_score", 0), 0)
+        master_score = sterile_ib_numeric(row.get("master_assurance_score", 0), 0)
+        coverage_score = sterile_ib_numeric(row.get("coverage_score", 0), 0)
+
+        red_signals = 0
+        yellow_signals = 0
+
+        for status in [inspection_status, master_status, gate_status, coverage_status]:
+            bucket = sterile_ib_status_bucket(status)
+            if bucket == "RED":
+                red_signals += 1
+            elif bucket == "YELLOW":
+                yellow_signals += 1
+
+        qa_red = sterile_ib_numeric(row.get("qa_red_count", 0), 0)
+        qa_yellow = sterile_ib_numeric(row.get("qa_yellow_count", 0), 0)
+        cross_red = sterile_ib_numeric(row.get("crosswalk_red_count", 0), 0)
+        cross_yellow = sterile_ib_numeric(row.get("crosswalk_yellow_count", 0), 0)
+
+        if qa_red or cross_red:
+            red_signals += 1
+        if qa_yellow or cross_yellow:
+            yellow_signals += 1
+
+        scores = [score for score in [inspection_score, master_score, coverage_score] if score > 0]
+        binder_score = min(scores) if scores else 0
+
+        if red_signals or binder_score < 60:
+            binder_status = "RED"
+            binder_decision = "BINDER NOT INSPECTION READY / BLOCKERS REQUIRE CLOSURE"
+        elif yellow_signals or binder_score < 90:
+            binder_status = "YELLOW"
+            binder_decision = "BINDER NEEDS REVIEW / CONDITIONAL EXPLANATION REQUIRED"
+        else:
+            binder_status = "GREEN"
+            binder_decision = "BINDER INSPECTION READY FROM GOVERNANCE VIEW"
+
+        binder_summary = (
+            f"Binder for {record_id} includes {len(record_manifest)} packet items. "
+            f"Inspection={inspection_status} ({inspection_score}), Master={master_status} ({master_score}), "
+            f"Coverage={coverage_status} ({coverage_score}), Gate={gate_status}. "
+            f"QA RED={qa_red}, Crosswalk RED={cross_red}."
+        )
+
+        payload = {
+            "binder_id": sterile_ib_make_id("ST-BINDER", record_id, binder_status, binder_score),
+            "record_id": record_id,
+            "csp_name": csp_name,
+            "batch_or_rx_id": sterile_ib_safe(row.get("batch_or_rx_id", "")),
+            "facility_type": sterile_ib_safe(row.get("facility_type", "")),
+            "inspection_status": inspection_status,
+            "inspection_score": inspection_score,
+            "master_assurance_status": master_status,
+            "master_assurance_score": master_score,
+            "no_release_gate_status": gate_status,
+            "coverage_status": coverage_status,
+            "coverage_score": coverage_score,
+            "qa_red_count": qa_red,
+            "qa_yellow_count": qa_yellow,
+            "crosswalk_red_count": cross_red,
+            "crosswalk_yellow_count": cross_yellow,
+            "manifest_item_count": len(record_manifest),
+            "binder_status": binder_status,
+            "binder_score": binder_score,
+            "binder_decision": binder_decision,
+            "binder_summary": binder_summary,
+            "first_route": f"/sterile-compounding/inspection-binder/{record_id}",
+            "primary_routes": sterile_ib_safe(row.get("primary_routes", "")),
+            "last_checked": sterile_now(),
+        }
+
+        payload["binder_hash"] = sterile_hash_text(
+            sterile_ib_json.dumps(payload, sort_keys=True)
+        )
+
+        binder_rows.append(payload)
+
+    binder_df = sterile_ib_pd.DataFrame(binder_rows)
+    binder_df = sterile_ensure_cols(binder_df, STERILE_INSPECTION_BINDER_COLUMNS)
+
+    manifest_df = sterile_ib_pd.DataFrame(manifest_rows)
+    manifest_df = sterile_ensure_cols(manifest_df, STERILE_PACKET_MANIFEST_COLUMNS)
+
+    sterile_write_register(STERILE_INSPECTION_BINDER_REGISTER, binder_df, STERILE_INSPECTION_BINDER_COLUMNS)
+    sterile_write_register(STERILE_PACKET_MANIFEST_REGISTER, manifest_df, STERILE_PACKET_MANIFEST_COLUMNS)
+
+    return binder_df, manifest_df
+
+
+@app.route("/sterile-compounding/inspection-binder")
+def sterile_compounding_inspection_binder():
+    binder_df, manifest_df = sterile_ib_build_binders()
+
+    status_filter = sterile_ib_safe(sterile_ib_request.args.get("status", ""))
+    filtered = binder_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["binder_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["binder_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["binder_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["binder_status"] == "RED").sum()) if total else 0
+    manifest_count = len(manifest_df)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Binder Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["binder_status", "binder_score"], ascending=[False, True]).iterrows():
+            rid = sterile_ib_safe(row.get("record_id", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ib_status_badge(row.get("binder_status", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-binder/{rid}">{rid}</a></td>
+                <td>{sterile_ib_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_ib_safe(row.get("binder_score", ""))}</td>
+                <td>{sterile_ib_status_badge(row.get("inspection_status", ""))}</td>
+                <td>{sterile_ib_status_badge(row.get("master_assurance_status", ""))}</td>
+                <td>{sterile_ib_status_badge(row.get("coverage_status", ""))}</td>
+                <td>{sterile_ib_status_badge(row.get("no_release_gate_status", ""))}</td>
+                <td>{sterile_ib_safe(row.get("manifest_item_count", ""))}</td>
+                <td>{sterile_ib_safe(row.get("binder_decision", ""))}</td>
+                <td>{sterile_ib_safe(row.get("binder_summary", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspection binder rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Binder Builder</h1>
+        <p>
+            Binder index for each sterile CSP. Each binder gives auditors and reviewers one place to open
+            the inspection narrative, readiness passport, regulatory crosswalk, master assurance, audit pack,
+            release dossier, sign-off, seal, closure simulator, Q&A pack, and control coverage.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Binders</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Manifest Items</div><div class="st-value">{manifest_count}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Binder Filters</h2>
+        <form method="GET" action="/sterile-compounding/inspection-binder">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Binder Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/packet-manifest">Packet Manifest</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder/export">Export Binder</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Binder Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Binder</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>Inspection</th>
+                        <th>Master</th>
+                        <th>Coverage</th>
+                        <th>No-Release</th>
+                        <th>Items</th>
+                        <th>Decision</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTION-BINDER",
+            "STERILE_INSPECTION_BINDER_VIEW",
+            "Sterile inspection binder viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/inspection-binder",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Inspection Binder Builder", body)
+
+
+@app.route("/sterile-compounding/inspection-binder/<record_id>")
+def sterile_compounding_inspection_binder_record(record_id):
+    binder_df, manifest_df = sterile_ib_build_binders()
+    record_id = sterile_ib_safe(record_id)
+
+    match = binder_df[binder_df["record_id"].astype(str) == str(record_id)] if not binder_df.empty else binder_df
+
+    if match.empty:
+        return sterile_ib_Response("Inspection binder not found.", status=404)
+
+    binder = match.iloc[0].to_dict()
+    record_manifest = manifest_df[manifest_df["record_id"].astype(str) == str(record_id)].copy() if not manifest_df.empty else manifest_df
+
+    detail_rows = ""
+    for key in STERILE_INSPECTION_BINDER_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ib_safe(binder.get(key, ""))
+
+        if key in ["binder_status", "inspection_status", "master_assurance_status", "no_release_gate_status", "coverage_status"]:
+            value = sterile_ib_status_badge(value)
+        elif key == "binder_hash":
+            value = f"<code>{value}</code>"
+        elif key == "primary_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    manifest_rows = ""
+    if not record_manifest.empty:
+        for _, item in record_manifest.sort_values(by="display_order", ascending=True).iterrows():
+            route = sterile_ib_safe(item.get("item_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            manifest_rows += f"""
+            <tr>
+                <td>{sterile_ib_safe(item.get("display_order", ""))}</td>
+                <td>{sterile_ib_status_badge(item.get("item_status", ""))}</td>
+                <td>{sterile_ib_safe(item.get("packet_section", ""))}</td>
+                <td>{sterile_ib_safe(item.get("packet_item", ""))}</td>
+                <td>{sterile_ib_safe(item.get("item_type", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ib_safe(item.get("reviewer_note", ""))}</td>
+            </tr>
+            """
+    else:
+        manifest_rows = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+                No manifest items found for this binder.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Binder: {record_id}</h1>
+        <p>
+            Record-level inspection binder and route manifest.
+        </p>
+        <div style="margin-top:16px;">{sterile_ib_status_badge(binder.get("binder_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ib_safe(binder.get("binder_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Binder Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Packet Manifest for This CSP</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Section</th>
+                        <th>Packet Item</th>
+                        <th>Type</th>
+                        <th>Route</th>
+                        <th>Reviewer Note</th>
+                    </tr>
+                </thead>
+                <tbody>{manifest_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/inspection-narrative/{record_id}">Inspection Narrative</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness/{record_id}">Inspection Readiness</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk/{record_id}">Regulatory Crosswalk</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/{record_id}">Master Assurance</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Back to Binder Index</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_INSPECTION_BINDER_RECORD_VIEW",
+            "Record-level sterile inspection binder viewed",
+            actor="system",
+            source_route="/sterile-compounding/inspection-binder/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Inspection Binder - {record_id}", body)
+
+
+@app.route("/sterile-compounding/packet-manifest")
+def sterile_compounding_packet_manifest():
+    binder_df, manifest_df = sterile_ib_build_binders()
+
+    status_filter = sterile_ib_safe(sterile_ib_request.args.get("status", ""))
+    filtered = manifest_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["item_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["item_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["item_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["item_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Item Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, item in filtered.sort_values(by=["record_id", "display_order"], ascending=[True, True]).iterrows():
+            rid = sterile_ib_safe(item.get("record_id", ""))
+            route = sterile_ib_safe(item.get("item_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ib_status_badge(item.get("item_status", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-binder/{rid}">{rid}</a></td>
+                <td>{sterile_ib_safe(item.get("csp_name", ""))}</td>
+                <td>{sterile_ib_safe(item.get("display_order", ""))}</td>
+                <td>{sterile_ib_safe(item.get("packet_section", ""))}</td>
+                <td>{sterile_ib_safe(item.get("packet_item", ""))}</td>
+                <td>{sterile_ib_safe(item.get("item_type", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ib_safe(item.get("reviewer_note", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No manifest items found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Packet Manifest</h1>
+        <p>
+            Full packet manifest across CSP binders. This is the route map for opening every inspection packet item.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Manifest Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Manifest Filters</h2>
+        <form method="GET" action="/sterile-compounding/packet-manifest">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Item Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/packet-manifest">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/packet-manifest/export">Export Manifest</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Packet Manifest Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Order</th>
+                        <th>Section</th>
+                        <th>Packet Item</th>
+                        <th>Type</th>
+                        <th>Route</th>
+                        <th>Reviewer Note</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PACKET-MANIFEST",
+            "STERILE_PACKET_MANIFEST_VIEW",
+            "Sterile packet manifest viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/packet-manifest",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Packet Manifest", body)
+
+
+@app.route("/sterile-compounding/inspection-binder/export")
+def sterile_compounding_inspection_binder_export():
+    binder_df, manifest_df = sterile_ib_build_binders()
+
+    if binder_df.empty:
+        binder_df = sterile_ib_pd.DataFrame(columns=STERILE_INSPECTION_BINDER_COLUMNS)
+
+    csv_data = binder_df.to_csv(index=False)
+
+    return sterile_ib_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspection_binder_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/packet-manifest/export")
+def sterile_compounding_packet_manifest_export():
+    binder_df, manifest_df = sterile_ib_build_binders()
+
+    if manifest_df.empty:
+        manifest_df = sterile_ib_pd.DataFrame(columns=STERILE_PACKET_MANIFEST_COLUMNS)
+
+    csv_data = manifest_df.to_csv(index=False)
+
+    return sterile_ib_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_packet_manifest_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_inspection_binder_dashboard_injection(response):
+    try:
+        if sterile_ib_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+            "/sterile-compounding/closure-simulator",
+            "/sterile-compounding/recovery-plan",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/auditor-qa-pack",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/control-evidence-coverage",
+            "/sterile-compounding/inspection-narrative",
+            "/sterile-compounding/executive-brief",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-inspection-binder-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-inspection-binder-panel">
+            <h2>Inspection Binder Builder + Packet Manifest</h2>
+            <p class="st-note">
+                Creates a one-page route binder for each CSP, linking inspection narrative, readiness,
+                regulatory crosswalk, master assurance, audit pack, release dossier, sign-off, seal,
+                closure simulator, Q&A, and control-evidence coverage.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/packet-manifest">Packet Manifest</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder/export">Export Binder</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/packet-manifest/export">Export Manifest</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile inspection binder dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
