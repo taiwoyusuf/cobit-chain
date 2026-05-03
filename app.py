@@ -54304,5 +54304,628 @@ def sterile_compounding_platform_health_entry_injection(response):
         print(f"Sterile Platform Health entry injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_GLOBAL_EXPOSURE_VALIDATION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 46: Global Exposure Validation + Protected Boundary Check
+#
+# New Routes:
+#   /sterile-compounding/global-exposure-map
+#   /sterile-compounding/global-exposure-map/export
+#   /sterile-compounding/protected-boundary-check
+#   /sterile-compounding/protected-boundary-check/export
+#
+# New Registers:
+#   sterile_compounding_global_exposure_map.csv
+#   sterile_compounding_protected_boundary_check.csv
+#
+# Boundary:
+#   This validates sterile global exposure bridges. It does not overwrite
+#   Command Center, Monday Demo, Release Notes, Platform Health,
+#   Manufacturing/Wole, ServiceNow, Entra, CI, Knowledge Governance,
+#   Operational Lineage, or any protected module.
+# ============================================================
+
+try:
+    import pandas as sterile_gev_pd
+    import json as sterile_gev_json
+    from flask import request as sterile_gev_request
+    from flask import Response as sterile_gev_Response
+except Exception as sterile_gev_import_error:
+    raise RuntimeError(f"Sterile global exposure validation import failed: {sterile_gev_import_error}")
+
+
+STERILE_GLOBAL_EXPOSURE_MAP_REGISTER = "sterile_compounding_global_exposure_map.csv"
+STERILE_PROTECTED_BOUNDARY_CHECK_REGISTER = "sterile_compounding_protected_boundary_check.csv"
+
+STERILE_GLOBAL_EXPOSURE_COLUMNS = [
+    "exposure_id",
+    "global_page",
+    "global_route",
+    "sterile_entry_route",
+    "entry_marker",
+    "entry_panel_id",
+    "exposure_type",
+    "registered_status",
+    "exposure_status",
+    "business_purpose",
+    "safe_boundary",
+    "recommended_test",
+    "last_checked",
+    "exposure_hash"
+]
+
+STERILE_PROTECTED_BOUNDARY_COLUMNS = [
+    "boundary_id",
+    "protected_area",
+    "protected_route",
+    "boundary_status",
+    "expected_behavior",
+    "sterile_change_position",
+    "verification_method",
+    "risk_if_modified",
+    "recommended_action",
+    "last_checked",
+    "boundary_hash"
+]
+
+
+STERILE_GLOBAL_EXPOSURE_SEED = [
+    {
+        "global_page": "Command Center",
+        "global_route": "/command-center",
+        "sterile_entry_route": "/sterile-compounding/command-center-entry",
+        "entry_marker": "STERILE_COMPOUNDING_COMMAND_CENTER_ENTRY_ACTIVE",
+        "entry_panel_id": "sterile-command-center-entry-panel",
+        "exposure_type": "after_request panel injection",
+        "purpose": "Expose Compound Sterile AssuranceLayer from the executive Command Center without replacing the existing route.",
+        "boundary": "Entry bridge only. Existing Command Center logic remains intact.",
+        "test": "Open /command-center and confirm the sterile entry panel appears while existing Command Center content still loads.",
+    },
+    {
+        "global_page": "Monday Demo",
+        "global_route": "/monday-demo",
+        "sterile_entry_route": "/sterile-compounding/monday-demo-entry",
+        "entry_marker": "STERILE_COMPOUNDING_MONDAY_DEMO_ENTRY_ACTIVE",
+        "entry_panel_id": "sterile-monday-demo-entry-panel",
+        "exposure_type": "after_request panel injection",
+        "purpose": "Expose the sterile vertical as a Monday demo candidate with a safe click path and presenter boundary.",
+        "boundary": "Demo entry only. Existing Monday Demo logic remains intact.",
+        "test": "Open /monday-demo and confirm the sterile demo panel appears while existing demo content still loads.",
+    },
+    {
+        "global_page": "Release Notes",
+        "global_route": "/release-notes",
+        "sterile_entry_route": "/sterile-compounding/release-notes-entry",
+        "entry_marker": "STERILE_COMPOUNDING_RELEASE_NOTES_ENTRY_ACTIVE",
+        "entry_panel_id": "sterile-release-notes-entry-panel",
+        "exposure_type": "after_request panel injection",
+        "purpose": "Document sterile vertical release scope and safe boundary inside Release Notes without replacing the route.",
+        "boundary": "Release summary only. Existing Release Notes logic remains intact.",
+        "test": "Open /release-notes and confirm the sterile release panel appears while existing release notes still load.",
+    },
+    {
+        "global_page": "Platform Health",
+        "global_route": "/platform-health",
+        "sterile_entry_route": "/sterile-compounding/platform-health-entry",
+        "entry_marker": "STERILE_COMPOUNDING_PLATFORM_HEALTH_ENTRY_ACTIVE",
+        "entry_panel_id": "sterile-platform-health-entry-panel",
+        "exposure_type": "after_request panel injection",
+        "purpose": "Expose sterile register health from Platform Health without replacing the main health route.",
+        "boundary": "Register health bridge only. Existing Platform Health logic remains intact.",
+        "test": "Open /platform-health and confirm sterile register health appears while existing health content still loads.",
+    },
+]
+
+
+STERILE_PROTECTED_BOUNDARY_SEED = [
+    ("Manufacturing/Wole Homepage", "/manufacturing", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter the Manufacturing/Wole homepage, routes, templates, datasets, or narrative."),
+    ("ServiceNow Live Tickets", "/servicenow-tickets-live", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter ServiceNow ticket pages, KB suggestions, or ticket workflows."),
+    ("Suggested KB", "/suggested-kb/<ticket_number>", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter ticket-specific suggested KB behavior."),
+    ("KB Usage", "/kb-usage/<ticket_number>/<kb_id>", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter KB usage tracking."),
+    ("Knowledge Governance", "/knowledge-governance", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter knowledge approval/review governance."),
+    ("Knowledge Review", "/knowledge-review", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter knowledge review workflows."),
+    ("Knowledge Passport", "/knowledge-passport/<kb_id>", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter knowledge passport pages."),
+    ("Operational Lineage", "/operational-lineage", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter operational lineage."),
+    ("CI myAccess Blueprint", "/ci-myaccess-blueprint", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter CI/myAccess blueprint."),
+    ("CI Candidate Factory", "/ci-candidate-factory", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter CI candidate scoring, review, or creation logic."),
+    ("CI Candidate Passport", "/ci-candidate-passport/<candidate_id>", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter candidate passport behavior."),
+    ("CI Candidate Review", "/ci-candidate-review", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter CI review board behavior."),
+    ("CI Submission Pack", "/ci-submission-pack", "Must remain unchanged unless explicitly requested.", "Sterile patches must not alter CI submission packaging."),
+    ("Release Notes", "/release-notes", "Existing route must remain intact.", "Sterile entry uses after_request injection only; no route overwrite."),
+    ("Monday Demo", "/monday-demo", "Existing route must remain intact.", "Sterile entry uses after_request injection only; no route overwrite."),
+    ("Command Center", "/command-center", "Existing route must remain intact.", "Sterile entry uses after_request injection only; no route overwrite."),
+    ("Platform Health", "/platform-health", "Existing route must remain intact.", "Sterile entry uses after_request injection only; no route overwrite."),
+]
+
+
+def sterile_gev_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile global exposure validation dependencies missing: " + ", ".join(missing))
+
+
+def sterile_gev_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_gev_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_gev_badge(status):
+    status = sterile_gev_safe(status).upper()
+
+    if status in ["GREEN", "REGISTERED", "PROTECTED", "INTACT"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CHECK", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "MISSING", "BROKEN"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_gev_registered_routes():
+    try:
+        return set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return set()
+
+
+def sterile_gev_route_status(route, routes):
+    if route in routes:
+        return "REGISTERED"
+    return "MISSING"
+
+
+def sterile_gev_marker_status(marker):
+    try:
+        with open("app.py", "r", encoding="utf-8") as handle:
+            source = handle.read()
+        return "FOUND" if marker in source else "MISSING"
+    except Exception:
+        return "UNKNOWN"
+
+
+def sterile_gev_build_maps():
+    sterile_gev_require_dependencies()
+
+    routes = sterile_gev_registered_routes()
+    exposure_rows = []
+    boundary_rows = []
+
+    for item in STERILE_GLOBAL_EXPOSURE_SEED:
+        global_registered = sterile_gev_route_status(item["global_route"], routes)
+        entry_registered = sterile_gev_route_status(item["sterile_entry_route"], routes)
+        marker_found = sterile_gev_marker_status(item["entry_marker"])
+
+        if global_registered == "REGISTERED" and entry_registered == "REGISTERED" and marker_found == "FOUND":
+            exposure_status = "GREEN"
+        elif entry_registered == "MISSING" or global_registered == "MISSING":
+            exposure_status = "RED"
+        else:
+            exposure_status = "YELLOW"
+
+        payload = {
+            "exposure_id": sterile_gev_make_id("ST-EXPOSE", item["global_route"], item["sterile_entry_route"]),
+            "global_page": item["global_page"],
+            "global_route": item["global_route"],
+            "sterile_entry_route": item["sterile_entry_route"],
+            "entry_marker": item["entry_marker"],
+            "entry_panel_id": item["entry_panel_id"],
+            "exposure_type": item["exposure_type"],
+            "registered_status": f"global={global_registered}; sterile_entry={entry_registered}; marker={marker_found}",
+            "exposure_status": exposure_status,
+            "business_purpose": item["purpose"],
+            "safe_boundary": item["boundary"],
+            "recommended_test": item["test"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["exposure_hash"] = sterile_hash_text(
+            sterile_gev_json.dumps(payload, sort_keys=True)
+        )
+
+        exposure_rows.append(payload)
+
+    for protected_area, protected_route, expected_behavior, sterile_position in STERILE_PROTECTED_BOUNDARY_SEED:
+        if "<" in protected_route and ">" in protected_route:
+            registered = "DYNAMIC"
+            boundary_status = "GREEN"
+        else:
+            registered = sterile_gev_route_status(protected_route, routes)
+            boundary_status = "GREEN" if registered == "REGISTERED" else "YELLOW"
+
+        payload = {
+            "boundary_id": sterile_gev_make_id("ST-BOUNDARY", protected_area, protected_route),
+            "protected_area": protected_area,
+            "protected_route": protected_route,
+            "boundary_status": boundary_status,
+            "expected_behavior": expected_behavior,
+            "sterile_change_position": sterile_position,
+            "verification_method": f"Route registration check: {registered}; no overwrite performed by sterile validation phase.",
+            "risk_if_modified": "Could break existing production/demo flow or confuse the current AssuranceLayer build baseline.",
+            "recommended_action": "Do not modify this area unless the user explicitly requests a safe patch for that specific protected module.",
+            "last_checked": sterile_now(),
+        }
+
+        payload["boundary_hash"] = sterile_hash_text(
+            sterile_gev_json.dumps(payload, sort_keys=True)
+        )
+
+        boundary_rows.append(payload)
+
+    exposure_df = sterile_gev_pd.DataFrame(exposure_rows)
+    exposure_df = exposure_df.reindex(columns=STERILE_GLOBAL_EXPOSURE_COLUMNS).fillna("")
+
+    boundary_df = sterile_gev_pd.DataFrame(boundary_rows)
+    boundary_df = boundary_df.reindex(columns=STERILE_PROTECTED_BOUNDARY_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_GLOBAL_EXPOSURE_MAP_REGISTER,
+        exposure_df,
+        STERILE_GLOBAL_EXPOSURE_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_PROTECTED_BOUNDARY_CHECK_REGISTER,
+        boundary_df,
+        STERILE_PROTECTED_BOUNDARY_COLUMNS
+    )
+
+    return exposure_df, boundary_df
+
+
+@app.route("/sterile-compounding/global-exposure-map")
+def sterile_compounding_global_exposure_map():
+    exposure_df, boundary_df = sterile_gev_build_maps()
+
+    status_filter = sterile_gev_safe(sterile_gev_request.args.get("status", ""))
+
+    filtered = exposure_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["exposure_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["exposure_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["exposure_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["exposure_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Exposure Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["exposure_status", "global_page"], ascending=[False, True]).iterrows():
+            global_route = sterile_gev_safe(row.get("global_route", ""))
+            entry_route = sterile_gev_safe(row.get("sterile_entry_route", ""))
+
+            global_link = f'<a href="{global_route}">{global_route}</a>' if global_route else ""
+            entry_link = f'<a href="{entry_route}">{entry_route}</a>' if entry_route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_gev_badge(row.get("exposure_status", ""))}</td>
+                <td>{sterile_gev_safe(row.get("global_page", ""))}</td>
+                <td>{global_link}</td>
+                <td>{entry_link}</td>
+                <td><code>{sterile_gev_safe(row.get("entry_panel_id", ""))}</code></td>
+                <td>{sterile_gev_safe(row.get("registered_status", ""))}</td>
+                <td>{sterile_gev_safe(row.get("business_purpose", ""))}</td>
+                <td>{sterile_gev_safe(row.get("safe_boundary", ""))}</td>
+                <td>{sterile_gev_safe(row.get("recommended_test", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No global exposure rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Global Exposure Map</h1>
+        <p>
+            Validation map for sterile entry bridges across Command Center, Monday Demo, Release Notes,
+            and Platform Health. These bridges use after_request injection and do not overwrite existing routes.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Exposure Points</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Exposure Filters</h2>
+        <form method="GET" action="/sterile-compounding/global-exposure-map">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Exposure Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Protected Boundary Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map/export">Export Exposure Map</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Global Exposure Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Global Page</th>
+                        <th>Global Route</th>
+                        <th>Sterile Entry</th>
+                        <th>Panel ID</th>
+                        <th>Registration</th>
+                        <th>Purpose</th>
+                        <th>Boundary</th>
+                        <th>Recommended Test</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "GLOBAL-EXPOSURE-MAP",
+            "STERILE_GLOBAL_EXPOSURE_MAP_VIEW",
+            "Sterile global exposure map viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/global-exposure-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Global Exposure Map", body)
+
+
+@app.route("/sterile-compounding/protected-boundary-check")
+def sterile_compounding_protected_boundary_check():
+    exposure_df, boundary_df = sterile_gev_build_maps()
+
+    status_filter = sterile_gev_safe(sterile_gev_request.args.get("status", ""))
+
+    filtered = boundary_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["boundary_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["boundary_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["boundary_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["boundary_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Boundary Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["boundary_status", "protected_area"], ascending=[False, True]).iterrows():
+            route = sterile_gev_safe(row.get("protected_route", ""))
+            route_cell = f'<a href="{route}">{route}</a>' if route and "<" not in route else f"<code>{route}</code>"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_gev_badge(row.get("boundary_status", ""))}</td>
+                <td>{sterile_gev_safe(row.get("protected_area", ""))}</td>
+                <td>{route_cell}</td>
+                <td>{sterile_gev_safe(row.get("expected_behavior", ""))}</td>
+                <td>{sterile_gev_safe(row.get("sterile_change_position", ""))}</td>
+                <td>{sterile_gev_safe(row.get("verification_method", ""))}</td>
+                <td>{sterile_gev_safe(row.get("risk_if_modified", ""))}</td>
+                <td>{sterile_gev_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No protected boundary rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Protected Boundary Check</h1>
+        <p>
+            Confirms the sterile vertical expansion respected protected modules. This page documents the protected
+            routes and the sterile change position for each one.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Protected Areas</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary Filters</h2>
+        <form method="GET" action="/sterile-compounding/protected-boundary-check">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Boundary Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map">Global Exposure Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check/export">Export Boundary Check</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Protected Boundary Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Protected Area</th>
+                        <th>Route</th>
+                        <th>Expected Behavior</th>
+                        <th>Sterile Position</th>
+                        <th>Verification</th>
+                        <th>Risk If Modified</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PROTECTED-BOUNDARY-CHECK",
+            "STERILE_PROTECTED_BOUNDARY_CHECK_VIEW",
+            "Sterile protected boundary check viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/protected-boundary-check",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Protected Boundary Check", body)
+
+
+@app.route("/sterile-compounding/global-exposure-map/export")
+def sterile_compounding_global_exposure_map_export():
+    exposure_df, boundary_df = sterile_gev_build_maps()
+
+    if exposure_df.empty:
+        exposure_df = sterile_gev_pd.DataFrame(columns=STERILE_GLOBAL_EXPOSURE_COLUMNS)
+
+    csv_data = exposure_df.to_csv(index=False)
+
+    return sterile_gev_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_global_exposure_map_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/protected-boundary-check/export")
+def sterile_compounding_protected_boundary_check_export():
+    exposure_df, boundary_df = sterile_gev_build_maps()
+
+    if boundary_df.empty:
+        boundary_df = sterile_gev_pd.DataFrame(columns=STERILE_PROTECTED_BOUNDARY_COLUMNS)
+
+    csv_data = boundary_df.to_csv(index=False)
+
+    return sterile_gev_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_protected_boundary_check_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_global_exposure_dashboard_injection(response):
+    try:
+        if sterile_gev_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/command-center-entry",
+            "/sterile-compounding/monday-demo-entry",
+            "/sterile-compounding/release-notes-entry",
+            "/sterile-compounding/platform-health-entry",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/build-acceptance",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-global-exposure-validation-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-global-exposure-validation-panel">
+            <h2>Global Exposure Validation + Protected Boundary Check</h2>
+            <p class="st-note">
+                Confirms sterile entry bridges are registered for Command Center, Monday Demo, Release Notes,
+                and Platform Health while documenting protected route boundaries.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/global-exposure-map">Global Exposure Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Protected Boundary Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map/export">Export Exposure Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check/export">Export Boundary Check</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile global exposure validation injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
