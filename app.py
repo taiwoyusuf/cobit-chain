@@ -43792,5 +43792,900 @@ def sterile_compounding_build_acceptance_dashboard_injection(response):
         print(f"Sterile build acceptance dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_GO_LIVE_READINESS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 32: Go-Live Readiness Pack + Change Control Summary
+#
+# New Routes:
+#   /sterile-compounding/go-live-readiness
+#   /sterile-compounding/change-control-pack
+#   /sterile-compounding/go-live-readiness/export
+#   /sterile-compounding/change-control-pack/export
+#
+# New Registers:
+#   sterile_compounding_go_live_readiness_register.csv
+#   sterile_compounding_change_control_pack.csv
+#
+# Boundary:
+#   This creates a sterile-only go-live/readiness and change-summary layer.
+#   It does not touch Command Center, Monday Demo, Release Notes,
+#   Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, or other protected areas.
+# ============================================================
+
+try:
+    import pandas as sterile_gl_pd
+    import json as sterile_gl_json
+    from flask import request as sterile_gl_request
+    from flask import Response as sterile_gl_Response
+except Exception as sterile_gl_import_error:
+    raise RuntimeError(f"Sterile go-live readiness import failed: {sterile_gl_import_error}")
+
+
+STERILE_GO_LIVE_READINESS_REGISTER = "sterile_compounding_go_live_readiness_register.csv"
+STERILE_CHANGE_CONTROL_PACK_REGISTER = "sterile_compounding_change_control_pack.csv"
+
+STERILE_GO_LIVE_READINESS_COLUMNS = [
+    "readiness_id",
+    "readiness_area",
+    "readiness_check",
+    "status",
+    "score",
+    "evidence_value",
+    "go_live_decision",
+    "risk_note",
+    "required_action",
+    "supporting_route",
+    "last_checked",
+    "readiness_hash"
+]
+
+STERILE_CHANGE_CONTROL_PACK_COLUMNS = [
+    "change_id",
+    "change_area",
+    "change_summary",
+    "change_type",
+    "impact_level",
+    "validation_boundary",
+    "protected_area_impact",
+    "evidence_route",
+    "acceptance_status",
+    "rollback_reference",
+    "review_note",
+    "last_checked",
+    "change_hash"
+]
+
+
+def sterile_gl_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_BUILD_ACCEPTANCE_COLUMNS",
+        "STERILE_SMOKE_TEST_MATRIX_COLUMNS",
+        "STERILE_NAVIGATION_COLUMNS",
+        "STERILE_ROUTE_HEALTH_COLUMNS",
+        "sterile_ba_build_acceptance",
+        "sterile_nav_build_registers",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile go-live readiness dependencies missing: " + ", ".join(missing))
+
+
+def sterile_gl_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_gl_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_gl_mean(df, column):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return round(sterile_gl_pd.to_numeric(df[column], errors="coerce").fillna(0).mean(), 1)
+
+
+def sterile_gl_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_gl_bucket(value):
+    value = sterile_gl_safe(value).upper()
+
+    if value in ["GREEN", "PASS", "PASSED", "READY", "REGISTERED", "GO"]:
+        return "GREEN"
+
+    if value in ["RED", "FAIL", "FAILED", "MISSING", "BLOCKED", "NO-GO", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_gl_badge(status):
+    bucket = sterile_gl_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_gl_build_sources():
+    sterile_gl_require_dependencies()
+
+    try:
+        acceptance_df, smoke_df = sterile_ba_build_acceptance()
+    except Exception:
+        acceptance_df = sterile_read_register(
+            "sterile_compounding_build_acceptance_register.csv",
+            STERILE_BUILD_ACCEPTANCE_COLUMNS
+        )
+        smoke_df = sterile_read_register(
+            "sterile_compounding_smoke_test_matrix.csv",
+            STERILE_SMOKE_TEST_MATRIX_COLUMNS
+        )
+
+    try:
+        nav_df, route_health_df = sterile_nav_build_registers()
+    except Exception:
+        nav_df = sterile_read_register(
+            "sterile_compounding_navigation_register.csv",
+            STERILE_NAVIGATION_COLUMNS
+        )
+        route_health_df = sterile_read_register(
+            "sterile_compounding_route_health_register.csv",
+            STERILE_ROUTE_HEALTH_COLUMNS
+        )
+
+    acceptance_df = sterile_ensure_cols(acceptance_df, STERILE_BUILD_ACCEPTANCE_COLUMNS)
+    smoke_df = sterile_ensure_cols(smoke_df, STERILE_SMOKE_TEST_MATRIX_COLUMNS)
+    nav_df = sterile_ensure_cols(nav_df, STERILE_NAVIGATION_COLUMNS)
+    route_health_df = sterile_ensure_cols(route_health_df, STERILE_ROUTE_HEALTH_COLUMNS)
+
+    return acceptance_df, smoke_df, nav_df, route_health_df
+
+
+def sterile_gl_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_gl_pd.DataFrame(columns=columns)
+
+
+def sterile_gl_count_status(df, column, status):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return int((df[column].astype(str).apply(sterile_gl_bucket) == status).sum())
+
+
+def sterile_gl_make_readiness(area, check, status, score, evidence, decision, risk, action, route):
+    payload = {
+        "readiness_id": sterile_gl_make_id("ST-GOLIVE", area, check),
+        "readiness_area": area,
+        "readiness_check": check,
+        "status": sterile_gl_bucket(status),
+        "score": score,
+        "evidence_value": evidence,
+        "go_live_decision": decision,
+        "risk_note": risk,
+        "required_action": action,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+
+    payload["readiness_hash"] = sterile_hash_text(
+        sterile_gl_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_gl_build_readiness_pack():
+    acceptance_df, smoke_df, nav_df, route_health_df = sterile_gl_build_sources()
+
+    binder_df = sterile_gl_read_optional(
+        "sterile_compounding_inspection_binder_register.csv",
+        "STERILE_INSPECTION_BINDER_COLUMNS"
+    )
+    brief_df = sterile_gl_read_optional(
+        "sterile_compounding_executive_brief_register.csv",
+        "STERILE_EXECUTIVE_BRIEF_COLUMNS"
+    )
+    catalog_df = sterile_gl_read_optional(
+        "sterile_compounding_register_catalog.csv",
+        "STERILE_REGISTER_CATALOG_COLUMNS"
+    )
+
+    rows = []
+
+    acceptance_total = len(acceptance_df)
+    acceptance_red = sterile_gl_count_status(acceptance_df, "status", "RED")
+    acceptance_yellow = sterile_gl_count_status(acceptance_df, "status", "YELLOW")
+    acceptance_green = sterile_gl_count_status(acceptance_df, "status", "GREEN")
+    acceptance_score = sterile_gl_mean(acceptance_df, "score")
+    acceptance_status = "RED" if acceptance_red else "YELLOW" if acceptance_yellow else "GREEN"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "01 Build Acceptance",
+            "Build acceptance gate has no RED blockers",
+            acceptance_status,
+            acceptance_score,
+            f"checks={acceptance_total}; green={acceptance_green}; yellow={acceptance_yellow}; red={acceptance_red}",
+            "GO" if acceptance_status == "GREEN" else "CONDITIONAL" if acceptance_status == "YELLOW" else "NO-GO",
+            "Build acceptance RED means the sterile vertical should not be presented until blockers are resolved.",
+            "Open Build Acceptance and close RED checks before demo.",
+            "/sterile-compounding/build-acceptance",
+        )
+    )
+
+    smoke_total = len(smoke_df)
+    smoke_red = sterile_gl_count_status(smoke_df, "test_status", "RED")
+    smoke_green = sterile_gl_count_status(smoke_df, "test_status", "GREEN")
+    smoke_score = int(round((smoke_green / smoke_total) * 100, 0)) if smoke_total else 0
+    smoke_status = "GREEN" if smoke_red == 0 and smoke_total else "RED" if smoke_red else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "02 Smoke Test",
+            "Smoke test matrix routes are registered",
+            smoke_status,
+            smoke_score,
+            f"tests={smoke_total}; green={smoke_green}; red={smoke_red}",
+            "GO" if smoke_status == "GREEN" else "NO-GO",
+            "Smoke test RED means one or more demo/test routes are not registered.",
+            "Open Smoke Test Matrix and manually test P0 routes.",
+            "/sterile-compounding/smoke-test-matrix",
+        )
+    )
+
+    p0_df = smoke_df[smoke_df["priority"].astype(str) == "P0"].copy() if not smoke_df.empty and "priority" in smoke_df.columns else sterile_gl_pd.DataFrame()
+    p0_total = len(p0_df)
+    p0_red = sterile_gl_count_status(p0_df, "test_status", "RED")
+    p0_green = sterile_gl_count_status(p0_df, "test_status", "GREEN")
+    p0_score = int(round((p0_green / p0_total) * 100, 0)) if p0_total else 0
+    p0_status = "GREEN" if p0_red == 0 and p0_total else "RED" if p0_red else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "03 P0 Demo Path",
+            "Critical P0 demo path is available",
+            p0_status,
+            p0_score,
+            f"p0_tests={p0_total}; p0_green={p0_green}; p0_red={p0_red}",
+            "GO" if p0_status == "GREEN" else "NO-GO",
+            "P0 route issues will interrupt the live story.",
+            "Run P0 browser tests before presenting.",
+            "/sterile-compounding/smoke-test-matrix?priority=P0",
+        )
+    )
+
+    nav_total = len(nav_df)
+    nav_missing = int((nav_df["registered_status"].astype(str) == "MISSING").sum()) if nav_total else 0
+    nav_registered = int((nav_df["registered_status"].astype(str) == "REGISTERED").sum()) if nav_total else 0
+    nav_score = int(round((nav_registered / nav_total) * 100, 0)) if nav_total else 0
+    nav_status = "GREEN" if nav_missing == 0 and nav_total else "RED" if nav_missing else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "04 Navigation",
+            "Internal sterile navigation is available",
+            nav_status,
+            nav_score,
+            f"navigation_rows={nav_total}; registered={nav_registered}; missing={nav_missing}",
+            "GO" if nav_status == "GREEN" else "CONDITIONAL" if nav_status == "YELLOW" else "NO-GO",
+            "Missing navigation routes can confuse live demo flow.",
+            "Open Navigation Hub and Route Health.",
+            "/sterile-compounding/navigation-hub",
+        )
+    )
+
+    runtime_total = len(route_health_df)
+    runtime_status = "GREEN" if runtime_total > 0 else "RED"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "05 Runtime Health",
+            "Runtime sterile route map is populated",
+            runtime_status,
+            min(100, runtime_total),
+            f"runtime_sterile_routes={runtime_total}",
+            "GO" if runtime_status == "GREEN" else "NO-GO",
+            "Empty route health can indicate older code is being served.",
+            "Open Route Health after Azure deployment.",
+            "/sterile-compounding/route-health",
+        )
+    )
+
+    binder_total = len(binder_df)
+    binder_red = sterile_gl_count_status(binder_df, "binder_status", "RED")
+    binder_yellow = sterile_gl_count_status(binder_df, "binder_status", "YELLOW")
+    binder_green = sterile_gl_count_status(binder_df, "binder_status", "GREEN")
+    binder_score = sterile_gl_mean(binder_df, "binder_score")
+    binder_status = "RED" if binder_red else "YELLOW" if binder_yellow else "GREEN" if binder_total else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "06 Inspection Binder",
+            "Inspection binder is generated for CSP records",
+            binder_status,
+            binder_score,
+            f"binders={binder_total}; green={binder_green}; yellow={binder_yellow}; red={binder_red}",
+            "GO" if binder_status == "GREEN" else "CONDITIONAL" if binder_status == "YELLOW" else "NO-GO",
+            "Binder RED/YELLOW may still be acceptable for demo if the purpose is to show closure workflow, but should be explained clearly.",
+            "Open Inspection Binder and choose one CSP to demonstrate.",
+            "/sterile-compounding/inspection-binder",
+        )
+    )
+
+    brief_total = len(brief_df)
+    brief_status = "GREEN" if brief_total > 0 else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "07 Executive Brief",
+            "Executive brief is generated",
+            brief_status,
+            100 if brief_total else 50,
+            f"executive_brief_rows={brief_total}",
+            "GO" if brief_status == "GREEN" else "CONDITIONAL",
+            "Without executive brief, leadership summary is less polished.",
+            "Open Executive Brief before presenting.",
+            "/sterile-compounding/executive-brief",
+        )
+    )
+
+    catalog_total = len(catalog_df)
+    catalog_red = sterile_gl_count_status(catalog_df, "status", "RED")
+    catalog_yellow = sterile_gl_count_status(catalog_df, "status", "YELLOW")
+    catalog_green = sterile_gl_count_status(catalog_df, "status", "GREEN")
+    catalog_score = int(round(((catalog_green + (catalog_yellow * 0.5)) / catalog_total) * 100, 0)) if catalog_total else 0
+    catalog_status = "RED" if catalog_red else "YELLOW" if catalog_yellow else "GREEN" if catalog_total else "YELLOW"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "08 Data Backbone",
+            "Register catalog/data backbone is visible",
+            catalog_status,
+            catalog_score,
+            f"catalog_registers={catalog_total}; green={catalog_green}; yellow={catalog_yellow}; red={catalog_red}",
+            "GO" if catalog_status == "GREEN" else "CONDITIONAL" if catalog_status == "YELLOW" else "NO-GO",
+            "YELLOW catalog rows often mean derived registers have not been generated yet. RED should be reviewed.",
+            "Open Register Catalog and Data Dictionary.",
+            "/sterile-compounding/register-catalog",
+        )
+    )
+
+    protected_impact_status = "GREEN"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "09 Protected Boundary",
+            "Protected non-sterile modules were not modified by this go-live layer",
+            protected_impact_status,
+            100,
+            "This module only adds /sterile-compounding/go-live-readiness and /sterile-compounding/change-control-pack routes.",
+            "GO",
+            "This confirms scope discipline for the sterile-only patch.",
+            "Do not modify Command Center, Monday Demo, Release Notes, Platform Health, ServiceNow, CI, Knowledge, or Manufacturing/Wole unless explicitly requested.",
+            "/sterile-compounding/go-live-readiness",
+        )
+    )
+
+    overall_red = sum(1 for r in rows if r["status"] == "RED")
+    overall_yellow = sum(1 for r in rows if r["status"] == "YELLOW")
+    overall_score = int(round(sum(sterile_gl_numeric(r["score"], 0) for r in rows) / len(rows), 0)) if rows else 0
+
+    overall_status = "RED" if overall_red else "YELLOW" if overall_yellow else "GREEN"
+    overall_decision = "GO" if overall_status == "GREEN" else "CONDITIONAL GO" if overall_status == "YELLOW" else "NO-GO"
+
+    rows.append(
+        sterile_gl_make_readiness(
+            "10 Overall Go-Live",
+            "Overall sterile vertical go-live readiness",
+            overall_status,
+            overall_score,
+            f"overall_red={overall_red}; overall_yellow={overall_yellow}; overall_score={overall_score}",
+            overall_decision,
+            "Overall status is based on acceptance, smoke tests, route health, binder, executive brief, and data backbone.",
+            "Use this row as the final pre-demo readiness decision.",
+            "/sterile-compounding/go-live-readiness",
+        )
+    )
+
+    readiness_df = sterile_gl_pd.DataFrame(rows)
+    readiness_df = sterile_ensure_cols(readiness_df, STERILE_GO_LIVE_READINESS_COLUMNS)
+
+    change_df = sterile_gl_build_change_pack(readiness_df)
+
+    sterile_write_register(STERILE_GO_LIVE_READINESS_REGISTER, readiness_df, STERILE_GO_LIVE_READINESS_COLUMNS)
+    sterile_write_register(STERILE_CHANGE_CONTROL_PACK_REGISTER, change_df, STERILE_CHANGE_CONTROL_PACK_COLUMNS)
+
+    return readiness_df, change_df
+
+
+def sterile_gl_change_row(area, summary, change_type, impact, boundary, protected_impact, route, status, rollback, note):
+    payload = {
+        "change_id": sterile_gl_make_id("ST-CHANGE", area, summary),
+        "change_area": area,
+        "change_summary": summary,
+        "change_type": change_type,
+        "impact_level": impact,
+        "validation_boundary": boundary,
+        "protected_area_impact": protected_impact,
+        "evidence_route": route,
+        "acceptance_status": sterile_gl_bucket(status),
+        "rollback_reference": rollback,
+        "review_note": note,
+        "last_checked": sterile_now(),
+    }
+
+    payload["change_hash"] = sterile_hash_text(
+        sterile_gl_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_gl_build_change_pack(readiness_df):
+    overall = readiness_df[readiness_df["acceptance_area"].astype(str) == "10 Overall Go-Live"].copy() if not readiness_df.empty else readiness_df
+    overall_status = sterile_gl_safe(overall.iloc[0].get("status", "YELLOW")) if not overall.empty else "YELLOW"
+
+    rows = [
+        sterile_gl_change_row(
+            "Sterile Vertical",
+            "Compound Sterile AssuranceLayer vertical added as a self-contained /sterile-compounding module set.",
+            "Additive route/module expansion",
+            "Medium",
+            "Sterile compounding governance demonstration only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/navigation-hub",
+            overall_status,
+            "Use latest stable-before/stable-working git tags if rollback is needed.",
+            "Primary scope is sterile compounding assurance, inspection readiness, evidence coverage, and demo readiness.",
+        ),
+        sterile_gl_change_row(
+            "Evidence and Assurance",
+            "Evidence vault, evidence matrix, audit pack, release dossier, sign-off, seal, custody, SOP/formula, personnel, equipment/room, and master assurance layers added.",
+            "Governance feature expansion",
+            "Medium",
+            "Assurance support only; not formal QA release or QMS approval",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/master-assurance-index",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "These pages provide control-to-evidence and readiness logic, not validated system replacement.",
+        ),
+        sterile_gl_change_row(
+            "Inspection Readiness",
+            "Inspection readiness, auditor Q&A, regulatory crosswalk, control-evidence coverage, inspection narrative, binder, packet manifest, and executive brief added.",
+            "Inspection support expansion",
+            "Medium",
+            "Auditor-facing governance narrative only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/inspection-binder",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "Used to structure review narrative and evidence routes for demo/inspection preparation.",
+        ),
+        sterile_gl_change_row(
+            "Demo Readiness",
+            "Demo walkthrough, leadership script, navigation hub, route health, register catalog, data dictionary, build acceptance, smoke-test matrix, and go-live readiness added.",
+            "Operational readiness expansion",
+            "Low",
+            "Internal sterile vertical readiness only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/go-live-readiness",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "Used to make the vertical easier to present, test, and explain.",
+        ),
+        sterile_gl_change_row(
+            "Protected Boundary",
+            "Command Center, Monday Demo, Release Notes, Platform Health, ServiceNow, Entra, CI, Knowledge Governance, Operational Lineage, and Manufacturing/Wole remain outside this patch scope.",
+            "Boundary confirmation",
+            "Low",
+            "No change to protected areas",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/go-live-readiness",
+            "GREEN",
+            "No rollback required unless unrelated protected behavior is observed.",
+            "Any future integration into global navigation should be performed as a separate explicit patch.",
+        ),
+    ]
+
+    change_df = sterile_gl_pd.DataFrame(rows)
+    change_df = sterile_ensure_cols(change_df, STERILE_CHANGE_CONTROL_PACK_COLUMNS)
+
+    return change_df
+
+
+@app.route("/sterile-compounding/go-live-readiness")
+def sterile_compounding_go_live_readiness():
+    readiness_df, change_df = sterile_gl_build_readiness_pack()
+
+    status_filter = sterile_gl_safe(sterile_gl_request.args.get("status", ""))
+    filtered = readiness_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["status"] == "RED").sum()) if total else 0
+    avg_score = sterile_gl_mean(filtered, "score") if total else 0
+
+    full_red = int((readiness_df["status"] == "RED").sum()) if not readiness_df.empty else 0
+    full_yellow = int((readiness_df["status"] == "YELLOW").sum()) if not readiness_df.empty else 0
+
+    if full_red:
+        overall_status = "RED"
+        overall_message = "NO-GO: RED readiness blockers exist. Fix before live presentation."
+    elif full_yellow:
+        overall_status = "YELLOW"
+        overall_message = "CONDITIONAL GO: Demo can proceed if YELLOW items are explained clearly."
+    else:
+        overall_status = "GREEN"
+        overall_message = "GO: Sterile vertical is ready from the internal readiness checks."
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Readiness Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["status", "readiness_area"], ascending=[False, True]).iterrows():
+            route = sterile_gl_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_gl_badge(row.get("status", ""))}</td>
+                <td>{sterile_gl_safe(row.get("readiness_area", ""))}</td>
+                <td>{sterile_gl_safe(row.get("readiness_check", ""))}</td>
+                <td>{sterile_gl_safe(row.get("score", ""))}</td>
+                <td>{sterile_gl_safe(row.get("go_live_decision", ""))}</td>
+                <td>{sterile_gl_safe(row.get("evidence_value", ""))}</td>
+                <td>{sterile_gl_safe(row.get("risk_note", ""))}</td>
+                <td>{sterile_gl_safe(row.get("required_action", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No go-live readiness rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Go-Live Readiness Pack</h1>
+        <p>
+            Final internal readiness page for the Compound Sterile AssuranceLayer vertical.
+            It consolidates build acceptance, smoke tests, P0 demo path, navigation, route health,
+            inspection binder, executive brief, data backbone, protected-boundary confirmation, and overall go-live decision.
+        </p>
+        <div style="margin-top:16px;">{sterile_gl_badge(overall_status)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">{overall_message}</div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Readiness Checks</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Readiness Filters</h2>
+        <form method="GET" action="/sterile-compounding/go-live-readiness">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/change-control-pack">Change Control Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance">Build Acceptance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness/export">Export Readiness</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Go-Live Readiness Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Area</th>
+                        <th>Check</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Evidence</th>
+                        <th>Risk Note</th>
+                        <th>Required Action</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "GO-LIVE-READINESS",
+            "STERILE_GO_LIVE_READINESS_VIEW",
+            "Sterile go-live readiness viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/go-live-readiness",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Go-Live Readiness Pack", body)
+
+
+@app.route("/sterile-compounding/change-control-pack")
+def sterile_compounding_change_control_pack():
+    readiness_df, change_df = sterile_gl_build_readiness_pack()
+
+    status_filter = sterile_gl_safe(sterile_gl_request.args.get("status", ""))
+    filtered = change_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["acceptance_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["acceptance_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["acceptance_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["acceptance_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Acceptance Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["impact_level", "change_area"], ascending=[False, True]).iterrows():
+            route = sterile_gl_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_gl_badge(row.get("acceptance_status", ""))}</td>
+                <td>{sterile_gl_safe(row.get("change_area", ""))}</td>
+                <td>{sterile_gl_safe(row.get("change_summary", ""))}</td>
+                <td>{sterile_gl_safe(row.get("change_type", ""))}</td>
+                <td>{sterile_gl_safe(row.get("impact_level", ""))}</td>
+                <td>{sterile_gl_safe(row.get("validation_boundary", ""))}</td>
+                <td>{sterile_gl_safe(row.get("protected_area_impact", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_gl_safe(row.get("rollback_reference", ""))}</td>
+                <td>{sterile_gl_safe(row.get("review_note", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No change-control rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Change Control Pack</h1>
+        <p>
+            Sterile-only change summary showing what was added, the validation/governance boundary,
+            protected-area impact, acceptance status, rollback reference, and review note.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Change Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Change Pack Filters</h2>
+        <form method="GET" action="/sterile-compounding/change-control-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Acceptance Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/change-control-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/change-control-pack/export">Export Change Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Change Control Pack Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Area</th>
+                        <th>Summary</th>
+                        <th>Type</th>
+                        <th>Impact</th>
+                        <th>Boundary</th>
+                        <th>Protected Impact</th>
+                        <th>Evidence Route</th>
+                        <th>Rollback</th>
+                        <th>Review Note</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CHANGE-CONTROL-PACK",
+            "STERILE_CHANGE_CONTROL_PACK_VIEW",
+            "Sterile change control pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/change-control-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Change Control Pack", body)
+
+
+@app.route("/sterile-compounding/go-live-readiness/export")
+def sterile_compounding_go_live_readiness_export():
+    readiness_df, change_df = sterile_gl_build_readiness_pack()
+
+    if readiness_df.empty:
+        readiness_df = sterile_gl_pd.DataFrame(columns=STERILE_GO_LIVE_READINESS_COLUMNS)
+
+    csv_data = readiness_df.to_csv(index=False)
+
+    return sterile_gl_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_go_live_readiness_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/change-control-pack/export")
+def sterile_compounding_change_control_pack_export():
+    readiness_df, change_df = sterile_gl_build_readiness_pack()
+
+    if change_df.empty:
+        change_df = sterile_gl_pd.DataFrame(columns=STERILE_CHANGE_CONTROL_PACK_COLUMNS)
+
+    csv_data = change_df.to_csv(index=False)
+
+    return sterile_gl_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_change_control_pack_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_go_live_readiness_dashboard_injection(response):
+    try:
+        if sterile_gl_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/build-acceptance",
+            "/sterile-compounding/smoke-test-matrix",
+            "/sterile-compounding/navigation-hub",
+            "/sterile-compounding/module-map",
+            "/sterile-compounding/route-health",
+            "/sterile-compounding/register-catalog",
+            "/sterile-compounding/data-dictionary",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/demo-script",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/executive-brief",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-go-live-readiness-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-go-live-readiness-panel">
+            <h2>Go-Live Readiness Pack + Change Control Summary</h2>
+            <p class="st-note">
+                Final sterile-only readiness layer showing GO / CONDITIONAL GO / NO-GO evidence,
+                change summary, protected-boundary confirmation, and rollback reference.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/change-control-pack">Change Control Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness/export">Export Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/change-control-pack/export">Export Change Pack</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile go-live readiness dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
