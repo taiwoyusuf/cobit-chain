@@ -56280,5 +56280,874 @@ def sterile_compounding_executive_handoff_dashboard_injection(response):
         print(f"Sterile executive handoff injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_LEADERSHIP_ROUTE_BUNDLE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 49: Leadership Route Bundle + Handoff Checklist
+#
+# New Routes:
+#   /sterile-compounding/leadership-route-bundle
+#   /sterile-compounding/leadership-route-bundle/export
+#   /sterile-compounding/handoff-checklist
+#   /sterile-compounding/handoff-checklist/export
+#
+# New Registers:
+#   sterile_compounding_leadership_route_bundle.csv
+#   sterile_compounding_handoff_checklist.csv
+#
+# Boundary:
+#   This is a sterile-only leadership navigation and handoff checklist layer.
+#   It does not overwrite existing routes and does not modify protected
+#   global modules, ServiceNow, Entra, CI, Knowledge, Operational Lineage,
+#   Manufacturing/Wole, Command Center, Monday Demo, Release Notes, or
+#   Platform Health logic.
+# ============================================================
+
+try:
+    import pandas as sterile_lrb_pd
+    import json as sterile_lrb_json
+    from flask import request as sterile_lrb_request
+    from flask import Response as sterile_lrb_Response
+except Exception as sterile_lrb_import_error:
+    raise RuntimeError(f"Sterile leadership route bundle import failed: {sterile_lrb_import_error}")
+
+
+STERILE_LEADERSHIP_ROUTE_BUNDLE_REGISTER = "sterile_compounding_leadership_route_bundle.csv"
+STERILE_HANDOFF_CHECKLIST_REGISTER = "sterile_compounding_handoff_checklist.csv"
+
+STERILE_LEADERSHIP_ROUTE_BUNDLE_COLUMNS = [
+    "bundle_id",
+    "sequence",
+    "route_group",
+    "route_title",
+    "route_url",
+    "route_status",
+    "estimated_time",
+    "what_to_show",
+    "what_to_say",
+    "evidence_to_point_to",
+    "leadership_value",
+    "safe_claim",
+    "not_safe_claim",
+    "transition_to_next",
+    "last_checked",
+    "bundle_hash"
+]
+
+STERILE_HANDOFF_CHECKLIST_COLUMNS = [
+    "checklist_id",
+    "checklist_group",
+    "checklist_item",
+    "checklist_status",
+    "required_before_demo",
+    "completion_signal",
+    "supporting_route",
+    "owner_audience",
+    "risk_if_skipped",
+    "recommended_action",
+    "last_checked",
+    "checklist_hash"
+]
+
+
+def sterile_lrb_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_eh_build_handoff",
+        "STERILE_EXECUTIVE_HANDOFF_COLUMNS",
+        "STERILE_VALUE_SCORECARD_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile leadership route bundle dependencies missing: " + ", ".join(missing))
+
+
+def sterile_lrb_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_lrb_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_lrb_badge(status):
+    status = sterile_lrb_safe(status).upper()
+
+    if status in ["GREEN", "READY", "STRONG", "COMPLETE", "REQUIRED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "OPTIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_lrb_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_lrb_route_status(route):
+    return "GREEN" if sterile_lrb_route_exists(route) else "YELLOW"
+
+
+def sterile_lrb_add_bundle(rows, sequence, group, title, route, time_box, show, say, evidence, value, safe, unsafe, transition):
+    status = sterile_lrb_route_status(route)
+
+    payload = {
+        "bundle_id": sterile_lrb_make_id("ST-LRB", sequence, route),
+        "sequence": sequence,
+        "route_group": group,
+        "route_title": title,
+        "route_url": route,
+        "route_status": status,
+        "estimated_time": time_box,
+        "what_to_show": show,
+        "what_to_say": say,
+        "evidence_to_point_to": evidence,
+        "leadership_value": value,
+        "safe_claim": safe,
+        "not_safe_claim": unsafe,
+        "transition_to_next": transition,
+        "last_checked": sterile_now(),
+    }
+
+    payload["bundle_hash"] = sterile_hash_text(
+        sterile_lrb_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_lrb_add_check(rows, group, item, status, required, signal, route, audience, risk, action):
+    payload = {
+        "checklist_id": sterile_lrb_make_id("ST-HCHECK", group, item, route),
+        "checklist_group": group,
+        "checklist_item": item,
+        "checklist_status": status,
+        "required_before_demo": required,
+        "completion_signal": signal,
+        "supporting_route": route,
+        "owner_audience": audience,
+        "risk_if_skipped": risk,
+        "recommended_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["checklist_hash"] = sterile_hash_text(
+        sterile_lrb_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_lrb_build_bundle():
+    sterile_lrb_require_dependencies()
+
+    try:
+        handoff_df, value_df = sterile_eh_build_handoff()
+    except Exception:
+        handoff_df = sterile_lrb_pd.DataFrame(columns=STERILE_EXECUTIVE_HANDOFF_COLUMNS)
+        value_df = sterile_lrb_pd.DataFrame(columns=STERILE_VALUE_SCORECARD_COLUMNS)
+
+    bundle_rows = []
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        10,
+        "Opening",
+        "Sterile Home",
+        "/sterile-compounding",
+        "45 seconds",
+        "Show the sterile vertical landing page and its module structure.",
+        "This is the sterile compounding governance vertical. It is not another tracker; it is an assurance layer that links records, evidence, readiness, and audit narrative.",
+        "Sterile module cards and route navigation.",
+        "Creates a clear entry point for regulated-operation assurance.",
+        "Safe to say this is a governance and evidence-readiness layer.",
+        "Do not claim it is a production QMS or pharmacy release system.",
+        "Move from the home page into the demo walkthrough to tell the story in sequence.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        20,
+        "Storyline",
+        "Demo Walkthrough",
+        "/sterile-compounding/demo-walkthrough",
+        "60 seconds",
+        "Show the route-by-route demo sequence.",
+        "This page gives the presenter a structured path so the demo does not become random clicking.",
+        "Demo walkthrough rows and recommended click sequence.",
+        "Improves leadership comprehension and demo discipline.",
+        "Safe to say the demo is structured and repeatable.",
+        "Do not claim the demo sequence is a validated operating procedure.",
+        "Move into executive brief for the leadership summary.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        30,
+        "Executive Summary",
+        "Executive Brief",
+        "/sterile-compounding/executive-brief",
+        "60 seconds",
+        "Show the executive-level narrative and business framing.",
+        "The business value is that leaders can see whether sterile evidence is complete, linked, reviewable, and explainable.",
+        "Executive brief and value summary.",
+        "Translates the build into leadership language.",
+        "Safe to say this supports leadership review and decision framing.",
+        "Do not claim formal enterprise approval or adoption.",
+        "Move into inspection binder to prove the evidence story.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        40,
+        "Inspection Readiness",
+        "Inspection Binder",
+        "/sterile-compounding/inspection-binder",
+        "75 seconds",
+        "Show inspection binder, packet structure, and evidence route logic.",
+        "This is where the vertical becomes more than a dashboard. It organizes evidence into an inspection-ready story.",
+        "Inspection binder, packet manifest, inspection narrative.",
+        "Reduces scattered-evidence risk and supports audit readiness.",
+        "Safe to say this organizes inspection evidence for review.",
+        "Do not claim it is the official inspection response system.",
+        "Move into regulatory crosswalk to show control coverage.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        50,
+        "Control Coverage",
+        "Regulatory Crosswalk",
+        "/sterile-compounding/regulatory-crosswalk",
+        "60 seconds",
+        "Show controls, evidence routes, auditor questions, and coverage logic.",
+        "This is how AssuranceLayer connects evidence to governance expectations and reviewer questions.",
+        "Regulatory crosswalk and control-evidence coverage.",
+        "Connects operational evidence to control domains.",
+        "Safe to say it demonstrates control-to-evidence traceability.",
+        "Do not claim it is an approved regulatory mapping unless formally reviewed.",
+        "Move into go-live readiness to show build discipline.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        60,
+        "Readiness",
+        "Go-Live Readiness",
+        "/sterile-compounding/go-live-readiness",
+        "60 seconds",
+        "Show readiness scoring and the readiness areas.",
+        "This separates demo readiness from production readiness, which is important in regulated environments.",
+        "Go-live readiness rows and status cards.",
+        "Shows controlled readiness thinking.",
+        "Safe to say this is a readiness governance view.",
+        "Do not say it authorizes production deployment.",
+        "Move into stability check to show the build can self-check.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        70,
+        "Stability",
+        "Stability Check",
+        "/sterile-compounding/stability-check",
+        "60 seconds",
+        "Show key routes, active markers, protected route presence, and compatibility hardening.",
+        "This proves we are building safely and not just adding pages blindly.",
+        "Stability check register.",
+        "Shows technical discipline and reduces regression risk.",
+        "Safe to say the sterile vertical has a self-check layer.",
+        "Do not claim this replaces full automated QA testing.",
+        "Move into value scorecard for the business case.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        80,
+        "Value",
+        "Value Scorecard",
+        "/sterile-compounding/value-scorecard",
+        "75 seconds",
+        "Show value domains, scores, current problems, risk reduction, and next enhancements.",
+        "This is the leadership case: evidence readiness, inspection preparedness, integration readiness, POC control, and protected build discipline.",
+        "Value scorecard rows and average score.",
+        "Converts technical work into measurable business value.",
+        "Safe to say this summarizes expected value and risk reduction.",
+        "Do not claim realized savings unless measured later.",
+        "Move into integration blueprint to show future scalability.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        90,
+        "Integration Future",
+        "Integration Blueprint",
+        "/sterile-compounding/integration-blueprint",
+        "75 seconds",
+        "Show future system integrations and connector readiness.",
+        "We are not jumping into API work. The app forces source-of-truth, data contract, owner approval, and validation boundaries first.",
+        "Integration blueprint, data contracts, mock ingestion, approval board.",
+        "Creates safe integration governance before connector work.",
+        "Safe to say it documents future integration readiness.",
+        "Do not claim live integrations are already active.",
+        "Move into POC results to show non-production control.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        100,
+        "POC Control",
+        "POC Results Summary",
+        "/sterile-compounding/poc-results-summary",
+        "75 seconds",
+        "Show non-production POC test readiness, evidence gaps, P0 blockers, and final position.",
+        "Any future proof of concept should be controlled, evidence-based, and non-production first.",
+        "POC results summary and evidence packet manifest.",
+        "Makes future POC work auditable and defensible.",
+        "Safe to say this prepares controlled non-production POC governance.",
+        "Do not claim production tests were executed.",
+        "Move into protected boundary check to close with safety.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        110,
+        "Boundary",
+        "Protected Boundary Check",
+        "/sterile-compounding/protected-boundary-check",
+        "45 seconds",
+        "Show protected routes and sterile change position.",
+        "This is how we prove the sterile build respected existing app areas.",
+        "Protected boundary register.",
+        "Builds trust that the app was expanded safely.",
+        "Safe to say protected routes were documented and respected by this phase.",
+        "Do not claim protected modules were improved unless specifically patched later.",
+        "Close with the executive handoff pack.",
+    )
+
+    sterile_lrb_add_bundle(
+        bundle_rows,
+        120,
+        "Close",
+        "Executive Handoff Pack",
+        "/sterile-compounding/executive-handoff-pack",
+        "60 seconds",
+        "Show final handoff sections, safe claims, not-safe claims, and recommended next actions.",
+        "This is the leader-ready takeaway: what was built, why it matters, what can be claimed, and what should happen next.",
+        "Executive handoff pack and exports.",
+        "Creates a controlled leadership handoff artifact.",
+        "Safe to say this is a leadership handoff summary.",
+        "Do not claim formal organizational approval unless granted.",
+        "End by asking for feedback on which integration or evidence workflow should be prioritized next.",
+    )
+
+    checklist_rows = []
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Before Demo",
+        "Confirm Azure deployment completed after git push",
+        "GREEN",
+        "YES",
+        "All target URLs load after Azure deployment.",
+        "/sterile-compounding/stability-check",
+        "App owner / presenter",
+        "Demo may show stale or missing routes.",
+        "Open stability check and key routes before presenting.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Before Demo",
+        "Confirm protected pages still load",
+        "GREEN",
+        "YES",
+        "Command Center, Monday Demo, Release Notes, and Platform Health still load with their existing content.",
+        "/sterile-compounding/protected-boundary-check",
+        "App owner / reviewer",
+        "Stakeholders may think the sterile build broke existing modules.",
+        "Open protected boundary check and the four global pages.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Before Demo",
+        "Use safe claims only",
+        "GREEN",
+        "YES",
+        "Presenter avoids claiming production validation, official approval, live connectors, or product release authority.",
+        "/sterile-compounding/executive-handoff-pack",
+        "Presenter / leadership",
+        "Overclaiming can create compliance and credibility risk.",
+        "Use the safe-claim and not-safe-claim columns in the handoff pack.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Evidence",
+        "Show inspection binder before integration blueprint",
+        "GREEN",
+        "YES",
+        "Audience first sees audit/evidence value before future integration roadmap.",
+        "/sterile-compounding/inspection-binder",
+        "QA / governance / leadership",
+        "Demo may look like another integration idea instead of an assurance layer.",
+        "Follow the leadership route bundle sequence.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Evidence",
+        "Show stability check before closing",
+        "GREEN",
+        "YES",
+        "Presenter proves route registration, markers, and protected-route presence.",
+        "/sterile-compounding/stability-check",
+        "Technical reviewer / app owner",
+        "Technical reviewer may question whether the build is safe.",
+        "Open stability check near the end of the technical walkthrough.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Integration",
+        "Clarify blueprint versus live connector",
+        "GREEN",
+        "YES",
+        "Presenter states integration pages are readiness and planning only.",
+        "/sterile-compounding/integration-blueprint",
+        "Enterprise architecture / system owners",
+        "Stakeholders may think live system connections already exist.",
+        "Say clearly that there are no production API calls or writebacks in this phase.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Integration",
+        "Use POC results as non-production planning evidence",
+        "GREEN",
+        "YES",
+        "Presenter explains POC pages organize future test evidence; they do not execute production tests.",
+        "/sterile-compounding/poc-results-summary",
+        "IT leadership / integration owners",
+        "POC control could be misunderstood as completed production testing.",
+        "Use the not-allowed actions column and evidence packet manifest.",
+    )
+
+    sterile_lrb_add_check(
+        checklist_rows,
+        "Close",
+        "End with decision request",
+        "YELLOW",
+        "NO",
+        "Presenter asks which next path should be prioritized: evidence workflow, integration blueprint, or stakeholder review.",
+        "/sterile-compounding/value-scorecard",
+        "Leadership",
+        "Demo may end without a clear next step.",
+        "Close by asking for the preferred next enhancement or review audience.",
+    )
+
+    bundle_df = sterile_lrb_pd.DataFrame(bundle_rows)
+    bundle_df = bundle_df.reindex(columns=STERILE_LEADERSHIP_ROUTE_BUNDLE_COLUMNS).fillna("")
+
+    checklist_df = sterile_lrb_pd.DataFrame(checklist_rows)
+    checklist_df = checklist_df.reindex(columns=STERILE_HANDOFF_CHECKLIST_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_LEADERSHIP_ROUTE_BUNDLE_REGISTER,
+        bundle_df,
+        STERILE_LEADERSHIP_ROUTE_BUNDLE_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_HANDOFF_CHECKLIST_REGISTER,
+        checklist_df,
+        STERILE_HANDOFF_CHECKLIST_COLUMNS
+    )
+
+    return bundle_df, checklist_df
+
+
+@app.route("/sterile-compounding/leadership-route-bundle")
+def sterile_compounding_leadership_route_bundle():
+    bundle_df, checklist_df = sterile_lrb_build_bundle()
+
+    status_filter = sterile_lrb_safe(sterile_lrb_request.args.get("status", ""))
+    group_filter = sterile_lrb_safe(sterile_lrb_request.args.get("group", ""))
+
+    filtered = bundle_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["route_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["route_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["route_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["route_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["route_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Route Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Route Groups</option>'
+    for group in sorted(bundle_df["route_group"].dropna().unique().tolist()) if not bundle_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["sequence"]).iterrows():
+            route = sterile_lrb_safe(row.get("route_url", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_lrb_badge(row.get("route_status", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("sequence", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("route_group", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("route_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_lrb_safe(row.get("estimated_time", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("what_to_show", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("what_to_say", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("leadership_value", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("transition_to_next", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No leadership route bundle rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Leadership Route Bundle</h1>
+        <p>
+            One controlled leadership demo path for Compound Sterile AssuranceLayer™.
+            Open these routes in sequence to explain the build clearly, prove value, and avoid overclaiming.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Routes</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Bundle Filters</h2>
+        <form method="GET" action="/sterile-compounding/leadership-route-bundle">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Route Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Route Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-route-bundle">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/handoff-checklist">Handoff Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-route-bundle/export">Export Bundle</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Leadership Route Bundle Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Seq</th>
+                        <th>Group</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Time</th>
+                        <th>What to Show</th>
+                        <th>What to Say</th>
+                        <th>Leadership Value</th>
+                        <th>Transition</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "LEADERSHIP-ROUTE-BUNDLE",
+            "STERILE_LEADERSHIP_ROUTE_BUNDLE_VIEW",
+            "Sterile leadership route bundle viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/leadership-route-bundle",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Leadership Route Bundle", body)
+
+
+@app.route("/sterile-compounding/handoff-checklist")
+def sterile_compounding_handoff_checklist():
+    bundle_df, checklist_df = sterile_lrb_build_bundle()
+
+    status_filter = sterile_lrb_safe(sterile_lrb_request.args.get("status", ""))
+    required_filter = sterile_lrb_safe(sterile_lrb_request.args.get("required", ""))
+
+    filtered = checklist_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["checklist_status"].astype(str) == status_filter]
+
+    if required_filter and not filtered.empty:
+        filtered = filtered[filtered["required_before_demo"].astype(str) == required_filter]
+
+    total = len(filtered)
+    green = int((filtered["checklist_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["checklist_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["checklist_status"] == "RED").sum()) if total else 0
+    required = int((filtered["required_before_demo"] == "YES").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Checklist Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    required_options = ""
+    for option in ["", "YES", "NO"]:
+        label = "All Required Flags" if option == "" else option
+        selected = "selected" if option == required_filter else ""
+        required_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["required_before_demo", "checklist_group"], ascending=[False, True]).iterrows():
+            route = sterile_lrb_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_lrb_badge(row.get("checklist_status", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("required_before_demo", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("checklist_group", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("checklist_item", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("completion_signal", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_lrb_safe(row.get("owner_audience", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("risk_if_skipped", ""))}</td>
+                <td>{sterile_lrb_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No handoff checklist rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Handoff Checklist</h1>
+        <p>
+            Presenter checklist for the sterile vertical. Use this before showing the build to leadership,
+            QA/governance, system owners, or technical reviewers.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Checklist Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Required</div><div class="st-value">{required}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Checklist Filters</h2>
+        <form method="GET" action="/sterile-compounding/handoff-checklist">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Checklist Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Required</label>
+                    <select name="required">{required_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/handoff-checklist">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-route-bundle">Leadership Route Bundle</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/handoff-checklist/export">Export Checklist</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Handoff Checklist Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Required</th>
+                        <th>Group</th>
+                        <th>Checklist Item</th>
+                        <th>Completion Signal</th>
+                        <th>Route</th>
+                        <th>Audience</th>
+                        <th>Risk If Skipped</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "HANDOFF-CHECKLIST",
+            "STERILE_HANDOFF_CHECKLIST_VIEW",
+            "Sterile handoff checklist viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/handoff-checklist",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Handoff Checklist", body)
+
+
+@app.route("/sterile-compounding/leadership-route-bundle/export")
+def sterile_compounding_leadership_route_bundle_export():
+    bundle_df, checklist_df = sterile_lrb_build_bundle()
+
+    if bundle_df.empty:
+        bundle_df = sterile_lrb_pd.DataFrame(columns=STERILE_LEADERSHIP_ROUTE_BUNDLE_COLUMNS)
+
+    csv_data = bundle_df.to_csv(index=False)
+
+    return sterile_lrb_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_leadership_route_bundle_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/handoff-checklist/export")
+def sterile_compounding_handoff_checklist_export():
+    bundle_df, checklist_df = sterile_lrb_build_bundle()
+
+    if checklist_df.empty:
+        checklist_df = sterile_lrb_pd.DataFrame(columns=STERILE_HANDOFF_CHECKLIST_COLUMNS)
+
+    csv_data = checklist_df.to_csv(index=False)
+
+    return sterile_lrb_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_handoff_checklist_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_leadership_route_bundle_dashboard_injection(response):
+    try:
+        if sterile_lrb_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/executive-handoff-pack",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/monday-demo-entry",
+            "/sterile-compounding/presentation-lock",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-leadership-route-bundle-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-leadership-route-bundle-panel">
+            <h2>Leadership Route Bundle + Handoff Checklist</h2>
+            <p class="st-note">
+                Provides the recommended leadership demo route sequence, talk track, safe claims,
+                not-safe claims, transition language, and presenter checklist.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/leadership-route-bundle">Leadership Route Bundle</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/handoff-checklist">Handoff Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-route-bundle/export">Export Bundle</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/handoff-checklist/export">Export Checklist</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile leadership route bundle injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
