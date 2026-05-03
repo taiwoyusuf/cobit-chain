@@ -44687,5 +44687,705 @@ def sterile_compounding_go_live_readiness_dashboard_injection(response):
         print(f"Sterile go-live readiness dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_FREEZE_SNAPSHOT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 33: Freeze Snapshot + Presentation Lock
+#
+# New Routes:
+#   /sterile-compounding/freeze-snapshot
+#   /sterile-compounding/freeze-snapshot/<snapshot_id>
+#   /sterile-compounding/freeze-snapshot/export
+#   /sterile-compounding/presentation-lock
+#   /sterile-compounding/presentation-lock/export
+#
+# New Registers:
+#   sterile_compounding_freeze_snapshot_register.csv
+#   sterile_compounding_presentation_lock_register.csv
+#
+# Boundary:
+#   This creates a sterile-only snapshot and presentation lock layer.
+#   It does not freeze Azure, GitHub, QA release, QMS records, pharmacy
+#   release, or validated systems. It does not touch Command Center,
+#   Monday Demo, Release Notes, Platform Health, Manufacturing/Wole,
+#   ServiceNow, Entra, CI, Knowledge Governance, Operational Lineage,
+#   or other protected areas.
+# ============================================================
+
+try:
+    import pandas as sterile_fs_pd
+    import json as sterile_fs_json
+    from flask import request as sterile_fs_request
+    from flask import Response as sterile_fs_Response
+except Exception as sterile_fs_import_error:
+    raise RuntimeError(f"Sterile freeze snapshot import failed: {sterile_fs_import_error}")
+
+
+STERILE_FREEZE_SNAPSHOT_REGISTER = "sterile_compounding_freeze_snapshot_register.csv"
+STERILE_PRESENTATION_LOCK_REGISTER = "sterile_compounding_presentation_lock_register.csv"
+
+STERILE_FREEZE_SNAPSHOT_COLUMNS = [
+    "snapshot_id",
+    "snapshot_scope",
+    "snapshot_status",
+    "go_live_status",
+    "go_live_score",
+    "acceptance_status",
+    "acceptance_score",
+    "smoke_test_status",
+    "smoke_test_score",
+    "route_health_count",
+    "navigation_registered",
+    "navigation_missing",
+    "register_count",
+    "register_red_count",
+    "binder_count",
+    "binder_red_count",
+    "demo_script_count",
+    "snapshot_summary",
+    "presentation_recommendation",
+    "supporting_routes",
+    "created_at",
+    "snapshot_hash"
+]
+
+STERILE_PRESENTATION_LOCK_COLUMNS = [
+    "lock_id",
+    "snapshot_id",
+    "lock_status",
+    "lock_decision",
+    "go_condition",
+    "conditional_items",
+    "blocked_items",
+    "required_presenter_action",
+    "recommended_opening_route",
+    "recommended_demo_record",
+    "safe_demo_script",
+    "rollback_reference",
+    "created_at",
+    "lock_hash"
+]
+
+
+def sterile_fs_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_GO_LIVE_READINESS_COLUMNS",
+        "STERILE_CHANGE_CONTROL_PACK_COLUMNS",
+        "sterile_gl_build_readiness_pack",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile freeze snapshot dependencies missing: " + ", ".join(missing))
+
+
+def sterile_fs_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_fs_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_fs_mean(df, column):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return round(sterile_fs_pd.to_numeric(df[column], errors="coerce").fillna(0).mean(), 1)
+
+
+def sterile_fs_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_fs_bucket(value):
+    value = sterile_fs_safe(value).upper()
+
+    if value in ["GREEN", "GO", "PASS", "READY", "REGISTERED", "LOCKED"]:
+        return "GREEN"
+
+    if value in ["RED", "NO-GO", "FAIL", "FAILED", "MISSING", "BLOCKED", "NOT READY"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_fs_badge(status):
+    bucket = sterile_fs_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_fs_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_fs_pd.DataFrame(columns=columns)
+
+
+def sterile_fs_count_bucket(df, column, bucket):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+
+    return int((df[column].astype(str).apply(sterile_fs_bucket) == bucket).sum())
+
+
+def sterile_fs_latest_overall(readiness_df):
+    if readiness_df is None or readiness_df.empty:
+        return {}
+
+    if "readiness_area" in readiness_df.columns:
+        match = readiness_df[readiness_df["readiness_area"].astype(str) == "10 Overall Go-Live"].copy()
+        if not match.empty:
+            return match.iloc[0].to_dict()
+
+    return readiness_df.iloc[-1].to_dict()
+
+
+def sterile_fs_build_snapshot():
+    sterile_fs_require_dependencies()
+
+    try:
+        readiness_df, change_df = sterile_gl_build_readiness_pack()
+    except Exception:
+        readiness_df = sterile_fs_read_optional(
+            "sterile_compounding_go_live_readiness_register.csv",
+            "STERILE_GO_LIVE_READINESS_COLUMNS"
+        )
+        change_df = sterile_fs_read_optional(
+            "sterile_compounding_change_control_pack.csv",
+            "STERILE_CHANGE_CONTROL_PACK_COLUMNS"
+        )
+
+    acceptance_df = sterile_fs_read_optional(
+        "sterile_compounding_build_acceptance_register.csv",
+        "STERILE_BUILD_ACCEPTANCE_COLUMNS"
+    )
+    smoke_df = sterile_fs_read_optional(
+        "sterile_compounding_smoke_test_matrix.csv",
+        "STERILE_SMOKE_TEST_MATRIX_COLUMNS"
+    )
+    route_health_df = sterile_fs_read_optional(
+        "sterile_compounding_route_health_register.csv",
+        "STERILE_ROUTE_HEALTH_COLUMNS"
+    )
+    nav_df = sterile_fs_read_optional(
+        "sterile_compounding_navigation_register.csv",
+        "STERILE_NAVIGATION_COLUMNS"
+    )
+    catalog_df = sterile_fs_read_optional(
+        "sterile_compounding_register_catalog.csv",
+        "STERILE_REGISTER_CATALOG_COLUMNS"
+    )
+    binder_df = sterile_fs_read_optional(
+        "sterile_compounding_inspection_binder_register.csv",
+        "STERILE_INSPECTION_BINDER_COLUMNS"
+    )
+    script_df = sterile_fs_read_optional(
+        "sterile_compounding_demo_script_register.csv",
+        "STERILE_DEMO_SCRIPT_COLUMNS"
+    )
+
+    overall = sterile_fs_latest_overall(readiness_df)
+
+    go_live_status = sterile_fs_safe(overall.get("status", "YELLOW"))
+    go_live_score = sterile_fs_numeric(overall.get("score", 0), 0)
+
+    acceptance_red = sterile_fs_count_bucket(acceptance_df, "status", "RED")
+    acceptance_yellow = sterile_fs_count_bucket(acceptance_df, "status", "YELLOW")
+    acceptance_status = "RED" if acceptance_red else "YELLOW" if acceptance_yellow else "GREEN" if len(acceptance_df) else "YELLOW"
+    acceptance_score = sterile_fs_mean(acceptance_df, "score")
+
+    smoke_red = sterile_fs_count_bucket(smoke_df, "test_status", "RED")
+    smoke_status = "RED" if smoke_red else "GREEN" if len(smoke_df) else "YELLOW"
+    smoke_green = sterile_fs_count_bucket(smoke_df, "test_status", "GREEN")
+    smoke_test_score = int(round((smoke_green / len(smoke_df)) * 100, 0)) if len(smoke_df) else 0
+
+    route_health_count = len(route_health_df)
+
+    navigation_registered = 0
+    navigation_missing = 0
+    if not nav_df.empty and "registered_status" in nav_df.columns:
+        navigation_registered = int((nav_df["registered_status"].astype(str) == "REGISTERED").sum())
+        navigation_missing = int((nav_df["registered_status"].astype(str) == "MISSING").sum())
+
+    register_count = len(catalog_df)
+    register_red_count = sterile_fs_count_bucket(catalog_df, "status", "RED")
+
+    binder_count = len(binder_df)
+    binder_red_count = sterile_fs_count_bucket(binder_df, "binder_status", "RED")
+
+    demo_script_count = len(script_df)
+
+    red_flags = []
+    yellow_flags = []
+
+    if sterile_fs_bucket(go_live_status) == "RED":
+        red_flags.append("Go-live readiness is RED")
+    elif sterile_fs_bucket(go_live_status) == "YELLOW":
+        yellow_flags.append("Go-live readiness is conditional")
+
+    if sterile_fs_bucket(acceptance_status) == "RED":
+        red_flags.append("Build acceptance has RED checks")
+    elif sterile_fs_bucket(acceptance_status) == "YELLOW":
+        yellow_flags.append("Build acceptance has YELLOW checks")
+
+    if sterile_fs_bucket(smoke_status) == "RED":
+        red_flags.append("Smoke test matrix has RED routes")
+
+    if navigation_missing:
+        red_flags.append(f"Navigation has {navigation_missing} missing route(s)")
+
+    if register_red_count:
+        red_flags.append(f"Register catalog has {register_red_count} RED register(s)")
+
+    if binder_red_count:
+        yellow_flags.append(f"Inspection binder has {binder_red_count} RED binder record(s); acceptable only if demo explains closure workflow")
+
+    if route_health_count == 0:
+        red_flags.append("Route health register is empty")
+
+    if demo_script_count == 0:
+        yellow_flags.append("Demo script register is empty")
+
+    if red_flags:
+        snapshot_status = "RED"
+        recommendation = "Do not present as locked. Resolve RED blockers first."
+    elif yellow_flags:
+        snapshot_status = "YELLOW"
+        recommendation = "Presentation can proceed as conditional if YELLOW items are explained."
+    else:
+        snapshot_status = "GREEN"
+        recommendation = "Presentation lock can be used for demo."
+
+    supporting_routes = "; ".join([
+        "/sterile-compounding/go-live-readiness",
+        "/sterile-compounding/change-control-pack",
+        "/sterile-compounding/build-acceptance",
+        "/sterile-compounding/smoke-test-matrix",
+        "/sterile-compounding/route-health",
+        "/sterile-compounding/register-catalog",
+        "/sterile-compounding/inspection-binder",
+        "/sterile-compounding/demo-script",
+    ])
+
+    snapshot_summary = (
+        f"Snapshot status={snapshot_status}. Go-live={go_live_status} score={go_live_score}. "
+        f"Acceptance={acceptance_status} score={acceptance_score}. Smoke={smoke_status} score={smoke_test_score}. "
+        f"Runtime routes={route_health_count}; navigation registered={navigation_registered}; navigation missing={navigation_missing}; "
+        f"registers={register_count}; register RED={register_red_count}; binders={binder_count}; binder RED={binder_red_count}; demo scripts={demo_script_count}."
+    )
+
+    if red_flags:
+        snapshot_summary += " RED flags: " + "; ".join(red_flags) + "."
+    if yellow_flags:
+        snapshot_summary += " YELLOW flags: " + "; ".join(yellow_flags) + "."
+
+    created_at = sterile_now()
+    snapshot_id = sterile_fs_make_id("ST-FREEZE", created_at, snapshot_status, go_live_score, route_health_count)
+
+    snapshot_payload = {
+        "snapshot_id": snapshot_id,
+        "snapshot_scope": "Compound Sterile AssuranceLayer",
+        "snapshot_status": snapshot_status,
+        "go_live_status": go_live_status,
+        "go_live_score": go_live_score,
+        "acceptance_status": acceptance_status,
+        "acceptance_score": acceptance_score,
+        "smoke_test_status": smoke_status,
+        "smoke_test_score": smoke_test_score,
+        "route_health_count": route_health_count,
+        "navigation_registered": navigation_registered,
+        "navigation_missing": navigation_missing,
+        "register_count": register_count,
+        "register_red_count": register_red_count,
+        "binder_count": binder_count,
+        "binder_red_count": binder_red_count,
+        "demo_script_count": demo_script_count,
+        "snapshot_summary": snapshot_summary,
+        "presentation_recommendation": recommendation,
+        "supporting_routes": supporting_routes,
+        "created_at": created_at,
+    }
+
+    snapshot_payload["snapshot_hash"] = sterile_hash_text(
+        sterile_fs_json.dumps(snapshot_payload, sort_keys=True)
+    )
+
+    snapshot_df = sterile_fs_pd.DataFrame([snapshot_payload])
+    snapshot_df = sterile_ensure_cols(snapshot_df, STERILE_FREEZE_SNAPSHOT_COLUMNS)
+
+    lock_df = sterile_fs_build_lock(snapshot_payload, red_flags, yellow_flags)
+
+    sterile_write_register(STERILE_FREEZE_SNAPSHOT_REGISTER, snapshot_df, STERILE_FREEZE_SNAPSHOT_COLUMNS)
+    sterile_write_register(STERILE_PRESENTATION_LOCK_REGISTER, lock_df, STERILE_PRESENTATION_LOCK_COLUMNS)
+
+    return snapshot_df, lock_df
+
+
+def sterile_fs_build_lock(snapshot_payload, red_flags, yellow_flags):
+    snapshot_id = sterile_fs_safe(snapshot_payload.get("snapshot_id", ""))
+
+    if red_flags:
+        lock_status = "RED"
+        lock_decision = "NOT LOCKED FOR PRESENTATION"
+        go_condition = "NO-GO"
+        required_action = "Resolve RED blockers, rebuild go-live readiness, then regenerate freeze snapshot."
+    elif yellow_flags:
+        lock_status = "YELLOW"
+        lock_decision = "CONDITIONALLY LOCKED FOR PRESENTATION"
+        go_condition = "CONDITIONAL GO"
+        required_action = "Presenter must explain YELLOW items and position demo as conditional evidence/closure workflow."
+    else:
+        lock_status = "GREEN"
+        lock_decision = "LOCKED FOR PRESENTATION"
+        go_condition = "GO"
+        required_action = "Proceed with demo using the recommended opening route."
+
+    safe_script = (
+        "Open the Sterile Home, then Executive Brief, then Inspection Binder for CSP-001, "
+        "then Master Assurance, Regulatory Crosswalk, Closure Simulator, Route Health, and Go-Live Readiness."
+    )
+
+    payload = {
+        "lock_id": sterile_fs_make_id("ST-PLOCK", snapshot_id, lock_status),
+        "snapshot_id": snapshot_id,
+        "lock_status": lock_status,
+        "lock_decision": lock_decision,
+        "go_condition": go_condition,
+        "conditional_items": "; ".join(yellow_flags) if yellow_flags else "None",
+        "blocked_items": "; ".join(red_flags) if red_flags else "None",
+        "required_presenter_action": required_action,
+        "recommended_opening_route": "/sterile-compounding",
+        "recommended_demo_record": "CSP-001",
+        "safe_demo_script": safe_script,
+        "rollback_reference": "Use the latest stable-before/stable-working git tags if rollback is required.",
+        "created_at": sterile_now(),
+    }
+
+    payload["lock_hash"] = sterile_hash_text(
+        sterile_fs_json.dumps(payload, sort_keys=True)
+    )
+
+    lock_df = sterile_fs_pd.DataFrame([payload])
+    lock_df = sterile_ensure_cols(lock_df, STERILE_PRESENTATION_LOCK_COLUMNS)
+
+    return lock_df
+
+
+@app.route("/sterile-compounding/freeze-snapshot")
+def sterile_compounding_freeze_snapshot():
+    snapshot_df, lock_df = sterile_fs_build_snapshot()
+
+    snapshot = snapshot_df.iloc[0].to_dict() if not snapshot_df.empty else {}
+    lock = lock_df.iloc[0].to_dict() if not lock_df.empty else {}
+
+    detail_rows = ""
+    for key in STERILE_FREEZE_SNAPSHOT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_fs_safe(snapshot.get(key, ""))
+
+        if key in ["snapshot_status", "go_live_status", "acceptance_status", "smoke_test_status"]:
+            value = sterile_fs_badge(value)
+        elif key == "snapshot_hash":
+            value = f"<code>{value}</code>"
+        elif key == "supporting_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    lock_status = sterile_fs_safe(lock.get("lock_status", "YELLOW"))
+    lock_decision = sterile_fs_safe(lock.get("lock_decision", "Presentation lock not available."))
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Freeze Snapshot</h1>
+        <p>
+            Current sterile vertical snapshot for presentation readiness. This is a governance/demo freeze,
+            not a technical deployment freeze or QA release.
+        </p>
+        <div style="margin-top:16px;">{sterile_fs_badge(lock_status)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">{lock_decision}</div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Go-Live</div><div class="st-value">{sterile_fs_safe(snapshot.get("go_live_status", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Go-Live Score</div><div class="st-value">{sterile_fs_safe(snapshot.get("go_live_score", ""))}%</div></div>
+        <div class="st-card"><div class="st-label">Acceptance</div><div class="st-value">{sterile_fs_safe(snapshot.get("acceptance_status", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Smoke</div><div class="st-value">{sterile_fs_safe(snapshot.get("smoke_test_status", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Routes</div><div class="st-value">{sterile_fs_safe(snapshot.get("route_health_count", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Registers</div><div class="st-value">{sterile_fs_safe(snapshot.get("register_count", ""))}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Snapshot Actions</h2>
+        <a class="st-button" href="/sterile-compounding/presentation-lock">Presentation Lock</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/build-acceptance">Build Acceptance</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/freeze-snapshot/export">Export Snapshot</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Freeze Snapshot Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            sterile_fs_safe(snapshot.get("snapshot_id", "FREEZE-SNAPSHOT")),
+            "STERILE_FREEZE_SNAPSHOT_VIEW",
+            "Sterile freeze snapshot viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/freeze-snapshot",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Freeze Snapshot", body)
+
+
+@app.route("/sterile-compounding/freeze-snapshot/<snapshot_id>")
+def sterile_compounding_freeze_snapshot_detail(snapshot_id):
+    snapshot_df, lock_df = sterile_fs_build_snapshot()
+    snapshot_id = sterile_fs_safe(snapshot_id)
+
+    match = snapshot_df[snapshot_df["snapshot_id"].astype(str) == str(snapshot_id)].copy() if not snapshot_df.empty else snapshot_df
+
+    if match.empty:
+        return sterile_fs_Response("Freeze snapshot not found. Open /sterile-compounding/freeze-snapshot to generate the latest snapshot.", status=404)
+
+    snapshot = match.iloc[0].to_dict()
+
+    rows = ""
+    for key in STERILE_FREEZE_SNAPSHOT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_fs_safe(snapshot.get(key, ""))
+
+        if key == "snapshot_hash":
+            value = f"<code>{value}</code>"
+
+        rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Freeze Snapshot Detail</h1>
+        <p>{snapshot_id}</p>
+        <div style="margin-top:16px;">{sterile_fs_badge(snapshot.get("snapshot_status", ""))}</div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Snapshot Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/freeze-snapshot">Latest Freeze Snapshot</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/presentation-lock">Presentation Lock</a>
+    </div>
+    """
+
+    return sterile_page_shell(f"Freeze Snapshot - {snapshot_id}", body)
+
+
+@app.route("/sterile-compounding/presentation-lock")
+def sterile_compounding_presentation_lock():
+    snapshot_df, lock_df = sterile_fs_build_snapshot()
+
+    lock = lock_df.iloc[0].to_dict() if not lock_df.empty else {}
+
+    rows = ""
+    for key in STERILE_PRESENTATION_LOCK_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_fs_safe(lock.get(key, ""))
+
+        if key == "lock_status":
+            value = sterile_fs_badge(value)
+        elif key == "lock_hash":
+            value = f"<code>{value}</code>"
+        elif key == "recommended_opening_route":
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Presentation Lock</h1>
+        <p>
+            Final sterile demo/presentation lock. Use this before showing the vertical to leadership or reviewers.
+        </p>
+        <div style="margin-top:16px;">{sterile_fs_badge(lock.get("lock_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_fs_safe(lock.get("lock_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Presenter Action</h2>
+        <p><b>Go Condition:</b> {sterile_fs_safe(lock.get("go_condition", ""))}</p>
+        <p><b>Required Action:</b> {sterile_fs_safe(lock.get("required_presenter_action", ""))}</p>
+        <p><b>Safe Demo Script:</b> {sterile_fs_safe(lock.get("safe_demo_script", ""))}</p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Presentation Lock Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding">Open Sterile Home</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/freeze-snapshot">Freeze Snapshot</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/presentation-lock/export">Export Lock</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            sterile_fs_safe(lock.get("lock_id", "PRESENTATION-LOCK")),
+            "STERILE_PRESENTATION_LOCK_VIEW",
+            "Sterile presentation lock viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/presentation-lock",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Presentation Lock", body)
+
+
+@app.route("/sterile-compounding/freeze-snapshot/export")
+def sterile_compounding_freeze_snapshot_export():
+    snapshot_df, lock_df = sterile_fs_build_snapshot()
+
+    if snapshot_df.empty:
+        snapshot_df = sterile_fs_pd.DataFrame(columns=STERILE_FREEZE_SNAPSHOT_COLUMNS)
+
+    csv_data = snapshot_df.to_csv(index=False)
+
+    return sterile_fs_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_freeze_snapshot_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/presentation-lock/export")
+def sterile_compounding_presentation_lock_export():
+    snapshot_df, lock_df = sterile_fs_build_snapshot()
+
+    if lock_df.empty:
+        lock_df = sterile_fs_pd.DataFrame(columns=STERILE_PRESENTATION_LOCK_COLUMNS)
+
+    csv_data = lock_df.to_csv(index=False)
+
+    return sterile_fs_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_presentation_lock_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_freeze_snapshot_dashboard_injection(response):
+    try:
+        if sterile_fs_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/change-control-pack",
+            "/sterile-compounding/build-acceptance",
+            "/sterile-compounding/smoke-test-matrix",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/demo-script",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-freeze-snapshot-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-freeze-snapshot-panel">
+            <h2>Freeze Snapshot + Presentation Lock</h2>
+            <p class="st-note">
+                Captures the current sterile vertical state and provides a final GO / CONDITIONAL GO / NO-GO
+                presentation lock for demo readiness.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/freeze-snapshot">Freeze Snapshot</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/presentation-lock">Presentation Lock</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/freeze-snapshot/export">Export Snapshot</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/presentation-lock/export">Export Lock</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile freeze snapshot dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
