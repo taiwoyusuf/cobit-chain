@@ -34595,5 +34595,1112 @@ def sterile_compounding_equipment_room_dashboard_injection(response):
         print(f"Sterile equipment/room dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_MASTER_ASSURANCE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 22: Master Assurance Index + Composite No-Release Gate
+#
+# New Routes:
+#   /sterile-compounding/master-assurance-index
+#   /sterile-compounding/master-assurance/<record_id>
+#   /sterile-compounding/master-assurance/export
+#   /sterile-compounding/no-release-composite
+#   /sterile-compounding/no-release-composite/export
+#
+# New Registers:
+#   sterile_compounding_master_assurance_register.csv
+#   sterile_compounding_no_release_composite_register.csv
+#
+# Boundary:
+#   This is a governance assurance index. It does not perform formal
+#   pharmacy release, product disposition, QA approval, QMS approval,
+#   or validated-system replacement. It does not touch protected
+#   Manufacturing/Wole, ServiceNow, Entra, CI Candidate Factory,
+#   CI Review Board, CI Submission Pack, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   Platform Health, or existing routes.
+# ============================================================
+
+try:
+    import pandas as sterile_ma_pd
+    import json as sterile_ma_json
+    from flask import request as sterile_ma_request
+    from flask import Response as sterile_ma_Response
+except Exception as sterile_ma_import_error:
+    raise RuntimeError(f"Sterile master assurance import failed: {sterile_ma_import_error}")
+
+
+STERILE_MASTER_ASSURANCE_REGISTER = "sterile_compounding_master_assurance_register.csv"
+STERILE_NO_RELEASE_COMPOSITE_REGISTER = "sterile_compounding_no_release_composite_register.csv"
+
+STERILE_MASTER_ASSURANCE_COLUMNS = [
+    "assurance_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "csp_category",
+    "hazardous_drug",
+    "governance_status",
+    "readiness_score",
+    "release_decision",
+    "evidence_matrix_status",
+    "evidence_missing",
+    "evidence_rejected",
+    "evidence_pending",
+    "audit_pack_status",
+    "audit_pack_score",
+    "signoff_status",
+    "seal_health_status",
+    "latest_seal_verification",
+    "custody_audit_status",
+    "sop_drift_status",
+    "personnel_drift_status",
+    "equipment_room_drift_status",
+    "prework_gate_status",
+    "environmental_drift_status",
+    "regulatory_impact_status",
+    "deviation_signal",
+    "critical_blocker_count",
+    "review_signal_count",
+    "master_assurance_status",
+    "master_assurance_score",
+    "master_assurance_decision",
+    "no_release_flag",
+    "risk_summary",
+    "recommended_action",
+    "source_routes",
+    "last_checked",
+    "master_assurance_hash"
+]
+
+STERILE_NO_RELEASE_COMPOSITE_COLUMNS = [
+    "gate_id",
+    "record_id",
+    "csp_name",
+    "gate_status",
+    "gate_decision",
+    "critical_blocker_count",
+    "review_signal_count",
+    "blocker_summary",
+    "conditional_summary",
+    "required_closure_action",
+    "linked_master_assurance_status",
+    "linked_master_assurance_score",
+    "source_routes",
+    "last_checked",
+    "gate_hash"
+]
+
+
+def sterile_ma_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile master assurance dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ma_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ma_lower(value):
+    return sterile_ma_safe(value).lower()
+
+
+def sterile_ma_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_ma_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ma_status_badge(status):
+    status = sterile_ma_safe(status).upper()
+
+    if status in ["GREEN", "GO", "PASS", "READY", "APPROVED", "HASH MATCH"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "PENDING", "NO VERIFICATION", "NO BASELINE", "UNKNOWN"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAIL", "FAILED", "HASH MISMATCH", "HOLD"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ma_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_ma_pd.DataFrame(columns=columns)
+
+
+def sterile_ma_build_or_read(builder_name, register_name, columns_global_name):
+    try:
+        builder = globals().get(builder_name)
+        if callable(builder):
+            df = builder()
+            if df is not None and hasattr(df, "columns"):
+                return df.fillna("")
+    except Exception as exc:
+        print(f"Master assurance optional builder skipped: {builder_name}: {exc}")
+
+    return sterile_ma_read_optional(register_name, columns_global_name)
+
+
+def sterile_ma_support():
+    return {
+        "evidence_matrix": sterile_ma_build_or_read(
+            "sterile_mx_build_matrix",
+            "sterile_compounding_evidence_matrix_register.csv",
+            "STERILE_EVIDENCE_MATRIX_COLUMNS"
+        ),
+        "audit_pack": sterile_ma_build_or_read(
+            "sterile_pack_build_register",
+            "sterile_compounding_audit_pack_register.csv",
+            "STERILE_AUDIT_PACK_COLUMNS"
+        ),
+        "signoffs": sterile_ma_read_optional(
+            "sterile_compounding_signoff_register.csv",
+            "STERILE_SIGNOFF_COLUMNS"
+        ),
+        "seal_health": sterile_ma_build_or_read(
+            "sterile_sh_build_health",
+            "sterile_compounding_seal_health_register.csv",
+            "STERILE_SEAL_HEALTH_COLUMNS"
+        ),
+        "custody_audit": sterile_ma_build_or_read(
+            "sterile_cal_build_link",
+            "sterile_compounding_custody_audit_link_register.csv",
+            "STERILE_CUSTODY_AUDIT_LINK_COLUMNS"
+        ),
+        "sop_drift": sterile_ma_build_or_read(
+            "sterile_sop_build_drift",
+            "sterile_compounding_sop_drift_register.csv",
+            "STERILE_SOP_DRIFT_COLUMNS"
+        ),
+        "personnel_drift": sterile_ma_build_or_read(
+            "sterile_pc_build_drift",
+            "sterile_compounding_personnel_drift_register.csv",
+            "STERILE_PERSONNEL_DRIFT_COLUMNS"
+        ),
+        "equipment_room_drift": sterile_ma_build_or_read(
+            "sterile_er_build_drift",
+            "sterile_compounding_equipment_room_drift_register.csv",
+            "STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS"
+        ),
+        "prework_gate": sterile_ma_build_or_read(
+            "sterile_prework_build_gate",
+            "sterile_compounding_prework_gate_register.csv",
+            "STERILE_PREWORK_GATE_COLUMNS"
+        ),
+        "environmental_drift": sterile_ma_build_or_read(
+            "sterile_drift_build_register",
+            "sterile_compounding_environmental_drift_register.csv",
+            "STERILE_ENV_DRIFT_COLUMNS"
+        ),
+        "regulatory_impact": sterile_ma_build_or_read(
+            "sterile_ent_build_regwatch_impacts",
+            "sterile_compounding_regulatory_impact_register.csv",
+            "STERILE_REGWATCH_IMPACT_COLUMNS"
+        ),
+    }
+
+
+def sterile_ma_latest(df, record_id, timestamp_col=None):
+    if df is None or df.empty or "record_id" not in df.columns:
+        return {}
+
+    match = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return {}
+
+    if timestamp_col and timestamp_col in match.columns:
+        try:
+            match = match.sort_values(by=timestamp_col, ascending=False)
+        except Exception:
+            pass
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_ma_status_from_row(df, record_id, status_col, timestamp_col=None, default="UNKNOWN"):
+    row = sterile_ma_latest(df, record_id, timestamp_col)
+
+    if not row:
+        return default
+
+    return sterile_ma_safe(row.get(status_col, default)) or default
+
+
+def sterile_ma_evidence_summary(matrix_df, record_id):
+    if matrix_df is None or matrix_df.empty or "record_id" not in matrix_df.columns:
+        return {
+            "status": "UNKNOWN",
+            "missing": 0,
+            "rejected": 0,
+            "pending": 0,
+        }
+
+    rows = matrix_df[matrix_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if rows.empty or "evidence_status" not in rows.columns:
+        return {
+            "status": "UNKNOWN",
+            "missing": 0,
+            "rejected": 0,
+            "pending": 0,
+        }
+
+    statuses = rows["evidence_status"].astype(str).str.upper()
+
+    missing = int((statuses == "MISSING").sum())
+    rejected = int((statuses == "REJECTED").sum())
+    pending = int((statuses == "PRESENT_PENDING").sum())
+
+    if missing or rejected:
+        status = "RED"
+    elif pending:
+        status = "YELLOW"
+    else:
+        status = "GREEN"
+
+    return {
+        "status": status,
+        "missing": missing,
+        "rejected": rejected,
+        "pending": pending,
+    }
+
+
+def sterile_ma_regulatory_status(reg_df, record_id):
+    if reg_df is None or reg_df.empty:
+        return "GREEN"
+
+    if "record_id" in reg_df.columns:
+        rows = reg_df[reg_df["record_id"].astype(str) == str(record_id)].copy()
+    elif "impacted_record_id" in reg_df.columns:
+        rows = reg_df[reg_df["impacted_record_id"].astype(str) == str(record_id)].copy()
+    else:
+        return "GREEN"
+
+    if rows.empty:
+        return "GREEN"
+
+    for col in ["impact_status", "risk_status", "watch_status", "severity"]:
+        if col in rows.columns:
+            values = rows[col].astype(str).str.upper().tolist()
+            if any(v in ["RED", "CRITICAL", "HIGH", "BLOCKED"] for v in values):
+                return "RED"
+            if any(v in ["YELLOW", "MEDIUM", "REVIEW", "PENDING"] for v in values):
+                return "YELLOW"
+
+    return "YELLOW"
+
+
+def sterile_ma_prework_status(prework_df, record_id):
+    if prework_df is None or prework_df.empty:
+        return "UNKNOWN"
+
+    row = sterile_ma_latest(prework_df, record_id, "last_checked")
+
+    if not row:
+        return "UNKNOWN"
+
+    for col in ["gate_status", "prework_status", "start_gate_status"]:
+        if col in row and sterile_ma_safe(row.get(col, "")):
+            return sterile_ma_safe(row.get(col, ""))
+
+    return "UNKNOWN"
+
+
+def sterile_ma_env_drift_status(env_df, record_id):
+    if env_df is None or env_df.empty:
+        return "UNKNOWN"
+
+    row = sterile_ma_latest(env_df, record_id, "last_checked")
+
+    if not row:
+        return "UNKNOWN"
+
+    for col in ["drift_status", "environmental_drift_status", "env_drift_status", "risk_status"]:
+        if col in row and sterile_ma_safe(row.get(col, "")):
+            return sterile_ma_safe(row.get(col, ""))
+
+    return "UNKNOWN"
+
+
+def sterile_ma_latest_signoff_status(sign_df, record_id):
+    if sign_df is None or sign_df.empty or "record_id" not in sign_df.columns:
+        return "NO SIGNOFF"
+
+    rows = sign_df[sign_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if rows.empty:
+        return "NO SIGNOFF"
+
+    if "signed_timestamp" in rows.columns:
+        try:
+            rows = rows.sort_values(by="signed_timestamp", ascending=False)
+        except Exception:
+            pass
+
+    row = rows.iloc[0].to_dict()
+
+    return sterile_ma_safe(row.get("signoff_status", "")) or sterile_ma_safe(row.get("review_decision", "")) or "YELLOW"
+
+
+def sterile_ma_add_signal(label, status, criticals, reviews, risk_parts):
+    status_u = sterile_ma_safe(status).upper()
+
+    if status_u in ["RED", "FAILED", "FAIL", "BLOCK", "BLOCKED", "HOLD", "HASH MISMATCH", "NO-GO", "REJECTED"]:
+        criticals.append(label)
+        risk_parts.append(f"{label}: RED/BLOCK")
+    elif status_u in ["YELLOW", "REVIEW", "PENDING", "CONDITIONAL", "NO VERIFICATION", "NO BASELINE", "NO SIGNOFF", "UNKNOWN"]:
+        reviews.append(label)
+        risk_parts.append(f"{label}: REVIEW")
+
+
+def sterile_ma_build_one(csp, support):
+    record_id = sterile_ma_safe(csp.get("record_id", ""))
+    evidence = sterile_ma_evidence_summary(support["evidence_matrix"], record_id)
+
+    audit_row = sterile_ma_latest(support["audit_pack"], record_id, "created_at")
+    audit_pack_status = sterile_ma_safe(audit_row.get("audit_pack_status", "UNKNOWN")) or "UNKNOWN"
+    audit_pack_score = sterile_ma_numeric(audit_row.get("audit_pack_score", 0), 0)
+
+    signoff_status = sterile_ma_latest_signoff_status(support["signoffs"], record_id)
+
+    seal_row = sterile_ma_latest(support["seal_health"], record_id, "last_checked")
+    seal_health_status = sterile_ma_safe(seal_row.get("seal_health_status", "UNKNOWN")) or "UNKNOWN"
+    latest_seal_verification = sterile_ma_safe(seal_row.get("latest_verification_status", "UNKNOWN")) or "UNKNOWN"
+
+    custody_audit_status = sterile_ma_status_from_row(
+        support["custody_audit"], record_id, "custody_audit_status", "last_checked"
+    )
+    sop_drift_status = sterile_ma_status_from_row(
+        support["sop_drift"], record_id, "drift_status", "last_checked"
+    )
+    personnel_drift_status = sterile_ma_status_from_row(
+        support["personnel_drift"], record_id, "drift_status", "last_checked"
+    )
+    equipment_room_drift_status = sterile_ma_status_from_row(
+        support["equipment_room_drift"], record_id, "drift_status", "last_checked"
+    )
+
+    prework_gate_status = sterile_ma_prework_status(support["prework_gate"], record_id)
+    environmental_drift_status = sterile_ma_env_drift_status(support["environmental_drift"], record_id)
+    regulatory_impact_status = sterile_ma_regulatory_status(support["regulatory_impact"], record_id)
+
+    governance_status = sterile_ma_safe(csp.get("governance_status", "UNKNOWN")) or "UNKNOWN"
+    readiness_score = sterile_ma_numeric(csp.get("readiness_score", 0), 0)
+    release_decision = sterile_ma_safe(csp.get("release_decision", ""))
+    deviation_signal = sterile_ma_safe(csp.get("deviation_open", ""))
+
+    criticals = []
+    reviews = []
+    risk_parts = []
+
+    sterile_ma_add_signal("CSP governance", governance_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Evidence matrix", evidence["status"], criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Audit pack", audit_pack_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Governance sign-off", signoff_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Dossier seal health", seal_health_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Latest seal verification", latest_seal_verification, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Custody audit-link", custody_audit_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("SOP/formula drift", sop_drift_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Personnel drift", personnel_drift_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Equipment/room drift", equipment_room_drift_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Pre-work gate", prework_gate_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Environmental drift", environmental_drift_status, criticals, reviews, risk_parts)
+    sterile_ma_add_signal("Regulatory impact", regulatory_impact_status, criticals, reviews, risk_parts)
+
+    if evidence["missing"]:
+        criticals.append("Missing required evidence")
+        risk_parts.append(f"Missing evidence requirements: {evidence['missing']}")
+
+    if evidence["rejected"]:
+        criticals.append("Rejected evidence")
+        risk_parts.append(f"Rejected evidence requirements: {evidence['rejected']}")
+
+    if evidence["pending"]:
+        reviews.append("Pending evidence review")
+        risk_parts.append(f"Pending evidence requirements: {evidence['pending']}")
+
+    if sterile_ma_lower(deviation_signal) in ["yes", "true", "open", "critical"]:
+        criticals.append("Open deviation")
+        risk_parts.append("Open deviation signal")
+
+    if readiness_score and readiness_score < 60:
+        criticals.append("Low readiness score")
+        risk_parts.append(f"Readiness score below 60: {readiness_score}")
+    elif readiness_score and readiness_score < 90:
+        reviews.append("Readiness score below clean threshold")
+        risk_parts.append(f"Readiness score below 90: {readiness_score}")
+
+    score = 100
+    score -= len(criticals) * 9
+    score -= len(reviews) * 3
+
+    if readiness_score:
+        score = min(score, readiness_score if readiness_score < 100 else score)
+
+    if audit_pack_score:
+        score = min(score, audit_pack_score if audit_pack_score < 100 else score)
+
+    score = max(0, min(100, int(score)))
+
+    critical_count = len(criticals)
+    review_count = len(reviews)
+
+    if critical_count > 0 or score < 60:
+        master_status = "RED"
+        decision = "NO-GO: MASTER ASSURANCE BLOCKERS REQUIRE CLOSURE"
+        no_release_flag = "YES"
+        recommended_action = "Close critical blockers before governance reliance. Review evidence, audit pack, sign-off, seal, custody, SOP, personnel, equipment/room, environmental, and regulatory signals."
+    elif review_count > 0 or score < 90:
+        master_status = "YELLOW"
+        decision = "CONDITIONAL: REVIEW REQUIRED BEFORE FINAL RELIANCE"
+        no_release_flag = "CONDITIONAL"
+        recommended_action = "Resolve review signals or document conditional rationale before relying on dossier."
+    else:
+        master_status = "GREEN"
+        decision = "GO: MASTER ASSURANCE ACCEPTABLE FROM GOVERNANCE VIEW"
+        no_release_flag = "NO"
+        recommended_action = "No master assurance action required."
+
+    source_routes = [
+        f"/sterile-compounding/passport/{record_id}",
+        f"/sterile-compounding/evidence-matrix/{record_id}",
+        f"/sterile-compounding/audit-pack/{record_id}",
+        f"/sterile-compounding/release-dossier/{record_id}",
+        f"/sterile-compounding/signoff/{record_id}",
+        f"/sterile-compounding/seal/{record_id}",
+        f"/sterile-compounding/custody/{record_id}",
+        "/sterile-compounding/sop-drift",
+        "/sterile-compounding/personnel-drift",
+        "/sterile-compounding/equipment-room-drift",
+    ]
+
+    payload = {
+        "assurance_id": sterile_ma_make_id("ST-MAI", record_id, master_status, score),
+        "record_id": record_id,
+        "csp_name": sterile_ma_safe(csp.get("csp_name", "")),
+        "batch_or_rx_id": sterile_ma_safe(csp.get("batch_or_rx_id", "")),
+        "facility_type": sterile_ma_safe(csp.get("facility_type", "")),
+        "csp_category": sterile_ma_safe(csp.get("csp_category", "")),
+        "hazardous_drug": sterile_ma_safe(csp.get("hazardous_drug", "")),
+        "governance_status": governance_status,
+        "readiness_score": sterile_ma_safe(csp.get("readiness_score", "")),
+        "release_decision": release_decision,
+        "evidence_matrix_status": evidence["status"],
+        "evidence_missing": evidence["missing"],
+        "evidence_rejected": evidence["rejected"],
+        "evidence_pending": evidence["pending"],
+        "audit_pack_status": audit_pack_status,
+        "audit_pack_score": audit_pack_score,
+        "signoff_status": signoff_status,
+        "seal_health_status": seal_health_status,
+        "latest_seal_verification": latest_seal_verification,
+        "custody_audit_status": custody_audit_status,
+        "sop_drift_status": sop_drift_status,
+        "personnel_drift_status": personnel_drift_status,
+        "equipment_room_drift_status": equipment_room_drift_status,
+        "prework_gate_status": prework_gate_status,
+        "environmental_drift_status": environmental_drift_status,
+        "regulatory_impact_status": regulatory_impact_status,
+        "deviation_signal": deviation_signal,
+        "critical_blocker_count": critical_count,
+        "review_signal_count": review_count,
+        "master_assurance_status": master_status,
+        "master_assurance_score": score,
+        "master_assurance_decision": decision,
+        "no_release_flag": no_release_flag,
+        "risk_summary": "; ".join(risk_parts) if risk_parts else "No material master assurance risk signal detected.",
+        "recommended_action": recommended_action,
+        "source_routes": "; ".join(source_routes),
+        "last_checked": sterile_now(),
+    }
+
+    payload["master_assurance_hash"] = sterile_hash_text(
+        sterile_ma_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_ma_build_register():
+    sterile_ma_require_phase1()
+
+    csp_df = sterile_prepare_dashboard_df()
+    support = sterile_ma_support()
+
+    if csp_df is None or csp_df.empty:
+        empty_df = sterile_ma_pd.DataFrame(columns=STERILE_MASTER_ASSURANCE_COLUMNS)
+        sterile_write_register(STERILE_MASTER_ASSURANCE_REGISTER, empty_df, STERILE_MASTER_ASSURANCE_COLUMNS)
+        sterile_ma_build_no_release(empty_df)
+        return empty_df
+
+    rows = []
+
+    for _, csp in csp_df.iterrows():
+        rows.append(sterile_ma_build_one(csp.to_dict(), support))
+
+    master_df = sterile_ma_pd.DataFrame(rows)
+    master_df = sterile_ensure_cols(master_df, STERILE_MASTER_ASSURANCE_COLUMNS)
+    sterile_write_register(STERILE_MASTER_ASSURANCE_REGISTER, master_df, STERILE_MASTER_ASSURANCE_COLUMNS)
+
+    sterile_ma_build_no_release(master_df)
+
+    return master_df
+
+
+def sterile_ma_build_no_release(master_df=None):
+    if master_df is None:
+        master_df = sterile_ma_build_register()
+
+    if master_df is None or master_df.empty:
+        empty_df = sterile_ma_pd.DataFrame(columns=STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+        sterile_write_register(STERILE_NO_RELEASE_COMPOSITE_REGISTER, empty_df, STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, row in master_df.iterrows():
+        record_id = sterile_ma_safe(row.get("record_id", ""))
+        status = sterile_ma_safe(row.get("master_assurance_status", "YELLOW")).upper()
+        no_release_flag = sterile_ma_safe(row.get("no_release_flag", "CONDITIONAL"))
+
+        if status == "RED" or no_release_flag == "YES":
+            gate_status = "RED"
+            gate_decision = "NO RELEASE / DO NOT RELY UNTIL BLOCKERS ARE CLOSED"
+            required_action = "Close critical blockers and rebuild master assurance index."
+        elif status == "YELLOW" or no_release_flag == "CONDITIONAL":
+            gate_status = "YELLOW"
+            gate_decision = "CONDITIONAL HOLD / REVIEW REQUIRED BEFORE RELIANCE"
+            required_action = "Document review rationale, close review items, or accept conditional governance reliance."
+        else:
+            gate_status = "GREEN"
+            gate_decision = "NO COMPOSITE RELEASE BLOCK FROM GOVERNANCE VIEW"
+            required_action = "No composite gate action required."
+
+        blockers = []
+        conditionals = []
+
+        for label, col in [
+            ("CSP governance", "governance_status"),
+            ("Evidence matrix", "evidence_matrix_status"),
+            ("Audit pack", "audit_pack_status"),
+            ("Sign-off", "signoff_status"),
+            ("Seal health", "seal_health_status"),
+            ("Seal verification", "latest_seal_verification"),
+            ("Custody", "custody_audit_status"),
+            ("SOP/formula", "sop_drift_status"),
+            ("Personnel", "personnel_drift_status"),
+            ("Equipment/room", "equipment_room_drift_status"),
+            ("Prework", "prework_gate_status"),
+            ("Environmental", "environmental_drift_status"),
+            ("Regulatory", "regulatory_impact_status"),
+        ]:
+            value = sterile_ma_safe(row.get(col, "")).upper()
+            if value in ["RED", "FAILED", "FAIL", "BLOCKED", "BLOCK", "HOLD", "HASH MISMATCH", "NO-GO", "REJECTED"]:
+                blockers.append(f"{label}: {value}")
+            elif value in ["YELLOW", "REVIEW", "PENDING", "CONDITIONAL", "NO VERIFICATION", "NO BASELINE", "NO SIGNOFF", "UNKNOWN"]:
+                conditionals.append(f"{label}: {value}")
+
+        payload = {
+            "gate_id": sterile_ma_make_id("ST-NRG", record_id, gate_status),
+            "record_id": record_id,
+            "csp_name": sterile_ma_safe(row.get("csp_name", "")),
+            "gate_status": gate_status,
+            "gate_decision": gate_decision,
+            "critical_blocker_count": sterile_ma_safe(row.get("critical_blocker_count", "")),
+            "review_signal_count": sterile_ma_safe(row.get("review_signal_count", "")),
+            "blocker_summary": "; ".join(blockers) if blockers else "No critical blockers detected.",
+            "conditional_summary": "; ".join(conditionals) if conditionals else "No conditional review signals detected.",
+            "required_closure_action": required_action,
+            "linked_master_assurance_status": sterile_ma_safe(row.get("master_assurance_status", "")),
+            "linked_master_assurance_score": sterile_ma_safe(row.get("master_assurance_score", "")),
+            "source_routes": "; ".join([
+                f"/sterile-compounding/master-assurance/{record_id}",
+                f"/sterile-compounding/audit-pack/{record_id}",
+                f"/sterile-compounding/release-dossier/{record_id}",
+                f"/sterile-compounding/signoff/{record_id}",
+                f"/sterile-compounding/seal/{record_id}",
+            ]),
+            "last_checked": sterile_now(),
+        }
+
+        payload["gate_hash"] = sterile_hash_text(
+            sterile_ma_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    gate_df = sterile_ma_pd.DataFrame(rows)
+    gate_df = sterile_ensure_cols(gate_df, STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+    sterile_write_register(STERILE_NO_RELEASE_COMPOSITE_REGISTER, gate_df, STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+
+    return gate_df
+
+
+@app.route("/sterile-compounding/master-assurance-index")
+def sterile_compounding_master_assurance_index():
+    master_df = sterile_ma_build_register()
+
+    status_filter = sterile_ma_safe(sterile_ma_request.args.get("status", ""))
+    filtered = master_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["master_assurance_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["master_assurance_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["master_assurance_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["master_assurance_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_ma_pd.to_numeric(filtered["master_assurance_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["master_assurance_status", "master_assurance_score"], ascending=[False, True]).iterrows():
+            rid = sterile_ma_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ma_status_badge(row.get("master_assurance_status", ""))}</td>
+                <td><a href="/sterile-compounding/master-assurance/{rid}">{rid}</a></td>
+                <td>{sterile_ma_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_ma_safe(row.get("master_assurance_score", ""))}</td>
+                <td>{sterile_ma_safe(row.get("no_release_flag", ""))}</td>
+                <td>{sterile_ma_safe(row.get("critical_blocker_count", ""))}</td>
+                <td>{sterile_ma_safe(row.get("review_signal_count", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("evidence_matrix_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("signoff_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("seal_health_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("custody_audit_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("sop_drift_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("personnel_drift_status", ""))}</td>
+                <td>{sterile_ma_status_badge(row.get("equipment_room_drift_status", ""))}</td>
+                <td>{sterile_ma_safe(row.get("master_assurance_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="16" style="text-align:center; padding:24px; color:#6b7280;">
+                No master assurance rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Master Assurance Index</h1>
+        <p>
+            Final sterile governance index across CSP readiness, evidence matrix, audit pack, sign-off,
+            cryptographic seal, custody, SOP/formula, personnel competency, equipment/room readiness,
+            pre-work, environmental drift, and regulatory impact.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Assurance Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Master Assurance Filters</h2>
+        <form method="GET" action="/sterile-compounding/master-assurance-index">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Master Assurance Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance-index">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite">Composite No-Release Gate</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/export">Export Master Assurance</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Master Assurance Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>No-Release</th>
+                        <th>Critical</th>
+                        <th>Review</th>
+                        <th>Evidence</th>
+                        <th>Audit</th>
+                        <th>Sign-Off</th>
+                        <th>Seal</th>
+                        <th>Custody</th>
+                        <th>SOP</th>
+                        <th>Personnel</th>
+                        <th>Equipment</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MASTER-ASSURANCE",
+            "STERILE_MASTER_ASSURANCE_INDEX_VIEW",
+            "Sterile master assurance index viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/master-assurance-index",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Master Assurance Index", body)
+
+
+@app.route("/sterile-compounding/master-assurance/<record_id>")
+def sterile_compounding_master_assurance_record(record_id):
+    master_df = sterile_ma_build_register()
+    record_id = sterile_ma_safe(record_id)
+
+    match = master_df[master_df["record_id"].astype(str) == str(record_id)] if not master_df.empty else master_df
+
+    if match.empty:
+        return sterile_ma_Response("Master assurance record not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+
+    detail_rows = ""
+    for key in STERILE_MASTER_ASSURANCE_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ma_safe(row.get(key, ""))
+
+        if key == "master_assurance_status":
+            value = sterile_ma_status_badge(value)
+        elif key == "master_assurance_hash":
+            value = f"<code>{value}</code>"
+        elif key == "source_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Master Assurance Passport: {record_id}</h1>
+        <p>
+            Full composite assurance record for this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_ma_status_badge(row.get("master_assurance_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ma_safe(row.get("master_assurance_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Master Assurance Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/no-release-composite">Composite No-Release Gate</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/audit-pack/{record_id}">Audit Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/release-dossier/{record_id}">Release Dossier</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/signoff/{record_id}">Sign-Off</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/seal/{record_id}">Dossier Seal</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance-index">Back to Master Index</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_MASTER_ASSURANCE_RECORD_VIEW",
+            "Record-level master assurance passport viewed",
+            actor="system",
+            source_route="/sterile-compounding/master-assurance/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Master Assurance - {record_id}", body)
+
+
+@app.route("/sterile-compounding/no-release-composite")
+def sterile_compounding_no_release_composite():
+    master_df = sterile_ma_build_register()
+    gate_df = sterile_ma_build_no_release(master_df)
+
+    status_filter = sterile_ma_safe(sterile_ma_request.args.get("status", ""))
+    filtered = gate_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["gate_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["gate_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["gate_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["gate_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Gate Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["gate_status", "critical_blocker_count"], ascending=[False, False]).iterrows():
+            rid = sterile_ma_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ma_status_badge(row.get("gate_status", ""))}</td>
+                <td><a href="/sterile-compounding/master-assurance/{rid}">{rid}</a></td>
+                <td>{sterile_ma_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_ma_safe(row.get("linked_master_assurance_score", ""))}</td>
+                <td>{sterile_ma_safe(row.get("critical_blocker_count", ""))}</td>
+                <td>{sterile_ma_safe(row.get("review_signal_count", ""))}</td>
+                <td>{sterile_ma_safe(row.get("gate_decision", ""))}</td>
+                <td>{sterile_ma_safe(row.get("blocker_summary", ""))}</td>
+                <td>{sterile_ma_safe(row.get("conditional_summary", ""))}</td>
+                <td>{sterile_ma_safe(row.get("required_closure_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No composite gate rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Composite No-Release Gate</h1>
+        <p>
+            Final governance gate that converts the Master Assurance Index into GREEN, YELLOW, or RED reliance decisions.
+            This is a governance support view only. It does not perform formal pharmacy or QA release.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Gate Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED / No-Release</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Composite Gate Filters</h2>
+        <form method="GET" action="/sterile-compounding/no-release-composite">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Gate Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance-index">Master Assurance Index</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite/export">Export Composite Gate</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>No-Release Composite Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Gate</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>Critical</th>
+                        <th>Review</th>
+                        <th>Gate Decision</th>
+                        <th>Blockers</th>
+                        <th>Conditionals</th>
+                        <th>Required Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "NO-RELEASE-COMPOSITE",
+            "STERILE_NO_RELEASE_COMPOSITE_VIEW",
+            "Sterile composite no-release gate viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/no-release-composite",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Composite No-Release Gate", body)
+
+
+@app.route("/sterile-compounding/master-assurance/export")
+def sterile_compounding_master_assurance_export():
+    master_df = sterile_ma_build_register()
+
+    if master_df.empty:
+        master_df = sterile_ma_pd.DataFrame(columns=STERILE_MASTER_ASSURANCE_COLUMNS)
+
+    csv_data = master_df.to_csv(index=False)
+
+    return sterile_ma_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_master_assurance_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/no-release-composite/export")
+def sterile_compounding_no_release_composite_export():
+    master_df = sterile_ma_build_register()
+    gate_df = sterile_ma_build_no_release(master_df)
+
+    if gate_df.empty:
+        gate_df = sterile_ma_pd.DataFrame(columns=STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+
+    csv_data = gate_df.to_csv(index=False)
+
+    return sterile_ma_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_no_release_composite_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_master_assurance_dashboard_injection(response):
+    try:
+        if sterile_ma_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-master-assurance-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-master-assurance-panel">
+            <h2>Master Assurance Index + Composite No-Release Gate</h2>
+            <p class="st-note">
+                Final composite decision layer across CSP readiness, evidence, audit pack, sign-off, seal health,
+                custody, SOP/formula drift, personnel competency, equipment/room readiness, environmental drift,
+                pre-work gate, and regulatory impact.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/master-assurance-index">Master Assurance Index</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite">Composite No-Release Gate</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/export">Export Master Assurance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite/export">Export Composite Gate</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile master assurance dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
