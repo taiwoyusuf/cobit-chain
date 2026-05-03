@@ -18441,5 +18441,694 @@ def sterile_compounding_control_mapper_export():
         headers={"Content-Disposition": "attachment;filename=sterile_compounding_control_map_export.csv"}
     )
 
+
+# ============================================================
+# STERILE_COMPOUNDING_TRUST_PASSPORTS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 4: Personnel, Equipment/Room, and Ingredient Trust Passports
+#
+# New Routes:
+#   /sterile-compounding/personnel-passports
+#   /sterile-compounding/personnel-passport/<person_id>
+#   /sterile-compounding/equipment-readiness
+#   /sterile-compounding/equipment-passport/<equipment_id>
+#   /sterile-compounding/ingredient-trust
+#   /sterile-compounding/ingredient-passport/<lot_id>
+#
+# New Derived Register:
+#   sterile_compounding_trust_passport_register.csv
+#
+# Boundary:
+#   This derives trust passports from the sterile compounding register.
+#   It does not overwrite existing routes and does not touch protected
+#   Manufacturing/Wole, ServiceNow, Entra, CI, Knowledge, Operational
+#   Lineage, Release Notes, Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_trust_pd
+    import json as sterile_trust_json
+except Exception as sterile_trust_import_error:
+    raise RuntimeError(f"Sterile trust passport import failed: {sterile_trust_import_error}")
+
+
+STERILE_TRUST_PASSPORT_REGISTER = "sterile_compounding_trust_passport_register.csv"
+
+STERILE_TRUST_PASSPORT_COLUMNS = [
+    "passport_id",
+    "passport_type",
+    "entity_id",
+    "entity_label",
+    "total_csp_records",
+    "green_records",
+    "yellow_records",
+    "red_records",
+    "review_signals",
+    "critical_signals",
+    "trust_score",
+    "trust_status",
+    "trust_decision",
+    "blocking_summary",
+    "last_updated",
+    "passport_hash"
+]
+
+
+def sterile_trust_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_trust_safe_id(value):
+    value = sterile_clean(value)
+    return value if value else "UNASSIGNED"
+
+
+def sterile_trust_make_passport_id(passport_type, entity_id):
+    raw = f"{passport_type}|{entity_id}"
+    return "ST-TP-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_trust_signal_count(group, column, bad_values):
+    if column not in group.columns:
+        return 0
+    return int(group[column].astype(str).str.lower().isin(bad_values).sum())
+
+
+def sterile_trust_review_count(group, column, review_values):
+    if column not in group.columns:
+        return 0
+    return int(group[column].astype(str).str.lower().isin(review_values).sum())
+
+
+def sterile_trust_entity_summary(group, passport_type, entity_id, entity_label):
+    total = len(group)
+
+    green = int((group["governance_status"].astype(str) == "GREEN").sum()) if total else 0
+    yellow = int((group["governance_status"].astype(str) == "YELLOW").sum()) if total else 0
+    red = int((group["governance_status"].astype(str) == "RED").sum()) if total else 0
+
+    critical_signals = 0
+    review_signals = 0
+    blockers = []
+
+    critical_checks = [
+        ("equipment_status", ["expired", "fail", "failed", "not current"], "Expired/failed equipment or room control"),
+        ("personnel_qualified", ["no", "false", "expired", "not qualified", "fail", "failed"], "Personnel qualification failure"),
+        ("coa_attached", ["no", "false", "missing"], "Missing COA"),
+        ("environmental_status", ["fail", "failed", "red", "excursion", "out of limit", "out of range"], "Environmental failure or excursion"),
+        ("deviation_open", ["yes", "true", "open", "critical"], "Open deviation"),
+        ("approval_status", ["rejected", "not approved", "denied"], "Approval rejected or not approved"),
+        ("supplier_approved", ["no", "false", "not approved", "rejected"], "Supplier not approved"),
+        ("ingredient_expiry_status", ["expired", "fail", "failed"], "Ingredient expiry failure"),
+        ("storage_condition_status", ["fail", "failed", "excursion", "out of range", "out of limit"], "Storage condition failure"),
+        ("cleaning_log_status", ["missing", "incomplete", "fail", "failed"], "Cleaning log missing or failed"),
+        ("em_log_reviewed", ["no", "false", "missing"], "Environmental monitoring review missing"),
+        ("pharmacist_verification", ["no", "false", "missing", "rejected"], "Pharmacist verification missing or rejected"),
+        ("qa_review_status", ["rejected", "failed", "fail"], "QA review failed or rejected"),
+    ]
+
+    review_checks = [
+        ("equipment_status", ["due", "near due", "review", "pending"], "Equipment or room status needs review"),
+        ("personnel_qualified", ["review", "pending", "due"], "Personnel qualification needs review"),
+        ("coa_attached", ["review", "pending"], "COA status needs review"),
+        ("environmental_status", ["alert", "warning", "yellow", "review", "pending"], "Environmental status needs review"),
+        ("deviation_open", ["review", "pending"], "Deviation status needs review"),
+        ("approval_status", ["pending", "review"], "Approval pending or under review"),
+        ("supplier_approved", ["pending", "review"], "Supplier approval needs review"),
+        ("ingredient_expiry_status", ["due", "near due", "review", "pending"], "Ingredient expiry status needs review"),
+        ("storage_condition_status", ["alert", "review", "pending"], "Storage condition needs review"),
+        ("cleaning_log_status", ["review", "pending", "due"], "Cleaning log needs review"),
+        ("em_log_reviewed", ["review", "pending"], "Environmental monitoring review pending"),
+        ("pharmacist_verification", ["pending", "review"], "Pharmacist verification pending"),
+        ("qa_review_status", ["pending", "review"], "QA review pending"),
+    ]
+
+    for column, values, label in critical_checks:
+        count = sterile_trust_signal_count(group, column, values)
+        critical_signals += count
+        if count:
+            blockers.append(f"{label}: {count}")
+
+    for column, values, label in review_checks:
+        count = sterile_trust_review_count(group, column, values)
+        review_signals += count
+        if count:
+            blockers.append(f"{label}: {count}")
+
+    if total == 0:
+        trust_score = 0
+    else:
+        base = 100
+        base -= red * 25
+        base -= yellow * 10
+        base -= critical_signals * 8
+        base -= review_signals * 3
+        trust_score = max(0, min(100, int(base)))
+
+    if critical_signals > 0 or red > 0 or trust_score < 60:
+        trust_status = "RED"
+        trust_decision = "TRUST BLOCK / GOVERNANCE REVIEW REQUIRED"
+    elif review_signals > 0 or yellow > 0 or trust_score < 90:
+        trust_status = "YELLOW"
+        trust_decision = "CONDITIONAL TRUST / REVIEW REQUIRED"
+    else:
+        trust_status = "GREEN"
+        trust_decision = "TRUSTED FROM GOVERNANCE VIEW"
+
+    payload = {
+        "passport_id": sterile_trust_make_passport_id(passport_type, entity_id),
+        "passport_type": passport_type,
+        "entity_id": entity_id,
+        "entity_label": entity_label,
+        "total_csp_records": total,
+        "green_records": green,
+        "yellow_records": yellow,
+        "red_records": red,
+        "review_signals": review_signals,
+        "critical_signals": critical_signals,
+        "trust_score": trust_score,
+        "trust_status": trust_status,
+        "trust_decision": trust_decision,
+        "blocking_summary": "; ".join(blockers),
+        "last_updated": sterile_now(),
+    }
+
+    payload["passport_hash"] = sterile_hash_text(
+        sterile_trust_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_trust_build_passports():
+    sterile_trust_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        empty_df = sterile_trust_pd.DataFrame(columns=STERILE_TRUST_PASSPORT_COLUMNS)
+        sterile_write_register(STERILE_TRUST_PASSPORT_REGISTER, empty_df, STERILE_TRUST_PASSPORT_COLUMNS)
+        return empty_df
+
+    passports = []
+
+    group_configs = [
+        ("PERSONNEL", "assigned_technician", "Personnel Qualification Passport"),
+        ("EQUIPMENT_ROOM", "hood_or_cleanroom_id", "Equipment / Room Readiness Passport"),
+        ("INGREDIENT_LOT", "ingredient_lot", "Ingredient Lot Trust Passport"),
+    ]
+
+    for passport_type, group_col, label_prefix in group_configs:
+        working = df.copy()
+        working[group_col] = working[group_col].astype(str).apply(sterile_trust_safe_id)
+
+        for entity_id, group in working.groupby(group_col):
+            entity_id = sterile_trust_safe_id(entity_id)
+            entity_label = f"{label_prefix}: {entity_id}"
+            passports.append(
+                sterile_trust_entity_summary(group, passport_type, entity_id, entity_label)
+            )
+
+    passport_df = sterile_trust_pd.DataFrame(passports)
+    passport_df = sterile_ensure_cols(passport_df, STERILE_TRUST_PASSPORT_COLUMNS)
+
+    sterile_write_register(
+        STERILE_TRUST_PASSPORT_REGISTER,
+        passport_df,
+        STERILE_TRUST_PASSPORT_COLUMNS
+    )
+
+    return passport_df
+
+
+def sterile_trust_filter(passport_type):
+    df = sterile_trust_build_passports()
+
+    if df.empty:
+        return df
+
+    return df[df["passport_type"].astype(str) == passport_type].copy()
+
+
+def sterile_trust_rows_html(passport_df, detail_base_url):
+    if passport_df.empty:
+        return """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No trust passports found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    rows_html = ""
+
+    for _, row in passport_df.sort_values(by=["trust_status", "trust_score"], ascending=[False, True]).iterrows():
+        entity_id = sterile_clean(row.get("entity_id", ""))
+        detail_url = f"{detail_base_url}/{entity_id}"
+
+        rows_html += f"""
+        <tr>
+            <td><a href="{detail_url}">{entity_id}</a></td>
+            <td>{sterile_clean(row.get("entity_label", ""))}</td>
+            <td>{sterile_badge(row.get("trust_status", ""))}</td>
+            <td>{sterile_clean(row.get("trust_score", ""))}</td>
+            <td>{sterile_clean(row.get("trust_decision", ""))}</td>
+            <td>{sterile_clean(row.get("total_csp_records", ""))}</td>
+            <td>{sterile_clean(row.get("green_records", ""))}</td>
+            <td>{sterile_clean(row.get("yellow_records", ""))}</td>
+            <td>{sterile_clean(row.get("red_records", ""))}</td>
+            <td>{sterile_clean(row.get("blocking_summary", ""))}</td>
+        </tr>
+        """
+
+    return rows_html
+
+
+def sterile_trust_cards(passport_df, noun):
+    total = len(passport_df)
+    green = int((passport_df["trust_status"] == "GREEN").sum()) if total else 0
+    yellow = int((passport_df["trust_status"] == "YELLOW").sum()) if total else 0
+    red = int((passport_df["trust_status"] == "RED").sum()) if total else 0
+    avg_score = 0
+
+    if total:
+        avg_score = round(sterile_trust_pd.to_numeric(passport_df["trust_score"], errors="coerce").fillna(0).mean(), 1)
+
+    return f"""
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total {noun}</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+        <div class="st-card"><div class="st-label">Average Trust Score</div><div class="st-value">{avg_score}%</div></div>
+    </div>
+    """
+
+
+def sterile_trust_detail_table(entity_id, entity_col):
+    csp_df = sterile_prepare_dashboard_df()
+
+    if csp_df.empty:
+        return ""
+
+    csp_df[entity_col] = csp_df[entity_col].astype(str).apply(sterile_trust_safe_id)
+    related = csp_df[csp_df[entity_col].astype(str) == str(entity_id)].copy()
+
+    if related.empty:
+        return """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No related CSP records found.
+            </td>
+        </tr>
+        """
+
+    rows_html = ""
+
+    for _, row in related.iterrows():
+        rid = sterile_clean(row.get("record_id", ""))
+
+        rows_html += f"""
+        <tr>
+            <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+            <td>{sterile_clean(row.get("csp_name", ""))}</td>
+            <td>{sterile_clean(row.get("facility_type", ""))}</td>
+            <td>{sterile_clean(row.get("batch_or_rx_id", ""))}</td>
+            <td>{sterile_badge(row.get("governance_status", ""))}</td>
+            <td>{sterile_clean(row.get("readiness_score", ""))}</td>
+            <td>{sterile_clean(row.get("release_decision", ""))}</td>
+            <td>{sterile_clean(row.get("critical_issues", ""))}</td>
+            <td>{sterile_clean(row.get("warnings", ""))}</td>
+        </tr>
+        """
+
+    return rows_html
+
+
+def sterile_trust_detail_page(passport_type, entity_id, entity_col, page_title, back_url):
+    passport_df = sterile_trust_build_passports()
+
+    match = passport_df[
+        (passport_df["passport_type"].astype(str) == passport_type)
+        & (passport_df["entity_id"].astype(str) == str(entity_id))
+    ] if not passport_df.empty else passport_df
+
+    if match.empty:
+        return "No trust passport found.", 404
+
+    row = match.iloc[0].to_dict()
+    related_rows = sterile_trust_detail_table(entity_id, entity_col)
+
+    passport_rows = ""
+    for key in STERILE_TRUST_PASSPORT_COLUMNS:
+        value = sterile_clean(row.get(key, ""))
+        label = key.replace("_", " ").title()
+        if key == "trust_status":
+            value = sterile_badge(value)
+        passport_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>{page_title}</h1>
+        <p>Governance trust passport for <b>{sterile_clean(entity_id)}</b>.</p>
+        <div style="margin-top:16px;">{sterile_badge(row.get("trust_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_clean(row.get("trust_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Trust Passport</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">
+                {passport_rows}
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Related CSP Records</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Facility Type</th>
+                        <th>Batch/Rx ID</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Critical Issues</th>
+                        <th>Warnings</th>
+                    </tr>
+                </thead>
+                <tbody>{related_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="{back_url}">Back to Summary</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding">Back to CSP Dashboard</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/no-release-gate">No-Release Gate</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            sterile_clean(entity_id),
+            f"{passport_type}_TRUST_PASSPORT_VIEW",
+            f"{page_title} viewed",
+            actor="system",
+            source_route=back_url,
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(page_title, body)
+
+
+@app.route("/sterile-compounding/personnel-passports")
+def sterile_compounding_personnel_passports():
+    passport_df = sterile_trust_filter("PERSONNEL")
+    rows_html = sterile_trust_rows_html(passport_df, "/sterile-compounding/personnel-passport")
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Personnel Qualification Passports</h1>
+        <p>
+            Derived trust passports for technicians/personnel based on CSP records, personnel qualification,
+            environmental status, deviations, pharmacist/QA review, and linked release-readiness outcomes.
+        </p>
+    </div>
+
+    {sterile_trust_cards(passport_df, "Personnel")}
+
+    <div class="st-panel">
+        <h2>Personnel Trust Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Personnel ID</th>
+                        <th>Label</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Total CSPs</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Signals</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PERSONNEL-PASSPORTS",
+            "PERSONNEL_TRUST_SUMMARY_VIEW",
+            "Personnel qualification passport summary viewed",
+            actor="system",
+            source_route="/sterile-compounding/personnel-passports",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Personnel Qualification Passports", body)
+
+
+@app.route("/sterile-compounding/personnel-passport/<path:person_id>")
+def sterile_compounding_personnel_passport(person_id):
+    result = sterile_trust_detail_page(
+        "PERSONNEL",
+        person_id,
+        "assigned_technician",
+        "Personnel Qualification Passport",
+        "/sterile-compounding/personnel-passports"
+    )
+
+    if isinstance(result, tuple):
+        return result
+
+    return result
+
+
+@app.route("/sterile-compounding/equipment-readiness")
+def sterile_compounding_equipment_readiness():
+    passport_df = sterile_trust_filter("EQUIPMENT_ROOM")
+    rows_html = sterile_trust_rows_html(passport_df, "/sterile-compounding/equipment-passport")
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Equipment / Room Readiness Passports</h1>
+        <p>
+            Derived trust passports for hoods, cleanrooms, and controlled compounding areas based on equipment status,
+            environmental signals, cleaning evidence, deviations, and related CSP release-readiness outcomes.
+        </p>
+    </div>
+
+    {sterile_trust_cards(passport_df, "Equipment / Rooms")}
+
+    <div class="st-panel">
+        <h2>Equipment / Room Trust Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Equipment / Room ID</th>
+                        <th>Label</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Total CSPs</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Signals</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EQUIPMENT-READINESS",
+            "EQUIPMENT_TRUST_SUMMARY_VIEW",
+            "Equipment/room readiness passport summary viewed",
+            actor="system",
+            source_route="/sterile-compounding/equipment-readiness",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Equipment / Room Readiness Passports", body)
+
+
+@app.route("/sterile-compounding/equipment-passport/<path:equipment_id>")
+def sterile_compounding_equipment_passport(equipment_id):
+    result = sterile_trust_detail_page(
+        "EQUIPMENT_ROOM",
+        equipment_id,
+        "hood_or_cleanroom_id",
+        "Equipment / Room Readiness Passport",
+        "/sterile-compounding/equipment-readiness"
+    )
+
+    if isinstance(result, tuple):
+        return result
+
+    return result
+
+
+@app.route("/sterile-compounding/ingredient-trust")
+def sterile_compounding_ingredient_trust():
+    passport_df = sterile_trust_filter("INGREDIENT_LOT")
+    rows_html = sterile_trust_rows_html(passport_df, "/sterile-compounding/ingredient-passport")
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Ingredient Lot Trust Passports</h1>
+        <p>
+            Derived trust passports for ingredient lots based on COA evidence, supplier approval, expiry,
+            storage conditions, environmental events, deviations, and linked CSP release-readiness outcomes.
+        </p>
+    </div>
+
+    {sterile_trust_cards(passport_df, "Ingredient Lots")}
+
+    <div class="st-panel">
+        <h2>Ingredient Lot Trust Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Ingredient Lot</th>
+                        <th>Label</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Decision</th>
+                        <th>Total CSPs</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Signals</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INGREDIENT-TRUST",
+            "INGREDIENT_TRUST_SUMMARY_VIEW",
+            "Ingredient lot trust passport summary viewed",
+            actor="system",
+            source_route="/sterile-compounding/ingredient-trust",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Ingredient Lot Trust Passports", body)
+
+
+@app.route("/sterile-compounding/ingredient-passport/<path:lot_id>")
+def sterile_compounding_ingredient_passport(lot_id):
+    result = sterile_trust_detail_page(
+        "INGREDIENT_LOT",
+        lot_id,
+        "ingredient_lot",
+        "Ingredient Lot Trust Passport",
+        "/sterile-compounding/ingredient-trust"
+    )
+
+    if isinstance(result, tuple):
+        return result
+
+    return result
+
+
+@app.after_request
+def sterile_compounding_trust_passports_dashboard_injection(response):
+    try:
+        if sterile_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-trust-passports-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-trust-passports-panel">
+            <h2>Advanced Trust Passports</h2>
+            <p class="st-note">
+                Derived governance passports for personnel qualification, equipment/room readiness,
+                and ingredient-lot trust. These do not replace formal QA/pharmacy disposition; they
+                make readiness, evidence gaps, and impact signals visible.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/personnel-passports">Personnel Passports</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-readiness">Equipment / Room Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/ingredient-trust">Ingredient Trust</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/control-mapper">Control Mapper</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/no-release-gate">No-Release Gate</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+
+        return response
+
+    except Exception as exc:
+        print(f"Sterile trust passport dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
