@@ -33265,5 +33265,1335 @@ def sterile_compounding_personnel_competency_dashboard_injection(response):
         print(f"Sterile personnel competency dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_EQUIPMENT_ROOM_DRIFT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 21: Equipment / Room Certification Drift + Cleanroom Readiness Governance
+#
+# New Routes:
+#   /sterile-compounding/equipment-room-governance
+#   /sterile-compounding/equipment-room/<room_key>
+#   /sterile-compounding/equipment-room/export
+#   /sterile-compounding/equipment-room-drift
+#   /sterile-compounding/equipment-room-drift/export
+#
+# New Registers:
+#   sterile_compounding_equipment_room_register.csv
+#   sterile_compounding_equipment_room_drift_register.csv
+#
+# Boundary:
+#   This is a governance/assurance view over hood, cleanroom, equipment,
+#   certification, cleaning, environmental, readiness, and room workload risk.
+#   It does not replace Blue Mountain, Veeva, QMS, pharmacy release,
+#   QA disposition, calibration systems, BAS/BMS, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, Release Notes, Monday Demo,
+#   Command Center, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_er_pd
+    import json as sterile_er_json
+    from urllib.parse import quote as sterile_er_quote
+    from flask import request as sterile_er_request
+    from flask import Response as sterile_er_Response
+except Exception as sterile_er_import_error:
+    raise RuntimeError(f"Sterile equipment/room drift import failed: {sterile_er_import_error}")
+
+
+STERILE_EQUIPMENT_ROOM_REGISTER = "sterile_compounding_equipment_room_register.csv"
+STERILE_EQUIPMENT_ROOM_DRIFT_REGISTER = "sterile_compounding_equipment_room_drift_register.csv"
+
+STERILE_EQUIPMENT_ROOM_COLUMNS = [
+    "room_key",
+    "hood_or_cleanroom_id",
+    "facility_type",
+    "linked_csp_count",
+    "green_csp",
+    "yellow_csp",
+    "red_csp",
+    "hazardous_csp_count",
+    "open_deviation_count",
+    "equipment_due_or_failed_count",
+    "environmental_alert_count",
+    "cleaning_gap_count",
+    "prework_block_count",
+    "environmental_drift_red_count",
+    "audit_pack_red_count",
+    "custody_block_count",
+    "personnel_red_count",
+    "sop_drift_red_count",
+    "seal_mismatch_count",
+    "room_evidence_count",
+    "approved_room_evidence_count",
+    "pending_room_evidence_count",
+    "rejected_room_evidence_count",
+    "average_readiness_score",
+    "equipment_room_status",
+    "equipment_room_score",
+    "equipment_room_decision",
+    "risk_summary",
+    "recommended_action",
+    "last_checked",
+    "equipment_room_hash"
+]
+
+STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS = [
+    "drift_id",
+    "record_id",
+    "room_key",
+    "hood_or_cleanroom_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "csp_category",
+    "hazardous_drug",
+    "governance_status",
+    "readiness_score",
+    "equipment_status",
+    "environmental_status",
+    "cleaning_status",
+    "audit_pack_status",
+    "custody_audit_status",
+    "personnel_drift_status",
+    "sop_drift_status",
+    "seal_health_status",
+    "prework_gate_status",
+    "environmental_drift_status",
+    "room_evidence_status",
+    "deviation_signal",
+    "drift_status",
+    "drift_score",
+    "drift_reason",
+    "recommended_action",
+    "source_routes",
+    "last_checked",
+    "drift_hash"
+]
+
+
+def sterile_er_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile equipment/room dependencies missing: " + ", ".join(missing))
+
+
+def sterile_er_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_er_lower(value):
+    return sterile_er_safe(value).lower()
+
+
+def sterile_er_entity(value, fallback):
+    value = sterile_er_safe(value)
+    return value if value else fallback
+
+
+def sterile_er_room_key(value):
+    value = sterile_er_safe(value)
+
+    if not value:
+        return "UNASSIGNED-ROOM-HOOD"
+
+    safe = value.replace("/", "_").replace("\\", "_").replace(" ", "_").replace("#", "").replace("?", "")
+    safe = safe.replace("&", "AND").replace(":", "_").replace(";", "_").replace("@", "_AT_")
+    return safe[:120] if safe else "UNASSIGNED-ROOM-HOOD"
+
+
+def sterile_er_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_er_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_er_status_badge(status):
+    status = sterile_er_safe(status).upper()
+
+    if status in ["GREEN", "CURRENT", "READY", "PASS", "ACCEPTABLE", "COMPLETE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "PENDING", "DUE", "WARNING", "ALERT", "UNKNOWN"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "FAILED", "FAIL", "EXPIRED", "OUT OF SERVICE", "BLOCKED", "EXCURSION", "OUT OF RANGE"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_er_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_er_pd.DataFrame(columns=columns)
+
+
+def sterile_er_prepare_csp_df():
+    sterile_er_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df is None or df.empty:
+        return sterile_er_pd.DataFrame(columns=STERILE_COMPOUNDING_COLUMNS)
+
+    df = df.copy()
+
+    expected = [
+        "record_id",
+        "csp_name",
+        "batch_or_rx_id",
+        "facility_type",
+        "csp_category",
+        "hazardous_drug",
+        "governance_status",
+        "readiness_score",
+        "hood_or_cleanroom_id",
+        "equipment_status",
+        "environmental_status",
+        "cleaning_status",
+        "deviation_open",
+        "evidence_file",
+    ]
+
+    for col in expected:
+        if col not in df.columns:
+            df[col] = ""
+
+    df["hood_or_cleanroom_id"] = df["hood_or_cleanroom_id"].astype(str).apply(
+        lambda v: sterile_er_entity(v, "Unassigned Room / Hood")
+    )
+    df["room_key_calc"] = df["hood_or_cleanroom_id"].apply(sterile_er_room_key)
+
+    return df
+
+
+def sterile_er_subset(df, column, value):
+    if df is None or df.empty or column not in df.columns:
+        return sterile_er_pd.DataFrame(columns=df.columns if df is not None and hasattr(df, "columns") else [])
+    return df[df[column].astype(str) == str(value)].copy()
+
+
+def sterile_er_build_support():
+    support = {}
+
+    try:
+        if callable(globals().get("sterile_pack_build_register")):
+            support["audit_pack"] = sterile_pack_build_register()
+        else:
+            support["audit_pack"] = sterile_er_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+    except Exception:
+        support["audit_pack"] = sterile_er_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_cal_build_link")):
+            support["custody_audit"] = sterile_cal_build_link()
+        else:
+            support["custody_audit"] = sterile_er_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+    except Exception:
+        support["custody_audit"] = sterile_er_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_pc_build_drift")):
+            support["personnel_drift"] = sterile_pc_build_drift()
+        else:
+            support["personnel_drift"] = sterile_er_read_optional("sterile_compounding_personnel_drift_register.csv", "STERILE_PERSONNEL_DRIFT_COLUMNS")
+    except Exception:
+        support["personnel_drift"] = sterile_er_read_optional("sterile_compounding_personnel_drift_register.csv", "STERILE_PERSONNEL_DRIFT_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_sop_build_drift")):
+            support["sop_drift"] = sterile_sop_build_drift()
+        else:
+            support["sop_drift"] = sterile_er_read_optional("sterile_compounding_sop_drift_register.csv", "STERILE_SOP_DRIFT_COLUMNS")
+    except Exception:
+        support["sop_drift"] = sterile_er_read_optional("sterile_compounding_sop_drift_register.csv", "STERILE_SOP_DRIFT_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_sh_build_health")):
+            support["seal_health"] = sterile_sh_build_health()
+        else:
+            support["seal_health"] = sterile_er_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+    except Exception:
+        support["seal_health"] = sterile_er_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_prework_build_gate")):
+            support["prework_gate"] = sterile_prework_build_gate()
+        else:
+            support["prework_gate"] = sterile_er_read_optional("sterile_compounding_prework_gate_register.csv", "STERILE_PREWORK_GATE_COLUMNS")
+    except Exception:
+        support["prework_gate"] = sterile_er_read_optional("sterile_compounding_prework_gate_register.csv", "STERILE_PREWORK_GATE_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_drift_build_register")):
+            support["environmental_drift"] = sterile_drift_build_register()
+        else:
+            support["environmental_drift"] = sterile_er_read_optional("sterile_compounding_environmental_drift_register.csv", "STERILE_ENV_DRIFT_COLUMNS")
+    except Exception:
+        support["environmental_drift"] = sterile_er_read_optional("sterile_compounding_environmental_drift_register.csv", "STERILE_ENV_DRIFT_COLUMNS")
+
+    support["evidence_vault"] = sterile_er_read_optional("sterile_compounding_evidence_vault_register.csv", "STERILE_EVIDENCE_VAULT_COLUMNS")
+
+    return support
+
+
+def sterile_er_record_room_evidence(vault_df, record_id):
+    if vault_df is None or vault_df.empty:
+        return sterile_er_pd.DataFrame(columns=vault_df.columns if vault_df is not None and hasattr(vault_df, "columns") else [])
+
+    linked = vault_df[vault_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if linked.empty:
+        return linked
+
+    mask = sterile_er_pd.Series([False] * len(linked), index=linked.index)
+
+    keywords = [
+        "equipment",
+        "hood",
+        "cleanroom",
+        "room",
+        "certification",
+        "calibration",
+        "maintenance",
+        "environmental",
+        "em",
+        "cleaning",
+        "disinfection",
+        "bms",
+        "temperature",
+        "pressure",
+        "hepa",
+        "airflow",
+    ]
+
+    for col in ["evidence_category", "evidence_title", "original_filename"]:
+        if col in linked.columns:
+            content = linked[col].astype(str).str.lower()
+            for kw in keywords:
+                mask = mask | content.str.contains(kw, na=False)
+
+    return linked[mask].copy()
+
+
+def sterile_er_room_evidence_status(vault_df, record_id):
+    evidence_df = sterile_er_record_room_evidence(vault_df, record_id)
+
+    if evidence_df is None or evidence_df.empty:
+        return "MISSING"
+
+    if "evidence_status" not in evidence_df.columns:
+        return "YELLOW"
+
+    statuses = set(evidence_df["evidence_status"].astype(str).str.upper().tolist())
+
+    if "RED" in statuses:
+        return "RED"
+    if "YELLOW" in statuses:
+        return "YELLOW"
+    if "GREEN" in statuses:
+        return "GREEN"
+
+    return "UNKNOWN"
+
+
+def sterile_er_record_support_status(record_id, support):
+    def get_status(df_name, status_col):
+        df = support.get(df_name)
+        if df is None or df.empty or "record_id" not in df.columns or status_col not in df.columns:
+            return ""
+        match = df[df["record_id"].astype(str) == str(record_id)].copy()
+        if match.empty:
+            return ""
+        return sterile_er_safe(match.iloc[0].get(status_col, ""))
+
+    return {
+        "audit_pack_status": get_status("audit_pack", "audit_pack_status"),
+        "custody_audit_status": get_status("custody_audit", "custody_audit_status"),
+        "personnel_drift_status": get_status("personnel_drift", "drift_status"),
+        "sop_drift_status": get_status("sop_drift", "drift_status"),
+        "seal_health_status": get_status("seal_health", "seal_health_status"),
+        "prework_gate_status": get_status("prework_gate", "gate_status"),
+        "environmental_drift_status": get_status("environmental_drift", "drift_status"),
+    }
+
+
+def sterile_er_is_bad(value):
+    value = sterile_er_lower(value)
+    return value in [
+        "no",
+        "false",
+        "fail",
+        "failed",
+        "red",
+        "expired",
+        "out of service",
+        "not current",
+        "rejected",
+        "blocked",
+        "excursion",
+        "out of range",
+        "out of limit",
+        "temperature excursion",
+    ]
+
+
+def sterile_er_is_review(value):
+    value = sterile_er_lower(value)
+    return value in [
+        "",
+        "unknown",
+        "pending",
+        "review",
+        "warning",
+        "alert",
+        "yellow",
+        "due",
+        "near due",
+        "conditional",
+    ]
+
+
+def sterile_er_record_drift(row, support):
+    record_id = sterile_er_safe(row.get("record_id", ""))
+    hood_id = sterile_er_entity(row.get("hood_or_cleanroom_id", ""), "Unassigned Room / Hood")
+    room_key = sterile_er_room_key(hood_id)
+
+    equipment_status = sterile_er_safe(row.get("equipment_status", ""))
+    environmental_status = sterile_er_safe(row.get("environmental_status", ""))
+    cleaning_status = sterile_er_safe(row.get("cleaning_status", ""))
+    governance_status = sterile_er_safe(row.get("governance_status", ""))
+    readiness_score = sterile_er_numeric(row.get("readiness_score", 0), 0)
+    hazardous = sterile_er_safe(row.get("hazardous_drug", ""))
+    deviation_signal = sterile_er_safe(row.get("deviation_open", ""))
+
+    supported = sterile_er_record_support_status(record_id, support)
+
+    audit_pack_status = supported["audit_pack_status"]
+    custody_audit_status = supported["custody_audit_status"]
+    personnel_drift_status = supported["personnel_drift_status"]
+    sop_drift_status = supported["sop_drift_status"]
+    seal_health_status = supported["seal_health_status"]
+    prework_gate_status = supported["prework_gate_status"]
+    environmental_drift_status = supported["environmental_drift_status"]
+
+    room_evidence_status = sterile_er_room_evidence_status(support.get("evidence_vault"), record_id)
+
+    reasons = []
+    score = 0
+
+    if room_key == "UNASSIGNED-ROOM-HOOD":
+        reasons.append("Missing hood/cleanroom assignment")
+        score += 25
+
+    if sterile_er_is_bad(equipment_status):
+        reasons.append("Equipment status failed, expired, out of service, or not current")
+        score += 30
+    elif sterile_er_is_review(equipment_status):
+        reasons.append("Equipment status pending, due, alert, or unknown")
+        score += 12
+
+    if sterile_er_is_bad(environmental_status):
+        reasons.append("Environmental status failed, out of range, or excursion")
+        score += 30
+    elif sterile_er_is_review(environmental_status):
+        reasons.append("Environmental status pending, alert, or unknown")
+        score += 12
+
+    if sterile_er_is_bad(cleaning_status):
+        reasons.append("Cleaning/disinfection status failed or not current")
+        score += 25
+    elif sterile_er_is_review(cleaning_status):
+        reasons.append("Cleaning/disinfection status pending, due, alert, or unknown")
+        score += 10
+
+    if room_evidence_status in ["MISSING", "RED"]:
+        reasons.append("No approved equipment/room/environmental evidence linked")
+        score += 22
+    elif room_evidence_status in ["YELLOW", "UNKNOWN"]:
+        reasons.append("Equipment/room evidence pending or unknown")
+        score += 10
+
+    if governance_status.upper() == "RED":
+        reasons.append("CSP governance status is RED")
+        score += 18
+    elif governance_status.upper() == "YELLOW":
+        reasons.append("CSP governance status requires review")
+        score += 6
+
+    if readiness_score and readiness_score < 60:
+        reasons.append("Low readiness score")
+        score += 15
+    elif readiness_score and readiness_score < 90:
+        reasons.append("Readiness score below clean release threshold")
+        score += 5
+
+    if sterile_er_lower(hazardous) in ["yes", "true", "hazardous"]:
+        reasons.append("Hazardous-drug CSP in this room/hood")
+        score += 6
+
+    if sterile_er_lower(deviation_signal) in ["yes", "true", "open", "critical"]:
+        reasons.append("Open deviation linked to room/hood CSP")
+        score += 16
+
+    for label, status_value, red_points, yellow_points in [
+        ("Audit pack", audit_pack_status, 18, 6),
+        ("Custody audit-link", custody_audit_status, 12, 5),
+        ("Personnel drift", personnel_drift_status, 12, 5),
+        ("SOP/formula drift", sop_drift_status, 12, 5),
+        ("Dossier seal health", seal_health_status, 15, 5),
+        ("Pre-work gate", prework_gate_status, 20, 8),
+        ("Environmental drift", environmental_drift_status, 20, 8),
+    ]:
+        if sterile_er_safe(status_value).upper() == "RED":
+            reasons.append(f"{label} is RED")
+            score += red_points
+        elif sterile_er_safe(status_value).upper() == "YELLOW":
+            reasons.append(f"{label} requires review")
+            score += yellow_points
+
+    score = max(0, min(100, score))
+
+    if score >= 60:
+        drift_status = "RED"
+        recommended_action = "Do not rely on this room/hood-linked CSP until equipment, environmental, cleaning, certification, or related governance blockers are reviewed."
+    elif score >= 20:
+        drift_status = "YELLOW"
+        recommended_action = "Review room/hood readiness evidence, environmental/cleaning status, and linked governance signals before final reliance."
+    else:
+        drift_status = "GREEN"
+        recommended_action = "No equipment/room drift action required from governance view."
+
+    payload = {
+        "drift_id": sterile_er_make_id("ST-ERDRIFT", record_id, room_key),
+        "record_id": record_id,
+        "room_key": room_key,
+        "hood_or_cleanroom_id": hood_id,
+        "csp_name": sterile_er_safe(row.get("csp_name", "")),
+        "batch_or_rx_id": sterile_er_safe(row.get("batch_or_rx_id", "")),
+        "facility_type": sterile_er_safe(row.get("facility_type", "")),
+        "csp_category": sterile_er_safe(row.get("csp_category", "")),
+        "hazardous_drug": hazardous,
+        "governance_status": governance_status,
+        "readiness_score": sterile_er_safe(row.get("readiness_score", "")),
+        "equipment_status": equipment_status,
+        "environmental_status": environmental_status,
+        "cleaning_status": cleaning_status,
+        "audit_pack_status": audit_pack_status,
+        "custody_audit_status": custody_audit_status,
+        "personnel_drift_status": personnel_drift_status,
+        "sop_drift_status": sop_drift_status,
+        "seal_health_status": seal_health_status,
+        "prework_gate_status": prework_gate_status,
+        "environmental_drift_status": environmental_drift_status,
+        "room_evidence_status": room_evidence_status,
+        "deviation_signal": deviation_signal,
+        "drift_status": drift_status,
+        "drift_score": score,
+        "drift_reason": "; ".join(reasons) if reasons else "No material equipment/room drift signal detected.",
+        "recommended_action": recommended_action,
+        "source_routes": "; ".join([
+            f"/sterile-compounding/passport/{record_id}",
+            f"/sterile-compounding/equipment-room/{sterile_er_quote(room_key)}",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/equipment-readiness",
+            f"/sterile-compounding/environmental-drift",
+        ]),
+        "last_checked": sterile_now(),
+    }
+
+    payload["drift_hash"] = sterile_hash_text(
+        sterile_er_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_er_build_drift():
+    sterile_er_require_phase1()
+
+    csp_df = sterile_er_prepare_csp_df()
+    support = sterile_er_build_support()
+
+    if csp_df.empty:
+        empty_df = sterile_er_pd.DataFrame(columns=STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS)
+        sterile_write_register(STERILE_EQUIPMENT_ROOM_DRIFT_REGISTER, empty_df, STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, row in csp_df.iterrows():
+        rows.append(sterile_er_record_drift(row.to_dict(), support))
+
+    drift_df = sterile_er_pd.DataFrame(rows)
+    drift_df = sterile_ensure_cols(drift_df, STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS)
+    sterile_write_register(STERILE_EQUIPMENT_ROOM_DRIFT_REGISTER, drift_df, STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS)
+
+    return drift_df
+
+
+def sterile_er_build_register():
+    sterile_er_require_phase1()
+
+    csp_df = sterile_er_prepare_csp_df()
+    drift_df = sterile_er_build_drift()
+    support = sterile_er_build_support()
+    vault_df = support.get("evidence_vault")
+    audit_pack_df = support.get("audit_pack")
+    custody_df = support.get("custody_audit")
+    personnel_df = support.get("personnel_drift")
+    sop_drift_df = support.get("sop_drift")
+    seal_df = support.get("seal_health")
+    prework_df = support.get("prework_gate")
+    env_drift_df = support.get("environmental_drift")
+
+    if csp_df.empty:
+        empty_df = sterile_er_pd.DataFrame(columns=STERILE_EQUIPMENT_ROOM_COLUMNS)
+        sterile_write_register(STERILE_EQUIPMENT_ROOM_REGISTER, empty_df, STERILE_EQUIPMENT_ROOM_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for (room_key, hood_id, facility_type), group in csp_df.groupby(
+        ["room_key_calc", "hood_or_cleanroom_id", "facility_type"],
+        dropna=False
+    ):
+        record_ids = [sterile_er_safe(v) for v in group["record_id"].astype(str).tolist()]
+        linked_count = len(group)
+
+        green_csp = int((group["governance_status"].astype(str).str.upper() == "GREEN").sum())
+        yellow_csp = int((group["governance_status"].astype(str).str.upper() == "YELLOW").sum())
+        red_csp = int((group["governance_status"].astype(str).str.upper() == "RED").sum())
+
+        hazardous_count = int(group["hazardous_drug"].astype(str).str.lower().isin(["yes", "true", "hazardous"]).sum())
+        open_dev_count = int(group["deviation_open"].astype(str).str.lower().isin(["yes", "true", "open", "critical"]).sum())
+
+        equipment_due_or_failed_count = int(group["equipment_status"].astype(str).str.lower().apply(
+            lambda v: sterile_er_is_bad(v) or v in ["due", "near due", "pending", "review", "unknown"]
+        ).sum())
+
+        environmental_alert_count = int(group["environmental_status"].astype(str).str.lower().apply(
+            lambda v: sterile_er_is_bad(v) or v in ["alert", "warning", "yellow", "pending", "review", "unknown"]
+        ).sum())
+
+        cleaning_gap_count = int(group["cleaning_status"].astype(str).str.lower().apply(
+            lambda v: sterile_er_is_bad(v) or v in ["due", "near due", "pending", "review", "unknown"]
+        ).sum())
+
+        avg_readiness = round(
+            sterile_er_pd.to_numeric(group["readiness_score"], errors="coerce").fillna(0).mean(),
+            1
+        )
+
+        room_evidence_count = 0
+        approved_room_evidence_count = 0
+        pending_room_evidence_count = 0
+        rejected_room_evidence_count = 0
+
+        for rid in record_ids:
+            ev = sterile_er_record_room_evidence(vault_df, rid)
+            room_evidence_count += len(ev)
+
+            if ev is not None and not ev.empty and "evidence_status" in ev.columns:
+                approved_room_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "GREEN").sum())
+                pending_room_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "YELLOW").sum())
+                rejected_room_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "RED").sum())
+
+        def count_red(df, status_col):
+            if df is None or df.empty or "record_id" not in df.columns or status_col not in df.columns:
+                return 0
+            return int(
+                df[
+                    df["record_id"].astype(str).isin(record_ids)
+                    & (df[status_col].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        audit_pack_red_count = count_red(audit_pack_df, "audit_pack_status")
+        custody_block_count = count_red(custody_df, "custody_audit_status")
+        personnel_red_count = count_red(personnel_df, "drift_status")
+        sop_drift_red_count = count_red(sop_drift_df, "drift_status")
+        environmental_drift_red_count = count_red(env_drift_df, "drift_status")
+
+        prework_block_count = 0
+        if prework_df is not None and not prework_df.empty and "record_id" in prework_df.columns:
+            for status_col in ["gate_status", "prework_status", "start_gate_status"]:
+                if status_col in prework_df.columns:
+                    prework_block_count = int(
+                        prework_df[
+                            prework_df["record_id"].astype(str).isin(record_ids)
+                            & (prework_df[status_col].astype(str).str.upper() == "RED")
+                        ].shape[0]
+                    )
+                    break
+
+        seal_mismatch_count = 0
+        if seal_df is not None and not seal_df.empty and "record_id" in seal_df.columns:
+            if "latest_verification_status" in seal_df.columns:
+                seal_mismatch_count = int(
+                    seal_df[
+                        seal_df["record_id"].astype(str).isin(record_ids)
+                        & (seal_df["latest_verification_status"].astype(str).str.upper() == "HASH MISMATCH")
+                    ].shape[0]
+                )
+
+        linked_drift = drift_df[drift_df["record_id"].astype(str).isin(record_ids)].copy() if not drift_df.empty else drift_df
+        red_drift = int((linked_drift["drift_status"].astype(str).str.upper() == "RED").sum()) if not linked_drift.empty else 0
+        yellow_drift = int((linked_drift["drift_status"].astype(str).str.upper() == "YELLOW").sum()) if not linked_drift.empty else 0
+
+        risk_parts = []
+        score = 100
+
+        if room_key == "UNASSIGNED-ROOM-HOOD":
+            score -= 30
+            risk_parts.append("Unassigned room/hood")
+
+        if equipment_due_or_failed_count:
+            score -= equipment_due_or_failed_count * 10
+            risk_parts.append(f"Equipment due/failed/review signals: {equipment_due_or_failed_count}")
+
+        if environmental_alert_count:
+            score -= environmental_alert_count * 10
+            risk_parts.append(f"Environmental alert/failure signals: {environmental_alert_count}")
+
+        if cleaning_gap_count:
+            score -= cleaning_gap_count * 8
+            risk_parts.append(f"Cleaning/disinfection gaps: {cleaning_gap_count}")
+
+        if room_evidence_count == 0:
+            score -= 20
+            risk_parts.append("No linked equipment/room evidence")
+
+        if rejected_room_evidence_count:
+            score -= rejected_room_evidence_count * 15
+            risk_parts.append(f"Rejected equipment/room evidence: {rejected_room_evidence_count}")
+
+        if pending_room_evidence_count:
+            score -= pending_room_evidence_count * 5
+            risk_parts.append(f"Pending equipment/room evidence: {pending_room_evidence_count}")
+
+        if red_csp:
+            score -= red_csp * 12
+            risk_parts.append(f"RED CSP records: {red_csp}")
+
+        if yellow_csp:
+            score -= yellow_csp * 5
+            risk_parts.append(f"YELLOW CSP records: {yellow_csp}")
+
+        if hazardous_count:
+            score -= hazardous_count * 4
+            risk_parts.append(f"Hazardous CSPs in room/hood: {hazardous_count}")
+
+        if open_dev_count:
+            score -= open_dev_count * 10
+            risk_parts.append(f"Open deviations linked to room/hood: {open_dev_count}")
+
+        if prework_block_count:
+            score -= prework_block_count * 15
+            risk_parts.append(f"Pre-work gate blocks: {prework_block_count}")
+
+        if environmental_drift_red_count:
+            score -= environmental_drift_red_count * 15
+            risk_parts.append(f"Environmental drift RED rows: {environmental_drift_red_count}")
+
+        if audit_pack_red_count:
+            score -= audit_pack_red_count * 12
+            risk_parts.append(f"RED audit packs: {audit_pack_red_count}")
+
+        if custody_block_count:
+            score -= custody_block_count * 10
+            risk_parts.append(f"Custody blocks: {custody_block_count}")
+
+        if personnel_red_count:
+            score -= personnel_red_count * 8
+            risk_parts.append(f"Personnel RED drift rows: {personnel_red_count}")
+
+        if sop_drift_red_count:
+            score -= sop_drift_red_count * 8
+            risk_parts.append(f"SOP/formula RED drift rows: {sop_drift_red_count}")
+
+        if seal_mismatch_count:
+            score -= seal_mismatch_count * 15
+            risk_parts.append(f"Dossier seal mismatches: {seal_mismatch_count}")
+
+        if red_drift:
+            score -= red_drift * 10
+            risk_parts.append(f"RED equipment/room drift rows: {red_drift}")
+
+        if yellow_drift:
+            score -= yellow_drift * 4
+            risk_parts.append(f"YELLOW equipment/room drift rows: {yellow_drift}")
+
+        score = max(0, min(100, int(score)))
+
+        if score < 60 or red_drift or rejected_room_evidence_count or environmental_drift_red_count or prework_block_count or seal_mismatch_count:
+            status = "RED"
+            decision = "EQUIPMENT / ROOM READINESS REQUIRES GOVERNANCE REVIEW"
+            action = "Review equipment certification, room readiness, environmental/cleaning status, evidence, pre-work gate, and linked audit packs before reliance."
+        elif score < 90 or yellow_drift or pending_room_evidence_count or equipment_due_or_failed_count or environmental_alert_count or cleaning_gap_count:
+            status = "YELLOW"
+            decision = "EQUIPMENT / ROOM READINESS NEEDS REVIEW"
+            action = "Confirm equipment/room evidence, environmental status, cleaning readiness, and linked CSP readiness before final reliance."
+        else:
+            status = "GREEN"
+            decision = "EQUIPMENT / ROOM READINESS ACCEPTABLE FROM GOVERNANCE VIEW"
+            action = "No equipment/room action required."
+
+        payload = {
+            "room_key": sterile_er_safe(room_key),
+            "hood_or_cleanroom_id": sterile_er_safe(hood_id),
+            "facility_type": sterile_er_safe(facility_type),
+            "linked_csp_count": linked_count,
+            "green_csp": green_csp,
+            "yellow_csp": yellow_csp,
+            "red_csp": red_csp,
+            "hazardous_csp_count": hazardous_count,
+            "open_deviation_count": open_dev_count,
+            "equipment_due_or_failed_count": equipment_due_or_failed_count,
+            "environmental_alert_count": environmental_alert_count,
+            "cleaning_gap_count": cleaning_gap_count,
+            "prework_block_count": prework_block_count,
+            "environmental_drift_red_count": environmental_drift_red_count,
+            "audit_pack_red_count": audit_pack_red_count,
+            "custody_block_count": custody_block_count,
+            "personnel_red_count": personnel_red_count,
+            "sop_drift_red_count": sop_drift_red_count,
+            "seal_mismatch_count": seal_mismatch_count,
+            "room_evidence_count": room_evidence_count,
+            "approved_room_evidence_count": approved_room_evidence_count,
+            "pending_room_evidence_count": pending_room_evidence_count,
+            "rejected_room_evidence_count": rejected_room_evidence_count,
+            "average_readiness_score": avg_readiness,
+            "equipment_room_status": status,
+            "equipment_room_score": score,
+            "equipment_room_decision": decision,
+            "risk_summary": "; ".join(risk_parts) if risk_parts else "No material equipment/room risk signal detected.",
+            "recommended_action": action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["equipment_room_hash"] = sterile_hash_text(
+            sterile_er_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    room_df = sterile_er_pd.DataFrame(rows)
+    room_df = sterile_ensure_cols(room_df, STERILE_EQUIPMENT_ROOM_COLUMNS)
+    sterile_write_register(STERILE_EQUIPMENT_ROOM_REGISTER, room_df, STERILE_EQUIPMENT_ROOM_COLUMNS)
+
+    return room_df
+
+
+@app.route("/sterile-compounding/equipment-room-governance")
+def sterile_compounding_equipment_room_governance():
+    room_df = sterile_er_build_register()
+
+    status_filter = sterile_er_safe(sterile_er_request.args.get("status", ""))
+    filtered = room_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["equipment_room_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["equipment_room_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["equipment_room_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["equipment_room_status"] == "RED").sum()) if total else 0
+    linked_csp = int(sterile_er_pd.to_numeric(filtered["linked_csp_count"], errors="coerce").fillna(0).sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["equipment_room_status", "equipment_room_score"], ascending=[False, True]).iterrows():
+            room_key = sterile_er_safe(row.get("room_key", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_er_status_badge(row.get("equipment_room_status", ""))}</td>
+                <td><a href="/sterile-compounding/equipment-room/{sterile_er_quote(room_key)}">{sterile_er_safe(row.get("hood_or_cleanroom_id", ""))}</a></td>
+                <td>{sterile_er_safe(row.get("facility_type", ""))}</td>
+                <td>{sterile_er_safe(row.get("linked_csp_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("equipment_room_score", ""))}</td>
+                <td>{sterile_er_safe(row.get("equipment_due_or_failed_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("environmental_alert_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("cleaning_gap_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("room_evidence_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("prework_block_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("environmental_drift_red_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("audit_pack_red_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("seal_mismatch_count", ""))}</td>
+                <td>{sterile_er_safe(row.get("equipment_room_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="14" style="text-align:center; padding:24px; color:#6b7280;">
+                No equipment/room rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Equipment / Room Readiness Governance</h1>
+        <p>
+            Governance view for sterile hoods, cleanrooms, and equipment readiness. It links room/hood readiness
+            to environmental status, cleaning status, evidence, pre-work gate, environmental drift, audit packs,
+            custody, personnel, SOP/formula drift, and dossier seal health.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Rooms / Hoods</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Linked CSPs</div><div class="st-value">{linked_csp}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Equipment / Room Filters</h2>
+        <form method="GET" action="/sterile-compounding/equipment-room-governance">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-governance">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-drift">Equipment / Room Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room/export">Export Equipment / Room</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Equipment / Room Governance Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Hood / Room</th>
+                        <th>Facility</th>
+                        <th>Linked CSPs</th>
+                        <th>Score</th>
+                        <th>Equipment Due/Fail</th>
+                        <th>Environmental Alerts</th>
+                        <th>Cleaning Gaps</th>
+                        <th>Evidence</th>
+                        <th>Prework Blocks</th>
+                        <th>Env Drift RED</th>
+                        <th>RED Audit Packs</th>
+                        <th>Seal Mismatches</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EQUIPMENT-ROOM-GOVERNANCE",
+            "STERILE_EQUIPMENT_ROOM_GOVERNANCE_VIEW",
+            "Sterile equipment/room governance viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/equipment-room-governance",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Equipment / Room Readiness Governance", body)
+
+
+@app.route("/sterile-compounding/equipment-room/export")
+def sterile_compounding_equipment_room_export():
+    room_df = sterile_er_build_register()
+
+    if room_df.empty:
+        room_df = sterile_er_pd.DataFrame(columns=STERILE_EQUIPMENT_ROOM_COLUMNS)
+
+    csv_data = room_df.to_csv(index=False)
+
+    return sterile_er_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_equipment_room_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/equipment-room/<room_key>")
+def sterile_compounding_equipment_room_passport(room_key):
+    room_df = sterile_er_build_register()
+    drift_df = sterile_er_build_drift()
+    room_key = sterile_er_safe(room_key)
+
+    match = room_df[room_df["room_key"].astype(str) == str(room_key)] if not room_df.empty else room_df
+
+    if match.empty:
+        return sterile_er_Response("Equipment/room passport not found.", status=404)
+
+    room = match.iloc[0].to_dict()
+    linked_drift = drift_df[drift_df["room_key"].astype(str) == str(room_key)].copy() if not drift_df.empty else drift_df
+
+    room_rows = ""
+    for key in STERILE_EQUIPMENT_ROOM_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_er_safe(room.get(key, ""))
+
+        if key == "equipment_room_status":
+            value = sterile_er_status_badge(value)
+        elif key == "equipment_room_hash":
+            value = f"<code>{value}</code>"
+
+        room_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    drift_rows = ""
+    if not linked_drift.empty:
+        for _, row in linked_drift.sort_values(by=["drift_status", "drift_score"], ascending=[False, False]).iterrows():
+            rid = sterile_er_safe(row.get("record_id", ""))
+
+            drift_rows += f"""
+            <tr>
+                <td>{sterile_er_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_er_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_er_safe(row.get("equipment_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("environmental_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("cleaning_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("room_evidence_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_er_safe(row.get("drift_reason", ""))}</td>
+            </tr>
+            """
+    else:
+        drift_rows = """
+        <tr>
+            <td colspan="12" style="text-align:center; padding:24px; color:#6b7280;">
+                No linked equipment/room drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Equipment / Room Passport</h1>
+        <p>
+            Readiness and drift passport for <b>{sterile_er_safe(room.get("hood_or_cleanroom_id", ""))}</b>.
+        </p>
+        <div style="margin-top:16px;">{sterile_er_status_badge(room.get("equipment_room_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_er_safe(room.get("equipment_room_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Equipment / Room Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{room_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Linked CSP Equipment / Room Drift</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Readiness</th>
+                        <th>Equipment</th>
+                        <th>Environmental</th>
+                        <th>Cleaning</th>
+                        <th>Room Evidence</th>
+                        <th>Audit Pack</th>
+                        <th>Score</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>{drift_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/equipment-room-drift">Equipment / Room Drift</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-governance">Back to Equipment / Room Governance</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            room_key,
+            "STERILE_EQUIPMENT_ROOM_PASSPORT_VIEW",
+            f"Equipment/room passport viewed for {room_key}",
+            actor="system",
+            source_route="/sterile-compounding/equipment-room/<room_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Equipment / Room Passport - {room_key}", body)
+
+
+@app.route("/sterile-compounding/equipment-room-drift")
+def sterile_compounding_equipment_room_drift():
+    drift_df = sterile_er_build_drift()
+
+    status_filter = sterile_er_safe(sterile_er_request.args.get("status", ""))
+    filtered = drift_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["drift_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["drift_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["drift_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["drift_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["drift_status", "drift_score"], ascending=[False, False]).iterrows():
+            rid = sterile_er_safe(row.get("record_id", ""))
+            room_key = sterile_er_safe(row.get("room_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_er_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/equipment-room/{sterile_er_quote(room_key)}">{sterile_er_safe(row.get("hood_or_cleanroom_id", ""))}</a></td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_er_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("equipment_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("environmental_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("cleaning_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("room_evidence_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("prework_gate_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("environmental_drift_status", ""))}</td>
+                <td>{sterile_er_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_er_safe(row.get("drift_reason", ""))}</td>
+                <td>{sterile_er_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="14" style="text-align:center; padding:24px; color:#6b7280;">
+                No equipment/room drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Equipment / Room Drift Register</h1>
+        <p>
+            Record-level drift view showing room/hood assignment gaps, equipment status, environmental status,
+            cleaning status, evidence readiness, pre-work gate status, environmental drift, audit pack, custody,
+            personnel, SOP/formula, and seal-health impact.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Drift Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Equipment / Room Drift Filters</h2>
+        <form method="GET" action="/sterile-compounding/equipment-room-drift">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Drift Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-drift">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-governance">Equipment / Room Governance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-drift/export">Export Drift</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Equipment / Room Drift Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Hood / Room</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Equipment</th>
+                        <th>Environmental</th>
+                        <th>Cleaning</th>
+                        <th>Evidence</th>
+                        <th>Prework</th>
+                        <th>Env Drift</th>
+                        <th>Score</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EQUIPMENT-ROOM-DRIFT",
+            "STERILE_EQUIPMENT_ROOM_DRIFT_VIEW",
+            "Sterile equipment/room drift register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/equipment-room-drift",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Equipment / Room Drift Register", body)
+
+
+@app.route("/sterile-compounding/equipment-room-drift/export")
+def sterile_compounding_equipment_room_drift_export():
+    drift_df = sterile_er_build_drift()
+
+    if drift_df.empty:
+        drift_df = sterile_er_pd.DataFrame(columns=STERILE_EQUIPMENT_ROOM_DRIFT_COLUMNS)
+
+    csv_data = drift_df.to_csv(index=False)
+
+    return sterile_er_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_equipment_room_drift_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_equipment_room_dashboard_injection(response):
+    try:
+        if sterile_er_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-equipment-room-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-equipment-room-panel">
+            <h2>Equipment / Room Certification Drift + Cleanroom Readiness Governance</h2>
+            <p class="st-note">
+                Tracks hood/cleanroom/equipment readiness, certification evidence, environmental status,
+                cleaning/disinfection status, pre-work gate impact, environmental drift, audit packs,
+                custody, personnel, SOP/formula drift, and dossier seal-health issues.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/equipment-room-governance">Equipment / Room Governance</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-drift">Equipment / Room Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room/export">Export Equipment / Room</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/equipment-room-drift/export">Export Drift</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile equipment/room dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
