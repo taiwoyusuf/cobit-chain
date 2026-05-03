@@ -48098,5 +48098,969 @@ def sterile_compounding_data_contracts_dashboard_injection(response):
         print(f"Sterile data contracts dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_MOCK_INGESTION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 37: Mock Ingestion Lab + Pre-Integration Risk Register
+#
+# New Routes:
+#   /sterile-compounding/mock-ingestion-lab
+#   /sterile-compounding/mock-ingestion-lab/<system_key>
+#   /sterile-compounding/mock-ingestion-lab/export
+#   /sterile-compounding/pre-integration-risk
+#   /sterile-compounding/pre-integration-risk/export
+#
+# New Registers:
+#   sterile_compounding_mock_ingestion_lab.csv
+#   sterile_compounding_pre_integration_risk_register.csv
+#
+# Boundary:
+#   This is a sterile-only mock ingestion and pre-integration risk layer.
+#   It does not call external APIs, does not connect to ServiceNow,
+#   Veeva, Blue Mountain, myAccess, Entra, Azure, Power BI, or ledger
+#   services, and does not touch protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_mi_pd
+    import json as sterile_mi_json
+    from flask import request as sterile_mi_request
+    from flask import Response as sterile_mi_Response
+except Exception as sterile_mi_import_error:
+    raise RuntimeError(f"Sterile mock ingestion import failed: {sterile_mi_import_error}")
+
+
+STERILE_MOCK_INGESTION_REGISTER = "sterile_compounding_mock_ingestion_lab.csv"
+STERILE_PRE_INTEGRATION_RISK_REGISTER = "sterile_compounding_pre_integration_risk_register.csv"
+
+STERILE_MOCK_INGESTION_COLUMNS = [
+    "mock_id",
+    "system_key",
+    "system_name",
+    "mock_payload_name",
+    "mock_source_object",
+    "target_register",
+    "mvp_field_count",
+    "optional_field_count",
+    "mapped_field_count",
+    "mock_payload_status",
+    "mock_score",
+    "sample_payload_shape",
+    "required_mvp_fields",
+    "optional_fields",
+    "quality_gate",
+    "safe_test_instruction",
+    "failure_message",
+    "last_checked",
+    "mock_hash"
+]
+
+STERILE_PRE_INTEGRATION_RISK_COLUMNS = [
+    "risk_id",
+    "system_key",
+    "system_name",
+    "risk_domain",
+    "risk_status",
+    "risk_score",
+    "risk_statement",
+    "control_needed",
+    "evidence_needed",
+    "approval_needed",
+    "go_no_go_position",
+    "safe_next_action",
+    "supporting_route",
+    "last_checked",
+    "risk_hash"
+]
+
+
+STERILE_MOCK_SOURCE_OBJECTS = {
+    "servicenow": {
+        "payload": "ServiceNow Ticket / Change / CI Reference Payload",
+        "source_object": "incident/change/task/kb_knowledge",
+        "quality_gate": "Ticket or change reference must be unique, resolvable, and linked to the CSP record without overwriting ServiceNow.",
+        "failure": "Mock payload fails if ticket/change number, state, or reference route is missing.",
+    },
+    "veeva": {
+        "payload": "Veeva Controlled Document / Deviation / CAPA Reference Payload",
+        "source_object": "document/deviation/capa",
+        "quality_gate": "Document ID, version, lifecycle/approval state, and deviation/CAPA reference must be traceable.",
+        "failure": "Mock payload fails if SOP/document version or approval state cannot support sterile readiness.",
+    },
+    "blue-mountain": {
+        "payload": "Blue Mountain Asset / Equipment / Room Readiness Payload",
+        "source_object": "asset/work_order/calibration",
+        "quality_gate": "Asset ID, calibration/maintenance state, room/hood identity, and work order reference must be resolvable.",
+        "failure": "Mock payload fails if equipment or room readiness cannot be proven.",
+    },
+    "myaccess": {
+        "payload": "myAccess Access Evidence Payload",
+        "source_object": "access_review/access_role",
+        "quality_gate": "User, role, approval state, and last review date must support personnel/access readiness.",
+        "failure": "Mock payload fails if access status or approval evidence is missing.",
+    },
+    "entra": {
+        "payload": "Entra Identity Normalization Payload",
+        "source_object": "user/group",
+        "quality_gate": "UPN, display name, email/object ID, and account state must normalize sign-off/custody/personnel identity.",
+        "failure": "Mock payload fails if reviewer, custodian, or technician identity cannot be resolved.",
+    },
+    "azure-blob": {
+        "payload": "Azure Blob Evidence Storage Payload",
+        "source_object": "blob/blob_metadata",
+        "quality_gate": "Blob path, file name, evidence hash, uploader, timestamp, and retention metadata must be controlled.",
+        "failure": "Mock payload fails if evidence file, hash, or storage path is missing.",
+    },
+    "azure-confidential-ledger": {
+        "payload": "Azure Confidential Ledger Hash Anchor Payload",
+        "source_object": "ledger_transaction",
+        "quality_gate": "Payload must contain hash-only anchor metadata with transaction ID and no sensitive evidence content.",
+        "failure": "Mock payload fails if ledger transaction or hash-only rule is not satisfied.",
+    },
+    "power-bi": {
+        "payload": "Power BI Sterile Assurance Dataset Payload",
+        "source_object": "dataset/dataflow",
+        "quality_gate": "Record ID, status fields, scores, snapshot ID, and refresh timestamp must support dashboard drill-through.",
+        "failure": "Mock payload fails if key dashboard joins or status fields are missing.",
+    },
+}
+
+
+STERILE_PRE_INTEGRATION_RISK_DOMAINS = [
+    ("Source-of-Truth Boundary", "External system must remain source of truth where applicable.", "Document source-of-truth rule and no-writeback boundary."),
+    ("Data Quality", "Mapped fields must be complete, valid, and consistently formatted.", "Define field-level validation and allowed values."),
+    ("Security and Privacy", "Sensitive data must not be pulled or stored unnecessarily.", "Review PHI/PII/secrets handling and least-privilege access."),
+    ("Validation / CSV Boundary", "Validated systems cannot be replaced by AssuranceLayer.", "Document CSV/validation boundary and intended use."),
+    ("Operational Failure Mode", "Missing or stale connector data must not create false GREEN readiness.", "Define fallback logic and YELLOW/RED behavior."),
+    ("Approval Readiness", "System owner and governance approval must exist before live connection.", "Capture owner approval and implementation authorization."),
+]
+
+
+def sterile_mi_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_DATA_CONTRACT_COLUMNS",
+        "STERILE_FIELD_MAPPING_COLUMNS",
+        "sterile_dc_build_contracts",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile mock ingestion dependencies missing: " + ", ".join(missing))
+
+
+def sterile_mi_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_mi_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_mi_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_mi_bucket(value):
+    value = sterile_mi_safe(value).upper()
+
+    if value in ["GREEN", "READY", "PASS", "LOW"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "FAIL", "HIGH"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_mi_badge(status):
+    bucket = sterile_mi_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_mi_build_sources():
+    sterile_mi_require_dependencies()
+
+    try:
+        contract_df, mapping_df = sterile_dc_build_contracts()
+    except Exception:
+        contract_df = sterile_read_register(
+            "sterile_compounding_data_contract_register.csv",
+            STERILE_DATA_CONTRACT_COLUMNS
+        )
+        mapping_df = sterile_read_register(
+            "sterile_compounding_field_mapping_matrix.csv",
+            STERILE_FIELD_MAPPING_COLUMNS
+        )
+
+    contract_df = sterile_ensure_cols(contract_df, STERILE_DATA_CONTRACT_COLUMNS)
+    mapping_df = sterile_ensure_cols(mapping_df, STERILE_FIELD_MAPPING_COLUMNS)
+
+    return contract_df, mapping_df
+
+
+def sterile_mi_latest_contract(contract_df, system_key):
+    if contract_df is None or contract_df.empty or "system_key" not in contract_df.columns:
+        return {}
+
+    match = contract_df[contract_df["system_key"].astype(str) == str(system_key)].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_mi_contract_score(contract):
+    return sterile_mi_numeric(contract.get("contract_score", 0), 0)
+
+
+def sterile_mi_status_from_score(score):
+    score = sterile_mi_numeric(score, 0)
+
+    if score >= 75:
+        return "GREEN"
+    if score >= 55:
+        return "YELLOW"
+    return "RED"
+
+
+def sterile_mi_sample_payload(system_key, system_maps):
+    fields = []
+
+    if system_maps is not None and not system_maps.empty:
+        for _, row in system_maps.iterrows():
+            source_field = sterile_mi_safe(row.get("source_field", ""))
+            target_field = sterile_mi_safe(row.get("target_field", ""))
+            required = sterile_mi_safe(row.get("required_for_mvp", ""))
+            if source_field:
+                fields.append(f"{source_field}->{target_field}({required})")
+
+    if not fields:
+        return "{}"
+
+    return "{ " + "; ".join(fields[:10]) + " }"
+
+
+def sterile_mi_build_mock_registers():
+    contract_df, mapping_df = sterile_mi_build_sources()
+
+    mock_rows = []
+    risk_rows = []
+
+    if contract_df.empty:
+        empty_mock = sterile_mi_pd.DataFrame(columns=STERILE_MOCK_INGESTION_COLUMNS)
+        empty_risk = sterile_mi_pd.DataFrame(columns=STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+        sterile_write_register(STERILE_MOCK_INGESTION_REGISTER, empty_mock, STERILE_MOCK_INGESTION_COLUMNS)
+        sterile_write_register(STERILE_PRE_INTEGRATION_RISK_REGISTER, empty_risk, STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+        return empty_mock, empty_risk
+
+    for _, contract_row in contract_df.iterrows():
+        contract = contract_row.to_dict()
+        system_key = sterile_mi_safe(contract.get("system_key", ""))
+        system_name = sterile_mi_safe(contract.get("system_name", ""))
+
+        system_maps = mapping_df[mapping_df["system_key"].astype(str) == str(system_key)].copy() if not mapping_df.empty else mapping_df
+
+        mvp_maps = system_maps[system_maps["required_for_mvp"].astype(str) == "YES"].copy() if not system_maps.empty else system_maps
+        optional_maps = system_maps[system_maps["required_for_mvp"].astype(str) != "YES"].copy() if not system_maps.empty else system_maps
+
+        mvp_count = len(mvp_maps)
+        optional_count = len(optional_maps)
+        mapped_count = len(system_maps)
+
+        green_maps = int((system_maps["mapping_status"].astype(str) == "GREEN").sum()) if mapped_count else 0
+        yellow_maps = int((system_maps["mapping_status"].astype(str) == "YELLOW").sum()) if mapped_count else 0
+        red_maps = int((system_maps["mapping_status"].astype(str) == "RED").sum()) if mapped_count else 0
+
+        contract_score = sterile_mi_contract_score(contract)
+
+        if mapped_count:
+            mapping_score = int(round(((green_maps * 100) + (yellow_maps * 60)) / mapped_count, 0))
+        else:
+            mapping_score = 0
+
+        mock_score = int(round((contract_score * 0.55) + (mapping_score * 0.45), 0))
+
+        if red_maps:
+            mock_status = "RED"
+        else:
+            mock_status = sterile_mi_status_from_score(mock_score)
+
+        source_cfg = STERILE_MOCK_SOURCE_OBJECTS.get(system_key, {
+            "payload": f"{system_name} Mock Payload",
+            "source_object": "source_object",
+            "quality_gate": "Mock payload must satisfy data contract and field mapping requirements.",
+            "failure": "Mock payload fails if required fields are missing.",
+        })
+
+        required_fields = "; ".join(mvp_maps["source_field"].astype(str).tolist()) if mvp_count else "No MVP fields declared."
+        optional_fields = "; ".join(optional_maps["source_field"].astype(str).tolist()) if optional_count else "No optional fields declared."
+
+        target_registers = sorted(system_maps["target_register"].dropna().unique().tolist()) if mapped_count else []
+        target_register = "; ".join(target_registers) if target_registers else "No target register mapped."
+
+        payload = {
+            "mock_id": sterile_mi_make_id("ST-MOCK", system_key),
+            "system_key": system_key,
+            "system_name": system_name,
+            "mock_payload_name": source_cfg["payload"],
+            "mock_source_object": source_cfg["source_object"],
+            "target_register": target_register,
+            "mvp_field_count": mvp_count,
+            "optional_field_count": optional_count,
+            "mapped_field_count": mapped_count,
+            "mock_payload_status": mock_status,
+            "mock_score": mock_score,
+            "sample_payload_shape": sterile_mi_sample_payload(system_key, system_maps),
+            "required_mvp_fields": required_fields,
+            "optional_fields": optional_fields,
+            "quality_gate": source_cfg["quality_gate"],
+            "safe_test_instruction": sterile_mi_safe(contract.get("safe_first_test", "")),
+            "failure_message": source_cfg["failure"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["mock_hash"] = sterile_hash_text(
+            sterile_mi_json.dumps(payload, sort_keys=True)
+        )
+
+        mock_rows.append(payload)
+
+        risk_rows.extend(
+            sterile_mi_build_risks_for_system(
+                contract,
+                system_maps,
+                mock_status,
+                mock_score,
+                red_maps,
+                yellow_maps,
+                mvp_count,
+            )
+        )
+
+    mock_df = sterile_mi_pd.DataFrame(mock_rows)
+    mock_df = sterile_ensure_cols(mock_df, STERILE_MOCK_INGESTION_COLUMNS)
+
+    risk_df = sterile_mi_pd.DataFrame(risk_rows)
+    risk_df = sterile_ensure_cols(risk_df, STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+
+    sterile_write_register(STERILE_MOCK_INGESTION_REGISTER, mock_df, STERILE_MOCK_INGESTION_COLUMNS)
+    sterile_write_register(STERILE_PRE_INTEGRATION_RISK_REGISTER, risk_df, STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+
+    return mock_df, risk_df
+
+
+def sterile_mi_build_risks_for_system(contract, system_maps, mock_status, mock_score, red_maps, yellow_maps, mvp_count):
+    rows = []
+
+    system_key = sterile_mi_safe(contract.get("system_key", ""))
+    system_name = sterile_mi_safe(contract.get("system_name", ""))
+    approval = sterile_mi_safe(contract.get("approval_needed", ""))
+    boundary = sterile_mi_safe(contract.get("source_of_truth_boundary", ""))
+    writeback = sterile_mi_safe(contract.get("writeback_allowed", "NO"))
+
+    for domain, base_statement, control_needed in STERILE_PRE_INTEGRATION_RISK_DOMAINS:
+        risk_score = 70
+        risk_status = "YELLOW"
+        evidence_needed = control_needed
+        go_position = "CONDITIONAL"
+        safe_next = sterile_mi_safe(contract.get("safe_first_test", ""))
+
+        if domain == "Source-of-Truth Boundary":
+            if boundary and "remains" in boundary.lower():
+                risk_status = "GREEN"
+                risk_score = 85
+                go_position = "GO FOR BLUEPRINT"
+            else:
+                risk_status = "YELLOW"
+                risk_score = 60
+            evidence_needed = "Document which system remains source of truth and what AssuranceLayer is allowed to store."
+
+        elif domain == "Data Quality":
+            if red_maps:
+                risk_status = "RED"
+                risk_score = 40
+                go_position = "NO-GO FOR LIVE CONNECTOR"
+            elif yellow_maps:
+                risk_status = "YELLOW"
+                risk_score = 65
+            else:
+                risk_status = "GREEN"
+                risk_score = 85
+                go_position = "GO FOR MOCK TEST"
+            evidence_needed = "Field mapping matrix with required fields, status values, and quality rules."
+
+        elif domain == "Security and Privacy":
+            if system_key in ["veeva", "myaccess", "entra"]:
+                risk_status = "YELLOW"
+                risk_score = 60
+            else:
+                risk_status = "GREEN" if mock_score >= 70 else "YELLOW"
+                risk_score = 80 if risk_status == "GREEN" else 60
+            evidence_needed = "Security/privacy review confirming metadata-only use and no unnecessary sensitive data."
+
+        elif domain == "Validation / CSV Boundary":
+            if system_key in ["veeva", "blue-mountain"]:
+                risk_status = "YELLOW"
+                risk_score = 58
+            else:
+                risk_status = "GREEN" if writeback == "NO" else "YELLOW"
+                risk_score = 82 if risk_status == "GREEN" else 65
+            evidence_needed = "CSV/validation boundary statement and validated-system non-replacement statement."
+
+        elif domain == "Operational Failure Mode":
+            if sterile_mi_bucket(mock_status) == "RED":
+                risk_status = "RED"
+                risk_score = 35
+                go_position = "NO-GO FOR LIVE CONNECTOR"
+            elif mvp_count == 0:
+                risk_status = "YELLOW"
+                risk_score = 55
+            else:
+                risk_status = "YELLOW" if sterile_mi_bucket(mock_status) == "YELLOW" else "GREEN"
+                risk_score = 65 if risk_status == "YELLOW" else 85
+            evidence_needed = "Fallback rule showing when missing connector data becomes YELLOW/RED instead of false GREEN."
+
+        elif domain == "Approval Readiness":
+            if approval:
+                risk_status = "YELLOW"
+                risk_score = 65
+            else:
+                risk_status = "RED"
+                risk_score = 40
+                go_position = "NO-GO FOR LIVE CONNECTOR"
+            evidence_needed = "Named owner/reviewer approval before live connector design or implementation."
+
+        if risk_status == "GREEN":
+            risk_statement = f"{domain}: {base_statement} Current blueprint signal is acceptable for mock testing."
+        elif risk_status == "YELLOW":
+            risk_statement = f"{domain}: {base_statement} Review or approval is needed before live implementation."
+        else:
+            risk_statement = f"{domain}: {base_statement} This is a blocker before live connector work."
+
+        payload = {
+            "risk_id": sterile_mi_make_id("ST-IRISK", system_key, domain),
+            "system_key": system_key,
+            "system_name": system_name,
+            "risk_domain": domain,
+            "risk_status": risk_status,
+            "risk_score": risk_score,
+            "risk_statement": risk_statement,
+            "control_needed": control_needed,
+            "evidence_needed": evidence_needed,
+            "approval_needed": approval,
+            "go_no_go_position": go_position,
+            "safe_next_action": safe_next,
+            "supporting_route": f"/sterile-compounding/data-contracts/{system_key}",
+            "last_checked": sterile_now(),
+        }
+
+        payload["risk_hash"] = sterile_hash_text(
+            sterile_mi_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    return rows
+
+
+@app.route("/sterile-compounding/mock-ingestion-lab")
+def sterile_compounding_mock_ingestion_lab():
+    mock_df, risk_df = sterile_mi_build_mock_registers()
+
+    status_filter = sterile_mi_safe(sterile_mi_request.args.get("status", ""))
+    system_filter = sterile_mi_safe(sterile_mi_request.args.get("system", ""))
+
+    filtered = mock_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["mock_payload_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["mock_payload_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["mock_payload_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["mock_payload_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Mock Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(mock_df["system_key"].dropna().unique().tolist()) if not mock_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["mock_payload_status", "system_key"], ascending=[False, True]).iterrows():
+            system_key = sterile_mi_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mi_badge(row.get("mock_payload_status", ""))}</td>
+                <td><a href="/sterile-compounding/mock-ingestion-lab/{system_key}">{sterile_mi_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_mi_safe(row.get("mock_payload_name", ""))}</td>
+                <td>{sterile_mi_safe(row.get("mock_source_object", ""))}</td>
+                <td>{sterile_mi_safe(row.get("target_register", ""))}</td>
+                <td>{sterile_mi_safe(row.get("mock_score", ""))}</td>
+                <td>{sterile_mi_safe(row.get("mvp_field_count", ""))}</td>
+                <td>{sterile_mi_safe(row.get("mapped_field_count", ""))}</td>
+                <td>{sterile_mi_safe(row.get("quality_gate", ""))}</td>
+                <td>{sterile_mi_safe(row.get("safe_test_instruction", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No mock ingestion rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Mock Ingestion Lab</h1>
+        <p>
+            Sterile-only simulation layer for future system integrations. This page validates payload shape,
+            MVP fields, field mapping coverage, quality gate, and safe test instructions without calling any external API.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Mock Payloads</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Mock Filters</h2>
+        <form method="GET" action="/sterile-compounding/mock-ingestion-lab">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Mock Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/mock-ingestion-lab">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk">Pre-Integration Risk</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/mock-ingestion-lab/export">Export Mock Lab</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Mock Ingestion Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Payload</th>
+                        <th>Source Object</th>
+                        <th>Target Register</th>
+                        <th>Score</th>
+                        <th>MVP Fields</th>
+                        <th>Mapped Fields</th>
+                        <th>Quality Gate</th>
+                        <th>Safe Test</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MOCK-INGESTION-LAB",
+            "STERILE_MOCK_INGESTION_LAB_VIEW",
+            "Sterile mock ingestion lab viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/mock-ingestion-lab",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Mock Ingestion Lab", body)
+
+
+@app.route("/sterile-compounding/mock-ingestion-lab/<system_key>")
+def sterile_compounding_mock_ingestion_lab_detail(system_key):
+    mock_df, risk_df = sterile_mi_build_mock_registers()
+    system_key = sterile_mi_safe(system_key)
+
+    match = mock_df[mock_df["system_key"].astype(str) == str(system_key)].copy() if not mock_df.empty else mock_df
+
+    if match.empty:
+        return sterile_mi_Response("Mock ingestion payload not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    system_risks = risk_df[risk_df["system_key"].astype(str) == str(system_key)].copy() if not risk_df.empty else risk_df
+
+    detail_rows = ""
+
+    for key in STERILE_MOCK_INGESTION_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_mi_safe(row.get(key, ""))
+
+        if key == "mock_payload_status":
+            value = sterile_mi_badge(value)
+        elif key == "mock_hash":
+            value = f"<code>{value}</code>"
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    risk_rows = ""
+
+    if not system_risks.empty:
+        for _, risk in system_risks.sort_values(by=["risk_status", "risk_domain"], ascending=[False, True]).iterrows():
+            risk_rows += f"""
+            <tr>
+                <td>{sterile_mi_badge(risk.get("risk_status", ""))}</td>
+                <td>{sterile_mi_safe(risk.get("risk_domain", ""))}</td>
+                <td>{sterile_mi_safe(risk.get("risk_score", ""))}</td>
+                <td>{sterile_mi_safe(risk.get("risk_statement", ""))}</td>
+                <td>{sterile_mi_safe(risk.get("control_needed", ""))}</td>
+                <td>{sterile_mi_safe(risk.get("safe_next_action", ""))}</td>
+            </tr>
+            """
+    else:
+        risk_rows = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No pre-integration risk rows found for this system.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Mock Ingestion Detail: {sterile_mi_safe(row.get("system_name", ""))}</h1>
+        <p>
+            System-specific mock payload, target registers, MVP fields, quality gate, and risk summary.
+            Documentation/simulation only — no external system call is performed.
+        </p>
+        <div style="margin-top:16px;">{sterile_mi_badge(row.get("mock_payload_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_mi_safe(row.get("safe_test_instruction", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Mock Payload Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Pre-Integration Risks for This System</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Risk Domain</th>
+                        <th>Score</th>
+                        <th>Risk Statement</th>
+                        <th>Control Needed</th>
+                        <th>Safe Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{risk_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/mock-ingestion-lab">Back to Mock Lab</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/data-contracts/{system_key}">Data Contract</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint/{system_key}">Integration Blueprint</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk?system={system_key}">Pre-Integration Risk</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_MOCK_INGESTION_DETAIL_VIEW",
+            "Sterile mock ingestion detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/mock-ingestion-lab/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Mock Ingestion - {system_key}", body)
+
+
+@app.route("/sterile-compounding/pre-integration-risk")
+def sterile_compounding_pre_integration_risk():
+    mock_df, risk_df = sterile_mi_build_mock_registers()
+
+    status_filter = sterile_mi_safe(sterile_mi_request.args.get("status", ""))
+    system_filter = sterile_mi_safe(sterile_mi_request.args.get("system", ""))
+
+    filtered = risk_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["risk_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["risk_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["risk_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["risk_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Risk Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(risk_df["system_key"].dropna().unique().tolist()) if not risk_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["risk_status", "system_key", "risk_domain"], ascending=[False, True, True]).iterrows():
+            system_key = sterile_mi_safe(row.get("system_key", ""))
+            route = sterile_mi_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mi_badge(row.get("risk_status", ""))}</td>
+                <td><a href="/sterile-compounding/mock-ingestion-lab/{system_key}">{sterile_mi_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_mi_safe(row.get("risk_domain", ""))}</td>
+                <td>{sterile_mi_safe(row.get("risk_score", ""))}</td>
+                <td>{sterile_mi_safe(row.get("risk_statement", ""))}</td>
+                <td>{sterile_mi_safe(row.get("control_needed", ""))}</td>
+                <td>{sterile_mi_safe(row.get("evidence_needed", ""))}</td>
+                <td>{sterile_mi_safe(row.get("go_no_go_position", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No pre-integration risk rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Pre-Integration Risk Register</h1>
+        <p>
+            Risk register for future sterile integrations before any live connector is built. It checks
+            source-of-truth boundary, data quality, security/privacy, validation boundary, failure mode,
+            and approval readiness.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Risk Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Risk Filters</h2>
+        <form method="GET" action="/sterile-compounding/pre-integration-risk">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Risk Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/mock-ingestion-lab">Mock Ingestion Lab</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk/export">Export Risk Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Pre-Integration Risk Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Risk Domain</th>
+                        <th>Score</th>
+                        <th>Risk Statement</th>
+                        <th>Control Needed</th>
+                        <th>Evidence Needed</th>
+                        <th>Go / No-Go</th>
+                        <th>Supporting Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PRE-INTEGRATION-RISK",
+            "STERILE_PRE_INTEGRATION_RISK_VIEW",
+            "Sterile pre-integration risk register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/pre-integration-risk",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Pre-Integration Risk Register", body)
+
+
+@app.route("/sterile-compounding/mock-ingestion-lab/export")
+def sterile_compounding_mock_ingestion_lab_export():
+    mock_df, risk_df = sterile_mi_build_mock_registers()
+
+    if mock_df.empty:
+        mock_df = sterile_mi_pd.DataFrame(columns=STERILE_MOCK_INGESTION_COLUMNS)
+
+    csv_data = mock_df.to_csv(index=False)
+
+    return sterile_mi_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_mock_ingestion_lab_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/pre-integration-risk/export")
+def sterile_compounding_pre_integration_risk_export():
+    mock_df, risk_df = sterile_mi_build_mock_registers()
+
+    if risk_df.empty:
+        risk_df = sterile_mi_pd.DataFrame(columns=STERILE_PRE_INTEGRATION_RISK_COLUMNS)
+
+    csv_data = risk_df.to_csv(index=False)
+
+    return sterile_mi_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_pre_integration_risk_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_mock_ingestion_dashboard_injection(response):
+    try:
+        if sterile_mi_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/data-contracts",
+            "/sterile-compounding/field-mapping-matrix",
+            "/sterile-compounding/integration-blueprint",
+            "/sterile-compounding/system-connector-readiness",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-mock-ingestion-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-mock-ingestion-panel">
+            <h2>Mock Ingestion Lab + Pre-Integration Risk Register</h2>
+            <p class="st-note">
+                Simulates future payload readiness and pre-integration risk without calling external APIs
+                or touching protected modules.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/mock-ingestion-lab">Mock Ingestion Lab</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk">Pre-Integration Risk</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/mock-ingestion-lab/export">Export Mock Lab</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/pre-integration-risk/export">Export Risk Register</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile mock ingestion dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
