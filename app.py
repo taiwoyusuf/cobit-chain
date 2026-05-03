@@ -32053,5 +32053,1217 @@ def sterile_compounding_sop_formula_dashboard_injection(response):
         print(f"Sterile SOP/formula dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_PERSONNEL_COMPETENCY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 20: Personnel Competency Drift + Aseptic Workload Risk
+#
+# New Routes:
+#   /sterile-compounding/personnel-competency
+#   /sterile-compounding/personnel-competency/<person_key>
+#   /sterile-compounding/personnel-competency/export
+#   /sterile-compounding/personnel-drift
+#   /sterile-compounding/personnel-drift/export
+#
+# New Registers:
+#   sterile_compounding_personnel_competency_register.csv
+#   sterile_compounding_personnel_drift_register.csv
+#
+# Boundary:
+#   This is a governance/assurance view over sterile personnel competency,
+#   qualification evidence, workload risk, deviations, hazardous CSP exposure,
+#   audit-pack failures, custody blocks, SOP/formula drift, and seal issues.
+#   It does not replace HR, training systems, QMS, pharmacy supervision,
+#   QA disposition, Veeva, Blue Mountain, ServiceNow, Entra, CI,
+#   Knowledge Governance, Operational Lineage, Release Notes, Monday Demo,
+#   Command Center, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_pc_pd
+    import json as sterile_pc_json
+    from urllib.parse import quote as sterile_pc_quote
+    from flask import request as sterile_pc_request
+    from flask import Response as sterile_pc_Response
+except Exception as sterile_pc_import_error:
+    raise RuntimeError(f"Sterile personnel competency import failed: {sterile_pc_import_error}")
+
+
+STERILE_PERSONNEL_COMPETENCY_REGISTER = "sterile_compounding_personnel_competency_register.csv"
+STERILE_PERSONNEL_DRIFT_REGISTER = "sterile_compounding_personnel_drift_register.csv"
+
+STERILE_PERSONNEL_COMPETENCY_COLUMNS = [
+    "person_key",
+    "person_name",
+    "role_context",
+    "linked_csp_count",
+    "green_csp",
+    "yellow_csp",
+    "red_csp",
+    "qualified_csp_count",
+    "unqualified_or_pending_count",
+    "hazardous_csp_count",
+    "open_deviation_count",
+    "critical_audit_pack_count",
+    "custody_block_count",
+    "sop_formula_drift_count",
+    "seal_mismatch_count",
+    "personnel_evidence_count",
+    "approved_personnel_evidence_count",
+    "pending_personnel_evidence_count",
+    "rejected_personnel_evidence_count",
+    "average_readiness_score",
+    "competency_status",
+    "competency_score",
+    "competency_decision",
+    "risk_summary",
+    "recommended_action",
+    "last_checked",
+    "competency_hash"
+]
+
+STERILE_PERSONNEL_DRIFT_COLUMNS = [
+    "drift_id",
+    "record_id",
+    "person_key",
+    "person_name",
+    "role_context",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "csp_category",
+    "hazardous_drug",
+    "governance_status",
+    "readiness_score",
+    "personnel_qualified",
+    "audit_pack_status",
+    "custody_audit_status",
+    "sop_drift_status",
+    "seal_health_status",
+    "deviation_signal",
+    "personnel_evidence_status",
+    "drift_status",
+    "drift_score",
+    "drift_reason",
+    "recommended_action",
+    "source_routes",
+    "last_checked",
+    "drift_hash"
+]
+
+
+def sterile_pc_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile personnel competency dependencies missing: " + ", ".join(missing))
+
+
+def sterile_pc_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_pc_lower(value):
+    return sterile_pc_safe(value).lower()
+
+
+def sterile_pc_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_pc_person_key(value):
+    value = sterile_pc_safe(value)
+
+    if not value:
+        return "UNASSIGNED-PERSONNEL"
+
+    safe = value.replace("/", "_").replace("\\", "_").replace(" ", "_").replace("#", "").replace("?", "")
+    safe = safe.replace("&", "AND").replace(":", "_").replace(";", "_").replace("@", "_AT_")
+    return safe[:120] if safe else "UNASSIGNED-PERSONNEL"
+
+
+def sterile_pc_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_pc_status_badge(status):
+    status = sterile_pc_safe(status).upper()
+
+    if status in ["GREEN", "QUALIFIED", "COMPLETE", "APPROVED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "PENDING", "REVIEW", "UNKNOWN", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "UNQUALIFIED", "EXPIRED", "FAILED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_pc_read_optional(register_name, columns_global_name):
+    columns = globals().get(columns_global_name, [])
+
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            if columns:
+                return sterile_ensure_cols(df, columns)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    return sterile_pc_pd.DataFrame(columns=columns)
+
+
+def sterile_pc_subset(df, column, value):
+    if df is None or df.empty or column not in df.columns:
+        return sterile_pc_pd.DataFrame(columns=df.columns if df is not None and hasattr(df, "columns") else [])
+    return df[df[column].astype(str) == str(value)].copy()
+
+
+def sterile_pc_prepare_csp_df():
+    sterile_pc_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df is None or df.empty:
+        return sterile_pc_pd.DataFrame(columns=STERILE_COMPOUNDING_COLUMNS)
+
+    df = df.copy()
+
+    expected = [
+        "record_id",
+        "csp_name",
+        "batch_or_rx_id",
+        "facility_type",
+        "csp_category",
+        "hazardous_drug",
+        "governance_status",
+        "readiness_score",
+        "assigned_technician",
+        "personnel_qualified",
+        "verifying_pharmacist",
+        "pharmacist_verification",
+        "deviation_open",
+        "evidence_file",
+    ]
+
+    for col in expected:
+        if col not in df.columns:
+            df[col] = ""
+
+    df["person_name_calc"] = df["assigned_technician"].astype(str).apply(lambda v: sterile_pc_safe(v) or "Unassigned Personnel")
+    df["person_key_calc"] = df["person_name_calc"].apply(sterile_pc_person_key)
+    df["role_context_calc"] = "Assigned Technician / Sterile Operator"
+
+    return df
+
+
+def sterile_pc_build_support():
+    support = {}
+
+    try:
+        if callable(globals().get("sterile_pack_build_register")):
+            support["audit_pack"] = sterile_pack_build_register()
+        else:
+            support["audit_pack"] = sterile_pc_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+    except Exception:
+        support["audit_pack"] = sterile_pc_read_optional("sterile_compounding_audit_pack_register.csv", "STERILE_AUDIT_PACK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_cal_build_link")):
+            support["custody_audit"] = sterile_cal_build_link()
+        else:
+            support["custody_audit"] = sterile_pc_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+    except Exception:
+        support["custody_audit"] = sterile_pc_read_optional("sterile_compounding_custody_audit_link_register.csv", "STERILE_CUSTODY_AUDIT_LINK_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_sop_build_drift")):
+            support["sop_drift"] = sterile_sop_build_drift()
+        else:
+            support["sop_drift"] = sterile_pc_read_optional("sterile_compounding_sop_drift_register.csv", "STERILE_SOP_DRIFT_COLUMNS")
+    except Exception:
+        support["sop_drift"] = sterile_pc_read_optional("sterile_compounding_sop_drift_register.csv", "STERILE_SOP_DRIFT_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_sh_build_health")):
+            support["seal_health"] = sterile_sh_build_health()
+        else:
+            support["seal_health"] = sterile_pc_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+    except Exception:
+        support["seal_health"] = sterile_pc_read_optional("sterile_compounding_seal_health_register.csv", "STERILE_SEAL_HEALTH_COLUMNS")
+
+    try:
+        if callable(globals().get("sterile_mx_build_matrix")):
+            support["evidence_matrix"] = sterile_mx_build_matrix()
+        else:
+            support["evidence_matrix"] = sterile_pc_read_optional("sterile_compounding_evidence_matrix_register.csv", "STERILE_EVIDENCE_MATRIX_COLUMNS")
+    except Exception:
+        support["evidence_matrix"] = sterile_pc_read_optional("sterile_compounding_evidence_matrix_register.csv", "STERILE_EVIDENCE_MATRIX_COLUMNS")
+
+    support["evidence_vault"] = sterile_pc_read_optional("sterile_compounding_evidence_vault_register.csv", "STERILE_EVIDENCE_VAULT_COLUMNS")
+
+    return support
+
+
+def sterile_pc_record_personnel_evidence(vault_df, record_id):
+    if vault_df is None or vault_df.empty:
+        return sterile_pc_pd.DataFrame(columns=vault_df.columns if vault_df is not None and hasattr(vault_df, "columns") else [])
+
+    linked = vault_df[vault_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if linked.empty:
+        return linked
+
+    mask = sterile_pc_pd.Series([False] * len(linked), index=linked.index)
+
+    keywords = [
+        "personnel",
+        "qualification",
+        "training",
+        "competency",
+        "aseptic",
+        "media fill",
+        "media-fill",
+        "glove",
+        "fingertip",
+        "garbing",
+        "operator",
+        "technician",
+    ]
+
+    for col in ["evidence_category", "evidence_title", "original_filename"]:
+        if col in linked.columns:
+            content = linked[col].astype(str).str.lower()
+            for kw in keywords:
+                mask = mask | content.str.contains(kw, na=False)
+
+    return linked[mask].copy()
+
+
+def sterile_pc_personnel_evidence_status(vault_df, record_id):
+    evidence_df = sterile_pc_record_personnel_evidence(vault_df, record_id)
+
+    if evidence_df is None or evidence_df.empty:
+        return "MISSING"
+
+    if "evidence_status" not in evidence_df.columns:
+        return "YELLOW"
+
+    statuses = set(evidence_df["evidence_status"].astype(str).str.upper().tolist())
+
+    if "RED" in statuses:
+        return "RED"
+    if "YELLOW" in statuses:
+        return "YELLOW"
+    if "GREEN" in statuses:
+        return "GREEN"
+
+    return "UNKNOWN"
+
+
+def sterile_pc_record_status_from_support(record_id, support):
+    def get_status(df_name, status_col):
+        df = support.get(df_name)
+        if df is None or df.empty or "record_id" not in df.columns or status_col not in df.columns:
+            return ""
+        match = df[df["record_id"].astype(str) == str(record_id)].copy()
+        if match.empty:
+            return ""
+        return sterile_pc_safe(match.iloc[0].get(status_col, ""))
+
+    return {
+        "audit_pack_status": get_status("audit_pack", "audit_pack_status"),
+        "custody_audit_status": get_status("custody_audit", "custody_audit_status"),
+        "sop_drift_status": get_status("sop_drift", "drift_status"),
+        "seal_health_status": get_status("seal_health", "seal_health_status"),
+    }
+
+
+def sterile_pc_record_drift(row, support):
+    record_id = sterile_pc_safe(row.get("record_id", ""))
+    person_name = sterile_pc_safe(row.get("person_name_calc", "")) or "Unassigned Personnel"
+    person_key = sterile_pc_person_key(person_name)
+    role_context = sterile_pc_safe(row.get("role_context_calc", "")) or "Assigned Technician / Sterile Operator"
+
+    personnel_qualified = sterile_pc_safe(row.get("personnel_qualified", ""))
+    personnel_qualified_l = personnel_qualified.lower()
+    governance_status = sterile_pc_safe(row.get("governance_status", ""))
+    readiness_score = sterile_pc_numeric(row.get("readiness_score", 0), 0)
+    hazardous = sterile_pc_safe(row.get("hazardous_drug", ""))
+    deviation_signal = sterile_pc_safe(row.get("deviation_open", ""))
+
+    supported = sterile_pc_record_status_from_support(record_id, support)
+    audit_pack_status = supported["audit_pack_status"]
+    custody_audit_status = supported["custody_audit_status"]
+    sop_drift_status = supported["sop_drift_status"]
+    seal_health_status = supported["seal_health_status"]
+    personnel_evidence_status = sterile_pc_personnel_evidence_status(support.get("evidence_vault"), record_id)
+
+    reasons = []
+    score = 0
+
+    if person_key == "UNASSIGNED-PERSONNEL":
+        reasons.append("Assigned sterile personnel missing")
+        score += 30
+
+    if personnel_qualified_l in ["no", "false", "expired", "not qualified", "fail", "failed", "rejected"]:
+        reasons.append("Personnel qualification failed, expired, or not qualified")
+        score += 35
+    elif personnel_qualified_l in ["pending", "review", "due", "", "unknown"]:
+        reasons.append("Personnel qualification pending, due, or unknown")
+        score += 18
+
+    if personnel_evidence_status in ["MISSING", "RED"]:
+        reasons.append("No approved personnel/aseptic competency evidence linked")
+        score += 25
+    elif personnel_evidence_status in ["YELLOW", "UNKNOWN"]:
+        reasons.append("Personnel competency evidence pending or unknown")
+        score += 10
+
+    if governance_status.upper() == "RED":
+        reasons.append("CSP governance status is RED")
+        score += 20
+    elif governance_status.upper() == "YELLOW":
+        reasons.append("CSP governance status requires review")
+        score += 8
+
+    if readiness_score and readiness_score < 60:
+        reasons.append("Low readiness score")
+        score += 16
+    elif readiness_score and readiness_score < 90:
+        reasons.append("Readiness score below clean release threshold")
+        score += 6
+
+    if sterile_pc_lower(hazardous) in ["yes", "true", "hazardous"]:
+        reasons.append("Hazardous-drug CSP handled by personnel")
+        score += 8
+
+    if sterile_pc_lower(deviation_signal) in ["yes", "true", "open", "critical"]:
+        reasons.append("Open deviation linked to personnel-handled CSP")
+        score += 18
+
+    if audit_pack_status.upper() == "RED":
+        reasons.append("Audit pack is RED")
+        score += 18
+    elif audit_pack_status.upper() == "YELLOW":
+        reasons.append("Audit pack requires review")
+        score += 6
+
+    if custody_audit_status.upper() == "RED":
+        reasons.append("Custody audit-link is RED")
+        score += 14
+    elif custody_audit_status.upper() == "YELLOW":
+        reasons.append("Custody audit-link requires review")
+        score += 5
+
+    if sop_drift_status.upper() == "RED":
+        reasons.append("SOP/formula drift is RED")
+        score += 14
+    elif sop_drift_status.upper() == "YELLOW":
+        reasons.append("SOP/formula drift requires review")
+        score += 5
+
+    if seal_health_status.upper() == "RED":
+        reasons.append("Dossier seal health is RED")
+        score += 16
+    elif seal_health_status.upper() == "YELLOW":
+        reasons.append("Dossier seal health requires review")
+        score += 5
+
+    score = max(0, min(100, score))
+
+    if score >= 60:
+        drift_status = "RED"
+        recommended_action = "Do not rely on this personnel-linked CSP until qualification, competency evidence, audit-pack, custody, SOP drift, or seal issues are reviewed."
+    elif score >= 20:
+        drift_status = "YELLOW"
+        recommended_action = "Review personnel qualification evidence and linked governance signals before final reliance."
+    else:
+        drift_status = "GREEN"
+        recommended_action = "No personnel competency drift action required from governance view."
+
+    payload = {
+        "drift_id": sterile_pc_make_id("ST-PCDRIFT", record_id, person_key),
+        "record_id": record_id,
+        "person_key": person_key,
+        "person_name": person_name,
+        "role_context": role_context,
+        "csp_name": sterile_pc_safe(row.get("csp_name", "")),
+        "batch_or_rx_id": sterile_pc_safe(row.get("batch_or_rx_id", "")),
+        "facility_type": sterile_pc_safe(row.get("facility_type", "")),
+        "csp_category": sterile_pc_safe(row.get("csp_category", "")),
+        "hazardous_drug": hazardous,
+        "governance_status": governance_status,
+        "readiness_score": sterile_pc_safe(row.get("readiness_score", "")),
+        "personnel_qualified": personnel_qualified,
+        "audit_pack_status": audit_pack_status,
+        "custody_audit_status": custody_audit_status,
+        "sop_drift_status": sop_drift_status,
+        "seal_health_status": seal_health_status,
+        "deviation_signal": deviation_signal,
+        "personnel_evidence_status": personnel_evidence_status,
+        "drift_status": drift_status,
+        "drift_score": score,
+        "drift_reason": "; ".join(reasons) if reasons else "No material personnel competency drift signal detected.",
+        "recommended_action": recommended_action,
+        "source_routes": "; ".join([
+            f"/sterile-compounding/passport/{record_id}",
+            f"/sterile-compounding/personnel-competency/{sterile_pc_quote(person_key)}",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/evidence-matrix/{record_id}",
+            f"/sterile-compounding/custody/{record_id}",
+        ]),
+        "last_checked": sterile_now(),
+    }
+
+    payload["drift_hash"] = sterile_hash_text(
+        sterile_pc_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_pc_build_drift():
+    sterile_pc_require_phase1()
+
+    csp_df = sterile_pc_prepare_csp_df()
+    support = sterile_pc_build_support()
+
+    if csp_df.empty:
+        empty_df = sterile_pc_pd.DataFrame(columns=STERILE_PERSONNEL_DRIFT_COLUMNS)
+        sterile_write_register(STERILE_PERSONNEL_DRIFT_REGISTER, empty_df, STERILE_PERSONNEL_DRIFT_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, row in csp_df.iterrows():
+        rows.append(sterile_pc_record_drift(row.to_dict(), support))
+
+    drift_df = sterile_pc_pd.DataFrame(rows)
+    drift_df = sterile_ensure_cols(drift_df, STERILE_PERSONNEL_DRIFT_COLUMNS)
+    sterile_write_register(STERILE_PERSONNEL_DRIFT_REGISTER, drift_df, STERILE_PERSONNEL_DRIFT_COLUMNS)
+
+    return drift_df
+
+
+def sterile_pc_build_competency():
+    sterile_pc_require_phase1()
+
+    csp_df = sterile_pc_prepare_csp_df()
+    drift_df = sterile_pc_build_drift()
+    support = sterile_pc_build_support()
+    vault_df = support.get("evidence_vault")
+    audit_pack_df = support.get("audit_pack")
+    custody_df = support.get("custody_audit")
+    sop_drift_df = support.get("sop_drift")
+    seal_df = support.get("seal_health")
+
+    if csp_df.empty:
+        empty_df = sterile_pc_pd.DataFrame(columns=STERILE_PERSONNEL_COMPETENCY_COLUMNS)
+        sterile_write_register(STERILE_PERSONNEL_COMPETENCY_REGISTER, empty_df, STERILE_PERSONNEL_COMPETENCY_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for (person_key, person_name, role_context), group in csp_df.groupby(
+        ["person_key_calc", "person_name_calc", "role_context_calc"],
+        dropna=False
+    ):
+        record_ids = [sterile_pc_safe(v) for v in group["record_id"].astype(str).tolist()]
+        linked_count = len(group)
+
+        green_csp = int((group["governance_status"].astype(str).str.upper() == "GREEN").sum())
+        yellow_csp = int((group["governance_status"].astype(str).str.upper() == "YELLOW").sum())
+        red_csp = int((group["governance_status"].astype(str).str.upper() == "RED").sum())
+
+        qualified_count = int(group["personnel_qualified"].astype(str).str.lower().isin([
+            "yes", "true", "current", "qualified", "pass", "passed", "approved", "verified"
+        ]).sum())
+
+        unqualified_or_pending_count = linked_count - qualified_count
+
+        hazardous_count = int(group["hazardous_drug"].astype(str).str.lower().isin(["yes", "true", "hazardous"]).sum())
+        open_dev_count = int(group["deviation_open"].astype(str).str.lower().isin(["yes", "true", "open", "critical"]).sum())
+
+        avg_readiness = round(
+            sterile_pc_pd.to_numeric(group["readiness_score"], errors="coerce").fillna(0).mean(),
+            1
+        )
+
+        critical_audit_pack_count = 0
+        if audit_pack_df is not None and not audit_pack_df.empty and "record_id" in audit_pack_df.columns:
+            critical_audit_pack_count = int(
+                audit_pack_df[
+                    audit_pack_df["record_id"].astype(str).isin(record_ids)
+                    & (audit_pack_df["audit_pack_status"].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        custody_block_count = 0
+        if custody_df is not None and not custody_df.empty and "record_id" in custody_df.columns:
+            custody_block_count = int(
+                custody_df[
+                    custody_df["record_id"].astype(str).isin(record_ids)
+                    & (custody_df["custody_audit_status"].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        sop_formula_drift_count = 0
+        if sop_drift_df is not None and not sop_drift_df.empty and "record_id" in sop_drift_df.columns:
+            sop_formula_drift_count = int(
+                sop_drift_df[
+                    sop_drift_df["record_id"].astype(str).isin(record_ids)
+                    & (sop_drift_df["drift_status"].astype(str).str.upper() == "RED")
+                ].shape[0]
+            )
+
+        seal_mismatch_count = 0
+        if seal_df is not None and not seal_df.empty and "record_id" in seal_df.columns:
+            seal_mismatch_count = int(
+                seal_df[
+                    seal_df["record_id"].astype(str).isin(record_ids)
+                    & (seal_df["latest_verification_status"].astype(str).str.upper() == "HASH MISMATCH")
+                ].shape[0]
+            )
+
+        personnel_evidence_count = 0
+        approved_personnel_evidence_count = 0
+        pending_personnel_evidence_count = 0
+        rejected_personnel_evidence_count = 0
+
+        for rid in record_ids:
+            ev = sterile_pc_record_personnel_evidence(vault_df, rid)
+            personnel_evidence_count += len(ev)
+
+            if ev is not None and not ev.empty and "evidence_status" in ev.columns:
+                approved_personnel_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "GREEN").sum())
+                pending_personnel_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "YELLOW").sum())
+                rejected_personnel_evidence_count += int((ev["evidence_status"].astype(str).str.upper() == "RED").sum())
+
+        linked_drift = drift_df[drift_df["record_id"].astype(str).isin(record_ids)].copy() if not drift_df.empty else drift_df
+        red_drift = int((linked_drift["drift_status"].astype(str).str.upper() == "RED").sum()) if not linked_drift.empty else 0
+        yellow_drift = int((linked_drift["drift_status"].astype(str).str.upper() == "YELLOW").sum()) if not linked_drift.empty else 0
+
+        risk_parts = []
+        score = 100
+
+        if person_key == "UNASSIGNED-PERSONNEL":
+            score -= 30
+            risk_parts.append("Unassigned personnel")
+
+        if unqualified_or_pending_count:
+            score -= unqualified_or_pending_count * 10
+            risk_parts.append(f"Unqualified/pending qualification CSPs: {unqualified_or_pending_count}")
+
+        if personnel_evidence_count == 0:
+            score -= 20
+            risk_parts.append("No linked personnel/aseptic competency evidence")
+
+        if rejected_personnel_evidence_count:
+            score -= rejected_personnel_evidence_count * 15
+            risk_parts.append(f"Rejected personnel evidence: {rejected_personnel_evidence_count}")
+
+        if pending_personnel_evidence_count:
+            score -= pending_personnel_evidence_count * 5
+            risk_parts.append(f"Pending personnel evidence: {pending_personnel_evidence_count}")
+
+        if red_csp:
+            score -= red_csp * 12
+            risk_parts.append(f"RED CSP records: {red_csp}")
+
+        if yellow_csp:
+            score -= yellow_csp * 5
+            risk_parts.append(f"YELLOW CSP records: {yellow_csp}")
+
+        if hazardous_count:
+            score -= hazardous_count * 4
+            risk_parts.append(f"Hazardous CSP workload: {hazardous_count}")
+
+        if open_dev_count:
+            score -= open_dev_count * 10
+            risk_parts.append(f"Open deviations linked to personnel: {open_dev_count}")
+
+        if critical_audit_pack_count:
+            score -= critical_audit_pack_count * 12
+            risk_parts.append(f"RED audit packs linked to personnel: {critical_audit_pack_count}")
+
+        if custody_block_count:
+            score -= custody_block_count * 10
+            risk_parts.append(f"Custody blocks linked to personnel: {custody_block_count}")
+
+        if sop_formula_drift_count:
+            score -= sop_formula_drift_count * 10
+            risk_parts.append(f"SOP/formula drift linked to personnel: {sop_formula_drift_count}")
+
+        if seal_mismatch_count:
+            score -= seal_mismatch_count * 15
+            risk_parts.append(f"Seal mismatches linked to personnel: {seal_mismatch_count}")
+
+        if red_drift:
+            score -= red_drift * 10
+            risk_parts.append(f"RED personnel drift rows: {red_drift}")
+
+        if yellow_drift:
+            score -= yellow_drift * 4
+            risk_parts.append(f"YELLOW personnel drift rows: {yellow_drift}")
+
+        score = max(0, min(100, int(score)))
+
+        if score < 60 or red_drift or rejected_personnel_evidence_count or critical_audit_pack_count or seal_mismatch_count:
+            status = "RED"
+            decision = "PERSONNEL COMPETENCY / ASEPTIC WORKLOAD REQUIRES GOVERNANCE REVIEW"
+            action = "Review qualification evidence, aseptic competency, audit packs, deviations, custody, SOP drift, and seal health before reliance."
+        elif score < 90 or yellow_drift or pending_personnel_evidence_count or unqualified_or_pending_count:
+            status = "YELLOW"
+            decision = "PERSONNEL COMPETENCY NEEDS REVIEW"
+            action = "Confirm qualification status and linked competency evidence before final reliance."
+        else:
+            status = "GREEN"
+            decision = "PERSONNEL COMPETENCY ACCEPTABLE FROM GOVERNANCE VIEW"
+            action = "No personnel competency action required."
+
+        payload = {
+            "person_key": sterile_pc_safe(person_key),
+            "person_name": sterile_pc_safe(person_name),
+            "role_context": sterile_pc_safe(role_context),
+            "linked_csp_count": linked_count,
+            "green_csp": green_csp,
+            "yellow_csp": yellow_csp,
+            "red_csp": red_csp,
+            "qualified_csp_count": qualified_count,
+            "unqualified_or_pending_count": unqualified_or_pending_count,
+            "hazardous_csp_count": hazardous_count,
+            "open_deviation_count": open_dev_count,
+            "critical_audit_pack_count": critical_audit_pack_count,
+            "custody_block_count": custody_block_count,
+            "sop_formula_drift_count": sop_formula_drift_count,
+            "seal_mismatch_count": seal_mismatch_count,
+            "personnel_evidence_count": personnel_evidence_count,
+            "approved_personnel_evidence_count": approved_personnel_evidence_count,
+            "pending_personnel_evidence_count": pending_personnel_evidence_count,
+            "rejected_personnel_evidence_count": rejected_personnel_evidence_count,
+            "average_readiness_score": avg_readiness,
+            "competency_status": status,
+            "competency_score": score,
+            "competency_decision": decision,
+            "risk_summary": "; ".join(risk_parts) if risk_parts else "No material personnel competency risk signal detected.",
+            "recommended_action": action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["competency_hash"] = sterile_hash_text(
+            sterile_pc_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    competency_df = sterile_pc_pd.DataFrame(rows)
+    competency_df = sterile_ensure_cols(competency_df, STERILE_PERSONNEL_COMPETENCY_COLUMNS)
+    sterile_write_register(STERILE_PERSONNEL_COMPETENCY_REGISTER, competency_df, STERILE_PERSONNEL_COMPETENCY_COLUMNS)
+
+    return competency_df
+
+
+@app.route("/sterile-compounding/personnel-competency")
+def sterile_compounding_personnel_competency():
+    competency_df = sterile_pc_build_competency()
+
+    status_filter = sterile_pc_safe(sterile_pc_request.args.get("status", ""))
+    filtered = competency_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["competency_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["competency_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["competency_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["competency_status"] == "RED").sum()) if total else 0
+    linked_csp = int(sterile_pc_pd.to_numeric(filtered["linked_csp_count"], errors="coerce").fillna(0).sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["competency_status", "competency_score"], ascending=[False, True]).iterrows():
+            person_key = sterile_pc_safe(row.get("person_key", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pc_status_badge(row.get("competency_status", ""))}</td>
+                <td><a href="/sterile-compounding/personnel-competency/{sterile_pc_quote(person_key)}">{sterile_pc_safe(row.get("person_name", ""))}</a></td>
+                <td>{sterile_pc_safe(row.get("role_context", ""))}</td>
+                <td>{sterile_pc_safe(row.get("linked_csp_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("competency_score", ""))}</td>
+                <td>{sterile_pc_safe(row.get("qualified_csp_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("unqualified_or_pending_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("hazardous_csp_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("open_deviation_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("personnel_evidence_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("critical_audit_pack_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("custody_block_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("sop_formula_drift_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("seal_mismatch_count", ""))}</td>
+                <td>{sterile_pc_safe(row.get("competency_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="15" style="text-align:center; padding:24px; color:#6b7280;">
+                No personnel competency rows found. Load sample data first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Personnel Competency Governance</h1>
+        <p>
+            Governance view of sterile personnel/technician competency. It links personnel to CSP readiness,
+            qualification status, hazardous workload, deviation exposure, competency evidence, audit-pack failures,
+            custody blocks, SOP/formula drift, and dossier seal mismatches.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Personnel Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Linked CSPs</div><div class="st-value">{linked_csp}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Personnel Filters</h2>
+        <form method="GET" action="/sterile-compounding/personnel-competency">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Competency Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-competency">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-drift">Personnel Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-competency/export">Export Competency</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Personnel Competency Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Personnel</th>
+                        <th>Role</th>
+                        <th>Linked CSPs</th>
+                        <th>Score</th>
+                        <th>Qualified</th>
+                        <th>Unqualified/Pending</th>
+                        <th>Hazardous CSP</th>
+                        <th>Deviations</th>
+                        <th>Evidence</th>
+                        <th>RED Audit Packs</th>
+                        <th>Custody Blocks</th>
+                        <th>SOP Drift</th>
+                        <th>Seal Mismatch</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PERSONNEL-COMPETENCY",
+            "STERILE_PERSONNEL_COMPETENCY_VIEW",
+            "Sterile personnel competency governance viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/personnel-competency",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Personnel Competency Governance", body)
+
+
+@app.route("/sterile-compounding/personnel-competency/<person_key>")
+def sterile_compounding_personnel_competency_passport(person_key):
+    competency_df = sterile_pc_build_competency()
+    drift_df = sterile_pc_build_drift()
+    person_key = sterile_pc_safe(person_key)
+
+    match = competency_df[competency_df["person_key"].astype(str) == str(person_key)] if not competency_df.empty else competency_df
+
+    if match.empty:
+        return sterile_pc_Response("Personnel competency passport not found.", status=404)
+
+    person = match.iloc[0].to_dict()
+    linked_drift = drift_df[drift_df["person_key"].astype(str) == str(person_key)].copy() if not drift_df.empty else drift_df
+
+    person_rows = ""
+    for key in STERILE_PERSONNEL_COMPETENCY_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_pc_safe(person.get(key, ""))
+
+        if key == "competency_status":
+            value = sterile_pc_status_badge(value)
+        elif key == "competency_hash":
+            value = f"<code>{value}</code>"
+
+        person_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    drift_rows = ""
+    if not linked_drift.empty:
+        for _, row in linked_drift.sort_values(by=["drift_status", "drift_score"], ascending=[False, False]).iterrows():
+            rid = sterile_pc_safe(row.get("record_id", ""))
+            drift_rows += f"""
+            <tr>
+                <td>{sterile_pc_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_pc_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_pc_safe(row.get("personnel_qualified", ""))}</td>
+                <td>{sterile_pc_safe(row.get("personnel_evidence_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("custody_audit_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("sop_drift_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("seal_health_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_pc_safe(row.get("drift_reason", ""))}</td>
+            </tr>
+            """
+    else:
+        drift_rows = """
+        <tr>
+            <td colspan="13" style="text-align:center; padding:24px; color:#6b7280;">
+                No linked personnel drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Personnel Competency Passport</h1>
+        <p>
+            Competency and aseptic workload passport for <b>{sterile_pc_safe(person.get("person_name", ""))}</b>.
+        </p>
+        <div style="margin-top:16px;">{sterile_pc_status_badge(person.get("competency_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_pc_safe(person.get("competency_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Personnel Competency Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{person_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Linked CSP Personnel Drift</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Readiness</th>
+                        <th>Qualification</th>
+                        <th>Evidence</th>
+                        <th>Audit Pack</th>
+                        <th>Custody</th>
+                        <th>SOP Drift</th>
+                        <th>Seal Health</th>
+                        <th>Score</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>{drift_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/personnel-drift">Personnel Drift Register</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/personnel-competency">Back to Personnel Competency</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            person_key,
+            "STERILE_PERSONNEL_COMPETENCY_PASSPORT_VIEW",
+            f"Personnel competency passport viewed for {person_key}",
+            actor="system",
+            source_route="/sterile-compounding/personnel-competency/<person_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Personnel Competency Passport - {person_key}", body)
+
+
+@app.route("/sterile-compounding/personnel-drift")
+def sterile_compounding_personnel_drift():
+    drift_df = sterile_pc_build_drift()
+
+    status_filter = sterile_pc_safe(sterile_pc_request.args.get("status", ""))
+    filtered = drift_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["drift_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["drift_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["drift_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["drift_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["drift_status", "drift_score"], ascending=[False, False]).iterrows():
+            rid = sterile_pc_safe(row.get("record_id", ""))
+            person_key = sterile_pc_safe(row.get("person_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pc_status_badge(row.get("drift_status", ""))}</td>
+                <td><a href="/sterile-compounding/personnel-competency/{sterile_pc_quote(person_key)}">{sterile_pc_safe(row.get("person_name", ""))}</a></td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_pc_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_pc_safe(row.get("personnel_qualified", ""))}</td>
+                <td>{sterile_pc_safe(row.get("personnel_evidence_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("custody_audit_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("sop_drift_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("seal_health_status", ""))}</td>
+                <td>{sterile_pc_safe(row.get("drift_score", ""))}</td>
+                <td>{sterile_pc_safe(row.get("drift_reason", ""))}</td>
+                <td>{sterile_pc_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="15" style="text-align:center; padding:24px; color:#6b7280;">
+                No personnel drift rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Personnel Competency Drift Register</h1>
+        <p>
+            Record-level drift view showing personnel qualification gaps, missing competency evidence,
+            hazardous CSP workload, deviations, audit-pack failures, custody blocks, SOP/formula drift,
+            and dossier seal issues.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Drift Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Personnel Drift Filters</h2>
+        <form method="GET" action="/sterile-compounding/personnel-drift">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Drift Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-drift">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-competency">Personnel Competency</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-drift/export">Export Drift</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Personnel Drift Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Drift</th>
+                        <th>Personnel</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Readiness</th>
+                        <th>Qualification</th>
+                        <th>Evidence</th>
+                        <th>Audit Pack</th>
+                        <th>Custody</th>
+                        <th>SOP Drift</th>
+                        <th>Seal Health</th>
+                        <th>Score</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PERSONNEL-DRIFT",
+            "STERILE_PERSONNEL_DRIFT_VIEW",
+            "Sterile personnel competency drift register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/personnel-drift",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Personnel Competency Drift Register", body)
+
+
+@app.route("/sterile-compounding/personnel-competency/export")
+def sterile_compounding_personnel_competency_export():
+    competency_df = sterile_pc_build_competency()
+
+    if competency_df.empty:
+        competency_df = sterile_pc_pd.DataFrame(columns=STERILE_PERSONNEL_COMPETENCY_COLUMNS)
+
+    csv_data = competency_df.to_csv(index=False)
+
+    return sterile_pc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_personnel_competency_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/personnel-drift/export")
+def sterile_compounding_personnel_drift_export():
+    drift_df = sterile_pc_build_drift()
+
+    if drift_df.empty:
+        drift_df = sterile_pc_pd.DataFrame(columns=STERILE_PERSONNEL_DRIFT_COLUMNS)
+
+    csv_data = drift_df.to_csv(index=False)
+
+    return sterile_pc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_personnel_drift_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_personnel_competency_dashboard_injection(response):
+    try:
+        if sterile_pc_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-personnel-competency-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-personnel-competency-panel">
+            <h2>Personnel Competency Drift + Aseptic Workload Risk</h2>
+            <p class="st-note">
+                Tracks personnel qualification status, aseptic competency evidence, hazardous workload,
+                deviation exposure, audit-pack failures, custody blocks, SOP/formula drift, and seal-health issues.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/personnel-competency">Personnel Competency</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-drift">Personnel Drift</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-competency/export">Export Competency</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/personnel-drift/export">Export Drift</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile personnel competency dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
