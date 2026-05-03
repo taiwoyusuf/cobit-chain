@@ -46359,5 +46359,847 @@ def sterile_compounding_maturity_roadmap_dashboard_injection(response):
         print(f"Sterile maturity roadmap dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INTEGRATION_BLUEPRINT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 35: Enterprise Integration Blueprint + Connector Readiness
+#
+# New Routes:
+#   /sterile-compounding/integration-blueprint
+#   /sterile-compounding/integration-blueprint/<system_key>
+#   /sterile-compounding/integration-blueprint/export
+#   /sterile-compounding/system-connector-readiness
+#   /sterile-compounding/system-connector-readiness/export
+#
+# New Registers:
+#   sterile_compounding_integration_blueprint_register.csv
+#   sterile_compounding_system_connector_readiness.csv
+#
+# Boundary:
+#   This is a sterile-only future integration blueprint. It does not
+#   call external APIs, does not modify ServiceNow, Entra, CI, Knowledge,
+#   Command Center, Monday Demo, Release Notes, Platform Health,
+#   Manufacturing/Wole, Veeva, Blue Mountain, myAccess, or any protected
+#   global route. It documents readiness and safe integration boundaries.
+# ============================================================
+
+try:
+    import pandas as sterile_int_pd
+    import json as sterile_int_json
+    from flask import request as sterile_int_request
+    from flask import Response as sterile_int_Response
+except Exception as sterile_int_import_error:
+    raise RuntimeError(f"Sterile integration blueprint import failed: {sterile_int_import_error}")
+
+
+STERILE_INTEGRATION_BLUEPRINT_REGISTER = "sterile_compounding_integration_blueprint_register.csv"
+STERILE_SYSTEM_CONNECTOR_READINESS_REGISTER = "sterile_compounding_system_connector_readiness.csv"
+
+STERILE_INTEGRATION_BLUEPRINT_COLUMNS = [
+    "integration_id",
+    "system_key",
+    "system_name",
+    "system_category",
+    "integration_purpose",
+    "source_or_target",
+    "data_objects",
+    "proposed_connection_pattern",
+    "governance_controls",
+    "validation_boundary",
+    "protected_area_impact",
+    "required_approval",
+    "risk_level",
+    "readiness_status",
+    "readiness_score",
+    "first_safe_step",
+    "future_route_or_output",
+    "last_checked",
+    "integration_hash"
+]
+
+STERILE_CONNECTOR_READINESS_COLUMNS = [
+    "connector_id",
+    "system_key",
+    "system_name",
+    "readiness_domain",
+    "domain_status",
+    "domain_score",
+    "current_gap",
+    "required_evidence",
+    "owner_or_reviewer",
+    "safe_next_action",
+    "integration_dependency",
+    "last_checked",
+    "connector_hash"
+]
+
+
+STERILE_INTEGRATION_SEED = [
+    {
+        "system_key": "servicenow",
+        "system_name": "ServiceNow",
+        "system_category": "ITSM / workflow / CI governance",
+        "purpose": "Future link between sterile assurance records and tickets, tasks, CI candidates, incidents, change records, and knowledge references.",
+        "direction": "Source and target, subject to approval",
+        "objects": "tickets; incidents; changes; CI references; task numbers; knowledge links",
+        "pattern": "Blueprint first. Later use API or export/import adapter after approval. No current ServiceNow route is touched by this module.",
+        "controls": "Change traceability; ticket-to-evidence linkage; approval state capture; audit lineage; no direct overwrite of ITSM records.",
+        "boundary": "Sterile blueprint only. No ServiceNow API call, no route overwrite, no protected ServiceNow page update.",
+        "approval": "ITSM owner, system owner, QA/Governance reviewer if used for GMP-impacting evidence.",
+        "risk": "Medium",
+        "score": 65,
+        "first": "Create a field mapping table for sterile CSP record ID to ServiceNow ticket/change/CI references.",
+        "future": "/sterile-compounding/servicenow-link-blueprint",
+    },
+    {
+        "system_key": "veeva",
+        "system_name": "Veeva Vault / QMS",
+        "system_category": "Controlled documents / deviations / CAPA",
+        "purpose": "Future link between CSP assurance records and controlled SOPs, deviations, CAPA references, training evidence, and approved documents.",
+        "direction": "Source reference only unless approved",
+        "objects": "SOP IDs; document versions; deviation IDs; CAPA IDs; approval states; training references",
+        "pattern": "Read-only evidence reference blueprint first. Do not write into Veeva from this app without formal approval.",
+        "controls": "Controlled-document version mapping; deviation/CAPA reference integrity; reviewer sign-off; evidence retention boundary.",
+        "boundary": "Sterile blueprint only. No QMS writeback and no formal document control replacement.",
+        "approval": "QA, Document Control, Veeva owner, CSV/validation reviewer.",
+        "risk": "High",
+        "score": 55,
+        "first": "Define Veeva reference fields needed in the sterile evidence matrix and regulatory crosswalk.",
+        "future": "/sterile-compounding/veeva-reference-blueprint",
+    },
+    {
+        "system_key": "blue-mountain",
+        "system_name": "Blue Mountain RAM",
+        "system_category": "Validated asset / equipment system of record",
+        "purpose": "Future link between CSP readiness and equipment, room, hood, calibration, maintenance, work order, and asset status evidence.",
+        "direction": "Source reference only unless approved",
+        "objects": "asset IDs; room IDs; hood IDs; equipment status; calibration due dates; maintenance work orders; periodic review evidence",
+        "pattern": "Read-only equipment/room readiness mapping. Later use controlled export/import or approved API.",
+        "controls": "Asset-to-CSP linkage; calibration status; maintenance evidence; validated-system boundary; no source-of-truth replacement.",
+        "boundary": "Sterile blueprint only. Blue Mountain remains the validated source of truth.",
+        "approval": "System owner, validation owner, QA, equipment/process owner.",
+        "risk": "High",
+        "score": 60,
+        "first": "Create sterile equipment/room mapping table using asset ID, room ID, hood ID, and readiness fields.",
+        "future": "/sterile-compounding/blue-mountain-readiness-blueprint",
+    },
+    {
+        "system_key": "myaccess",
+        "system_name": "myAccess",
+        "system_category": "Access governance",
+        "purpose": "Future link between sterile personnel competency, access entitlement evidence, and access review status.",
+        "direction": "Source reference only unless approved",
+        "objects": "user IDs; role names; access groups; access review status; approval evidence; exceptions",
+        "pattern": "CSV/export-based access evidence first. Later API-based access posture only after approval.",
+        "controls": "Role-to-task appropriateness; access review linkage; segregation risk; evidence of approval and reviewer identity.",
+        "boundary": "Sterile blueprint only. Does not modify myAccess or access entitlements.",
+        "approval": "Access governance owner, IAM owner, QA/Governance reviewer.",
+        "risk": "Medium",
+        "score": 60,
+        "first": "Define personnel-to-access evidence fields for the personnel competency drift register.",
+        "future": "/sterile-compounding/myaccess-evidence-blueprint",
+    },
+    {
+        "system_key": "entra",
+        "system_name": "Microsoft Entra ID",
+        "system_category": "Identity / user directory",
+        "purpose": "Future identity lookup for technician, reviewer, approver, custodian, and sign-off actor metadata.",
+        "direction": "Source reference only unless approved",
+        "objects": "display name; email; user principal name; group membership; role labels; account state",
+        "pattern": "Read-only Graph lookup blueprint. No Entra route or protected identity module is touched.",
+        "controls": "Identity normalization; reviewer identity consistency; account-active check; least-privilege identity lookup.",
+        "boundary": "Sterile blueprint only. No Entra writeback and no protected Entra module changes.",
+        "approval": "IAM owner, security owner, app owner.",
+        "risk": "Medium",
+        "score": 62,
+        "first": "Define identity fields needed for sign-off, custody, and personnel competency records.",
+        "future": "/sterile-compounding/entra-identity-blueprint",
+    },
+    {
+        "system_key": "azure-blob",
+        "system_name": "Azure Blob Storage",
+        "system_category": "Evidence/register storage",
+        "purpose": "Future controlled storage pattern for sterile registers, evidence metadata, exported packets, and immutable hash inputs.",
+        "direction": "Target storage, subject to approval",
+        "objects": "CSV registers; evidence metadata; packet exports; hash manifests; snapshots",
+        "pattern": "Controlled container and folder structure with naming conventions, retention logic, and access controls.",
+        "controls": "Storage access control; retention; versioning; naming convention; hash verification; export lineage.",
+        "boundary": "Sterile blueprint only. Does not change current Azure storage configuration.",
+        "approval": "Azure owner, security owner, records/retention reviewer if used operationally.",
+        "risk": "Medium",
+        "score": 70,
+        "first": "Define sterile storage container/folder model and register naming convention.",
+        "future": "/sterile-compounding/storage-blueprint",
+    },
+    {
+        "system_key": "azure-confidential-ledger",
+        "system_name": "Azure Confidential Ledger",
+        "system_category": "Immutable ledger / tamper-evident anchoring",
+        "purpose": "Future anchoring of sterile dossier hash, freeze snapshot hash, presentation lock hash, and audit packet hash.",
+        "direction": "Target ledger, subject to approval",
+        "objects": "dossier hashes; snapshot hashes; lock hashes; packet hashes; verification events",
+        "pattern": "Hash-only anchoring. No sensitive evidence content should be written to ledger.",
+        "controls": "Hash-only submission; verification timestamp; ledger transaction reference; no PHI/PII/secrets in ledger payload.",
+        "boundary": "Sterile blueprint only. No ledger call is made by this module.",
+        "approval": "Security owner, cloud owner, QA/Governance reviewer.",
+        "risk": "Medium",
+        "score": 68,
+        "first": "Define hash-only ledger payload schema for sterile dossier and freeze snapshot evidence.",
+        "future": "/sterile-compounding/ledger-anchor-blueprint",
+    },
+    {
+        "system_key": "power-bi",
+        "system_name": "Power BI",
+        "system_category": "Analytics / leadership dashboard",
+        "purpose": "Future analytics layer for sterile readiness, assurance score, control coverage, inspection status, and route-health KPIs.",
+        "direction": "Target analytics",
+        "objects": "register exports; readiness KPIs; route health; binder status; maturity score; roadmap items",
+        "pattern": "Read-only dataset from exported sterile CSV registers or controlled dataflow.",
+        "controls": "Dataset refresh governance; row-level sensitivity review; no uncontrolled source-of-truth replacement.",
+        "boundary": "Sterile blueprint only. No Power BI workspace or dataset is modified by this module.",
+        "approval": "Analytics owner, data governance reviewer, business owner.",
+        "risk": "Low",
+        "score": 75,
+        "first": "Create Power BI data model using register catalog and key readiness registers.",
+        "future": "/sterile-compounding/powerbi-blueprint",
+    },
+]
+
+
+STERILE_CONNECTOR_DOMAINS = [
+    ("Ownership", "System owner and business owner identified", 20),
+    ("Data Contract", "Fields, keys, status values, and data direction defined", 20),
+    ("Access Model", "Read/write scope, identity, and permission model approved", 15),
+    ("Validation Boundary", "Validated-system and source-of-truth boundary documented", 15),
+    ("Security Review", "Security, privacy, PHI/PII, and secrets handling reviewed", 15),
+    ("Evidence Mapping", "Control-to-evidence mapping and audit route defined", 15),
+]
+
+
+def sterile_int_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile integration blueprint dependencies missing: " + ", ".join(missing))
+
+
+def sterile_int_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_int_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_int_bucket(value):
+    value = sterile_int_safe(value).upper()
+
+    if value in ["GREEN", "READY", "LOW"]:
+        return "GREEN"
+
+    if value in ["RED", "BLOCKED", "HIGH"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_int_badge(status):
+    bucket = sterile_int_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_int_readiness_from_score(score):
+    try:
+        score = int(float(score))
+    except Exception:
+        score = 0
+
+    if score >= 75:
+        return "GREEN"
+    if score >= 55:
+        return "YELLOW"
+    return "RED"
+
+
+def sterile_int_build_blueprints():
+    sterile_int_require_dependencies()
+
+    blueprint_rows = []
+    connector_rows = []
+
+    for item in STERILE_INTEGRATION_SEED:
+        readiness_status = sterile_int_readiness_from_score(item["score"])
+
+        payload = {
+            "integration_id": sterile_int_make_id("ST-INT", item["system_key"]),
+            "system_key": item["system_key"],
+            "system_name": item["system_name"],
+            "system_category": item["system_category"],
+            "integration_purpose": item["purpose"],
+            "source_or_target": item["direction"],
+            "data_objects": item["objects"],
+            "proposed_connection_pattern": item["pattern"],
+            "governance_controls": item["controls"],
+            "validation_boundary": item["boundary"],
+            "protected_area_impact": "None in this phase. Blueprint only.",
+            "required_approval": item["approval"],
+            "risk_level": item["risk"],
+            "readiness_status": readiness_status,
+            "readiness_score": item["score"],
+            "first_safe_step": item["first"],
+            "future_route_or_output": item["future"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["integration_hash"] = sterile_hash_text(
+            sterile_int_json.dumps(payload, sort_keys=True)
+        )
+
+        blueprint_rows.append(payload)
+
+        for domain, gap_template, weight in STERILE_CONNECTOR_DOMAINS:
+            if item["score"] >= 75:
+                domain_status = "GREEN" if domain in ["Ownership", "Data Contract", "Evidence Mapping"] else "YELLOW"
+                domain_score = weight
+            elif item["score"] >= 60:
+                domain_status = "YELLOW"
+                domain_score = max(8, int(weight * 0.65))
+            else:
+                domain_status = "YELLOW" if domain in ["Ownership", "Data Contract"] else "RED"
+                domain_score = max(5, int(weight * 0.45))
+
+            if domain_status == "GREEN":
+                gap = "Baseline planning is sufficient for demo blueprint."
+                evidence = f"{domain} is represented in the sterile blueprint."
+            elif domain_status == "YELLOW":
+                gap = f"{gap_template}; requires owner review before implementation."
+                evidence = f"Document approval evidence for {domain.lower()}."
+            else:
+                gap = f"{gap_template}; not ready for implementation."
+                evidence = f"Formal approval and evidence are required for {domain.lower()}."
+
+            conn_payload = {
+                "connector_id": sterile_int_make_id("ST-CONN", item["system_key"], domain),
+                "system_key": item["system_key"],
+                "system_name": item["system_name"],
+                "readiness_domain": domain,
+                "domain_status": domain_status,
+                "domain_score": domain_score,
+                "current_gap": gap,
+                "required_evidence": evidence,
+                "owner_or_reviewer": item["approval"],
+                "safe_next_action": item["first"],
+                "integration_dependency": item["pattern"],
+                "last_checked": sterile_now(),
+            }
+
+            conn_payload["connector_hash"] = sterile_hash_text(
+                sterile_int_json.dumps(conn_payload, sort_keys=True)
+            )
+
+            connector_rows.append(conn_payload)
+
+    blueprint_df = sterile_int_pd.DataFrame(blueprint_rows)
+    blueprint_df = sterile_ensure_cols(blueprint_df, STERILE_INTEGRATION_BLUEPRINT_COLUMNS)
+
+    connector_df = sterile_int_pd.DataFrame(connector_rows)
+    connector_df = sterile_ensure_cols(connector_df, STERILE_CONNECTOR_READINESS_COLUMNS)
+
+    sterile_write_register(STERILE_INTEGRATION_BLUEPRINT_REGISTER, blueprint_df, STERILE_INTEGRATION_BLUEPRINT_COLUMNS)
+    sterile_write_register(STERILE_SYSTEM_CONNECTOR_READINESS_REGISTER, connector_df, STERILE_CONNECTOR_READINESS_COLUMNS)
+
+    return blueprint_df, connector_df
+
+
+@app.route("/sterile-compounding/integration-blueprint")
+def sterile_compounding_integration_blueprint():
+    blueprint_df, connector_df = sterile_int_build_blueprints()
+
+    status_filter = sterile_int_safe(sterile_int_request.args.get("status", ""))
+    risk_filter = sterile_int_safe(sterile_int_request.args.get("risk", ""))
+
+    filtered = blueprint_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["readiness_status"].astype(str) == status_filter]
+
+    if risk_filter and not filtered.empty:
+        filtered = filtered[filtered["risk_level"].astype(str) == risk_filter]
+
+    total = len(filtered)
+    green = int((filtered["readiness_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["readiness_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["readiness_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Readiness Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    risk_options = ""
+    for option in ["", "Low", "Medium", "High"]:
+        label = "All Risk Levels" if option == "" else option
+        selected = "selected" if option == risk_filter else ""
+        risk_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["risk_level", "readiness_score"], ascending=[False, False]).iterrows():
+            system_key = sterile_int_safe(row.get("system_key", ""))
+            future = sterile_int_safe(row.get("future_route_or_output", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_int_badge(row.get("readiness_status", ""))}</td>
+                <td><a href="/sterile-compounding/integration-blueprint/{system_key}">{sterile_int_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_int_safe(row.get("system_category", ""))}</td>
+                <td>{sterile_int_safe(row.get("risk_level", ""))}</td>
+                <td>{sterile_int_safe(row.get("readiness_score", ""))}</td>
+                <td>{sterile_int_safe(row.get("source_or_target", ""))}</td>
+                <td>{sterile_int_safe(row.get("data_objects", ""))}</td>
+                <td>{sterile_int_safe(row.get("first_safe_step", ""))}</td>
+                <td><code>{future}</code></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No integration blueprint rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Enterprise Integration Blueprint</h1>
+        <p>
+            Sterile-only future integration plan for ServiceNow, Veeva, Blue Mountain, myAccess,
+            Entra ID, Azure storage, immutable ledger anchoring, and Power BI. This page documents
+            safe boundaries only. It does not call or modify those systems.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Systems</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Blueprint Filters</h2>
+        <form method="GET" action="/sterile-compounding/integration-blueprint">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Readiness Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Risk Level</label>
+                    <select name="risk">{risk_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness">Connector Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint/export">Export Blueprint</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Integration Blueprint Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Category</th>
+                        <th>Risk</th>
+                        <th>Score</th>
+                        <th>Direction</th>
+                        <th>Data Objects</th>
+                        <th>First Safe Step</th>
+                        <th>Future Output</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INTEGRATION-BLUEPRINT",
+            "STERILE_INTEGRATION_BLUEPRINT_VIEW",
+            "Sterile enterprise integration blueprint viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/integration-blueprint",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Enterprise Integration Blueprint", body)
+
+
+@app.route("/sterile-compounding/integration-blueprint/<system_key>")
+def sterile_compounding_integration_blueprint_detail(system_key):
+    blueprint_df, connector_df = sterile_int_build_blueprints()
+    system_key = sterile_int_safe(system_key)
+
+    match = blueprint_df[blueprint_df["system_key"].astype(str) == str(system_key)].copy() if not blueprint_df.empty else blueprint_df
+
+    if match.empty:
+        return sterile_int_Response("Integration blueprint not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    connector_rows = connector_df[connector_df["system_key"].astype(str) == str(system_key)].copy() if not connector_df.empty else connector_df
+
+    detail_rows = ""
+    for key in STERILE_INTEGRATION_BLUEPRINT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_int_safe(row.get(key, ""))
+
+        if key == "readiness_status":
+            value = sterile_int_badge(value)
+        elif key == "integration_hash":
+            value = f"<code>{value}</code>"
+        elif key == "future_route_or_output":
+            value = f"<code>{value}</code>"
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    connector_html = ""
+
+    if not connector_rows.empty:
+        for _, conn in connector_rows.sort_values(by="readiness_domain").iterrows():
+            connector_html += f"""
+            <tr>
+                <td>{sterile_int_badge(conn.get("domain_status", ""))}</td>
+                <td>{sterile_int_safe(conn.get("readiness_domain", ""))}</td>
+                <td>{sterile_int_safe(conn.get("domain_score", ""))}</td>
+                <td>{sterile_int_safe(conn.get("current_gap", ""))}</td>
+                <td>{sterile_int_safe(conn.get("required_evidence", ""))}</td>
+                <td>{sterile_int_safe(conn.get("safe_next_action", ""))}</td>
+            </tr>
+            """
+    else:
+        connector_html = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No connector readiness rows found for this system.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Integration Blueprint: {sterile_int_safe(row.get("system_name", ""))}</h1>
+        <p>
+            System-specific future integration boundary. This is documentation only and does not connect to the system.
+        </p>
+        <div style="margin-top:16px;">{sterile_int_badge(row.get("readiness_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            First safe step: {sterile_int_safe(row.get("first_safe_step", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Blueprint Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Readiness Domains</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Domain</th>
+                        <th>Score</th>
+                        <th>Current Gap</th>
+                        <th>Required Evidence</th>
+                        <th>Safe Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{connector_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/integration-blueprint">Back to Blueprint</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness">Connector Readiness</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/roadmap">Roadmap</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model">Maturity Model</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            system_key,
+            "STERILE_INTEGRATION_BLUEPRINT_DETAIL_VIEW",
+            "Sterile system-specific integration blueprint viewed",
+            actor="system",
+            source_route="/sterile-compounding/integration-blueprint/<system_key>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Integration Blueprint - {system_key}", body)
+
+
+@app.route("/sterile-compounding/system-connector-readiness")
+def sterile_compounding_system_connector_readiness():
+    blueprint_df, connector_df = sterile_int_build_blueprints()
+
+    status_filter = sterile_int_safe(sterile_int_request.args.get("status", ""))
+    system_filter = sterile_int_safe(sterile_int_request.args.get("system", ""))
+
+    filtered = connector_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["domain_status"].astype(str) == status_filter]
+
+    if system_filter and not filtered.empty:
+        filtered = filtered[filtered["system_key"].astype(str) == system_filter]
+
+    total = len(filtered)
+    green = int((filtered["domain_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["domain_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["domain_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Domain Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    system_options = '<option value="">All Systems</option>'
+    for key in sorted(connector_df["system_key"].dropna().unique().tolist()) if not connector_df.empty else []:
+        selected = "selected" if key == system_filter else ""
+        system_options += f'<option value="{key}" {selected}>{key}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["domain_status", "system_key", "readiness_domain"], ascending=[False, True, True]).iterrows():
+            system_key = sterile_int_safe(row.get("system_key", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_int_badge(row.get("domain_status", ""))}</td>
+                <td><a href="/sterile-compounding/integration-blueprint/{system_key}">{sterile_int_safe(row.get("system_name", ""))}</a></td>
+                <td>{sterile_int_safe(row.get("readiness_domain", ""))}</td>
+                <td>{sterile_int_safe(row.get("domain_score", ""))}</td>
+                <td>{sterile_int_safe(row.get("current_gap", ""))}</td>
+                <td>{sterile_int_safe(row.get("required_evidence", ""))}</td>
+                <td>{sterile_int_safe(row.get("owner_or_reviewer", ""))}</td>
+                <td>{sterile_int_safe(row.get("safe_next_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No connector readiness rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>System Connector Readiness</h1>
+        <p>
+            Readiness matrix for future sterile integrations. This shows the gaps that must be closed before
+            connecting to enterprise systems. No connector is active in this phase.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Readiness Rows</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Filters</h2>
+        <form method="GET" action="/sterile-compounding/system-connector-readiness">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Domain Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>System</label>
+                    <select name="system">{system_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint">Integration Blueprint</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness/export">Export Readiness</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Connector Readiness Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>System</th>
+                        <th>Domain</th>
+                        <th>Score</th>
+                        <th>Current Gap</th>
+                        <th>Required Evidence</th>
+                        <th>Owner / Reviewer</th>
+                        <th>Safe Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONNECTOR-READINESS",
+            "STERILE_CONNECTOR_READINESS_VIEW",
+            "Sterile system connector readiness viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/system-connector-readiness",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("System Connector Readiness", body)
+
+
+@app.route("/sterile-compounding/integration-blueprint/export")
+def sterile_compounding_integration_blueprint_export():
+    blueprint_df, connector_df = sterile_int_build_blueprints()
+
+    if blueprint_df.empty:
+        blueprint_df = sterile_int_pd.DataFrame(columns=STERILE_INTEGRATION_BLUEPRINT_COLUMNS)
+
+    csv_data = blueprint_df.to_csv(index=False)
+
+    return sterile_int_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_integration_blueprint_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/system-connector-readiness/export")
+def sterile_compounding_system_connector_readiness_export():
+    blueprint_df, connector_df = sterile_int_build_blueprints()
+
+    if connector_df.empty:
+        connector_df = sterile_int_pd.DataFrame(columns=STERILE_CONNECTOR_READINESS_COLUMNS)
+
+    csv_data = connector_df.to_csv(index=False)
+
+    return sterile_int_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_system_connector_readiness_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_integration_blueprint_dashboard_injection(response):
+    try:
+        if sterile_int_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/roadmap",
+            "/sterile-compounding/maturity-model",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/navigation-hub",
+            "/sterile-compounding/demo-walkthrough",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-integration-blueprint-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-integration-blueprint-panel">
+            <h2>Enterprise Integration Blueprint + Connector Readiness</h2>
+            <p class="st-note">
+                Documents future integration boundaries for ServiceNow, Veeva, Blue Mountain, myAccess,
+                Entra, Azure storage, immutable ledger, and Power BI. No external system is called or modified.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/integration-blueprint">Integration Blueprint</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness">Connector Readiness</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint/export">Export Blueprint</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/system-connector-readiness/export">Export Readiness</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile integration blueprint dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
