@@ -53197,5 +53197,300 @@ def sterile_compounding_command_center_entry_injection(response):
         print(f"Sterile Command Center entry injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_MONDAY_DEMO_ENTRY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 43: Monday Demo Entry Bridge
+#
+# New Routes:
+#   /sterile-compounding/monday-demo-entry
+#   /sterile-compounding/monday-demo-entry/export
+#
+# New Register:
+#   sterile_compounding_monday_demo_entry.csv
+#
+# Boundary:
+#   This adds a small sterile demo entry panel into /monday-demo
+#   using after_request injection. It does not overwrite the existing
+#   /monday-demo route and does not touch Command Center logic,
+#   Release Notes, Platform Health, Manufacturing/Wole, ServiceNow,
+#   Entra, CI, Knowledge, Operational Lineage, or other protected modules.
+# ============================================================
+
+try:
+    import pandas as sterile_mde_pd
+    import json as sterile_mde_json
+    from flask import request as sterile_mde_request
+    from flask import Response as sterile_mde_Response
+except Exception as sterile_mde_import_error:
+    raise RuntimeError(f"Sterile Monday Demo entry import failed: {sterile_mde_import_error}")
+
+
+STERILE_MONDAY_DEMO_ENTRY_REGISTER = "sterile_compounding_monday_demo_entry.csv"
+
+STERILE_MONDAY_DEMO_ENTRY_COLUMNS = [
+    "demo_entry_id",
+    "demo_name",
+    "demo_status",
+    "demo_route",
+    "opening_route",
+    "story_route",
+    "executive_route",
+    "inspection_route",
+    "integration_route",
+    "poc_route",
+    "demo_duration",
+    "audience",
+    "opening_message",
+    "demo_storyline",
+    "wow_factor",
+    "safe_boundary",
+    "not_allowed_claims",
+    "recommended_click_sequence",
+    "last_checked",
+    "demo_entry_hash"
+]
+
+
+def sterile_mde_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Monday Demo entry dependencies missing: " + ", ".join(missing))
+
+
+def sterile_mde_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_mde_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_mde_badge(status):
+    status = sterile_mde_safe(status).upper()
+
+    if status in ["GREEN", "ACTIVE", "READY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_mde_build_entry():
+    sterile_mde_require_dependencies()
+
+    click_sequence = "Sterile Home -> Demo Walkthrough -> Executive Brief -> Inspection Binder -> Go-Live Readiness -> POC Results -> Integration Blueprint -> Maturity Roadmap"
+
+    payload = {
+        "demo_entry_id": sterile_mde_make_id("ST-MDEMO", "compound-sterile-demo"),
+        "demo_name": "Compound Sterile AssuranceLayer™ Monday Demo",
+        "demo_status": "GREEN",
+        "demo_route": "/sterile-compounding/monday-demo-entry",
+        "opening_route": "/sterile-compounding",
+        "story_route": "/sterile-compounding/demo-walkthrough",
+        "executive_route": "/sterile-compounding/executive-brief",
+        "inspection_route": "/sterile-compounding/inspection-binder",
+        "integration_route": "/sterile-compounding/integration-blueprint",
+        "poc_route": "/sterile-compounding/poc-results-summary",
+        "demo_duration": "5-8 minutes",
+        "audience": "IT leadership, QA/governance reviewers, integration stakeholders, audit-readiness stakeholders",
+        "opening_message": "This demo shows how AssuranceLayer can convert sterile compounding activity into governed evidence, inspection readiness, readiness gates, evidence packets, and future integration plans without replacing validated source systems.",
+        "demo_storyline": "Start with sterile home, show record-level assurance, show inspection binder and narrative, show go-live/presentation lock, then show POC integration governance and data-contract readiness.",
+        "wow_factor": "The vertical does not just display records; it builds a governed control-to-evidence story with readiness gates, packet manifests, connector approvals, POC test evidence, and integration boundaries.",
+        "safe_boundary": "Demonstration and governance planning only. Not a QMS, not a pharmacy release system, not a validated source of truth, and not a live enterprise connector.",
+        "not_allowed_claims": "Do not claim it releases compounded products, replaces Veeva/Blue Mountain/ServiceNow/myAccess, or has live production integrations unless separately implemented and approved.",
+        "recommended_click_sequence": click_sequence,
+        "last_checked": sterile_now(),
+    }
+
+    payload["demo_entry_hash"] = sterile_hash_text(
+        sterile_mde_json.dumps(payload, sort_keys=True)
+    )
+
+    df = sterile_mde_pd.DataFrame([payload])
+    df = df.reindex(columns=STERILE_MONDAY_DEMO_ENTRY_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_MONDAY_DEMO_ENTRY_REGISTER,
+        df,
+        STERILE_MONDAY_DEMO_ENTRY_COLUMNS
+    )
+
+    return df
+
+
+@app.route("/sterile-compounding/monday-demo-entry")
+def sterile_compounding_monday_demo_entry():
+    entry_df = sterile_mde_build_entry()
+    row = entry_df.iloc[0].to_dict() if not entry_df.empty else {}
+
+    detail_rows = ""
+    for key in STERILE_MONDAY_DEMO_ENTRY_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_mde_safe(row.get(key, ""))
+
+        if key == "demo_status":
+            value = sterile_mde_badge(value)
+        elif key == "demo_entry_hash":
+            value = f"<code>{value}</code>"
+        elif key.endswith("_route") or key in ["demo_route", "opening_route"]:
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Monday Demo Entry Bridge</h1>
+        <p>
+            Sterile-only demo entry record for presenting Compound Sterile AssuranceLayer™ from the Monday Demo page.
+            This route documents the story, audience, click path, value, and safe boundaries.
+        </p>
+        <div style="margin-top:16px;">{sterile_mde_badge(row.get("demo_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_mde_safe(row.get("demo_name", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Recommended Demo Flow</h2>
+        <p class="st-note">{sterile_mde_safe(row.get("opening_message", ""))}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            <a class="st-button" href="/sterile-compounding">Sterile Home</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary">POC Results</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint">Integration Blueprint</a>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Demo Entry Register Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Presenter Boundary</h2>
+        <p><b>Safe boundary:</b> {sterile_mde_safe(row.get("safe_boundary", ""))}</p>
+        <p><b>Not allowed claims:</b> {sterile_mde_safe(row.get("not_allowed_claims", ""))}</p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MONDAY-DEMO-ENTRY",
+            "STERILE_MONDAY_DEMO_ENTRY_VIEW",
+            "Sterile Monday Demo entry bridge viewed",
+            actor="system",
+            source_route="/sterile-compounding/monday-demo-entry",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Monday Demo Entry Bridge", body)
+
+
+@app.route("/sterile-compounding/monday-demo-entry/export")
+def sterile_compounding_monday_demo_entry_export():
+    entry_df = sterile_mde_build_entry()
+
+    if entry_df.empty:
+        entry_df = sterile_mde_pd.DataFrame(columns=STERILE_MONDAY_DEMO_ENTRY_COLUMNS)
+
+    csv_data = entry_df.to_csv(index=False)
+
+    return sterile_mde_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_monday_demo_entry_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_monday_demo_entry_injection(response):
+    try:
+        if sterile_mde_request.path != "/monday-demo":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-monday-demo-entry-panel" in html:
+            return response
+
+        panel = """
+        <section id="sterile-monday-demo-entry-panel" style="margin:24px 0; padding:22px; border:1px solid #e0e7ff; border-radius:18px; background:linear-gradient(135deg,#eef2ff,#ffffff); box-shadow:0 8px 24px rgba(15,23,42,0.08);">
+            <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+                <div style="max-width:850px;">
+                    <div style="font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#4338ca;">Monday Demo Candidate</div>
+                    <h2 style="margin:8px 0 8px 0; font-size:28px; line-height:1.15;">Compound Sterile AssuranceLayer™</h2>
+                    <p style="margin:0; color:#334155; font-size:15px; line-height:1.55;">
+                        Demo story: sterile evidence governance, inspection readiness, go-live/presentation lock,
+                        POC evidence packet, and integration blueprint. Shows how AssuranceLayer adds governance
+                        without replacing validated systems.
+                    </p>
+                </div>
+                <div style="font-weight:900; color:#166534; background:#dcfce7; border:1px solid #86efac; padding:8px 12px; border-radius:999px;">GREEN</div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;">
+                <a href="/sterile-compounding/demo-walkthrough" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#4338ca; color:#fff; text-decoration:none; font-weight:800;">Start Demo Walkthrough</a>
+                <a href="/sterile-compounding/executive-brief" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Executive Brief</a>
+                <a href="/sterile-compounding/inspection-binder" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Inspection Binder</a>
+                <a href="/sterile-compounding/go-live-readiness" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Go-Live Readiness</a>
+                <a href="/sterile-compounding/poc-results-summary" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">POC Results</a>
+                <a href="/sterile-compounding/monday-demo-entry" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#ffffff; color:#4338ca; border:1px solid #c7d2fe; text-decoration:none; font-weight:800;">Demo Entry Register</a>
+            </div>
+            <p style="margin:14px 0 0 0; color:#64748b; font-size:13px;">
+                Boundary: this is a demo entry bridge only. It does not overwrite the Monday Demo route and does not
+                activate any production connector or source-system writeback.
+            </p>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Monday Demo entry injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
