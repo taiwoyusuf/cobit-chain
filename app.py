@@ -25385,5 +25385,868 @@ def sterile_evidence_vault_summary_injection(response):
         print(f"Sterile Evidence Vault summary injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_EVIDENCE_MATRIX_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 12: Evidence Requirements Matrix + Evidence Closure Worklist
+#
+# New Routes:
+#   /sterile-compounding/evidence-matrix
+#   /sterile-compounding/evidence-matrix/<record_id>
+#   /sterile-compounding/evidence-matrix/export
+#   /sterile-compounding/evidence-worklist
+#   /sterile-compounding/evidence-worklist/export
+#
+# New Derived Registers:
+#   sterile_compounding_evidence_matrix_register.csv
+#   sterile_compounding_evidence_worklist_register.csv
+#
+# Boundary:
+#   This derives required evidence gaps from CSP records and the Evidence Vault.
+#   It does not replace QA, pharmacy disposition, Veeva, Blue Mountain,
+#   ServiceNow, Entra, CI, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Command Center, Platform Health,
+#   or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_mx_pd
+    import json as sterile_mx_json
+    from flask import request as sterile_mx_request
+    from flask import Response as sterile_mx_Response
+except Exception as sterile_mx_import_error:
+    raise RuntimeError(f"Sterile evidence matrix import failed: {sterile_mx_import_error}")
+
+
+STERILE_EVIDENCE_MATRIX_REGISTER = "sterile_compounding_evidence_matrix_register.csv"
+STERILE_EVIDENCE_WORKLIST_REGISTER = "sterile_compounding_evidence_worklist_register.csv"
+
+STERILE_EVIDENCE_MATRIX_COLUMNS = [
+    "matrix_id",
+    "record_id",
+    "facility_type",
+    "csp_category",
+    "hazardous_drug",
+    "required_evidence_category",
+    "requirement_reason",
+    "evidence_status",
+    "matched_evidence_id",
+    "matched_evidence_title",
+    "matched_filename",
+    "matched_approval_status",
+    "matched_sha256_hash",
+    "gap_severity",
+    "closure_decision",
+    "source_route",
+    "last_updated",
+    "matrix_hash"
+]
+
+STERILE_EVIDENCE_WORKLIST_COLUMNS = [
+    "worklist_id",
+    "record_id",
+    "required_evidence_category",
+    "gap_type",
+    "gap_severity",
+    "closure_decision",
+    "owner_role",
+    "recommended_action",
+    "linked_route",
+    "created_at",
+    "worklist_hash"
+]
+
+
+def sterile_mx_require_dependencies():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+        "STERILE_EVIDENCE_VAULT_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile evidence matrix dependencies are missing: " + ", ".join(missing))
+
+
+def sterile_mx_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_mx_lower(value):
+    return sterile_mx_safe(value).lower()
+
+
+def sterile_mx_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_mx_status_badge(status):
+    status = sterile_mx_safe(status).upper()
+
+    if status in ["PRESENT_APPROVED", "PRESENT_VERIFIED", "COMPLETE", "GREEN"]:
+        return '<span class="st-badge st-green">COMPLETE</span>'
+    if status in ["PRESENT_PENDING", "PENDING", "REVIEW", "YELLOW"]:
+        return '<span class="st-badge st-yellow">REVIEW</span>'
+    if status in ["MISSING", "REJECTED", "RED"]:
+        return '<span class="st-badge st-red">GAP</span>'
+    if status == "NOT_REQUIRED":
+        return '<span class="st-badge st-gray">N/A</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_mx_read_vault():
+    try:
+        df = sterile_read_register(
+            "sterile_compounding_evidence_vault_register.csv",
+            globals().get("STERILE_EVIDENCE_VAULT_COLUMNS")
+        )
+        return sterile_ensure_cols(df, globals().get("STERILE_EVIDENCE_VAULT_COLUMNS"))
+    except Exception:
+        return sterile_mx_pd.DataFrame(columns=globals().get("STERILE_EVIDENCE_VAULT_COLUMNS", []))
+
+
+def sterile_mx_required_categories(record):
+    facility_type = sterile_mx_lower(record.get("facility_type", ""))
+    hazardous = sterile_mx_lower(record.get("hazardous_drug", ""))
+    deviation = sterile_mx_lower(record.get("deviation_open", ""))
+    environmental = sterile_mx_lower(record.get("environmental_status", ""))
+    approval = sterile_mx_lower(record.get("approval_status", ""))
+    qa_review = sterile_mx_lower(record.get("qa_review_status", ""))
+
+    requirements = [
+        ("Batch / Rx Record", "Core CSP record evidence required for audit traceability.", "HIGH"),
+        ("COA / Ingredient Evidence", "Ingredient and COA evidence required for lot traceability.", "HIGH"),
+        ("Environmental Monitoring", "Environmental status evidence required for sterile compounding readiness.", "HIGH"),
+        ("Cleaning / Disinfection Log", "Cleaning/disinfection evidence required for room/hood readiness.", "HIGH"),
+        ("Equipment Certification", "Hood/room/equipment readiness evidence required.", "HIGH"),
+        ("Personnel Qualification", "Personnel training/qualification evidence required.", "HIGH"),
+        ("Pharmacist Verification", "Pharmacist verification evidence required before release-readiness reliance.", "CRITICAL"),
+        ("SOP / Formula Evidence", "Controlled SOP/formula version evidence required for control-to-evidence linkage.", "MEDIUM"),
+    ]
+
+    if "503b" in facility_type or "outsourcing" in facility_type:
+        requirements.append((
+            "QA Review",
+            "503B/outsourcing mode should carry stronger QA/release review evidence.",
+            "HIGH"
+        ))
+
+    if hazardous in ["yes", "true", "hazardous"]:
+        requirements.append((
+            "Hazardous Drug Handling Evidence",
+            "Hazardous-drug CSPs require additional handling/governance evidence review.",
+            "HIGH"
+        ))
+
+    if deviation in ["yes", "true", "open", "critical"] or approval in ["rejected", "not approved", "denied"] or qa_review in ["rejected", "failed", "fail"]:
+        requirements.append((
+            "Deviation / CAPA Evidence",
+            "Deviation, rejection, or failed review signal requires deviation/CAPA evidence.",
+            "CRITICAL"
+        ))
+
+    if environmental in ["alert", "warning", "yellow", "fail", "failed", "red", "excursion", "out of limit", "out of range"]:
+        requirements.append((
+            "Environmental Investigation Evidence",
+            "Environmental alert/failure requires investigation or review evidence.",
+            "CRITICAL" if environmental in ["fail", "failed", "red", "excursion", "out of limit", "out of range"] else "HIGH"
+        ))
+
+    return requirements
+
+
+def sterile_mx_category_match(required_category, evidence_category, evidence_title, filename):
+    required = sterile_mx_lower(required_category)
+    category = sterile_mx_lower(evidence_category)
+    title = sterile_mx_lower(evidence_title)
+    fname = sterile_mx_lower(filename)
+    combined = f"{category} {title} {fname}"
+
+    aliases = {
+        "batch / rx record": ["batch", "rx", "record"],
+        "coa / ingredient evidence": ["coa", "ingredient", "lot"],
+        "environmental monitoring": ["environmental", "em", "monitoring"],
+        "environmental investigation evidence": ["environmental", "investigation", "excursion", "em"],
+        "cleaning / disinfection log": ["cleaning", "disinfection", "clean"],
+        "equipment certification": ["equipment", "certification", "hood", "room", "cleanroom"],
+        "personnel qualification": ["personnel", "qualification", "training", "technician"],
+        "pharmacist verification": ["pharmacist", "verification", "verify"],
+        "qa review": ["qa", "review", "quality"],
+        "sop / formula evidence": ["sop", "formula", "procedure"],
+        "deviation / capa evidence": ["deviation", "capa", "investigation"],
+        "hazardous drug handling evidence": ["hazardous", "handling", "usp 800", "usp800"],
+    }
+
+    if required in category:
+        return True
+
+    tokens = aliases.get(required, [required])
+
+    for token in tokens:
+        if token in combined:
+            return True
+
+    return False
+
+
+def sterile_mx_best_match(vault_linked, required_category):
+    if vault_linked.empty:
+        return None
+
+    candidates = []
+    for _, ev in vault_linked.iterrows():
+        if sterile_mx_category_match(
+            required_category,
+            ev.get("evidence_category", ""),
+            ev.get("evidence_title", ""),
+            ev.get("original_filename", "")
+        ):
+            candidates.append(ev.to_dict())
+
+    if not candidates:
+        return None
+
+    def rank(ev):
+        approval = sterile_mx_lower(ev.get("approval_status", ""))
+        status = sterile_mx_lower(ev.get("evidence_status", ""))
+
+        if approval in ["approved", "verified"] or status == "green":
+            return 3
+        if approval in ["pending", "review"] or status == "yellow":
+            return 2
+        if approval in ["rejected", "failed"] or status == "red":
+            return 1
+        return 0
+
+    return sorted(candidates, key=rank, reverse=True)[0]
+
+
+def sterile_mx_status_from_match(match):
+    if not match:
+        return "MISSING", "No matching evidence found.", "Upload required evidence to Evidence Vault."
+
+    approval = sterile_mx_lower(match.get("approval_status", ""))
+    ev_status = sterile_mx_lower(match.get("evidence_status", ""))
+
+    if approval in ["approved", "verified"] or ev_status == "green":
+        return "PRESENT_APPROVED", "Evidence present and approved/verified.", "No closure action required."
+    if approval in ["rejected", "failed"] or ev_status == "red":
+        return "REJECTED", "Evidence present but rejected/failed.", "Replace or resolve rejected evidence."
+    return "PRESENT_PENDING", "Evidence present but pending/review.", "Complete evidence review and approval."
+
+
+def sterile_mx_owner_for_category(category):
+    category_l = sterile_mx_lower(category)
+
+    if "pharmacist" in category_l:
+        return "Pharmacist / Pharmacy Reviewer"
+    if "qa" in category_l or "deviation" in category_l or "capa" in category_l:
+        return "QA / Quality Review"
+    if "environmental" in category_l or "cleaning" in category_l:
+        return "Operations / QA Review"
+    if "equipment" in category_l:
+        return "Engineering / Facilities / QA"
+    if "personnel" in category_l:
+        return "Supervisor / Training Owner"
+    if "coa" in category_l or "ingredient" in category_l or "hazardous" in category_l:
+        return "Pharmacy / Supplier Quality / QA"
+    if "sop" in category_l:
+        return "Document Owner / QA"
+    return "Record Owner / QA"
+
+
+def sterile_mx_build_matrix():
+    sterile_mx_require_dependencies()
+
+    csp_df = sterile_prepare_dashboard_df()
+    vault_df = sterile_mx_read_vault()
+
+    if csp_df.empty:
+        empty_df = sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_MATRIX_COLUMNS)
+        sterile_write_register(STERILE_EVIDENCE_MATRIX_REGISTER, empty_df, STERILE_EVIDENCE_MATRIX_COLUMNS)
+        sterile_write_register(STERILE_EVIDENCE_WORKLIST_REGISTER, sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_WORKLIST_COLUMNS), STERILE_EVIDENCE_WORKLIST_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, record in csp_df.iterrows():
+        record_dict = record.to_dict()
+        record_id = sterile_mx_safe(record_dict.get("record_id", ""))
+
+        if vault_df.empty:
+            linked_evidence = vault_df
+        else:
+            linked_evidence = vault_df[vault_df["record_id"].astype(str) == str(record_id)].copy()
+
+        for required_category, reason, severity in sterile_mx_required_categories(record_dict):
+            match = sterile_mx_best_match(linked_evidence, required_category)
+            status, status_reason, closure_decision = sterile_mx_status_from_match(match)
+
+            if match:
+                matched_evidence_id = sterile_mx_safe(match.get("evidence_id", ""))
+                matched_title = sterile_mx_safe(match.get("evidence_title", ""))
+                matched_filename = sterile_mx_safe(match.get("original_filename", ""))
+                matched_approval = sterile_mx_safe(match.get("approval_status", ""))
+                matched_hash = sterile_mx_safe(match.get("sha256_hash", ""))
+            else:
+                matched_evidence_id = ""
+                matched_title = ""
+                matched_filename = ""
+                matched_approval = ""
+                matched_hash = ""
+
+            if status in ["MISSING", "REJECTED"] and severity == "CRITICAL":
+                gap_severity = "CRITICAL"
+            elif status in ["MISSING", "REJECTED"]:
+                gap_severity = severity
+            elif status == "PRESENT_PENDING":
+                gap_severity = "MEDIUM"
+            else:
+                gap_severity = "NONE"
+
+            payload = {
+                "matrix_id": sterile_mx_make_id("ST-MX", record_id, required_category),
+                "record_id": record_id,
+                "facility_type": sterile_mx_safe(record_dict.get("facility_type", "")),
+                "csp_category": sterile_mx_safe(record_dict.get("csp_category", "")),
+                "hazardous_drug": sterile_mx_safe(record_dict.get("hazardous_drug", "")),
+                "required_evidence_category": required_category,
+                "requirement_reason": reason,
+                "evidence_status": status,
+                "matched_evidence_id": matched_evidence_id,
+                "matched_evidence_title": matched_title,
+                "matched_filename": matched_filename,
+                "matched_approval_status": matched_approval,
+                "matched_sha256_hash": matched_hash,
+                "gap_severity": gap_severity,
+                "closure_decision": f"{status_reason} {closure_decision}",
+                "source_route": f"/sterile-compounding/passport/{record_id}",
+                "last_updated": sterile_now(),
+            }
+
+            payload["matrix_hash"] = sterile_hash_text(
+                sterile_mx_json.dumps(payload, sort_keys=True)
+            )
+
+            rows.append(payload)
+
+    matrix_df = sterile_mx_pd.DataFrame(rows)
+    matrix_df = sterile_ensure_cols(matrix_df, STERILE_EVIDENCE_MATRIX_COLUMNS)
+    sterile_write_register(STERILE_EVIDENCE_MATRIX_REGISTER, matrix_df, STERILE_EVIDENCE_MATRIX_COLUMNS)
+
+    sterile_mx_build_worklist_from_matrix(matrix_df)
+
+    return matrix_df
+
+
+def sterile_mx_build_worklist_from_matrix(matrix_df):
+    if matrix_df.empty:
+        empty = sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_WORKLIST_COLUMNS)
+        sterile_write_register(STERILE_EVIDENCE_WORKLIST_REGISTER, empty, STERILE_EVIDENCE_WORKLIST_COLUMNS)
+        return empty
+
+    gaps = matrix_df[
+        matrix_df["evidence_status"].astype(str).isin(["MISSING", "REJECTED", "PRESENT_PENDING"])
+    ].copy()
+
+    rows = []
+
+    for _, gap in gaps.iterrows():
+        record_id = sterile_mx_safe(gap.get("record_id", ""))
+        category = sterile_mx_safe(gap.get("required_evidence_category", ""))
+        status = sterile_mx_safe(gap.get("evidence_status", ""))
+
+        if status == "MISSING":
+            gap_type = "Missing Evidence"
+            recommended_action = f"Upload required evidence category: {category}."
+        elif status == "REJECTED":
+            gap_type = "Rejected Evidence"
+            recommended_action = f"Replace or resolve rejected evidence for category: {category}."
+        else:
+            gap_type = "Pending Evidence Review"
+            recommended_action = f"Complete approval/review for evidence category: {category}."
+
+        payload = {
+            "worklist_id": sterile_mx_make_id("ST-EWL", record_id, category, status),
+            "record_id": record_id,
+            "required_evidence_category": category,
+            "gap_type": gap_type,
+            "gap_severity": sterile_mx_safe(gap.get("gap_severity", "")),
+            "closure_decision": sterile_mx_safe(gap.get("closure_decision", "")),
+            "owner_role": sterile_mx_owner_for_category(category),
+            "recommended_action": recommended_action,
+            "linked_route": f"/sterile-compounding/evidence-matrix/{record_id}",
+            "created_at": sterile_now(),
+        }
+
+        payload["worklist_hash"] = sterile_hash_text(
+            sterile_mx_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    worklist_df = sterile_mx_pd.DataFrame(rows) if rows else sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_WORKLIST_COLUMNS)
+    worklist_df = sterile_ensure_cols(worklist_df, STERILE_EVIDENCE_WORKLIST_COLUMNS)
+    sterile_write_register(STERILE_EVIDENCE_WORKLIST_REGISTER, worklist_df, STERILE_EVIDENCE_WORKLIST_COLUMNS)
+    return worklist_df
+
+
+def sterile_mx_get_worklist():
+    matrix_df = sterile_mx_build_matrix()
+    return sterile_read_register(STERILE_EVIDENCE_WORKLIST_REGISTER, STERILE_EVIDENCE_WORKLIST_COLUMNS)
+
+
+@app.route("/sterile-compounding/evidence-matrix")
+def sterile_compounding_evidence_matrix():
+    matrix_df = sterile_mx_build_matrix()
+
+    status_filter = sterile_mx_safe(sterile_mx_request.args.get("status", ""))
+    record_filter = sterile_mx_safe(sterile_mx_request.args.get("record_id", ""))
+
+    filtered = matrix_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["evidence_status"].astype(str) == status_filter]
+
+    if record_filter and not filtered.empty:
+        filtered = filtered[filtered["record_id"].astype(str) == record_filter]
+
+    total = len(filtered)
+    complete = int((filtered["evidence_status"] == "PRESENT_APPROVED").sum()) if total else 0
+    pending = int((filtered["evidence_status"] == "PRESENT_PENDING").sum()) if total else 0
+    missing = int((filtered["evidence_status"] == "MISSING").sum()) if total else 0
+    rejected = int((filtered["evidence_status"] == "REJECTED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "PRESENT_APPROVED", "PRESENT_PENDING", "MISSING", "REJECTED"]:
+        label = "All Evidence Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["record_id", "gap_severity", "required_evidence_category"], ascending=[True, False, True]).iterrows():
+            record_id = sterile_mx_safe(row.get("record_id", ""))
+            evidence_id = sterile_mx_safe(row.get("matched_evidence_id", ""))
+
+            if evidence_id:
+                evidence_link = f'<a href="/sterile-compounding/evidence-passport/{evidence_id}">{evidence_id}</a>'
+            else:
+                evidence_link = "Not linked"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mx_status_badge(row.get("evidence_status", ""))}</td>
+                <td><a href="/sterile-compounding/evidence-matrix/{record_id}">{record_id}</a></td>
+                <td>{sterile_mx_safe(row.get("required_evidence_category", ""))}</td>
+                <td>{sterile_mx_safe(row.get("gap_severity", ""))}</td>
+                <td>{sterile_mx_safe(row.get("requirement_reason", ""))}</td>
+                <td>{evidence_link}</td>
+                <td>{sterile_mx_safe(row.get("matched_evidence_title", ""))}</td>
+                <td>{sterile_mx_safe(row.get("matched_approval_status", ""))}</td>
+                <td>{sterile_mx_safe(row.get("closure_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No evidence matrix records found. Load CSP sample data and/or upload evidence first.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Evidence Requirements Matrix</h1>
+        <p>
+            Maps each CSP to the evidence categories required for governance readiness and checks whether matching
+            evidence exists in the Evidence Vault. This creates a clear closure path for missing, rejected, or pending evidence.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Requirements</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Complete</div><div class="st-value">{complete}</div></div>
+        <div class="st-card"><div class="st-label">Pending Review</div><div class="st-value">{pending}</div></div>
+        <div class="st-card"><div class="st-label">Missing</div><div class="st-value">{missing}</div></div>
+        <div class="st-card"><div class="st-label">Rejected</div><div class="st-value">{rejected}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Matrix Filters</h2>
+        <form method="GET" action="/sterile-compounding/evidence-matrix">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Record ID</label>
+                    <input name="record_id" value="{record_filter}" placeholder="Example: CSP-003">
+                </div>
+                <div style="min-width:260px;">
+                    <label>Evidence Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist">Evidence Worklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix/export">Export Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Matrix Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Required Evidence</th>
+                        <th>Severity</th>
+                        <th>Requirement Reason</th>
+                        <th>Matched Evidence</th>
+                        <th>Evidence Title</th>
+                        <th>Approval</th>
+                        <th>Closure Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EVIDENCE-MATRIX",
+            "STERILE_EVIDENCE_MATRIX_VIEW",
+            "Sterile evidence requirements matrix viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/evidence-matrix",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Evidence Requirements Matrix", body)
+
+
+@app.route("/sterile-compounding/evidence-matrix/<record_id>")
+def sterile_compounding_evidence_matrix_record(record_id):
+    matrix_df = sterile_mx_build_matrix()
+    record_id = sterile_mx_safe(record_id)
+
+    record_matrix = matrix_df[matrix_df["record_id"].astype(str) == record_id] if not matrix_df.empty else matrix_df
+
+    if record_matrix.empty:
+        return sterile_mx_Response("No evidence matrix found for this CSP record.", status=404)
+
+    complete = int((record_matrix["evidence_status"] == "PRESENT_APPROVED").sum())
+    pending = int((record_matrix["evidence_status"] == "PRESENT_PENDING").sum())
+    missing = int((record_matrix["evidence_status"] == "MISSING").sum())
+    rejected = int((record_matrix["evidence_status"] == "REJECTED").sum())
+
+    if missing or rejected:
+        overall = "RED"
+        decision = "EVIDENCE CLOSURE REQUIRED"
+    elif pending:
+        overall = "YELLOW"
+        decision = "EVIDENCE REVIEW REQUIRED"
+    else:
+        overall = "GREEN"
+        decision = "EVIDENCE COMPLETE FROM GOVERNANCE VIEW"
+
+    rows_html = ""
+    for _, row in record_matrix.iterrows():
+        evidence_id = sterile_mx_safe(row.get("matched_evidence_id", ""))
+        if evidence_id:
+            evidence_link = f'<a href="/sterile-compounding/evidence-passport/{evidence_id}">{evidence_id}</a>'
+        else:
+            evidence_link = '<a href="/sterile-compounding/evidence-vault">Upload Evidence</a>'
+
+        rows_html += f"""
+        <tr>
+            <td>{sterile_mx_status_badge(row.get("evidence_status", ""))}</td>
+            <td>{sterile_mx_safe(row.get("required_evidence_category", ""))}</td>
+            <td>{sterile_mx_safe(row.get("gap_severity", ""))}</td>
+            <td>{sterile_mx_safe(row.get("requirement_reason", ""))}</td>
+            <td>{evidence_link}</td>
+            <td>{sterile_mx_safe(row.get("matched_evidence_title", ""))}</td>
+            <td>{sterile_mx_safe(row.get("matched_approval_status", ""))}</td>
+            <td>{sterile_mx_safe(row.get("closure_decision", ""))}</td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Evidence Matrix Passport: {record_id}</h1>
+        <p>
+            Required evidence coverage for this CSP record.
+        </p>
+        <div style="margin-top:16px;">{sterile_badge(overall)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">{decision}</div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Complete</div><div class="st-value">{complete}</div></div>
+        <div class="st-card"><div class="st-label">Pending</div><div class="st-value">{pending}</div></div>
+        <div class="st-card"><div class="st-label">Missing</div><div class="st-value">{missing}</div></div>
+        <div class="st-card"><div class="st-label">Rejected</div><div class="st-value">{rejected}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Record Evidence Requirements</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Required Evidence</th>
+                        <th>Severity</th>
+                        <th>Reason</th>
+                        <th>Matched / Upload</th>
+                        <th>Evidence Title</th>
+                        <th>Approval</th>
+                        <th>Closure Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/evidence-vault">Upload Evidence</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/passport/{record_id}">CSP Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist">Evidence Worklist</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix">Back to Matrix</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_EVIDENCE_MATRIX_RECORD_VIEW",
+            "Record-level sterile evidence matrix viewed",
+            actor="system",
+            source_route="/sterile-compounding/evidence-matrix/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Evidence Matrix - {record_id}", body)
+
+
+@app.route("/sterile-compounding/evidence-worklist")
+def sterile_compounding_evidence_worklist():
+    worklist_df = sterile_mx_get_worklist()
+
+    severity_filter = sterile_mx_safe(sterile_mx_request.args.get("severity", ""))
+
+    filtered = worklist_df.copy()
+
+    if severity_filter and not filtered.empty:
+        filtered = filtered[filtered["gap_severity"].astype(str) == severity_filter]
+
+    total = len(filtered)
+    critical = int((filtered["gap_severity"] == "CRITICAL").sum()) if total else 0
+    high = int((filtered["gap_severity"] == "HIGH").sum()) if total else 0
+    medium = int((filtered["gap_severity"] == "MEDIUM").sum()) if total else 0
+
+    severity_options = ""
+    for option in ["", "CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE"]:
+        label = "All Severities" if option == "" else option
+        selected = "selected" if option == severity_filter else ""
+        severity_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["gap_severity", "record_id"], ascending=[True, True]).iterrows():
+            rid = sterile_mx_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_mx_safe(row.get("gap_severity", ""))}</td>
+                <td><a href="/sterile-compounding/evidence-matrix/{rid}">{rid}</a></td>
+                <td>{sterile_mx_safe(row.get("required_evidence_category", ""))}</td>
+                <td>{sterile_mx_safe(row.get("gap_type", ""))}</td>
+                <td>{sterile_mx_safe(row.get("owner_role", ""))}</td>
+                <td>{sterile_mx_safe(row.get("recommended_action", ""))}</td>
+                <td>{sterile_mx_safe(row.get("closure_decision", ""))}</td>
+                <td><a href="/sterile-compounding/evidence-vault">Upload / Review Evidence</a></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No evidence closure worklist items. Either evidence is complete or sample data has not been loaded.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Evidence Closure Worklist</h1>
+        <p>
+            Action list for missing, rejected, or pending evidence requirements. This converts evidence gaps into
+            owner-friendly closure tasks without replacing formal QMS or QA workflows.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Worklist Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Critical</div><div class="st-value">{critical}</div></div>
+        <div class="st-card"><div class="st-label">High</div><div class="st-value">{high}</div></div>
+        <div class="st-card"><div class="st-label">Medium</div><div class="st-value">{medium}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Worklist Filters</h2>
+        <form method="GET" action="/sterile-compounding/evidence-worklist">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Severity</label>
+                    <select name="severity">{severity_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix">Evidence Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist/export">Export Worklist</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Closure Worklist</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Record ID</th>
+                        <th>Required Evidence</th>
+                        <th>Gap Type</th>
+                        <th>Owner Role</th>
+                        <th>Recommended Action</th>
+                        <th>Closure Decision</th>
+                        <th>Evidence Vault</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EVIDENCE-WORKLIST",
+            "STERILE_EVIDENCE_WORKLIST_VIEW",
+            "Sterile evidence closure worklist viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/evidence-worklist",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Evidence Closure Worklist", body)
+
+
+@app.route("/sterile-compounding/evidence-matrix/export")
+def sterile_compounding_evidence_matrix_export():
+    matrix_df = sterile_mx_build_matrix()
+
+    if matrix_df.empty:
+        matrix_df = sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_MATRIX_COLUMNS)
+
+    csv_data = matrix_df.to_csv(index=False)
+
+    return sterile_mx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_evidence_matrix_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/evidence-worklist/export")
+def sterile_compounding_evidence_worklist_export():
+    worklist_df = sterile_mx_get_worklist()
+
+    if worklist_df.empty:
+        worklist_df = sterile_mx_pd.DataFrame(columns=STERILE_EVIDENCE_WORKLIST_COLUMNS)
+
+    csv_data = worklist_df.to_csv(index=False)
+
+    return sterile_mx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_evidence_worklist_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_evidence_matrix_dashboard_injection(response):
+    try:
+        if sterile_mx_request.path not in ["/sterile-compounding", "/sterile-compounding/control-tower", "/sterile-compounding/evidence-vault"]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-evidence-matrix-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-evidence-matrix-panel">
+            <h2>Evidence Requirements Matrix + Closure Worklist</h2>
+            <p class="st-note">
+                Maps each CSP record to its required evidence categories and checks the Evidence Vault for matching,
+                approved, pending, rejected, or missing evidence. Converts evidence gaps into closure worklist items.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/evidence-matrix">Evidence Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist">Evidence Worklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-matrix/export">Export Matrix</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/evidence-worklist/export">Export Worklist</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile evidence matrix dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
