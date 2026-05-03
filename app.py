@@ -57885,5 +57885,993 @@ def sterile_compounding_stakeholder_review_dashboard_injection(response):
         print(f"Sterile stakeholder review injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_REVIEWER_ATTESTATION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 51: Reviewer Attestation Capture + Decision Log
+#
+# New Routes:
+#   /sterile-compounding/reviewer-attestation
+#   /sterile-compounding/reviewer-attestation/<attestation_id>
+#   /sterile-compounding/reviewer-attestation/export
+#   /sterile-compounding/decision-log
+#   /sterile-compounding/decision-log/export
+#
+# New Registers:
+#   sterile_compounding_reviewer_attestation.csv
+#   sterile_compounding_decision_log.csv
+#
+# Boundary:
+#   This is a sterile-only reviewer attestation and decision-log layer.
+#   It does not write to QMS, Veeva, ServiceNow, Blue Mountain, myAccess,
+#   Entra, Power BI, Azure Ledger, Manufacturing/Wole, CI, Knowledge,
+#   Operational Lineage, Command Center, Monday Demo, Release Notes, or
+#   Platform Health logic.
+# ============================================================
+
+try:
+    import pandas as sterile_ra_pd
+    import json as sterile_ra_json
+    from pathlib import Path as sterile_ra_Path
+    from flask import request as sterile_ra_request
+    from flask import Response as sterile_ra_Response
+    from flask import redirect as sterile_ra_redirect
+except Exception as sterile_ra_import_error:
+    raise RuntimeError(f"Sterile reviewer attestation import failed: {sterile_ra_import_error}")
+
+
+STERILE_REVIEWER_ATTESTATION_REGISTER = "sterile_compounding_reviewer_attestation.csv"
+STERILE_DECISION_LOG_REGISTER = "sterile_compounding_decision_log.csv"
+
+STERILE_REVIEWER_ATTESTATION_COLUMNS = [
+    "attestation_id",
+    "attestation_type",
+    "review_scope",
+    "reviewer_name",
+    "reviewer_role",
+    "reviewer_group",
+    "attestation_status",
+    "attestation_decision",
+    "reviewed_route",
+    "evidence_route",
+    "safe_claim_confirmed",
+    "not_safe_claim_confirmed",
+    "boundary_confirmed",
+    "comments",
+    "follow_up_needed",
+    "follow_up_owner",
+    "created_at",
+    "attestation_hash"
+]
+
+STERILE_DECISION_LOG_COLUMNS = [
+    "decision_id",
+    "attestation_id",
+    "decision_area",
+    "decision_status",
+    "decision_priority",
+    "decision_summary",
+    "decision_rationale",
+    "approved_next_action",
+    "not_approved_action",
+    "required_follow_up",
+    "supporting_route",
+    "created_at",
+    "decision_hash"
+]
+
+
+def sterile_ra_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile reviewer attestation dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ra_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ra_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ra_badge(status):
+    status = sterile_ra_safe(status).upper()
+
+    if status in ["GREEN", "APPROVED", "ACCEPTED", "COMPLETE", "NO FOLLOW-UP"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "FOLLOW-UP", "DRAFT"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "REJECTED", "BLOCKED", "NOT APPROVED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ra_read_register(register_name, columns):
+    register_path = sterile_ra_Path(register_name)
+
+    if not register_path.exists():
+        return sterile_ra_pd.DataFrame(columns=columns)
+
+    try:
+        df = sterile_ra_pd.read_csv(register_path, dtype=str).fillna("")
+    except Exception:
+        df = sterile_ra_pd.DataFrame(columns=columns)
+
+    return df.reindex(columns=columns).fillna("")
+
+
+def sterile_ra_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+
+    return df
+
+
+def sterile_ra_seed_if_empty():
+    sterile_ra_require_dependencies()
+
+    attestation_df = sterile_ra_read_register(
+        STERILE_REVIEWER_ATTESTATION_REGISTER,
+        STERILE_REVIEWER_ATTESTATION_COLUMNS
+    )
+
+    decision_df = sterile_ra_read_register(
+        STERILE_DECISION_LOG_REGISTER,
+        STERILE_DECISION_LOG_COLUMNS
+    )
+
+    if attestation_df.empty:
+        seed_rows = [
+            {
+                "attestation_type": "Demo Boundary Review",
+                "review_scope": "Leadership demo safe-claim and not-safe-claim review",
+                "reviewer_name": "Pending Reviewer",
+                "reviewer_role": "QA / Governance Reviewer",
+                "reviewer_group": "QA / Compliance",
+                "attestation_status": "YELLOW",
+                "attestation_decision": "Conditional - reviewer not yet assigned",
+                "reviewed_route": "/sterile-compounding/executive-handoff-pack",
+                "evidence_route": "/sterile-compounding/leadership-route-bundle",
+                "safe_claim_confirmed": "YES",
+                "not_safe_claim_confirmed": "YES",
+                "boundary_confirmed": "YES",
+                "comments": "Template row. Replace with actual reviewer attestation after demo review.",
+                "follow_up_needed": "YES",
+                "follow_up_owner": "Presenter / QA reviewer",
+            },
+            {
+                "attestation_type": "Integration Boundary Review",
+                "review_scope": "Future connector governance and non-production-only POC boundary",
+                "reviewer_name": "Pending Reviewer",
+                "reviewer_role": "System Owner / Architecture Reviewer",
+                "reviewer_group": "Integration / Architecture",
+                "attestation_status": "YELLOW",
+                "attestation_decision": "Conditional - select first connector candidate",
+                "reviewed_route": "/sterile-compounding/integration-blueprint",
+                "evidence_route": "/sterile-compounding/data-contracts",
+                "safe_claim_confirmed": "YES",
+                "not_safe_claim_confirmed": "YES",
+                "boundary_confirmed": "YES",
+                "comments": "Template row. Use this to confirm blueprint-only position before any connector work.",
+                "follow_up_needed": "YES",
+                "follow_up_owner": "System owner / architecture reviewer",
+            },
+            {
+                "attestation_type": "Protected Boundary Review",
+                "review_scope": "Protected module non-overwrite confirmation",
+                "reviewer_name": "Pending Reviewer",
+                "reviewer_role": "Application Owner",
+                "reviewer_group": "Technical Review",
+                "attestation_status": "GREEN",
+                "attestation_decision": "Accepted for demo-stage boundary",
+                "reviewed_route": "/sterile-compounding/protected-boundary-check",
+                "evidence_route": "/sterile-compounding/global-exposure-map",
+                "safe_claim_confirmed": "YES",
+                "not_safe_claim_confirmed": "YES",
+                "boundary_confirmed": "YES",
+                "comments": "Template row showing protected-module boundary review position.",
+                "follow_up_needed": "NO",
+                "follow_up_owner": "App owner",
+            },
+        ]
+
+        normalized_rows = []
+
+        for item in seed_rows:
+            payload = dict(item)
+            payload["created_at"] = sterile_now()
+            payload["attestation_id"] = sterile_ra_make_id(
+                "ST-ATTEST",
+                payload["attestation_type"],
+                payload["reviewer_group"],
+                payload["reviewed_route"]
+            )
+            payload["attestation_hash"] = sterile_hash_text(
+                sterile_ra_json.dumps(payload, sort_keys=True)
+            )
+            normalized_rows.append(payload)
+
+        attestation_df = sterile_ra_pd.DataFrame(normalized_rows)
+        attestation_df = sterile_ra_write_register(
+            STERILE_REVIEWER_ATTESTATION_REGISTER,
+            attestation_df,
+            STERILE_REVIEWER_ATTESTATION_COLUMNS
+        )
+
+    if decision_df.empty:
+        decision_rows = []
+
+        for _, row in attestation_df.iterrows():
+            attestation_id = sterile_ra_safe(row.get("attestation_id", ""))
+            attestation_type = sterile_ra_safe(row.get("attestation_type", ""))
+            status = sterile_ra_safe(row.get("attestation_status", "YELLOW"))
+            follow_up = sterile_ra_safe(row.get("follow_up_needed", "YES"))
+
+            if status == "GREEN" and follow_up == "NO":
+                decision_status = "GREEN"
+                priority = "P2"
+                approved = "Proceed with demo-stage use of this reviewed route."
+                required_follow_up = "No immediate follow-up."
+            elif status == "RED":
+                decision_status = "RED"
+                priority = "P0"
+                approved = "Do not proceed until blocker is resolved."
+                required_follow_up = "Resolve reviewer blocker before next demo or implementation step."
+            else:
+                decision_status = "YELLOW"
+                priority = "P1"
+                approved = "Proceed only as demo/planning material with clear boundary statement."
+                required_follow_up = "Assign reviewer and capture final attestation decision."
+
+            payload = {
+                "decision_id": sterile_ra_make_id("ST-DECLOG", attestation_id, decision_status),
+                "attestation_id": attestation_id,
+                "decision_area": attestation_type,
+                "decision_status": decision_status,
+                "decision_priority": priority,
+                "decision_summary": sterile_ra_safe(row.get("attestation_decision", "")),
+                "decision_rationale": sterile_ra_safe(row.get("comments", "")),
+                "approved_next_action": approved,
+                "not_approved_action": "No production connector, QMS writeback, product release claim, or protected-module modification is approved by this attestation.",
+                "required_follow_up": required_follow_up,
+                "supporting_route": sterile_ra_safe(row.get("reviewed_route", "")),
+                "created_at": sterile_now(),
+            }
+
+            payload["decision_hash"] = sterile_hash_text(
+                sterile_ra_json.dumps(payload, sort_keys=True)
+            )
+
+            decision_rows.append(payload)
+
+        decision_df = sterile_ra_pd.DataFrame(decision_rows)
+        decision_df = sterile_ra_write_register(
+            STERILE_DECISION_LOG_REGISTER,
+            decision_df,
+            STERILE_DECISION_LOG_COLUMNS
+        )
+
+    return attestation_df, decision_df
+
+
+def sterile_ra_build_decision_from_attestation(row):
+    attestation_id = sterile_ra_safe(row.get("attestation_id", ""))
+    status = sterile_ra_safe(row.get("attestation_status", "YELLOW")).upper()
+    decision = sterile_ra_safe(row.get("attestation_decision", ""))
+    comments = sterile_ra_safe(row.get("comments", ""))
+    follow_up = sterile_ra_safe(row.get("follow_up_needed", "YES")).upper()
+    route = sterile_ra_safe(row.get("reviewed_route", ""))
+    attestation_type = sterile_ra_safe(row.get("attestation_type", "Reviewer Attestation"))
+
+    if status == "GREEN" and follow_up == "NO":
+        decision_status = "GREEN"
+        priority = "P2"
+        approved_next_action = "Proceed with demo-stage use of this reviewed scope."
+        required_follow_up = "No immediate follow-up required."
+    elif status == "RED":
+        decision_status = "RED"
+        priority = "P0"
+        approved_next_action = "Do not proceed until reviewer blocker is resolved."
+        required_follow_up = "Resolve blocker and capture updated attestation."
+    else:
+        decision_status = "YELLOW"
+        priority = "P1"
+        approved_next_action = "Proceed only as demo/planning material with boundary statement."
+        required_follow_up = "Capture final reviewer decision before operational or integration use."
+
+    payload = {
+        "decision_id": sterile_ra_make_id("ST-DECLOG", attestation_id, decision_status, decision),
+        "attestation_id": attestation_id,
+        "decision_area": attestation_type,
+        "decision_status": decision_status,
+        "decision_priority": priority,
+        "decision_summary": decision,
+        "decision_rationale": comments,
+        "approved_next_action": approved_next_action,
+        "not_approved_action": "No production connector, QMS writeback, product release claim, enterprise approval claim, or protected-module modification is approved by this attestation.",
+        "required_follow_up": required_follow_up,
+        "supporting_route": route,
+        "created_at": sterile_now(),
+    }
+
+    payload["decision_hash"] = sterile_hash_text(
+        sterile_ra_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+@app.route("/sterile-compounding/reviewer-attestation", methods=["GET", "POST"])
+def sterile_compounding_reviewer_attestation():
+    attestation_df, decision_df = sterile_ra_seed_if_empty()
+
+    notice = ""
+
+    if sterile_ra_request.method == "POST":
+        form = sterile_ra_request.form
+
+        payload = {
+            "attestation_type": sterile_ra_safe(form.get("attestation_type", "")) or "Reviewer Attestation",
+            "review_scope": sterile_ra_safe(form.get("review_scope", "")) or "Sterile demo / governance review",
+            "reviewer_name": sterile_ra_safe(form.get("reviewer_name", "")) or "Unnamed Reviewer",
+            "reviewer_role": sterile_ra_safe(form.get("reviewer_role", "")) or "Reviewer",
+            "reviewer_group": sterile_ra_safe(form.get("reviewer_group", "")) or "Stakeholder Review",
+            "attestation_status": sterile_ra_safe(form.get("attestation_status", "YELLOW")) or "YELLOW",
+            "attestation_decision": sterile_ra_safe(form.get("attestation_decision", "")) or "Conditional review captured",
+            "reviewed_route": sterile_ra_safe(form.get("reviewed_route", "")) or "/sterile-compounding/executive-handoff-pack",
+            "evidence_route": sterile_ra_safe(form.get("evidence_route", "")) or "/sterile-compounding/leadership-route-bundle",
+            "safe_claim_confirmed": sterile_ra_safe(form.get("safe_claim_confirmed", "YES")) or "YES",
+            "not_safe_claim_confirmed": sterile_ra_safe(form.get("not_safe_claim_confirmed", "YES")) or "YES",
+            "boundary_confirmed": sterile_ra_safe(form.get("boundary_confirmed", "YES")) or "YES",
+            "comments": sterile_ra_safe(form.get("comments", "")),
+            "follow_up_needed": sterile_ra_safe(form.get("follow_up_needed", "YES")) or "YES",
+            "follow_up_owner": sterile_ra_safe(form.get("follow_up_owner", "")) or "Presenter / Reviewer",
+            "created_at": sterile_now(),
+        }
+
+        payload["attestation_id"] = sterile_ra_make_id(
+            "ST-ATTEST",
+            payload["attestation_type"],
+            payload["reviewer_name"],
+            payload["reviewed_route"],
+            payload["created_at"]
+        )
+
+        payload["attestation_hash"] = sterile_hash_text(
+            sterile_ra_json.dumps(payload, sort_keys=True)
+        )
+
+        new_attestation_df = sterile_ra_pd.DataFrame([payload])
+        attestation_df = sterile_ra_pd.concat([attestation_df, new_attestation_df], ignore_index=True)
+        attestation_df = sterile_ra_write_register(
+            STERILE_REVIEWER_ATTESTATION_REGISTER,
+            attestation_df,
+            STERILE_REVIEWER_ATTESTATION_COLUMNS
+        )
+
+        decision_payload = sterile_ra_build_decision_from_attestation(payload)
+        decision_df = sterile_ra_pd.concat([decision_df, sterile_ra_pd.DataFrame([decision_payload])], ignore_index=True)
+        decision_df = sterile_ra_write_register(
+            STERILE_DECISION_LOG_REGISTER,
+            decision_df,
+            STERILE_DECISION_LOG_COLUMNS
+        )
+
+        try:
+            sterile_add_lineage(
+                payload["attestation_id"],
+                "STERILE_REVIEWER_ATTESTATION_CREATED",
+                "Reviewer attestation captured from sterile attestation form",
+                actor=payload["reviewer_name"],
+                source_route="/sterile-compounding/reviewer-attestation",
+            )
+        except Exception:
+            pass
+
+        return sterile_ra_redirect(f"/sterile-compounding/reviewer-attestation/{payload['attestation_id']}")
+
+    status_filter = sterile_ra_safe(sterile_ra_request.args.get("status", ""))
+    group_filter = sterile_ra_safe(sterile_ra_request.args.get("group", ""))
+
+    filtered = attestation_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["attestation_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["reviewer_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["attestation_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["attestation_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["attestation_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Attestation Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Reviewer Groups</option>'
+    for group in sorted(attestation_df["reviewer_group"].dropna().unique().tolist()) if not attestation_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["created_at", "reviewer_group"], ascending=[False, True]).iterrows():
+            attestation_id = sterile_ra_safe(row.get("attestation_id", ""))
+            reviewed_route = sterile_ra_safe(row.get("reviewed_route", ""))
+            evidence_route = sterile_ra_safe(row.get("evidence_route", ""))
+
+            reviewed_link = f'<a href="{reviewed_route}">{reviewed_route}</a>' if reviewed_route else ""
+            evidence_link = f'<a href="{evidence_route}">{evidence_route}</a>' if evidence_route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ra_badge(row.get("attestation_status", ""))}</td>
+                <td><a href="/sterile-compounding/reviewer-attestation/{attestation_id}">{attestation_id}</a></td>
+                <td>{sterile_ra_safe(row.get("attestation_type", ""))}</td>
+                <td>{sterile_ra_safe(row.get("reviewer_name", ""))}</td>
+                <td>{sterile_ra_safe(row.get("reviewer_role", ""))}</td>
+                <td>{sterile_ra_safe(row.get("reviewer_group", ""))}</td>
+                <td>{sterile_ra_safe(row.get("attestation_decision", ""))}</td>
+                <td>{reviewed_link}</td>
+                <td>{evidence_link}</td>
+                <td>{sterile_ra_safe(row.get("follow_up_needed", ""))}</td>
+                <td>{sterile_ra_safe(row.get("follow_up_owner", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No reviewer attestation rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Reviewer Attestation Capture</h1>
+        <p>
+            Capture sterile-only reviewer attestations for demo boundaries, safe claims, not-safe claims,
+            evidence review, integration boundaries, and protected-module boundaries. This is not a QMS approval
+            and does not write to any enterprise system.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Attestations</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Capture New Attestation</h2>
+        <form method="POST" action="/sterile-compounding/reviewer-attestation">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
+                <div>
+                    <label>Attestation Type</label>
+                    <input name="attestation_type" value="Demo Boundary Review">
+                </div>
+                <div>
+                    <label>Review Scope</label>
+                    <input name="review_scope" value="Sterile leadership demo and safe-claim review">
+                </div>
+                <div>
+                    <label>Reviewer Name</label>
+                    <input name="reviewer_name" placeholder="Reviewer name">
+                </div>
+                <div>
+                    <label>Reviewer Role</label>
+                    <input name="reviewer_role" value="QA / Governance Reviewer">
+                </div>
+                <div>
+                    <label>Reviewer Group</label>
+                    <select name="reviewer_group">
+                        <option>QA / Compliance</option>
+                        <option>IT Leadership</option>
+                        <option>System Owner</option>
+                        <option>Integration / Architecture</option>
+                        <option>Operations</option>
+                        <option>Security / Privacy</option>
+                        <option>Technical Review</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Attestation Status</label>
+                    <select name="attestation_status">
+                        <option>YELLOW</option>
+                        <option>GREEN</option>
+                        <option>RED</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Attestation Decision</label>
+                    <input name="attestation_decision" value="Conditional review captured">
+                </div>
+                <div>
+                    <label>Reviewed Route</label>
+                    <input name="reviewed_route" value="/sterile-compounding/executive-handoff-pack">
+                </div>
+                <div>
+                    <label>Evidence Route</label>
+                    <input name="evidence_route" value="/sterile-compounding/leadership-route-bundle">
+                </div>
+                <div>
+                    <label>Safe Claim Confirmed</label>
+                    <select name="safe_claim_confirmed">
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Not-Safe Claim Confirmed</label>
+                    <select name="not_safe_claim_confirmed">
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Boundary Confirmed</label>
+                    <select name="boundary_confirmed">
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Follow-Up Needed</label>
+                    <select name="follow_up_needed">
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Follow-Up Owner</label>
+                    <input name="follow_up_owner" value="Presenter / Reviewer">
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Comments</label>
+                <textarea name="comments" rows="4" placeholder="Capture reviewer comments, limitations, or decision rationale."></textarea>
+            </div>
+            <div style="margin-top:14px;">
+                <button class="st-button" type="submit">Capture Attestation</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/decision-log">Decision Log</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/reviewer-attestation/export">Export Attestations</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Attestation Filters</h2>
+        <form method="GET" action="/sterile-compounding/reviewer-attestation">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Reviewer Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/reviewer-attestation">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Reviewer Attestation Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Attestation ID</th>
+                        <th>Type</th>
+                        <th>Reviewer</th>
+                        <th>Role</th>
+                        <th>Group</th>
+                        <th>Decision</th>
+                        <th>Reviewed Route</th>
+                        <th>Evidence Route</th>
+                        <th>Follow-Up</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "REVIEWER-ATTESTATION",
+            "STERILE_REVIEWER_ATTESTATION_VIEW",
+            "Sterile reviewer attestation page viewed",
+            actor="system",
+            source_route="/sterile-compounding/reviewer-attestation",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Reviewer Attestation Capture", body)
+
+
+@app.route("/sterile-compounding/reviewer-attestation/<attestation_id>")
+def sterile_compounding_reviewer_attestation_detail(attestation_id):
+    attestation_df, decision_df = sterile_ra_seed_if_empty()
+    attestation_id = sterile_ra_safe(attestation_id)
+
+    match = attestation_df[attestation_df["attestation_id"].astype(str) == str(attestation_id)].copy() if not attestation_df.empty else attestation_df
+
+    if match.empty:
+        return sterile_ra_Response("Reviewer attestation not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+    decisions = decision_df[decision_df["attestation_id"].astype(str) == str(attestation_id)].copy() if not decision_df.empty else decision_df
+
+    detail_rows = ""
+
+    for key in STERILE_REVIEWER_ATTESTATION_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ra_safe(row.get(key, ""))
+
+        if key == "attestation_status":
+            value = sterile_ra_badge(value)
+        elif key == "attestation_hash":
+            value = f"<code>{value}</code>"
+        elif key in ["reviewed_route", "evidence_route"]:
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    decision_rows = ""
+
+    if not decisions.empty:
+        for _, decision in decisions.iterrows():
+            route = sterile_ra_safe(decision.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            decision_rows += f"""
+            <tr>
+                <td>{sterile_ra_badge(decision.get("decision_status", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("decision_priority", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("decision_area", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("decision_summary", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("approved_next_action", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("not_approved_action", ""))}</td>
+                <td>{sterile_ra_safe(decision.get("required_follow_up", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        decision_rows = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No decision log row found for this attestation.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Reviewer Attestation Detail</h1>
+        <p>{attestation_id}</p>
+        <div style="margin-top:16px;">{sterile_ra_badge(row.get("attestation_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ra_safe(row.get("attestation_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Attestation Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Linked Decision Log</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Area</th>
+                        <th>Summary</th>
+                        <th>Approved Next Action</th>
+                        <th>Not Approved</th>
+                        <th>Follow-Up</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{decision_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/reviewer-attestation">Back to Attestations</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/decision-log">Decision Log</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-handoff-pack">Executive Handoff</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Protected Boundary</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            attestation_id,
+            "STERILE_REVIEWER_ATTESTATION_DETAIL_VIEW",
+            "Sterile reviewer attestation detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/reviewer-attestation/<attestation_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Reviewer Attestation - {attestation_id}", body)
+
+
+@app.route("/sterile-compounding/decision-log")
+def sterile_compounding_decision_log():
+    attestation_df, decision_df = sterile_ra_seed_if_empty()
+
+    status_filter = sterile_ra_safe(sterile_ra_request.args.get("status", ""))
+    priority_filter = sterile_ra_safe(sterile_ra_request.args.get("priority", ""))
+
+    filtered = decision_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["decision_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["decision_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["decision_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["decision_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["decision_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["decision_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Decision Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["created_at", "decision_priority"], ascending=[False, True]).iterrows():
+            attestation_id = sterile_ra_safe(row.get("attestation_id", ""))
+            route = sterile_ra_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+            attestation_link = f'<a href="/sterile-compounding/reviewer-attestation/{attestation_id}">{attestation_id}</a>'
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ra_badge(row.get("decision_status", ""))}</td>
+                <td>{sterile_ra_safe(row.get("decision_priority", ""))}</td>
+                <td>{attestation_link}</td>
+                <td>{sterile_ra_safe(row.get("decision_area", ""))}</td>
+                <td>{sterile_ra_safe(row.get("decision_summary", ""))}</td>
+                <td>{sterile_ra_safe(row.get("decision_rationale", ""))}</td>
+                <td>{sterile_ra_safe(row.get("approved_next_action", ""))}</td>
+                <td>{sterile_ra_safe(row.get("not_approved_action", ""))}</td>
+                <td>{sterile_ra_safe(row.get("required_follow_up", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No decision log rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Decision Log</h1>
+        <p>
+            Decision log generated from reviewer attestations. This captures approved next actions,
+            not-approved actions, required follow-up, priority, and supporting routes.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Decisions</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Decision Filters</h2>
+        <form method="GET" action="/sterile-compounding/decision-log">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/decision-log">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/reviewer-attestation">Reviewer Attestation</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/decision-log/export">Export Decision Log</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Decision Log Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Attestation</th>
+                        <th>Area</th>
+                        <th>Summary</th>
+                        <th>Rationale</th>
+                        <th>Approved Next Action</th>
+                        <th>Not Approved</th>
+                        <th>Follow-Up</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "DECISION-LOG",
+            "STERILE_DECISION_LOG_VIEW",
+            "Sterile decision log viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/decision-log",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Decision Log", body)
+
+
+@app.route("/sterile-compounding/reviewer-attestation/export")
+def sterile_compounding_reviewer_attestation_export():
+    attestation_df, decision_df = sterile_ra_seed_if_empty()
+
+    if attestation_df.empty:
+        attestation_df = sterile_ra_pd.DataFrame(columns=STERILE_REVIEWER_ATTESTATION_COLUMNS)
+
+    csv_data = attestation_df.to_csv(index=False)
+
+    return sterile_ra_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_reviewer_attestation_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/decision-log/export")
+def sterile_compounding_decision_log_export():
+    attestation_df, decision_df = sterile_ra_seed_if_empty()
+
+    if decision_df.empty:
+        decision_df = sterile_ra_pd.DataFrame(columns=STERILE_DECISION_LOG_COLUMNS)
+
+    csv_data = decision_df.to_csv(index=False)
+
+    return sterile_ra_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_decision_log_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_reviewer_attestation_dashboard_injection(response):
+    try:
+        if sterile_ra_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/executive-handoff-pack",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/leadership-route-bundle",
+            "/sterile-compounding/handoff-checklist",
+            "/sterile-compounding/stakeholder-review-board",
+            "/sterile-compounding/enhancement-backlog",
+            "/sterile-compounding/protected-boundary-check",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-reviewer-attestation-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-reviewer-attestation-panel">
+            <h2>Reviewer Attestation + Decision Log</h2>
+            <p class="st-note">
+                Captures demo-stage reviewer attestations, safe-claim confirmation, not-safe-claim confirmation,
+                boundary confirmation, and decision-log outcomes. This does not write to QMS or enterprise systems.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/reviewer-attestation">Reviewer Attestation</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/decision-log">Decision Log</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/reviewer-attestation/export">Export Attestations</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/decision-log/export">Export Decisions</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile reviewer attestation injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
