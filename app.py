@@ -17558,5 +17558,888 @@ def sterile_compounding_nav_health_injection(response):
         print(f"Sterile compounding nav/health injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CONTROL_MAPPER_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 3: Control Mapper + No-Release Governance Gate
+#
+# New Routes:
+#   /sterile-compounding/control-mapper
+#   /sterile-compounding/control-mapper/<record_id>
+#   /sterile-compounding/control-mapper/export
+#   /sterile-compounding/no-release-gate
+#
+# New Register:
+#   sterile_compounding_control_map_register.csv
+#
+# Boundary:
+#   This module maps evidence to control expectations.
+#   It does not certify legal/regulatory compliance and does not
+#   replace pharmacy, QMS, QA, ServiceNow, Blue Mountain, Veeva,
+#   Entra, CI Candidate Factory, Knowledge Governance, Operational
+#   Lineage, Monday Demo, Release Notes, Platform Health, or the
+#   protected Manufacturing/Wole homepage.
+# ============================================================
+
+try:
+    from flask import Response as sterile_control_Response
+    from flask import redirect as sterile_control_redirect
+    import pandas as sterile_control_pd
+    import json as sterile_control_json
+except Exception as sterile_control_import_error:
+    raise RuntimeError(f"Sterile control mapper import failed: {sterile_control_import_error}")
+
+
+STERILE_CONTROL_MAP_REGISTER = "sterile_compounding_control_map_register.csv"
+
+STERILE_CONTROL_MAP_COLUMNS = [
+    "map_id",
+    "record_id",
+    "facility_type",
+    "csp_category",
+    "hazardous_drug",
+    "control_domain",
+    "control_expectation",
+    "evidence_field",
+    "evidence_value",
+    "control_status",
+    "severity",
+    "release_impact",
+    "standard_reference",
+    "rationale",
+    "created_at",
+    "control_hash"
+]
+
+
+def sterile_control_require_phase1():
+    required = [
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+
+    if missing:
+        raise RuntimeError(
+            "Sterile Phase 1 helpers are missing: " + ", ".join(missing)
+        )
+
+
+def sterile_control_value(row, field):
+    return sterile_clean(row.get(field, ""))
+
+
+def sterile_control_lower(row, field):
+    return sterile_control_value(row, field).lower()
+
+
+def sterile_control_make_id(record_id, domain, evidence_field):
+    raw = f"{record_id}|{domain}|{evidence_field}"
+    return "ST-CMAP-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_control_status_from_value(value, pass_values, review_values, fail_values, blank_status="REVIEW"):
+    value = sterile_clean(value).lower()
+
+    if value in pass_values:
+        return "PASS"
+
+    if value in fail_values:
+        return "FAIL"
+
+    if value in review_values:
+        return "REVIEW"
+
+    if value == "":
+        return blank_status
+
+    return "REVIEW"
+
+
+def sterile_control_release_impact(status, severity):
+    status = sterile_clean(status).upper()
+    severity = sterile_clean(severity).upper()
+
+    if status == "FAIL" and severity in ["CRITICAL", "HIGH"]:
+        return "BLOCK RELEASE"
+    if status == "FAIL":
+        return "HOLD FOR QA / PHARMACIST REVIEW"
+    if status == "REVIEW":
+        return "REVIEW REQUIRED"
+    if status == "N/A":
+        return "NOT APPLICABLE"
+    return "NO RELEASE BLOCK"
+
+
+def sterile_control_add_row(rows, record, domain, expectation, evidence_field, status, severity, standard_reference, rationale):
+    record_id = sterile_control_value(record, "record_id")
+    evidence_value = sterile_control_value(record, evidence_field)
+
+    release_impact = sterile_control_release_impact(status, severity)
+
+    payload = {
+        "map_id": sterile_control_make_id(record_id, domain, evidence_field),
+        "record_id": record_id,
+        "facility_type": sterile_control_value(record, "facility_type"),
+        "csp_category": sterile_control_value(record, "csp_category"),
+        "hazardous_drug": sterile_control_value(record, "hazardous_drug"),
+        "control_domain": domain,
+        "control_expectation": expectation,
+        "evidence_field": evidence_field,
+        "evidence_value": evidence_value,
+        "control_status": status,
+        "severity": severity,
+        "release_impact": release_impact,
+        "standard_reference": standard_reference,
+        "rationale": rationale,
+        "created_at": sterile_now(),
+    }
+
+    payload["control_hash"] = sterile_hash_text(
+        sterile_control_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_control_build_rows_for_record(record):
+    rows = []
+
+    equipment_status = sterile_control_lower(record, "equipment_status")
+    personnel_qualified = sterile_control_lower(record, "personnel_qualified")
+    coa_attached = sterile_control_lower(record, "coa_attached")
+    environmental_status = sterile_control_lower(record, "environmental_status")
+    deviation_open = sterile_control_lower(record, "deviation_open")
+    approval_status = sterile_control_lower(record, "approval_status")
+    supplier_approved = sterile_control_lower(record, "supplier_approved")
+    ingredient_expiry_status = sterile_control_lower(record, "ingredient_expiry_status")
+    storage_condition_status = sterile_control_lower(record, "storage_condition_status")
+    cleaning_log_status = sterile_control_lower(record, "cleaning_log_status")
+    em_log_reviewed = sterile_control_lower(record, "em_log_reviewed")
+    pharmacist_verification = sterile_control_lower(record, "pharmacist_verification")
+    qa_review_status = sterile_control_lower(record, "qa_review_status")
+    sop_version = sterile_control_value(record, "sop_version")
+    evidence_file = sterile_control_value(record, "evidence_file")
+    ingredient_lot = sterile_control_value(record, "ingredient_lot")
+    beyond_use_date = sterile_control_value(record, "beyond_use_date")
+    facility_type = sterile_control_lower(record, "facility_type")
+    hazardous_drug = sterile_control_lower(record, "hazardous_drug")
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Personnel Qualification",
+        "Personnel assigned to sterile compounding should be qualified and authorized for the activity.",
+        "personnel_qualified",
+        sterile_control_status_from_value(
+            personnel_qualified,
+            pass_values=["yes", "true", "current", "qualified", "pass", "passed", "approved", "verified"],
+            review_values=["pending", "review", "due"],
+            fail_values=["no", "false", "expired", "not qualified", "fail", "failed"],
+        ),
+        "CRITICAL",
+        "USP 797 governance mapping",
+        "Checks whether the technician/personnel qualification field supports release readiness."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Equipment / Hood Readiness",
+        "Compounding equipment, hood, or cleanroom control evidence should be current before release.",
+        "equipment_status",
+        sterile_control_status_from_value(
+            equipment_status,
+            pass_values=["current", "yes", "pass", "passed", "approved", "verified"],
+            review_values=["due", "near due", "review", "pending"],
+            fail_values=["expired", "fail", "failed", "not current"],
+        ),
+        "CRITICAL",
+        "USP 797 governance mapping",
+        "Checks equipment/certification status for release-blocking conditions."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Environmental Monitoring",
+        "Environmental monitoring status should be acceptable or reviewed before release.",
+        "environmental_status",
+        sterile_control_status_from_value(
+            environmental_status,
+            pass_values=["pass", "passed", "green", "acceptable", "approved"],
+            review_values=["alert", "warning", "yellow", "review", "pending"],
+            fail_values=["fail", "failed", "red", "excursion", "out of limit", "out of range"],
+        ),
+        "CRITICAL",
+        "USP 797 governance mapping",
+        "Checks viable/non-viable or environmental status signals for release-blocking excursions."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "COA / Ingredient Evidence",
+        "COA or ingredient evidence should be attached and traceable.",
+        "coa_attached",
+        sterile_control_status_from_value(
+            coa_attached,
+            pass_values=["yes", "true", "attached", "present", "complete", "approved"],
+            review_values=["pending", "review"],
+            fail_values=["no", "false", "missing", "fail", "failed"],
+        ),
+        "HIGH",
+        "Ingredient governance mapping",
+        "Checks whether ingredient evidence is attached."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Ingredient Lot Traceability",
+        "Ingredient lot should be captured for traceability and impact analysis.",
+        "ingredient_lot",
+        "PASS" if ingredient_lot else "REVIEW",
+        "HIGH",
+        "Ingredient governance mapping",
+        "Checks whether the ingredient lot is present for lineage and blast-radius analysis."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Supplier Approval",
+        "Supplier approval status should support use of the ingredient/material.",
+        "supplier_approved",
+        sterile_control_status_from_value(
+            supplier_approved,
+            pass_values=["yes", "true", "approved", "verified"],
+            review_values=["pending", "review"],
+            fail_values=["no", "false", "not approved", "rejected", "fail", "failed"],
+        ),
+        "HIGH",
+        "Supplier governance mapping",
+        "Checks whether the supplier approval field supports release readiness."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Ingredient Expiry",
+        "Ingredient expiry status should be current before use/release.",
+        "ingredient_expiry_status",
+        sterile_control_status_from_value(
+            ingredient_expiry_status,
+            pass_values=["current", "valid", "yes", "pass", "passed", "approved"],
+            review_values=["due", "near due", "review", "pending"],
+            fail_values=["expired", "fail", "failed"],
+        ),
+        "CRITICAL",
+        "Ingredient governance mapping",
+        "Checks whether ingredient expiry creates a release-blocking condition."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Storage Conditions",
+        "Storage condition evidence should support acceptable conditions.",
+        "storage_condition_status",
+        sterile_control_status_from_value(
+            storage_condition_status,
+            pass_values=["pass", "passed", "acceptable", "current", "yes", "approved"],
+            review_values=["alert", "review", "pending"],
+            fail_values=["fail", "failed", "excursion", "out of range", "out of limit"],
+        ),
+        "HIGH",
+        "Storage governance mapping",
+        "Checks whether storage condition status creates a review or block condition."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Cleaning / Disinfection Evidence",
+        "Cleaning or disinfection log should be complete before release readiness is accepted.",
+        "cleaning_log_status",
+        sterile_control_status_from_value(
+            cleaning_log_status,
+            pass_values=["complete", "completed", "yes", "pass", "passed", "approved"],
+            review_values=["review", "pending", "due"],
+            fail_values=["missing", "incomplete", "fail", "failed"],
+        ),
+        "HIGH",
+        "USP 797 governance mapping",
+        "Checks cleaning-log evidence for missing or failed controls."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Environmental Monitoring Review",
+        "Environmental monitoring record should be reviewed.",
+        "em_log_reviewed",
+        sterile_control_status_from_value(
+            em_log_reviewed,
+            pass_values=["yes", "true", "reviewed", "complete", "approved"],
+            review_values=["pending", "review"],
+            fail_values=["no", "false", "missing", "fail", "failed"],
+        ),
+        "HIGH",
+        "USP 797 governance mapping",
+        "Checks whether environmental monitoring has been reviewed."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Pharmacist Verification",
+        "Pharmacist verification should be complete before release readiness is accepted.",
+        "pharmacist_verification",
+        sterile_control_status_from_value(
+            pharmacist_verification,
+            pass_values=["yes", "true", "verified", "complete", "approved"],
+            review_values=["pending", "review"],
+            fail_values=["no", "false", "missing", "rejected", "fail", "failed"],
+        ),
+        "CRITICAL",
+        "Pharmacist verification governance mapping",
+        "Checks whether pharmacist verification supports release readiness."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "QA Review",
+        "QA review status should be acceptable when required by facility mode or risk state.",
+        "qa_review_status",
+        sterile_control_status_from_value(
+            qa_review_status,
+            pass_values=["approved", "yes", "true", "complete", "verified"],
+            review_values=["pending", "review", "not applicable", "n/a"],
+            fail_values=["rejected", "fail", "failed", "no"],
+        ),
+        "HIGH",
+        "QA governance mapping",
+        "Checks QA review status without replacing formal QA approval."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Deviation Status",
+        "Open critical deviations should block release until reviewed.",
+        "deviation_open",
+        sterile_control_status_from_value(
+            deviation_open,
+            pass_values=["no", "false", "closed", "none", "no deviation"],
+            review_values=["review", "pending"],
+            fail_values=["yes", "true", "open", "critical"],
+        ),
+        "CRITICAL",
+        "Deviation/CAPA governance mapping",
+        "Checks whether open deviation status creates a release-blocking condition."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Controlled SOP / Formula Version",
+        "SOP or formula version should be captured for control-to-evidence lineage.",
+        "sop_version",
+        "PASS" if sop_version else "REVIEW",
+        "MEDIUM",
+        "SOP governance mapping",
+        "Checks whether the SOP/formula version is present for evidence lineage."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Evidence File",
+        "Evidence file reference should be present for audit-readiness.",
+        "evidence_file",
+        "PASS" if evidence_file else "REVIEW",
+        "MEDIUM",
+        "Audit evidence mapping",
+        "Checks whether an evidence file reference is present."
+    )
+
+    sterile_control_add_row(
+        rows,
+        record,
+        "Beyond-Use Date",
+        "Beyond-use date should be present and not expired.",
+        "beyond_use_date",
+        "PASS" if beyond_use_date else "REVIEW",
+        "HIGH",
+        "BUD governance mapping",
+        "Checks whether beyond-use date evidence is present."
+    )
+
+    if "503b" in facility_type or "outsourcing" in facility_type:
+        sterile_control_add_row(
+            rows,
+            record,
+            "503B Outsourcing Facility Governance Mode",
+            "503B mode should have stronger QA/release governance review visibility.",
+            "facility_type",
+            "PASS" if qa_review_status in ["approved", "complete", "verified", "yes", "true"] else "REVIEW",
+            "HIGH",
+            "503B governance mode mapping",
+            "Flags outsourcing-facility mode for stronger QA/release governance visibility."
+        )
+
+    if hazardous_drug in ["yes", "true", "hazardous"]:
+        sterile_control_add_row(
+            rows,
+            record,
+            "USP 800 Hazardous Drug Governance",
+            "Hazardous drug records should have additional handling evidence review.",
+            "hazardous_drug",
+            "REVIEW",
+            "HIGH",
+            "USP 800 governance mapping",
+            "Hazardous drug flag is present. Additional hazardous-drug handling evidence should be reviewed."
+        )
+    else:
+        sterile_control_add_row(
+            rows,
+            record,
+            "USP 800 Hazardous Drug Governance",
+            "Hazardous drug controls are not triggered when hazardous_drug is No.",
+            "hazardous_drug",
+            "N/A",
+            "LOW",
+            "USP 800 governance mapping",
+            "Hazardous drug flag does not trigger extra USP 800-style evidence review."
+        )
+
+    return rows
+
+
+def sterile_control_build_map():
+    sterile_control_require_phase1()
+
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        empty_map = sterile_control_pd.DataFrame(columns=STERILE_CONTROL_MAP_COLUMNS)
+        sterile_write_register(
+            STERILE_CONTROL_MAP_REGISTER,
+            empty_map,
+            STERILE_CONTROL_MAP_COLUMNS
+        )
+        return empty_map
+
+    all_rows = []
+
+    for _, row in df.iterrows():
+        all_rows.extend(sterile_control_build_rows_for_record(row.to_dict()))
+
+    map_df = sterile_control_pd.DataFrame(all_rows)
+    map_df = sterile_ensure_cols(map_df, STERILE_CONTROL_MAP_COLUMNS)
+
+    sterile_write_register(
+        STERILE_CONTROL_MAP_REGISTER,
+        map_df,
+        STERILE_CONTROL_MAP_COLUMNS
+    )
+
+    return map_df
+
+
+def sterile_control_badge(status):
+    status = sterile_clean(status).upper()
+
+    if status == "PASS":
+        return '<span class="st-badge st-green">PASS</span>'
+    if status == "REVIEW":
+        return '<span class="st-badge st-yellow">REVIEW</span>'
+    if status == "FAIL":
+        return '<span class="st-badge st-red">FAIL</span>'
+    if status == "N/A":
+        return '<span class="st-badge st-gray">N/A</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_gate_status_for_records(map_df):
+    if map_df.empty:
+        return sterile_control_pd.DataFrame(columns=[
+            "record_id",
+            "total_controls",
+            "pass_count",
+            "review_count",
+            "fail_count",
+            "critical_fail_count",
+            "high_fail_count",
+            "gate_status",
+            "gate_decision",
+            "blocking_reasons",
+        ])
+
+    rows = []
+
+    for record_id, group in map_df.groupby("record_id"):
+        total_controls = len(group)
+        pass_count = int((group["control_status"] == "PASS").sum())
+        review_count = int((group["control_status"] == "REVIEW").sum())
+        fail_count = int((group["control_status"] == "FAIL").sum())
+        critical_fail_count = int(((group["control_status"] == "FAIL") & (group["severity"] == "CRITICAL")).sum())
+        high_fail_count = int(((group["control_status"] == "FAIL") & (group["severity"] == "HIGH")).sum())
+
+        blockers = group[
+            (group["control_status"] == "FAIL")
+            | (group["release_impact"].isin(["BLOCK RELEASE", "HOLD FOR QA / PHARMACIST REVIEW"]))
+        ]
+
+        blocking_reasons = "; ".join(
+            [
+                f"{sterile_clean(r.get('control_domain', ''))}: {sterile_clean(r.get('rationale', ''))}"
+                for _, r in blockers.iterrows()
+            ]
+        )
+
+        if critical_fail_count > 0 or high_fail_count > 0:
+            gate_status = "RED"
+            gate_decision = "NO-RELEASE GOVERNANCE LOCK"
+        elif fail_count > 0 or review_count > 0:
+            gate_status = "YELLOW"
+            gate_decision = "REVIEW REQUIRED BEFORE RELEASE"
+        else:
+            gate_status = "GREEN"
+            gate_decision = "NO GOVERNANCE RELEASE BLOCK DETECTED"
+
+        rows.append({
+            "record_id": record_id,
+            "total_controls": total_controls,
+            "pass_count": pass_count,
+            "review_count": review_count,
+            "fail_count": fail_count,
+            "critical_fail_count": critical_fail_count,
+            "high_fail_count": high_fail_count,
+            "gate_status": gate_status,
+            "gate_decision": gate_decision,
+            "blocking_reasons": blocking_reasons,
+        })
+
+    return sterile_control_pd.DataFrame(rows)
+
+
+@app.route("/sterile-compounding/control-mapper")
+def sterile_compounding_control_mapper():
+    map_df = sterile_control_build_map()
+
+    total_controls = len(map_df)
+    pass_count = int((map_df["control_status"] == "PASS").sum()) if total_controls else 0
+    review_count = int((map_df["control_status"] == "REVIEW").sum()) if total_controls else 0
+    fail_count = int((map_df["control_status"] == "FAIL").sum()) if total_controls else 0
+    na_count = int((map_df["control_status"] == "N/A").sum()) if total_controls else 0
+
+    rows_html = ""
+
+    if not map_df.empty:
+        for _, row in map_df.iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/control-mapper/{rid}">{rid}</a></td>
+                <td>{sterile_clean(row.get("control_domain", ""))}</td>
+                <td>{sterile_clean(row.get("standard_reference", ""))}</td>
+                <td>{sterile_clean(row.get("evidence_field", ""))}</td>
+                <td>{sterile_clean(row.get("evidence_value", ""))}</td>
+                <td>{sterile_control_badge(row.get("control_status", ""))}</td>
+                <td>{sterile_clean(row.get("severity", ""))}</td>
+                <td>{sterile_clean(row.get("release_impact", ""))}</td>
+                <td>{sterile_clean(row.get("rationale", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No CSP records found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Control Mapper</h1>
+        <p>
+            Maps each CSP record to control expectations across personnel qualification, equipment readiness,
+            environmental monitoring, COA/ingredient evidence, cleaning, pharmacist verification, QA review,
+            deviations, 503B mode, and hazardous-drug governance. This is a governance mapping view, not a legal
+            compliance certification.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total Control Checks</div><div class="st-value">{total_controls}</div></div>
+        <div class="st-card"><div class="st-label">PASS</div><div class="st-value">{pass_count}</div></div>
+        <div class="st-card"><div class="st-label">REVIEW</div><div class="st-value">{review_count}</div></div>
+        <div class="st-card"><div class="st-label">FAIL</div><div class="st-value">{fail_count}</div></div>
+        <div class="st-card"><div class="st-label">N/A</div><div class="st-value">{na_count}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control Map Actions</h2>
+        <a class="st-button" href="/sterile-compounding/no-release-gate">Open No-Release Gate</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/control-mapper/export">Export Control Map CSV</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding">Back to CSP Dashboard</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control-to-Evidence Map</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Control Domain</th>
+                        <th>Reference</th>
+                        <th>Evidence Field</th>
+                        <th>Evidence Value</th>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Release Impact</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONTROL-MAPPER",
+            "CONTROL_MAP_VIEW",
+            "Sterile control mapper viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/control-mapper",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Control Mapper", body)
+
+
+@app.route("/sterile-compounding/control-mapper/<record_id>")
+def sterile_compounding_control_mapper_record(record_id):
+    map_df = sterile_control_build_map()
+    record_map = map_df[map_df["record_id"].astype(str) == str(record_id)] if not map_df.empty else map_df
+
+    if record_map.empty:
+        return sterile_control_Response("No control-map record found for this CSP.", status=404)
+
+    rows_html = ""
+
+    for _, row in record_map.iterrows():
+        rows_html += f"""
+        <tr>
+            <td>{sterile_clean(row.get("control_domain", ""))}</td>
+            <td>{sterile_clean(row.get("control_expectation", ""))}</td>
+            <td>{sterile_clean(row.get("evidence_field", ""))}</td>
+            <td>{sterile_clean(row.get("evidence_value", ""))}</td>
+            <td>{sterile_control_badge(row.get("control_status", ""))}</td>
+            <td>{sterile_clean(row.get("severity", ""))}</td>
+            <td>{sterile_clean(row.get("release_impact", ""))}</td>
+            <td>{sterile_clean(row.get("rationale", ""))}</td>
+        </tr>
+        """
+
+    gate_df = sterile_gate_status_for_records(map_df)
+    gate_match = gate_df[gate_df["record_id"].astype(str) == str(record_id)]
+
+    gate_html = ""
+
+    if not gate_match.empty:
+        gate = gate_match.iloc[0].to_dict()
+        gate_html = f"""
+        <div class="st-panel">
+            <h2>No-Release Gate Result</h2>
+            <p><b>Status:</b> {sterile_badge(gate.get("gate_status", ""))}</p>
+            <p><b>Decision:</b> {sterile_clean(gate.get("gate_decision", ""))}</p>
+            <p><b>Blocking Reasons:</b> {sterile_clean(gate.get("blocking_reasons", "")) or "None detected."}</p>
+        </div>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>CSP Control Mapper Passport</h1>
+        <p>Control-to-evidence map for <b>{sterile_clean(record_id)}</b>.</p>
+    </div>
+
+    {gate_html}
+
+    <div class="st-panel">
+        <h2>Mapped Controls</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Control Domain</th>
+                        <th>Expectation</th>
+                        <th>Evidence Field</th>
+                        <th>Evidence Value</th>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Release Impact</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/passport/{sterile_clean(record_id)}">Back to CSP Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/no-release-gate">Open No-Release Gate</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/control-mapper">Back to Full Control Mapper</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "CONTROL_MAP_RECORD_VIEW",
+            "Record-level sterile control mapper viewed",
+            actor="system",
+            source_route="/sterile-compounding/control-mapper/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Sterile Control Mapper - {record_id}", body)
+
+
+@app.route("/sterile-compounding/no-release-gate")
+def sterile_compounding_no_release_gate():
+    map_df = sterile_control_build_map()
+    gate_df = sterile_gate_status_for_records(map_df)
+
+    total = len(gate_df)
+    green = int((gate_df["gate_status"] == "GREEN").sum()) if total else 0
+    yellow = int((gate_df["gate_status"] == "YELLOW").sum()) if total else 0
+    red = int((gate_df["gate_status"] == "RED").sum()) if total else 0
+
+    rows_html = ""
+
+    if not gate_df.empty:
+        for _, row in gate_df.iterrows():
+            rid = sterile_clean(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_badge(row.get("gate_status", ""))}</td>
+                <td>{sterile_clean(row.get("gate_decision", ""))}</td>
+                <td>{sterile_clean(row.get("total_controls", ""))}</td>
+                <td>{sterile_clean(row.get("pass_count", ""))}</td>
+                <td>{sterile_clean(row.get("review_count", ""))}</td>
+                <td>{sterile_clean(row.get("fail_count", ""))}</td>
+                <td>{sterile_clean(row.get("critical_fail_count", ""))}</td>
+                <td>{sterile_clean(row.get("high_fail_count", ""))}</td>
+                <td>{sterile_clean(row.get("blocking_reasons", ""))}</td>
+                <td><a href="/sterile-compounding/control-mapper/{rid}">Control Map</a></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No gate results available. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>No-Release Governance Gate</h1>
+        <p>
+            Release-gating view based on mapped control evidence. GREEN means no governance block detected.
+            YELLOW means review is required. RED means a no-release governance lock is triggered by critical or
+            high-severity failed controls. This is not a substitute for formal pharmacist/QA disposition.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total CSPs</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Gate Actions</h2>
+        <a class="st-button" href="/sterile-compounding/control-mapper">Open Control Mapper</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding">Back to CSP Dashboard</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>No-Release Gate Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Gate Status</th>
+                        <th>Gate Decision</th>
+                        <th>Total Controls</th>
+                        <th>Pass</th>
+                        <th>Review</th>
+                        <th>Fail</th>
+                        <th>Critical Fail</th>
+                        <th>High Fail</th>
+                        <th>Blocking Reasons</th>
+                        <th>Detail</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "NO-RELEASE-GATE",
+            "NO_RELEASE_GATE_VIEW",
+            "Sterile no-release governance gate viewed",
+            actor="system",
+            source_route="/sterile-compounding/no-release-gate",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("No-Release Governance Gate", body)
+
+
+@app.route("/sterile-compounding/control-mapper/export")
+def sterile_compounding_control_mapper_export():
+    map_df = sterile_control_build_map()
+
+    if map_df.empty:
+        map_df = sterile_control_pd.DataFrame(columns=STERILE_CONTROL_MAP_COLUMNS)
+
+    csv_data = map_df.to_csv(index=False)
+
+    return sterile_control_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_control_map_export.csv"}
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
