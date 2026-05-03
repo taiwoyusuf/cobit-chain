@@ -53492,5 +53492,319 @@ def sterile_compounding_monday_demo_entry_injection(response):
         print(f"Sterile Monday Demo entry injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_RELEASE_NOTES_ENTRY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 44: Release Notes Entry Bridge
+#
+# New Routes:
+#   /sterile-compounding/release-notes-entry
+#   /sterile-compounding/release-notes-entry/export
+#
+# New Register:
+#   sterile_compounding_release_notes_entry.csv
+#
+# Boundary:
+#   This adds a small sterile release summary panel into /release-notes
+#   using after_request injection. It does not overwrite the existing
+#   /release-notes route and does not touch Command Center logic,
+#   Monday Demo logic, Platform Health, Manufacturing/Wole, ServiceNow,
+#   Entra, CI, Knowledge, Operational Lineage, or other protected modules.
+# ============================================================
+
+try:
+    import pandas as sterile_rne_pd
+    import json as sterile_rne_json
+    from flask import request as sterile_rne_request
+    from flask import Response as sterile_rne_Response
+except Exception as sterile_rne_import_error:
+    raise RuntimeError(f"Sterile Release Notes entry import failed: {sterile_rne_import_error}")
+
+
+STERILE_RELEASE_NOTES_ENTRY_REGISTER = "sterile_compounding_release_notes_entry.csv"
+
+STERILE_RELEASE_NOTES_ENTRY_COLUMNS = [
+    "release_entry_id",
+    "release_name",
+    "release_status",
+    "release_phase",
+    "release_scope",
+    "release_route",
+    "primary_entry_route",
+    "demo_route",
+    "readiness_route",
+    "poc_results_route",
+    "integration_blueprint_route",
+    "maturity_route",
+    "what_changed",
+    "why_it_matters",
+    "safe_boundary",
+    "protected_area_impact",
+    "rollback_reference",
+    "recommended_next_phase",
+    "last_checked",
+    "release_entry_hash"
+]
+
+
+def sterile_rne_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Release Notes entry dependencies missing: " + ", ".join(missing))
+
+
+def sterile_rne_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_rne_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_rne_badge(status):
+    status = sterile_rne_safe(status).upper()
+
+    if status in ["GREEN", "ACTIVE", "READY", "RELEASED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_rne_build_entry():
+    sterile_rne_require_dependencies()
+
+    what_changed = (
+        "Added Compound Sterile AssuranceLayer™ as a governed sterile compounding vertical with "
+        "record passports, evidence matrix, audit pack, release dossier, cryptographic seal logic, custody chain, "
+        "SOP/formula drift, personnel competency drift, equipment/room readiness, master assurance index, "
+        "inspection readiness, auditor Q&A, regulatory crosswalk, inspection binder, executive brief, demo walkthrough, "
+        "go-live readiness, freeze snapshot, maturity roadmap, integration blueprint, data contracts, mock ingestion, "
+        "connector approval, non-production POC planning, POC test execution, and evidence packet manifest."
+    )
+
+    why_it_matters = (
+        "The release demonstrates how AssuranceLayer can convert sterile compounding activities into governed "
+        "control-to-evidence workflows without replacing validated systems such as Veeva, Blue Mountain, ServiceNow, "
+        "myAccess, Entra, or enterprise analytics tools."
+    )
+
+    payload = {
+        "release_entry_id": sterile_rne_make_id("ST-RNOTE", "compound-sterile-release"),
+        "release_name": "Compound Sterile AssuranceLayer™ Release Entry",
+        "release_status": "GREEN",
+        "release_phase": "Sterile vertical build + controlled global exposure",
+        "release_scope": "Sterile compounding evidence governance, inspection readiness, POC integration governance, and leadership demo readiness.",
+        "release_route": "/sterile-compounding/release-notes-entry",
+        "primary_entry_route": "/sterile-compounding",
+        "demo_route": "/sterile-compounding/demo-walkthrough",
+        "readiness_route": "/sterile-compounding/go-live-readiness",
+        "poc_results_route": "/sterile-compounding/poc-results-summary",
+        "integration_blueprint_route": "/sterile-compounding/integration-blueprint",
+        "maturity_route": "/sterile-compounding/maturity-model",
+        "what_changed": what_changed,
+        "why_it_matters": why_it_matters,
+        "safe_boundary": "Governance/demo/planning layer only. Not a QMS replacement, validated source of truth, pharmacy release engine, production connector, or production automation.",
+        "protected_area_impact": "No existing Release Notes route overwrite. This phase injects a release entry panel only and does not modify Command Center logic, Monday Demo logic, Platform Health, Manufacturing/Wole, ServiceNow, Entra, CI, Knowledge, or Operational Lineage.",
+        "rollback_reference": "Use stable-before-sterile-release-notes-entry-20260503 or the last stable-working tag if rollback is required.",
+        "recommended_next_phase": "Add sterile registers to Platform Health as a safe after_request bridge and register health summary.",
+        "last_checked": sterile_now(),
+    }
+
+    payload["release_entry_hash"] = sterile_hash_text(
+        sterile_rne_json.dumps(payload, sort_keys=True)
+    )
+
+    df = sterile_rne_pd.DataFrame([payload])
+    df = df.reindex(columns=STERILE_RELEASE_NOTES_ENTRY_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_RELEASE_NOTES_ENTRY_REGISTER,
+        df,
+        STERILE_RELEASE_NOTES_ENTRY_COLUMNS
+    )
+
+    return df
+
+
+@app.route("/sterile-compounding/release-notes-entry")
+def sterile_compounding_release_notes_entry():
+    entry_df = sterile_rne_build_entry()
+    row = entry_df.iloc[0].to_dict() if not entry_df.empty else {}
+
+    detail_rows = ""
+    for key in STERILE_RELEASE_NOTES_ENTRY_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_rne_safe(row.get(key, ""))
+
+        if key == "release_status":
+            value = sterile_rne_badge(value)
+        elif key == "release_entry_hash":
+            value = f"<code>{value}</code>"
+        elif key.endswith("_route") or key in ["release_route", "primary_entry_route"]:
+            value = f'<a href="{value}">{value}</a>' if value else ""
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Release Notes Entry Bridge</h1>
+        <p>
+            Sterile-only release note record for Compound Sterile AssuranceLayer™.
+            This documents what changed, why it matters, what is protected, and what should come next.
+        </p>
+        <div style="margin-top:16px;">{sterile_rne_badge(row.get("release_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_rne_safe(row.get("release_name", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Release Summary</h2>
+        <p><b>What changed:</b> {sterile_rne_safe(row.get("what_changed", ""))}</p>
+        <p><b>Why it matters:</b> {sterile_rne_safe(row.get("why_it_matters", ""))}</p>
+        <p><b>Safe boundary:</b> {sterile_rne_safe(row.get("safe_boundary", ""))}</p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Open Release Routes</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            <a class="st-button" href="/sterile-compounding">Sterile Home</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/go-live-readiness">Go-Live Readiness</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/poc-results-summary">POC Results</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/integration-blueprint">Integration Blueprint</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model">Maturity Model</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/release-notes-entry/export">Export Entry</a>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Release Entry Register Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Protected Boundary</h2>
+        <p>{sterile_rne_safe(row.get("protected_area_impact", ""))}</p>
+        <p><b>Rollback reference:</b> {sterile_rne_safe(row.get("rollback_reference", ""))}</p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "RELEASE-NOTES-ENTRY",
+            "STERILE_RELEASE_NOTES_ENTRY_VIEW",
+            "Sterile Release Notes entry bridge viewed",
+            actor="system",
+            source_route="/sterile-compounding/release-notes-entry",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Release Notes Entry Bridge", body)
+
+
+@app.route("/sterile-compounding/release-notes-entry/export")
+def sterile_compounding_release_notes_entry_export():
+    entry_df = sterile_rne_build_entry()
+
+    if entry_df.empty:
+        entry_df = sterile_rne_pd.DataFrame(columns=STERILE_RELEASE_NOTES_ENTRY_COLUMNS)
+
+    csv_data = entry_df.to_csv(index=False)
+
+    return sterile_rne_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_release_notes_entry_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_release_notes_entry_injection(response):
+    try:
+        if sterile_rne_request.path != "/release-notes":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-release-notes-entry-panel" in html:
+            return response
+
+        panel = """
+        <section id="sterile-release-notes-entry-panel" style="margin:24px 0; padding:22px; border:1px solid #bbf7d0; border-radius:18px; background:linear-gradient(135deg,#f0fdf4,#ffffff); box-shadow:0 8px 24px rgba(15,23,42,0.08);">
+            <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+                <div style="max-width:900px;">
+                    <div style="font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#15803d;">Release Entry</div>
+                    <h2 style="margin:8px 0 8px 0; font-size:28px; line-height:1.15;">Compound Sterile AssuranceLayer™</h2>
+                    <p style="margin:0; color:#334155; font-size:15px; line-height:1.55;">
+                        Added a sterile compounding governance vertical with evidence passports, inspection readiness,
+                        audit packeting, release dossier logic, maturity roadmap, integration blueprint, data contracts,
+                        mock ingestion, connector approval, non-production POC planning, POC test execution, and evidence packet manifest.
+                    </p>
+                </div>
+                <div style="font-weight:900; color:#166534; background:#dcfce7; border:1px solid #86efac; padding:8px 12px; border-radius:999px;">GREEN</div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;">
+                <a href="/sterile-compounding/release-notes-entry" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#15803d; color:#fff; text-decoration:none; font-weight:800;">Release Entry Register</a>
+                <a href="/sterile-compounding" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Sterile Home</a>
+                <a href="/sterile-compounding/go-live-readiness" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Go-Live Readiness</a>
+                <a href="/sterile-compounding/poc-results-summary" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">POC Results</a>
+                <a href="/sterile-compounding/maturity-model" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Maturity Model</a>
+                <a href="/sterile-compounding/integration-blueprint" style="display:inline-block; padding:10px 14px; border-radius:12px; background:#0f172a; color:#fff; text-decoration:none; font-weight:800;">Integration Blueprint</a>
+            </div>
+            <p style="margin:14px 0 0 0; color:#64748b; font-size:13px;">
+                Boundary: release note entry only. This does not overwrite /release-notes and does not activate production connectors,
+                source-system writeback, QA release, or pharmacy release decisioning.
+            </p>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Release Notes entry injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
