@@ -1,3 +1,4 @@
+# CI_SUBMISSION_PACK_ACTIVE
 # CI_CANDIDATE_REVIEW_NAV_HEALTH_ACTIVE
 # CI_CANDIDATE_REVIEW_BOARD_ACTIVE
 # CI_CANDIDATE_FACTORY_NAV_HEALTH_ACTIVE
@@ -15545,6 +15546,220 @@ approved, rejected, or marked ServiceNow-ready. It prevents weak or duplicate re
         reviewers=reviewers,
         reviewer_error=reviewer_error,
         result=result
+    )
+
+
+# ============================================================
+# CI SUBMISSION PACK ACTIVE
+# Read-only ServiceNow-ready CI submission pack.
+# Shows/export only candidates marked SERVICENOW-READY CANDIDATE.
+# Does not create ServiceNow CIs directly.
+# ============================================================
+
+def get_ci_submission_pack_records():
+    candidates = prepare_ci_candidate_factory().fillna("")
+    latest_reviews = get_latest_ci_candidate_review_map()
+
+    records = []
+
+    if candidates.empty:
+        return records
+
+    for _, row in candidates.iterrows():
+        c = row.to_dict()
+        cid = clean(c.get("candidate_id"))
+        review = latest_reviews.get(cid, {})
+
+        if clean(review.get("review_status")) != "SERVICENOW-READY CANDIDATE":
+            continue
+
+        submission_record = {
+            "submission_status": "PREPARED - NOT SUBMITTED",
+            "candidate_id": cid,
+            "candidate_name": clean(c.get("candidate_name")),
+            "asset_id": clean(c.get("asset_id")),
+            "description": clean(c.get("description")),
+            "recommended_ci_class": clean(c.get("recommended_ci_class")),
+            "owner": clean(c.get("owner")),
+            "department": clean(c.get("department")),
+            "location": clean(c.get("location")),
+            "criticality": clean(c.get("criticality")),
+            "gmp_impact": clean(c.get("gmp_impact")),
+            "validated_status": clean(c.get("validated_status")),
+            "vendor": clean(c.get("vendor")),
+            "model": clean(c.get("model")),
+            "serial_number": clean(c.get("serial_number")),
+            "support_group": clean(c.get("support_group")),
+            "access_required": clean(c.get("access_required")),
+            "myaccess_mapping_status": clean(c.get("myaccess_mapping_status")),
+            "source_file": clean(c.get("source_file")),
+            "source_sheet": clean(c.get("source_sheet")),
+            "source_row": clean(c.get("source_row")),
+            "evidence_source": clean(c.get("evidence_source")),
+            "factory_readiness_status": clean(c.get("readiness_status")),
+            "factory_readiness_score": clean(c.get("readiness_score")),
+            "duplicate_risk": clean(c.get("duplicate_risk")),
+            "missing_fields": clean(c.get("missing_fields")),
+            "review_event_id": clean(review.get("review_event_id")),
+            "reviewer_name": clean(review.get("reviewer_name")),
+            "reviewer_role": clean(review.get("reviewer_role")),
+            "review_status": clean(review.get("review_status")),
+            "review_comment": clean(review.get("review_comment")),
+            "servicenow_ready_status": clean(review.get("servicenow_ready_status")),
+            "review_score": clean(review.get("review_score")),
+            "review_risk_level": clean(review.get("risk_level")),
+            "candidate_record_hash": clean(c.get("record_hash")),
+            "review_record_hash": clean(review.get("record_hash")),
+            "recommended_servicenow_action": "Create or update CI only after CMDB owner validation and duplicate reconciliation"
+        }
+
+        records.append(submission_record)
+
+    return list(reversed(records))
+
+
+@app.route("/ci-submission-pack")
+def ci_submission_pack_page():
+    # CI_SUBMISSION_PACK_ACTIVE
+    records = get_ci_submission_pack_records()
+
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ CI Submission Pack</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#1d4ed8);color:white;padding:42px 46px 56px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1550px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{background:white;border:1px solid #e5e7eb;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.metric-label{color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.metric-value{font-size:30px;font-weight:900;margin-top:6px}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:12px}
+th{background:#0f172a;color:white;text-align:left;padding:10px}
+td{border-bottom:1px solid #e5e7eb;padding:10px;vertical-align:top;word-break:break-word}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.ready{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}
+.hash{font-family:Consolas,monospace;font-size:11px;word-break:break-all;color:#334155}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ ServiceNow-Ready CI Submission Pack</h1>
+<p>Read-only submission view for CI candidates that passed review and were marked ServiceNow-ready.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/ci-candidate-factory">CI Candidate Factory</a>
+<a href="/ci-candidate-review">CI Review Board</a>
+<a class="active" href="/ci-submission-pack">CI Submission Pack</a>
+<a href="/platform-health">Platform Health</a>
+</nav>
+
+<div class="warning">
+<b>Governance boundary:</b> This pack does not create CIs in ServiceNow. It prepares only reviewed, ServiceNow-ready candidates for controlled CMDB owner validation, duplicate reconciliation, and future submission.
+</div>
+
+<section class="grid">
+<div class="metric"><div class="metric-label">ServiceNow-Ready Candidates</div><div class="metric-value">{{ records|length }}</div></div>
+<div class="metric"><div class="metric-label">Submission Mode</div><div class="metric-value" style="font-size:22px;color:#f59e0b">NOT SUBMITTED</div></div>
+<div class="metric"><div class="metric-label">Export</div><div class="metric-value" style="font-size:22px">CSV</div></div>
+<div class="metric"><div class="metric-label">Control</div><div class="metric-value" style="font-size:22px;color:#16a34a">REVIEWED</div></div>
+</section>
+
+<div class="notice">
+<b>Leadership message:</b> COBIT-Chain does not blindly create CIs. It converts uploaded files into candidates, scores them, creates passports, routes them for review, and only then prepares a ServiceNow-ready submission pack.
+</div>
+
+<div class="section">
+<h2>Export Pack</h2>
+<div class="action">
+<a href="/ci-submission-pack.csv">Download CSV Submission Pack</a>
+<a href="/ci-candidate-review">Open Review Board</a>
+<a href="/ci-candidate-factory">Open Factory</a>
+</div>
+</div>
+
+<div class="section">
+<h2>ServiceNow-Ready CI Candidates</h2>
+{% if records %}
+<table>
+<tr>
+<th>Candidate</th>
+<th>CI Profile</th>
+<th>Ownership</th>
+<th>Quality / Risk</th>
+<th>Access</th>
+<th>Source Evidence</th>
+<th>Review</th>
+<th>Hashes</th>
+</tr>
+{% for r in records %}
+<tr>
+<td><b>{{ r.candidate_id }}</b><br>{{ r.asset_id }}<br>{{ r.candidate_name }}</td>
+<td>{{ r.recommended_ci_class }}<br>{{ r.description }}</td>
+<td>{{ r.owner }}<br>{{ r.department }}<br>{{ r.location }}</td>
+<td>{{ r.gmp_impact }}<br>{{ r.validated_status }}<br>Duplicate: {{ r.duplicate_risk }}</td>
+<td>{{ r.access_required }}<br>{{ r.myaccess_mapping_status }}</td>
+<td>{{ r.source_file }}<br>{{ r.source_sheet }} row {{ r.source_row }}<br>{{ r.evidence_source }}</td>
+<td><b>{{ r.review_status }}</b><br>{{ r.reviewer_name }}<br>{{ r.review_comment }}</td>
+<td class="hash">Candidate: {{ r.candidate_record_hash }}<br><br>Review: {{ r.review_record_hash }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No candidates are currently marked ServiceNow-ready. Go to the CI Candidate Review Board and mark a reviewed candidate as ServiceNow-ready.</p>
+{% endif %}
+</div>
+
+<div class="section">
+<h2>Next Controlled Steps</h2>
+<ol>
+<li>CMDB owner reviews the submission pack.</li>
+<li>Duplicate reconciliation is performed against existing ServiceNow CMDB.</li>
+<li>Owner, location, criticality, class, and support group are confirmed.</li>
+<li>MyAccess mapping is reviewed for systems requiring access governance.</li>
+<li>Only approved candidates are submitted to ServiceNow CMDB in a controlled future integration.</li>
+</ol>
+</div>
+
+</main>
+</body>
+</html>
+    """
+
+    return render_template_string(html, records=records)
+
+
+@app.route("/ci-submission-pack.csv")
+def ci_submission_pack_csv():
+    # CI_SUBMISSION_PACK_ACTIVE
+    import io
+
+    records = get_ci_submission_pack_records()
+    df = pd.DataFrame(records)
+
+    output = io.StringIO()
+    df.to_csv(output, index=False)
+
+    return app.response_class(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=ci_submission_pack.csv"
+        }
     )
 
 if __name__ == "__main__":
