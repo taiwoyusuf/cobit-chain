@@ -1,3 +1,4 @@
+# CI_MYACCESS_BLUEPRINT_ACTIVE
 # RELEASE_NOTES_PAGE_ACTIVE
 # OPERATIONAL_LINEAGE_NAV_HEALTH_ACTIVE
 # OPERATIONAL_LINEAGE_CONTROL_TOWER_ACTIVE
@@ -13734,6 +13735,362 @@ It is a governance assurance layer that connects the operational evidence around
 <a href="/knowledge-governance">Knowledge Governance</a>
 <a href="/knowledge-review">Knowledge Review</a>
 <a href="/knowledge-passport/KB-DEMO-001">Knowledge Passport</a>
+<a href="/platform-health">Platform Health</a>
+</div>
+</div>
+
+</main>
+</body>
+</html>
+    """
+    return render_template_string(html)
+
+
+# ============================================================
+# CI + MYACCESS BLUEPRINT ACTIVE
+# Future-state blueprint: Binder/Excel → CI Candidate →
+# MyAccess Readiness → SuccessFactors Training Reference →
+# ServiceNow CMDB → CI/Access Passport → Audit Lineage.
+# Static leadership blueprint. No data changes.
+# ============================================================
+
+@app.route("/ci-myaccess-blueprint")
+def ci_myaccess_blueprint_page():
+    # CI_MYACCESS_BLUEPRINT_ACTIVE
+    html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>AssuranceLayer™ CI + MyAccess Blueprint</title>
+<style>
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#0f172a}
+.hero{background:linear-gradient(135deg,#071527,#0f766e);color:white;padding:42px 46px 56px;border-bottom-left-radius:34px;border-bottom-right-radius:34px}
+.container{max-width:1500px;margin:-26px auto 50px;padding:0 26px}
+.nav,.section,.card{background:white;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:20px}
+.nav a{text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 13px;border-radius:999px;font-weight:900;font-size:13px;margin-right:8px;display:inline-block;margin-bottom:7px}
+.nav a.active{background:#0f172a;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card h3{margin:0 0 8px}
+.card p,.section p,li{color:#475569;line-height:1.55}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:9px}
+.live{background:#dcfce7;color:#166534}
+.future{background:#e0e7ff;color:#3730a3}
+.warn{background:#fef3c7;color:#92400e}
+.risk{background:#fee2e2;color:#991b1b}
+table{width:100%;border-collapse:collapse;border-radius:15px;overflow:hidden;font-size:13px}
+th{background:#0f172a;color:white;text-align:left;padding:11px}
+td{border-bottom:1px solid #e5e7eb;padding:11px;vertical-align:top;word-break:break-word}
+.notice{background:#f0fdf4;border-left:7px solid #16a34a;border-radius:16px;padding:14px;margin-bottom:16px}
+.warning{background:#fff7ed;border-left:7px solid #f59e0b;border-radius:16px;padding:14px;margin-bottom:16px}
+.flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.flow div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px;font-weight:900;min-width:150px;text-align:center}
+.action a{display:inline-block;text-decoration:none;background:#0f172a;color:white;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;margin:3px}
+@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>AssuranceLayer™ CI + MyAccess Readiness Blueprint</h1>
+<p>Future-state expansion: certify binder/Excel records, generate CI candidates, validate MyAccess readiness, reference SuccessFactors training, and create CI/access passports before audit.</p>
+</section>
+
+<main class="container">
+<nav class="nav">
+<a href="/">Manufacturing</a>
+<a href="/command-center">Command Center</a>
+<a href="/monday-demo">Monday Demo</a>
+<a href="/operational-lineage">Operational Lineage</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
+<a href="/platform-health">Platform Health</a>
+<a href="/release-notes">Release Notes</a>
+<a class="active" href="/ci-myaccess-blueprint">CI + MyAccess Blueprint</a>
+</nav>
+
+<div class="notice">
+<b>Positioning:</b> This is the next enterprise expansion after the working ServiceNow + Entra + Shift + Knowledge lineage demo.
+It does not replace MyAccess, SuccessFactors, ServiceNow, Blue Mountain, or Veeva. It validates that their records connect into one governed audit chain.
+</div>
+
+<div class="section">
+<h2>1. Plain-English Concept</h2>
+<p>
+The binder and Excel show the historical access/equipment evidence. Blue Mountain shows regulated assets and work schedules.
+SuccessFactors confirms the person and training. MyAccess manages access request and approval. ServiceNow manages tickets, changes, and CIs.
+AssuranceLayer™ / COBIT-Chain™ connects those records, checks gaps, hashes evidence, captures review, and generates passports.
+</p>
+<div class="warning">
+<b>Safe wording:</b> Excel should not be called the permanent source of truth. It should be called a <b>certified migration baseline</b> or <b>governed operational dataset</b> after validation, review, approval, and cryptographic sealing.
+</div>
+</div>
+
+<div class="section">
+<h2>2. Future Governed Chain</h2>
+<div class="flow">
+<div>Binder / Excel</div>
+<div>Blue Mountain Asset</div>
+<div>CI Candidate</div>
+<div>MyAccess Mapping</div>
+<div>SuccessFactors Training</div>
+<div>ServiceNow CI</div>
+<div>Access Verification</div>
+<div>Evidence Hash</div>
+<div>Owner Review</div>
+<div>CI + Access Passport</div>
+<div>Audit Lineage</div>
+</div>
+</div>
+
+<div class="section">
+<h2>3. Source Systems and Roles</h2>
+<table>
+<tr><th>System / Source</th><th>Primary Role</th><th>COBIT-Chain / AssuranceLayer™ Role</th></tr>
+<tr>
+<td><b>Binder / Paper Forms</b></td>
+<td>Historical access/equipment evidence.</td>
+<td>Reference original evidence, certify migration baseline, preserve audit lineage.</td>
+</tr>
+<tr>
+<td><b>Excel Access / Equipment Registers</b></td>
+<td>Digital working register derived from binder or operational exports.</td>
+<td>Validate rows, detect gaps, create hashes, require review, generate migration baseline.</td>
+</tr>
+<tr>
+<td><b>Blue Mountain</b></td>
+<td>Validated asset/work-order/equipment maintenance source.</td>
+<td>Create CI candidates, link EQP/work orders/evidence, score CI readiness.</td>
+</tr>
+<tr>
+<td><b>SuccessFactors</b></td>
+<td>Employee status and training history source.</td>
+<td>Reference training completion and validate training-to-access-to-work alignment.</td>
+</tr>
+<tr>
+<td><b>MyAccess</b></td>
+<td>Access request, entitlement, approval, review, and connector workflow.</td>
+<td>Validate MyAccess migration readiness, privileged account correlation, access passport.</td>
+</tr>
+<tr>
+<td><b>ServiceNow</b></td>
+<td>Incident/change/request workflow and CMDB CI source.</td>
+<td>Verify CI readiness, ticket-to-CI linkage, and audit evidence completeness.</td>
+</tr>
+<tr>
+<td><b>Veeva / Controlled Docs</b></td>
+<td>SOPs, controlled procedures, approved documentation.</td>
+<td>Reference SOP/version/training linkage and flag SOP-to-reality drift.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Proposed Future Modules</h2>
+<div class="grid">
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>Asset-to-CI Factory</h3>
+<p>Uses Blue Mountain full equipment list, Master System List, and ServiceNow CMDB export to create governed CI candidates.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>Binder-to-Excel Certification</h3>
+<p>Validates binder-derived Excel records, creates workbook and row-level hashes, and certifies the baseline through review.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>MyAccess Readiness</h3>
+<p>Checks connector type, application owner, custodian, entitlement catalog, access review owner, and go-live readiness.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>Unplugged Validator</h3>
+<p>Validates Unplugged account files, privileged account format, correlation to Lilly identity, and evidence gaps.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>AD Group Readiness</h3>
+<p>Checks whether AD groups meet MyAccess requirements before onboarding: security group, universal, no nesting, not email-enabled.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>Training-to-Access Check</h3>
+<p>References SuccessFactors training history and checks whether training was complete before access/work execution.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>CI Passport</h3>
+<p>Shows the full origin of a CI candidate: asset, owner, location, criticality, access model, work order, evidence, and review.</p>
+</div>
+<div class="card">
+<span class="badge future">FUTURE</span>
+<h3>Access Passport</h3>
+<p>Shows the full story of a user/system access record: user, role, training, approval, provisioning, evidence, and review.</p>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2>5. CI Candidate Readiness Checks</h2>
+<table>
+<tr><th>Check</th><th>Why It Matters</th><th>Status Logic</th></tr>
+<tr>
+<td>Asset exists in Blue Mountain</td>
+<td>Confirms the asset is operationally recognized.</td>
+<td>Missing = Red</td>
+</tr>
+<tr>
+<td>EQP / Asset ID present</td>
+<td>Prevents duplicate or vague CI creation.</td>
+<td>Missing = Red</td>
+</tr>
+<tr>
+<td>Owner and department present</td>
+<td>Ensures accountable ownership.</td>
+<td>Missing = Yellow/Red</td>
+</tr>
+<tr>
+<td>Location present</td>
+<td>Required for operations, support, and audit traceability.</td>
+<td>Missing = Yellow</td>
+</tr>
+<tr>
+<td>Criticality / GMP impact defined</td>
+<td>Determines risk, quality approval, and change impact.</td>
+<td>Unknown = Red</td>
+</tr>
+<tr>
+<td>ServiceNow CI match</td>
+<td>Prevents duplicate or disconnected CMDB records.</td>
+<td>No match = Yellow</td>
+</tr>
+<tr>
+<td>MyAccess mapping exists</td>
+<td>Shows how access to the system is governed.</td>
+<td>Missing for access-controlled systems = Red</td>
+</tr>
+<tr>
+<td>Training reference exists</td>
+<td>Confirms user qualification can be checked.</td>
+<td>Missing for GMP role = Red</td>
+</tr>
+<tr>
+<td>Evidence reference exists</td>
+<td>Supports audit defense and migration certification.</td>
+<td>Missing = Yellow/Red</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>6. Access / MyAccess Readiness Checks</h2>
+<table>
+<tr><th>Check</th><th>Plain-English Meaning</th><th>COBIT-Chain Outcome</th></tr>
+<tr>
+<td>User active</td>
+<td>Is the person still valid in the organization?</td>
+<td>Reference SuccessFactors / identity status.</td>
+</tr>
+<tr>
+<td>Training completed</td>
+<td>Was the person trained before access or work?</td>
+<td>Training-to-access validation.</td>
+</tr>
+<tr>
+<td>Role/entitlement defined</td>
+<td>Is the requested access clearly described?</td>
+<td>Role catalog readiness.</td>
+</tr>
+<tr>
+<td>Approver identified</td>
+<td>Is the correct system/process owner approving?</td>
+<td>Approval matrix validation.</td>
+</tr>
+<tr>
+<td>Privileged account correlation</td>
+<td>Is the special account linked to the real user?</td>
+<td>Privileged account assurance.</td>
+</tr>
+<tr>
+<td>Manual provisioning evidence</td>
+<td>Was access actually added/removed on the equipment?</td>
+<td>Evidence and custodian action validation.</td>
+</tr>
+<tr>
+<td>Review status</td>
+<td>Was access periodically reviewed?</td>
+<td>Audit readiness score.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>7. Best Pilot Candidate</h2>
+<div class="two">
+<div class="card">
+<span class="badge live">RECOMMENDED PILOT</span>
+<h3>Niagara BMS / EQP-0747</h3>
+<p>Best first pilot because it already has strong evidence: asset record, work order, backup evidence, data-integrity form, owner/reviewer sign-off, and audit relevance.</p>
+</div>
+<div class="card">
+<span class="badge warn">WHY IT WORKS</span>
+<h3>Full Evidence Story</h3>
+<p>It can demonstrate Asset → CI Candidate → Work Order → Backup Evidence → System Owner/QA Review → Passport → Audit Lineage.</p>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2>8. Leadership Message</h2>
+<div class="notice">
+<b>Suggested wording:</b><br>
+“MyAccess manages access approvals. SuccessFactors confirms training. ServiceNow manages tickets and CIs. Blue Mountain manages regulated asset and work-order evidence. COBIT-Chain connects these into one governed evidence chain so we can prove the right person, with the right training, had the right access, to the right system, for the right work, with the right evidence and review.”
+</div>
+</div>
+
+<div class="section">
+<h2>9. Next Build After Monday</h2>
+<table>
+<tr><th>Priority</th><th>Build</th><th>Input Needed</th><th>Output</th></tr>
+<tr>
+<td>1</td>
+<td>Blue Mountain Asset-to-CI Intake</td>
+<td>Full asset/equipment export</td>
+<td>CI candidates and CI readiness score</td>
+</tr>
+<tr>
+<td>2</td>
+<td>MyAccess Readiness Intake</td>
+<td>Application status / connector export</td>
+<td>Connector readiness and delay-risk dashboard</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Access Baseline Certification</td>
+<td>Binder-derived access Excel</td>
+<td>Certified migration baseline and access passport</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Training-to-Access Verification</td>
+<td>SuccessFactors training export sample</td>
+<td>Training/access/work validation status</td>
+</tr>
+<tr>
+<td>5</td>
+<td>CI + Access Passport</td>
+<td>CI candidate + access + evidence + review records</td>
+<td>Audit-ready passport</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>10. Quick Links</h2>
+<div class="action">
+<a href="/monday-demo">Monday Demo</a>
+<a href="/operational-lineage">Operational Lineage</a>
+<a href="/release-notes">Release Notes</a>
+<a href="/servicenow-tickets-live">ServiceNow Live</a>
 <a href="/platform-health">Platform Health</a>
 </div>
 </div>
