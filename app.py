@@ -35702,5 +35702,993 @@ def sterile_compounding_master_assurance_dashboard_injection(response):
         print(f"Sterile master assurance dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CLOSURE_SIMULATOR_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 23: Closure Simulator + What-If Recovery Planner
+#
+# New Routes:
+#   /sterile-compounding/closure-simulator
+#   /sterile-compounding/closure-simulator/<record_id>
+#   /sterile-compounding/closure-simulator/export
+#   /sterile-compounding/recovery-plan
+#   /sterile-compounding/recovery-plan/export
+#
+# New Registers:
+#   sterile_compounding_closure_simulator_register.csv
+#   sterile_compounding_recovery_plan_register.csv
+#
+# Boundary:
+#   This is a governance what-if planner. It does not change evidence,
+#   sign-off, audit pack, release, seal, custody, SOP, personnel,
+#   equipment, environmental, or regulatory records. It only simulates
+#   likely recovery movement based on existing assurance signals.
+#   It does not perform formal pharmacy release, QA disposition, or QMS approval.
+# ============================================================
+
+try:
+    import pandas as sterile_cs_pd
+    import json as sterile_cs_json
+    from flask import request as sterile_cs_request
+    from flask import Response as sterile_cs_Response
+except Exception as sterile_cs_import_error:
+    raise RuntimeError(f"Sterile closure simulator import failed: {sterile_cs_import_error}")
+
+
+STERILE_CLOSURE_SIMULATOR_REGISTER = "sterile_compounding_closure_simulator_register.csv"
+STERILE_RECOVERY_PLAN_REGISTER = "sterile_compounding_recovery_plan_register.csv"
+
+STERILE_CLOSURE_SIMULATOR_COLUMNS = [
+    "simulation_id",
+    "record_id",
+    "csp_name",
+    "current_master_status",
+    "current_master_score",
+    "current_no_release_flag",
+    "action_domain",
+    "closure_action",
+    "current_signal",
+    "closure_type",
+    "score_lift",
+    "projected_score",
+    "projected_status",
+    "projected_decision",
+    "recommended_order",
+    "source_route",
+    "last_checked",
+    "simulation_hash"
+]
+
+STERILE_RECOVERY_PLAN_COLUMNS = [
+    "plan_id",
+    "record_id",
+    "csp_name",
+    "current_master_status",
+    "current_master_score",
+    "current_no_release_flag",
+    "critical_blocker_count",
+    "review_signal_count",
+    "proposed_action_count",
+    "critical_action_count",
+    "review_action_count",
+    "estimated_score_lift",
+    "projected_score",
+    "projected_status",
+    "projected_decision",
+    "next_best_action",
+    "recovery_sequence",
+    "blocker_summary",
+    "conditional_summary",
+    "source_routes",
+    "last_checked",
+    "recovery_plan_hash"
+]
+
+
+def sterile_cs_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_MASTER_ASSURANCE_COLUMNS",
+        "STERILE_NO_RELEASE_COMPOSITE_COLUMNS",
+        "sterile_ma_build_register",
+        "sterile_ma_build_no_release",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile closure simulator dependencies missing: " + ", ".join(missing))
+
+
+def sterile_cs_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_cs_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_cs_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_cs_status_badge(status):
+    status = sterile_cs_safe(status).upper()
+
+    if status in ["GREEN", "GO", "READY", "PROJECTED GREEN"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "PROJECTED YELLOW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "NO-GO", "BLOCKED", "PROJECTED RED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_cs_projected_status(score, remaining_critical=0, remaining_review=0):
+    score = sterile_cs_numeric(score, 0)
+
+    if remaining_critical > 0 or score < 60:
+        return "RED", "PROJECTED NO-GO: CRITICAL BLOCKERS REMAIN"
+    if remaining_review > 0 or score < 90:
+        return "YELLOW", "PROJECTED CONDITIONAL: REVIEW SIGNALS REMAIN"
+    return "GREEN", "PROJECTED GO: MASTER ASSURANCE COULD BECOME ACCEPTABLE"
+
+
+def sterile_cs_master_df():
+    sterile_cs_require_dependencies()
+
+    try:
+        df = sterile_ma_build_register()
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, STERILE_MASTER_ASSURANCE_COLUMNS)
+    except Exception:
+        pass
+
+    return sterile_read_register(
+        "sterile_compounding_master_assurance_register.csv",
+        STERILE_MASTER_ASSURANCE_COLUMNS
+    )
+
+
+def sterile_cs_gate_df(master_df=None):
+    sterile_cs_require_dependencies()
+
+    try:
+        df = sterile_ma_build_no_release(master_df)
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, STERILE_NO_RELEASE_COMPOSITE_COLUMNS)
+    except Exception:
+        pass
+
+    return sterile_read_register(
+        "sterile_compounding_no_release_composite_register.csv",
+        STERILE_NO_RELEASE_COMPOSITE_COLUMNS
+    )
+
+
+def sterile_cs_add_action(actions, domain, current_signal, closure_action, closure_type, lift, order):
+    actions.append({
+        "action_domain": domain,
+        "current_signal": sterile_cs_safe(current_signal),
+        "closure_action": closure_action,
+        "closure_type": closure_type,
+        "score_lift": sterile_cs_numeric(lift, 0),
+        "recommended_order": order,
+    })
+
+
+def sterile_cs_actions_for_master(row):
+    actions = []
+
+    order = 10
+
+    current_status = sterile_cs_safe(row.get("master_assurance_status", ""))
+    current_score = sterile_cs_numeric(row.get("master_assurance_score", 0), 0)
+
+    evidence_missing = sterile_cs_numeric(row.get("evidence_missing", 0), 0)
+    evidence_rejected = sterile_cs_numeric(row.get("evidence_rejected", 0), 0)
+    evidence_pending = sterile_cs_numeric(row.get("evidence_pending", 0), 0)
+
+    if evidence_missing:
+        sterile_cs_add_action(
+            actions,
+            "Evidence Matrix",
+            f"Missing evidence requirements: {evidence_missing}",
+            "Upload and approve missing required evidence in the Evidence Vault, then rebuild Evidence Matrix and Audit Pack.",
+            "CRITICAL_CLOSURE",
+            min(30, 12 + evidence_missing * 4),
+            order
+        )
+        order += 10
+
+    if evidence_rejected:
+        sterile_cs_add_action(
+            actions,
+            "Evidence Matrix",
+            f"Rejected evidence requirements: {evidence_rejected}",
+            "Replace or resolve rejected evidence and document approval decision.",
+            "CRITICAL_CLOSURE",
+            min(30, 12 + evidence_rejected * 5),
+            order
+        )
+        order += 10
+
+    if evidence_pending:
+        sterile_cs_add_action(
+            actions,
+            "Evidence Matrix",
+            f"Pending evidence requirements: {evidence_pending}",
+            "Complete evidence review and approval for pending evidence requirements.",
+            "REVIEW_CLOSURE",
+            min(15, 5 + evidence_pending * 2),
+            order
+        )
+        order += 10
+
+    signoff = sterile_cs_safe(row.get("signoff_status", ""))
+    if signoff.upper() in ["NO SIGNOFF", "YELLOW", "REVIEW", "PENDING", "CONDITIONAL", "UNKNOWN", "RED"]:
+        closure_type = "CRITICAL_CLOSURE" if signoff.upper() == "RED" else "REVIEW_CLOSURE"
+        sterile_cs_add_action(
+            actions,
+            "Governance Sign-Off",
+            signoff or "No sign-off detected",
+            "Record reviewer sign-off after audit-pack review or document conditional sign-off rationale.",
+            closure_type,
+            10 if closure_type == "CRITICAL_CLOSURE" else 7,
+            order
+        )
+        order += 10
+
+    seal_health = sterile_cs_safe(row.get("seal_health_status", ""))
+    seal_verify = sterile_cs_safe(row.get("latest_seal_verification", ""))
+
+    if seal_health.upper() != "GREEN" or seal_verify.upper() != "HASH MATCH":
+        closure_type = "CRITICAL_CLOSURE" if seal_health.upper() == "RED" or seal_verify.upper() == "HASH MISMATCH" else "REVIEW_CLOSURE"
+        sterile_cs_add_action(
+            actions,
+            "Dossier Seal",
+            f"Seal health: {seal_health}; Verification: {seal_verify}",
+            "Create or verify cryptographic dossier seal after closure actions are complete.",
+            closure_type,
+            12 if closure_type == "CRITICAL_CLOSURE" else 8,
+            order
+        )
+        order += 10
+
+    signal_specs = [
+        ("Custody", "custody_audit_status", "Resolve custody baseline, handoff evidence, current custodian, hold/quarantine, or storage-condition issue.", 12, 7),
+        ("SOP / Formula", "sop_drift_status", "Resolve SOP/formula version or controlled formula evidence drift.", 10, 6),
+        ("Personnel Competency", "personnel_drift_status", "Resolve personnel qualification, aseptic competency evidence, or workload-risk issue.", 10, 6),
+        ("Equipment / Room", "equipment_room_drift_status", "Resolve hood, room, equipment, cleaning, certification, or cleanroom readiness drift.", 12, 7),
+        ("Pre-Work Gate", "prework_gate_status", "Resolve pre-work gate blockers before CSP reliance.", 12, 7),
+        ("Environmental Drift", "environmental_drift_status", "Resolve environmental alert, excursion, or EM investigation signal.", 14, 8),
+        ("Regulatory Impact", "regulatory_impact_status", "Review regulatory/supplier-watch impact and document disposition.", 10, 6),
+    ]
+
+    for domain, col, action_text, red_lift, yellow_lift in signal_specs:
+        signal = sterile_cs_safe(row.get(col, ""))
+        signal_u = signal.upper()
+
+        if signal_u in ["RED", "FAILED", "FAIL", "BLOCKED", "BLOCK", "HOLD", "HASH MISMATCH", "NO-GO", "REJECTED"]:
+            sterile_cs_add_action(
+                actions,
+                domain,
+                signal,
+                action_text,
+                "CRITICAL_CLOSURE",
+                red_lift,
+                order
+            )
+            order += 10
+        elif signal_u in ["YELLOW", "REVIEW", "PENDING", "CONDITIONAL", "NO VERIFICATION", "NO BASELINE", "UNKNOWN"]:
+            sterile_cs_add_action(
+                actions,
+                domain,
+                signal,
+                action_text,
+                "REVIEW_CLOSURE",
+                yellow_lift,
+                order
+            )
+            order += 10
+
+    deviation = sterile_cs_safe(row.get("deviation_signal", ""))
+    if deviation.lower() in ["yes", "true", "open", "critical"]:
+        sterile_cs_add_action(
+            actions,
+            "Deviation / CAPA",
+            deviation,
+            "Close or disposition deviation/CAPA linkage before final assurance reliance.",
+            "CRITICAL_CLOSURE",
+            14,
+            order
+        )
+        order += 10
+
+    if current_status.upper() == "GREEN" and not actions:
+        sterile_cs_add_action(
+            actions,
+            "Sustainment",
+            "No blockers detected",
+            "Maintain evidence, seal, sign-off, custody, SOP, personnel, and room readiness records.",
+            "SUSTAINMENT",
+            0,
+            order
+        )
+
+    return actions
+
+
+def sterile_cs_build_simulator():
+    master_df = sterile_cs_master_df()
+
+    if master_df is None or master_df.empty:
+        empty_df = sterile_cs_pd.DataFrame(columns=STERILE_CLOSURE_SIMULATOR_COLUMNS)
+        sterile_write_register(STERILE_CLOSURE_SIMULATOR_REGISTER, empty_df, STERILE_CLOSURE_SIMULATOR_COLUMNS)
+        sterile_cs_build_recovery_plan(empty_df)
+        return empty_df
+
+    rows = []
+
+    for _, master in master_df.iterrows():
+        record_id = sterile_cs_safe(master.get("record_id", ""))
+        csp_name = sterile_cs_safe(master.get("csp_name", ""))
+        current_status = sterile_cs_safe(master.get("master_assurance_status", ""))
+        current_score = sterile_cs_numeric(master.get("master_assurance_score", 0), 0)
+        no_release_flag = sterile_cs_safe(master.get("no_release_flag", ""))
+        critical_count = sterile_cs_numeric(master.get("critical_blocker_count", 0), 0)
+        review_count = sterile_cs_numeric(master.get("review_signal_count", 0), 0)
+
+        actions = sterile_cs_actions_for_master(master.to_dict())
+
+        cumulative_lift = 0
+        remaining_critical = critical_count
+        remaining_review = review_count
+
+        for action in sorted(actions, key=lambda x: x["recommended_order"]):
+            closure_type = action["closure_type"]
+
+            if closure_type == "CRITICAL_CLOSURE" and remaining_critical > 0:
+                remaining_critical -= 1
+            elif closure_type == "REVIEW_CLOSURE" and remaining_review > 0:
+                remaining_review -= 1
+
+            cumulative_lift += sterile_cs_numeric(action["score_lift"], 0)
+            projected_score = max(0, min(100, current_score + cumulative_lift))
+            projected_status, projected_decision = sterile_cs_projected_status(
+                projected_score,
+                remaining_critical,
+                remaining_review
+            )
+
+            payload = {
+                "simulation_id": sterile_cs_make_id(
+                    "ST-SIM",
+                    record_id,
+                    action["action_domain"],
+                    action["recommended_order"],
+                ),
+                "record_id": record_id,
+                "csp_name": csp_name,
+                "current_master_status": current_status,
+                "current_master_score": current_score,
+                "current_no_release_flag": no_release_flag,
+                "action_domain": action["action_domain"],
+                "closure_action": action["closure_action"],
+                "current_signal": action["current_signal"],
+                "closure_type": action["closure_type"],
+                "score_lift": action["score_lift"],
+                "projected_score": projected_score,
+                "projected_status": projected_status,
+                "projected_decision": projected_decision,
+                "recommended_order": action["recommended_order"],
+                "source_route": f"/sterile-compounding/master-assurance/{record_id}",
+                "last_checked": sterile_now(),
+            }
+
+            payload["simulation_hash"] = sterile_hash_text(
+                sterile_cs_json.dumps(payload, sort_keys=True)
+            )
+
+            rows.append(payload)
+
+    sim_df = sterile_cs_pd.DataFrame(rows)
+    sim_df = sterile_ensure_cols(sim_df, STERILE_CLOSURE_SIMULATOR_COLUMNS)
+    sterile_write_register(STERILE_CLOSURE_SIMULATOR_REGISTER, sim_df, STERILE_CLOSURE_SIMULATOR_COLUMNS)
+
+    sterile_cs_build_recovery_plan(sim_df, master_df)
+
+    return sim_df
+
+
+def sterile_cs_build_recovery_plan(sim_df=None, master_df=None):
+    if master_df is None:
+        master_df = sterile_cs_master_df()
+
+    if sim_df is None:
+        sim_df = sterile_read_register(
+            STERILE_CLOSURE_SIMULATOR_REGISTER,
+            STERILE_CLOSURE_SIMULATOR_COLUMNS
+        )
+
+    if master_df is None or master_df.empty:
+        empty_df = sterile_cs_pd.DataFrame(columns=STERILE_RECOVERY_PLAN_COLUMNS)
+        sterile_write_register(STERILE_RECOVERY_PLAN_REGISTER, empty_df, STERILE_RECOVERY_PLAN_COLUMNS)
+        return empty_df
+
+    gate_df = sterile_cs_gate_df(master_df)
+    rows = []
+
+    for _, master in master_df.iterrows():
+        record_id = sterile_cs_safe(master.get("record_id", ""))
+        record_sims = sim_df[sim_df["record_id"].astype(str) == str(record_id)].copy() if not sim_df.empty else sim_df
+
+        current_status = sterile_cs_safe(master.get("master_assurance_status", ""))
+        current_score = sterile_cs_numeric(master.get("master_assurance_score", 0), 0)
+        no_release_flag = sterile_cs_safe(master.get("no_release_flag", ""))
+        critical_count = sterile_cs_numeric(master.get("critical_blocker_count", 0), 0)
+        review_count = sterile_cs_numeric(master.get("review_signal_count", 0), 0)
+
+        proposed_action_count = len(record_sims)
+        critical_action_count = 0
+        review_action_count = 0
+        estimated_lift = 0
+        recovery_sequence = ""
+        next_best_action = "No closure action required."
+        projected_score = current_score
+        projected_status = current_status
+        projected_decision = sterile_cs_safe(master.get("master_assurance_decision", ""))
+
+        if not record_sims.empty:
+            record_sims = record_sims.sort_values(by="recommended_order", ascending=True)
+            critical_action_count = int((record_sims["closure_type"].astype(str) == "CRITICAL_CLOSURE").sum())
+            review_action_count = int((record_sims["closure_type"].astype(str) == "REVIEW_CLOSURE").sum())
+            estimated_lift = int(sterile_cs_pd.to_numeric(record_sims["score_lift"], errors="coerce").fillna(0).sum())
+            projected_score = int(sterile_cs_pd.to_numeric(record_sims["projected_score"], errors="coerce").fillna(current_score).max())
+
+            final_row = record_sims.iloc[-1].to_dict()
+            projected_status = sterile_cs_safe(final_row.get("projected_status", current_status))
+            projected_decision = sterile_cs_safe(final_row.get("projected_decision", ""))
+
+            first_row = record_sims.iloc[0].to_dict()
+            next_best_action = sterile_cs_safe(first_row.get("closure_action", ""))
+
+            sequence_parts = []
+            for _, sim in record_sims.iterrows():
+                sequence_parts.append(
+                    f"{sterile_cs_safe(sim.get('recommended_order', ''))}. "
+                    f"{sterile_cs_safe(sim.get('action_domain', ''))}: "
+                    f"{sterile_cs_safe(sim.get('closure_action', ''))}"
+                )
+            recovery_sequence = " | ".join(sequence_parts)
+
+        gate_match = gate_df[gate_df["record_id"].astype(str) == str(record_id)].copy() if not gate_df.empty else gate_df
+        blocker_summary = sterile_cs_safe(master.get("risk_summary", ""))
+        conditional_summary = ""
+
+        if not gate_match.empty:
+            gate = gate_match.iloc[0].to_dict()
+            blocker_summary = sterile_cs_safe(gate.get("blocker_summary", blocker_summary))
+            conditional_summary = sterile_cs_safe(gate.get("conditional_summary", ""))
+
+        payload = {
+            "plan_id": sterile_cs_make_id("ST-RECOVERY", record_id, projected_status, projected_score),
+            "record_id": record_id,
+            "csp_name": sterile_cs_safe(master.get("csp_name", "")),
+            "current_master_status": current_status,
+            "current_master_score": current_score,
+            "current_no_release_flag": no_release_flag,
+            "critical_blocker_count": critical_count,
+            "review_signal_count": review_count,
+            "proposed_action_count": proposed_action_count,
+            "critical_action_count": critical_action_count,
+            "review_action_count": review_action_count,
+            "estimated_score_lift": estimated_lift,
+            "projected_score": projected_score,
+            "projected_status": projected_status,
+            "projected_decision": projected_decision,
+            "next_best_action": next_best_action,
+            "recovery_sequence": recovery_sequence or "No recovery sequence required.",
+            "blocker_summary": blocker_summary,
+            "conditional_summary": conditional_summary,
+            "source_routes": "; ".join([
+                f"/sterile-compounding/master-assurance/{record_id}",
+                f"/sterile-compounding/closure-simulator/{record_id}",
+                "/sterile-compounding/no-release-composite",
+                f"/sterile-compounding/audit-pack/{record_id}",
+                f"/sterile-compounding/release-dossier/{record_id}",
+            ]),
+            "last_checked": sterile_now(),
+        }
+
+        payload["recovery_plan_hash"] = sterile_hash_text(
+            sterile_cs_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    recovery_df = sterile_cs_pd.DataFrame(rows)
+    recovery_df = sterile_ensure_cols(recovery_df, STERILE_RECOVERY_PLAN_COLUMNS)
+    sterile_write_register(STERILE_RECOVERY_PLAN_REGISTER, recovery_df, STERILE_RECOVERY_PLAN_COLUMNS)
+
+    return recovery_df
+
+
+@app.route("/sterile-compounding/closure-simulator")
+def sterile_compounding_closure_simulator():
+    sim_df = sterile_cs_build_simulator()
+
+    status_filter = sterile_cs_safe(sterile_cs_request.args.get("status", ""))
+    filtered = sim_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["projected_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    critical = int((filtered["closure_type"] == "CRITICAL_CLOSURE").sum()) if total else 0
+    review = int((filtered["closure_type"] == "REVIEW_CLOSURE").sum()) if total else 0
+    sustain = int((filtered["closure_type"] == "SUSTAINMENT").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Projected Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["record_id", "recommended_order"], ascending=[True, True]).iterrows():
+            rid = sterile_cs_safe(row.get("record_id", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_cs_status_badge(row.get("current_master_status", ""))}</td>
+                <td><a href="/sterile-compounding/closure-simulator/{rid}">{rid}</a></td>
+                <td>{sterile_cs_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_cs_safe(row.get("current_master_score", ""))}</td>
+                <td>{sterile_cs_safe(row.get("action_domain", ""))}</td>
+                <td>{sterile_cs_safe(row.get("current_signal", ""))}</td>
+                <td>{sterile_cs_safe(row.get("closure_type", ""))}</td>
+                <td>{sterile_cs_safe(row.get("score_lift", ""))}</td>
+                <td>{sterile_cs_status_badge(row.get("projected_status", ""))}</td>
+                <td>{sterile_cs_safe(row.get("projected_score", ""))}</td>
+                <td>{sterile_cs_safe(row.get("closure_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No closure simulation rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Closure Simulator</h1>
+        <p>
+            What-if recovery planner for RED/YELLOW sterile CSP records. It shows which closure actions would likely
+            improve the Master Assurance Index before any evidence, sign-off, custody, SOP, personnel, room, or seal record is changed.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Simulation Actions</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Critical Closures</div><div class="st-value">{critical}</div></div>
+        <div class="st-card"><div class="st-label">Review Closures</div><div class="st-value">{review}</div></div>
+        <div class="st-card"><div class="st-label">Sustainment</div><div class="st-value">{sustain}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Simulator Filters</h2>
+        <form method="GET" action="/sterile-compounding/closure-simulator">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Projected Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan">Recovery Plan</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator/export">Export Simulator</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Closure Simulation Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Current</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Current Score</th>
+                        <th>Domain</th>
+                        <th>Signal</th>
+                        <th>Closure Type</th>
+                        <th>Lift</th>
+                        <th>Projected</th>
+                        <th>Projected Score</th>
+                        <th>Closure Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CLOSURE-SIMULATOR",
+            "STERILE_CLOSURE_SIMULATOR_VIEW",
+            "Sterile closure simulator viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/closure-simulator",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Closure Simulator", body)
+
+
+@app.route("/sterile-compounding/closure-simulator/<record_id>")
+def sterile_compounding_closure_simulator_record(record_id):
+    sim_df = sterile_cs_build_simulator()
+    recovery_df = sterile_cs_build_recovery_plan(sim_df)
+    record_id = sterile_cs_safe(record_id)
+
+    record_sims = sim_df[sim_df["record_id"].astype(str) == str(record_id)].copy() if not sim_df.empty else sim_df
+    record_plan = recovery_df[recovery_df["record_id"].astype(str) == str(record_id)].copy() if not recovery_df.empty else recovery_df
+
+    if record_plan.empty:
+        return sterile_cs_Response("Closure simulator record not found.", status=404)
+
+    plan = record_plan.iloc[0].to_dict()
+
+    sim_rows = ""
+    if not record_sims.empty:
+        for _, row in record_sims.sort_values(by="recommended_order", ascending=True).iterrows():
+            sim_rows += f"""
+            <tr>
+                <td>{sterile_cs_safe(row.get("recommended_order", ""))}</td>
+                <td>{sterile_cs_safe(row.get("action_domain", ""))}</td>
+                <td>{sterile_cs_safe(row.get("current_signal", ""))}</td>
+                <td>{sterile_cs_safe(row.get("closure_type", ""))}</td>
+                <td>{sterile_cs_safe(row.get("score_lift", ""))}</td>
+                <td>{sterile_cs_status_badge(row.get("projected_status", ""))}</td>
+                <td>{sterile_cs_safe(row.get("projected_score", ""))}</td>
+                <td>{sterile_cs_safe(row.get("closure_action", ""))}</td>
+            </tr>
+            """
+    else:
+        sim_rows = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No closure actions required.
+            </td>
+        </tr>
+        """
+
+    plan_rows = ""
+    for key in STERILE_RECOVERY_PLAN_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_cs_safe(plan.get(key, ""))
+
+        if key in ["current_master_status", "projected_status"]:
+            value = sterile_cs_status_badge(value)
+        elif key == "recovery_plan_hash":
+            value = f"<code>{value}</code>"
+        elif key == "source_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        plan_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Closure Simulator: {record_id}</h1>
+        <p>
+            Record-level what-if closure sequence for this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_cs_status_badge(plan.get("projected_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_cs_safe(plan.get("projected_decision", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Recovery Plan Summary</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{plan_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>What-If Closure Sequence</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Domain</th>
+                        <th>Current Signal</th>
+                        <th>Closure Type</th>
+                        <th>Score Lift</th>
+                        <th>Projected Status</th>
+                        <th>Projected Score</th>
+                        <th>Closure Action</th>
+                    </tr>
+                </thead>
+                <tbody>{sim_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/master-assurance/{record_id}">Master Assurance Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/no-release-composite">Composite No-Release Gate</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan">Recovery Plan Index</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator">Back to Simulator</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_CLOSURE_SIMULATOR_RECORD_VIEW",
+            "Record-level sterile closure simulator viewed",
+            actor="system",
+            source_route="/sterile-compounding/closure-simulator/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Closure Simulator - {record_id}", body)
+
+
+@app.route("/sterile-compounding/recovery-plan")
+def sterile_compounding_recovery_plan():
+    sim_df = sterile_cs_build_simulator()
+    recovery_df = sterile_cs_build_recovery_plan(sim_df)
+
+    status_filter = sterile_cs_safe(sterile_cs_request.args.get("status", ""))
+    filtered = recovery_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["projected_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    projected_green = int((filtered["projected_status"] == "GREEN").sum()) if total else 0
+    projected_yellow = int((filtered["projected_status"] == "YELLOW").sum()) if total else 0
+    projected_red = int((filtered["projected_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Projected Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["projected_status", "critical_blocker_count"], ascending=[False, False]).iterrows():
+            rid = sterile_cs_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_cs_status_badge(row.get("current_master_status", ""))}</td>
+                <td>{sterile_cs_status_badge(row.get("projected_status", ""))}</td>
+                <td><a href="/sterile-compounding/closure-simulator/{rid}">{rid}</a></td>
+                <td>{sterile_cs_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_cs_safe(row.get("current_master_score", ""))}</td>
+                <td>{sterile_cs_safe(row.get("projected_score", ""))}</td>
+                <td>{sterile_cs_safe(row.get("critical_blocker_count", ""))}</td>
+                <td>{sterile_cs_safe(row.get("review_signal_count", ""))}</td>
+                <td>{sterile_cs_safe(row.get("proposed_action_count", ""))}</td>
+                <td>{sterile_cs_safe(row.get("next_best_action", ""))}</td>
+                <td>{sterile_cs_safe(row.get("projected_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="11" style="text-align:center; padding:24px; color:#6b7280;">
+                No recovery-plan rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>What-If Recovery Plan</h1>
+        <p>
+            Record-level recovery plan generated from the Closure Simulator. This helps reviewers see the next best
+            closure action and the projected assurance status after closure work is completed.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Recovery Plans</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Projected GREEN</div><div class="st-value">{projected_green}</div></div>
+        <div class="st-card"><div class="st-label">Projected YELLOW</div><div class="st-value">{projected_yellow}</div></div>
+        <div class="st-card"><div class="st-label">Projected RED</div><div class="st-value">{projected_red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Recovery Plan Filters</h2>
+        <form method="GET" action="/sterile-compounding/recovery-plan">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Projected Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator">Closure Simulator</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan/export">Export Recovery Plan</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Recovery Plan Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Current</th>
+                        <th>Projected</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Current Score</th>
+                        <th>Projected Score</th>
+                        <th>Critical</th>
+                        <th>Review</th>
+                        <th>Actions</th>
+                        <th>Next Best Action</th>
+                        <th>Projected Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "RECOVERY-PLAN",
+            "STERILE_RECOVERY_PLAN_VIEW",
+            "Sterile recovery plan viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/recovery-plan",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("What-If Recovery Plan", body)
+
+
+@app.route("/sterile-compounding/closure-simulator/export")
+def sterile_compounding_closure_simulator_export():
+    sim_df = sterile_cs_build_simulator()
+
+    if sim_df.empty:
+        sim_df = sterile_cs_pd.DataFrame(columns=STERILE_CLOSURE_SIMULATOR_COLUMNS)
+
+    csv_data = sim_df.to_csv(index=False)
+
+    return sterile_cs_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_closure_simulator_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/recovery-plan/export")
+def sterile_compounding_recovery_plan_export():
+    sim_df = sterile_cs_build_simulator()
+    recovery_df = sterile_cs_build_recovery_plan(sim_df)
+
+    if recovery_df.empty:
+        recovery_df = sterile_cs_pd.DataFrame(columns=STERILE_RECOVERY_PLAN_COLUMNS)
+
+    csv_data = recovery_df.to_csv(index=False)
+
+    return sterile_cs_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_recovery_plan_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_closure_simulator_dashboard_injection(response):
+    try:
+        if sterile_cs_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-closure-simulator-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-closure-simulator-panel">
+            <h2>Closure Simulator + What-If Recovery Planner</h2>
+            <p class="st-note">
+                Simulates which closure actions could move RED/YELLOW CSPs toward GREEN before evidence,
+                sign-off, seal, custody, SOP, personnel, equipment, environmental, or regulatory records are changed.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/closure-simulator">Closure Simulator</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan">Recovery Plan</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator/export">Export Simulator</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/recovery-plan/export">Export Recovery Plan</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile closure simulator dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
