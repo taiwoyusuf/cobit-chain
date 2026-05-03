@@ -30405,5 +30405,543 @@ def sterile_compounding_custody_chain_dashboard_injection(response):
         print(f"Sterile custody chain dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CUSTODY_AUDIT_LINK_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 18: Custody Integration into Audit Pack / Dossier / Seal Health
+#
+# New Routes:
+#   /sterile-compounding/custody-audit-link
+#   /sterile-compounding/custody-audit-link/export
+#
+# New Register:
+#   sterile_compounding_custody_audit_link_register.csv
+#
+# Integration targets by response injection only:
+#   /sterile-compounding/control-tower
+#   /sterile-compounding/executive-pack
+#   /sterile-compounding/module-health
+#   /sterile-compounding/audit-pack
+#   /sterile-compounding/release-dossier
+#   /sterile-compounding/signoff-board
+#   /sterile-compounding/seal-health
+#
+# Boundary:
+#   Does not overwrite existing routes and does not touch protected
+#   Manufacturing/Wole, ServiceNow, Entra, CI Candidate Factory,
+#   CI Review Board, CI Submission Pack, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_cal_pd
+    import json as sterile_cal_json
+    from flask import request as sterile_cal_request
+    from flask import Response as sterile_cal_Response
+except Exception as sterile_cal_import_error:
+    raise RuntimeError(f"Sterile custody audit-link import failed: {sterile_cal_import_error}")
+
+
+STERILE_CUSTODY_AUDIT_LINK_REGISTER = "sterile_compounding_custody_audit_link_register.csv"
+
+STERILE_CUSTODY_AUDIT_LINK_COLUMNS = [
+    "link_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "governance_status",
+    "audit_pack_status",
+    "audit_pack_score",
+    "release_decision",
+    "custody_health_status",
+    "custody_event_count",
+    "latest_custody_status",
+    "current_custodian",
+    "latest_location",
+    "storage_condition",
+    "temperature_signal",
+    "missing_handoff_evidence",
+    "open_hold_signal",
+    "custody_audit_status",
+    "custody_audit_decision",
+    "recommended_action",
+    "source_routes",
+    "last_checked",
+    "custody_audit_hash"
+]
+
+
+def sterile_cal_require_dependencies():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+        "STERILE_CUSTODY_HEALTH_COLUMNS",
+        "STERILE_AUDIT_PACK_COLUMNS",
+        "sterile_cd_build_health",
+        "sterile_pack_build_register",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile custody audit-link dependencies missing: " + ", ".join(missing))
+
+
+def sterile_cal_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_cal_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_cal_read_optional(register_name, columns):
+    try:
+        df = sterile_read_register(register_name, columns)
+        if df is not None and hasattr(df, "columns"):
+            return sterile_ensure_cols(df, columns)
+    except Exception:
+        pass
+
+    return sterile_cal_pd.DataFrame(columns=columns)
+
+
+def sterile_cal_status_badge(status):
+    status = sterile_cal_safe(status).upper()
+
+    if status in ["GREEN", "COMPLETE", "ACCEPTABLE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "CONDITIONAL", "NO BASELINE"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "HOLD", "QUARANTINE", "BLOCK", "FAILED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_cal_latest_row(df, record_id, timestamp_col=None):
+    if df is None or df.empty or "record_id" not in df.columns:
+        return {}
+
+    match = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return {}
+
+    if timestamp_col and timestamp_col in match.columns:
+        try:
+            match = match.sort_values(by=timestamp_col, ascending=False)
+        except Exception:
+            pass
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_cal_build_link():
+    sterile_cal_require_dependencies()
+
+    csp_df = sterile_prepare_dashboard_df()
+
+    try:
+        custody_health_df = sterile_cd_build_health()
+    except Exception:
+        custody_health_df = sterile_cal_read_optional(
+            "sterile_compounding_custody_health_register.csv",
+            STERILE_CUSTODY_HEALTH_COLUMNS
+        )
+
+    try:
+        audit_pack_df = sterile_pack_build_register()
+    except Exception:
+        audit_pack_df = sterile_cal_read_optional(
+            "sterile_compounding_audit_pack_register.csv",
+            STERILE_AUDIT_PACK_COLUMNS
+        )
+
+    if csp_df.empty:
+        empty_df = sterile_cal_pd.DataFrame(columns=STERILE_CUSTODY_AUDIT_LINK_COLUMNS)
+        sterile_write_register(STERILE_CUSTODY_AUDIT_LINK_REGISTER, empty_df, STERILE_CUSTODY_AUDIT_LINK_COLUMNS)
+        return empty_df
+
+    rows = []
+
+    for _, csp in csp_df.iterrows():
+        record_id = sterile_cal_safe(csp.get("record_id", ""))
+
+        custody = sterile_cal_latest_row(custody_health_df, record_id, "last_checked")
+        audit_pack = sterile_cal_latest_row(audit_pack_df, record_id, "created_at")
+
+        governance_status = sterile_cal_safe(csp.get("governance_status", ""))
+        audit_pack_status = sterile_cal_safe(audit_pack.get("audit_pack_status", ""))
+        audit_pack_score = sterile_cal_safe(audit_pack.get("audit_pack_score", ""))
+        custody_health_status = sterile_cal_safe(custody.get("custody_health_status", "YELLOW"))
+        missing_handoff = sterile_cal_safe(custody.get("missing_handoff_evidence", "YES"))
+        open_hold = sterile_cal_safe(custody.get("open_hold_signal", "NO"))
+        latest_custody = sterile_cal_safe(custody.get("latest_custody_status", "NO BASELINE"))
+        temp_signal = sterile_cal_safe(custody.get("temperature_signal", ""))
+        storage_condition = sterile_cal_safe(custody.get("storage_condition", ""))
+
+        reasons = []
+
+        if custody_health_status.upper() == "RED":
+            reasons.append("Custody health is RED")
+        if missing_handoff.upper() == "YES":
+            reasons.append("Missing handoff/custody evidence")
+        if open_hold.upper() == "YES":
+            reasons.append("Open hold/quarantine/rejection signal")
+        if latest_custody.upper() == "NO BASELINE":
+            reasons.append("No custody baseline recorded")
+        if temp_signal.lower() in ["excursion", "out of range", "fail", "failed", "temperature excursion"]:
+            reasons.append("Temperature excursion or failure signal")
+        if storage_condition.lower() in ["excursion", "out of range", "fail", "failed"]:
+            reasons.append("Storage condition failure signal")
+
+        if audit_pack_status.upper() == "RED":
+            reasons.append("Audit pack is RED")
+        if governance_status.upper() == "RED":
+            reasons.append("CSP governance status is RED")
+
+        if (
+            custody_health_status.upper() == "RED"
+            or open_hold.upper() == "YES"
+            or temp_signal.lower() in ["excursion", "out of range", "fail", "failed", "temperature excursion"]
+            or storage_condition.lower() in ["excursion", "out of range", "fail", "failed"]
+        ):
+            custody_audit_status = "RED"
+            custody_audit_decision = "CUSTODY BLOCK / AUDIT PACK CANNOT BE RELIED ON WITHOUT REVIEW"
+            recommended_action = "Investigate custody hold, quarantine, storage, handoff, or temperature exception before dossier reliance."
+        elif (
+            custody_health_status.upper() == "YELLOW"
+            or missing_handoff.upper() == "YES"
+            or latest_custody.upper() == "NO BASELINE"
+        ):
+            custody_audit_status = "YELLOW"
+            custody_audit_decision = "CUSTODY REVIEW REQUIRED BEFORE AUDIT PACK RELIANCE"
+            recommended_action = "Record custody baseline or attach handoff evidence before relying on the audit pack."
+        else:
+            custody_audit_status = "GREEN"
+            custody_audit_decision = "CUSTODY SUPPORTS AUDIT PACK RELIANCE FROM GOVERNANCE VIEW"
+            recommended_action = "No custody action required."
+
+        source_routes = [
+            f"/sterile-compounding/custody/{record_id}",
+            f"/sterile-compounding/custody-transfer/{record_id}",
+            f"/sterile-compounding/custody-health",
+            f"/sterile-compounding/audit-pack/{record_id}",
+            f"/sterile-compounding/release-dossier/{record_id}",
+            f"/sterile-compounding/seal/{record_id}",
+        ]
+
+        payload = {
+            "link_id": sterile_cal_make_id("ST-CAL", record_id, custody_audit_status, latest_custody),
+            "record_id": record_id,
+            "csp_name": sterile_cal_safe(csp.get("csp_name", "")),
+            "batch_or_rx_id": sterile_cal_safe(csp.get("batch_or_rx_id", "")),
+            "facility_type": sterile_cal_safe(csp.get("facility_type", "")),
+            "governance_status": governance_status,
+            "audit_pack_status": audit_pack_status,
+            "audit_pack_score": audit_pack_score,
+            "release_decision": sterile_cal_safe(csp.get("release_decision", "")),
+            "custody_health_status": custody_health_status,
+            "custody_event_count": sterile_cal_safe(custody.get("custody_event_count", 0)),
+            "latest_custody_status": latest_custody,
+            "current_custodian": sterile_cal_safe(custody.get("current_custodian", "")),
+            "latest_location": sterile_cal_safe(custody.get("latest_location", "")),
+            "storage_condition": storage_condition,
+            "temperature_signal": temp_signal,
+            "missing_handoff_evidence": missing_handoff,
+            "open_hold_signal": open_hold,
+            "custody_audit_status": custody_audit_status,
+            "custody_audit_decision": custody_audit_decision,
+            "recommended_action": recommended_action,
+            "source_routes": "; ".join(source_routes),
+            "last_checked": sterile_now(),
+        }
+
+        payload["custody_audit_hash"] = sterile_hash_text(
+            sterile_cal_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    link_df = sterile_cal_pd.DataFrame(rows)
+    link_df = sterile_ensure_cols(link_df, STERILE_CUSTODY_AUDIT_LINK_COLUMNS)
+    sterile_write_register(STERILE_CUSTODY_AUDIT_LINK_REGISTER, link_df, STERILE_CUSTODY_AUDIT_LINK_COLUMNS)
+
+    return link_df
+
+
+def sterile_cal_summary_counts():
+    link_df = sterile_cal_build_link()
+
+    total = len(link_df)
+    green = int((link_df["custody_audit_status"] == "GREEN").sum()) if total else 0
+    yellow = int((link_df["custody_audit_status"] == "YELLOW").sum()) if total else 0
+    red = int((link_df["custody_audit_status"] == "RED").sum()) if total else 0
+    no_baseline = int((link_df["latest_custody_status"] == "NO BASELINE").sum()) if total else 0
+    missing_handoff = int((link_df["missing_handoff_evidence"] == "YES").sum()) if total else 0
+    open_hold = int((link_df["open_hold_signal"] == "YES").sum()) if total else 0
+
+    if red:
+        overall_status = "RED"
+        overall_decision = "CUSTODY BLOCKS OR WEAKENS AUDIT PACK RELIANCE"
+    elif yellow:
+        overall_status = "YELLOW"
+        overall_decision = "CUSTODY REVIEW REQUIRED BEFORE FINAL RELIANCE"
+    else:
+        overall_status = "GREEN"
+        overall_decision = "CUSTODY SUPPORTS AUDIT PACK RELIANCE"
+
+    return {
+        "link_df": link_df,
+        "total": total,
+        "green": green,
+        "yellow": yellow,
+        "red": red,
+        "no_baseline": no_baseline,
+        "missing_handoff": missing_handoff,
+        "open_hold": open_hold,
+        "overall_status": overall_status,
+        "overall_decision": overall_decision,
+    }
+
+
+@app.route("/sterile-compounding/custody-audit-link")
+def sterile_compounding_custody_audit_link():
+    summary = sterile_cal_summary_counts()
+    link_df = summary["link_df"]
+
+    status_filter = sterile_cal_safe(sterile_cal_request.args.get("status", ""))
+    filtered = link_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["custody_audit_status"].astype(str) == status_filter]
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["custody_audit_status", "record_id"], ascending=[False, True]).iterrows():
+            rid = sterile_cal_safe(row.get("record_id", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_cal_status_badge(row.get("custody_audit_status", ""))}</td>
+                <td><a href="/sterile-compounding/custody/{rid}">{rid}</a></td>
+                <td>{sterile_cal_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_badge(row.get("governance_status", ""))}</td>
+                <td>{sterile_cal_status_badge(row.get("audit_pack_status", ""))}</td>
+                <td>{sterile_cal_status_badge(row.get("custody_health_status", ""))}</td>
+                <td>{sterile_cal_safe(row.get("custody_event_count", ""))}</td>
+                <td>{sterile_cal_safe(row.get("latest_custody_status", ""))}</td>
+                <td>{sterile_cal_safe(row.get("current_custodian", ""))}</td>
+                <td>{sterile_cal_safe(row.get("latest_location", ""))}</td>
+                <td>{sterile_cal_safe(row.get("missing_handoff_evidence", ""))}</td>
+                <td>{sterile_cal_safe(row.get("open_hold_signal", ""))}</td>
+                <td>{sterile_cal_safe(row.get("custody_audit_decision", ""))}</td>
+                <td>{sterile_cal_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="14" style="text-align:center; padding:24px; color:#6b7280;">
+                No custody audit-link rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Custody Audit-Link Register</h1>
+        <p>
+            Connects sterile custody health to audit packs, release dossiers, and seal health.
+            This tells reviewers whether custody evidence supports final dossier reliance.
+        </p>
+        <div style="margin-top:16px;">{sterile_cal_status_badge(summary["overall_status"])}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {summary["overall_decision"]}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Custody Audit Rows</div><div class="st-value">{summary["total"]}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{summary["green"]}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{summary["yellow"]}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{summary["red"]}</div></div>
+        <div class="st-card"><div class="st-label">No Custody Baseline</div><div class="st-value">{summary["no_baseline"]}</div></div>
+        <div class="st-card"><div class="st-label">Missing Handoff Evidence</div><div class="st-value">{summary["missing_handoff"]}</div></div>
+        <div class="st-card"><div class="st-label">Open Hold Signals</div><div class="st-value">{summary["open_hold"]}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Audit-Link Filters</h2>
+        <form method="GET" action="/sterile-compounding/custody-audit-link">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-audit-link">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain">Custody Chain</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-health">Custody Health</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/custody-audit-link/export">Export Audit Link</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Custody Audit-Link Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Custody Audit</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>CSP Status</th>
+                        <th>Audit Pack</th>
+                        <th>Custody Health</th>
+                        <th>Events</th>
+                        <th>Latest Custody</th>
+                        <th>Custodian</th>
+                        <th>Location</th>
+                        <th>Missing Evidence</th>
+                        <th>Open Hold</th>
+                        <th>Decision</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CUSTODY-AUDIT-LINK",
+            "STERILE_CUSTODY_AUDIT_LINK_VIEW",
+            "Sterile custody audit-link register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/custody-audit-link",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Custody Audit-Link Register", body)
+
+
+@app.route("/sterile-compounding/custody-audit-link/export")
+def sterile_compounding_custody_audit_link_export():
+    link_df = sterile_cal_build_link()
+
+    if link_df.empty:
+        link_df = sterile_cal_pd.DataFrame(columns=STERILE_CUSTODY_AUDIT_LINK_COLUMNS)
+
+    csv_data = link_df.to_csv(index=False)
+
+    return sterile_cal_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_custody_audit_link_export.csv"}
+    )
+
+
+def sterile_cal_summary_panel():
+    summary = sterile_cal_summary_counts()
+
+    return f"""
+    <section class="st-panel" id="sterile-custody-audit-link-panel">
+        <h2>Custody Integration into Audit Pack / Dossier / Seal Health</h2>
+        <p class="st-note">
+            Links custody health to audit-pack reliance. This shows whether each CSP has a custody baseline,
+            handoff evidence, current custodian, storage/location signal, and whether hold/quarantine conditions
+            affect final dossier reliance.
+        </p>
+        <div>{sterile_cal_status_badge(summary["overall_status"])} <b>{summary["overall_decision"]}</b></div>
+        <div class="st-cards" style="margin-top:14px;">
+            <div class="st-card"><div class="st-label">Custody Audit Rows</div><div class="st-value">{summary["total"]}</div></div>
+            <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{summary["green"]}</div></div>
+            <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{summary["yellow"]}</div></div>
+            <div class="st-card"><div class="st-label">RED</div><div class="st-value">{summary["red"]}</div></div>
+            <div class="st-card"><div class="st-label">No Baseline</div><div class="st-value">{summary["no_baseline"]}</div></div>
+            <div class="st-card"><div class="st-label">Missing Handoff</div><div class="st-value">{summary["missing_handoff"]}</div></div>
+            <div class="st-card"><div class="st-label">Open Hold</div><div class="st-value">{summary["open_hold"]}</div></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            <a class="st-button" href="/sterile-compounding/custody-audit-link">Custody Audit-Link</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/custody-chain">Custody Chain</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/custody-health">Custody Health</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/custody-audit-link/export">Export Custody Audit-Link</a>
+        </div>
+    </section>
+    """
+
+
+@app.after_request
+def sterile_compounding_custody_audit_link_injection(response):
+    try:
+        if sterile_cal_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-custody-audit-link-panel" in html:
+            return response
+
+        panel = sterile_cal_summary_panel()
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile custody audit-link injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
