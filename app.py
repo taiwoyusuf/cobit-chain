@@ -23230,5 +23230,875 @@ def sterile_compounding_enterprise_regwatch_dashboard_injection(response):
         print(f"Sterile enterprise/regwatch dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CONTROL_TOWER_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 9: Control Tower + Executive Pack + Module Health
+#
+# New Routes:
+#   /sterile-compounding/control-tower
+#   /sterile-compounding/executive-pack
+#   /sterile-compounding/executive-pack/export
+#   /sterile-compounding/module-health
+#   /sterile-compounding/module-health/export
+#
+# New Register:
+#   sterile_compounding_module_health_register.csv
+#
+# Boundary:
+#   This module summarizes sterile compounding modules only.
+#   It does not modify protected Manufacturing/Wole, ServiceNow, Entra,
+#   CI Candidate Factory, CI Review Board, CI Submission Pack,
+#   Knowledge Governance, Operational Lineage, Release Notes, Monday Demo,
+#   Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import os as sterile_ct_os
+    import pandas as sterile_ct_pd
+    import json as sterile_ct_json
+    from io import StringIO as sterile_ct_StringIO
+    from flask import request as sterile_ct_request
+    from flask import Response as sterile_ct_Response
+except Exception as sterile_ct_import_error:
+    raise RuntimeError(f"Sterile control tower import failed: {sterile_ct_import_error}")
+
+
+STERILE_MODULE_HEALTH_REGISTER = "sterile_compounding_module_health_register.csv"
+
+STERILE_MODULE_HEALTH_COLUMNS = [
+    "module_id",
+    "module_name",
+    "active_marker",
+    "route",
+    "register_name",
+    "register_rows",
+    "health_status",
+    "health_decision",
+    "notes",
+    "last_checked",
+    "health_hash"
+]
+
+STERILE_EXECUTIVE_PACK_COLUMNS = [
+    "metric_domain",
+    "metric_name",
+    "metric_value",
+    "metric_status",
+    "metric_decision",
+    "source_route",
+    "source_register",
+    "last_updated"
+]
+
+
+def sterile_ct_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_ct_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_ct_status_badge(status):
+    status = sterile_ct_safe(status).upper()
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ct_app_source_text():
+    try:
+        with open(__file__, "r", encoding="utf-8") as handle:
+            return handle.read()
+    except Exception:
+        try:
+            with open("app.py", "r", encoding="utf-8") as handle:
+                return handle.read()
+        except Exception:
+            return ""
+
+
+def sterile_ct_blob_available():
+    try:
+        return (
+            "blob_service_client" in globals()
+            and "CONTAINER_NAME" in globals()
+            and globals().get("blob_service_client") is not None
+            and globals().get("CONTAINER_NAME") is not None
+        )
+    except Exception:
+        return False
+
+
+def sterile_ct_register_rows(register_name, columns=None):
+    try:
+        if columns and "sterile_read_register" in globals():
+            df = sterile_read_register(register_name, columns)
+            if df is not None and hasattr(df, "columns"):
+                return len(df)
+    except Exception:
+        pass
+
+    if sterile_ct_blob_available():
+        try:
+            blob_client = globals()["blob_service_client"].get_blob_client(
+                container=globals()["CONTAINER_NAME"],
+                blob=register_name
+            )
+            data = blob_client.download_blob().readall().decode("utf-8")
+            df = sterile_ct_pd.read_csv(sterile_ct_StringIO(data))
+            return len(df)
+        except Exception:
+            return 0
+
+    try:
+        if sterile_ct_os.path.exists(register_name):
+            return len(sterile_ct_pd.read_csv(register_name))
+    except Exception:
+        pass
+
+    return 0
+
+
+def sterile_ct_route_exists(route):
+    source = sterile_ct_app_source_text()
+    return route in source
+
+
+def sterile_ct_marker_exists(marker):
+    source = sterile_ct_app_source_text()
+    return marker in source
+
+
+def sterile_ct_register_catalog():
+    return [
+        {
+            "register_name": "sterile_compounding_register.csv",
+            "columns_global": "STERILE_COMPOUNDING_COLUMNS",
+            "module_name": "CSP Release Readiness & Evidence Twin",
+            "marker": "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+            "route": "/sterile-compounding",
+            "notes": "Core CSP readiness register, evidence twin hash, GREEN/YELLOW/RED release-readiness scoring."
+        },
+        {
+            "register_name": "sterile_compounding_review_register.csv",
+            "columns_global": "STERILE_REVIEW_COLUMNS",
+            "module_name": "Sterile Review Board",
+            "marker": "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+            "route": "/sterile-compounding/review",
+            "notes": "Reviewer/pharmacist/QA-style governance decisions."
+        },
+        {
+            "register_name": "sterile_compounding_lineage_register.csv",
+            "columns_global": "STERILE_LINEAGE_COLUMNS",
+            "module_name": "Sterile Audit Lineage",
+            "marker": "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+            "route": "/sterile-compounding/audit-lineage",
+            "notes": "Upload, passport, review, blast-radius, and replay events."
+        },
+        {
+            "register_name": "sterile_compounding_control_map_register.csv",
+            "columns_global": "STERILE_CONTROL_MAP_COLUMNS",
+            "module_name": "Control Mapper + No-Release Gate",
+            "marker": "STERILE_COMPOUNDING_CONTROL_MAPPER_ACTIVE",
+            "route": "/sterile-compounding/control-mapper",
+            "notes": "Control-to-evidence map and no-release governance gate."
+        },
+        {
+            "register_name": "sterile_compounding_trust_passport_register.csv",
+            "columns_global": "STERILE_TRUST_PASSPORT_COLUMNS",
+            "module_name": "Trust Passports",
+            "marker": "STERILE_COMPOUNDING_TRUST_PASSPORTS_ACTIVE",
+            "route": "/sterile-compounding/personnel-passports",
+            "notes": "Personnel, equipment/room, and ingredient lot trust passports."
+        },
+        {
+            "register_name": "sterile_compounding_deviation_pack_register.csv",
+            "columns_global": "STERILE_DEVIATION_PACK_COLUMNS",
+            "module_name": "Inspector Mode + Deviation Auto-Assembler",
+            "marker": "STERILE_COMPOUNDING_INSPECTOR_DEVIATION_ACTIVE",
+            "route": "/sterile-compounding/inspector-mode",
+            "notes": "Inspector findings and deviation/review evidence packs."
+        },
+        {
+            "register_name": "sterile_compounding_risk_graph_register.csv",
+            "columns_global": "STERILE_RISK_GRAPH_COLUMNS",
+            "module_name": "Risk Graph",
+            "marker": "STERILE_COMPOUNDING_RISK_GRAPH_REPLAY_ACTIVE",
+            "route": "/sterile-compounding/risk-graph",
+            "notes": "CSP relationship graph across personnel, room, lot, SOP, evidence, deviation, and facility mode."
+        },
+        {
+            "register_name": "sterile_compounding_auditor_replay_register.csv",
+            "columns_global": "STERILE_AUDITOR_REPLAY_COLUMNS",
+            "module_name": "Auditor Replay Mode",
+            "marker": "STERILE_COMPOUNDING_RISK_GRAPH_REPLAY_ACTIVE",
+            "route": "/sterile-compounding/auditor-replay",
+            "notes": "Timeline replay of the evidence/control story for each CSP."
+        },
+        {
+            "register_name": "sterile_compounding_prework_gate_register.csv",
+            "columns_global": "STERILE_PREWORK_GATE_COLUMNS",
+            "module_name": "Pre-Compounding Start Gate",
+            "marker": "STERILE_COMPOUNDING_PREWORK_DRIFT_ACTIVE",
+            "route": "/sterile-compounding/pre-work-gate",
+            "notes": "Start-readiness by facility/hood/room before compounding begins."
+        },
+        {
+            "register_name": "sterile_compounding_environmental_drift_register.csv",
+            "columns_global": "STERILE_ENV_DRIFT_COLUMNS",
+            "module_name": "Environmental Drift Monitor",
+            "marker": "STERILE_COMPOUNDING_PREWORK_DRIFT_ACTIVE",
+            "route": "/sterile-compounding/environmental-drift",
+            "notes": "Derived drift-risk view from environmental, equipment, cleaning, EM review, storage, and deviation signals."
+        },
+        {
+            "register_name": "sterile_compounding_enterprise_scorecard_register.csv",
+            "columns_global": "STERILE_ENTERPRISE_SCORECARD_COLUMNS",
+            "module_name": "Enterprise Scorecard",
+            "marker": "STERILE_COMPOUNDING_ENTERPRISE_REGWATCH_ACTIVE",
+            "route": "/sterile-compounding/enterprise-scorecard",
+            "notes": "Multi-facility/hood/room governance scorecard."
+        },
+        {
+            "register_name": "sterile_compounding_regulatory_watch_register.csv",
+            "columns_global": "STERILE_REGWATCH_COLUMNS",
+            "module_name": "Regulatory / Supplier Watch Intake",
+            "marker": "STERILE_COMPOUNDING_ENTERPRISE_REGWATCH_ACTIVE",
+            "route": "/sterile-compounding/regulatory-watch",
+            "notes": "Manual/sanitized watch intake for supplier, regulatory, shortage, recall, hazardous-drug, or quality alerts."
+        },
+        {
+            "register_name": "sterile_compounding_regulatory_impact_register.csv",
+            "columns_global": "STERILE_REGWATCH_IMPACT_COLUMNS",
+            "module_name": "Regulatory Watch Impact",
+            "marker": "STERILE_COMPOUNDING_ENTERPRISE_REGWATCH_ACTIVE",
+            "route": "/sterile-compounding/regulatory-impact/export",
+            "notes": "Maps watch items to impacted CSP records."
+        },
+    ]
+
+
+def sterile_ct_route_catalog():
+    return [
+        ("/sterile-compounding", "Main sterile compounding dashboard"),
+        ("/sterile-compounding/sample", "Load demo CSP sample records"),
+        ("/sterile-compounding/review", "Sterile review board"),
+        ("/sterile-compounding/blast-radius", "Contamination blast-radius analysis"),
+        ("/sterile-compounding/audit-lineage", "Audit lineage register"),
+        ("/sterile-compounding/control-mapper", "Control-to-evidence mapper"),
+        ("/sterile-compounding/no-release-gate", "No-release governance gate"),
+        ("/sterile-compounding/personnel-passports", "Personnel qualification passports"),
+        ("/sterile-compounding/equipment-readiness", "Equipment/room readiness passports"),
+        ("/sterile-compounding/ingredient-trust", "Ingredient lot trust passports"),
+        ("/sterile-compounding/inspector-mode", "AI Inspector Mode"),
+        ("/sterile-compounding/deviation-assembler", "Deviation Auto-Assembler"),
+        ("/sterile-compounding/risk-graph", "Risk graph"),
+        ("/sterile-compounding/auditor-replay", "Auditor replay mode"),
+        ("/sterile-compounding/pre-work-gate", "Pre-compounding start gate"),
+        ("/sterile-compounding/environmental-drift", "Environmental drift monitor"),
+        ("/sterile-compounding/enterprise-scorecard", "Enterprise scorecard"),
+        ("/sterile-compounding/regulatory-watch", "Regulatory/supplier watch intake"),
+        ("/sterile-compounding/control-tower", "Sterile control tower"),
+        ("/sterile-compounding/executive-pack", "Sterile executive pack"),
+        ("/sterile-compounding/module-health", "Sterile module health"),
+    ]
+
+
+def sterile_ct_build_module_health():
+    sterile_ct_require_phase1()
+
+    rows = []
+    catalog = sterile_ct_register_catalog()
+
+    for item in catalog:
+        columns = globals().get(item["columns_global"])
+        rows_count = sterile_ct_register_rows(item["register_name"], columns)
+        marker_ok = sterile_ct_marker_exists(item["marker"])
+        route_ok = sterile_ct_route_exists(item["route"])
+
+        if marker_ok and route_ok:
+            if rows_count > 0:
+                health_status = "GREEN"
+                health_decision = "ACTIVE WITH DATA"
+            else:
+                health_status = "YELLOW"
+                health_decision = "ACTIVE / NO DATA YET"
+        else:
+            health_status = "RED"
+            missing = []
+            if not marker_ok:
+                missing.append("marker")
+            if not route_ok:
+                missing.append("route")
+            health_decision = "CHECK MODULE: missing " + ", ".join(missing)
+
+        payload = {
+            "module_id": sterile_ct_hash_short(item["module_name"]),
+            "module_name": item["module_name"],
+            "active_marker": item["marker"],
+            "route": item["route"],
+            "register_name": item["register_name"],
+            "register_rows": rows_count,
+            "health_status": health_status,
+            "health_decision": health_decision,
+            "notes": item["notes"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["health_hash"] = sterile_hash_text(
+            sterile_ct_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    health_df = sterile_ct_pd.DataFrame(rows)
+    health_df = sterile_ensure_cols(health_df, STERILE_MODULE_HEALTH_COLUMNS)
+    sterile_write_register(STERILE_MODULE_HEALTH_REGISTER, health_df, STERILE_MODULE_HEALTH_COLUMNS)
+    return health_df
+
+
+def sterile_ct_hash_short(value):
+    return "ST-MOD-" + sterile_hash_text(str(value))[:10].upper()
+
+
+def sterile_ct_status_counts(df, column):
+    if df is None or df.empty or column not in df.columns:
+        return {"GREEN": 0, "YELLOW": 0, "RED": 0}
+    return {
+        "GREEN": int((df[column].astype(str).str.upper() == "GREEN").sum()),
+        "YELLOW": int((df[column].astype(str).str.upper() == "YELLOW").sum()),
+        "RED": int((df[column].astype(str).str.upper() == "RED").sum()),
+    }
+
+
+def sterile_ct_build_exec_metrics():
+    sterile_ct_require_phase1()
+
+    metrics = []
+
+    def add_metric(domain, name, value, status, decision, route, register_name):
+        metrics.append({
+            "metric_domain": domain,
+            "metric_name": name,
+            "metric_value": value,
+            "metric_status": status,
+            "metric_decision": decision,
+            "source_route": route,
+            "source_register": register_name,
+            "last_updated": sterile_now(),
+        })
+
+    csp_df = sterile_prepare_dashboard_df()
+    health_df = sterile_ct_build_module_health()
+
+    total_csp = len(csp_df)
+    csp_counts = sterile_ct_status_counts(csp_df, "governance_status")
+
+    add_metric(
+        "CSP Readiness",
+        "Total CSP Records",
+        total_csp,
+        "GREEN" if total_csp else "YELLOW",
+        "CSP records available" if total_csp else "Load sample or upload CSP register",
+        "/sterile-compounding",
+        "sterile_compounding_register.csv"
+    )
+
+    add_metric(
+        "CSP Readiness",
+        "RED / Blocked CSPs",
+        csp_counts["RED"],
+        "RED" if csp_counts["RED"] else "GREEN",
+        "Blocked CSPs require review" if csp_counts["RED"] else "No blocked CSPs detected",
+        "/sterile-compounding",
+        "sterile_compounding_register.csv"
+    )
+
+    add_metric(
+        "CSP Readiness",
+        "YELLOW / Review CSPs",
+        csp_counts["YELLOW"],
+        "YELLOW" if csp_counts["YELLOW"] else "GREEN",
+        "Review-required CSPs exist" if csp_counts["YELLOW"] else "No review-required CSPs detected",
+        "/sterile-compounding",
+        "sterile_compounding_register.csv"
+    )
+
+    health_counts = sterile_ct_status_counts(health_df, "health_status")
+
+    add_metric(
+        "Module Health",
+        "Active Sterile Modules",
+        len(health_df),
+        "GREEN" if len(health_df) else "RED",
+        "Sterile modules registered in module-health view",
+        "/sterile-compounding/module-health",
+        STERILE_MODULE_HEALTH_REGISTER
+    )
+
+    add_metric(
+        "Module Health",
+        "Module Health RED",
+        health_counts["RED"],
+        "RED" if health_counts["RED"] else "GREEN",
+        "One or more sterile modules need route/marker review" if health_counts["RED"] else "No RED module-health findings",
+        "/sterile-compounding/module-health",
+        STERILE_MODULE_HEALTH_REGISTER
+    )
+
+    optional_sources = [
+        ("Control Mapper", "Control Checks", "STERILE_CONTROL_MAP_COLUMNS", "sterile_compounding_control_map_register.csv", "/sterile-compounding/control-mapper"),
+        ("Trust Passports", "Trust Passports", "STERILE_TRUST_PASSPORT_COLUMNS", "sterile_compounding_trust_passport_register.csv", "/sterile-compounding/personnel-passports"),
+        ("Inspector Mode", "Deviation / Review Packs", "STERILE_DEVIATION_PACK_COLUMNS", "sterile_compounding_deviation_pack_register.csv", "/sterile-compounding/deviation-assembler"),
+        ("Risk Graph", "Risk Graph Edges", "STERILE_RISK_GRAPH_COLUMNS", "sterile_compounding_risk_graph_register.csv", "/sterile-compounding/risk-graph"),
+        ("Auditor Replay", "Replay Events", "STERILE_AUDITOR_REPLAY_COLUMNS", "sterile_compounding_auditor_replay_register.csv", "/sterile-compounding/auditor-replay"),
+        ("Pre-Work Gate", "Pre-Work Gate Rows", "STERILE_PREWORK_GATE_COLUMNS", "sterile_compounding_prework_gate_register.csv", "/sterile-compounding/pre-work-gate"),
+        ("Environmental Drift", "Drift Rows", "STERILE_ENV_DRIFT_COLUMNS", "sterile_compounding_environmental_drift_register.csv", "/sterile-compounding/environmental-drift"),
+        ("Enterprise Scorecard", "Enterprise Scorecard Rows", "STERILE_ENTERPRISE_SCORECARD_COLUMNS", "sterile_compounding_enterprise_scorecard_register.csv", "/sterile-compounding/enterprise-scorecard"),
+        ("Regulatory Watch", "Watch Items", "STERILE_REGWATCH_COLUMNS", "sterile_compounding_regulatory_watch_register.csv", "/sterile-compounding/regulatory-watch"),
+        ("Regulatory Watch", "Watch Impact Links", "STERILE_REGWATCH_IMPACT_COLUMNS", "sterile_compounding_regulatory_impact_register.csv", "/sterile-compounding/regulatory-impact/export"),
+    ]
+
+    for domain, name, columns_global, register_name, route in optional_sources:
+        rows = sterile_ct_register_rows(register_name, globals().get(columns_global))
+        status = "GREEN" if rows > 0 else "YELLOW"
+        decision = "Register has data" if rows > 0 else "Register active or pending data generation"
+        add_metric(domain, name, rows, status, decision, route, register_name)
+
+    metrics_df = sterile_ct_pd.DataFrame(metrics)
+    return sterile_ensure_cols(metrics_df, STERILE_EXECUTIVE_PACK_COLUMNS)
+
+
+@app.route("/sterile-compounding/module-health")
+def sterile_compounding_module_health():
+    health_df = sterile_ct_build_module_health()
+
+    total = len(health_df)
+    counts = sterile_ct_status_counts(health_df, "health_status")
+
+    rows_html = ""
+    if not health_df.empty:
+        for _, row in health_df.iterrows():
+            route = sterile_ct_safe(row.get("route", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ct_status_badge(row.get("health_status", ""))}</td>
+                <td>{sterile_ct_safe(row.get("module_name", ""))}</td>
+                <td><code>{sterile_ct_safe(row.get("active_marker", ""))}</code></td>
+                <td><a href="{route}">{route}</a></td>
+                <td><code>{sterile_ct_safe(row.get("register_name", ""))}</code></td>
+                <td>{sterile_ct_safe(row.get("register_rows", ""))}</td>
+                <td>{sterile_ct_safe(row.get("health_decision", ""))}</td>
+                <td>{sterile_ct_safe(row.get("notes", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No module health records generated.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Module Health</h1>
+        <p>
+            Health register for the Compound Sterile AssuranceLayer™ vertical. It checks sterile module markers,
+            routes, and register row counts without modifying protected app areas.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Modules / Registers</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{counts["GREEN"]}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{counts["YELLOW"]}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{counts["RED"]}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Health Actions</h2>
+        <a class="st-button" href="/sterile-compounding/control-tower">Control Tower</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack">Executive Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/module-health/export">Export Module Health</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Module Health Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Module</th>
+                        <th>Marker</th>
+                        <th>Route</th>
+                        <th>Register</th>
+                        <th>Rows</th>
+                        <th>Decision</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MODULE-HEALTH",
+            "STERILE_MODULE_HEALTH_VIEW",
+            "Sterile module health viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/module-health",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Module Health", body)
+
+
+@app.route("/sterile-compounding/module-health/export")
+def sterile_compounding_module_health_export():
+    health_df = sterile_ct_build_module_health()
+
+    if health_df.empty:
+        health_df = sterile_ct_pd.DataFrame(columns=STERILE_MODULE_HEALTH_COLUMNS)
+
+    csv_data = health_df.to_csv(index=False)
+
+    return sterile_ct_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_module_health_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/executive-pack")
+def sterile_compounding_executive_pack():
+    metrics_df = sterile_ct_build_exec_metrics()
+
+    overall_status = "GREEN"
+    if not metrics_df.empty:
+        if int((metrics_df["metric_status"].astype(str) == "RED").sum()) > 0:
+            overall_status = "RED"
+        elif int((metrics_df["metric_status"].astype(str) == "YELLOW").sum()) > 0:
+            overall_status = "YELLOW"
+    else:
+        overall_status = "YELLOW"
+
+    total_metrics = len(metrics_df)
+    counts = sterile_ct_status_counts(metrics_df, "metric_status")
+
+    rows_html = ""
+    if not metrics_df.empty:
+        for _, row in metrics_df.iterrows():
+            route = sterile_ct_safe(row.get("source_route", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ct_status_badge(row.get("metric_status", ""))}</td>
+                <td>{sterile_ct_safe(row.get("metric_domain", ""))}</td>
+                <td>{sterile_ct_safe(row.get("metric_name", ""))}</td>
+                <td>{sterile_ct_safe(row.get("metric_value", ""))}</td>
+                <td>{sterile_ct_safe(row.get("metric_decision", ""))}</td>
+                <td><a href="{route}">{route}</a></td>
+                <td><code>{sterile_ct_safe(row.get("source_register", ""))}</code></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+                No executive metrics available.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Compound Sterile AssuranceLayer™ Executive Pack</h1>
+        <p>
+            Leadership-ready summary of sterile compounding governance: readiness status, blocked/review records,
+            module health, trust passports, inspector findings, risk graph, replay, pre-work gate, drift monitor,
+            enterprise scorecard, and regulatory-watch impact. This is an assurance layer, not a replacement for
+            pharmacy/QMS/validated systems.
+        </p>
+        <div style="margin-top:16px;">{sterile_ct_status_badge(overall_status)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            Overall Executive Status: {overall_status}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Executive Metrics</div><div class="st-value">{total_metrics}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{counts["GREEN"]}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{counts["YELLOW"]}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{counts["RED"]}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Executive Actions</h2>
+        <a class="st-button" href="/sterile-compounding/control-tower">Control Tower</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/module-health">Module Health</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack/export">Export Executive Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding">CSP Dashboard</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Executive Metrics</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Domain</th>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Decision</th>
+                        <th>Route</th>
+                        <th>Register</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EXECUTIVE-PACK",
+            "STERILE_EXECUTIVE_PACK_VIEW",
+            "Sterile executive pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/executive-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Executive Pack", body)
+
+
+@app.route("/sterile-compounding/executive-pack/export")
+def sterile_compounding_executive_pack_export():
+    metrics_df = sterile_ct_build_exec_metrics()
+
+    if metrics_df.empty:
+        metrics_df = sterile_ct_pd.DataFrame(columns=STERILE_EXECUTIVE_PACK_COLUMNS)
+
+    csv_data = metrics_df.to_csv(index=False)
+
+    return sterile_ct_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_executive_pack_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/control-tower")
+def sterile_compounding_control_tower():
+    csp_df = sterile_prepare_dashboard_df()
+    health_df = sterile_ct_build_module_health()
+    metrics_df = sterile_ct_build_exec_metrics()
+
+    total_csp = len(csp_df)
+    csp_counts = sterile_ct_status_counts(csp_df, "governance_status")
+    health_counts = sterile_ct_status_counts(health_df, "health_status")
+
+    quick_links = [
+        ("CSP Dashboard", "/sterile-compounding", "Core readiness and evidence-twin dashboard"),
+        ("Control Mapper", "/sterile-compounding/control-mapper", "Control-to-evidence mapping"),
+        ("No-Release Gate", "/sterile-compounding/no-release-gate", "Release-block governance gate"),
+        ("Personnel Passports", "/sterile-compounding/personnel-passports", "Technician/personnel trust passports"),
+        ("Equipment Readiness", "/sterile-compounding/equipment-readiness", "Hood/room readiness passports"),
+        ("Ingredient Trust", "/sterile-compounding/ingredient-trust", "Ingredient lot trust passports"),
+        ("AI Inspector Mode", "/sterile-compounding/inspector-mode", "Inspector-style findings"),
+        ("Deviation Assembler", "/sterile-compounding/deviation-assembler", "Deviation/review evidence packs"),
+        ("Risk Graph", "/sterile-compounding/risk-graph", "Relationship risk graph"),
+        ("Auditor Replay", "/sterile-compounding/auditor-replay", "Timeline replay"),
+        ("Pre-Work Gate", "/sterile-compounding/pre-work-gate", "Can work start now?"),
+        ("Environmental Drift", "/sterile-compounding/environmental-drift", "Predictive drift signals"),
+        ("Enterprise Scorecard", "/sterile-compounding/enterprise-scorecard", "Multi-site/facility scorecard"),
+        ("Regulatory Watch", "/sterile-compounding/regulatory-watch", "Manual/sanitized watch intake"),
+        ("Executive Pack", "/sterile-compounding/executive-pack", "Leadership summary"),
+        ("Module Health", "/sterile-compounding/module-health", "Routes/markers/registers health"),
+    ]
+
+    link_cards = ""
+    for title, route, note in quick_links:
+        link_cards += f"""
+        <div class="st-card">
+            <div class="st-label">{sterile_ct_safe(title)}</div>
+            <div style="font-size:14px; margin-top:8px; min-height:42px;">{sterile_ct_safe(note)}</div>
+            <div style="margin-top:12px;">
+                <a class="st-button" href="{route}">Open</a>
+            </div>
+        </div>
+        """
+
+    module_rows = ""
+    if not health_df.empty:
+        for _, row in health_df.iterrows():
+            route = sterile_ct_safe(row.get("route", ""))
+            module_rows += f"""
+            <tr>
+                <td>{sterile_ct_status_badge(row.get("health_status", ""))}</td>
+                <td>{sterile_ct_safe(row.get("module_name", ""))}</td>
+                <td><a href="{route}">{route}</a></td>
+                <td>{sterile_ct_safe(row.get("register_rows", ""))}</td>
+                <td>{sterile_ct_safe(row.get("health_decision", ""))}</td>
+            </tr>
+            """
+    else:
+        module_rows = '<tr><td colspan="5" style="text-align:center; padding:24px; color:#6b7280;">No module health rows available.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Compound Sterile AssuranceLayer™ Control Tower</h1>
+        <p>
+            One front door for the sterile compounding governance vertical. This consolidates release readiness,
+            review, control mapping, trust passports, inspector findings, deviation packs, risk graph, auditor replay,
+            start gate, environmental drift, enterprise scorecard, regulatory-watch impact, executive pack,
+            and module health.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total CSP Records</div><div class="st-value">{total_csp}</div></div>
+        <div class="st-card"><div class="st-label">GREEN CSP</div><div class="st-value">{csp_counts["GREEN"]}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW CSP</div><div class="st-value">{csp_counts["YELLOW"]}</div></div>
+        <div class="st-card"><div class="st-label">RED CSP</div><div class="st-value">{csp_counts["RED"]}</div></div>
+        <div class="st-card"><div class="st-label">Modules / Registers</div><div class="st-value">{len(health_df)}</div></div>
+        <div class="st-card"><div class="st-label">Module Health GREEN</div><div class="st-value">{health_counts["GREEN"]}</div></div>
+        <div class="st-card"><div class="st-label">Module Health YELLOW</div><div class="st-value">{health_counts["YELLOW"]}</div></div>
+        <div class="st-card"><div class="st-label">Module Health RED</div><div class="st-value">{health_counts["RED"]}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control Tower Actions</h2>
+        <a class="st-button" href="/sterile-compounding/sample">Load Sample Data</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-watch?sample=1">Load Demo Watch Items</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack">Executive Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/module-health">Module Health</a>
+    </div>
+
+    <div class="st-panel">
+        <h2>Sterile Module Directory</h2>
+        <div class="st-cards">
+            {link_cards}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Module Health Snapshot</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Module</th>
+                        <th>Route</th>
+                        <th>Register Rows</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>{module_rows}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CONTROL-TOWER",
+            "STERILE_CONTROL_TOWER_VIEW",
+            "Sterile control tower viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/control-tower",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Control Tower", body)
+
+
+@app.after_request
+def sterile_compounding_control_tower_dashboard_injection(response):
+    try:
+        if sterile_ct_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-control-tower-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-control-tower-panel">
+            <h2>Sterile Control Tower + Executive Pack</h2>
+            <p class="st-note">
+                One leadership-ready entry point for the full sterile compounding vertical:
+                control tower, executive pack, module health, release readiness, risk graph,
+                auditor replay, start gate, drift monitor, and regulatory-watch impact.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/control-tower">Control Tower</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack">Executive Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/module-health">Module Health</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-pack/export">Export Executive Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/module-health/export">Export Module Health</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile control tower dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
