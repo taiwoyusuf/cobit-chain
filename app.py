@@ -38788,5 +38788,872 @@ def sterile_compounding_regulatory_crosswalk_dashboard_injection(response):
         print(f"Sterile regulatory crosswalk dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INSPECTION_NARRATIVE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 26: Inspection Narrative Report + Executive Brief
+#
+# New Routes:
+#   /sterile-compounding/inspection-narrative
+#   /sterile-compounding/inspection-narrative/<record_id>
+#   /sterile-compounding/inspection-narrative/export
+#   /sterile-compounding/executive-brief
+#   /sterile-compounding/executive-brief/export
+#
+# New Registers:
+#   sterile_compounding_inspection_narrative_register.csv
+#   sterile_compounding_executive_brief_register.csv
+#
+# Boundary:
+#   This converts existing sterile governance registers into readable
+#   inspection narratives and leadership summaries. It does not create
+#   formal release, QA disposition, QMS approval, regulatory certification,
+#   or validated-system replacement. It does not touch protected
+#   Manufacturing/Wole, ServiceNow, Entra, CI Candidate Factory,
+#   CI Review Board, CI Submission Pack, Knowledge Governance,
+#   Operational Lineage, Release Notes, Monday Demo, Command Center,
+#   or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_in_pd
+    import json as sterile_in_json
+    from flask import request as sterile_in_request
+    from flask import Response as sterile_in_Response
+except Exception as sterile_in_import_error:
+    raise RuntimeError(f"Sterile inspection narrative import failed: {sterile_in_import_error}")
+
+
+STERILE_INSPECTION_NARRATIVE_REGISTER = "sterile_compounding_inspection_narrative_register.csv"
+STERILE_EXECUTIVE_BRIEF_REGISTER = "sterile_compounding_executive_brief_register.csv"
+
+STERILE_INSPECTION_NARRATIVE_COLUMNS = [
+    "narrative_id",
+    "record_id",
+    "csp_name",
+    "batch_or_rx_id",
+    "facility_type",
+    "inspection_status",
+    "inspection_score",
+    "master_assurance_status",
+    "master_assurance_score",
+    "no_release_gate_status",
+    "coverage_status",
+    "coverage_score",
+    "qa_red_count",
+    "qa_yellow_count",
+    "qa_green_count",
+    "crosswalk_red_count",
+    "crosswalk_yellow_count",
+    "crosswalk_green_count",
+    "executive_summary",
+    "evidence_story",
+    "risk_story",
+    "auditor_talk_track",
+    "closure_story",
+    "final_readiness_statement",
+    "primary_routes",
+    "last_checked",
+    "narrative_hash"
+]
+
+STERILE_EXECUTIVE_BRIEF_COLUMNS = [
+    "brief_id",
+    "brief_scope",
+    "total_csp",
+    "inspection_green",
+    "inspection_yellow",
+    "inspection_red",
+    "master_green",
+    "master_yellow",
+    "master_red",
+    "coverage_green",
+    "coverage_yellow",
+    "coverage_red",
+    "average_inspection_score",
+    "average_master_score",
+    "average_coverage_score",
+    "top_readiness_message",
+    "top_risk_message",
+    "leadership_summary",
+    "recommended_leadership_action",
+    "source_routes",
+    "last_checked",
+    "brief_hash"
+]
+
+
+def sterile_in_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "sterile_ensure_cols",
+        "STERILE_INSPECTION_READINESS_COLUMNS",
+        "STERILE_AUDITOR_QA_COLUMNS",
+        "STERILE_REGULATORY_CROSSWALK_COLUMNS",
+        "STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS",
+        "sterile_ir_build_registers",
+        "sterile_rc_build_crosswalk",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile inspection narrative dependencies missing: " + ", ".join(missing))
+
+
+def sterile_in_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_in_numeric(value, default=0):
+    try:
+        return int(float(str(value)))
+    except Exception:
+        return default
+
+
+def sterile_in_mean(df, column):
+    if df is None or df.empty or column not in df.columns:
+        return 0
+    return round(sterile_in_pd.to_numeric(df[column], errors="coerce").fillna(0).mean(), 1)
+
+
+def sterile_in_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_in_status_bucket(value):
+    value = sterile_in_safe(value).upper()
+
+    if value in ["GREEN", "GO", "READY", "HASH MATCH", "INSPECTION READY", "SUPPORTED"]:
+        return "GREEN"
+
+    if value in ["RED", "NO-GO", "BLOCK", "BLOCKED", "FAILED", "FAIL", "HASH MISMATCH", "HOLD", "REJECTED", "NOT READY", "GAP / BLOCKER"]:
+        return "RED"
+
+    return "YELLOW"
+
+
+def sterile_in_status_badge(status):
+    bucket = sterile_in_status_bucket(status)
+
+    if bucket == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if bucket == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if bucket == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_in_build_sources():
+    sterile_in_require_dependencies()
+
+    try:
+        inspection_df, qa_df = sterile_ir_build_registers()
+    except Exception:
+        inspection_df = sterile_read_register(
+            "sterile_compounding_inspection_readiness_register.csv",
+            STERILE_INSPECTION_READINESS_COLUMNS
+        )
+        qa_df = sterile_read_register(
+            "sterile_compounding_auditor_qa_register.csv",
+            STERILE_AUDITOR_QA_COLUMNS
+        )
+
+    try:
+        crosswalk_df, coverage_df = sterile_rc_build_crosswalk()
+    except Exception:
+        crosswalk_df = sterile_read_register(
+            "sterile_compounding_regulatory_crosswalk_register.csv",
+            STERILE_REGULATORY_CROSSWALK_COLUMNS
+        )
+        coverage_df = sterile_read_register(
+            "sterile_compounding_control_evidence_coverage_register.csv",
+            STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS
+        )
+
+    inspection_df = sterile_ensure_cols(inspection_df, STERILE_INSPECTION_READINESS_COLUMNS)
+    qa_df = sterile_ensure_cols(qa_df, STERILE_AUDITOR_QA_COLUMNS)
+    crosswalk_df = sterile_ensure_cols(crosswalk_df, STERILE_REGULATORY_CROSSWALK_COLUMNS)
+    coverage_df = sterile_ensure_cols(coverage_df, STERILE_CONTROL_EVIDENCE_COVERAGE_COLUMNS)
+
+    return inspection_df, qa_df, crosswalk_df, coverage_df
+
+
+def sterile_in_latest_coverage(coverage_df, record_id):
+    if coverage_df is None or coverage_df.empty or "record_id" not in coverage_df.columns:
+        return {}
+
+    match = coverage_df[coverage_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if match.empty:
+        return {}
+
+    return match.iloc[0].to_dict()
+
+
+def sterile_in_counts(df, record_id, status_col):
+    if df is None or df.empty or "record_id" not in df.columns or status_col not in df.columns:
+        return {"GREEN": 0, "YELLOW": 0, "RED": 0}
+
+    rows = df[df["record_id"].astype(str) == str(record_id)].copy()
+
+    if rows.empty:
+        return {"GREEN": 0, "YELLOW": 0, "RED": 0}
+
+    counts = {"GREEN": 0, "YELLOW": 0, "RED": 0}
+
+    for value in rows[status_col].astype(str).tolist():
+        bucket = sterile_in_status_bucket(value)
+        counts[bucket] += 1
+
+    return counts
+
+
+def sterile_in_top_domains(crosswalk_df, record_id, status_bucket):
+    if crosswalk_df is None or crosswalk_df.empty:
+        return []
+
+    rows = crosswalk_df[crosswalk_df["record_id"].astype(str) == str(record_id)].copy()
+
+    if rows.empty:
+        return []
+
+    selected = []
+
+    for _, row in rows.iterrows():
+        bucket = sterile_in_status_bucket(row.get("coverage_status", ""))
+        if bucket == status_bucket:
+            selected.append(sterile_in_safe(row.get("control_domain", "")))
+
+    return [x for x in selected if x]
+
+
+def sterile_in_primary_routes(record_id):
+    return "; ".join([
+        f"/sterile-compounding/inspection-narrative/{record_id}",
+        f"/sterile-compounding/inspection-readiness/{record_id}",
+        f"/sterile-compounding/regulatory-crosswalk/{record_id}",
+        f"/sterile-compounding/master-assurance/{record_id}",
+        f"/sterile-compounding/audit-pack/{record_id}",
+        f"/sterile-compounding/release-dossier/{record_id}",
+        f"/sterile-compounding/closure-simulator/{record_id}",
+    ])
+
+
+def sterile_in_build_record_narrative(inspection_row, qa_df, crosswalk_df, coverage_df):
+    record_id = sterile_in_safe(inspection_row.get("record_id", ""))
+    csp_name = sterile_in_safe(inspection_row.get("csp_name", ""))
+    batch_or_rx_id = sterile_in_safe(inspection_row.get("batch_or_rx_id", ""))
+    facility_type = sterile_in_safe(inspection_row.get("facility_type", ""))
+
+    inspection_status = sterile_in_safe(inspection_row.get("inspection_status", "UNKNOWN"))
+    inspection_score = sterile_in_numeric(inspection_row.get("inspection_score", 0), 0)
+    master_status = sterile_in_safe(inspection_row.get("master_assurance_status", "UNKNOWN"))
+    master_score = sterile_in_numeric(inspection_row.get("master_assurance_score", 0), 0)
+    gate_status = sterile_in_safe(inspection_row.get("no_release_gate_status", "UNKNOWN"))
+
+    coverage = sterile_in_latest_coverage(coverage_df, record_id)
+    coverage_status = sterile_in_safe(coverage.get("coverage_status", "UNKNOWN"))
+    coverage_score = sterile_in_numeric(coverage.get("coverage_score", 0), 0)
+
+    qa_counts = sterile_in_counts(qa_df, record_id, "question_status")
+    cross_counts = sterile_in_counts(crosswalk_df, record_id, "coverage_status")
+
+    red_domains = sterile_in_top_domains(crosswalk_df, record_id, "RED")
+    yellow_domains = sterile_in_top_domains(crosswalk_df, record_id, "YELLOW")
+
+    required_focus = sterile_in_safe(inspection_row.get("required_evidence_focus", ""))
+    next_action = sterile_in_safe(inspection_row.get("next_best_action", ""))
+
+    executive_summary = (
+        f"{record_id} ({csp_name}) has inspection status {inspection_status}, "
+        f"inspection score {inspection_score}, master assurance {master_status}, "
+        f"and no-release gate {gate_status}. Control-evidence coverage is {coverage_status} "
+        f"with score {coverage_score}."
+    )
+
+    if sterile_in_status_bucket(inspection_status) == "GREEN":
+        final_readiness_statement = (
+            "This CSP is inspection-ready from the governance view. The record should still be handled under normal QA, QMS, and pharmacy release processes."
+        )
+    elif sterile_in_status_bucket(inspection_status) == "YELLOW":
+        final_readiness_statement = (
+            "This CSP needs inspection review before clean reliance. Conditional rationale, reviewer explanation, or evidence completion should be documented."
+        )
+    else:
+        final_readiness_statement = (
+            "This CSP is not inspection-ready from the governance view. Critical blockers should be closed before reliance or inspection presentation."
+        )
+
+    if red_domains:
+        risk_story = "Primary RED domains: " + "; ".join(red_domains) + "."
+    elif yellow_domains:
+        risk_story = "Primary YELLOW domains requiring review: " + "; ".join(yellow_domains) + "."
+    else:
+        risk_story = "No material RED/YELLOW control-domain gaps detected in the current crosswalk."
+
+    evidence_story = (
+        f"Evidence focus: {required_focus or 'Standard audit pack, evidence matrix, sign-off, and seal evidence.'} "
+        f"Auditor Q&A status counts: GREEN={qa_counts['GREEN']}, YELLOW={qa_counts['YELLOW']}, RED={qa_counts['RED']}. "
+        f"Crosswalk coverage counts: GREEN={cross_counts['GREEN']}, YELLOW={cross_counts['YELLOW']}, RED={cross_counts['RED']}."
+    )
+
+    auditor_talk_track = (
+        f"Start with the Inspection Readiness passport for {record_id}, then open Master Assurance, Regulatory Crosswalk, "
+        f"Audit Pack, Release Dossier, Sign-Off, Dossier Seal, and Closure Simulator as needed. "
+        f"The safest inspection message is: governance status is {inspection_status}, key risk story is: {risk_story}"
+    )
+
+    closure_story = (
+        f"Next best action: {next_action or 'No recovery action required.'} "
+        f"Use the Closure Simulator to explain what must be closed before moving RED/YELLOW records toward GREEN."
+    )
+
+    payload = {
+        "narrative_id": sterile_in_make_id("ST-NARR", record_id, inspection_status, coverage_status),
+        "record_id": record_id,
+        "csp_name": csp_name,
+        "batch_or_rx_id": batch_or_rx_id,
+        "facility_type": facility_type,
+        "inspection_status": inspection_status,
+        "inspection_score": inspection_score,
+        "master_assurance_status": master_status,
+        "master_assurance_score": master_score,
+        "no_release_gate_status": gate_status,
+        "coverage_status": coverage_status,
+        "coverage_score": coverage_score,
+        "qa_red_count": qa_counts["RED"],
+        "qa_yellow_count": qa_counts["YELLOW"],
+        "qa_green_count": qa_counts["GREEN"],
+        "crosswalk_red_count": cross_counts["RED"],
+        "crosswalk_yellow_count": cross_counts["YELLOW"],
+        "crosswalk_green_count": cross_counts["GREEN"],
+        "executive_summary": executive_summary,
+        "evidence_story": evidence_story,
+        "risk_story": risk_story,
+        "auditor_talk_track": auditor_talk_track,
+        "closure_story": closure_story,
+        "final_readiness_statement": final_readiness_statement,
+        "primary_routes": sterile_in_primary_routes(record_id),
+        "last_checked": sterile_now(),
+    }
+
+    payload["narrative_hash"] = sterile_hash_text(
+        sterile_in_json.dumps(payload, sort_keys=True)
+    )
+
+    return payload
+
+
+def sterile_in_build_narratives():
+    inspection_df, qa_df, crosswalk_df, coverage_df = sterile_in_build_sources()
+
+    if inspection_df.empty:
+        empty_narrative = sterile_in_pd.DataFrame(columns=STERILE_INSPECTION_NARRATIVE_COLUMNS)
+        empty_brief = sterile_in_pd.DataFrame(columns=STERILE_EXECUTIVE_BRIEF_COLUMNS)
+        sterile_write_register(STERILE_INSPECTION_NARRATIVE_REGISTER, empty_narrative, STERILE_INSPECTION_NARRATIVE_COLUMNS)
+        sterile_write_register(STERILE_EXECUTIVE_BRIEF_REGISTER, empty_brief, STERILE_EXECUTIVE_BRIEF_COLUMNS)
+        return empty_narrative, empty_brief
+
+    rows = []
+
+    for _, inspection_row in inspection_df.iterrows():
+        rows.append(
+            sterile_in_build_record_narrative(
+                inspection_row.to_dict(),
+                qa_df,
+                crosswalk_df,
+                coverage_df
+            )
+        )
+
+    narrative_df = sterile_in_pd.DataFrame(rows)
+    narrative_df = sterile_ensure_cols(narrative_df, STERILE_INSPECTION_NARRATIVE_COLUMNS)
+
+    brief_df = sterile_in_build_executive_brief(narrative_df)
+
+    sterile_write_register(STERILE_INSPECTION_NARRATIVE_REGISTER, narrative_df, STERILE_INSPECTION_NARRATIVE_COLUMNS)
+    sterile_write_register(STERILE_EXECUTIVE_BRIEF_REGISTER, brief_df, STERILE_EXECUTIVE_BRIEF_COLUMNS)
+
+    return narrative_df, brief_df
+
+
+def sterile_in_build_executive_brief(narrative_df):
+    if narrative_df is None or narrative_df.empty:
+        return sterile_in_pd.DataFrame(columns=STERILE_EXECUTIVE_BRIEF_COLUMNS)
+
+    total = len(narrative_df)
+
+    inspection_green = int((narrative_df["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "GREEN").sum())
+    inspection_yellow = int((narrative_df["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "YELLOW").sum())
+    inspection_red = int((narrative_df["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "RED").sum())
+
+    master_green = int((narrative_df["master_assurance_status"].astype(str).apply(sterile_in_status_bucket) == "GREEN").sum())
+    master_yellow = int((narrative_df["master_assurance_status"].astype(str).apply(sterile_in_status_bucket) == "YELLOW").sum())
+    master_red = int((narrative_df["master_assurance_status"].astype(str).apply(sterile_in_status_bucket) == "RED").sum())
+
+    coverage_green = int((narrative_df["coverage_status"].astype(str).apply(sterile_in_status_bucket) == "GREEN").sum())
+    coverage_yellow = int((narrative_df["coverage_status"].astype(str).apply(sterile_in_status_bucket) == "YELLOW").sum())
+    coverage_red = int((narrative_df["coverage_status"].astype(str).apply(sterile_in_status_bucket) == "RED").sum())
+
+    avg_inspection = sterile_in_mean(narrative_df, "inspection_score")
+    avg_master = sterile_in_mean(narrative_df, "master_assurance_score")
+    avg_coverage = sterile_in_mean(narrative_df, "coverage_score")
+
+    if inspection_red or master_red or coverage_red:
+        top_readiness_message = "Sterile vertical has RED inspection/governance records requiring closure before clean reliance."
+        top_risk_message = "Primary concern: at least one CSP has blocker-level assurance, inspection, or coverage gaps."
+        recommended_action = "Prioritize RED CSPs, open each inspection narrative, close evidence/control gaps, then rebuild Master Assurance and Regulatory Crosswalk."
+    elif inspection_yellow or master_yellow or coverage_yellow:
+        top_readiness_message = "Sterile vertical is partially ready but has conditional review items."
+        top_risk_message = "Primary concern: one or more CSPs need conditional rationale, review closure, or evidence completion."
+        recommended_action = "Review YELLOW narratives, document rationale, close pending evidence or review items, then rerun inspection readiness."
+    else:
+        top_readiness_message = "Sterile vertical appears GREEN from the current governance dataset."
+        top_risk_message = "No material blocker or review pattern detected across current narratives."
+        recommended_action = "Maintain evidence currency, seal verification, sign-off, and inspection readiness monitoring."
+
+    leadership_summary = (
+        f"Across {total} CSP record(s), inspection readiness is GREEN={inspection_green}, "
+        f"YELLOW={inspection_yellow}, RED={inspection_red}. Master assurance is GREEN={master_green}, "
+        f"YELLOW={master_yellow}, RED={master_red}. Control-evidence coverage is GREEN={coverage_green}, "
+        f"YELLOW={coverage_yellow}, RED={coverage_red}. Average scores: inspection={avg_inspection}%, "
+        f"master={avg_master}%, coverage={avg_coverage}%."
+    )
+
+    payload = {
+        "brief_id": sterile_in_make_id("ST-BRIEF", total, inspection_green, inspection_yellow, inspection_red),
+        "brief_scope": "Compound Sterile AssuranceLayer",
+        "total_csp": total,
+        "inspection_green": inspection_green,
+        "inspection_yellow": inspection_yellow,
+        "inspection_red": inspection_red,
+        "master_green": master_green,
+        "master_yellow": master_yellow,
+        "master_red": master_red,
+        "coverage_green": coverage_green,
+        "coverage_yellow": coverage_yellow,
+        "coverage_red": coverage_red,
+        "average_inspection_score": avg_inspection,
+        "average_master_score": avg_master,
+        "average_coverage_score": avg_coverage,
+        "top_readiness_message": top_readiness_message,
+        "top_risk_message": top_risk_message,
+        "leadership_summary": leadership_summary,
+        "recommended_leadership_action": recommended_action,
+        "source_routes": "; ".join([
+            "/sterile-compounding/inspection-narrative",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/control-evidence-coverage",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+        ]),
+        "last_checked": sterile_now(),
+    }
+
+    payload["brief_hash"] = sterile_hash_text(
+        sterile_in_json.dumps(payload, sort_keys=True)
+    )
+
+    return sterile_ensure_cols(
+        sterile_in_pd.DataFrame([payload]),
+        STERILE_EXECUTIVE_BRIEF_COLUMNS
+    )
+
+
+@app.route("/sterile-compounding/inspection-narrative")
+def sterile_compounding_inspection_narrative():
+    narrative_df, brief_df = sterile_in_build_narratives()
+
+    status_filter = sterile_in_safe(sterile_in_request.args.get("status", ""))
+    filtered = narrative_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["inspection_status"].astype(str).apply(sterile_in_status_bucket) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "GREEN").sum()) if total else 0
+    yellow = int((filtered["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "YELLOW").sum()) if total else 0
+    red = int((filtered["inspection_status"].astype(str).apply(sterile_in_status_bucket) == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Narrative Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["inspection_status", "inspection_score"], ascending=[False, True]).iterrows():
+            rid = sterile_in_safe(row.get("record_id", ""))
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_in_status_badge(row.get("inspection_status", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-narrative/{rid}">{rid}</a></td>
+                <td>{sterile_in_safe(row.get("csp_name", ""))}</td>
+                <td>{sterile_in_safe(row.get("inspection_score", ""))}</td>
+                <td>{sterile_in_status_badge(row.get("coverage_status", ""))}</td>
+                <td>{sterile_in_safe(row.get("coverage_score", ""))}</td>
+                <td>{sterile_in_safe(row.get("qa_red_count", ""))}</td>
+                <td>{sterile_in_safe(row.get("crosswalk_red_count", ""))}</td>
+                <td>{sterile_in_safe(row.get("executive_summary", ""))}</td>
+                <td>{sterile_in_safe(row.get("final_readiness_statement", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspection narrative rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Narrative Report</h1>
+        <p>
+            Human-readable inspection narratives generated from inspection readiness, auditor Q&A,
+            regulatory crosswalk, control-evidence coverage, master assurance, and recovery planning.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Narratives</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Narrative Filters</h2>
+        <form method="GET" action="/sterile-compounding/inspection-narrative">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Inspection Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-narrative">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-narrative/export">Export Narratives</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Narrative Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>CSP Name</th>
+                        <th>Score</th>
+                        <th>Coverage</th>
+                        <th>Coverage Score</th>
+                        <th>QA RED</th>
+                        <th>Crosswalk RED</th>
+                        <th>Executive Summary</th>
+                        <th>Readiness Statement</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTION-NARRATIVE",
+            "STERILE_INSPECTION_NARRATIVE_VIEW",
+            "Sterile inspection narrative report viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/inspection-narrative",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Inspection Narrative Report", body)
+
+
+@app.route("/sterile-compounding/inspection-narrative/<record_id>")
+def sterile_compounding_inspection_narrative_record(record_id):
+    narrative_df, brief_df = sterile_in_build_narratives()
+    record_id = sterile_in_safe(record_id)
+
+    match = narrative_df[narrative_df["record_id"].astype(str) == str(record_id)] if not narrative_df.empty else narrative_df
+
+    if match.empty:
+        return sterile_in_Response("Inspection narrative not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+
+    detail_rows = ""
+    for key in STERILE_INSPECTION_NARRATIVE_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_in_safe(row.get(key, ""))
+
+        if key in ["inspection_status", "master_assurance_status", "no_release_gate_status", "coverage_status"]:
+            value = sterile_in_status_badge(value)
+        elif key == "narrative_hash":
+            value = f"<code>{value}</code>"
+        elif key == "primary_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Narrative: {record_id}</h1>
+        <p>
+            Human-readable inspection story for this CSP.
+        </p>
+        <div style="margin-top:16px;">{sterile_in_status_badge(row.get("inspection_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_in_safe(row.get("final_readiness_statement", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Narrative Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Recommended Inspection Flow</h2>
+        <p>{sterile_in_safe(row.get("auditor_talk_track", ""))}</p>
+        <p>{sterile_in_safe(row.get("closure_story", ""))}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+            <a class="st-button" href="/sterile-compounding/inspection-readiness/{record_id}">Inspection Readiness</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk/{record_id}">Regulatory Crosswalk</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/master-assurance/{record_id}">Master Assurance</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/closure-simulator/{record_id}">Closure Simulator</a>
+            <a class="st-button st-button-dark" href="/sterile-compounding/inspection-narrative">Back to Narratives</a>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "STERILE_INSPECTION_NARRATIVE_RECORD_VIEW",
+            "Record-level sterile inspection narrative viewed",
+            actor="system",
+            source_route="/sterile-compounding/inspection-narrative/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Inspection Narrative - {record_id}", body)
+
+
+@app.route("/sterile-compounding/executive-brief")
+def sterile_compounding_executive_brief():
+    narrative_df, brief_df = sterile_in_build_narratives()
+
+    if brief_df.empty:
+        return sterile_in_Response("Executive brief not available. Load sample data first.", status=404)
+
+    brief = brief_df.iloc[0].to_dict()
+
+    detail_rows = ""
+    for key in STERILE_EXECUTIVE_BRIEF_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_in_safe(brief.get(key, ""))
+
+        if key == "brief_hash":
+            value = f"<code>{value}</code>"
+        elif key == "source_routes":
+            routes = [r.strip() for r in value.split(";") if r.strip()]
+            value = "<br>".join([f'<a href="{r}">{r}</a>' for r in routes])
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Executive Brief</h1>
+        <p>
+            Leadership-level summary of the Compound Sterile AssuranceLayer inspection and governance posture.
+        </p>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_in_safe(brief.get("top_readiness_message", ""))}
+        </div>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Total CSP</div><div class="st-value">{sterile_in_safe(brief.get("total_csp", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Inspection GREEN</div><div class="st-value">{sterile_in_safe(brief.get("inspection_green", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Inspection YELLOW</div><div class="st-value">{sterile_in_safe(brief.get("inspection_yellow", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Inspection RED</div><div class="st-value">{sterile_in_safe(brief.get("inspection_red", ""))}</div></div>
+        <div class="st-card"><div class="st-label">Avg Inspection</div><div class="st-value">{sterile_in_safe(brief.get("average_inspection_score", ""))}%</div></div>
+        <div class="st-card"><div class="st-label">Avg Master</div><div class="st-value">{sterile_in_safe(brief.get("average_master_score", ""))}%</div></div>
+        <div class="st-card"><div class="st-label">Avg Coverage</div><div class="st-value">{sterile_in_safe(brief.get("average_coverage_score", ""))}%</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Leadership Summary</h2>
+        <p>{sterile_in_safe(brief.get("leadership_summary", ""))}</p>
+        <p><b>Top Risk:</b> {sterile_in_safe(brief.get("top_risk_message", ""))}</p>
+        <p><b>Recommended Action:</b> {sterile_in_safe(brief.get("recommended_leadership_action", ""))}</p>
+    </div>
+
+    <div class="st-panel">
+        <h2>Executive Brief Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/inspection-narrative">Inspection Narratives</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-readiness">Inspection Readiness</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/regulatory-crosswalk">Regulatory Crosswalk</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief/export">Export Executive Brief</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EXECUTIVE-BRIEF",
+            "STERILE_EXECUTIVE_BRIEF_VIEW",
+            "Sterile executive brief viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/executive-brief",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Executive Brief", body)
+
+
+@app.route("/sterile-compounding/inspection-narrative/export")
+def sterile_compounding_inspection_narrative_export():
+    narrative_df, brief_df = sterile_in_build_narratives()
+
+    if narrative_df.empty:
+        narrative_df = sterile_in_pd.DataFrame(columns=STERILE_INSPECTION_NARRATIVE_COLUMNS)
+
+    csv_data = narrative_df.to_csv(index=False)
+
+    return sterile_in_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspection_narrative_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/executive-brief/export")
+def sterile_compounding_executive_brief_export():
+    narrative_df, brief_df = sterile_in_build_narratives()
+
+    if brief_df.empty:
+        brief_df = sterile_in_pd.DataFrame(columns=STERILE_EXECUTIVE_BRIEF_COLUMNS)
+
+    csv_data = brief_df.to_csv(index=False)
+
+    return sterile_in_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_executive_brief_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_inspection_narrative_dashboard_injection(response):
+    try:
+        if sterile_in_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+            "/sterile-compounding/audit-pack",
+            "/sterile-compounding/release-dossier",
+            "/sterile-compounding/signoff-board",
+            "/sterile-compounding/seal-health",
+            "/sterile-compounding/custody-audit-link",
+            "/sterile-compounding/sop-formula-governance",
+            "/sterile-compounding/personnel-competency",
+            "/sterile-compounding/equipment-room-governance",
+            "/sterile-compounding/master-assurance-index",
+            "/sterile-compounding/no-release-composite",
+            "/sterile-compounding/closure-simulator",
+            "/sterile-compounding/recovery-plan",
+            "/sterile-compounding/inspection-readiness",
+            "/sterile-compounding/auditor-qa-pack",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/control-evidence-coverage",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-inspection-narrative-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-inspection-narrative-panel">
+            <h2>Inspection Narrative Report + Executive Brief</h2>
+            <p class="st-note">
+                Converts technical sterile governance data into human-readable inspection narratives,
+                auditor talk tracks, closure stories, and leadership-level executive summaries.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/inspection-narrative">Inspection Narratives</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief">Executive Brief</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-narrative/export">Export Narratives</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-brief/export">Export Executive Brief</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile inspection narrative dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
