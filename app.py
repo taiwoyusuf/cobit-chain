@@ -24962,5 +24962,428 @@ def sterile_compounding_evidence_vault_dashboard_injection(response):
         print(f"Sterile evidence vault dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_EVIDENCE_VAULT_INTEGRATION_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 11: Evidence Vault integration into:
+#   /sterile-compounding/control-tower
+#   /sterile-compounding/executive-pack
+#   /sterile-compounding/module-health
+#
+# Safety:
+#   - Does not overwrite existing routes
+#   - Does not edit Control Tower, Executive Pack, or Module Health functions directly
+#   - Uses response injection only
+#   - Does not touch protected Manufacturing/Wole, ServiceNow, Entra,
+#     CI Candidate Factory, Knowledge Governance, Operational Lineage,
+#     Release Notes, Monday Demo, Command Center, or Platform Health
+# ============================================================
+
+try:
+    import os as sterile_evi_os
+    import pandas as sterile_evi_pd
+    from io import StringIO as sterile_evi_StringIO
+    from flask import request as sterile_evi_request
+except Exception as sterile_evi_import_error:
+    raise RuntimeError(f"Sterile Evidence Vault integration import failed: {sterile_evi_import_error}")
+
+
+def sterile_evi_safe(value):
+    try:
+        return sterile_clean(value)
+    except Exception:
+        return str(value or "").strip()
+
+
+def sterile_evi_blob_available():
+    try:
+        return (
+            "blob_service_client" in globals()
+            and "CONTAINER_NAME" in globals()
+            and globals().get("blob_service_client") is not None
+            and globals().get("CONTAINER_NAME") is not None
+        )
+    except Exception:
+        return False
+
+
+def sterile_evi_read_any_register(register_name, columns_global_name=None):
+    columns = globals().get(columns_global_name) if columns_global_name else None
+
+    try:
+        reader = globals().get("sterile_read_register")
+        if callable(reader) and columns:
+            df = reader(register_name, columns)
+            if df is not None and hasattr(df, "columns"):
+                return df
+    except Exception:
+        pass
+
+    if sterile_evi_blob_available():
+        try:
+            blob_client = globals()["blob_service_client"].get_blob_client(
+                container=globals()["CONTAINER_NAME"],
+                blob=register_name
+            )
+            data = blob_client.download_blob().readall().decode("utf-8")
+            return sterile_evi_pd.read_csv(sterile_evi_StringIO(data))
+        except Exception:
+            return sterile_evi_pd.DataFrame(columns=columns or [])
+
+    try:
+        if sterile_evi_os.path.exists(register_name):
+            return sterile_evi_pd.read_csv(register_name)
+    except Exception:
+        pass
+
+    return sterile_evi_pd.DataFrame(columns=columns or [])
+
+
+def sterile_evi_counts():
+    vault_df = sterile_evi_read_any_register(
+        "sterile_compounding_evidence_vault_register.csv",
+        "STERILE_EVIDENCE_VAULT_COLUMNS"
+    )
+    verify_df = sterile_evi_read_any_register(
+        "sterile_compounding_evidence_verification_register.csv",
+        "STERILE_EVIDENCE_VERIFICATION_COLUMNS"
+    )
+
+    total_evidence = len(vault_df)
+    approved = 0
+    pending = 0
+    rejected = 0
+    linked_csp = 0
+    hash_match = 0
+    hash_mismatch = 0
+    no_baseline = 0
+
+    if total_evidence and "evidence_status" in vault_df.columns:
+        approved = int((vault_df["evidence_status"].astype(str).str.upper() == "GREEN").sum())
+        pending = int((vault_df["evidence_status"].astype(str).str.upper() == "YELLOW").sum())
+        rejected = int((vault_df["evidence_status"].astype(str).str.upper() == "RED").sum())
+
+    if total_evidence and "record_id" in vault_df.columns:
+        linked_csp = int((vault_df["record_id"].astype(str).str.strip() != "").sum())
+
+    total_verifications = len(verify_df)
+
+    if total_verifications and "verification_status" in verify_df.columns:
+        hash_match = int((verify_df["verification_status"].astype(str).str.upper() == "HASH MATCH").sum())
+        hash_mismatch = int((verify_df["verification_status"].astype(str).str.upper() == "HASH MISMATCH").sum())
+        no_baseline = int((verify_df["verification_status"].astype(str).str.upper() == "NO BASELINE").sum())
+
+    if hash_mismatch > 0 or rejected > 0:
+        evidence_status = "RED"
+        evidence_decision = "EVIDENCE REVIEW REQUIRED"
+    elif pending > 0 or no_baseline > 0 or total_evidence == 0:
+        evidence_status = "YELLOW"
+        evidence_decision = "EVIDENCE BASELINE / APPROVAL REVIEW NEEDED"
+    else:
+        evidence_status = "GREEN"
+        evidence_decision = "EVIDENCE BASELINE HEALTH ACCEPTABLE"
+
+    return {
+        "total_evidence": total_evidence,
+        "approved": approved,
+        "pending": pending,
+        "rejected": rejected,
+        "linked_csp": linked_csp,
+        "total_verifications": total_verifications,
+        "hash_match": hash_match,
+        "hash_mismatch": hash_mismatch,
+        "no_baseline": no_baseline,
+        "evidence_status": evidence_status,
+        "evidence_decision": evidence_decision,
+    }
+
+
+def sterile_evi_badge(status):
+    status = sterile_evi_safe(status).upper()
+
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_evi_panel_css():
+    return """
+    <style id="sterile-evidence-vault-integration-css">
+        .sterile-evi-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 22px auto;
+            max-width: 1450px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+            border: 1px solid #dbeafe;
+            font-family: Arial, sans-serif;
+            color: #111827;
+        }
+        .sterile-evi-panel h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .sterile-evi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .sterile-evi-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 14px;
+        }
+        .sterile-evi-label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .sterile-evi-value {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+        .sterile-evi-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .sterile-evi-links a {
+            display: inline-block;
+            background: #1d4ed8;
+            color: white !important;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .sterile-evi-links a.dark {
+            background: #111827;
+        }
+        .sterile-evi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 13px;
+        }
+        .sterile-evi-table th {
+            background: #111827;
+            color: white;
+            text-align: left;
+            padding: 10px;
+        }
+        .sterile-evi-table td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px;
+        }
+    </style>
+    """
+
+
+def sterile_evi_links():
+    return """
+    <div class="sterile-evi-links">
+        <a href="/sterile-compounding/evidence-vault">Evidence Vault</a>
+        <a class="dark" href="/sterile-compounding/evidence-verify">Verify Evidence</a>
+        <a class="dark" href="/sterile-compounding/evidence-vault/export">Export Evidence</a>
+        <a class="dark" href="/sterile-compounding/evidence-verify/export">Export Verification</a>
+    </div>
+    """
+
+
+def sterile_evi_control_tower_panel():
+    c = sterile_evi_counts()
+
+    return sterile_evi_panel_css() + f"""
+    <section class="sterile-evi-panel" id="sterile-evidence-vault-control-tower-panel">
+        <h2>Evidence Vault + Hash Verification</h2>
+        <p>
+            Evidence backbone for Compound Sterile AssuranceLayer™. Upload sterile compounding evidence,
+            generate SHA-256 baselines, link files to CSP records, create evidence passports, and verify whether
+            a submitted file still matches the original evidence hash.
+        </p>
+        <div>{sterile_evi_badge(c["evidence_status"])} <b>{c["evidence_decision"]}</b></div>
+        <div class="sterile-evi-grid">
+            <div class="sterile-evi-card"><div class="sterile-evi-label">Evidence Records</div><div class="sterile-evi-value">{c["total_evidence"]}</div></div>
+            <div class="sterile-evi-card"><div class="sterile-evi-label">Linked CSP Evidence</div><div class="sterile-evi-value">{c["linked_csp"]}</div></div>
+            <div class="sterile-evi-card"><div class="sterile-evi-label">Hash Matches</div><div class="sterile-evi-value">{c["hash_match"]}</div></div>
+            <div class="sterile-evi-card"><div class="sterile-evi-label">Hash Mismatches</div><div class="sterile-evi-value">{c["hash_mismatch"]}</div></div>
+        </div>
+        {sterile_evi_links()}
+    </section>
+    """
+
+
+def sterile_evi_executive_pack_panel():
+    c = sterile_evi_counts()
+
+    return sterile_evi_panel_css() + f"""
+    <section class="sterile-evi-panel" id="sterile-evidence-vault-executive-pack-panel">
+        <h2>Executive Evidence Integrity Summary</h2>
+        <p>
+            Evidence integrity status for sterile compounding files and verification events.
+            This summary should be used to explain that AssuranceLayer™ is not only scoring CSP records;
+            it also creates a cryptographic baseline for supporting evidence.
+        </p>
+        <table class="sterile-evi-table">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Executive Decision</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{sterile_evi_badge(c["evidence_status"])}</td>
+                    <td>Total Evidence Records</td>
+                    <td>{c["total_evidence"]}</td>
+                    <td>{c["evidence_decision"]}</td>
+                    <td><a href="/sterile-compounding/evidence-vault">Evidence Vault</a></td>
+                </tr>
+                <tr>
+                    <td>{sterile_evi_badge("GREEN" if c["linked_csp"] else "YELLOW")}</td>
+                    <td>Evidence Linked to CSP Records</td>
+                    <td>{c["linked_csp"]}</td>
+                    <td>{"Evidence is linked to CSP records" if c["linked_csp"] else "Upload/link evidence to CSP records"}</td>
+                    <td>sterile_compounding_evidence_vault_register.csv</td>
+                </tr>
+                <tr>
+                    <td>{sterile_evi_badge("RED" if c["hash_mismatch"] else "GREEN")}</td>
+                    <td>Hash Mismatch Events</td>
+                    <td>{c["hash_mismatch"]}</td>
+                    <td>{"Investigate mismatched evidence files" if c["hash_mismatch"] else "No hash mismatches detected"}</td>
+                    <td><a href="/sterile-compounding/evidence-verify">Evidence Verification</a></td>
+                </tr>
+            </tbody>
+        </table>
+        {sterile_evi_links()}
+    </section>
+    """
+
+
+def sterile_evi_module_health_panel():
+    c = sterile_evi_counts()
+
+    return sterile_evi_panel_css() + f"""
+    <section class="sterile-evi-panel" id="sterile-evidence-vault-module-health-panel">
+        <h2>Evidence Vault Module Health Add-On</h2>
+        <p>
+            The Evidence Vault was added after the original sterile module-health catalog, so this panel adds its
+            register health without rewriting the original module-health route.
+        </p>
+        <table class="sterile-evi-table">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Module</th>
+                    <th>Route</th>
+                    <th>Register</th>
+                    <th>Rows</th>
+                    <th>Decision</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{sterile_evi_badge("GREEN" if c["total_evidence"] else "YELLOW")}</td>
+                    <td>Sterile Evidence Vault</td>
+                    <td><a href="/sterile-compounding/evidence-vault">/sterile-compounding/evidence-vault</a></td>
+                    <td><code>sterile_compounding_evidence_vault_register.csv</code></td>
+                    <td>{c["total_evidence"]}</td>
+                    <td>{"Evidence vault has uploaded evidence" if c["total_evidence"] else "Evidence vault active / no uploaded evidence yet"}</td>
+                </tr>
+                <tr>
+                    <td>{sterile_evi_badge("RED" if c["hash_mismatch"] else ("GREEN" if c["total_verifications"] else "YELLOW"))}</td>
+                    <td>Sterile Evidence Hash Verification</td>
+                    <td><a href="/sterile-compounding/evidence-verify">/sterile-compounding/evidence-verify</a></td>
+                    <td><code>sterile_compounding_evidence_verification_register.csv</code></td>
+                    <td>{c["total_verifications"]}</td>
+                    <td>{"Hash mismatch detected" if c["hash_mismatch"] else ("Verification events exist" if c["total_verifications"] else "Verification route active / no verification events yet")}</td>
+                </tr>
+            </tbody>
+        </table>
+        {sterile_evi_links()}
+    </section>
+    """
+
+
+def sterile_evi_insert_before_body(html, panel):
+    if "sterile-evidence-vault-control-tower-panel" in html:
+        return html
+    if "sterile-evidence-vault-executive-pack-panel" in html:
+        return html
+    if "sterile-evidence-vault-module-health-panel" in html:
+        return html
+
+    lower_html = html.lower()
+
+    if "</body>" in lower_html:
+        index = lower_html.rfind("</body>")
+        return html[:index] + panel + html[index:]
+
+    return html + panel
+
+
+@app.after_request
+def sterile_evidence_vault_summary_injection(response):
+    try:
+        path = sterile_evi_request.path
+
+        if path not in [
+            "/sterile-compounding/control-tower",
+            "/sterile-compounding/executive-pack",
+            "/sterile-compounding/module-health",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html:
+            return response
+
+        if path == "/sterile-compounding/control-tower":
+            panel = sterile_evi_control_tower_panel()
+        elif path == "/sterile-compounding/executive-pack":
+            panel = sterile_evi_executive_pack_panel()
+        elif path == "/sterile-compounding/module-health":
+            panel = sterile_evi_module_health_panel()
+        else:
+            return response
+
+        updated_html = sterile_evi_insert_before_body(html, panel)
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Evidence Vault summary injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
