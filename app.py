@@ -55531,5 +55531,754 @@ def sterile_compounding_stability_check_dashboard_injection(response):
         print(f"Sterile stability check injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_EXECUTIVE_HANDOFF_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 48: Executive Handoff Pack + Value Realization Scorecard
+#
+# New Routes:
+#   /sterile-compounding/executive-handoff-pack
+#   /sterile-compounding/executive-handoff-pack/export
+#   /sterile-compounding/value-scorecard
+#   /sterile-compounding/value-scorecard/export
+#
+# New Registers:
+#   sterile_compounding_executive_handoff_pack.csv
+#   sterile_compounding_value_scorecard.csv
+#
+# Boundary:
+#   This is a sterile-only leadership handoff and value summary layer.
+#   It does not overwrite existing routes and does not modify protected
+#   global modules, ServiceNow, Entra, CI, Knowledge, Operational Lineage,
+#   Manufacturing/Wole, Command Center, Monday Demo, Release Notes, or
+#   Platform Health logic.
+# ============================================================
+
+try:
+    import pandas as sterile_eh_pd
+    import json as sterile_eh_json
+    from pathlib import Path as sterile_eh_Path
+    from flask import request as sterile_eh_request
+    from flask import Response as sterile_eh_Response
+except Exception as sterile_eh_import_error:
+    raise RuntimeError(f"Sterile executive handoff import failed: {sterile_eh_import_error}")
+
+
+STERILE_EXECUTIVE_HANDOFF_REGISTER = "sterile_compounding_executive_handoff_pack.csv"
+STERILE_VALUE_SCORECARD_REGISTER = "sterile_compounding_value_scorecard.csv"
+
+STERILE_EXECUTIVE_HANDOFF_COLUMNS = [
+    "handoff_id",
+    "section",
+    "section_status",
+    "title",
+    "executive_message",
+    "talk_track",
+    "supporting_route",
+    "evidence_route",
+    "safe_claim",
+    "not_safe_claim",
+    "recommended_next_action",
+    "owner_audience",
+    "last_checked",
+    "handoff_hash"
+]
+
+STERILE_VALUE_SCORECARD_COLUMNS = [
+    "value_id",
+    "value_domain",
+    "value_status",
+    "value_score",
+    "current_problem",
+    "assurancelayer_value",
+    "measurable_signal",
+    "leadership_value",
+    "risk_reduced",
+    "supporting_route",
+    "next_enhancement",
+    "last_checked",
+    "value_hash"
+]
+
+
+def sterile_eh_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile executive handoff dependencies missing: " + ", ".join(missing))
+
+
+def sterile_eh_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_eh_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_eh_badge(status):
+    status = sterile_eh_safe(status).upper()
+
+    if status in ["GREEN", "READY", "STRONG", "COMPLETE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_eh_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_eh_route_status(route):
+    return "GREEN" if sterile_eh_route_exists(route) else "YELLOW"
+
+
+def sterile_eh_build_handoff():
+    sterile_eh_require_dependencies()
+
+    handoff_seed = [
+        {
+            "section": "01 Opening Position",
+            "title": "What AssuranceLayer adds",
+            "message": "Compound Sterile AssuranceLayer™ turns sterile compounding activity into governed evidence, readiness gates, packet manifests, and integration planning without replacing validated systems.",
+            "talk": "The value is not another tracker. The value is a governance layer that shows whether evidence, controls, sign-offs, readiness, and integration boundaries are complete enough to trust.",
+            "route": "/sterile-compounding",
+            "evidence": "/sterile-compounding/executive-brief",
+            "safe": "It is safe to say this is a governance and assurance layer for sterile compounding evidence readiness.",
+            "unsafe": "Do not say it releases product, replaces QA, replaces QMS, or connects live to enterprise systems.",
+            "next": "Use the demo walkthrough and executive brief as the opening leadership path.",
+            "audience": "IT leadership, QA governance, integration stakeholders",
+        },
+        {
+            "section": "02 Inspection Readiness",
+            "title": "Inspection binder and audit narrative",
+            "message": "The vertical organizes sterile records into inspection-ready evidence routes, auditor Q&A, regulatory crosswalk, packet manifest, and executive narrative.",
+            "talk": "Instead of searching across disconnected artifacts, a reviewer can follow a structured control-to-evidence path.",
+            "route": "/sterile-compounding/inspection-binder",
+            "evidence": "/sterile-compounding/regulatory-crosswalk",
+            "safe": "It is safe to say the app structures inspection-readiness evidence for review.",
+            "unsafe": "Do not claim it is an official inspection response system unless approved.",
+            "next": "Open inspection binder, regulatory crosswalk, and packet manifest during the handoff.",
+            "audience": "QA, compliance, audit-readiness reviewers",
+        },
+        {
+            "section": "03 Readiness Gates",
+            "title": "Go-live, build acceptance, smoke test, and presentation lock",
+            "message": "The sterile vertical includes route health, build acceptance, smoke-test matrix, go-live readiness, freeze snapshot, presentation lock, and stability self-check.",
+            "talk": "This lets us show not only what was built, but whether the build is ready to present and what still needs attention.",
+            "route": "/sterile-compounding/go-live-readiness",
+            "evidence": "/sterile-compounding/stability-check",
+            "safe": "It is safe to say the vertical has self-check and readiness pages for demo governance.",
+            "unsafe": "Do not claim this is validated production release approval.",
+            "next": "Open stability check after go-live readiness to prove controlled build discipline.",
+            "audience": "IT leadership, app owner, demo reviewer",
+        },
+        {
+            "section": "04 Integration Governance",
+            "title": "Blueprint before connector",
+            "message": "The app defines integration blueprint, data contracts, field mappings, mock ingestion, pre-integration risk, connector approvals, and non-production POC planning.",
+            "talk": "This prevents premature API work. It forces the discussion to start with source-of-truth, field ownership, approval, security, validation boundary, and failure mode.",
+            "route": "/sterile-compounding/integration-blueprint",
+            "evidence": "/sterile-compounding/data-contracts",
+            "safe": "It is safe to say the app documents future connector readiness and governance boundaries.",
+            "unsafe": "Do not claim ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or Azure ledger are live-connected unless separately implemented.",
+            "next": "Use data contracts and mock ingestion as the integration-readiness discussion path.",
+            "audience": "Enterprise architects, system owners, IAM, ITSM, QA",
+        },
+        {
+            "section": "05 POC Evidence",
+            "title": "Non-production POC evidence packet",
+            "message": "The vertical creates non-production POC plans, connector test cases, test execution ledger, evidence checklist, results summary, and evidence packet manifest.",
+            "talk": "This makes future proof-of-concept work controlled and auditable before anyone touches production systems.",
+            "route": "/sterile-compounding/poc-results-summary",
+            "evidence": "/sterile-compounding/poc-evidence-packet",
+            "safe": "It is safe to say the app prepares POC evidence and test governance for future non-production work.",
+            "unsafe": "Do not say tests were actually executed against production systems.",
+            "next": "Show POC results summary, then evidence packet manifest.",
+            "audience": "IT leadership, integration owners, governance reviewers",
+        },
+        {
+            "section": "06 Global Visibility",
+            "title": "Controlled exposure without route overwrite",
+            "message": "The sterile vertical is exposed through Command Center, Monday Demo, Release Notes, and Platform Health using entry bridges and after_request injection.",
+            "talk": "We made the module discoverable while preserving protected routes and existing app behavior.",
+            "route": "/sterile-compounding/global-exposure-map",
+            "evidence": "/sterile-compounding/protected-boundary-check",
+            "safe": "It is safe to say global visibility was added without overwriting protected route handlers.",
+            "unsafe": "Do not say protected modules were redesigned or modified.",
+            "next": "Use protected boundary check to show that existing modules were respected.",
+            "audience": "App owner, reviewers, technical stakeholders",
+        },
+        {
+            "section": "07 Value Summary",
+            "title": "Why this matters",
+            "message": "The vertical demonstrates a reusable regulated-operation assurance pattern: governance first, evidence linked, readiness scored, and integration boundaries explicit.",
+            "talk": "This is the pitch: AssuranceLayer does not compete with source systems. It helps leaders know whether the evidence across those systems can be trusted.",
+            "route": "/sterile-compounding/value-scorecard",
+            "evidence": "/sterile-compounding/maturity-model",
+            "safe": "It is safe to say this is a reusable governance pattern for regulated operations.",
+            "unsafe": "Do not claim enterprise adoption, validation, or official endorsement unless that occurs separately.",
+            "next": "Use value scorecard and maturity model as the closing leadership view.",
+            "audience": "Leadership, governance, innovation, enterprise architecture",
+        },
+    ]
+
+    handoff_rows = []
+
+    for item in handoff_seed:
+        status = sterile_eh_route_status(item["route"])
+
+        payload = {
+            "handoff_id": sterile_eh_make_id("ST-HANDOFF", item["section"], item["title"]),
+            "section": item["section"],
+            "section_status": status,
+            "title": item["title"],
+            "executive_message": item["message"],
+            "talk_track": item["talk"],
+            "supporting_route": item["route"],
+            "evidence_route": item["evidence"],
+            "safe_claim": item["safe"],
+            "not_safe_claim": item["unsafe"],
+            "recommended_next_action": item["next"],
+            "owner_audience": item["audience"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["handoff_hash"] = sterile_hash_text(
+            sterile_eh_json.dumps(payload, sort_keys=True)
+        )
+
+        handoff_rows.append(payload)
+
+    handoff_df = sterile_eh_pd.DataFrame(handoff_rows)
+    handoff_df = handoff_df.reindex(columns=STERILE_EXECUTIVE_HANDOFF_COLUMNS).fillna("")
+
+    value_rows = sterile_eh_build_value_rows()
+
+    value_df = sterile_eh_pd.DataFrame(value_rows)
+    value_df = value_df.reindex(columns=STERILE_VALUE_SCORECARD_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_EXECUTIVE_HANDOFF_REGISTER,
+        handoff_df,
+        STERILE_EXECUTIVE_HANDOFF_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_VALUE_SCORECARD_REGISTER,
+        value_df,
+        STERILE_VALUE_SCORECARD_COLUMNS
+    )
+
+    return handoff_df, value_df
+
+
+def sterile_eh_add_value(rows, domain, score, problem, value, signal, leadership, risk, route, next_enhancement):
+    if score >= 85:
+        status = "GREEN"
+    elif score >= 70:
+        status = "YELLOW"
+    else:
+        status = "RED"
+
+    payload = {
+        "value_id": sterile_eh_make_id("ST-VALUE", domain),
+        "value_domain": domain,
+        "value_status": status,
+        "value_score": score,
+        "current_problem": problem,
+        "assurancelayer_value": value,
+        "measurable_signal": signal,
+        "leadership_value": leadership,
+        "risk_reduced": risk,
+        "supporting_route": route,
+        "next_enhancement": next_enhancement,
+        "last_checked": sterile_now(),
+    }
+
+    payload["value_hash"] = sterile_hash_text(
+        sterile_eh_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_eh_build_value_rows():
+    rows = []
+
+    sterile_eh_add_value(
+        rows,
+        "Evidence Readiness",
+        92,
+        "Evidence can be scattered across files, emails, systems, reviews, and manual trackers.",
+        "Creates structured evidence routes, evidence matrix, audit pack, release dossier, and packet manifest.",
+        "Evidence routes, evidence matrix, packet manifest, inspection binder.",
+        "Leaders can see whether evidence is organized enough for review.",
+        "Reduces missing-evidence and last-minute audit preparation risk.",
+        "/sterile-compounding/evidence-matrix",
+        "Add controlled evidence upload and reviewer workflow."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "Inspection Preparedness",
+        90,
+        "Inspection stories often require manual reconstruction across SOPs, records, approvals, and exceptions.",
+        "Creates inspection readiness, auditor Q&A, regulatory crosswalk, narrative, and binder.",
+        "Inspection readiness status, auditor Q&A rows, control-evidence coverage.",
+        "QA and IT can explain readiness through a controlled story, not scattered screenshots.",
+        "Reduces inspection-response fragmentation and reviewer confusion.",
+        "/sterile-compounding/inspection-binder",
+        "Add controlled inspection packet export and reviewer sign-off."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "Readiness Governance",
+        88,
+        "Teams can present a system before route health, acceptance, smoke testing, and stability are checked.",
+        "Adds build acceptance, smoke-test matrix, go-live readiness, presentation lock, and stability check.",
+        "Go-live score, route health, smoke-test status, stability check.",
+        "Leaders can separate demo readiness from production readiness.",
+        "Reduces accidental presentation of unstable or incomplete modules.",
+        "/sterile-compounding/stability-check",
+        "Add automated route probing after deployment."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "System-of-Record Boundary",
+        86,
+        "Governance apps can accidentally appear to replace validated systems if boundaries are unclear.",
+        "Defines source-of-truth boundaries, data contracts, field mappings, validation limits, and not-allowed actions.",
+        "Data contract status, implementation decision matrix, protected boundary check.",
+        "Prevents overclaiming and keeps AssuranceLayer positioned as an evidence/governance overlay.",
+        "Reduces validation-boundary and ownership confusion.",
+        "/sterile-compounding/data-contracts",
+        "Add formal owner-approval capture before live connector design."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "Integration Readiness",
+        84,
+        "Teams may jump into API work before data ownership, field contracts, and approval gates are clear.",
+        "Creates integration blueprint, connector readiness, mock ingestion, risk register, approval board, and POC plan.",
+        "Connector readiness score, mock ingestion status, pre-integration risk, approval status.",
+        "Enterprise integration can be discussed safely before touching production systems.",
+        "Reduces premature connector build and unmanaged API risk.",
+        "/sterile-compounding/integration-blueprint",
+        "Add non-production connector sandbox blueprint after approvals."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "POC Control",
+        87,
+        "Proof-of-concept work can become informal and hard to defend.",
+        "Creates non-production POC plan, test cases, execution ledger, checklist, results summary, and evidence packet manifest.",
+        "POC results status, evidence gap count, P0 blockers, packet manifest rows.",
+        "Future POCs become reviewable, repeatable, and auditable.",
+        "Reduces uncontrolled POC and undocumented test evidence risk.",
+        "/sterile-compounding/poc-results-summary",
+        "Add reviewer attestation and sign-off capture."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "Leadership Demo Quality",
+        89,
+        "A technical build may not tell a coherent leadership story.",
+        "Creates executive brief, demo walkthrough, Monday Demo entry, release notes entry, and executive handoff pack.",
+        "Demo walkthrough, executive handoff pack, value scorecard, presentation lock.",
+        "Stakeholders can understand the value in plain business language.",
+        "Reduces demo confusion and improves adoption conversation quality.",
+        "/sterile-compounding/executive-handoff-pack",
+        "Add one-click leadership route bundle."
+    )
+
+    sterile_eh_add_value(
+        rows,
+        "Protected Build Discipline",
+        91,
+        "New modules can accidentally break existing app routes.",
+        "Uses additive routes, active markers, stable tags, protected-boundary checks, and after_request entry bridges.",
+        "Global exposure map, protected boundary check, stability check.",
+        "Shows disciplined modular expansion without breaking existing protected areas.",
+        "Reduces regression risk across protected modules.",
+        "/sterile-compounding/protected-boundary-check",
+        "Add automated protected-route regression checklist."
+    )
+
+    return rows
+
+
+@app.route("/sterile-compounding/executive-handoff-pack")
+def sterile_compounding_executive_handoff_pack():
+    handoff_df, value_df = sterile_eh_build_handoff()
+
+    status_filter = sterile_eh_safe(sterile_eh_request.args.get("status", ""))
+
+    filtered = handoff_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["section_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["section_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["section_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["section_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Section Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["section"]).iterrows():
+            route = sterile_eh_safe(row.get("supporting_route", ""))
+            evidence = sterile_eh_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+            evidence_link = f'<a href="{evidence}">{evidence}</a>' if evidence else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_eh_badge(row.get("section_status", ""))}</td>
+                <td>{sterile_eh_safe(row.get("section", ""))}</td>
+                <td>{sterile_eh_safe(row.get("title", ""))}</td>
+                <td>{sterile_eh_safe(row.get("executive_message", ""))}</td>
+                <td>{sterile_eh_safe(row.get("talk_track", ""))}</td>
+                <td>{route_link}</td>
+                <td>{evidence_link}</td>
+                <td>{sterile_eh_safe(row.get("safe_claim", ""))}</td>
+                <td>{sterile_eh_safe(row.get("not_safe_claim", ""))}</td>
+                <td>{sterile_eh_safe(row.get("recommended_next_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No executive handoff rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Executive Handoff Pack</h1>
+        <p>
+            Leadership-ready handoff for Compound Sterile AssuranceLayer™. This page summarizes the storyline,
+            value, safe claims, not-safe claims, supporting routes, evidence routes, and recommended next action.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Sections</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Handoff Filters</h2>
+        <form method="GET" action="/sterile-compounding/executive-handoff-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Section Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-handoff-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/value-scorecard">Value Scorecard</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/demo-walkthrough">Demo Walkthrough</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-handoff-pack/export">Export Handoff Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Executive Handoff Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Section</th>
+                        <th>Title</th>
+                        <th>Executive Message</th>
+                        <th>Talk Track</th>
+                        <th>Route</th>
+                        <th>Evidence</th>
+                        <th>Safe Claim</th>
+                        <th>Not Safe Claim</th>
+                        <th>Next Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EXECUTIVE-HANDOFF-PACK",
+            "STERILE_EXECUTIVE_HANDOFF_VIEW",
+            "Sterile executive handoff pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/executive-handoff-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Executive Handoff Pack", body)
+
+
+@app.route("/sterile-compounding/value-scorecard")
+def sterile_compounding_value_scorecard():
+    handoff_df, value_df = sterile_eh_build_handoff()
+
+    status_filter = sterile_eh_safe(sterile_eh_request.args.get("status", ""))
+
+    filtered = value_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["value_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["value_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["value_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["value_status"] == "RED").sum()) if total else 0
+
+    avg_score = 0
+    if total:
+        avg_score = round(sterile_eh_pd.to_numeric(filtered["value_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Value Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["value_score"], ascending=False).iterrows():
+            route = sterile_eh_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_eh_badge(row.get("value_status", ""))}</td>
+                <td>{sterile_eh_safe(row.get("value_domain", ""))}</td>
+                <td>{sterile_eh_safe(row.get("value_score", ""))}</td>
+                <td>{sterile_eh_safe(row.get("current_problem", ""))}</td>
+                <td>{sterile_eh_safe(row.get("assurancelayer_value", ""))}</td>
+                <td>{sterile_eh_safe(row.get("measurable_signal", ""))}</td>
+                <td>{sterile_eh_safe(row.get("leadership_value", ""))}</td>
+                <td>{sterile_eh_safe(row.get("risk_reduced", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_eh_safe(row.get("next_enhancement", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No value scorecard rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Value Realization Scorecard</h1>
+        <p>
+            Business-value scorecard for Compound Sterile AssuranceLayer™. This translates the technical build
+            into leadership value, measurable signals, risk reduction, and next enhancements.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Value Domains</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Scorecard Filters</h2>
+        <form method="GET" action="/sterile-compounding/value-scorecard">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Value Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/value-scorecard">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-handoff-pack">Executive Handoff Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/maturity-model">Maturity Model</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/value-scorecard/export">Export Scorecard</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Value Scorecard Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Value Domain</th>
+                        <th>Score</th>
+                        <th>Current Problem</th>
+                        <th>AssuranceLayer Value</th>
+                        <th>Measurable Signal</th>
+                        <th>Leadership Value</th>
+                        <th>Risk Reduced</th>
+                        <th>Route</th>
+                        <th>Next Enhancement</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "VALUE-SCORECARD",
+            "STERILE_VALUE_SCORECARD_VIEW",
+            "Sterile value scorecard viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/value-scorecard",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Value Realization Scorecard", body)
+
+
+@app.route("/sterile-compounding/executive-handoff-pack/export")
+def sterile_compounding_executive_handoff_pack_export():
+    handoff_df, value_df = sterile_eh_build_handoff()
+
+    if handoff_df.empty:
+        handoff_df = sterile_eh_pd.DataFrame(columns=STERILE_EXECUTIVE_HANDOFF_COLUMNS)
+
+    csv_data = handoff_df.to_csv(index=False)
+
+    return sterile_eh_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_executive_handoff_pack_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/value-scorecard/export")
+def sterile_compounding_value_scorecard_export():
+    handoff_df, value_df = sterile_eh_build_handoff()
+
+    if value_df.empty:
+        value_df = sterile_eh_pd.DataFrame(columns=STERILE_VALUE_SCORECARD_COLUMNS)
+
+    csv_data = value_df.to_csv(index=False)
+
+    return sterile_eh_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_value_scorecard_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_executive_handoff_dashboard_injection(response):
+    try:
+        if sterile_eh_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/demo-walkthrough",
+            "/sterile-compounding/monday-demo-entry",
+            "/sterile-compounding/release-notes-entry",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/stability-check",
+            "/sterile-compounding/maturity-model",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-executive-handoff-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-executive-handoff-panel">
+            <h2>Executive Handoff Pack + Value Scorecard</h2>
+            <p class="st-note">
+                Leader-ready summary of what was built, what value it creates, safe claims,
+                not-safe claims, evidence routes, and next actions.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/executive-handoff-pack">Executive Handoff Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/value-scorecard">Value Scorecard</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-handoff-pack/export">Export Handoff</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/value-scorecard/export">Export Scorecard</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile executive handoff injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
