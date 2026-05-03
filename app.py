@@ -20239,5 +20239,1050 @@ def sterile_compounding_inspector_dashboard_injection(response):
         print(f"Sterile inspector/deviation dashboard injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_RISK_GRAPH_REPLAY_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 6: Sterile Risk Graph + Auditor Replay Mode
+#
+# New Routes:
+#   /sterile-compounding/risk-graph
+#   /sterile-compounding/risk-graph/export
+#   /sterile-compounding/auditor-replay
+#   /sterile-compounding/auditor-replay/<record_id>
+#   /sterile-compounding/auditor-replay/export
+#
+# New Derived Registers:
+#   sterile_compounding_risk_graph_register.csv
+#   sterile_compounding_auditor_replay_register.csv
+#
+# Boundary:
+#   This module creates derived visualization/replay registers from
+#   sterile compounding records. It does not overwrite existing routes
+#   and does not touch protected Manufacturing/Wole, ServiceNow, Entra,
+#   CI Candidate Factory, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Command Center, or Platform Health.
+# ============================================================
+
+try:
+    import pandas as sterile_graph_pd
+    import json as sterile_graph_json
+    from flask import request as sterile_graph_request
+    from flask import Response as sterile_graph_Response
+except Exception as sterile_graph_import_error:
+    raise RuntimeError(f"Sterile risk graph/replay import failed: {sterile_graph_import_error}")
+
+
+STERILE_RISK_GRAPH_REGISTER = "sterile_compounding_risk_graph_register.csv"
+STERILE_AUDITOR_REPLAY_REGISTER = "sterile_compounding_auditor_replay_register.csv"
+
+STERILE_RISK_GRAPH_COLUMNS = [
+    "edge_id",
+    "record_id",
+    "source_node",
+    "source_type",
+    "relationship",
+    "target_node",
+    "target_type",
+    "target_label",
+    "risk_status",
+    "risk_score",
+    "risk_reason",
+    "evidence_signal",
+    "created_at",
+    "edge_hash"
+]
+
+STERILE_AUDITOR_REPLAY_COLUMNS = [
+    "replay_id",
+    "record_id",
+    "sequence",
+    "stage",
+    "event_summary",
+    "evidence_signal",
+    "stage_status",
+    "stage_decision",
+    "linked_entity",
+    "linked_route",
+    "created_at",
+    "replay_hash"
+]
+
+
+def sterile_graph_require_phase1():
+    required = [
+        "sterile_prepare_dashboard_df",
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_badge",
+        "sterile_read_register",
+        "sterile_write_register",
+        "sterile_add_lineage",
+        "STERILE_COMPOUNDING_COLUMNS",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+
+    if missing:
+        raise RuntimeError("Sterile Phase 1 helpers are missing: " + ", ".join(missing))
+
+
+def sterile_graph_safe(value):
+    return sterile_clean(value)
+
+
+def sterile_graph_safe_node(value, fallback):
+    value = sterile_graph_safe(value)
+    return value if value else fallback
+
+
+def sterile_graph_make_edge_id(record_id, relationship, target_node):
+    raw = f"{record_id}|{relationship}|{target_node}"
+    return "ST-EDGE-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_graph_make_replay_id(record_id, sequence, stage):
+    raw = f"{record_id}|{sequence}|{stage}"
+    return "ST-RPLY-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_graph_status_from_record(record):
+    governance_status = sterile_graph_safe(record.get("governance_status", "")).upper()
+    readiness_score = sterile_graph_safe(record.get("readiness_score", ""))
+
+    try:
+        score = int(float(readiness_score))
+    except Exception:
+        score = 0
+
+    if governance_status == "RED" or score < 60:
+        return "RED", score
+    if governance_status == "YELLOW" or score < 90:
+        return "YELLOW", score
+    if governance_status == "GREEN":
+        return "GREEN", score
+
+    return "YELLOW", score
+
+
+def sterile_graph_entity_risk(record, target_type, target_node):
+    governance_status, score = sterile_graph_status_from_record(record)
+
+    critical_issues = sterile_graph_safe(record.get("critical_issues", ""))
+    warnings = sterile_graph_safe(record.get("warnings", ""))
+
+    risk_reason = []
+
+    if critical_issues:
+        risk_reason.append(critical_issues)
+    if warnings:
+        risk_reason.append(warnings)
+
+    target_type_upper = sterile_graph_safe(target_type).upper()
+
+    if target_type_upper in ["EQUIPMENT_ROOM", "HOOD_CLEANROOM"]:
+        value = sterile_graph_safe(record.get("equipment_status", "")).lower()
+        env_value = sterile_graph_safe(record.get("environmental_status", "")).lower()
+        clean_value = sterile_graph_safe(record.get("cleaning_log_status", "")).lower()
+
+        if value in ["expired", "fail", "failed", "not current"]:
+            governance_status = "RED"
+            risk_reason.append("Equipment/room readiness failed or expired")
+        elif value in ["due", "near due", "review", "pending", ""]:
+            governance_status = "YELLOW"
+            risk_reason.append("Equipment/room readiness requires review")
+
+        if env_value in ["fail", "failed", "red", "excursion", "out of limit", "out of range"]:
+            governance_status = "RED"
+            risk_reason.append("Environmental failure/excursion linked to room or hood")
+        elif env_value in ["alert", "warning", "yellow", "review", "pending", ""]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("Environmental status requires review")
+
+        if clean_value in ["missing", "incomplete", "fail", "failed"]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("Cleaning evidence missing or failed")
+
+    elif target_type_upper == "PERSONNEL":
+        value = sterile_graph_safe(record.get("personnel_qualified", "")).lower()
+        if value in ["no", "false", "expired", "not qualified", "fail", "failed"]:
+            governance_status = "RED"
+            risk_reason.append("Personnel qualification failed or expired")
+        elif value in ["pending", "review", "due", ""]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("Personnel qualification requires review")
+
+    elif target_type_upper == "INGREDIENT_LOT":
+        coa = sterile_graph_safe(record.get("coa_attached", "")).lower()
+        supplier = sterile_graph_safe(record.get("supplier_approved", "")).lower()
+        expiry = sterile_graph_safe(record.get("ingredient_expiry_status", "")).lower()
+        storage = sterile_graph_safe(record.get("storage_condition_status", "")).lower()
+
+        if coa in ["no", "false", "missing", ""]:
+            governance_status = "RED"
+            risk_reason.append("COA missing for ingredient lot")
+        if supplier in ["no", "false", "not approved", "rejected"]:
+            governance_status = "RED"
+            risk_reason.append("Supplier not approved")
+        if expiry in ["expired", "fail", "failed"]:
+            governance_status = "RED"
+            risk_reason.append("Ingredient expired or failed expiry check")
+        if storage in ["fail", "failed", "excursion", "out of range", "out of limit"]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("Storage condition failure or excursion")
+
+    elif target_type_upper == "VERIFICATION":
+        pharmacist = sterile_graph_safe(record.get("pharmacist_verification", "")).lower()
+        qa = sterile_graph_safe(record.get("qa_review_status", "")).lower()
+        approval = sterile_graph_safe(record.get("approval_status", "")).lower()
+
+        if pharmacist in ["no", "false", "missing", "rejected", ""]:
+            governance_status = "RED"
+            risk_reason.append("Pharmacist verification missing or rejected")
+        if approval in ["rejected", "not approved", "denied"]:
+            governance_status = "RED"
+            risk_reason.append("Approval rejected or denied")
+        if qa in ["rejected", "failed", "fail"]:
+            governance_status = "RED"
+            risk_reason.append("QA review failed or rejected")
+        elif qa in ["pending", "review", ""]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("QA review pending or missing")
+
+    elif target_type_upper == "DEVIATION":
+        deviation = sterile_graph_safe(record.get("deviation_open", "")).lower()
+        if deviation in ["yes", "true", "open", "critical"]:
+            governance_status = "RED"
+            risk_reason.append("Open deviation linked to CSP")
+        elif deviation in ["pending", "review", ""]:
+            if governance_status != "RED":
+                governance_status = "YELLOW"
+            risk_reason.append("Deviation status requires review")
+
+    if not risk_reason:
+        risk_reason.append("No specific risk signal detected for this relationship")
+
+    return governance_status, score, "; ".join(risk_reason)
+
+
+def sterile_graph_add_edge(edges, record, relationship, target_node, target_type, target_label, evidence_signal):
+    record_id = sterile_graph_safe(record.get("record_id", ""))
+    target_node = sterile_graph_safe_node(target_node, "UNASSIGNED")
+    target_label = sterile_graph_safe_node(target_label, target_node)
+
+    risk_status, risk_score, risk_reason = sterile_graph_entity_risk(record, target_type, target_node)
+
+    payload = {
+        "edge_id": sterile_graph_make_edge_id(record_id, relationship, target_node),
+        "record_id": record_id,
+        "source_node": record_id,
+        "source_type": "CSP_RECORD",
+        "relationship": relationship,
+        "target_node": target_node,
+        "target_type": target_type,
+        "target_label": target_label,
+        "risk_status": risk_status,
+        "risk_score": risk_score,
+        "risk_reason": risk_reason,
+        "evidence_signal": evidence_signal,
+        "created_at": sterile_now(),
+    }
+
+    payload["edge_hash"] = sterile_hash_text(
+        sterile_graph_json.dumps(payload, sort_keys=True)
+    )
+
+    edges.append(payload)
+
+
+def sterile_graph_build_edges():
+    sterile_graph_require_phase1()
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        empty_df = sterile_graph_pd.DataFrame(columns=STERILE_RISK_GRAPH_COLUMNS)
+        sterile_write_register(STERILE_RISK_GRAPH_REGISTER, empty_df, STERILE_RISK_GRAPH_COLUMNS)
+        return empty_df
+
+    edges = []
+
+    for _, row in df.iterrows():
+        record = row.to_dict()
+        record_id = sterile_graph_safe(record.get("record_id", ""))
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "prepared_by",
+            record.get("assigned_technician", ""),
+            "PERSONNEL",
+            "Assigned Technician",
+            "Personnel qualification and authorization signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "verified_by",
+            record.get("verifying_pharmacist", ""),
+            "VERIFICATION",
+            "Verifying Pharmacist",
+            "Pharmacist verification signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "used_room_or_hood",
+            record.get("hood_or_cleanroom_id", ""),
+            "EQUIPMENT_ROOM",
+            "Hood / Cleanroom / Controlled Area",
+            "Equipment, environmental, and cleaning readiness signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "used_ingredient_lot",
+            record.get("ingredient_lot", ""),
+            "INGREDIENT_LOT",
+            "Ingredient Lot",
+            "COA, supplier, expiry, and storage evidence signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "followed_sop_version",
+            record.get("sop_version", ""),
+            "SOP_VERSION",
+            "SOP / Formula Version",
+            "Controlled SOP/formula evidence signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "has_evidence_file",
+            record.get("evidence_file", ""),
+            "EVIDENCE_FILE",
+            "Evidence File",
+            "Evidence reference and audit package signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "has_deviation_status",
+            record.get("deviation_open", ""),
+            "DEVIATION",
+            "Deviation Status",
+            "Deviation/CAPA trigger signal"
+        )
+
+        sterile_graph_add_edge(
+            edges,
+            record,
+            "facility_mode",
+            record.get("facility_type", ""),
+            "FACILITY_MODE",
+            "Facility Type",
+            "503A / 503B / hospital / training mode signal"
+        )
+
+    edge_df = sterile_graph_pd.DataFrame(edges)
+    edge_df = sterile_ensure_cols(edge_df, STERILE_RISK_GRAPH_COLUMNS)
+
+    sterile_write_register(STERILE_RISK_GRAPH_REGISTER, edge_df, STERILE_RISK_GRAPH_COLUMNS)
+    return edge_df
+
+
+def sterile_graph_add_replay_event(events, record, sequence, stage, summary, field, status, decision, linked_entity, route):
+    record_id = sterile_graph_safe(record.get("record_id", ""))
+    evidence_signal = ""
+
+    if field:
+        evidence_signal = f"{field}={sterile_graph_safe(record.get(field, ''))}"
+
+    payload = {
+        "replay_id": sterile_graph_make_replay_id(record_id, sequence, stage),
+        "record_id": record_id,
+        "sequence": sequence,
+        "stage": stage,
+        "event_summary": summary,
+        "evidence_signal": evidence_signal,
+        "stage_status": status,
+        "stage_decision": decision,
+        "linked_entity": sterile_graph_safe(linked_entity),
+        "linked_route": route,
+        "created_at": sterile_now(),
+    }
+
+    payload["replay_hash"] = sterile_hash_text(
+        sterile_graph_json.dumps(payload, sort_keys=True)
+    )
+
+    events.append(payload)
+
+
+def sterile_graph_status_for_field(record, field, fail_values, review_values, pass_values):
+    value = sterile_graph_safe(record.get(field, "")).lower()
+
+    if value in fail_values:
+        return "RED", "BLOCK / INVESTIGATE"
+    if value in review_values or value == "":
+        return "YELLOW", "REVIEW REQUIRED"
+    if value in pass_values:
+        return "GREEN", "ACCEPTABLE"
+    return "YELLOW", "REVIEW REQUIRED"
+
+
+def sterile_replay_build_events():
+    sterile_graph_require_phase1()
+    df = sterile_prepare_dashboard_df()
+
+    if df.empty:
+        empty_df = sterile_graph_pd.DataFrame(columns=STERILE_AUDITOR_REPLAY_COLUMNS)
+        sterile_write_register(STERILE_AUDITOR_REPLAY_REGISTER, empty_df, STERILE_AUDITOR_REPLAY_COLUMNS)
+        return empty_df
+
+    events = []
+
+    for _, row in df.iterrows():
+        record = row.to_dict()
+        record_id = sterile_graph_safe(record.get("record_id", ""))
+
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            10,
+            "Record Created / Captured",
+            f"CSP record {record_id} captured for sterile compounding governance readiness.",
+            "record_id",
+            "GREEN" if record_id else "YELLOW",
+            "TRACEABLE RECORD EXISTS" if record_id else "RECORD ID MISSING",
+            record_id,
+            f"/sterile-compounding/passport/{record_id}"
+        )
+
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            20,
+            "Facility Mode Established",
+            "Facility type and compounding mode captured for governance context.",
+            "facility_type",
+            "GREEN" if sterile_graph_safe(record.get("facility_type", "")) else "YELLOW",
+            "MODE CAPTURED" if sterile_graph_safe(record.get("facility_type", "")) else "MODE REVIEW REQUIRED",
+            record.get("facility_type", ""),
+            f"/sterile-compounding/passport/{record_id}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "personnel_qualified",
+            fail_values=["no", "false", "expired", "not qualified", "fail", "failed"],
+            review_values=["pending", "review", "due", ""],
+            pass_values=["yes", "true", "current", "qualified", "pass", "passed", "approved", "verified"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            30,
+            "Personnel Qualification Checked",
+            "Assigned technician/personnel qualification checked against the CSP record.",
+            "personnel_qualified",
+            status,
+            decision,
+            record.get("assigned_technician", ""),
+            f"/sterile-compounding/personnel-passport/{sterile_graph_safe(record.get('assigned_technician', ''))}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "equipment_status",
+            fail_values=["expired", "fail", "failed", "not current"],
+            review_values=["due", "near due", "pending", "review", ""],
+            pass_values=["current", "yes", "pass", "passed", "approved", "verified"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            40,
+            "Equipment / Room Readiness Checked",
+            "Hood, cleanroom, room, or equipment readiness checked.",
+            "equipment_status",
+            status,
+            decision,
+            record.get("hood_or_cleanroom_id", ""),
+            f"/sterile-compounding/equipment-passport/{sterile_graph_safe(record.get('hood_or_cleanroom_id', ''))}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "environmental_status",
+            fail_values=["fail", "failed", "red", "excursion", "out of limit", "out of range"],
+            review_values=["alert", "warning", "yellow", "pending", "review", ""],
+            pass_values=["pass", "passed", "green", "acceptable", "approved"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            50,
+            "Environmental Monitoring Checked",
+            "Environmental monitoring readiness reviewed for the CSP context.",
+            "environmental_status",
+            status,
+            decision,
+            record.get("hood_or_cleanroom_id", ""),
+            f"/sterile-compounding/blast-radius?record_id={record_id}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "coa_attached",
+            fail_values=["no", "false", "missing"],
+            review_values=["pending", "review", ""],
+            pass_values=["yes", "true", "attached", "present", "complete", "approved"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            60,
+            "COA / Ingredient Evidence Checked",
+            "Ingredient evidence and COA attachment status reviewed.",
+            "coa_attached",
+            status,
+            decision,
+            record.get("ingredient_lot", ""),
+            f"/sterile-compounding/ingredient-passport/{sterile_graph_safe(record.get('ingredient_lot', ''))}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "pharmacist_verification",
+            fail_values=["no", "false", "missing", "rejected"],
+            review_values=["pending", "review", ""],
+            pass_values=["yes", "true", "verified", "complete", "approved"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            70,
+            "Pharmacist Verification Checked",
+            "Pharmacist verification captured as a release-readiness control.",
+            "pharmacist_verification",
+            status,
+            decision,
+            record.get("verifying_pharmacist", ""),
+            f"/sterile-compounding/passport/{record_id}"
+        )
+
+        status, decision = sterile_graph_status_for_field(
+            record,
+            "deviation_open",
+            fail_values=["yes", "true", "open", "critical"],
+            review_values=["pending", "review", ""],
+            pass_values=["no", "false", "closed", "none", "no deviation"]
+        )
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            80,
+            "Deviation Status Checked",
+            "Deviation/CAPA status evaluated as a release-readiness signal.",
+            "deviation_open",
+            status,
+            decision,
+            record.get("deviation_open", ""),
+            f"/sterile-compounding/deviation-pack/{record_id}"
+        )
+
+        status = sterile_graph_safe(record.get("governance_status", "")).upper() or "YELLOW"
+        decision = sterile_graph_safe(record.get("release_decision", "")) or "REVIEW REQUIRED"
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            90,
+            "Governance Release Decision Generated",
+            "Final governance status generated from readiness scoring and evidence signals.",
+            "governance_status",
+            status,
+            decision,
+            record_id,
+            f"/sterile-compounding/no-release-gate"
+        )
+
+        sterile_graph_add_replay_event(
+            events,
+            record,
+            100,
+            "Evidence Twin Hash Generated",
+            "Evidence Twin hash generated for tamper-aware audit traceability.",
+            "evidence_twin_hash",
+            "GREEN" if sterile_graph_safe(record.get("evidence_twin_hash", "")) else "YELLOW",
+            "HASH AVAILABLE" if sterile_graph_safe(record.get("evidence_twin_hash", "")) else "HASH REVIEW REQUIRED",
+            record.get("evidence_twin_hash", ""),
+            f"/sterile-compounding/passport/{record_id}"
+        )
+
+    replay_df = sterile_graph_pd.DataFrame(events)
+    replay_df = sterile_ensure_cols(replay_df, STERILE_AUDITOR_REPLAY_COLUMNS)
+    sterile_write_register(STERILE_AUDITOR_REPLAY_REGISTER, replay_df, STERILE_AUDITOR_REPLAY_COLUMNS)
+    return replay_df
+
+
+def sterile_graph_status_badge(status):
+    status = sterile_graph_safe(status).upper()
+    if status == "GREEN":
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status == "YELLOW":
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status == "RED":
+        return '<span class="st-badge st-red">RED</span>'
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+@app.route("/sterile-compounding/risk-graph")
+def sterile_compounding_risk_graph():
+    edge_df = sterile_graph_build_edges()
+
+    record_filter = sterile_graph_safe(sterile_graph_request.args.get("record_id", ""))
+    type_filter = sterile_graph_safe(sterile_graph_request.args.get("target_type", ""))
+
+    filtered = edge_df.copy()
+
+    if record_filter and not filtered.empty:
+        filtered = filtered[filtered["record_id"].astype(str) == record_filter]
+
+    if type_filter and not filtered.empty:
+        filtered = filtered[filtered["target_type"].astype(str) == type_filter]
+
+    total_edges = len(filtered)
+    unique_csps = int(filtered["record_id"].nunique()) if total_edges else 0
+    red_edges = int((filtered["risk_status"] == "RED").sum()) if total_edges else 0
+    yellow_edges = int((filtered["risk_status"] == "YELLOW").sum()) if total_edges else 0
+    green_edges = int((filtered["risk_status"] == "GREEN").sum()) if total_edges else 0
+
+    type_options = ["", "PERSONNEL", "VERIFICATION", "EQUIPMENT_ROOM", "INGREDIENT_LOT", "SOP_VERSION", "EVIDENCE_FILE", "DEVIATION", "FACILITY_MODE"]
+    type_options_html = ""
+    for option in type_options:
+        label = "All Target Types" if option == "" else option
+        selected = "selected" if option == type_filter else ""
+        type_options_html += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered.empty:
+        for _, row in filtered.iterrows():
+            rid = sterile_graph_safe(row.get("record_id", ""))
+            target_node = sterile_graph_safe(row.get("target_node", ""))
+            rows_html += f"""
+            <tr>
+                <td>{sterile_graph_status_badge(row.get("risk_status", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">{rid}</a></td>
+                <td>{sterile_graph_safe(row.get("relationship", ""))}</td>
+                <td>{sterile_graph_safe(row.get("target_type", ""))}</td>
+                <td>{target_node}</td>
+                <td>{sterile_graph_safe(row.get("target_label", ""))}</td>
+                <td>{sterile_graph_safe(row.get("risk_score", ""))}</td>
+                <td>{sterile_graph_safe(row.get("risk_reason", ""))}</td>
+                <td>{sterile_graph_safe(row.get("evidence_signal", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="9" style="text-align:center; padding:24px; color:#6b7280;">
+                No risk graph edges found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Compounding Risk Graph</h1>
+        <p>
+            Relationship map connecting each CSP to personnel, pharmacist verification, hood/room,
+            ingredient lot, SOP version, evidence file, deviation status, and facility mode. This is a
+            governance graph for risk visibility and audit traceability, not a replacement for validated systems.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Graph Edges</div><div class="st-value">{total_edges}</div></div>
+        <div class="st-card"><div class="st-label">Unique CSPs</div><div class="st-value">{unique_csps}</div></div>
+        <div class="st-card"><div class="st-label">RED Edges</div><div class="st-value">{red_edges}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW Edges</div><div class="st-value">{yellow_edges}</div></div>
+        <div class="st-card"><div class="st-label">GREEN Edges</div><div class="st-value">{green_edges}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Graph Filters</h2>
+        <form method="GET" action="/sterile-compounding/risk-graph">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Record ID</label>
+                    <input name="record_id" value="{record_filter}" placeholder="Example: CSP-003">
+                </div>
+                <div style="min-width:260px;">
+                    <label>Target Type</label>
+                    <select name="target_type">{type_options_html}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/risk-graph">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/risk-graph/export">Export Graph</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay">Auditor Replay</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Risk Graph Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>CSP</th>
+                        <th>Relationship</th>
+                        <th>Target Type</th>
+                        <th>Target Node</th>
+                        <th>Target Label</th>
+                        <th>Risk Score</th>
+                        <th>Risk Reason</th>
+                        <th>Evidence Signal</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "RISK-GRAPH",
+            "RISK_GRAPH_VIEW",
+            "Sterile compounding risk graph viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/risk-graph",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Compounding Risk Graph", body)
+
+
+@app.route("/sterile-compounding/risk-graph/export")
+def sterile_compounding_risk_graph_export():
+    edge_df = sterile_graph_build_edges()
+
+    if edge_df.empty:
+        edge_df = sterile_graph_pd.DataFrame(columns=STERILE_RISK_GRAPH_COLUMNS)
+
+    csv_data = edge_df.to_csv(index=False)
+
+    return sterile_graph_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_risk_graph_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/auditor-replay")
+def sterile_compounding_auditor_replay():
+    replay_df = sterile_replay_build_events()
+
+    total_events = len(replay_df)
+    unique_csps = int(replay_df["record_id"].nunique()) if total_events else 0
+    red_events = int((replay_df["stage_status"] == "RED").sum()) if total_events else 0
+    yellow_events = int((replay_df["stage_status"] == "YELLOW").sum()) if total_events else 0
+    green_events = int((replay_df["stage_status"] == "GREEN").sum()) if total_events else 0
+
+    record_options_html = '<option value="">Select CSP replay</option>'
+    if not replay_df.empty:
+        for rid in sorted(replay_df["record_id"].dropna().astype(str).unique()):
+            record_options_html += f'<option value="{rid}">{rid}</option>'
+
+    rows_html = ""
+    if not replay_df.empty:
+        summary = replay_df.groupby("record_id").agg(
+            total_events=("replay_id", "count"),
+            red_events=("stage_status", lambda s: int((s == "RED").sum())),
+            yellow_events=("stage_status", lambda s: int((s == "YELLOW").sum())),
+            green_events=("stage_status", lambda s: int((s == "GREEN").sum())),
+        ).reset_index()
+
+        for _, row in summary.iterrows():
+            rid = sterile_graph_safe(row.get("record_id", ""))
+            if int(row.get("red_events", 0)) > 0:
+                replay_status = "RED"
+            elif int(row.get("yellow_events", 0)) > 0:
+                replay_status = "YELLOW"
+            else:
+                replay_status = "GREEN"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_graph_status_badge(replay_status)}</td>
+                <td><a href="/sterile-compounding/auditor-replay/{rid}">{rid}</a></td>
+                <td>{sterile_graph_safe(row.get("total_events", ""))}</td>
+                <td>{sterile_graph_safe(row.get("green_events", ""))}</td>
+                <td>{sterile_graph_safe(row.get("yellow_events", ""))}</td>
+                <td>{sterile_graph_safe(row.get("red_events", ""))}</td>
+                <td><a href="/sterile-compounding/passport/{rid}">CSP Passport</a></td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+                No replay events found. Load sample data first from /sterile-compounding/sample.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Auditor Replay Mode™</h1>
+        <p>
+            Replays the governance story of each CSP from record creation through facility mode,
+            personnel qualification, equipment readiness, environmental monitoring, ingredient evidence,
+            pharmacist verification, deviation status, release decision, and evidence hash.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Replay Events</div><div class="st-value">{total_events}</div></div>
+        <div class="st-card"><div class="st-label">Unique CSPs</div><div class="st-value">{unique_csps}</div></div>
+        <div class="st-card"><div class="st-label">GREEN Events</div><div class="st-value">{green_events}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW Events</div><div class="st-value">{yellow_events}</div></div>
+        <div class="st-card"><div class="st-label">RED Events</div><div class="st-value">{red_events}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Replay Actions</h2>
+        <form method="GET" action="/sterile-compounding/auditor-replay" onsubmit="event.preventDefault(); const v=this.record_id.value; if(v) window.location='/sterile-compounding/auditor-replay/'+encodeURIComponent(v);">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:280px;">
+                    <label>Open CSP Replay</label>
+                    <select name="record_id">{record_options_html}</select>
+                </div>
+                <button class="st-button" type="submit">Open Replay</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/risk-graph">Risk Graph</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay/export">Export Replay</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Replay Summary by CSP</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Record ID</th>
+                        <th>Total Events</th>
+                        <th>GREEN</th>
+                        <th>YELLOW</th>
+                        <th>RED</th>
+                        <th>Passport</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "AUDITOR-REPLAY",
+            "AUDITOR_REPLAY_SUMMARY_VIEW",
+            "Auditor replay summary viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/auditor-replay",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Auditor Replay Mode", body)
+
+
+@app.route("/sterile-compounding/auditor-replay/<record_id>")
+def sterile_compounding_auditor_replay_record(record_id):
+    replay_df = sterile_replay_build_events()
+    record_replay = replay_df[replay_df["record_id"].astype(str) == str(record_id)] if not replay_df.empty else replay_df
+
+    if record_replay.empty:
+        return sterile_graph_Response("No auditor replay found for this CSP.", status=404)
+
+    try:
+        record_replay = record_replay.sort_values(by="sequence", ascending=True)
+    except Exception:
+        pass
+
+    rows_html = ""
+    for _, row in record_replay.iterrows():
+        route = sterile_graph_safe(row.get("linked_route", ""))
+        route_html = f'<a href="{route}">Open Link</a>' if route else ""
+        rows_html += f"""
+        <tr>
+            <td>{sterile_graph_safe(row.get("sequence", ""))}</td>
+            <td>{sterile_graph_status_badge(row.get("stage_status", ""))}</td>
+            <td>{sterile_graph_safe(row.get("stage", ""))}</td>
+            <td>{sterile_graph_safe(row.get("event_summary", ""))}</td>
+            <td>{sterile_graph_safe(row.get("evidence_signal", ""))}</td>
+            <td>{sterile_graph_safe(row.get("stage_decision", ""))}</td>
+            <td>{sterile_graph_safe(row.get("linked_entity", ""))}</td>
+            <td>{route_html}</td>
+        </tr>
+        """
+
+    red_count = int((record_replay["stage_status"] == "RED").sum())
+    yellow_count = int((record_replay["stage_status"] == "YELLOW").sum())
+
+    if red_count:
+        replay_status = "RED"
+        replay_decision = "AUDITOR REPLAY SHOWS RELEASE-BLOCKING GOVERNANCE SIGNALS"
+    elif yellow_count:
+        replay_status = "YELLOW"
+        replay_decision = "AUDITOR REPLAY SHOWS REVIEW-REQUIRED GOVERNANCE SIGNALS"
+    else:
+        replay_status = "GREEN"
+        replay_decision = "AUDITOR REPLAY SHOWS COMPLETE GOVERNANCE STORY"
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Auditor Replay: {sterile_graph_safe(record_id)}</h1>
+        <p>
+            Timeline replay of the evidence and control story for this CSP record.
+        </p>
+        <div style="margin-top:16px;">{sterile_graph_status_badge(replay_status)}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {replay_decision}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Replay Timeline</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Seq</th>
+                        <th>Status</th>
+                        <th>Stage</th>
+                        <th>Event Summary</th>
+                        <th>Evidence Signal</th>
+                        <th>Decision</th>
+                        <th>Linked Entity</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/passport/{sterile_graph_safe(record_id)}">CSP Passport</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/risk-graph?record_id={sterile_graph_safe(record_id)}">Risk Graph for CSP</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/deviation-pack/{sterile_graph_safe(record_id)}">Deviation Pack</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay">Back to Replay Summary</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            record_id,
+            "AUDITOR_REPLAY_RECORD_VIEW",
+            "Record-level auditor replay viewed",
+            actor="system",
+            source_route="/sterile-compounding/auditor-replay/<record_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Auditor Replay - {record_id}", body)
+
+
+@app.route("/sterile-compounding/auditor-replay/export")
+def sterile_compounding_auditor_replay_export():
+    replay_df = sterile_replay_build_events()
+
+    if replay_df.empty:
+        replay_df = sterile_graph_pd.DataFrame(columns=STERILE_AUDITOR_REPLAY_COLUMNS)
+
+    csv_data = replay_df.to_csv(index=False)
+
+    return sterile_graph_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_auditor_replay_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_risk_graph_replay_dashboard_injection(response):
+    try:
+        if sterile_graph_request.path != "/sterile-compounding":
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-risk-graph-replay-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-risk-graph-replay-panel">
+            <h2>Sterile Risk Graph + Auditor Replay Mode™</h2>
+            <p class="st-note">
+                Relationship graph and timeline replay for CSP records. This connects each CSP to
+                personnel, pharmacist verification, hood/room, ingredient lot, SOP version, evidence file,
+                deviation status, facility mode, and release-readiness decision.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/risk-graph">Risk Graph</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay">Auditor Replay</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/risk-graph/export">Export Risk Graph</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/auditor-replay/export">Export Replay</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile risk graph/replay dashboard injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
