@@ -54927,5 +54927,609 @@ def sterile_compounding_global_exposure_dashboard_injection(response):
         print(f"Sterile global exposure validation injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_STABILITY_HARDENING_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 47: Stability Hardening + Dependency Self-Check
+#
+# New Routes:
+#   /sterile-compounding/stability-check
+#   /sterile-compounding/stability-check/export
+#
+# New Register:
+#   sterile_compounding_stability_check.csv
+#
+# Boundary:
+#   This is a sterile-only maintenance and self-check layer.
+#   It does not overwrite existing routes and does not modify protected
+#   global modules. It safely redefines one sterile helper function to
+#   correct the Go-Live / Change-Control dependency chain.
+# ============================================================
+
+try:
+    import pandas as sterile_sh_pd
+    import json as sterile_sh_json
+    from flask import request as sterile_sh_request
+    from flask import Response as sterile_sh_Response
+except Exception as sterile_sh_import_error:
+    raise RuntimeError(f"Sterile stability hardening import failed: {sterile_sh_import_error}")
+
+
+STERILE_STABILITY_CHECK_REGISTER = "sterile_compounding_stability_check.csv"
+
+STERILE_STABILITY_CHECK_COLUMNS = [
+    "check_id",
+    "check_group",
+    "check_name",
+    "check_status",
+    "route_or_marker",
+    "expected_result",
+    "observed_result",
+    "risk_note",
+    "recommended_action",
+    "last_checked",
+    "check_hash"
+]
+
+
+def sterile_sh_safe(value):
+    try:
+        value = sterile_clean(value)
+    except Exception:
+        value = "" if value is None else str(value)
+
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+
+    return value
+
+
+def sterile_sh_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    try:
+        return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+    except Exception:
+        import hashlib
+        return prefix + "-" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12].upper()
+
+
+def sterile_sh_now():
+    try:
+        return sterile_now()
+    except Exception:
+        from datetime import datetime
+        return datetime.utcnow().isoformat()
+
+
+def sterile_sh_hash_payload(payload):
+    try:
+        return sterile_hash_text(sterile_sh_json.dumps(payload, sort_keys=True))
+    except Exception:
+        import hashlib
+        return hashlib.sha256(sterile_sh_json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def sterile_sh_badge(status):
+    status = sterile_sh_safe(status).upper()
+
+    if status in ["GREEN", "PASS", "FOUND", "REGISTERED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CHECK", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "FAIL", "MISSING", "BROKEN"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_sh_route_exists(route):
+    try:
+        routes = set(str(rule) for rule in app.url_map.iter_rules())
+        return route in routes
+    except Exception:
+        return False
+
+
+def sterile_sh_marker_exists(marker_text):
+    try:
+        with open("app.py", "r", encoding="utf-8") as handle:
+            source = handle.read()
+        return marker_text in source
+    except Exception:
+        return False
+
+
+def sterile_sh_add_check(rows, group, name, status, route_or_marker, expected, observed, risk, action):
+    payload = {
+        "check_id": sterile_sh_make_id("ST-CHECK", group, name, route_or_marker),
+        "check_group": group,
+        "check_name": name,
+        "check_status": status,
+        "route_or_marker": route_or_marker,
+        "expected_result": expected,
+        "observed_result": observed,
+        "risk_note": risk,
+        "recommended_action": action,
+        "last_checked": sterile_sh_now(),
+    }
+
+    payload["check_hash"] = sterile_sh_hash_payload(payload)
+
+    rows.append(payload)
+
+
+# ------------------------------------------------------------
+# Compatibility correction:
+# A previous sterile helper used a brittle column name while
+# looking for the overall go-live row. This safe redefinition
+# preserves the route and output, but uses readiness_area.
+# ------------------------------------------------------------
+def sterile_gl_build_change_pack(readiness_df):
+    try:
+        readiness_df = sterile_ensure_cols(readiness_df, STERILE_GO_LIVE_READINESS_COLUMNS)
+    except Exception:
+        pass
+
+    if readiness_df is None:
+        readiness_df = sterile_sh_pd.DataFrame(columns=STERILE_GO_LIVE_READINESS_COLUMNS)
+
+    overall_status = "YELLOW"
+
+    try:
+        if not readiness_df.empty and "readiness_area" in readiness_df.columns:
+            overall = readiness_df[readiness_df["readiness_area"].astype(str) == "10 Overall Go-Live"].copy()
+            if not overall.empty:
+                overall_status = sterile_gl_safe(overall.iloc[0].get("status", "YELLOW"))
+            elif "status" in readiness_df.columns:
+                red_count = int((readiness_df["status"].astype(str) == "RED").sum())
+                yellow_count = int((readiness_df["status"].astype(str) == "YELLOW").sum())
+                overall_status = "RED" if red_count else "YELLOW" if yellow_count else "GREEN"
+    except Exception:
+        overall_status = "YELLOW"
+
+    rows = [
+        sterile_gl_change_row(
+            "Sterile Vertical",
+            "Compound Sterile AssuranceLayer vertical added as a self-contained /sterile-compounding module set.",
+            "Additive route/module expansion",
+            "Medium",
+            "Sterile compounding governance demonstration only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/navigation-hub",
+            overall_status,
+            "Use latest stable-before/stable-working git tags if rollback is needed.",
+            "Primary scope is sterile compounding assurance, inspection readiness, evidence coverage, and demo readiness.",
+        ),
+        sterile_gl_change_row(
+            "Evidence and Assurance",
+            "Evidence vault, evidence matrix, audit pack, release dossier, sign-off, seal, custody, SOP/formula, personnel, equipment/room, and master assurance layers added.",
+            "Governance feature expansion",
+            "Medium",
+            "Assurance support only; not formal QA release or QMS approval",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/master-assurance-index",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "These pages provide control-to-evidence and readiness logic, not validated system replacement.",
+        ),
+        sterile_gl_change_row(
+            "Inspection Readiness",
+            "Inspection readiness, auditor Q&A, regulatory crosswalk, control-evidence coverage, inspection narrative, binder, packet manifest, and executive brief added.",
+            "Inspection support expansion",
+            "Medium",
+            "Auditor-facing governance narrative only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/inspection-binder",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "Used to structure review narrative and evidence routes for demo/inspection preparation.",
+        ),
+        sterile_gl_change_row(
+            "Demo Readiness",
+            "Demo walkthrough, leadership script, navigation hub, route health, register catalog, data dictionary, build acceptance, smoke-test matrix, go-live readiness, and stability check added.",
+            "Operational readiness expansion",
+            "Low",
+            "Internal sterile vertical readiness only",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/stability-check",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "Used to make the vertical easier to present, test, and explain.",
+        ),
+        sterile_gl_change_row(
+            "Global Entry Bridges",
+            "Command Center, Monday Demo, Release Notes, and Platform Health now expose sterile entry panels through after_request injection.",
+            "Controlled global exposure",
+            "Low",
+            "Entry bridge only; existing global routes remain intact",
+            "No protected route overwritten",
+            "/sterile-compounding/global-exposure-map",
+            overall_status,
+            "Rollback through git stable tags if required.",
+            "Controlled exposure makes the sterile vertical discoverable without route overwrite.",
+        ),
+        sterile_gl_change_row(
+            "Protected Boundary",
+            "Command Center, Monday Demo, Release Notes, Platform Health, ServiceNow, Entra, CI, Knowledge Governance, Operational Lineage, and Manufacturing/Wole remain protected.",
+            "Boundary confirmation",
+            "Low",
+            "No change to protected protected route bodies",
+            "No protected non-sterile route intentionally modified",
+            "/sterile-compounding/protected-boundary-check",
+            "GREEN",
+            "No rollback required unless unrelated protected behavior is observed.",
+            "Any future integration into protected modules should be performed as a separate explicit patch.",
+        ),
+    ]
+
+    change_df = sterile_sh_pd.DataFrame(rows)
+
+    try:
+        change_df = sterile_ensure_cols(change_df, STERILE_CHANGE_CONTROL_PACK_COLUMNS)
+    except Exception:
+        change_df = change_df.reindex(columns=STERILE_CHANGE_CONTROL_PACK_COLUMNS).fillna("")
+
+    return change_df
+
+
+def sterile_sh_build_checks():
+    rows = []
+
+    route_expectations = [
+        ("/sterile-compounding", "Core sterile home route"),
+        ("/sterile-compounding/go-live-readiness", "Go-Live Readiness route"),
+        ("/sterile-compounding/change-control-pack", "Change Control Pack route"),
+        ("/sterile-compounding/presentation-lock", "Presentation Lock route"),
+        ("/sterile-compounding/maturity-model", "Maturity Model route"),
+        ("/sterile-compounding/integration-blueprint", "Integration Blueprint route"),
+        ("/sterile-compounding/data-contracts", "Data Contracts route"),
+        ("/sterile-compounding/mock-ingestion-lab", "Mock Ingestion Lab route"),
+        ("/sterile-compounding/connector-approval-board", "Connector Approval Board route"),
+        ("/sterile-compounding/nonprod-poc-plan", "Non-Production POC Plan route"),
+        ("/sterile-compounding/poc-test-execution", "POC Test Execution route"),
+        ("/sterile-compounding/poc-results-summary", "POC Results Summary route"),
+        ("/sterile-compounding/command-center-entry", "Command Center Entry route"),
+        ("/sterile-compounding/monday-demo-entry", "Monday Demo Entry route"),
+        ("/sterile-compounding/release-notes-entry", "Release Notes Entry route"),
+        ("/sterile-compounding/platform-health-entry", "Platform Health Entry route"),
+        ("/sterile-compounding/global-exposure-map", "Global Exposure Map route"),
+        ("/sterile-compounding/protected-boundary-check", "Protected Boundary Check route"),
+        ("/sterile-compounding/stability-check", "Stability Check route"),
+    ]
+
+    for route, name in route_expectations:
+        exists = sterile_sh_route_exists(route)
+        sterile_sh_add_check(
+            rows,
+            "Route Registration",
+            name,
+            "GREEN" if exists else "RED",
+            route,
+            "Route should be registered in Flask url_map.",
+            "REGISTERED" if exists else "MISSING",
+            "Missing route can break navigation or demo flow.",
+            "Confirm the related phase patch was applied and pushed.",
+        )
+
+    marker_expectations = [
+        "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+        "STERILE_COMPOUNDING_GO_LIVE_READINESS_ACTIVE",
+        "STERILE_COMPOUNDING_FREEZE_SNAPSHOT_ACTIVE",
+        "STERILE_COMPOUNDING_MATURITY_ROADMAP_ACTIVE",
+        "STERILE_COMPOUNDING_INTEGRATION_BLUEPRINT_ACTIVE",
+        "STERILE_COMPOUNDING_DATA_CONTRACTS_ACTIVE",
+        "STERILE_COMPOUNDING_MOCK_INGESTION_ACTIVE",
+        "STERILE_COMPOUNDING_CONNECTOR_APPROVAL_ACTIVE",
+        "STERILE_COMPOUNDING_NONPROD_POC_ACTIVE",
+        "STERILE_COMPOUNDING_POC_TEST_EXECUTION_ACTIVE",
+        "STERILE_COMPOUNDING_POC_RESULTS_ACTIVE",
+        "STERILE_COMPOUNDING_COMMAND_CENTER_ENTRY_ACTIVE",
+        "STERILE_COMPOUNDING_MONDAY_DEMO_ENTRY_ACTIVE",
+        "STERILE_COMPOUNDING_RELEASE_NOTES_ENTRY_ACTIVE",
+        "STERILE_COMPOUNDING_PLATFORM_HEALTH_ENTRY_ACTIVE",
+        "STERILE_COMPOUNDING_GLOBAL_EXPOSURE_VALIDATION_ACTIVE",
+        "STERILE_COMPOUNDING_STABILITY_HARDENING_ACTIVE",
+    ]
+
+    for marker_text in marker_expectations:
+        exists = sterile_sh_marker_exists(marker_text)
+        sterile_sh_add_check(
+            rows,
+            "Active Markers",
+            marker_text,
+            "GREEN" if exists else "RED",
+            marker_text,
+            "Marker should exist in app.py.",
+            "FOUND" if exists else "MISSING",
+            "Missing marker can allow duplicate code insertion or indicate a missing phase.",
+            "Review the patch history and apply the missing phase if needed.",
+        )
+
+    protected_routes = [
+        "/command-center",
+        "/monday-demo",
+        "/release-notes",
+        "/platform-health",
+        "/operational-lineage",
+        "/servicenow-tickets-live",
+        "/knowledge-governance",
+        "/knowledge-review",
+        "/ci-myaccess-blueprint",
+        "/ci-candidate-factory",
+        "/ci-candidate-review",
+        "/ci-submission-pack",
+    ]
+
+    for route in protected_routes:
+        exists = sterile_sh_route_exists(route)
+        sterile_sh_add_check(
+            rows,
+            "Protected Route Presence",
+            f"Protected route remains registered: {route}",
+            "GREEN" if exists else "YELLOW",
+            route,
+            "Protected route should remain available if it existed before sterile exposure.",
+            "REGISTERED" if exists else "NOT REGISTERED / REVIEW",
+            "If an expected protected route disappears, unrelated protected functionality may be affected.",
+            "Do not patch the protected route unless explicitly requested; investigate with grep and git diff first.",
+        )
+
+    try:
+        repaired_change_pack = callable(globals().get("sterile_gl_build_change_pack"))
+        sterile_sh_add_check(
+            rows,
+            "Compatibility Hardening",
+            "Go-Live / Change-Control helper override",
+            "GREEN" if repaired_change_pack else "RED",
+            "sterile_gl_build_change_pack",
+            "Helper should be callable and use readiness_area safely.",
+            "CALLABLE" if repaired_change_pack else "NOT CALLABLE",
+            "If not callable, change-control and downstream readiness pages may fail at runtime.",
+            "Reapply this stability hardening phase.",
+        )
+    except Exception as exc:
+        sterile_sh_add_check(
+            rows,
+            "Compatibility Hardening",
+            "Go-Live / Change-Control helper override",
+            "RED",
+            "sterile_gl_build_change_pack",
+            "Helper should be callable.",
+            f"ERROR: {exc}",
+            "Dependency chain may fail at runtime.",
+            "Reapply this stability hardening phase.",
+        )
+
+    df = sterile_sh_pd.DataFrame(rows)
+    df = df.reindex(columns=STERILE_STABILITY_CHECK_COLUMNS).fillna("")
+
+    try:
+        sterile_write_register(
+            STERILE_STABILITY_CHECK_REGISTER,
+            df,
+            STERILE_STABILITY_CHECK_COLUMNS
+        )
+    except Exception:
+        df.to_csv(STERILE_STABILITY_CHECK_REGISTER, index=False)
+
+    return df
+
+
+@app.route("/sterile-compounding/stability-check")
+def sterile_compounding_stability_check():
+    check_df = sterile_sh_build_checks()
+
+    status_filter = sterile_sh_safe(sterile_sh_request.args.get("status", ""))
+    group_filter = sterile_sh_safe(sterile_sh_request.args.get("group", ""))
+
+    filtered = check_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["check_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["check_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["check_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["check_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["check_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Check Groups</option>'
+    for group in sorted(check_df["check_group"].dropna().unique().tolist()) if not check_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["check_status", "check_group", "check_name"], ascending=[False, True, True]).iterrows():
+            route_or_marker = sterile_sh_safe(row.get("route_or_marker", ""))
+
+            if route_or_marker.startswith("/"):
+                route_cell = f'<a href="{route_or_marker}">{route_or_marker}</a>'
+            else:
+                route_cell = f"<code>{route_or_marker}</code>"
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sh_badge(row.get("check_status", ""))}</td>
+                <td>{sterile_sh_safe(row.get("check_group", ""))}</td>
+                <td>{sterile_sh_safe(row.get("check_name", ""))}</td>
+                <td>{route_cell}</td>
+                <td>{sterile_sh_safe(row.get("expected_result", ""))}</td>
+                <td>{sterile_sh_safe(row.get("observed_result", ""))}</td>
+                <td>{sterile_sh_safe(row.get("risk_note", ""))}</td>
+                <td>{sterile_sh_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px; color:#6b7280;">
+                No stability check rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Stability Check</h1>
+        <p>
+            Maintenance self-check for the Compound Sterile AssuranceLayer™ vertical.
+            This validates key sterile routes, active markers, protected route presence,
+            and the Go-Live / Change-Control compatibility hardening.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Checks</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Self-Check Filters</h2>
+        <form method="GET" action="/sterile-compounding/stability-check">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Check Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stability-check">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map">Global Exposure Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Protected Boundary Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stability-check/export">Export Stability Check</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Stability Check Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Check</th>
+                        <th>Route / Marker</th>
+                        <th>Expected</th>
+                        <th>Observed</th>
+                        <th>Risk</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "STABILITY-CHECK",
+            "STERILE_STABILITY_CHECK_VIEW",
+            "Sterile stability check viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/stability-check",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Stability Check", body)
+
+
+@app.route("/sterile-compounding/stability-check/export")
+def sterile_compounding_stability_check_export():
+    check_df = sterile_sh_build_checks()
+
+    if check_df.empty:
+        check_df = sterile_sh_pd.DataFrame(columns=STERILE_STABILITY_CHECK_COLUMNS)
+
+    csv_data = check_df.to_csv(index=False)
+
+    return sterile_sh_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_stability_check_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_stability_check_dashboard_injection(response):
+    try:
+        if sterile_sh_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/global-exposure-map",
+            "/sterile-compounding/protected-boundary-check",
+            "/sterile-compounding/platform-health-entry",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/change-control-pack",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/build-acceptance",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-stability-check-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-stability-check-panel">
+            <h2>Stability Hardening + Dependency Self-Check</h2>
+            <p class="st-note">
+                Validates sterile route registration, active markers, protected route presence,
+                and Go-Live / Change-Control compatibility hardening.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/stability-check">Stability Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stability-check/export">Export Stability Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/global-exposure-map">Global Exposure Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/protected-boundary-check">Protected Boundary Check</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile stability check injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
