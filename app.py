@@ -57149,5 +57149,741 @@ def sterile_compounding_leadership_route_bundle_dashboard_injection(response):
         print(f"Sterile leadership route bundle injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_STAKEHOLDER_REVIEW_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 50: Stakeholder Review Board + Enhancement Backlog
+#
+# New Routes:
+#   /sterile-compounding/stakeholder-review-board
+#   /sterile-compounding/stakeholder-review-board/export
+#   /sterile-compounding/enhancement-backlog
+#   /sterile-compounding/enhancement-backlog/export
+#
+# New Registers:
+#   sterile_compounding_stakeholder_review_board.csv
+#   sterile_compounding_enhancement_backlog.csv
+#
+# Boundary:
+#   This is a sterile-only stakeholder feedback and enhancement planning layer.
+#   It does not overwrite existing routes and does not modify protected
+#   global modules, ServiceNow, Entra, CI, Knowledge, Operational Lineage,
+#   Manufacturing/Wole, Command Center, Monday Demo, Release Notes, or
+#   Platform Health logic.
+# ============================================================
+
+try:
+    import pandas as sterile_sr_pd
+    import json as sterile_sr_json
+    from flask import request as sterile_sr_request
+    from flask import Response as sterile_sr_Response
+except Exception as sterile_sr_import_error:
+    raise RuntimeError(f"Sterile stakeholder review import failed: {sterile_sr_import_error}")
+
+
+STERILE_STAKEHOLDER_REVIEW_REGISTER = "sterile_compounding_stakeholder_review_board.csv"
+STERILE_ENHANCEMENT_BACKLOG_REGISTER = "sterile_compounding_enhancement_backlog.csv"
+
+STERILE_STAKEHOLDER_REVIEW_COLUMNS = [
+    "review_id",
+    "stakeholder_group",
+    "review_topic",
+    "review_status",
+    "review_priority",
+    "question_to_ask",
+    "expected_feedback",
+    "evidence_route",
+    "decision_needed",
+    "risk_if_unanswered",
+    "recommended_response",
+    "follow_up_owner",
+    "last_checked",
+    "review_hash"
+]
+
+STERILE_ENHANCEMENT_BACKLOG_COLUMNS = [
+    "enhancement_id",
+    "enhancement_area",
+    "enhancement_name",
+    "enhancement_status",
+    "priority",
+    "business_reason",
+    "technical_scope",
+    "governance_value",
+    "required_approval",
+    "protected_boundary",
+    "first_safe_patch",
+    "success_signal",
+    "supporting_route",
+    "last_checked",
+    "enhancement_hash"
+]
+
+
+def sterile_sr_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile stakeholder review dependencies missing: " + ", ".join(missing))
+
+
+def sterile_sr_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_sr_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_sr_badge(status):
+    status = sterile_sr_safe(status).upper()
+
+    if status in ["GREEN", "READY", "ANSWERED", "APPROVED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "OPEN", "REVIEW", "PROPOSED"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "REJECTED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_sr_build_registers():
+    sterile_sr_require_dependencies()
+
+    review_seed = [
+        {
+            "group": "IT Leadership",
+            "topic": "Strategic Fit",
+            "status": "YELLOW",
+            "priority": "P0",
+            "question": "Does the sterile vertical solve a real leadership visibility problem for regulated operations?",
+            "feedback": "Confirm whether the assurance/readiness concept aligns with current operational priorities.",
+            "route": "/sterile-compounding/value-scorecard",
+            "decision": "Whether to continue as a formal internal innovation review or keep as concept/demo.",
+            "risk": "Without leadership fit, the demo may be seen as an isolated technical build.",
+            "response": "Frame it as a governance overlay that helps leaders trust evidence across validated systems.",
+            "owner": "Presenter / app owner",
+        },
+        {
+            "group": "QA / Compliance",
+            "topic": "Validation and QMS Boundary",
+            "status": "YELLOW",
+            "priority": "P0",
+            "question": "Are the safe-claim and not-safe-claim boundaries clear enough for QA review?",
+            "feedback": "Confirm the app is not positioned as product release, QMS approval, or validated source of truth.",
+            "route": "/sterile-compounding/executive-handoff-pack",
+            "decision": "Whether QA is comfortable reviewing the concept as an assurance-support layer.",
+            "risk": "Overclaiming could create compliance concern.",
+            "response": "Use the safe-claim / not-safe-claim language and protected boundary check.",
+            "owner": "QA reviewer / presenter",
+        },
+        {
+            "group": "System Owners",
+            "topic": "System-of-Record Alignment",
+            "status": "YELLOW",
+            "priority": "P0",
+            "question": "Which systems should remain source of truth for each evidence object?",
+            "feedback": "Confirm Veeva, Blue Mountain, ServiceNow, myAccess, Entra, Power BI, and Azure boundaries.",
+            "route": "/sterile-compounding/data-contracts",
+            "decision": "Which integration blueprint should be prioritized first.",
+            "risk": "Wrong source-of-truth assumptions can weaken the governance model.",
+            "response": "Start with read-only references, data contracts, and mock ingestion before connector work.",
+            "owner": "System owner / enterprise architect",
+        },
+        {
+            "group": "Integration / Architecture",
+            "topic": "Connector Readiness",
+            "status": "YELLOW",
+            "priority": "P1",
+            "question": "Which future connector has the strongest non-production POC case?",
+            "feedback": "Rank ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or ledger anchoring.",
+            "route": "/sterile-compounding/implementation-decision-matrix",
+            "decision": "Select first controlled POC candidate.",
+            "risk": "Trying to integrate too many systems at once may dilute the value case.",
+            "response": "Use decision matrix and approval board to choose a safe, bounded POC.",
+            "owner": "Architecture / integration owner",
+        },
+        {
+            "group": "Operations",
+            "topic": "Workflow Usefulness",
+            "status": "YELLOW",
+            "priority": "P1",
+            "question": "Does the sterile workflow mirror how operational teams actually prepare evidence?",
+            "feedback": "Confirm whether inspection binder, evidence matrix, and readiness gates match practical review needs.",
+            "route": "/sterile-compounding/inspection-binder",
+            "decision": "Which operational workflow should be made more realistic next.",
+            "risk": "A technically strong model may still miss real operator/reviewer behavior.",
+            "response": "Capture workflow-specific feedback and convert it into backlog items.",
+            "owner": "Operations reviewer / presenter",
+        },
+        {
+            "group": "Security / Privacy",
+            "topic": "Sensitive Data Boundary",
+            "status": "YELLOW",
+            "priority": "P1",
+            "question": "Are the metadata-only and no-sensitive-content rules sufficient for future POC discussions?",
+            "feedback": "Confirm no PHI/PII, credentials, secrets, or production data are needed for next phase.",
+            "route": "/sterile-compounding/poc-evidence-packet",
+            "decision": "Whether additional privacy/security controls are needed before POC planning.",
+            "risk": "Unclear data handling can block stakeholder support.",
+            "response": "Emphasize mock/synthetic data and metadata-only evidence in this phase.",
+            "owner": "Security / privacy reviewer",
+        },
+        {
+            "group": "Demo Reviewers",
+            "topic": "Presentation Quality",
+            "status": "GREEN",
+            "priority": "P2",
+            "question": "Is the leadership demo path clear and persuasive?",
+            "feedback": "Confirm whether the route bundle sequence makes sense for a 5-8 minute demo.",
+            "route": "/sterile-compounding/leadership-route-bundle",
+            "decision": "Whether to shorten, reorder, or simplify the demo path.",
+            "risk": "A long demo may overwhelm stakeholders.",
+            "response": "Use the leadership route bundle as the standard demo sequence.",
+            "owner": "Presenter",
+        },
+    ]
+
+    backlog_seed = [
+        {
+            "area": "Evidence Workflow",
+            "name": "Reviewer Attestation Capture",
+            "status": "PROPOSED",
+            "priority": "P0",
+            "reason": "Leaders and QA reviewers will eventually need evidence that someone reviewed and accepted a readiness package.",
+            "scope": "Add sterile-only reviewer attestation routes and registers; no enterprise QMS writeback.",
+            "value": "Turns readiness views into reviewable sign-off packets.",
+            "approval": "QA/governance reviewer if used beyond demo.",
+            "boundary": "No QMS replacement and no product release authority.",
+            "patch": "Add /sterile-compounding/reviewer-attestation and export route.",
+            "signal": "Reviewer, role, decision, timestamp, scope, and hash captured.",
+            "route": "/sterile-compounding/executive-handoff-pack",
+        },
+        {
+            "area": "Integration Governance",
+            "name": "First Non-Production Connector Sandbox Blueprint",
+            "status": "PROPOSED",
+            "priority": "P0",
+            "reason": "The app now has integration blueprinting; next value comes from selecting one safe mock connector path.",
+            "scope": "Define a non-production sandbox blueprint for one system, likely ServiceNow or Power BI first.",
+            "value": "Shows how AssuranceLayer can move from concept to controlled POC without touching production.",
+            "approval": "System owner, security, architecture reviewer.",
+            "boundary": "No production credentials, no writeback, no protected route overwrite.",
+            "patch": "Add sterile-only sandbox blueprint route for the selected system.",
+            "signal": "Sandbox scope, data contract, mock payload, test cases, and approval gates documented.",
+            "route": "/sterile-compounding/integration-blueprint",
+        },
+        {
+            "area": "Leadership Demo",
+            "name": "One-Click Leadership Mode",
+            "status": "PROPOSED",
+            "priority": "P1",
+            "reason": "The vertical has many routes; a simplified leadership mode would reduce demo complexity.",
+            "scope": "Create a condensed executive route with top value, top evidence, top risk, and next ask.",
+            "value": "Makes the app easier to present to busy stakeholders.",
+            "approval": "Presenter / app owner.",
+            "boundary": "Demo summary only; no protected module changes.",
+            "patch": "Add /sterile-compounding/leadership-mode as a sterile-only summary route.",
+            "signal": "One page summarizes value, proof, boundaries, and next ask.",
+            "route": "/sterile-compounding/leadership-route-bundle",
+        },
+        {
+            "area": "Inspection Readiness",
+            "name": "Inspection Packet Export Bundle",
+            "status": "PROPOSED",
+            "priority": "P1",
+            "reason": "The binder and packet manifest exist, but a packaged export flow would improve review usefulness.",
+            "scope": "Create sterile-only packet index and export manifest for inspection evidence.",
+            "value": "Makes the inspection story easier to share and review.",
+            "approval": "QA/governance reviewer if used operationally.",
+            "boundary": "No official inspection submission unless approved.",
+            "patch": "Add /sterile-compounding/inspection-packet-export.",
+            "signal": "Packet index, route list, evidence items, and hash manifest exported.",
+            "route": "/sterile-compounding/inspection-binder",
+        },
+        {
+            "area": "Platform Health",
+            "name": "Automated Route Probe Register",
+            "status": "PROPOSED",
+            "priority": "P1",
+            "reason": "Current stability check validates route registration; live HTTP probing would provide stronger deployment proof.",
+            "scope": "Add a sterile-only route-probe register that records expected URLs and manual test results.",
+            "value": "Improves deployment confidence before demos.",
+            "approval": "App owner.",
+            "boundary": "No external monitoring integration required.",
+            "patch": "Add /sterile-compounding/route-probe-check.",
+            "signal": "Each critical sterile route has expected status, observed status, and review note.",
+            "route": "/sterile-compounding/stability-check",
+        },
+        {
+            "area": "Governance Analytics",
+            "name": "Power BI Readiness Dataset Contract",
+            "status": "PROPOSED",
+            "priority": "P2",
+            "reason": "Leadership may ask how this becomes a dashboard later.",
+            "scope": "Create Power BI dataset blueprint and export field dictionary from sterile registers.",
+            "value": "Shows a credible analytics path without building the dashboard inside Flask.",
+            "approval": "Analytics owner / data governance reviewer.",
+            "boundary": "Reporting only; Power BI is not source of truth.",
+            "patch": "Add /sterile-compounding/powerbi-readiness-blueprint.",
+            "signal": "Dataset table list, relationships, KPIs, and export fields documented.",
+            "route": "/sterile-compounding/value-scorecard",
+        },
+    ]
+
+    review_rows = []
+    backlog_rows = []
+
+    for item in review_seed:
+        payload = {
+            "review_id": sterile_sr_make_id("ST-REVIEW", item["group"], item["topic"]),
+            "stakeholder_group": item["group"],
+            "review_topic": item["topic"],
+            "review_status": item["status"],
+            "review_priority": item["priority"],
+            "question_to_ask": item["question"],
+            "expected_feedback": item["feedback"],
+            "evidence_route": item["route"],
+            "decision_needed": item["decision"],
+            "risk_if_unanswered": item["risk"],
+            "recommended_response": item["response"],
+            "follow_up_owner": item["owner"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["review_hash"] = sterile_hash_text(
+            sterile_sr_json.dumps(payload, sort_keys=True)
+        )
+
+        review_rows.append(payload)
+
+    for item in backlog_seed:
+        payload = {
+            "enhancement_id": sterile_sr_make_id("ST-ENH", item["area"], item["name"]),
+            "enhancement_area": item["area"],
+            "enhancement_name": item["name"],
+            "enhancement_status": item["status"],
+            "priority": item["priority"],
+            "business_reason": item["reason"],
+            "technical_scope": item["scope"],
+            "governance_value": item["value"],
+            "required_approval": item["approval"],
+            "protected_boundary": item["boundary"],
+            "first_safe_patch": item["patch"],
+            "success_signal": item["signal"],
+            "supporting_route": item["route"],
+            "last_checked": sterile_now(),
+        }
+
+        payload["enhancement_hash"] = sterile_hash_text(
+            sterile_sr_json.dumps(payload, sort_keys=True)
+        )
+
+        backlog_rows.append(payload)
+
+    review_df = sterile_sr_pd.DataFrame(review_rows)
+    review_df = review_df.reindex(columns=STERILE_STAKEHOLDER_REVIEW_COLUMNS).fillna("")
+
+    backlog_df = sterile_sr_pd.DataFrame(backlog_rows)
+    backlog_df = backlog_df.reindex(columns=STERILE_ENHANCEMENT_BACKLOG_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_STAKEHOLDER_REVIEW_REGISTER,
+        review_df,
+        STERILE_STAKEHOLDER_REVIEW_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_ENHANCEMENT_BACKLOG_REGISTER,
+        backlog_df,
+        STERILE_ENHANCEMENT_BACKLOG_COLUMNS
+    )
+
+    return review_df, backlog_df
+
+
+@app.route("/sterile-compounding/stakeholder-review-board")
+def sterile_compounding_stakeholder_review_board():
+    review_df, backlog_df = sterile_sr_build_registers()
+
+    status_filter = sterile_sr_safe(sterile_sr_request.args.get("status", ""))
+    priority_filter = sterile_sr_safe(sterile_sr_request.args.get("priority", ""))
+
+    filtered = review_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["review_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["review_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["review_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["review_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["review_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["review_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Review Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["review_priority", "stakeholder_group"]).iterrows():
+            route = sterile_sr_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sr_badge(row.get("review_status", ""))}</td>
+                <td>{sterile_sr_safe(row.get("review_priority", ""))}</td>
+                <td>{sterile_sr_safe(row.get("stakeholder_group", ""))}</td>
+                <td>{sterile_sr_safe(row.get("review_topic", ""))}</td>
+                <td>{sterile_sr_safe(row.get("question_to_ask", ""))}</td>
+                <td>{sterile_sr_safe(row.get("expected_feedback", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_sr_safe(row.get("decision_needed", ""))}</td>
+                <td>{sterile_sr_safe(row.get("recommended_response", ""))}</td>
+                <td>{sterile_sr_safe(row.get("follow_up_owner", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No stakeholder review rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Stakeholder Review Board</h1>
+        <p>
+            Structured review board for capturing the questions to ask leadership, QA, system owners,
+            integration stakeholders, operations, security/privacy, and demo reviewers after the sterile demo.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Review Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0 Items</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Review Filters</h2>
+        <form method="GET" action="/sterile-compounding/stakeholder-review-board">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Review Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stakeholder-review-board">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enhancement-backlog">Enhancement Backlog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stakeholder-review-board/export">Export Review Board</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Stakeholder Review Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Stakeholder</th>
+                        <th>Topic</th>
+                        <th>Question to Ask</th>
+                        <th>Expected Feedback</th>
+                        <th>Evidence Route</th>
+                        <th>Decision Needed</th>
+                        <th>Recommended Response</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "STAKEHOLDER-REVIEW-BOARD",
+            "STERILE_STAKEHOLDER_REVIEW_VIEW",
+            "Sterile stakeholder review board viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/stakeholder-review-board",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Stakeholder Review Board", body)
+
+
+@app.route("/sterile-compounding/enhancement-backlog")
+def sterile_compounding_enhancement_backlog():
+    review_df, backlog_df = sterile_sr_build_registers()
+
+    status_filter = sterile_sr_safe(sterile_sr_request.args.get("status", ""))
+    priority_filter = sterile_sr_safe(sterile_sr_request.args.get("priority", ""))
+
+    filtered = backlog_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["enhancement_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    proposed = int((filtered["enhancement_status"] == "PROPOSED").sum()) if total else 0
+    p0 = int((filtered["priority"] == "P0").sum()) if total else 0
+    p1 = int((filtered["priority"] == "P1").sum()) if total else 0
+    p2 = int((filtered["priority"] == "P2").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "PROPOSED", "APPROVED", "BLOCKED"]:
+        label = "All Enhancement Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["priority", "enhancement_area"]).iterrows():
+            route = sterile_sr_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_sr_badge(row.get("enhancement_status", ""))}</td>
+                <td>{sterile_sr_safe(row.get("priority", ""))}</td>
+                <td>{sterile_sr_safe(row.get("enhancement_area", ""))}</td>
+                <td>{sterile_sr_safe(row.get("enhancement_name", ""))}</td>
+                <td>{sterile_sr_safe(row.get("business_reason", ""))}</td>
+                <td>{sterile_sr_safe(row.get("technical_scope", ""))}</td>
+                <td>{sterile_sr_safe(row.get("governance_value", ""))}</td>
+                <td>{sterile_sr_safe(row.get("required_approval", ""))}</td>
+                <td>{sterile_sr_safe(row.get("first_safe_patch", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No enhancement backlog rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Enhancement Backlog</h1>
+        <p>
+            Governed next-action backlog for the sterile vertical. This converts stakeholder review outcomes
+            into safe future patches with clear approval needs and protected boundaries.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Backlog Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Proposed</div><div class="st-value">{proposed}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">P1</div><div class="st-value">{p1}</div></div>
+        <div class="st-card"><div class="st-label">P2</div><div class="st-value">{p2}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Backlog Filters</h2>
+        <form method="GET" action="/sterile-compounding/enhancement-backlog">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Enhancement Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enhancement-backlog">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stakeholder-review-board">Stakeholder Review Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enhancement-backlog/export">Export Backlog</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Enhancement Backlog Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Area</th>
+                        <th>Enhancement</th>
+                        <th>Business Reason</th>
+                        <th>Technical Scope</th>
+                        <th>Governance Value</th>
+                        <th>Approval</th>
+                        <th>First Safe Patch</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ENHANCEMENT-BACKLOG",
+            "STERILE_ENHANCEMENT_BACKLOG_VIEW",
+            "Sterile enhancement backlog viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/enhancement-backlog",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Enhancement Backlog", body)
+
+
+@app.route("/sterile-compounding/stakeholder-review-board/export")
+def sterile_compounding_stakeholder_review_board_export():
+    review_df, backlog_df = sterile_sr_build_registers()
+
+    if review_df.empty:
+        review_df = sterile_sr_pd.DataFrame(columns=STERILE_STAKEHOLDER_REVIEW_COLUMNS)
+
+    csv_data = review_df.to_csv(index=False)
+
+    return sterile_sr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_stakeholder_review_board_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/enhancement-backlog/export")
+def sterile_compounding_enhancement_backlog_export():
+    review_df, backlog_df = sterile_sr_build_registers()
+
+    if backlog_df.empty:
+        backlog_df = sterile_sr_pd.DataFrame(columns=STERILE_ENHANCEMENT_BACKLOG_COLUMNS)
+
+    csv_data = backlog_df.to_csv(index=False)
+
+    return sterile_sr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_enhancement_backlog_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_stakeholder_review_dashboard_injection(response):
+    try:
+        if sterile_sr_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/executive-handoff-pack",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/leadership-route-bundle",
+            "/sterile-compounding/handoff-checklist",
+            "/sterile-compounding/stability-check",
+            "/sterile-compounding/global-exposure-map",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-stakeholder-review-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-stakeholder-review-panel">
+            <h2>Stakeholder Review Board + Enhancement Backlog</h2>
+            <p class="st-note">
+                Captures leadership, QA, system-owner, architecture, operations, and security feedback,
+                then converts review outcomes into governed future enhancements.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/stakeholder-review-board">Stakeholder Review Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enhancement-backlog">Enhancement Backlog</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/stakeholder-review-board/export">Export Review Board</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/enhancement-backlog/export">Export Backlog</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile stakeholder review injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
