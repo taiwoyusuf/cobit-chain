@@ -62239,5 +62239,975 @@ def sterile_compounding_route_probe_check_dashboard_injection(response):
         print(f"Sterile route probe check injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POWERBI_READINESS_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 56: Power BI Readiness Dataset Contract + KPI Dictionary
+#
+# New Routes:
+#   /sterile-compounding/powerbi-readiness-blueprint
+#   /sterile-compounding/powerbi-readiness-blueprint/export
+#   /sterile-compounding/powerbi-kpi-dictionary
+#   /sterile-compounding/powerbi-kpi-dictionary/export
+#
+# New Registers:
+#   sterile_compounding_powerbi_readiness_blueprint.csv
+#   sterile_compounding_powerbi_kpi_dictionary.csv
+#
+# Boundary:
+#   This is a sterile-only analytics readiness blueprint.
+#   It does not connect to Power BI, publish datasets, call APIs,
+#   store credentials, create service principals, use production data,
+#   or modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_pbi_pd
+    import json as sterile_pbi_json
+    from flask import request as sterile_pbi_request
+    from flask import Response as sterile_pbi_Response
+except Exception as sterile_pbi_import_error:
+    raise RuntimeError(f"Sterile Power BI readiness import failed: {sterile_pbi_import_error}")
+
+
+STERILE_POWERBI_BLUEPRINT_REGISTER = "sterile_compounding_powerbi_readiness_blueprint.csv"
+STERILE_POWERBI_KPI_DICTIONARY_REGISTER = "sterile_compounding_powerbi_kpi_dictionary.csv"
+
+STERILE_POWERBI_BLUEPRINT_COLUMNS = [
+    "dataset_id",
+    "dataset_layer",
+    "dataset_table",
+    "dataset_status",
+    "dataset_priority",
+    "source_register",
+    "source_route",
+    "grain",
+    "key_fields",
+    "recommended_fields",
+    "relationship_hint",
+    "refresh_pattern",
+    "security_boundary",
+    "not_allowed_action",
+    "business_question_supported",
+    "visual_recommendation",
+    "last_checked",
+    "dataset_hash"
+]
+
+STERILE_POWERBI_KPI_COLUMNS = [
+    "kpi_id",
+    "kpi_domain",
+    "kpi_name",
+    "kpi_status",
+    "kpi_priority",
+    "definition",
+    "numerator",
+    "denominator",
+    "calculation_hint",
+    "target_behavior",
+    "risk_interpretation",
+    "recommended_visual",
+    "source_table",
+    "supporting_route",
+    "not_allowed_claim",
+    "last_checked",
+    "kpi_hash"
+]
+
+
+def sterile_pbi_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Power BI readiness dependencies missing: " + ", ".join(missing))
+
+
+def sterile_pbi_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_pbi_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_pbi_badge(status):
+    status = sterile_pbi_safe(status).upper()
+
+    if status in ["GREEN", "READY", "AVAILABLE", "STRONG"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "PROPOSED", "CONDITIONAL", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_pbi_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_pbi_status_for_route(route):
+    return "GREEN" if sterile_pbi_route_exists(route) else "YELLOW"
+
+
+def sterile_pbi_add_dataset(rows, layer, table, priority, source_register, source_route, grain, keys, fields, relationship, refresh, boundary, not_allowed, question, visual):
+    status = sterile_pbi_status_for_route(source_route)
+
+    payload = {
+        "dataset_id": sterile_pbi_make_id("ST-PBI-DATASET", layer, table, source_register),
+        "dataset_layer": layer,
+        "dataset_table": table,
+        "dataset_status": status,
+        "dataset_priority": priority,
+        "source_register": source_register,
+        "source_route": source_route,
+        "grain": grain,
+        "key_fields": keys,
+        "recommended_fields": fields,
+        "relationship_hint": relationship,
+        "refresh_pattern": refresh,
+        "security_boundary": boundary,
+        "not_allowed_action": not_allowed,
+        "business_question_supported": question,
+        "visual_recommendation": visual,
+        "last_checked": sterile_now(),
+    }
+
+    payload["dataset_hash"] = sterile_hash_text(
+        sterile_pbi_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_pbi_add_kpi(rows, domain, name, priority, definition, numerator, denominator, calc, target, risk, visual, source_table, route, not_allowed):
+    status = sterile_pbi_status_for_route(route)
+
+    payload = {
+        "kpi_id": sterile_pbi_make_id("ST-PBI-KPI", domain, name, source_table),
+        "kpi_domain": domain,
+        "kpi_name": name,
+        "kpi_status": status,
+        "kpi_priority": priority,
+        "definition": definition,
+        "numerator": numerator,
+        "denominator": denominator,
+        "calculation_hint": calc,
+        "target_behavior": target,
+        "risk_interpretation": risk,
+        "recommended_visual": visual,
+        "source_table": source_table,
+        "supporting_route": route,
+        "not_allowed_claim": not_allowed,
+        "last_checked": sterile_now(),
+    }
+
+    payload["kpi_hash"] = sterile_hash_text(
+        sterile_pbi_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_pbi_build_registers():
+    sterile_pbi_require_dependencies()
+
+    dataset_rows = []
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "01 Core Evidence",
+        "Evidence Register",
+        "P0",
+        "sterile_compounding_evidence_matrix_register.csv",
+        "/sterile-compounding/evidence-matrix",
+        "One row per evidence category / evidence route",
+        "record_id; evidence_id; evidence_category",
+        "evidence_category; evidence_status; source_route; owner; reviewed_by; last_checked; evidence_hash",
+        "Relate to Inspection Packet by evidence_category and source_route.",
+        "Manual CSV export from sterile app; no live Power BI refresh in this phase.",
+        "Metadata-only reporting. No PHI/PII, credentials, secrets, or production evidence content.",
+        "No workspace publish, no dataset refresh token, no service principal, no source-system connector.",
+        "Which evidence areas are complete, missing, or review-blocked?",
+        "Stacked bar by evidence_status, matrix by evidence_category, drill-through to route."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "02 Assurance",
+        "Master Assurance Index",
+        "P0",
+        "sterile_compounding_master_assurance_register.csv",
+        "/sterile-compounding/master-assurance-index",
+        "One row per assurance domain",
+        "assurance_id; assurance_domain",
+        "assurance_domain; assurance_status; assurance_score; risk_note; recommended_action; source_route",
+        "Relate to Value Scorecard by domain and to Readiness by route.",
+        "Manual CSV export from sterile app.",
+        "Demo-stage assurance metrics only.",
+        "No claim of official QA release, validated score, or production approval.",
+        "Which assurance domains are GREEN/YELLOW/RED and why?",
+        "KPI cards, domain score bar chart, status distribution donut."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "03 Inspection",
+        "Inspection Packet Bundle",
+        "P0",
+        "sterile_compounding_inspection_packet_export.csv",
+        "/sterile-compounding/inspection-packet-export",
+        "One row per inspection packet section",
+        "packet_id; packet_section",
+        "packet_section; packet_status; packet_priority; inspection_question; evidence_summary; primary_route; supporting_route; safe_claim; not_safe_claim",
+        "Relate to Route Index by primary_route/supporting_route.",
+        "Manual CSV export from sterile app.",
+        "Inspection-preparation index only; not official submission.",
+        "No official inspection response, no regulatory interpretation claim unless reviewed.",
+        "Can every inspection-style question point to evidence and a route?",
+        "Inspection packet table, priority filter, status cards, route drill-through."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "04 Readiness",
+        "Go-Live Readiness",
+        "P0",
+        "sterile_compounding_go_live_readiness_register.csv",
+        "/sterile-compounding/go-live-readiness",
+        "One row per readiness area",
+        "readiness_id; readiness_area",
+        "readiness_area; status; score; readiness_note; blocker; recommended_action; source_route",
+        "Relate to Stability Check by source_route and to Change Control by readiness area.",
+        "Manual CSV export from sterile app.",
+        "Demo readiness only; not production release approval.",
+        "No production deployment authorization claim.",
+        "Is the sterile vertical ready for demo-stage review?",
+        "Readiness scorecard, status bar chart, blocker table."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "05 Route Health",
+        "Route Probe Check",
+        "P0",
+        "sterile_compounding_route_probe_check.csv",
+        "/sterile-compounding/route-probe-check",
+        "One row per expected route",
+        "probe_id; route_url",
+        "route_group; route_title; route_url; registration_status; business_criticality; expected_result; recommended_action",
+        "Relate to Manual Route Test Log by route_url.",
+        "Manual CSV export from sterile app.",
+        "Internal Flask registration check only; no external HTTP probing.",
+        "No claim that Azure browser test passed unless manually tested.",
+        "Which routes are registered and which critical routes need attention?",
+        "Route health table, P0 missing count, status distribution."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "06 Manual Testing",
+        "Manual Route Test Log",
+        "P1",
+        "sterile_compounding_manual_route_test_log.csv",
+        "/sterile-compounding/manual-route-test-log",
+        "One row per manual browser test",
+        "test_log_id; route_url",
+        "route_title; tester_name; observed_status; observed_result; issue_summary; follow_up_needed; follow_up_owner; created_at",
+        "Relate to Route Probe Check by route_url.",
+        "Manual CSV export from sterile app.",
+        "User-entered manual test evidence only.",
+        "No automated uptime/SLA claim.",
+        "Which routes were manually verified after deployment?",
+        "Manual test log table, pass/fail cards, follow-up owner table."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "07 Integration",
+        "Connector Sandbox Blueprint",
+        "P1",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "One row per future connector candidate",
+        "sandbox_id; system_key",
+        "system_name; sandbox_status; sandbox_score; sandbox_pattern; nonprod_data_rule; credential_rule; writeback_rule; approval_required; success_signal",
+        "Relate to Sandbox Controls by system_key and POC Results by system_key.",
+        "Manual CSV export from sterile app.",
+        "Sandbox planning only; no live connector.",
+        "No Power BI/API/ServiceNow/Veeva/Blue Mountain/myAccess/Entra connection claim.",
+        "Which future connector candidate is safest for non-production POC planning?",
+        "Connector score ranking, approval requirement matrix, status cards."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "08 Governance Decisions",
+        "Reviewer Attestation",
+        "P1",
+        "sterile_compounding_reviewer_attestation.csv",
+        "/sterile-compounding/reviewer-attestation",
+        "One row per reviewer attestation",
+        "attestation_id",
+        "attestation_type; reviewer_name; reviewer_role; reviewer_group; attestation_status; attestation_decision; reviewed_route; evidence_route; follow_up_needed",
+        "Relate to Decision Log by attestation_id.",
+        "Manual CSV export from sterile app.",
+        "Demo-stage reviewer attestation only; not QMS approval.",
+        "No official enterprise endorsement or validated approval claim.",
+        "Who reviewed what, and what decision was captured?",
+        "Attestation status table, reviewer group chart, follow-up tracker."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "09 Decision Tracking",
+        "Decision Log",
+        "P1",
+        "sterile_compounding_decision_log.csv",
+        "/sterile-compounding/decision-log",
+        "One row per decision generated from attestation",
+        "decision_id; attestation_id",
+        "decision_area; decision_status; decision_priority; decision_summary; approved_next_action; not_approved_action; required_follow_up; supporting_route",
+        "Relate to Reviewer Attestation by attestation_id.",
+        "Manual CSV export from sterile app.",
+        "Decision tracking for demo-stage governance only.",
+        "No official QMS/enterprise approval claim.",
+        "What was approved, not approved, and what follow-up is required?",
+        "Decision priority table, follow-up status cards, action owner table."
+    )
+
+    sterile_pbi_add_dataset(
+        dataset_rows,
+        "10 Executive",
+        "Value Scorecard",
+        "P0",
+        "sterile_compounding_value_scorecard.csv",
+        "/sterile-compounding/value-scorecard",
+        "One row per value domain",
+        "value_id; value_domain",
+        "value_domain; value_status; value_score; current_problem; assurancelayer_value; measurable_signal; leadership_value; risk_reduced; next_enhancement",
+        "Relate to Leadership Mode by value domain where applicable.",
+        "Manual CSV export from sterile app.",
+        "Expected/demo value framing only.",
+        "No realized savings, ROI, or enterprise adoption claim unless measured later.",
+        "What business value does the sterile vertical create?",
+        "Value scorecard cards, domain ranking, next enhancement table."
+    )
+
+    kpi_rows = []
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Evidence",
+        "Evidence Readiness Rate",
+        "P0",
+        "Percentage of evidence rows that are GREEN or ready for review.",
+        "Count of evidence rows with status GREEN/READY",
+        "Total evidence rows",
+        "Evidence Readiness Rate = GREEN evidence rows / total evidence rows",
+        "Higher is better.",
+        "Low rate means evidence is missing, weakly linked, or not review-ready.",
+        "KPI card with trend-ready definition; bar by evidence category.",
+        "Evidence Register",
+        "/sterile-compounding/evidence-matrix",
+        "Do not claim official evidence completeness unless reviewed and approved."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Inspection",
+        "Inspection Packet Coverage",
+        "P0",
+        "Percentage of inspection packet sections that have registered supporting routes.",
+        "Packet sections with GREEN status",
+        "Total packet sections",
+        "Inspection Packet Coverage = GREEN packet sections / total packet sections",
+        "Higher is better.",
+        "Low coverage means inspection story has gaps or missing routes.",
+        "Donut by packet_status; table by packet_priority.",
+        "Inspection Packet Bundle",
+        "/sterile-compounding/inspection-packet-export",
+        "Do not call this an official inspection submission."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Readiness",
+        "Demo Readiness Score",
+        "P0",
+        "Average readiness score across go-live, stability, route health, and presentation controls.",
+        "Sum of readiness scores",
+        "Count of readiness rows",
+        "Demo Readiness Score = average readiness score",
+        "Higher is better.",
+        "Low score means the demo should not be presented without remediation.",
+        "Gauge/card plus readiness area table.",
+        "Go-Live Readiness",
+        "/sterile-compounding/go-live-readiness",
+        "Do not treat this as production deployment approval."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Route Health",
+        "P0 Route Registration Rate",
+        "P0",
+        "Percentage of P0 routes registered in Flask url_map.",
+        "P0 routes with registration_status GREEN",
+        "Total P0 routes",
+        "P0 Route Registration Rate = registered P0 routes / total P0 routes",
+        "Higher is better.",
+        "Low rate means critical demo or protected routes may not load.",
+        "KPI card and route table filtered to P0.",
+        "Route Probe Check",
+        "/sterile-compounding/route-probe-check",
+        "Do not claim live browser availability unless manual test log confirms it."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Manual Testing",
+        "Manual Browser Pass Rate",
+        "P1",
+        "Percentage of manually tested routes marked PASS.",
+        "Manual test rows with observed_status PASS",
+        "Total manual test rows excluding UNTESTED",
+        "Manual Browser Pass Rate = PASS rows / tested rows",
+        "Higher is better.",
+        "Low rate means deployment/browser issues need review.",
+        "Pass/fail cards and route issue table.",
+        "Manual Route Test Log",
+        "/sterile-compounding/manual-route-test-log",
+        "Do not claim automated uptime or monitoring."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Integration",
+        "Sandbox Readiness Score",
+        "P1",
+        "Average readiness score across future connector sandbox candidates.",
+        "Sum of sandbox_score",
+        "Count of sandbox candidates",
+        "Sandbox Readiness Score = average sandbox_score",
+        "Higher is better.",
+        "Low score means future connector work is premature.",
+        "System ranking bar chart and control checklist table.",
+        "Connector Sandbox Blueprint",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "Do not claim live connector readiness or approved API access."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Integration",
+        "No-Writeback Control Coverage",
+        "P0",
+        "Percentage of sandbox candidates with explicit no-writeback rule.",
+        "Sandbox candidates with writeback_rule containing NO WRITEBACK",
+        "Total sandbox candidates",
+        "No-Writeback Coverage = candidates with no-writeback rule / total candidates",
+        "Higher is better.",
+        "Low coverage creates source-system mutation and validation risk.",
+        "Compliance card and candidate table.",
+        "Connector Sandbox Blueprint",
+        "/sterile-compounding/sandbox-control-checklist",
+        "Do not imply writeback is approved."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Governance",
+        "Reviewer Attestation Completion",
+        "P1",
+        "Percentage of reviewer attestations that are GREEN or have no follow-up needed.",
+        "GREEN attestations or follow_up_needed = NO",
+        "Total attestations",
+        "Attestation Completion = completed attestations / total attestations",
+        "Higher is better.",
+        "Low completion means reviewer decisions remain open.",
+        "Reviewer group bar chart and follow-up owner table.",
+        "Reviewer Attestation",
+        "/sterile-compounding/reviewer-attestation",
+        "Do not claim QMS approval or enterprise endorsement."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Governance",
+        "Open Decision Follow-Up Count",
+        "P1",
+        "Number of decision log rows that require follow-up.",
+        "Decision rows where required_follow_up is not empty and not No immediate follow-up",
+        "Not applicable",
+        "Open Follow-Up Count = count of decision rows needing follow-up",
+        "Lower is better.",
+        "High count means demo decisions need ownership and closure.",
+        "KPI card and follow-up action table.",
+        "Decision Log",
+        "/sterile-compounding/decision-log",
+        "Do not treat follow-up closure as formal approval unless documented separately."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Executive",
+        "Leadership Value Score",
+        "P0",
+        "Average value_score across value scorecard domains.",
+        "Sum of value_score",
+        "Count of value domains",
+        "Leadership Value Score = average value_score",
+        "Higher is better.",
+        "Low value score means the demo message should be refined.",
+        "Executive KPI card, domain ranking chart.",
+        "Value Scorecard",
+        "/sterile-compounding/value-scorecard",
+        "Do not claim measured ROI or realized savings."
+    )
+
+    sterile_pbi_add_kpi(
+        kpi_rows,
+        "Executive",
+        "P0 Ask Closure Rate",
+        "P1",
+        "Percentage of P0 executive asks with GREEN status.",
+        "P0 asks with ask_status GREEN",
+        "Total P0 asks",
+        "P0 Ask Closure Rate = GREEN P0 asks / total P0 asks",
+        "Higher is better.",
+        "Low rate means the demo has not produced clear leadership decisions.",
+        "P0 ask table and status card.",
+        "Executive Ask Tracker",
+        "/sterile-compounding/executive-ask-tracker",
+        "Do not claim leadership approval unless the ask is explicitly approved."
+    )
+
+    dataset_df = sterile_pbi_pd.DataFrame(dataset_rows)
+    dataset_df = dataset_df.reindex(columns=STERILE_POWERBI_BLUEPRINT_COLUMNS).fillna("")
+
+    kpi_df = sterile_pbi_pd.DataFrame(kpi_rows)
+    kpi_df = kpi_df.reindex(columns=STERILE_POWERBI_KPI_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_POWERBI_BLUEPRINT_REGISTER,
+        dataset_df,
+        STERILE_POWERBI_BLUEPRINT_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_POWERBI_KPI_DICTIONARY_REGISTER,
+        kpi_df,
+        STERILE_POWERBI_KPI_COLUMNS
+    )
+
+    return dataset_df, kpi_df
+
+
+@app.route("/sterile-compounding/powerbi-readiness-blueprint")
+def sterile_compounding_powerbi_readiness_blueprint():
+    dataset_df, kpi_df = sterile_pbi_build_registers()
+
+    status_filter = sterile_pbi_safe(sterile_pbi_request.args.get("status", ""))
+    priority_filter = sterile_pbi_safe(sterile_pbi_request.args.get("priority", ""))
+
+    filtered = dataset_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["dataset_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["dataset_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["dataset_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["dataset_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["dataset_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["dataset_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Dataset Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["dataset_priority", "dataset_layer"]).iterrows():
+            route = sterile_pbi_safe(row.get("source_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pbi_badge(row.get("dataset_status", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("dataset_priority", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("dataset_layer", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("dataset_table", ""))}</td>
+                <td><code>{sterile_pbi_safe(row.get("source_register", ""))}</code></td>
+                <td>{route_link}</td>
+                <td>{sterile_pbi_safe(row.get("grain", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("key_fields", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("business_question_supported", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("visual_recommendation", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI dataset blueprint rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Readiness Dataset Contract</h1>
+        <p>
+            Reporting blueprint for the sterile vertical. This defines candidate Power BI tables,
+            source registers, grains, keys, relationships, security boundaries, and recommended visuals.
+            This does not connect to Power BI or publish a dataset.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Dataset Tables</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0 Tables</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Dataset Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-readiness-blueprint">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Dataset Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-readiness-blueprint">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-kpi-dictionary">KPI Dictionary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-readiness-blueprint/export">Export Dataset Contract</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI Dataset Blueprint Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Layer</th>
+                        <th>Table</th>
+                        <th>Source Register</th>
+                        <th>Route</th>
+                        <th>Grain</th>
+                        <th>Keys</th>
+                        <th>Business Question</th>
+                        <th>Visual</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This route is a reporting contract only. It does not create a Power BI workspace, publish a dataset,
+            configure refresh, store credentials, create a service principal, or connect to enterprise systems.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-READINESS-BLUEPRINT",
+            "STERILE_POWERBI_READINESS_VIEW",
+            "Sterile Power BI readiness blueprint viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-readiness-blueprint",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Readiness Dataset Contract", body)
+
+
+@app.route("/sterile-compounding/powerbi-kpi-dictionary")
+def sterile_compounding_powerbi_kpi_dictionary():
+    dataset_df, kpi_df = sterile_pbi_build_registers()
+
+    status_filter = sterile_pbi_safe(sterile_pbi_request.args.get("status", ""))
+    priority_filter = sterile_pbi_safe(sterile_pbi_request.args.get("priority", ""))
+
+    filtered = kpi_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["kpi_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["kpi_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["kpi_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["kpi_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["kpi_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["kpi_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All KPI Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["kpi_priority", "kpi_domain", "kpi_name"]).iterrows():
+            route = sterile_pbi_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pbi_badge(row.get("kpi_status", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("kpi_priority", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("kpi_domain", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("kpi_name", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("definition", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("calculation_hint", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("target_behavior", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("risk_interpretation", ""))}</td>
+                <td>{sterile_pbi_safe(row.get("recommended_visual", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI KPI dictionary rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI KPI Dictionary</h1>
+        <p>
+            KPI dictionary for a future sterile Power BI dashboard. It defines KPI names, calculations,
+            source tables, visual recommendations, interpretations, and not-allowed claims.
+            This does not calculate or publish Power BI measures.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">KPIs</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0 KPIs</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>KPI Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-kpi-dictionary">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>KPI Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-kpi-dictionary">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-readiness-blueprint">Dataset Contract</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-kpi-dictionary/export">Export KPI Dictionary</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI KPI Dictionary Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Domain</th>
+                        <th>KPI</th>
+                        <th>Definition</th>
+                        <th>Calculation</th>
+                        <th>Target</th>
+                        <th>Risk Meaning</th>
+                        <th>Visual</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            These KPI definitions are dashboard-planning metadata only. They are not validated production metrics,
+            not realized ROI, not automated monitoring, and not an official enterprise dashboard until separately approved.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-KPI-DICTIONARY",
+            "STERILE_POWERBI_KPI_DICTIONARY_VIEW",
+            "Sterile Power BI KPI dictionary viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-kpi-dictionary",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI KPI Dictionary", body)
+
+
+@app.route("/sterile-compounding/powerbi-readiness-blueprint/export")
+def sterile_compounding_powerbi_readiness_blueprint_export():
+    dataset_df, kpi_df = sterile_pbi_build_registers()
+
+    if dataset_df.empty:
+        dataset_df = sterile_pbi_pd.DataFrame(columns=STERILE_POWERBI_BLUEPRINT_COLUMNS)
+
+    csv_data = dataset_df.to_csv(index=False)
+
+    return sterile_pbi_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_readiness_blueprint_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/powerbi-kpi-dictionary/export")
+def sterile_compounding_powerbi_kpi_dictionary_export():
+    dataset_df, kpi_df = sterile_pbi_build_registers()
+
+    if kpi_df.empty:
+        kpi_df = sterile_pbi_pd.DataFrame(columns=STERILE_POWERBI_KPI_COLUMNS)
+
+    csv_data = kpi_df.to_csv(index=False)
+
+    return sterile_pbi_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_kpi_dictionary_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_powerbi_readiness_dashboard_injection(response):
+    try:
+        if sterile_pbi_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/leadership-mode",
+            "/sterile-compounding/route-probe-check",
+            "/sterile-compounding/manual-route-test-log",
+            "/sterile-compounding/connector-sandbox-blueprint",
+            "/sterile-compounding/inspection-packet-export",
+            "/sterile-compounding/executive-ask-tracker",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-powerbi-readiness-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-powerbi-readiness-panel">
+            <h2>Power BI Readiness Dataset Contract + KPI Dictionary</h2>
+            <p class="st-note">
+                Defines future reporting tables, source registers, KPI definitions, visual recommendations,
+                and analytics boundaries. This does not connect to Power BI or publish a dataset.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/powerbi-readiness-blueprint">Power BI Dataset Contract</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-kpi-dictionary">KPI Dictionary</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-readiness-blueprint/export">Export Dataset Contract</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-kpi-dictionary/export">Export KPI Dictionary</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Power BI readiness injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
