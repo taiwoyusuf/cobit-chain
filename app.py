@@ -61428,5 +61428,816 @@ def sterile_compounding_inspection_packet_export_dashboard_injection(response):
         print(f"Sterile inspection packet export injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_ROUTE_PROBE_CHECK_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 55: Route Probe Register + Manual Route Test Log
+#
+# New Routes:
+#   /sterile-compounding/route-probe-check
+#   /sterile-compounding/route-probe-check/export
+#   /sterile-compounding/manual-route-test-log
+#   /sterile-compounding/manual-route-test-log/export
+#
+# New Registers:
+#   sterile_compounding_route_probe_check.csv
+#   sterile_compounding_manual_route_test_log.csv
+#
+# Boundary:
+#   This is a sterile-only route registration and manual testing layer.
+#   It does not make external HTTP calls, does not call Azure, does not
+#   store credentials, and does not modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_rpc_pd
+    import json as sterile_rpc_json
+    from pathlib import Path as sterile_rpc_Path
+    from flask import request as sterile_rpc_request
+    from flask import Response as sterile_rpc_Response
+    from flask import redirect as sterile_rpc_redirect
+except Exception as sterile_rpc_import_error:
+    raise RuntimeError(f"Sterile route probe check import failed: {sterile_rpc_import_error}")
+
+
+STERILE_ROUTE_PROBE_REGISTER = "sterile_compounding_route_probe_check.csv"
+STERILE_MANUAL_ROUTE_TEST_LOG_REGISTER = "sterile_compounding_manual_route_test_log.csv"
+
+STERILE_ROUTE_PROBE_COLUMNS = [
+    "probe_id",
+    "route_group",
+    "route_title",
+    "route_url",
+    "expected_method",
+    "registration_status",
+    "route_type",
+    "business_criticality",
+    "expected_result",
+    "manual_test_instruction",
+    "risk_if_missing",
+    "recommended_action",
+    "last_checked",
+    "probe_hash"
+]
+
+STERILE_MANUAL_ROUTE_TEST_LOG_COLUMNS = [
+    "test_log_id",
+    "route_url",
+    "route_title",
+    "tester_name",
+    "observed_status",
+    "observed_result",
+    "browser_or_context",
+    "issue_summary",
+    "follow_up_needed",
+    "follow_up_owner",
+    "created_at",
+    "test_hash"
+]
+
+
+STERILE_ROUTE_PROBE_SEED = [
+    ("01 Core", "Sterile Home", "/sterile-compounding", "GET", "P0", "Main sterile vertical landing page should load."),
+    ("01 Core", "Record Review", "/sterile-compounding/review", "GET", "P1", "Review queue should load."),
+    ("01 Core", "Audit Lineage", "/sterile-compounding/audit-lineage", "GET", "P1", "Audit lineage should load."),
+    ("01 Core", "Export", "/sterile-compounding/export", "GET", "P1", "Core sterile export should download CSV."),
+
+    ("02 Evidence", "Evidence Vault", "/sterile-compounding/evidence-vault", "GET", "P0", "Evidence vault should load."),
+    ("02 Evidence", "Evidence Matrix", "/sterile-compounding/evidence-matrix", "GET", "P0", "Evidence matrix should load."),
+    ("02 Evidence", "Audit Pack", "/sterile-compounding/audit-pack", "GET", "P0", "Audit pack should load."),
+    ("02 Evidence", "Release Dossier", "/sterile-compounding/release-dossier", "GET", "P0", "Release dossier should load."),
+    ("02 Evidence", "Signoff Board", "/sterile-compounding/signoff-board", "GET", "P1", "Signoff board should load."),
+
+    ("03 Integrity", "Seal Ledger", "/sterile-compounding/seal-ledger", "GET", "P1", "Seal ledger should load."),
+    ("03 Integrity", "Seal Verify", "/sterile-compounding/seal-verify", "GET", "P1", "Seal verification should load."),
+    ("03 Integrity", "Seal Health", "/sterile-compounding/seal-health", "GET", "P1", "Seal health should load."),
+    ("03 Integrity", "Custody Chain", "/sterile-compounding/custody-chain", "GET", "P1", "Custody chain should load."),
+    ("03 Integrity", "Custody Health", "/sterile-compounding/custody-health", "GET", "P1", "Custody health should load."),
+
+    ("04 Drift", "SOP Formula Governance", "/sterile-compounding/sop-formula-governance", "GET", "P1", "SOP/formula governance should load."),
+    ("04 Drift", "SOP Drift", "/sterile-compounding/sop-drift", "GET", "P1", "SOP drift should load."),
+    ("04 Drift", "Personnel Competency", "/sterile-compounding/personnel-competency", "GET", "P1", "Personnel competency should load."),
+    ("04 Drift", "Personnel Drift", "/sterile-compounding/personnel-drift", "GET", "P1", "Personnel drift should load."),
+    ("04 Drift", "Equipment Room Governance", "/sterile-compounding/equipment-room-governance", "GET", "P1", "Equipment/room governance should load."),
+    ("04 Drift", "Equipment Room Drift", "/sterile-compounding/equipment-room-drift", "GET", "P1", "Equipment/room drift should load."),
+
+    ("05 Assurance", "Master Assurance Index", "/sterile-compounding/master-assurance-index", "GET", "P0", "Master assurance index should load."),
+    ("05 Assurance", "No Release Composite", "/sterile-compounding/no-release-composite", "GET", "P1", "No-release composite should load."),
+    ("05 Assurance", "Closure Simulator", "/sterile-compounding/closure-simulator", "GET", "P1", "Closure simulator should load."),
+    ("05 Assurance", "Recovery Plan", "/sterile-compounding/recovery-plan", "GET", "P1", "Recovery plan should load."),
+
+    ("06 Inspection", "Inspection Readiness", "/sterile-compounding/inspection-readiness", "GET", "P0", "Inspection readiness should load."),
+    ("06 Inspection", "Auditor Q&A Pack", "/sterile-compounding/auditor-qa-pack", "GET", "P0", "Auditor Q&A pack should load."),
+    ("06 Inspection", "Regulatory Crosswalk", "/sterile-compounding/regulatory-crosswalk", "GET", "P0", "Regulatory crosswalk should load."),
+    ("06 Inspection", "Control Evidence Coverage", "/sterile-compounding/control-evidence-coverage", "GET", "P0", "Control evidence coverage should load."),
+    ("06 Inspection", "Inspection Narrative", "/sterile-compounding/inspection-narrative", "GET", "P0", "Inspection narrative should load."),
+    ("06 Inspection", "Executive Brief", "/sterile-compounding/executive-brief", "GET", "P0", "Executive brief should load."),
+    ("06 Inspection", "Inspection Binder", "/sterile-compounding/inspection-binder", "GET", "P0", "Inspection binder should load."),
+    ("06 Inspection", "Packet Manifest", "/sterile-compounding/packet-manifest", "GET", "P0", "Packet manifest should load."),
+    ("06 Inspection", "Inspection Packet Export", "/sterile-compounding/inspection-packet-export", "GET", "P0", "Inspection packet export should load."),
+    ("06 Inspection", "Inspection Route Index", "/sterile-compounding/inspection-route-index", "GET", "P0", "Inspection route index should load."),
+
+    ("07 Demo", "Navigation Hub", "/sterile-compounding/navigation-hub", "GET", "P0", "Navigation hub should load."),
+    ("07 Demo", "Route Health", "/sterile-compounding/route-health", "GET", "P0", "Route health should load."),
+    ("07 Demo", "Demo Walkthrough", "/sterile-compounding/demo-walkthrough", "GET", "P0", "Demo walkthrough should load."),
+    ("07 Demo", "Demo Script", "/sterile-compounding/demo-script", "GET", "P0", "Demo script should load."),
+    ("07 Demo", "Leadership Mode", "/sterile-compounding/leadership-mode", "GET", "P0", "One-click leadership mode should load."),
+    ("07 Demo", "Executive Ask Tracker", "/sterile-compounding/executive-ask-tracker", "GET", "P0", "Executive ask tracker should load."),
+
+    ("08 Build Health", "Register Catalog", "/sterile-compounding/register-catalog", "GET", "P0", "Register catalog should load."),
+    ("08 Build Health", "Data Dictionary", "/sterile-compounding/data-dictionary", "GET", "P0", "Data dictionary should load."),
+    ("08 Build Health", "Build Acceptance", "/sterile-compounding/build-acceptance", "GET", "P0", "Build acceptance should load."),
+    ("08 Build Health", "Smoke Test Matrix", "/sterile-compounding/smoke-test-matrix", "GET", "P0", "Smoke test matrix should load."),
+    ("08 Build Health", "Go-Live Readiness", "/sterile-compounding/go-live-readiness", "GET", "P0", "Go-live readiness should load."),
+    ("08 Build Health", "Change Control Pack", "/sterile-compounding/change-control-pack", "GET", "P0", "Change control pack should load."),
+    ("08 Build Health", "Freeze Snapshot", "/sterile-compounding/freeze-snapshot", "GET", "P0", "Freeze snapshot should load."),
+    ("08 Build Health", "Presentation Lock", "/sterile-compounding/presentation-lock", "GET", "P0", "Presentation lock should load."),
+    ("08 Build Health", "Stability Check", "/sterile-compounding/stability-check", "GET", "P0", "Stability check should load."),
+    ("08 Build Health", "Route Probe Check", "/sterile-compounding/route-probe-check", "GET", "P0", "Route probe check should load."),
+    ("08 Build Health", "Manual Route Test Log", "/sterile-compounding/manual-route-test-log", "GET", "P1", "Manual route test log should load."),
+
+    ("09 Roadmap", "Maturity Model", "/sterile-compounding/maturity-model", "GET", "P1", "Maturity model should load."),
+    ("09 Roadmap", "Roadmap", "/sterile-compounding/roadmap", "GET", "P1", "Roadmap should load."),
+    ("09 Roadmap", "Stakeholder Review Board", "/sterile-compounding/stakeholder-review-board", "GET", "P1", "Stakeholder review board should load."),
+    ("09 Roadmap", "Enhancement Backlog", "/sterile-compounding/enhancement-backlog", "GET", "P1", "Enhancement backlog should load."),
+    ("09 Roadmap", "Reviewer Attestation", "/sterile-compounding/reviewer-attestation", "GET", "P1", "Reviewer attestation should load."),
+    ("09 Roadmap", "Decision Log", "/sterile-compounding/decision-log", "GET", "P1", "Decision log should load."),
+
+    ("10 Integration", "Integration Blueprint", "/sterile-compounding/integration-blueprint", "GET", "P1", "Integration blueprint should load."),
+    ("10 Integration", "System Connector Readiness", "/sterile-compounding/system-connector-readiness", "GET", "P1", "System connector readiness should load."),
+    ("10 Integration", "Data Contracts", "/sterile-compounding/data-contracts", "GET", "P1", "Data contracts should load."),
+    ("10 Integration", "Field Mapping Matrix", "/sterile-compounding/field-mapping-matrix", "GET", "P1", "Field mapping matrix should load."),
+    ("10 Integration", "Mock Ingestion Lab", "/sterile-compounding/mock-ingestion-lab", "GET", "P1", "Mock ingestion lab should load."),
+    ("10 Integration", "Pre-Integration Risk", "/sterile-compounding/pre-integration-risk", "GET", "P1", "Pre-integration risk should load."),
+    ("10 Integration", "Connector Approval Board", "/sterile-compounding/connector-approval-board", "GET", "P1", "Connector approval board should load."),
+    ("10 Integration", "Implementation Decision Matrix", "/sterile-compounding/implementation-decision-matrix", "GET", "P1", "Implementation decision matrix should load."),
+    ("10 Integration", "Non-Production POC Plan", "/sterile-compounding/nonprod-poc-plan", "GET", "P1", "Non-production POC plan should load."),
+    ("10 Integration", "Connector Test Cases", "/sterile-compounding/connector-test-cases", "GET", "P1", "Connector test cases should load."),
+    ("10 Integration", "POC Test Execution", "/sterile-compounding/poc-test-execution", "GET", "P1", "POC test execution should load."),
+    ("10 Integration", "POC Evidence Checklist", "/sterile-compounding/poc-evidence-checklist", "GET", "P1", "POC evidence checklist should load."),
+    ("10 Integration", "POC Results Summary", "/sterile-compounding/poc-results-summary", "GET", "P1", "POC results summary should load."),
+    ("10 Integration", "POC Evidence Packet", "/sterile-compounding/poc-evidence-packet", "GET", "P1", "POC evidence packet should load."),
+    ("10 Integration", "Connector Sandbox Blueprint", "/sterile-compounding/connector-sandbox-blueprint", "GET", "P1", "Connector sandbox blueprint should load."),
+    ("10 Integration", "Sandbox Control Checklist", "/sterile-compounding/sandbox-control-checklist", "GET", "P1", "Sandbox control checklist should load."),
+
+    ("11 Global Bridges", "Command Center Entry", "/sterile-compounding/command-center-entry", "GET", "P1", "Command Center entry bridge should load."),
+    ("11 Global Bridges", "Monday Demo Entry", "/sterile-compounding/monday-demo-entry", "GET", "P1", "Monday Demo entry bridge should load."),
+    ("11 Global Bridges", "Release Notes Entry", "/sterile-compounding/release-notes-entry", "GET", "P1", "Release Notes entry bridge should load."),
+    ("11 Global Bridges", "Platform Health Entry", "/sterile-compounding/platform-health-entry", "GET", "P1", "Platform Health entry bridge should load."),
+    ("11 Global Bridges", "Global Exposure Map", "/sterile-compounding/global-exposure-map", "GET", "P1", "Global exposure map should load."),
+    ("11 Global Bridges", "Protected Boundary Check", "/sterile-compounding/protected-boundary-check", "GET", "P1", "Protected boundary check should load."),
+
+    ("12 Protected Global", "Command Center", "/command-center", "GET", "P0", "Existing Command Center should still load."),
+    ("12 Protected Global", "Monday Demo", "/monday-demo", "GET", "P0", "Existing Monday Demo should still load."),
+    ("12 Protected Global", "Release Notes", "/release-notes", "GET", "P0", "Existing Release Notes should still load."),
+    ("12 Protected Global", "Platform Health", "/platform-health", "GET", "P0", "Existing Platform Health should still load."),
+]
+
+
+def sterile_rpc_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile route probe dependencies missing: " + ", ".join(missing))
+
+
+def sterile_rpc_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_rpc_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_rpc_badge(status):
+    status = sterile_rpc_safe(status).upper()
+
+    if status in ["GREEN", "REGISTERED", "PASS", "AVAILABLE", "OK"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "UNTESTED", "CHECK", "REVIEW", "DYNAMIC"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "MISSING", "FAIL", "BROKEN"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_rpc_route_set():
+    try:
+        return set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return set()
+
+
+def sterile_rpc_route_status(route_url, registered_routes):
+    if route_url in registered_routes:
+        return "GREEN"
+    return "RED"
+
+
+def sterile_rpc_route_type(route_url):
+    if "<" in route_url and ">" in route_url:
+        return "Dynamic"
+    if route_url.endswith("/export"):
+        return "Export"
+    if route_url in ["/command-center", "/monday-demo", "/release-notes", "/platform-health"]:
+        return "Protected Global"
+    return "Standard"
+
+
+def sterile_rpc_read_register(register_name, columns):
+    file_path = sterile_rpc_Path(register_name)
+
+    if not file_path.exists():
+        return sterile_rpc_pd.DataFrame(columns=columns)
+
+    try:
+        df = sterile_rpc_pd.read_csv(file_path, dtype=str).fillna("")
+    except Exception:
+        df = sterile_rpc_pd.DataFrame(columns=columns)
+
+    return df.reindex(columns=columns).fillna("")
+
+
+def sterile_rpc_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+
+    return df
+
+
+def sterile_rpc_build_probe_register():
+    sterile_rpc_require_dependencies()
+
+    registered_routes = sterile_rpc_route_set()
+    rows = []
+
+    for route_group, route_title, route_url, expected_method, criticality, expected_result in STERILE_ROUTE_PROBE_SEED:
+        registration_status = sterile_rpc_route_status(route_url, registered_routes)
+
+        if registration_status == "GREEN":
+            risk = "Low. Route is registered in Flask url_map."
+            action = "Open the route in browser after Azure deploy and log observed result if needed."
+        else:
+            risk = "High. Route is not registered in Flask url_map and may return 404."
+            action = "Review the phase patch that introduced the route and check Azure deployment logs."
+
+        payload = {
+            "probe_id": sterile_rpc_make_id("ST-RPROBE", route_group, route_url),
+            "route_group": route_group,
+            "route_title": route_title,
+            "route_url": route_url,
+            "expected_method": expected_method,
+            "registration_status": registration_status,
+            "route_type": sterile_rpc_route_type(route_url),
+            "business_criticality": criticality,
+            "expected_result": expected_result,
+            "manual_test_instruction": f"Open {route_url} after Azure deployment and confirm the page or export response works as expected.",
+            "risk_if_missing": risk,
+            "recommended_action": action,
+            "last_checked": sterile_now(),
+        }
+
+        payload["probe_hash"] = sterile_hash_text(
+            sterile_rpc_json.dumps(payload, sort_keys=True)
+        )
+
+        rows.append(payload)
+
+    probe_df = sterile_rpc_pd.DataFrame(rows)
+    probe_df = probe_df.reindex(columns=STERILE_ROUTE_PROBE_COLUMNS).fillna("")
+
+    sterile_rpc_write_register(
+        STERILE_ROUTE_PROBE_REGISTER,
+        probe_df,
+        STERILE_ROUTE_PROBE_COLUMNS
+    )
+
+    log_df = sterile_rpc_read_register(
+        STERILE_MANUAL_ROUTE_TEST_LOG_REGISTER,
+        STERILE_MANUAL_ROUTE_TEST_LOG_COLUMNS
+    )
+
+    if log_df.empty:
+        seed = {
+            "test_log_id": sterile_rpc_make_id("ST-RTEST", "template", "/sterile-compounding"),
+            "route_url": "/sterile-compounding",
+            "route_title": "Template - Sterile Home",
+            "tester_name": "Pending Tester",
+            "observed_status": "UNTESTED",
+            "observed_result": "Template row. Add real browser test results after Azure deployment.",
+            "browser_or_context": "Browser after git push/Azure deploy",
+            "issue_summary": "",
+            "follow_up_needed": "NO",
+            "follow_up_owner": "App owner",
+            "created_at": sterile_now(),
+        }
+
+        seed["test_hash"] = sterile_hash_text(
+            sterile_rpc_json.dumps(seed, sort_keys=True)
+        )
+
+        log_df = sterile_rpc_pd.DataFrame([seed])
+        log_df = sterile_rpc_write_register(
+            STERILE_MANUAL_ROUTE_TEST_LOG_REGISTER,
+            log_df,
+            STERILE_MANUAL_ROUTE_TEST_LOG_COLUMNS
+        )
+
+    return probe_df, log_df
+
+
+@app.route("/sterile-compounding/route-probe-check")
+def sterile_compounding_route_probe_check():
+    probe_df, log_df = sterile_rpc_build_probe_register()
+
+    status_filter = sterile_rpc_safe(sterile_rpc_request.args.get("status", ""))
+    group_filter = sterile_rpc_safe(sterile_rpc_request.args.get("group", ""))
+    criticality_filter = sterile_rpc_safe(sterile_rpc_request.args.get("criticality", ""))
+
+    filtered = probe_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["registration_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["route_group"].astype(str) == group_filter]
+
+    if criticality_filter and not filtered.empty:
+        filtered = filtered[filtered["business_criticality"].astype(str) == criticality_filter]
+
+    total = len(filtered)
+    green = int((filtered["registration_status"] == "GREEN").sum()) if total else 0
+    red = int((filtered["registration_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["business_criticality"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "RED"]:
+        label = "All Registration Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Route Groups</option>'
+    for group in sorted(probe_df["route_group"].dropna().unique().tolist()) if not probe_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    criticality_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Criticalities" if option == "" else option
+        selected = "selected" if option == criticality_filter else ""
+        criticality_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["business_criticality", "route_group", "route_title"]).iterrows():
+            route = sterile_rpc_safe(row.get("route_url", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_rpc_badge(row.get("registration_status", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("business_criticality", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("route_group", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("route_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_rpc_safe(row.get("route_type", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("expected_method", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("expected_result", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("manual_test_instruction", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No route probe rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Route Probe Check</h1>
+        <p>
+            Internal sterile route registration probe. This checks Flask route registration only.
+            It does not make external HTTP calls and does not touch Azure, credentials, production systems,
+            or protected modules.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Routes Checked</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0 Routes</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">Registered</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">Missing</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Probe Filters</h2>
+        <form method="GET" action="/sterile-compounding/route-probe-check">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Registration Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:260px;">
+                    <label>Route Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Criticality</label>
+                    <select name="criticality">{criticality_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-probe-check">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/manual-route-test-log">Manual Test Log</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-probe-check/export">Export Probe</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Route Probe Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Criticality</th>
+                        <th>Group</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Type</th>
+                        <th>Method</th>
+                        <th>Expected Result</th>
+                        <th>Manual Test</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "ROUTE-PROBE-CHECK",
+            "STERILE_ROUTE_PROBE_CHECK_VIEW",
+            "Sterile route probe check viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/route-probe-check",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Route Probe Check", body)
+
+
+@app.route("/sterile-compounding/manual-route-test-log", methods=["GET", "POST"])
+def sterile_compounding_manual_route_test_log():
+    probe_df, log_df = sterile_rpc_build_probe_register()
+
+    if sterile_rpc_request.method == "POST":
+        form = sterile_rpc_request.form
+
+        route_url = sterile_rpc_safe(form.get("route_url", "")) or "/sterile-compounding"
+        route_title = sterile_rpc_safe(form.get("route_title", "")) or "Manual Route Test"
+        tester_name = sterile_rpc_safe(form.get("tester_name", "")) or "Tester"
+        observed_status = sterile_rpc_safe(form.get("observed_status", "PASS")) or "PASS"
+
+        payload = {
+            "test_log_id": sterile_rpc_make_id("ST-RTEST", route_url, tester_name, sterile_now()),
+            "route_url": route_url,
+            "route_title": route_title,
+            "tester_name": tester_name,
+            "observed_status": observed_status,
+            "observed_result": sterile_rpc_safe(form.get("observed_result", "")),
+            "browser_or_context": sterile_rpc_safe(form.get("browser_or_context", "")) or "Browser after Azure deployment",
+            "issue_summary": sterile_rpc_safe(form.get("issue_summary", "")),
+            "follow_up_needed": sterile_rpc_safe(form.get("follow_up_needed", "NO")) or "NO",
+            "follow_up_owner": sterile_rpc_safe(form.get("follow_up_owner", "")) or "App owner",
+            "created_at": sterile_now(),
+        }
+
+        payload["test_hash"] = sterile_hash_text(
+            sterile_rpc_json.dumps(payload, sort_keys=True)
+        )
+
+        log_df = sterile_rpc_pd.concat([log_df, sterile_rpc_pd.DataFrame([payload])], ignore_index=True)
+        log_df = sterile_rpc_write_register(
+            STERILE_MANUAL_ROUTE_TEST_LOG_REGISTER,
+            log_df,
+            STERILE_MANUAL_ROUTE_TEST_LOG_COLUMNS
+        )
+
+        try:
+            sterile_add_lineage(
+                payload["test_log_id"],
+                "STERILE_MANUAL_ROUTE_TEST_LOG_CREATED",
+                "Manual route test log captured",
+                actor=tester_name,
+                source_route="/sterile-compounding/manual-route-test-log",
+            )
+        except Exception:
+            pass
+
+        return sterile_rpc_redirect("/sterile-compounding/manual-route-test-log")
+
+    status_filter = sterile_rpc_safe(sterile_rpc_request.args.get("status", ""))
+
+    filtered = log_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["observed_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    passed = int((filtered["observed_status"] == "PASS").sum()) if total else 0
+    failed = int((filtered["observed_status"] == "FAIL").sum()) if total else 0
+    untested = int((filtered["observed_status"] == "UNTESTED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "PASS", "FAIL", "UNTESTED", "REVIEW"]:
+        label = "All Observed Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    route_options = ""
+    for _, row in probe_df.sort_values(by=["business_criticality", "route_group", "route_title"]).iterrows():
+        route = sterile_rpc_safe(row.get("route_url", ""))
+        title = sterile_rpc_safe(row.get("route_title", ""))
+        route_options += f'<option value="{route}">{title} - {route}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["created_at"], ascending=False).iterrows():
+            route = sterile_rpc_safe(row.get("route_url", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_rpc_badge(row.get("observed_status", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("route_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_rpc_safe(row.get("tester_name", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("observed_result", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("browser_or_context", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("issue_summary", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("follow_up_needed", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("follow_up_owner", ""))}</td>
+                <td>{sterile_rpc_safe(row.get("created_at", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No manual route test log rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Manual Route Test Log</h1>
+        <p>
+            Capture observed browser results after Azure deployment. This complements the internal route probe
+            by recording what actually opened in the browser.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Manual Tests</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">PASS</div><div class="st-value">{passed}</div></div>
+        <div class="st-card"><div class="st-label">FAIL</div><div class="st-value">{failed}</div></div>
+        <div class="st-card"><div class="st-label">UNTESTED</div><div class="st-value">{untested}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Capture Manual Route Test</h2>
+        <form method="POST" action="/sterile-compounding/manual-route-test-log">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
+                <div>
+                    <label>Route</label>
+                    <select name="route_url">{route_options}</select>
+                </div>
+                <div>
+                    <label>Route Title</label>
+                    <input name="route_title" placeholder="Example: Leadership Mode">
+                </div>
+                <div>
+                    <label>Tester Name</label>
+                    <input name="tester_name" placeholder="Your name">
+                </div>
+                <div>
+                    <label>Observed Status</label>
+                    <select name="observed_status">
+                        <option>PASS</option>
+                        <option>FAIL</option>
+                        <option>REVIEW</option>
+                        <option>UNTESTED</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Browser / Context</label>
+                    <input name="browser_or_context" value="Browser after Azure deployment">
+                </div>
+                <div>
+                    <label>Follow-Up Needed</label>
+                    <select name="follow_up_needed">
+                        <option>NO</option>
+                        <option>YES</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Follow-Up Owner</label>
+                    <input name="follow_up_owner" value="App owner">
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Observed Result</label>
+                <textarea name="observed_result" rows="3" placeholder="Example: Page loaded and table displayed correctly."></textarea>
+            </div>
+            <div style="margin-top:12px;">
+                <label>Issue Summary</label>
+                <textarea name="issue_summary" rows="3" placeholder="Only fill if there is a problem."></textarea>
+            </div>
+            <div style="margin-top:14px;">
+                <button class="st-button" type="submit">Save Manual Test</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-probe-check">Route Probe Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/manual-route-test-log/export">Export Manual Log</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Manual Test Filters</h2>
+        <form method="GET" action="/sterile-compounding/manual-route-test-log">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Observed Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/manual-route-test-log">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Manual Route Test Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Tester</th>
+                        <th>Observed Result</th>
+                        <th>Context</th>
+                        <th>Issue</th>
+                        <th>Follow-Up</th>
+                        <th>Owner</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "MANUAL-ROUTE-TEST-LOG",
+            "STERILE_MANUAL_ROUTE_TEST_LOG_VIEW",
+            "Sterile manual route test log viewed",
+            actor="system",
+            source_route="/sterile-compounding/manual-route-test-log",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Manual Route Test Log", body)
+
+
+@app.route("/sterile-compounding/route-probe-check/export")
+def sterile_compounding_route_probe_check_export():
+    probe_df, log_df = sterile_rpc_build_probe_register()
+
+    if probe_df.empty:
+        probe_df = sterile_rpc_pd.DataFrame(columns=STERILE_ROUTE_PROBE_COLUMNS)
+
+    csv_data = probe_df.to_csv(index=False)
+
+    return sterile_rpc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_route_probe_check_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/manual-route-test-log/export")
+def sterile_compounding_manual_route_test_log_export():
+    probe_df, log_df = sterile_rpc_build_probe_register()
+
+    if log_df.empty:
+        log_df = sterile_rpc_pd.DataFrame(columns=STERILE_MANUAL_ROUTE_TEST_LOG_COLUMNS)
+
+    csv_data = log_df.to_csv(index=False)
+
+    return sterile_rpc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_manual_route_test_log_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_route_probe_check_dashboard_injection(response):
+    try:
+        if sterile_rpc_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/stability-check",
+            "/sterile-compounding/platform-health-entry",
+            "/sterile-compounding/route-health",
+            "/sterile-compounding/build-acceptance",
+            "/sterile-compounding/smoke-test-matrix",
+            "/sterile-compounding/go-live-readiness",
+            "/sterile-compounding/presentation-lock",
+            "/sterile-compounding/inspection-packet-export",
+            "/sterile-compounding/leadership-mode",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-route-probe-check-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-route-probe-check-panel">
+            <h2>Route Probe Check + Manual Test Log</h2>
+            <p class="st-note">
+                Checks Flask route registration internally and provides a manual browser-test log after Azure deployment.
+                No external HTTP calls, no credentials, and no protected module modification.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/route-probe-check">Route Probe Check</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/manual-route-test-log">Manual Test Log</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/route-probe-check/export">Export Probe</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/manual-route-test-log/export">Export Manual Log</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile route probe check injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
