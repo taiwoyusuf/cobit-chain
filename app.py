@@ -63209,5 +63209,1063 @@ def sterile_compounding_powerbi_readiness_dashboard_injection(response):
         print(f"Sterile Power BI readiness injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POWERBI_RELATIONSHIP_MAP_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 57: Power BI Relationship Map + Dashboard Wireframe
+#
+# New Routes:
+#   /sterile-compounding/powerbi-relationship-map
+#   /sterile-compounding/powerbi-relationship-map/export
+#   /sterile-compounding/powerbi-dashboard-wireframe
+#   /sterile-compounding/powerbi-dashboard-wireframe/export
+#
+# New Registers:
+#   sterile_compounding_powerbi_relationship_map.csv
+#   sterile_compounding_powerbi_dashboard_wireframe.csv
+#
+# Boundary:
+#   This is a sterile-only reporting model and dashboard planning layer.
+#   It does not connect to Power BI, publish datasets, call APIs,
+#   store credentials, create service principals, use production data,
+#   or modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_prm_pd
+    import json as sterile_prm_json
+    from flask import request as sterile_prm_request
+    from flask import Response as sterile_prm_Response
+except Exception as sterile_prm_import_error:
+    raise RuntimeError(f"Sterile Power BI relationship map import failed: {sterile_prm_import_error}")
+
+
+STERILE_POWERBI_RELATIONSHIP_MAP_REGISTER = "sterile_compounding_powerbi_relationship_map.csv"
+STERILE_POWERBI_DASHBOARD_WIREFRAME_REGISTER = "sterile_compounding_powerbi_dashboard_wireframe.csv"
+
+STERILE_POWERBI_RELATIONSHIP_COLUMNS = [
+    "relationship_id",
+    "relationship_group",
+    "from_table",
+    "from_field",
+    "to_table",
+    "to_field",
+    "relationship_type",
+    "filter_direction",
+    "relationship_status",
+    "model_priority",
+    "business_purpose",
+    "join_logic",
+    "data_quality_rule",
+    "risk_if_missing",
+    "recommended_action",
+    "supporting_route",
+    "last_checked",
+    "relationship_hash"
+]
+
+STERILE_POWERBI_WIREFRAME_COLUMNS = [
+    "wireframe_id",
+    "report_page",
+    "visual_order",
+    "visual_name",
+    "visual_type",
+    "visual_status",
+    "visual_priority",
+    "dataset_table",
+    "kpi_or_field",
+    "filters",
+    "drillthrough_target",
+    "business_question",
+    "interpretation",
+    "not_allowed_claim",
+    "supporting_route",
+    "last_checked",
+    "wireframe_hash"
+]
+
+
+def sterile_prm_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Power BI relationship map dependencies missing: " + ", ".join(missing))
+
+
+def sterile_prm_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_prm_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_prm_badge(status):
+    status = sterile_prm_safe(status).upper()
+
+    if status in ["GREEN", "READY", "RECOMMENDED", "AVAILABLE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "PROPOSED", "OPTIONAL", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_prm_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_prm_status_for_route(route):
+    return "GREEN" if sterile_prm_route_exists(route) else "YELLOW"
+
+
+def sterile_prm_add_relationship(rows, group, from_table, from_field, to_table, to_field, rel_type, direction, priority, purpose, logic, quality, risk, action, route):
+    status = sterile_prm_status_for_route(route)
+
+    payload = {
+        "relationship_id": sterile_prm_make_id("ST-PBI-REL", group, from_table, from_field, to_table, to_field),
+        "relationship_group": group,
+        "from_table": from_table,
+        "from_field": from_field,
+        "to_table": to_table,
+        "to_field": to_field,
+        "relationship_type": rel_type,
+        "filter_direction": direction,
+        "relationship_status": status,
+        "model_priority": priority,
+        "business_purpose": purpose,
+        "join_logic": logic,
+        "data_quality_rule": quality,
+        "risk_if_missing": risk,
+        "recommended_action": action,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+
+    payload["relationship_hash"] = sterile_hash_text(
+        sterile_prm_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_prm_add_wireframe(rows, page, order, name, visual_type, priority, table, kpi_or_field, filters, drill, question, interpretation, not_allowed, route):
+    status = sterile_prm_status_for_route(route)
+
+    payload = {
+        "wireframe_id": sterile_prm_make_id("ST-PBI-WIRE", page, order, name),
+        "report_page": page,
+        "visual_order": order,
+        "visual_name": name,
+        "visual_type": visual_type,
+        "visual_status": status,
+        "visual_priority": priority,
+        "dataset_table": table,
+        "kpi_or_field": kpi_or_field,
+        "filters": filters,
+        "drillthrough_target": drill,
+        "business_question": question,
+        "interpretation": interpretation,
+        "not_allowed_claim": not_allowed,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+
+    payload["wireframe_hash"] = sterile_hash_text(
+        sterile_prm_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_prm_build_registers():
+    sterile_prm_require_dependencies()
+
+    relationship_rows = []
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "01 Route Model",
+        "Route Probe Check",
+        "route_url",
+        "Manual Route Test Log",
+        "route_url",
+        "One-to-many",
+        "Single",
+        "P0",
+        "Connect expected route registration to manual browser test results.",
+        "Route Probe Check[route_url] -> Manual Route Test Log[route_url]",
+        "route_url must be normalized and begin with /sterile-compounding or protected global route.",
+        "Without this, registered routes and observed browser results cannot be compared.",
+        "Use route_url as the common key and keep route titles consistent.",
+        "/sterile-compounding/route-probe-check",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "01 Route Model",
+        "Inspection Route Index",
+        "route_url",
+        "Route Probe Check",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P0",
+        "Show whether inspection-supporting routes are registered.",
+        "Inspection Route Index[route_url] -> Route Probe Check[route_url]",
+        "Every inspection route should appear in the route probe register.",
+        "Inspection dashboard may show evidence routes without route health context.",
+        "Use route_url to join inspection route index to route probe check.",
+        "/sterile-compounding/inspection-route-index",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "02 Inspection Model",
+        "Inspection Packet Bundle",
+        "primary_route",
+        "Inspection Route Index",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P0",
+        "Connect each packet section to the primary route that supports its evidence.",
+        "Inspection Packet Bundle[primary_route] -> Inspection Route Index[route_url]",
+        "primary_route must match an indexed route_url.",
+        "Packet sections may not drill to route-level inspection use.",
+        "Validate all primary_route values against the route index.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "02 Inspection Model",
+        "Inspection Packet Bundle",
+        "supporting_route",
+        "Inspection Route Index",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P1",
+        "Connect each packet section to its supporting evidence route.",
+        "Inspection Packet Bundle[supporting_route] -> Inspection Route Index[route_url]",
+        "supporting_route should be blank only where no secondary route exists.",
+        "Secondary evidence routes may be invisible in dashboard drill-through.",
+        "Use an inactive relationship in Power BI if primary_route is the active route relationship.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "03 Integration Model",
+        "Connector Sandbox Blueprint",
+        "system_key",
+        "Sandbox Control Checklist",
+        "system_key",
+        "One-to-many",
+        "Single",
+        "P0",
+        "Connect each future connector candidate to its control checklist.",
+        "Connector Sandbox Blueprint[system_key] -> Sandbox Control Checklist[system_key]",
+        "system_key must be lowercase and consistent across integration registers.",
+        "Connector readiness cannot be explained at control level.",
+        "Standardize system_key values before Power BI import.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "03 Integration Model",
+        "Connector Sandbox Blueprint",
+        "system_key",
+        "POC Results Summary",
+        "system_key",
+        "One-to-one or one-to-many",
+        "Single",
+        "P1",
+        "Relate future sandbox candidates to non-production POC readiness summaries.",
+        "Connector Sandbox Blueprint[system_key] -> POC Results Summary[system_key]",
+        "Only systems included in POC planning should appear in POC Results Summary.",
+        "POC evidence may be disconnected from connector candidate prioritization.",
+        "Use system_key and keep system naming consistent.",
+        "/sterile-compounding/poc-results-summary",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "04 Governance Model",
+        "Reviewer Attestation",
+        "attestation_id",
+        "Decision Log",
+        "attestation_id",
+        "One-to-many",
+        "Single",
+        "P0",
+        "Connect reviewer attestations to decisions and required follow-up.",
+        "Reviewer Attestation[attestation_id] -> Decision Log[attestation_id]",
+        "Every generated decision log row should include an attestation_id.",
+        "Dashboard cannot show which attestation produced which decision.",
+        "Use attestation_id as the governance decision key.",
+        "/sterile-compounding/reviewer-attestation",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "04 Governance Model",
+        "Decision Log",
+        "supporting_route",
+        "Route Probe Check",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P1",
+        "Connect governance decisions to route health.",
+        "Decision Log[supporting_route] -> Route Probe Check[route_url]",
+        "supporting_route should match a known route_url.",
+        "Decision context may point to a route that is not registered.",
+        "Validate supporting_route values against route probe check.",
+        "/sterile-compounding/decision-log",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "05 Executive Model",
+        "Executive Ask Tracker",
+        "supporting_route",
+        "Route Probe Check",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P1",
+        "Connect executive asks to supporting route health.",
+        "Executive Ask Tracker[supporting_route] -> Route Probe Check[route_url]",
+        "supporting_route must be a route registered by the app.",
+        "Leadership asks may reference routes that do not load.",
+        "Keep supporting_route aligned with the leadership route bundle.",
+        "/sterile-compounding/executive-ask-tracker",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "05 Executive Model",
+        "Value Scorecard",
+        "supporting_route",
+        "Route Probe Check",
+        "route_url",
+        "Many-to-one",
+        "Single",
+        "P1",
+        "Connect value domains to the routes that support them.",
+        "Value Scorecard[supporting_route] -> Route Probe Check[route_url]",
+        "supporting_route should be populated for each value domain.",
+        "Value claims may not drill into proof routes.",
+        "Use route_url to drill from value score to route proof.",
+        "/sterile-compounding/value-scorecard",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "06 Dataset Model",
+        "Power BI Dataset Contract",
+        "source_register",
+        "Power BI KPI Dictionary",
+        "source_table",
+        "Many-to-many bridge recommended",
+        "Single",
+        "P1",
+        "Relate candidate reporting tables to KPIs that depend on them.",
+        "Dataset Contract[source_register/source table] -> KPI Dictionary[source_table]",
+        "source_table names must be normalized against dataset_table names.",
+        "KPI definitions may not trace back to dataset sources.",
+        "Create a small bridge table if names differ between source_register and source_table.",
+        "/sterile-compounding/powerbi-readiness-blueprint",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "07 Status Dimensions",
+        "DimStatus",
+        "status_value",
+        "All Fact Tables",
+        "status fields",
+        "Dimension relationship",
+        "Single",
+        "P2",
+        "Standardize GREEN/YELLOW/RED and PASS/FAIL status interpretation across the dashboard.",
+        "DimStatus[status_value] -> each status column where applicable",
+        "Statuses should be uppercase and limited to controlled values.",
+        "Dashboard colors and status counts may be inconsistent.",
+        "Create a manual DimStatus table during Power BI build.",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+    )
+
+    sterile_prm_add_relationship(
+        relationship_rows,
+        "07 Status Dimensions",
+        "DimDate",
+        "date",
+        "All Fact Tables",
+        "last_checked / created_at",
+        "Dimension relationship",
+        "Single",
+        "P2",
+        "Support date filtering across generated registers and manual logs.",
+        "DimDate[date] -> date portion of last_checked/created_at",
+        "Date fields should be parsed into date and datetime columns.",
+        "Dashboard cannot show readiness evolution over time.",
+        "Create DimDate in Power BI and transform timestamp columns during import.",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+    )
+
+    wireframe_rows = []
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "01 Executive Overview",
+        10,
+        "Leadership Value Score",
+        "KPI Card",
+        "P0",
+        "Value Scorecard",
+        "Leadership Value Score",
+        "Status; Value Domain",
+        "/sterile-compounding/value-scorecard",
+        "What is the overall business value of this sterile vertical?",
+        "High score supports the case for continued review; low score means the message needs refinement.",
+        "Do not claim measured ROI or realized savings.",
+        "/sterile-compounding/value-scorecard",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "01 Executive Overview",
+        20,
+        "Evidence Readiness Rate",
+        "KPI Card",
+        "P0",
+        "Evidence Register",
+        "Evidence Readiness Rate",
+        "Evidence Category; Status",
+        "/sterile-compounding/evidence-matrix",
+        "How complete and reviewable is the evidence story?",
+        "A low rate indicates evidence gaps or weak route linkage.",
+        "Do not claim official evidence completeness unless reviewed.",
+        "/sterile-compounding/evidence-matrix",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "01 Executive Overview",
+        30,
+        "Executive Ask Status",
+        "Stacked Bar",
+        "P0",
+        "Executive Ask Tracker",
+        "ask_status by ask_priority",
+        "Ask Group; Priority",
+        "/sterile-compounding/executive-ask-tracker",
+        "What decisions are still open after the demo?",
+        "Open P0 asks should be converted into follow-up meetings or reviewer attestations.",
+        "Do not claim leadership approval unless explicitly captured.",
+        "/sterile-compounding/executive-ask-tracker",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "02 Inspection Readiness",
+        10,
+        "Inspection Packet Coverage",
+        "Donut Chart",
+        "P0",
+        "Inspection Packet Bundle",
+        "packet_status distribution",
+        "Priority; Packet Section",
+        "/sterile-compounding/inspection-packet-export",
+        "Are packet sections complete enough for inspection-style review?",
+        "YELLOW/RED packet sections indicate route or evidence gaps.",
+        "Do not call this an official inspection submission.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "02 Inspection Readiness",
+        20,
+        "Inspection Packet Table",
+        "Table",
+        "P0",
+        "Inspection Packet Bundle",
+        "packet_section; inspection_question; primary_route; safe_claim; not_safe_claim",
+        "Priority; Status",
+        "/sterile-compounding/inspection-packet-export",
+        "Which questions can the packet answer and what evidence supports each answer?",
+        "The table should show exact route paths for reviewer drill-through.",
+        "Do not claim compliance interpretation unless QA has reviewed it.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "03 Route Health",
+        10,
+        "P0 Route Registration Rate",
+        "KPI Card",
+        "P0",
+        "Route Probe Check",
+        "P0 Route Registration Rate",
+        "Route Group; Criticality",
+        "/sterile-compounding/route-probe-check",
+        "Are the critical sterile and protected routes registered?",
+        "Missing P0 routes are demo blockers.",
+        "Do not claim browser availability without manual test evidence.",
+        "/sterile-compounding/route-probe-check",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "03 Route Health",
+        20,
+        "Manual Browser Pass Rate",
+        "KPI Card",
+        "P1",
+        "Manual Route Test Log",
+        "Manual Browser Pass Rate",
+        "Observed Status; Tester",
+        "/sterile-compounding/manual-route-test-log",
+        "Which routes have actually been opened successfully after deployment?",
+        "Failures should create follow-up actions before leadership demos.",
+        "Do not claim automated uptime or monitoring.",
+        "/sterile-compounding/manual-route-test-log",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "04 Integration Sandbox",
+        10,
+        "Sandbox Readiness Ranking",
+        "Horizontal Bar Chart",
+        "P1",
+        "Connector Sandbox Blueprint",
+        "sandbox_score by system_name",
+        "System; Status",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "Which future connector candidate is safest to explore first?",
+        "Higher score means better candidate for non-production POC planning.",
+        "Do not claim live connector readiness or approved API access.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "04 Integration Sandbox",
+        20,
+        "Sandbox Control Checklist",
+        "Matrix",
+        "P1",
+        "Sandbox Control Checklist",
+        "control_status by system_name and control_group",
+        "System; Control Group; Priority",
+        "/sterile-compounding/sandbox-control-checklist",
+        "Which systems have missing boundary, data, credential, writeback, approval, or evidence controls?",
+        "P0 control gaps block any future POC discussion.",
+        "Do not imply production API or writeback approval.",
+        "/sterile-compounding/sandbox-control-checklist",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "05 Governance Decisions",
+        10,
+        "Reviewer Attestation Completion",
+        "KPI Card",
+        "P1",
+        "Reviewer Attestation",
+        "Reviewer Attestation Completion",
+        "Reviewer Group; Status",
+        "/sterile-compounding/reviewer-attestation",
+        "Have reviewers confirmed safe claims, not-safe claims, and boundaries?",
+        "Open attestations indicate decisions are still pending.",
+        "Do not call reviewer attestation QMS approval.",
+        "/sterile-compounding/reviewer-attestation",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "05 Governance Decisions",
+        20,
+        "Decision Follow-Up Table",
+        "Table",
+        "P1",
+        "Decision Log",
+        "decision_summary; approved_next_action; not_approved_action; required_follow_up",
+        "Decision Priority; Status",
+        "/sterile-compounding/decision-log",
+        "What was approved, not approved, and what must happen next?",
+        "Open follow-ups require owner assignment before the next demo stage.",
+        "Do not claim enterprise approval unless explicitly recorded.",
+        "/sterile-compounding/decision-log",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "06 Data Model QA",
+        10,
+        "Relationship Health Table",
+        "Table",
+        "P1",
+        "Power BI Relationship Map",
+        "relationship_status; from_table; to_table; data_quality_rule",
+        "Relationship Group; Priority",
+        "/sterile-compounding/powerbi-relationship-map",
+        "Does the proposed model have clear joins and data quality rules?",
+        "YELLOW relationships require modeling decisions before building the report.",
+        "Do not claim a Power BI dataset has been built from this blueprint.",
+        "/sterile-compounding/powerbi-relationship-map",
+    )
+
+    sterile_prm_add_wireframe(
+        wireframe_rows,
+        "06 Data Model QA",
+        20,
+        "KPI Dictionary Table",
+        "Table",
+        "P1",
+        "Power BI KPI Dictionary",
+        "kpi_name; definition; calculation_hint; not_allowed_claim",
+        "KPI Domain; Priority",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+        "Are KPI definitions clear enough for dashboard development?",
+        "Every KPI should have a calculation hint and a not-allowed claim.",
+        "Do not treat these KPI definitions as validated production metrics.",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+    )
+
+    relationship_df = sterile_prm_pd.DataFrame(relationship_rows)
+    relationship_df = relationship_df.reindex(columns=STERILE_POWERBI_RELATIONSHIP_COLUMNS).fillna("")
+
+    wireframe_df = sterile_prm_pd.DataFrame(wireframe_rows)
+    wireframe_df = wireframe_df.reindex(columns=STERILE_POWERBI_WIREFRAME_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_POWERBI_RELATIONSHIP_MAP_REGISTER,
+        relationship_df,
+        STERILE_POWERBI_RELATIONSHIP_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_POWERBI_DASHBOARD_WIREFRAME_REGISTER,
+        wireframe_df,
+        STERILE_POWERBI_WIREFRAME_COLUMNS
+    )
+
+    return relationship_df, wireframe_df
+
+
+@app.route("/sterile-compounding/powerbi-relationship-map")
+def sterile_compounding_powerbi_relationship_map():
+    relationship_df, wireframe_df = sterile_prm_build_registers()
+
+    status_filter = sterile_prm_safe(sterile_prm_request.args.get("status", ""))
+    priority_filter = sterile_prm_safe(sterile_prm_request.args.get("priority", ""))
+
+    filtered = relationship_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["relationship_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["model_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["relationship_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["relationship_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["relationship_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["model_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Relationship Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["model_priority", "relationship_group"]).iterrows():
+            route = sterile_prm_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_prm_badge(row.get("relationship_status", ""))}</td>
+                <td>{sterile_prm_safe(row.get("model_priority", ""))}</td>
+                <td>{sterile_prm_safe(row.get("relationship_group", ""))}</td>
+                <td>{sterile_prm_safe(row.get("from_table", ""))}</td>
+                <td><code>{sterile_prm_safe(row.get("from_field", ""))}</code></td>
+                <td>{sterile_prm_safe(row.get("to_table", ""))}</td>
+                <td><code>{sterile_prm_safe(row.get("to_field", ""))}</code></td>
+                <td>{sterile_prm_safe(row.get("relationship_type", ""))}</td>
+                <td>{sterile_prm_safe(row.get("business_purpose", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI relationship map rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Relationship Map</h1>
+        <p>
+            Proposed relationship model for a future sterile Power BI dashboard.
+            This defines table joins, key fields, filter direction, model priority,
+            data quality rules, and modeling risk. It does not create a Power BI dataset.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Relationships</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Relationship Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-relationship-map">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Relationship Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-relationship-map">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dashboard-wireframe">Dashboard Wireframe</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-relationship-map/export">Export Relationship Map</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI Relationship Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>From Table</th>
+                        <th>From Field</th>
+                        <th>To Table</th>
+                        <th>To Field</th>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This is a reporting model proposal only. It does not build a semantic model,
+            publish a dataset, configure refresh, or connect to Power BI.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-RELATIONSHIP-MAP",
+            "STERILE_POWERBI_RELATIONSHIP_MAP_VIEW",
+            "Sterile Power BI relationship map viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-relationship-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Relationship Map", body)
+
+
+@app.route("/sterile-compounding/powerbi-dashboard-wireframe")
+def sterile_compounding_powerbi_dashboard_wireframe():
+    relationship_df, wireframe_df = sterile_prm_build_registers()
+
+    status_filter = sterile_prm_safe(sterile_prm_request.args.get("status", ""))
+    priority_filter = sterile_prm_safe(sterile_prm_request.args.get("priority", ""))
+
+    filtered = wireframe_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["visual_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["visual_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["visual_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["visual_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["visual_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["visual_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Visual Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["report_page", "visual_order"]).iterrows():
+            route = sterile_prm_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_prm_badge(row.get("visual_status", ""))}</td>
+                <td>{sterile_prm_safe(row.get("visual_priority", ""))}</td>
+                <td>{sterile_prm_safe(row.get("report_page", ""))}</td>
+                <td>{sterile_prm_safe(row.get("visual_order", ""))}</td>
+                <td>{sterile_prm_safe(row.get("visual_name", ""))}</td>
+                <td>{sterile_prm_safe(row.get("visual_type", ""))}</td>
+                <td>{sterile_prm_safe(row.get("dataset_table", ""))}</td>
+                <td>{sterile_prm_safe(row.get("kpi_or_field", ""))}</td>
+                <td>{sterile_prm_safe(row.get("business_question", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI dashboard wireframe rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Dashboard Wireframe</h1>
+        <p>
+            Proposed report pages, visuals, filters, drill-through targets, and interpretation guidance
+            for a future sterile Power BI dashboard. This does not build or publish a report.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Visuals</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Wireframe Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-dashboard-wireframe">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Visual Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dashboard-wireframe">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-relationship-map">Relationship Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dashboard-wireframe/export">Export Wireframe</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI Dashboard Wireframe Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Report Page</th>
+                        <th>Order</th>
+                        <th>Visual</th>
+                        <th>Type</th>
+                        <th>Dataset Table</th>
+                        <th>KPI / Field</th>
+                        <th>Business Question</th>
+                        <th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This wireframe is a report-design plan only. It does not create a Power BI report,
+            publish visuals, configure data refresh, or validate production KPIs.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-DASHBOARD-WIREFRAME",
+            "STERILE_POWERBI_DASHBOARD_WIREFRAME_VIEW",
+            "Sterile Power BI dashboard wireframe viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-dashboard-wireframe",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Dashboard Wireframe", body)
+
+
+@app.route("/sterile-compounding/powerbi-relationship-map/export")
+def sterile_compounding_powerbi_relationship_map_export():
+    relationship_df, wireframe_df = sterile_prm_build_registers()
+
+    if relationship_df.empty:
+        relationship_df = sterile_prm_pd.DataFrame(columns=STERILE_POWERBI_RELATIONSHIP_COLUMNS)
+
+    csv_data = relationship_df.to_csv(index=False)
+
+    return sterile_prm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_relationship_map_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/powerbi-dashboard-wireframe/export")
+def sterile_compounding_powerbi_dashboard_wireframe_export():
+    relationship_df, wireframe_df = sterile_prm_build_registers()
+
+    if wireframe_df.empty:
+        wireframe_df = sterile_prm_pd.DataFrame(columns=STERILE_POWERBI_WIREFRAME_COLUMNS)
+
+    csv_data = wireframe_df.to_csv(index=False)
+
+    return sterile_prm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_dashboard_wireframe_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_powerbi_relationship_map_dashboard_injection(response):
+    try:
+        if sterile_prm_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/powerbi-readiness-blueprint",
+            "/sterile-compounding/powerbi-kpi-dictionary",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/route-probe-check",
+            "/sterile-compounding/manual-route-test-log",
+            "/sterile-compounding/connector-sandbox-blueprint",
+            "/sterile-compounding/inspection-packet-export",
+            "/sterile-compounding/executive-ask-tracker",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-powerbi-relationship-map-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-powerbi-relationship-map-panel">
+            <h2>Power BI Relationship Map + Dashboard Wireframe</h2>
+            <p class="st-note">
+                Defines future reporting relationships, semantic model joins, report pages, visuals,
+                filters, drill-throughs, and dashboard interpretation rules. No Power BI connection is made.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/powerbi-relationship-map">Relationship Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dashboard-wireframe">Dashboard Wireframe</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-relationship-map/export">Export Relationship Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dashboard-wireframe/export">Export Wireframe</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Power BI relationship map injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
