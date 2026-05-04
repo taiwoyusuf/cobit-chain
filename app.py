@@ -59809,5 +59809,737 @@ def sterile_compounding_connector_sandbox_blueprint_dashboard_injection(response
         print(f"Sterile connector sandbox blueprint injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_LEADERSHIP_MODE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 53: One-Click Leadership Mode + Executive Ask Tracker
+#
+# New Routes:
+#   /sterile-compounding/leadership-mode
+#   /sterile-compounding/leadership-mode/export
+#   /sterile-compounding/executive-ask-tracker
+#   /sterile-compounding/executive-ask-tracker/export
+#
+# New Registers:
+#   sterile_compounding_leadership_mode.csv
+#   sterile_compounding_executive_ask_tracker.csv
+#
+# Boundary:
+#   This is a sterile-only leadership summary and executive ask layer.
+#   It does not overwrite existing routes and does not modify protected
+#   global modules, ServiceNow, Entra, CI, Knowledge, Operational Lineage,
+#   Manufacturing/Wole, Command Center, Monday Demo, Release Notes, or
+#   Platform Health logic.
+# ============================================================
+
+try:
+    import pandas as sterile_lm_pd
+    import json as sterile_lm_json
+    from flask import request as sterile_lm_request
+    from flask import Response as sterile_lm_Response
+except Exception as sterile_lm_import_error:
+    raise RuntimeError(f"Sterile leadership mode import failed: {sterile_lm_import_error}")
+
+
+STERILE_LEADERSHIP_MODE_REGISTER = "sterile_compounding_leadership_mode.csv"
+STERILE_EXECUTIVE_ASK_TRACKER_REGISTER = "sterile_compounding_executive_ask_tracker.csv"
+
+STERILE_LEADERSHIP_MODE_COLUMNS = [
+    "leadership_id",
+    "display_order",
+    "leadership_section",
+    "section_status",
+    "headline",
+    "plain_english_message",
+    "proof_point",
+    "supporting_route",
+    "executive_value",
+    "safe_claim",
+    "not_safe_claim",
+    "next_click",
+    "last_checked",
+    "leadership_hash"
+]
+
+STERILE_EXECUTIVE_ASK_TRACKER_COLUMNS = [
+    "ask_id",
+    "ask_group",
+    "ask_status",
+    "ask_priority",
+    "ask_title",
+    "ask_statement",
+    "decision_needed",
+    "why_it_matters",
+    "evidence_to_show",
+    "supporting_route",
+    "expected_owner",
+    "safe_boundary",
+    "not_allowed_action",
+    "recommended_follow_up",
+    "last_checked",
+    "ask_hash"
+]
+
+
+def sterile_lm_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile leadership mode dependencies missing: " + ", ".join(missing))
+
+
+def sterile_lm_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_lm_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_lm_badge(status):
+    status = sterile_lm_safe(status).upper()
+
+    if status in ["GREEN", "READY", "STRONG", "APPROVED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "OPEN", "CONDITIONAL", "REVIEW"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "REJECTED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_lm_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_lm_route_status(route):
+    return "GREEN" if sterile_lm_route_exists(route) else "YELLOW"
+
+
+def sterile_lm_add_section(rows, order, section, headline, message, proof, route, value, safe, unsafe, next_click):
+    status = sterile_lm_route_status(route)
+
+    payload = {
+        "leadership_id": sterile_lm_make_id("ST-LEAD", order, section, route),
+        "display_order": order,
+        "leadership_section": section,
+        "section_status": status,
+        "headline": headline,
+        "plain_english_message": message,
+        "proof_point": proof,
+        "supporting_route": route,
+        "executive_value": value,
+        "safe_claim": safe,
+        "not_safe_claim": unsafe,
+        "next_click": next_click,
+        "last_checked": sterile_now(),
+    }
+
+    payload["leadership_hash"] = sterile_hash_text(
+        sterile_lm_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_lm_add_ask(rows, group, status, priority, title, statement, decision, why, evidence, route, owner, boundary, not_allowed, follow_up):
+    payload = {
+        "ask_id": sterile_lm_make_id("ST-ASK", group, title, route),
+        "ask_group": group,
+        "ask_status": status,
+        "ask_priority": priority,
+        "ask_title": title,
+        "ask_statement": statement,
+        "decision_needed": decision,
+        "why_it_matters": why,
+        "evidence_to_show": evidence,
+        "supporting_route": route,
+        "expected_owner": owner,
+        "safe_boundary": boundary,
+        "not_allowed_action": not_allowed,
+        "recommended_follow_up": follow_up,
+        "last_checked": sterile_now(),
+    }
+
+    payload["ask_hash"] = sterile_hash_text(
+        sterile_lm_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_lm_build_registers():
+    sterile_lm_require_dependencies()
+
+    leadership_rows = []
+
+    sterile_lm_add_section(
+        leadership_rows,
+        10,
+        "Problem",
+        "Sterile compounding evidence is hard to trust when it is scattered.",
+        "In regulated operations, the issue is not only whether work was done. The harder question is whether evidence, ownership, review, readiness, and boundaries can be reconstructed quickly and confidently.",
+        "Evidence matrix, inspection binder, packet manifest, and readiness views.",
+        "/sterile-compounding/inspection-binder",
+        "Frames the problem in leadership language: evidence trust, audit readiness, and operational control.",
+        "Safe to say the vertical organizes sterile evidence into a controlled review story.",
+        "Do not claim it is the official QMS or product release system.",
+        "/sterile-compounding/value-scorecard",
+    )
+
+    sterile_lm_add_section(
+        leadership_rows,
+        20,
+        "Solution",
+        "AssuranceLayer turns records into control-to-evidence workflows.",
+        "The sterile vertical links records, evidence, sign-off logic, inspection narrative, readiness gates, and integration planning into one governed path.",
+        "Record passports, evidence matrix, audit pack, release dossier, and master assurance index.",
+        "/sterile-compounding/master-assurance-index",
+        "Shows that the app is not just a page collection; it is a governance overlay pattern.",
+        "Safe to say it supports evidence governance and readiness review.",
+        "Do not claim it replaces validated systems or QA approval.",
+        "/sterile-compounding/executive-handoff-pack",
+    )
+
+    sterile_lm_add_section(
+        leadership_rows,
+        30,
+        "Readiness",
+        "The build has self-checks, route health, and presentation controls.",
+        "The app includes build acceptance, smoke-test matrix, go-live readiness, freeze snapshot, presentation lock, stability check, and protected boundary check.",
+        "Stability check and protected boundary check.",
+        "/sterile-compounding/stability-check",
+        "Builds confidence that the module was expanded safely and can be demonstrated with discipline.",
+        "Safe to say it has demo-stage readiness controls.",
+        "Do not claim this is production validation or formal release approval.",
+        "/sterile-compounding/protected-boundary-check",
+    )
+
+    sterile_lm_add_section(
+        leadership_rows,
+        40,
+        "Integration",
+        "The app blocks premature connector work by forcing blueprint-first governance.",
+        "Before any API or integration work, the sterile vertical defines source-of-truth boundaries, data contracts, mock ingestion, connector approvals, POC evidence, sandbox blueprint, and no-writeback rules.",
+        "Connector sandbox blueprint, data contracts, implementation decision matrix, and sandbox controls.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "Shows an enterprise-safe path toward future integrations without touching production systems.",
+        "Safe to say it documents connector readiness and sandbox planning.",
+        "Do not claim ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or Azure ledger are live-connected.",
+        "/sterile-compounding/sandbox-control-checklist",
+    )
+
+    sterile_lm_add_section(
+        leadership_rows,
+        50,
+        "Value",
+        "The value is trust, not replacement.",
+        "AssuranceLayer does not compete with source systems. It helps leaders know whether the evidence across those systems is complete, reviewable, and safe enough to rely on.",
+        "Value scorecard, executive handoff pack, and leadership route bundle.",
+        "/sterile-compounding/value-scorecard",
+        "Turns technical work into business-value language: evidence readiness, inspection preparedness, integration readiness, POC control, and protected build discipline.",
+        "Safe to say this is a reusable governance pattern for regulated operations.",
+        "Do not claim realized savings or enterprise adoption unless measured and approved later.",
+        "/sterile-compounding/executive-ask-tracker",
+    )
+
+    sterile_lm_add_section(
+        leadership_rows,
+        60,
+        "Ask",
+        "The next step is not production. The next step is review and prioritization.",
+        "The right ask is to identify which review path matters most: QA boundary review, system-owner feedback, first sandbox candidate, or leadership demo refinement.",
+        "Executive ask tracker and stakeholder review board.",
+        "/sterile-compounding/executive-ask-tracker",
+        "Gives leadership a clear decision path instead of ending the demo vaguely.",
+        "Safe to ask for feedback, prioritization, and review ownership.",
+        "Do not ask for production deployment, live credentials, or enterprise writeback from this demo.",
+        "/sterile-compounding/stakeholder-review-board",
+    )
+
+    ask_rows = []
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "Leadership",
+        "YELLOW",
+        "P0",
+        "Approve next review audience",
+        "Which group should review this first: QA/compliance, IT leadership, system owners, or architecture?",
+        "Select the first formal review audience.",
+        "Without a clear review audience, the innovation may remain a demo instead of becoming a governed pilot candidate.",
+        "Executive handoff pack and value scorecard.",
+        "/sterile-compounding/executive-handoff-pack",
+        "IT leadership / sponsor",
+        "Review prioritization only; no production commitment.",
+        "No production deployment, no live connector, no validated-use claim.",
+        "Schedule a 30-minute review with the selected audience and capture feedback in stakeholder review board.",
+    )
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "QA / Compliance",
+        "YELLOW",
+        "P0",
+        "Review safe-claim boundary",
+        "Are the safe claims and not-safe claims acceptable for demo-stage and concept-stage discussion?",
+        "Confirm whether the boundary language is acceptable or needs revision.",
+        "QA comfort with boundary language is critical before broader internal demos.",
+        "Executive handoff pack, reviewer attestation, protected boundary check.",
+        "/sterile-compounding/reviewer-attestation",
+        "QA / governance reviewer",
+        "Boundary review only; not QMS approval.",
+        "No product release authority or official QMS approval implied.",
+        "Capture reviewer attestation and decision log after QA review.",
+    )
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "System Owners",
+        "YELLOW",
+        "P0",
+        "Select first sandbox candidate",
+        "Which future integration candidate should be considered first for non-production sandbox planning?",
+        "Choose one candidate such as ServiceNow, Power BI, Veeva, Blue Mountain, myAccess, Entra, Azure Blob, or Azure Confidential Ledger.",
+        "A single prioritized candidate prevents the roadmap from becoming too broad.",
+        "Connector sandbox blueprint and sandbox control checklist.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "System owner / architecture reviewer",
+        "Sandbox planning only; no live connector.",
+        "No credentials, no production API call, no writeback, no source-system mutation.",
+        "Use sandbox control checklist and reviewer attestation before any POC work.",
+    )
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "Operations",
+        "YELLOW",
+        "P1",
+        "Validate workflow realism",
+        "Does the inspection binder and readiness flow match how evidence would actually be reviewed?",
+        "Confirm which workflow screens should be simplified, renamed, or made more realistic.",
+        "Operational realism improves credibility with reviewers and users.",
+        "Inspection binder, evidence matrix, go-live readiness.",
+        "/sterile-compounding/inspection-binder",
+        "Operations reviewer / QA reviewer",
+        "Workflow feedback only; no operational use claim.",
+        "No claim that current records are real production records unless approved.",
+        "Convert feedback into enhancement backlog items.",
+    )
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "Architecture",
+        "YELLOW",
+        "P1",
+        "Review blueprint-first integration model",
+        "Is the blueprint-first, no-writeback, non-production sandbox path technically reasonable?",
+        "Confirm whether the future connector governance sequence is technically credible.",
+        "Architecture review helps prevent premature or unsafe integration design.",
+        "Integration blueprint, data contracts, implementation decision matrix.",
+        "/sterile-compounding/integration-blueprint",
+        "Enterprise architecture / integration owner",
+        "Architecture review only; no connector activation.",
+        "No API credential, no endpoint call, no system modification.",
+        "Capture architecture feedback and update sandbox blueprint backlog.",
+    )
+
+    sterile_lm_add_ask(
+        ask_rows,
+        "Demo Sponsor",
+        "GREEN",
+        "P2",
+        "Confirm leadership demo route",
+        "Is the one-click leadership mode enough for a short executive walkthrough?",
+        "Confirm whether leadership mode should be the default demo entry route.",
+        "A shorter demo route improves adoption conversation quality.",
+        "Leadership mode and leadership route bundle.",
+        "/sterile-compounding/leadership-mode",
+        "Presenter / sponsor",
+        "Demo-routing decision only.",
+        "No claim of enterprise approval.",
+        "Use leadership mode as the first page for short demos.",
+    )
+
+    leadership_df = sterile_lm_pd.DataFrame(leadership_rows)
+    leadership_df = leadership_df.reindex(columns=STERILE_LEADERSHIP_MODE_COLUMNS).fillna("")
+
+    ask_df = sterile_lm_pd.DataFrame(ask_rows)
+    ask_df = ask_df.reindex(columns=STERILE_EXECUTIVE_ASK_TRACKER_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_LEADERSHIP_MODE_REGISTER,
+        leadership_df,
+        STERILE_LEADERSHIP_MODE_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_EXECUTIVE_ASK_TRACKER_REGISTER,
+        ask_df,
+        STERILE_EXECUTIVE_ASK_TRACKER_COLUMNS
+    )
+
+    return leadership_df, ask_df
+
+
+@app.route("/sterile-compounding/leadership-mode")
+def sterile_compounding_leadership_mode():
+    leadership_df, ask_df = sterile_lm_build_registers()
+
+    status_filter = sterile_lm_safe(sterile_lm_request.args.get("status", ""))
+
+    filtered = leadership_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["section_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["section_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["section_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["section_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Section Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    card_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["display_order"]).iterrows():
+            route = sterile_lm_safe(row.get("supporting_route", ""))
+            next_click = sterile_lm_safe(row.get("next_click", ""))
+            route_link = f'<a class="st-button" href="{route}">Open Proof</a>' if route else ""
+            next_link = f'<a class="st-button st-button-dark" href="{next_click}">Next</a>' if next_click else ""
+
+            card_html += f"""
+            <div class="st-panel">
+                <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:13px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:#475569;">
+                            {sterile_lm_safe(row.get("leadership_section", ""))}
+                        </div>
+                        <h2 style="margin-top:6px;">{sterile_lm_safe(row.get("headline", ""))}</h2>
+                    </div>
+                    <div>{sterile_lm_badge(row.get("section_status", ""))}</div>
+                </div>
+                <p style="font-size:16px; line-height:1.6;">{sterile_lm_safe(row.get("plain_english_message", ""))}</p>
+                <p><b>Proof point:</b> {sterile_lm_safe(row.get("proof_point", ""))}</p>
+                <p><b>Executive value:</b> {sterile_lm_safe(row.get("executive_value", ""))}</p>
+                <p><b>Safe claim:</b> {sterile_lm_safe(row.get("safe_claim", ""))}</p>
+                <p><b>Do not claim:</b> {sterile_lm_safe(row.get("not_safe_claim", ""))}</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                    {route_link}
+                    {next_link}
+                </div>
+            </div>
+            """
+    else:
+        card_html = """
+        <div class="st-panel">
+            <p>No leadership mode rows found.</p>
+        </div>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>One-Click Leadership Mode</h1>
+        <p>
+            A simplified executive view of Compound Sterile AssuranceLayer™. Use this route when you need
+            to explain the whole vertical quickly: problem, solution, readiness, integration, value, and the ask.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Sections</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Leadership Controls</h2>
+        <form method="GET" action="/sterile-compounding/leadership-mode">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Section Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-mode">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker">Executive Ask Tracker</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-mode/export">Export Leadership Mode</a>
+            </div>
+        </form>
+    </div>
+
+    {card_html}
+    """
+
+    try:
+        sterile_add_lineage(
+            "LEADERSHIP-MODE",
+            "STERILE_LEADERSHIP_MODE_VIEW",
+            "Sterile one-click leadership mode viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/leadership-mode",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("One-Click Leadership Mode", body)
+
+
+@app.route("/sterile-compounding/executive-ask-tracker")
+def sterile_compounding_executive_ask_tracker():
+    leadership_df, ask_df = sterile_lm_build_registers()
+
+    status_filter = sterile_lm_safe(sterile_lm_request.args.get("status", ""))
+    priority_filter = sterile_lm_safe(sterile_lm_request.args.get("priority", ""))
+
+    filtered = ask_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["ask_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["ask_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["ask_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["ask_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["ask_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["ask_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Ask Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["ask_priority", "ask_group"]).iterrows():
+            route = sterile_lm_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_lm_badge(row.get("ask_status", ""))}</td>
+                <td>{sterile_lm_safe(row.get("ask_priority", ""))}</td>
+                <td>{sterile_lm_safe(row.get("ask_group", ""))}</td>
+                <td>{sterile_lm_safe(row.get("ask_title", ""))}</td>
+                <td>{sterile_lm_safe(row.get("ask_statement", ""))}</td>
+                <td>{sterile_lm_safe(row.get("decision_needed", ""))}</td>
+                <td>{sterile_lm_safe(row.get("why_it_matters", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_lm_safe(row.get("expected_owner", ""))}</td>
+                <td>{sterile_lm_safe(row.get("recommended_follow_up", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No executive ask rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Executive Ask Tracker</h1>
+        <p>
+            Tracks the specific decisions you want after the leadership demo. This prevents the presentation
+            from ending without a clear next action.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Asks</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Ask Filters</h2>
+        <form method="GET" action="/sterile-compounding/executive-ask-tracker">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Ask Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-mode">Leadership Mode</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker/export">Export Ask Tracker</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Executive Ask Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>Ask</th>
+                        <th>Statement</th>
+                        <th>Decision Needed</th>
+                        <th>Why It Matters</th>
+                        <th>Evidence</th>
+                        <th>Owner</th>
+                        <th>Follow-Up</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "EXECUTIVE-ASK-TRACKER",
+            "STERILE_EXECUTIVE_ASK_TRACKER_VIEW",
+            "Sterile executive ask tracker viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/executive-ask-tracker",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Executive Ask Tracker", body)
+
+
+@app.route("/sterile-compounding/leadership-mode/export")
+def sterile_compounding_leadership_mode_export():
+    leadership_df, ask_df = sterile_lm_build_registers()
+
+    if leadership_df.empty:
+        leadership_df = sterile_lm_pd.DataFrame(columns=STERILE_LEADERSHIP_MODE_COLUMNS)
+
+    csv_data = leadership_df.to_csv(index=False)
+
+    return sterile_lm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_leadership_mode_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/executive-ask-tracker/export")
+def sterile_compounding_executive_ask_tracker_export():
+    leadership_df, ask_df = sterile_lm_build_registers()
+
+    if ask_df.empty:
+        ask_df = sterile_lm_pd.DataFrame(columns=STERILE_EXECUTIVE_ASK_TRACKER_COLUMNS)
+
+    csv_data = ask_df.to_csv(index=False)
+
+    return sterile_lm_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_executive_ask_tracker_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_leadership_mode_dashboard_injection(response):
+    try:
+        if sterile_lm_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/executive-handoff-pack",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/leadership-route-bundle",
+            "/sterile-compounding/handoff-checklist",
+            "/sterile-compounding/stakeholder-review-board",
+            "/sterile-compounding/enhancement-backlog",
+            "/sterile-compounding/reviewer-attestation",
+            "/sterile-compounding/connector-sandbox-blueprint",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-leadership-mode-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-leadership-mode-panel">
+            <h2>One-Click Leadership Mode + Executive Ask Tracker</h2>
+            <p class="st-note">
+                Condenses the sterile vertical into a short executive story and tracks the specific decisions
+                needed after a leadership or reviewer demo.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/leadership-mode">Leadership Mode</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker">Executive Ask Tracker</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/leadership-mode/export">Export Leadership Mode</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker/export">Export Ask Tracker</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile leadership mode injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
