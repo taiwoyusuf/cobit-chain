@@ -64267,5 +64267,1021 @@ def sterile_compounding_powerbi_relationship_map_dashboard_injection(response):
         print(f"Sterile Power BI relationship map injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POWERBI_EXPORT_PACK_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 58: Power BI Export Pack + Build Readiness Checklist
+#
+# New Routes:
+#   /sterile-compounding/powerbi-export-pack
+#   /sterile-compounding/powerbi-export-pack/export
+#   /sterile-compounding/powerbi-build-checklist
+#   /sterile-compounding/powerbi-build-checklist/export
+#
+# New Registers:
+#   sterile_compounding_powerbi_export_pack.csv
+#   sterile_compounding_powerbi_build_checklist.csv
+#
+# Boundary:
+#   This is a sterile-only Power BI export planning layer.
+#   It does not connect to Power BI, publish datasets, call APIs,
+#   store credentials, create service principals, use production data,
+#   or modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_pbx_pd
+    import json as sterile_pbx_json
+    from pathlib import Path as sterile_pbx_Path
+    from flask import request as sterile_pbx_request
+    from flask import Response as sterile_pbx_Response
+except Exception as sterile_pbx_import_error:
+    raise RuntimeError(f"Sterile Power BI export pack import failed: {sterile_pbx_import_error}")
+
+
+STERILE_POWERBI_EXPORT_PACK_REGISTER = "sterile_compounding_powerbi_export_pack.csv"
+STERILE_POWERBI_BUILD_CHECKLIST_REGISTER = "sterile_compounding_powerbi_build_checklist.csv"
+
+STERILE_POWERBI_EXPORT_PACK_COLUMNS = [
+    "export_id",
+    "export_group",
+    "export_name",
+    "export_status",
+    "export_priority",
+    "source_register",
+    "source_route",
+    "export_route",
+    "target_powerbi_table",
+    "grain",
+    "key_fields",
+    "required_for_dashboard",
+    "refresh_handling",
+    "data_boundary",
+    "not_allowed_action",
+    "build_note",
+    "last_checked",
+    "export_hash"
+]
+
+STERILE_POWERBI_BUILD_CHECKLIST_COLUMNS = [
+    "check_id",
+    "check_group",
+    "check_name",
+    "check_status",
+    "check_priority",
+    "requirement",
+    "evidence_needed",
+    "supporting_route",
+    "risk_if_missing",
+    "not_allowed_action",
+    "recommended_action",
+    "last_checked",
+    "check_hash"
+]
+
+
+def sterile_pbx_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Power BI export pack dependencies missing: " + ", ".join(missing))
+
+
+def sterile_pbx_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_pbx_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_pbx_badge(status):
+    status = sterile_pbx_safe(status).upper()
+
+    if status in ["GREEN", "READY", "AVAILABLE", "PASS"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "PROPOSED", "REVIEW", "CONDITIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING", "FAIL"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_pbx_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_pbx_file_exists(file_name):
+    try:
+        return sterile_pbx_Path(file_name).exists()
+    except Exception:
+        return False
+
+
+def sterile_pbx_status(source_route, source_register):
+    route_ok = sterile_pbx_route_exists(source_route)
+    file_ok = sterile_pbx_file_exists(source_register)
+
+    if route_ok and file_ok:
+        return "GREEN"
+    if route_ok:
+        return "YELLOW"
+    return "RED"
+
+
+def sterile_pbx_add_export(rows, group, name, priority, source_register, source_route, export_route, table, grain, keys, required, refresh, boundary, not_allowed, note):
+    status = sterile_pbx_status(source_route, source_register)
+
+    payload = {
+        "export_id": sterile_pbx_make_id("ST-PBI-EXPORT", group, name, source_register),
+        "export_group": group,
+        "export_name": name,
+        "export_status": status,
+        "export_priority": priority,
+        "source_register": source_register,
+        "source_route": source_route,
+        "export_route": export_route,
+        "target_powerbi_table": table,
+        "grain": grain,
+        "key_fields": keys,
+        "required_for_dashboard": required,
+        "refresh_handling": refresh,
+        "data_boundary": boundary,
+        "not_allowed_action": not_allowed,
+        "build_note": note,
+        "last_checked": sterile_now(),
+    }
+
+    payload["export_hash"] = sterile_hash_text(
+        sterile_pbx_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_pbx_add_check(rows, group, name, status, priority, requirement, evidence, route, risk, not_allowed, action):
+    payload = {
+        "check_id": sterile_pbx_make_id("ST-PBI-CHECK", group, name, route),
+        "check_group": group,
+        "check_name": name,
+        "check_status": status,
+        "check_priority": priority,
+        "requirement": requirement,
+        "evidence_needed": evidence,
+        "supporting_route": route,
+        "risk_if_missing": risk,
+        "not_allowed_action": not_allowed,
+        "recommended_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["check_hash"] = sterile_hash_text(
+        sterile_pbx_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_pbx_build_registers():
+    sterile_pbx_require_dependencies()
+
+    export_rows = []
+
+    sterile_pbx_add_export(
+        export_rows,
+        "01 Executive",
+        "Value Scorecard",
+        "P0",
+        "sterile_compounding_value_scorecard.csv",
+        "/sterile-compounding/value-scorecard",
+        "/sterile-compounding/value-scorecard/export",
+        "FactValueScorecard",
+        "One row per value domain",
+        "value_id; value_domain",
+        "YES",
+        "Manual CSV export only; no Power BI refresh configured.",
+        "Demo-stage value metadata only.",
+        "No ROI, realized savings, or enterprise adoption claim.",
+        "Use for executive value cards and value-domain ranking."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "01 Executive",
+        "Executive Ask Tracker",
+        "P0",
+        "sterile_compounding_executive_ask_tracker.csv",
+        "/sterile-compounding/executive-ask-tracker",
+        "/sterile-compounding/executive-ask-tracker/export",
+        "FactExecutiveAsk",
+        "One row per executive ask",
+        "ask_id; ask_group; ask_priority",
+        "YES",
+        "Manual CSV export only.",
+        "Demo-stage ask tracking only.",
+        "No leadership approval claim unless explicitly captured.",
+        "Use for open P0 ask tracking and follow-up ownership."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "02 Inspection",
+        "Inspection Packet Bundle",
+        "P0",
+        "sterile_compounding_inspection_packet_export.csv",
+        "/sterile-compounding/inspection-packet-export",
+        "/sterile-compounding/inspection-packet-export/export",
+        "FactInspectionPacket",
+        "One row per inspection packet section",
+        "packet_id; packet_section; packet_priority",
+        "YES",
+        "Manual CSV export only.",
+        "Inspection-readiness index only; not official submission.",
+        "No official regulatory submission or inspection response claim.",
+        "Use for inspection packet coverage and reviewer question mapping."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "02 Inspection",
+        "Inspection Route Index",
+        "P0",
+        "sterile_compounding_inspection_route_index.csv",
+        "/sterile-compounding/inspection-route-index",
+        "/sterile-compounding/inspection-route-index/export",
+        "DimInspectionRoute",
+        "One row per inspection-supporting route",
+        "route_index_id; route_url",
+        "YES",
+        "Manual CSV export only.",
+        "Route metadata only.",
+        "No claim that every route was manually browser-tested unless manual test log confirms.",
+        "Use for route drill-through and route-to-packet relationships."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "03 Route Health",
+        "Route Probe Check",
+        "P0",
+        "sterile_compounding_route_probe_check.csv",
+        "/sterile-compounding/route-probe-check",
+        "/sterile-compounding/route-probe-check/export",
+        "FactRouteProbe",
+        "One row per expected route",
+        "probe_id; route_url",
+        "YES",
+        "Manual CSV export only.",
+        "Internal Flask route registration check only.",
+        "No automated uptime, Azure health, or external HTTP monitoring claim.",
+        "Use for registered/missing route status and P0 route health."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "03 Route Health",
+        "Manual Route Test Log",
+        "P1",
+        "sterile_compounding_manual_route_test_log.csv",
+        "/sterile-compounding/manual-route-test-log",
+        "/sterile-compounding/manual-route-test-log/export",
+        "FactManualRouteTest",
+        "One row per manual route test",
+        "test_log_id; route_url; created_at",
+        "YES",
+        "Manual CSV export only.",
+        "User-entered manual browser test evidence only.",
+        "No automated monitoring or SLA claim.",
+        "Use to compare registered routes against manually observed browser status."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "04 Integration",
+        "Connector Sandbox Blueprint",
+        "P1",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "/sterile-compounding/connector-sandbox-blueprint/export",
+        "FactConnectorSandbox",
+        "One row per future connector candidate",
+        "sandbox_id; system_key",
+        "YES",
+        "Manual CSV export only.",
+        "Sandbox-planning metadata only.",
+        "No live connector, API, credential, writeback, or source-system connection claim.",
+        "Use for connector candidate prioritization and sandbox readiness score."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "04 Integration",
+        "Sandbox Control Checklist",
+        "P1",
+        "sterile_compounding_sandbox_control_checklist.csv",
+        "/sterile-compounding/sandbox-control-checklist",
+        "/sterile-compounding/sandbox-control-checklist/export",
+        "FactSandboxControl",
+        "One row per system control",
+        "control_id; system_key; control_group",
+        "YES",
+        "Manual CSV export only.",
+        "Sandbox control checklist only.",
+        "No connector approval or API permission claim.",
+        "Use for P0 control gaps across boundary/data/credential/writeback/approval/evidence."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "05 Governance",
+        "Reviewer Attestation",
+        "P1",
+        "sterile_compounding_reviewer_attestation.csv",
+        "/sterile-compounding/reviewer-attestation",
+        "/sterile-compounding/reviewer-attestation/export",
+        "FactReviewerAttestation",
+        "One row per reviewer attestation",
+        "attestation_id",
+        "YES",
+        "Manual CSV export only.",
+        "Demo-stage reviewer attestation only.",
+        "No QMS approval, validation approval, or enterprise endorsement claim.",
+        "Use for reviewer group, attestation status, and follow-up tracking."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "05 Governance",
+        "Decision Log",
+        "P1",
+        "sterile_compounding_decision_log.csv",
+        "/sterile-compounding/decision-log",
+        "/sterile-compounding/decision-log/export",
+        "FactDecisionLog",
+        "One row per decision",
+        "decision_id; attestation_id",
+        "YES",
+        "Manual CSV export only.",
+        "Demo-stage decision log only.",
+        "No official enterprise approval claim unless separately documented.",
+        "Use for approved/not-approved actions and required follow-up."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "06 Power BI Model",
+        "Power BI Dataset Contract",
+        "P0",
+        "sterile_compounding_powerbi_readiness_blueprint.csv",
+        "/sterile-compounding/powerbi-readiness-blueprint",
+        "/sterile-compounding/powerbi-readiness-blueprint/export",
+        "ModelDatasetContract",
+        "One row per proposed dataset table",
+        "dataset_id; dataset_table",
+        "YES",
+        "Manual CSV export only.",
+        "Reporting contract only.",
+        "No published dataset or configured refresh claim.",
+        "Use as the main dataset build guide."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "06 Power BI Model",
+        "Power BI KPI Dictionary",
+        "P0",
+        "sterile_compounding_powerbi_kpi_dictionary.csv",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+        "/sterile-compounding/powerbi-kpi-dictionary/export",
+        "ModelKPIDictionary",
+        "One row per proposed KPI",
+        "kpi_id; kpi_name; kpi_domain",
+        "YES",
+        "Manual CSV export only.",
+        "KPI design metadata only.",
+        "No validated production metric or realized ROI claim.",
+        "Use to define measures and visual interpretations."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "06 Power BI Model",
+        "Power BI Relationship Map",
+        "P0",
+        "sterile_compounding_powerbi_relationship_map.csv",
+        "/sterile-compounding/powerbi-relationship-map",
+        "/sterile-compounding/powerbi-relationship-map/export",
+        "ModelRelationshipMap",
+        "One row per proposed model relationship",
+        "relationship_id",
+        "YES",
+        "Manual CSV export only.",
+        "Semantic model proposal only.",
+        "No semantic model build or relationship validation claim.",
+        "Use to build joins and bridge tables in Power BI later."
+    )
+
+    sterile_pbx_add_export(
+        export_rows,
+        "06 Power BI Model",
+        "Power BI Dashboard Wireframe",
+        "P0",
+        "sterile_compounding_powerbi_dashboard_wireframe.csv",
+        "/sterile-compounding/powerbi-dashboard-wireframe",
+        "/sterile-compounding/powerbi-dashboard-wireframe/export",
+        "ModelDashboardWireframe",
+        "One row per proposed dashboard visual",
+        "wireframe_id; report_page; visual_order",
+        "YES",
+        "Manual CSV export only.",
+        "Report design blueprint only.",
+        "No Power BI report or dashboard publication claim.",
+        "Use to design report pages, visuals, filters, and drill-through."
+    )
+
+    checklist_rows = []
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "01 Source Files",
+        "Confirm all P0 export files are available",
+        "YELLOW",
+        "P0",
+        "All P0 source registers should exist before building the dashboard.",
+        "Power BI export pack rows with export_priority = P0 and export_status = GREEN.",
+        "/sterile-compounding/powerbi-export-pack",
+        "Dashboard build will have missing tables or broken queries.",
+        "Do not create a report using missing or stale source exports.",
+        "Open each P0 source route/export route and refresh the export pack."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "01 Source Files",
+        "Confirm route probe and manual test distinction",
+        "GREEN",
+        "P0",
+        "Route Probe Check is internal route registration only; Manual Route Test Log is observed browser evidence.",
+        "Route probe export and manual test log export.",
+        "/sterile-compounding/route-probe-check",
+        "Stakeholders may confuse internal route registration with real browser testing.",
+        "Do not claim live browser pass unless the manual test log confirms it.",
+        "Use both route probe and manual test log in the model."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "02 Security",
+        "Confirm no credentials are required",
+        "GREEN",
+        "P0",
+        "Dashboard build should use exported CSV files only in this phase.",
+        "Export pack data boundary and not-allowed-action columns.",
+        "/sterile-compounding/powerbi-export-pack",
+        "Credential use would create security and approval risk.",
+        "No service principal, token, password, connection string, or API key.",
+        "Use manual CSV import/export only."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "02 Security",
+        "Confirm no production data is required",
+        "GREEN",
+        "P0",
+        "The Power BI plan must use sterile app metadata and synthetic/demo-stage registers only.",
+        "Dataset contract security boundary fields.",
+        "/sterile-compounding/powerbi-readiness-blueprint",
+        "Production data use would require additional approvals and controls.",
+        "No PHI/PII, production batch evidence, credentials, or sensitive source records.",
+        "Keep dataset contract metadata-only."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "03 Data Model",
+        "Normalize route_url fields",
+        "YELLOW",
+        "P1",
+        "Route fields must match exactly across Route Probe, Manual Test Log, Inspection Route Index, Decision Log, and Executive Ask Tracker.",
+        "Power BI relationship map route_url relationships.",
+        "/sterile-compounding/powerbi-relationship-map",
+        "Relationships will fail if routes have inconsistent spelling or trailing slashes.",
+        "Do not manually rename routes differently across tables.",
+        "Use route_url as the primary route join key."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "03 Data Model",
+        "Create DimStatus and DimDate manually",
+        "YELLOW",
+        "P2",
+        "Future dashboard should use status/date dimensions for consistent filtering.",
+        "Relationship map DimStatus and DimDate rows.",
+        "/sterile-compounding/powerbi-relationship-map",
+        "Status colors and date filters may be inconsistent.",
+        "Do not mix GREEN/YELLOW/RED with unstandardized free-text statuses in visuals.",
+        "Create a small DimStatus and DimDate table in Power BI later."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "04 KPI Build",
+        "Use KPI dictionary definitions as measure source",
+        "GREEN",
+        "P0",
+        "Every KPI should trace back to the KPI dictionary before a measure is created.",
+        "Power BI KPI dictionary export.",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+        "Measures may be interpreted incorrectly without documented definitions.",
+        "Do not claim validated production metrics.",
+        "Build DAX only after confirming numerator, denominator, and not-allowed claim."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "04 KPI Build",
+        "Use wireframe before visuals",
+        "GREEN",
+        "P1",
+        "Visuals should follow the dashboard wireframe so the report has a controlled story.",
+        "Power BI dashboard wireframe export.",
+        "/sterile-compounding/powerbi-dashboard-wireframe",
+        "Report may become cluttered or miss the executive storyline.",
+        "Do not create visuals that imply production monitoring.",
+        "Build report pages in the sequence shown in the wireframe."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "05 Governance",
+        "Keep Power BI as reporting layer only",
+        "GREEN",
+        "P0",
+        "Power BI should report on exported sterile registers; it must not become the system of record.",
+        "Dataset contract and export pack boundary fields.",
+        "/sterile-compounding/powerbi-readiness-blueprint",
+        "Stakeholders may mistake dashboard visuals for source-system truth.",
+        "No source-system writeback, no QMS approval claim, no validated source-of-truth claim.",
+        "State clearly that source systems and approved records remain authoritative."
+    )
+
+    sterile_pbx_add_check(
+        checklist_rows,
+        "05 Governance",
+        "Capture dashboard review as attestation if reviewed",
+        "YELLOW",
+        "P1",
+        "If a reviewer evaluates the Power BI blueprint, capture the review in Reviewer Attestation and Decision Log.",
+        "Reviewer Attestation and Decision Log routes.",
+        "/sterile-compounding/reviewer-attestation",
+        "Feedback may be lost or treated as informal approval.",
+        "Do not claim approval without recorded attestation/decision.",
+        "Add a reviewer attestation after dashboard blueprint review."
+    )
+
+    export_df = sterile_pbx_pd.DataFrame(export_rows)
+    export_df = export_df.reindex(columns=STERILE_POWERBI_EXPORT_PACK_COLUMNS).fillna("")
+
+    checklist_df = sterile_pbx_pd.DataFrame(checklist_rows)
+    checklist_df = checklist_df.reindex(columns=STERILE_POWERBI_BUILD_CHECKLIST_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_POWERBI_EXPORT_PACK_REGISTER,
+        export_df,
+        STERILE_POWERBI_EXPORT_PACK_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_POWERBI_BUILD_CHECKLIST_REGISTER,
+        checklist_df,
+        STERILE_POWERBI_BUILD_CHECKLIST_COLUMNS
+    )
+
+    return export_df, checklist_df
+
+
+@app.route("/sterile-compounding/powerbi-export-pack")
+def sterile_compounding_powerbi_export_pack():
+    export_df, checklist_df = sterile_pbx_build_registers()
+
+    status_filter = sterile_pbx_safe(sterile_pbx_request.args.get("status", ""))
+    priority_filter = sterile_pbx_safe(sterile_pbx_request.args.get("priority", ""))
+    group_filter = sterile_pbx_safe(sterile_pbx_request.args.get("group", ""))
+
+    filtered = export_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["export_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["export_priority"].astype(str) == priority_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["export_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["export_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["export_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["export_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["export_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Export Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Export Groups</option>'
+    for group in sorted(export_df["export_group"].dropna().unique().tolist()) if not export_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["export_priority", "export_group", "export_name"]).iterrows():
+            source_route = sterile_pbx_safe(row.get("source_route", ""))
+            export_route = sterile_pbx_safe(row.get("export_route", ""))
+            source_link = f'<a href="{source_route}">{source_route}</a>' if source_route else ""
+            export_link = f'<a href="{export_route}">{export_route}</a>' if export_route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pbx_badge(row.get("export_status", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("export_priority", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("export_group", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("export_name", ""))}</td>
+                <td><code>{sterile_pbx_safe(row.get("source_register", ""))}</code></td>
+                <td>{source_link}</td>
+                <td>{export_link}</td>
+                <td>{sterile_pbx_safe(row.get("target_powerbi_table", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("grain", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("build_note", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI export pack rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Export Pack</h1>
+        <p>
+            Export manifest for the sterile Power BI blueprint. This identifies which sterile registers
+            should feed the future report, where to export them, what table they become, and what boundaries apply.
+            No Power BI connection is made.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Exports</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Export Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-export-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Export Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <div style="min-width:240px;">
+                    <label>Export Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-export-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-build-checklist">Build Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-export-pack/export">Export Pack Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI Export Pack Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>Export Name</th>
+                        <th>Source Register</th>
+                        <th>Source Route</th>
+                        <th>Export Route</th>
+                        <th>Target Table</th>
+                        <th>Grain</th>
+                        <th>Build Note</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This export pack is a manual reporting manifest only. It does not create a Power BI workspace,
+            dataset, report, refresh schedule, credential, service principal, or source-system connector.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-EXPORT-PACK",
+            "STERILE_POWERBI_EXPORT_PACK_VIEW",
+            "Sterile Power BI export pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-export-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Export Pack", body)
+
+
+@app.route("/sterile-compounding/powerbi-build-checklist")
+def sterile_compounding_powerbi_build_checklist():
+    export_df, checklist_df = sterile_pbx_build_registers()
+
+    status_filter = sterile_pbx_safe(sterile_pbx_request.args.get("status", ""))
+    priority_filter = sterile_pbx_safe(sterile_pbx_request.args.get("priority", ""))
+
+    filtered = checklist_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["check_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["check_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["check_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["check_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["check_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["check_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Check Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["check_priority", "check_group", "check_name"]).iterrows():
+            route = sterile_pbx_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_pbx_badge(row.get("check_status", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("check_priority", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("check_group", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("check_name", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("requirement", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("evidence_needed", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_pbx_safe(row.get("risk_if_missing", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("not_allowed_action", ""))}</td>
+                <td>{sterile_pbx_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No Power BI build checklist rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Build Readiness Checklist</h1>
+        <p>
+            Readiness gate for a future Power BI dashboard build. This confirms source files, security boundaries,
+            data-model assumptions, KPI definitions, visual story, and governance limits before dashboard creation.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Checks</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Checklist Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-build-checklist">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Check Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-build-checklist">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-export-pack">Export Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-build-checklist/export">Export Checklist</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Power BI Build Checklist Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Group</th>
+                        <th>Check</th>
+                        <th>Requirement</th>
+                        <th>Evidence Needed</th>
+                        <th>Route</th>
+                        <th>Risk</th>
+                        <th>Not Allowed</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This checklist authorizes nothing by itself. It is a planning gate only. Any actual Power BI workspace,
+            dataset, refresh schedule, service principal, data gateway, or enterprise connection needs separate approval.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-BUILD-CHECKLIST",
+            "STERILE_POWERBI_BUILD_CHECKLIST_VIEW",
+            "Sterile Power BI build checklist viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-build-checklist",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Build Readiness Checklist", body)
+
+
+@app.route("/sterile-compounding/powerbi-export-pack/export")
+def sterile_compounding_powerbi_export_pack_export():
+    export_df, checklist_df = sterile_pbx_build_registers()
+
+    if export_df.empty:
+        export_df = sterile_pbx_pd.DataFrame(columns=STERILE_POWERBI_EXPORT_PACK_COLUMNS)
+
+    csv_data = export_df.to_csv(index=False)
+
+    return sterile_pbx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_export_pack_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/powerbi-build-checklist/export")
+def sterile_compounding_powerbi_build_checklist_export():
+    export_df, checklist_df = sterile_pbx_build_registers()
+
+    if checklist_df.empty:
+        checklist_df = sterile_pbx_pd.DataFrame(columns=STERILE_POWERBI_BUILD_CHECKLIST_COLUMNS)
+
+    csv_data = checklist_df.to_csv(index=False)
+
+    return sterile_pbx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_build_checklist_export.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_powerbi_export_pack_dashboard_injection(response):
+    try:
+        if sterile_pbx_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/powerbi-readiness-blueprint",
+            "/sterile-compounding/powerbi-kpi-dictionary",
+            "/sterile-compounding/powerbi-relationship-map",
+            "/sterile-compounding/powerbi-dashboard-wireframe",
+            "/sterile-compounding/value-scorecard",
+            "/sterile-compounding/route-probe-check",
+            "/sterile-compounding/manual-route-test-log",
+            "/sterile-compounding/inspection-packet-export",
+            "/sterile-compounding/leadership-mode",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-powerbi-export-pack-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-powerbi-export-pack-panel">
+            <h2>Power BI Export Pack + Build Readiness Checklist</h2>
+            <p class="st-note">
+                Defines which sterile CSV/register exports feed a future dashboard and what must be checked
+                before any report build. No Power BI connection, dataset publish, or API call is made.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/powerbi-export-pack">Power BI Export Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-build-checklist">Build Checklist</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-export-pack/export">Export Pack Register</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-build-checklist/export">Export Checklist</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile Power BI export pack injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
