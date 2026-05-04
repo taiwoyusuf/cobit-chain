@@ -60541,5 +60541,892 @@ def sterile_compounding_leadership_mode_dashboard_injection(response):
         print(f"Sterile leadership mode injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INSPECTION_PACKET_EXPORT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 54: Inspection Packet Export Bundle + Route Index
+#
+# New Routes:
+#   /sterile-compounding/inspection-packet-export
+#   /sterile-compounding/inspection-packet-export/<packet_id>
+#   /sterile-compounding/inspection-packet-export/export
+#   /sterile-compounding/inspection-route-index
+#   /sterile-compounding/inspection-route-index/export
+#
+# New Registers:
+#   sterile_compounding_inspection_packet_export.csv
+#   sterile_compounding_inspection_route_index.csv
+#
+# Boundary:
+#   This is a sterile-only inspection packet indexing and export layer.
+#   It does not create an official inspection submission, does not write
+#   to QMS/Veeva/ServiceNow/Blue Mountain/myAccess/Entra, and does not
+#   modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_ipx_pd
+    import json as sterile_ipx_json
+    from flask import request as sterile_ipx_request
+    from flask import Response as sterile_ipx_Response
+except Exception as sterile_ipx_import_error:
+    raise RuntimeError(f"Sterile inspection packet export import failed: {sterile_ipx_import_error}")
+
+
+STERILE_INSPECTION_PACKET_EXPORT_REGISTER = "sterile_compounding_inspection_packet_export.csv"
+STERILE_INSPECTION_ROUTE_INDEX_REGISTER = "sterile_compounding_inspection_route_index.csv"
+
+STERILE_INSPECTION_PACKET_EXPORT_COLUMNS = [
+    "packet_id",
+    "packet_section",
+    "packet_title",
+    "packet_status",
+    "packet_priority",
+    "inspection_question",
+    "evidence_summary",
+    "primary_route",
+    "supporting_route",
+    "export_register",
+    "reviewer_note",
+    "safe_claim",
+    "not_safe_claim",
+    "recommended_use",
+    "last_checked",
+    "packet_hash"
+]
+
+STERILE_INSPECTION_ROUTE_INDEX_COLUMNS = [
+    "route_index_id",
+    "route_group",
+    "route_title",
+    "route_url",
+    "route_status",
+    "inspection_use",
+    "evidence_type",
+    "export_available",
+    "source_register",
+    "reviewer_question_supported",
+    "risk_if_missing",
+    "recommended_action",
+    "last_checked",
+    "route_hash"
+]
+
+
+def sterile_ipx_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile inspection packet export dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ipx_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ipx_make_id(prefix, *parts):
+    raw = "|".join([str(part) for part in parts])
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ipx_badge(status):
+    status = sterile_ipx_safe(status).upper()
+
+    if status in ["GREEN", "READY", "AVAILABLE", "COMPLETE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "CONDITIONAL", "PARTIAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "MISSING", "BLOCKED"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ipx_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_ipx_route_status(route):
+    return "GREEN" if sterile_ipx_route_exists(route) else "YELLOW"
+
+
+def sterile_ipx_add_packet(rows, section, title, priority, question, summary, primary, supporting, export_register, note, safe, unsafe, use):
+    status = sterile_ipx_route_status(primary)
+
+    payload = {
+        "packet_id": sterile_ipx_make_id("ST-IPX", section, title, primary),
+        "packet_section": section,
+        "packet_title": title,
+        "packet_status": status,
+        "packet_priority": priority,
+        "inspection_question": question,
+        "evidence_summary": summary,
+        "primary_route": primary,
+        "supporting_route": supporting,
+        "export_register": export_register,
+        "reviewer_note": note,
+        "safe_claim": safe,
+        "not_safe_claim": unsafe,
+        "recommended_use": use,
+        "last_checked": sterile_now(),
+    }
+
+    payload["packet_hash"] = sterile_hash_text(
+        sterile_ipx_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_ipx_add_route(rows, group, title, route, use, evidence_type, export_available, source_register, question, risk, action):
+    status = sterile_ipx_route_status(route)
+
+    payload = {
+        "route_index_id": sterile_ipx_make_id("ST-IRUTE", group, title, route),
+        "route_group": group,
+        "route_title": title,
+        "route_url": route,
+        "route_status": status,
+        "inspection_use": use,
+        "evidence_type": evidence_type,
+        "export_available": export_available,
+        "source_register": source_register,
+        "reviewer_question_supported": question,
+        "risk_if_missing": risk,
+        "recommended_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["route_hash"] = sterile_hash_text(
+        sterile_ipx_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_ipx_build_registers():
+    sterile_ipx_require_dependencies()
+
+    packet_rows = []
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "01 Executive Summary",
+        "Executive Inspection Readiness Brief",
+        "P0",
+        "Can leadership explain what the sterile assurance layer does and what it does not do?",
+        "Executive brief, leadership mode, value scorecard, and safe-claim boundaries.",
+        "/sterile-compounding/executive-brief",
+        "/sterile-compounding/leadership-mode",
+        "sterile_compounding_executive_brief_register.csv",
+        "Use this section to orient reviewers before showing detailed evidence.",
+        "Safe to say this summarizes sterile evidence governance and readiness.",
+        "Do not claim official QA approval, QMS replacement, or product release authority.",
+        "Open first during inspection-style walkthroughs or leadership reviews."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "02 Evidence Traceability",
+        "Evidence Matrix and Evidence Vault",
+        "P0",
+        "Can evidence be traced from sterile records to reviewable evidence routes?",
+        "Evidence vault, evidence matrix, record passport, audit pack, release dossier, and packet manifest.",
+        "/sterile-compounding/evidence-matrix",
+        "/sterile-compounding/evidence-vault",
+        "sterile_compounding_evidence_matrix_register.csv",
+        "Use this section to prove evidence is organized and route-linked.",
+        "Safe to say the app supports control-to-evidence traceability.",
+        "Do not claim the evidence is official production evidence unless separately approved.",
+        "Use when a reviewer asks where evidence came from or how it is organized."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "03 Audit and Release Readiness",
+        "Audit Pack and Release Dossier",
+        "P0",
+        "Can the app assemble a reviewable audit/readiness package?",
+        "Audit pack, release dossier, sign-off board, no-release composite, and master assurance index.",
+        "/sterile-compounding/audit-pack",
+        "/sterile-compounding/release-dossier",
+        "sterile_compounding_audit_pack_register.csv",
+        "Use this section to show readiness packaging, not product release approval.",
+        "Safe to say it structures audit/readiness evidence.",
+        "Do not say it releases sterile product or replaces QA release.",
+        "Use after evidence traceability to show package-level readiness."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "04 Integrity and Custody",
+        "Seal Ledger, Verification, and Custody Chain",
+        "P1",
+        "Can evidence integrity and custody be explained?",
+        "Seal ledger, seal verification, seal health, custody chain, custody health, and custody audit link.",
+        "/sterile-compounding/seal-ledger",
+        "/sterile-compounding/custody-chain",
+        "sterile_compounding_seal_register.csv",
+        "Use this section to explain tamper-evident logic and custody narrative.",
+        "Safe to say the app demonstrates hash-based integrity and custody concepts.",
+        "Do not claim production ledger anchoring unless separately implemented.",
+        "Use when a reviewer asks how evidence tampering or custody issues would be detected."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "05 Drift and Readiness",
+        "SOP, Formula, Personnel, Equipment, and Room Readiness",
+        "P1",
+        "Can the app identify readiness drift across procedure, people, equipment, and room factors?",
+        "SOP/formula drift, personnel competency drift, equipment-room readiness, closure simulator, and recovery plan.",
+        "/sterile-compounding/sop-drift",
+        "/sterile-compounding/equipment-room-drift",
+        "sterile_compounding_sop_drift_register.csv",
+        "Use this section to show readiness is multi-factor, not just document presence.",
+        "Safe to say it models drift and readiness risk.",
+        "Do not claim it replaces validated operational checks or official batch release controls.",
+        "Use when explaining how AssuranceLayer identifies evidence gaps before review."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "06 Regulatory and Auditor Readiness",
+        "Regulatory Crosswalk and Auditor Q&A",
+        "P0",
+        "Can the app answer reviewer/auditor questions with mapped evidence?",
+        "Regulatory crosswalk, control-evidence coverage, auditor Q&A pack, inspection narrative, and inspection binder.",
+        "/sterile-compounding/regulatory-crosswalk",
+        "/sterile-compounding/auditor-qa-pack",
+        "sterile_compounding_regulatory_crosswalk_register.csv",
+        "Use this section to demonstrate reviewer-facing narrative.",
+        "Safe to say it supports inspection preparation and reviewer question mapping.",
+        "Do not claim approved regulatory interpretation unless reviewed by compliance.",
+        "Use when the reviewer asks how this aligns to audit or inspection expectations."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "07 Build and Demo Controls",
+        "Build Acceptance, Go-Live Readiness, and Stability",
+        "P0",
+        "Can the presenter prove the demo build is controlled and stable?",
+        "Route health, build acceptance, smoke test matrix, go-live readiness, freeze snapshot, presentation lock, and stability check.",
+        "/sterile-compounding/go-live-readiness",
+        "/sterile-compounding/stability-check",
+        "sterile_compounding_go_live_readiness_register.csv",
+        "Use this section to prove demo-stage discipline.",
+        "Safe to say it has demo-stage readiness and stability checks.",
+        "Do not claim production validation or formal change-control approval.",
+        "Use before or after the demo to reduce concerns about build stability."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "08 Integration and POC Boundaries",
+        "Integration Blueprint and Sandbox Controls",
+        "P1",
+        "Can future integrations be discussed safely without implying live connectors?",
+        "Integration blueprint, data contracts, mock ingestion, connector approval, POC planning, sandbox blueprint, and sandbox controls.",
+        "/sterile-compounding/integration-blueprint",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "sterile_compounding_integration_blueprint_register.csv",
+        "Use this section to show the app forces blueprint-first integration governance.",
+        "Safe to say it documents future connector readiness and sandbox planning.",
+        "Do not claim live API integrations, credentials, or production writeback.",
+        "Use when stakeholders ask how it could later connect to enterprise systems."
+    )
+
+    sterile_ipx_add_packet(
+        packet_rows,
+        "09 Stakeholder and Decision Evidence",
+        "Review Board, Attestation, and Decision Log",
+        "P1",
+        "Can stakeholder feedback and reviewer decisions be captured?",
+        "Stakeholder review board, enhancement backlog, reviewer attestation, decision log, and executive ask tracker.",
+        "/sterile-compounding/stakeholder-review-board",
+        "/sterile-compounding/reviewer-attestation",
+        "sterile_compounding_stakeholder_review_board.csv",
+        "Use this section to show governance does not end at the demo.",
+        "Safe to say it captures review questions, attestations, and decisions for demo-stage governance.",
+        "Do not claim QMS approval or official enterprise endorsement.",
+        "Use at the end of the review to capture next steps."
+    )
+
+    route_rows = []
+
+    inspection_routes = [
+        ("Executive", "Leadership Mode", "/sterile-compounding/leadership-mode", "Open a condensed executive story.", "Leadership summary", "YES", "sterile_compounding_leadership_mode.csv", "What is this and why does it matter?", "Demo may lack executive clarity.", "Open first for senior stakeholders."),
+        ("Executive", "Executive Brief", "/sterile-compounding/executive-brief", "Show business framing and governance message.", "Executive narrative", "YES", "sterile_compounding_executive_brief_register.csv", "Can leadership explain this clearly?", "Review may become too technical.", "Use before technical evidence pages."),
+        ("Evidence", "Evidence Matrix", "/sterile-compounding/evidence-matrix", "Show evidence categories and route links.", "Evidence traceability", "YES", "sterile_compounding_evidence_matrix_register.csv", "Where is the evidence and how is it linked?", "Evidence may appear scattered.", "Use as the main evidence traceability page."),
+        ("Evidence", "Evidence Vault", "/sterile-compounding/evidence-vault", "Show evidence object summary.", "Evidence inventory", "YES", "sterile_compounding_evidence_vault_register.csv", "What evidence objects exist?", "Reviewers may not see an evidence inventory.", "Use with evidence matrix."),
+        ("Audit", "Audit Pack", "/sterile-compounding/audit-pack", "Show audit-ready packaging.", "Audit pack", "YES", "sterile_compounding_audit_pack_register.csv", "Can the app assemble an audit pack?", "Audit story may remain fragmented.", "Use after evidence matrix."),
+        ("Audit", "Release Dossier", "/sterile-compounding/release-dossier", "Show readiness dossier logic.", "Readiness dossier", "YES", "sterile_compounding_release_dossier_register.csv", "What is the readiness dossier?", "May be mistaken for product release if not explained.", "Emphasize demo/readiness boundary."),
+        ("Integrity", "Seal Ledger", "/sterile-compounding/seal-ledger", "Show hash/seal concept.", "Integrity record", "YES", "sterile_compounding_seal_register.csv", "How is evidence integrity represented?", "Integrity story may be weak.", "Clarify this is concept/demo-stage."),
+        ("Custody", "Custody Chain", "/sterile-compounding/custody-chain", "Show custody sequence.", "Custody record", "YES", "sterile_compounding_custody_chain_register.csv", "Who handled what and when?", "Custody narrative may be unclear.", "Use with custody health."),
+        ("Drift", "SOP Drift", "/sterile-compounding/sop-drift", "Show SOP/formula drift indicators.", "Drift register", "YES", "sterile_compounding_sop_drift_register.csv", "Are SOP/formula gaps visible?", "Procedure drift may be missed.", "Use for readiness-risk discussion."),
+        ("Readiness", "Equipment Room Drift", "/sterile-compounding/equipment-room-drift", "Show equipment/room readiness drift.", "Readiness drift", "YES", "sterile_compounding_equipment_room_drift_register.csv", "Are room/equipment readiness issues visible?", "Operational readiness may be oversimplified.", "Use for operational reviewers."),
+        ("Inspection", "Regulatory Crosswalk", "/sterile-compounding/regulatory-crosswalk", "Show control-to-evidence mapping.", "Regulatory crosswalk", "YES", "sterile_compounding_regulatory_crosswalk_register.csv", "How does evidence map to controls?", "Reviewer may not see control alignment.", "Use for QA/compliance discussion."),
+        ("Inspection", "Auditor Q&A Pack", "/sterile-compounding/auditor-qa-pack", "Show likely questions and answers.", "Auditor Q&A", "YES", "sterile_compounding_auditor_qa_register.csv", "Can the app answer reviewer questions?", "Audit readiness may feel theoretical.", "Use during inspection-style demo."),
+        ("Inspection", "Inspection Narrative", "/sterile-compounding/inspection-narrative", "Show the story for reviewers.", "Inspection narrative", "YES", "sterile_compounding_inspection_narrative_register.csv", "Can the story be explained coherently?", "Review may feel like disconnected screens.", "Use before inspection binder."),
+        ("Inspection", "Inspection Binder", "/sterile-compounding/inspection-binder", "Show packetized inspection binder.", "Inspection binder", "YES", "sterile_compounding_inspection_binder_register.csv", "Can evidence be packaged for review?", "Reviewer may not see the full packet.", "Use as the main inspection page."),
+        ("Build", "Go-Live Readiness", "/sterile-compounding/go-live-readiness", "Show demo-stage readiness status.", "Readiness register", "YES", "sterile_compounding_go_live_readiness_register.csv", "Is the build ready to present?", "Build may appear uncontrolled.", "Use before stakeholder demo."),
+        ("Build", "Stability Check", "/sterile-compounding/stability-check", "Show markers and route registration.", "Stability check", "YES", "sterile_compounding_stability_check.csv", "Are the routes and markers intact?", "Technical trust may be low.", "Use for technical reviewers."),
+        ("Integration", "Integration Blueprint", "/sterile-compounding/integration-blueprint", "Show future connector planning.", "Integration blueprint", "YES", "sterile_compounding_integration_blueprint_register.csv", "How would this connect later?", "Stakeholders may assume live API work exists.", "State clearly that this is planning-only."),
+        ("Integration", "Connector Sandbox Blueprint", "/sterile-compounding/connector-sandbox-blueprint", "Show sandbox-only connector path.", "Sandbox blueprint", "YES", "sterile_compounding_connector_sandbox_blueprint.csv", "How can we test safely later?", "POC could become uncontrolled.", "Use no-credential/no-writeback language."),
+        ("Decision", "Reviewer Attestation", "/sterile-compounding/reviewer-attestation", "Capture reviewer boundary confirmation.", "Attestation register", "YES", "sterile_compounding_reviewer_attestation.csv", "Who reviewed and what did they decide?", "Feedback may not be captured.", "Use after review."),
+        ("Decision", "Decision Log", "/sterile-compounding/decision-log", "Show decisions and follow-up.", "Decision log", "YES", "sterile_compounding_decision_log.csv", "What was approved or not approved?", "Next steps may be vague.", "Use at the end of review."),
+        ("Ask", "Executive Ask Tracker", "/sterile-compounding/executive-ask-tracker", "Show the decision ask.", "Ask tracker", "YES", "sterile_compounding_executive_ask_tracker.csv", "What do we want leadership to decide?", "Demo may end without next action.", "Use as the final page."),
+    ]
+
+    for group, title, route, use, evidence_type, export_available, source_register, question, risk, action in inspection_routes:
+        sterile_ipx_add_route(
+            route_rows,
+            group,
+            title,
+            route,
+            use,
+            evidence_type,
+            export_available,
+            source_register,
+            question,
+            risk,
+            action,
+        )
+
+    packet_df = sterile_ipx_pd.DataFrame(packet_rows)
+    packet_df = packet_df.reindex(columns=STERILE_INSPECTION_PACKET_EXPORT_COLUMNS).fillna("")
+
+    route_df = sterile_ipx_pd.DataFrame(route_rows)
+    route_df = route_df.reindex(columns=STERILE_INSPECTION_ROUTE_INDEX_COLUMNS).fillna("")
+
+    sterile_write_register(
+        STERILE_INSPECTION_PACKET_EXPORT_REGISTER,
+        packet_df,
+        STERILE_INSPECTION_PACKET_EXPORT_COLUMNS
+    )
+
+    sterile_write_register(
+        STERILE_INSPECTION_ROUTE_INDEX_REGISTER,
+        route_df,
+        STERILE_INSPECTION_ROUTE_INDEX_COLUMNS
+    )
+
+    return packet_df, route_df
+
+
+@app.route("/sterile-compounding/inspection-packet-export")
+def sterile_compounding_inspection_packet_export():
+    packet_df, route_df = sterile_ipx_build_registers()
+
+    status_filter = sterile_ipx_safe(sterile_ipx_request.args.get("status", ""))
+    priority_filter = sterile_ipx_safe(sterile_ipx_request.args.get("priority", ""))
+
+    filtered = packet_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["packet_status"].astype(str) == status_filter]
+
+    if priority_filter and not filtered.empty:
+        filtered = filtered[filtered["packet_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["packet_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["packet_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["packet_status"] == "RED").sum()) if total else 0
+    p0 = int((filtered["packet_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Packet Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["packet_priority", "packet_section"]).iterrows():
+            packet_id = sterile_ipx_safe(row.get("packet_id", ""))
+            primary_route = sterile_ipx_safe(row.get("primary_route", ""))
+            supporting_route = sterile_ipx_safe(row.get("supporting_route", ""))
+
+            primary_link = f'<a href="{primary_route}">{primary_route}</a>' if primary_route else ""
+            supporting_link = f'<a href="{supporting_route}">{supporting_route}</a>' if supporting_route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ipx_badge(row.get("packet_status", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("packet_priority", ""))}</td>
+                <td><a href="/sterile-compounding/inspection-packet-export/{packet_id}">{sterile_ipx_safe(row.get("packet_section", ""))}</a></td>
+                <td>{sterile_ipx_safe(row.get("packet_title", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("inspection_question", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("evidence_summary", ""))}</td>
+                <td>{primary_link}</td>
+                <td>{supporting_link}</td>
+                <td><code>{sterile_ipx_safe(row.get("export_register", ""))}</code></td>
+                <td>{sterile_ipx_safe(row.get("recommended_use", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspection packet export rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Packet Export Bundle</h1>
+        <p>
+            A structured inspection packet index for the sterile vertical. This organizes what to show,
+            which evidence route supports it, what register backs it, and what claims are safe or not safe.
+            This is not an official inspection submission.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Packet Sections</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Packet Filters</h2>
+        <form method="GET" action="/sterile-compounding/inspection-packet-export">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Packet Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:180px;">
+                    <label>Priority</label>
+                    <select name="priority">{priority_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-packet-export">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index">Inspection Route Index</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-packet-export/export">Export Packet Bundle</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Packet Export Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Section</th>
+                        <th>Title</th>
+                        <th>Inspection Question</th>
+                        <th>Evidence Summary</th>
+                        <th>Primary Route</th>
+                        <th>Supporting Route</th>
+                        <th>Register</th>
+                        <th>Recommended Use</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTION-PACKET-EXPORT",
+            "STERILE_INSPECTION_PACKET_EXPORT_VIEW",
+            "Sterile inspection packet export bundle viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/inspection-packet-export",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Inspection Packet Export Bundle", body)
+
+
+@app.route("/sterile-compounding/inspection-packet-export/<packet_id>")
+def sterile_compounding_inspection_packet_export_detail(packet_id):
+    packet_df, route_df = sterile_ipx_build_registers()
+    packet_id = sterile_ipx_safe(packet_id)
+
+    match = packet_df[packet_df["packet_id"].astype(str) == str(packet_id)].copy() if not packet_df.empty else packet_df
+
+    if match.empty:
+        return sterile_ipx_Response("Inspection packet section not found.", status=404)
+
+    row = match.iloc[0].to_dict()
+
+    detail_rows = ""
+
+    for key in STERILE_INSPECTION_PACKET_EXPORT_COLUMNS:
+        label = key.replace("_", " ").title()
+        value = sterile_ipx_safe(row.get(key, ""))
+
+        if key == "packet_status":
+            value = sterile_ipx_badge(value)
+        elif key == "packet_hash":
+            value = f"<code>{value}</code>"
+        elif key in ["primary_route", "supporting_route"]:
+            value = f'<a href="{value}">{value}</a>' if value else ""
+        elif key == "export_register":
+            value = f"<code>{value}</code>"
+
+        detail_rows += f"<tr><th>{label}</th><td>{value}</td></tr>"
+
+    related_routes = route_df.copy()
+
+    primary_route = sterile_ipx_safe(row.get("primary_route", ""))
+    supporting_route = sterile_ipx_safe(row.get("supporting_route", ""))
+
+    if not related_routes.empty:
+        related_routes = related_routes[
+            related_routes["route_url"].astype(str).isin([primary_route, supporting_route])
+        ].copy()
+
+    related_rows = ""
+
+    if not related_routes.empty:
+        for _, route_row in related_routes.iterrows():
+            route = sterile_ipx_safe(route_row.get("route_url", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            related_rows += f"""
+            <tr>
+                <td>{sterile_ipx_badge(route_row.get("route_status", ""))}</td>
+                <td>{sterile_ipx_safe(route_row.get("route_group", ""))}</td>
+                <td>{sterile_ipx_safe(route_row.get("route_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ipx_safe(route_row.get("inspection_use", ""))}</td>
+                <td>{sterile_ipx_safe(route_row.get("reviewer_question_supported", ""))}</td>
+            </tr>
+            """
+    else:
+        related_rows = """
+        <tr>
+            <td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">
+                No related route-index rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Packet Section Detail</h1>
+        <p>{sterile_ipx_safe(row.get("packet_title", ""))}</p>
+        <div style="margin-top:16px;">{sterile_ipx_badge(row.get("packet_status", ""))}</div>
+        <div style="font-size:22px; font-weight:900; margin-top:10px;">
+            {sterile_ipx_safe(row.get("packet_section", ""))}
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Packet Detail</h2>
+        <div class="st-table-wrap">
+            <table class="st-table st-kv">{detail_rows}</table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Related Route Index</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Inspection Use</th>
+                        <th>Reviewer Question</th>
+                    </tr>
+                </thead>
+                <tbody>{related_rows}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <a class="st-button" href="/sterile-compounding/inspection-packet-export">Back to Packet Bundle</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index">Inspection Route Index</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/inspection-binder">Inspection Binder</a>
+        <a class="st-button st-button-dark" href="/sterile-compounding/executive-ask-tracker">Executive Ask Tracker</a>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            packet_id,
+            "STERILE_INSPECTION_PACKET_EXPORT_DETAIL_VIEW",
+            "Sterile inspection packet export detail viewed",
+            actor="system",
+            source_route="/sterile-compounding/inspection-packet-export/<packet_id>",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell(f"Inspection Packet Detail - {packet_id}", body)
+
+
+@app.route("/sterile-compounding/inspection-route-index")
+def sterile_compounding_inspection_route_index():
+    packet_df, route_df = sterile_ipx_build_registers()
+
+    status_filter = sterile_ipx_safe(sterile_ipx_request.args.get("status", ""))
+    group_filter = sterile_ipx_safe(sterile_ipx_request.args.get("group", ""))
+
+    filtered = route_df.copy()
+
+    if status_filter and not filtered.empty:
+        filtered = filtered[filtered["route_status"].astype(str) == status_filter]
+
+    if group_filter and not filtered.empty:
+        filtered = filtered[filtered["route_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["route_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["route_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["route_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Route Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    group_options = '<option value="">All Route Groups</option>'
+    for group in sorted(route_df["route_group"].dropna().unique().tolist()) if not route_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["route_group", "route_title"]).iterrows():
+            route = sterile_ipx_safe(row.get("route_url", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ipx_badge(row.get("route_status", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("route_group", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("route_title", ""))}</td>
+                <td>{route_link}</td>
+                <td>{sterile_ipx_safe(row.get("inspection_use", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("evidence_type", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("export_available", ""))}</td>
+                <td><code>{sterile_ipx_safe(row.get("source_register", ""))}</code></td>
+                <td>{sterile_ipx_safe(row.get("reviewer_question_supported", ""))}</td>
+                <td>{sterile_ipx_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = """
+        <tr>
+            <td colspan="10" style="text-align:center; padding:24px; color:#6b7280;">
+                No inspection route index rows found.
+            </td>
+        </tr>
+        """
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Inspection Route Index</h1>
+        <p>
+            Route-level inspection index for the sterile vertical. Use this to identify which routes support
+            which inspection-style questions, what evidence type they provide, and which source register backs them.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Routes Indexed</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Route Filters</h2>
+        <form method="GET" action="/sterile-compounding/inspection-route-index">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;">
+                    <label>Route Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <div style="min-width:220px;">
+                    <label>Route Group</label>
+                    <select name="group">{group_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-packet-export">Packet Bundle</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index/export">Export Route Index</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Inspection Route Index Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Group</th>
+                        <th>Title</th>
+                        <th>Route</th>
+                        <th>Use</th>
+                        <th>Evidence Type</th>
+                        <th>Export</th>
+                        <th>Register</th>
+                        <th>Reviewer Question</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INSPECTION-ROUTE-INDEX",
+            "STERILE_INSPECTION_ROUTE_INDEX_VIEW",
+            "Sterile inspection route index viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/inspection-route-index",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Inspection Route Index", body)
+
+
+@app.route("/sterile-compounding/inspection-packet-export/export")
+def sterile_compounding_inspection_packet_export_export():
+    packet_df, route_df = sterile_ipx_build_registers()
+
+    if packet_df.empty:
+        packet_df = sterile_ipx_pd.DataFrame(columns=STERILE_INSPECTION_PACKET_EXPORT_COLUMNS)
+
+    csv_data = packet_df.to_csv(index=False)
+
+    return sterile_ipx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspection_packet_export.csv"}
+    )
+
+
+@app.route("/sterile-compounding/inspection-route-index/export")
+def sterile_compounding_inspection_route_index_export():
+    packet_df, route_df = sterile_ipx_build_registers()
+
+    if route_df.empty:
+        route_df = sterile_ipx_pd.DataFrame(columns=STERILE_INSPECTION_ROUTE_INDEX_COLUMNS)
+
+    csv_data = route_df.to_csv(index=False)
+
+    return sterile_ipx_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_inspection_route_index.csv"}
+    )
+
+
+@app.after_request
+def sterile_compounding_inspection_packet_export_dashboard_injection(response):
+    try:
+        if sterile_ipx_request.path not in [
+            "/sterile-compounding",
+            "/sterile-compounding/inspection-binder",
+            "/sterile-compounding/packet-manifest",
+            "/sterile-compounding/inspection-narrative",
+            "/sterile-compounding/regulatory-crosswalk",
+            "/sterile-compounding/auditor-qa-pack",
+            "/sterile-compounding/executive-brief",
+            "/sterile-compounding/leadership-mode",
+            "/sterile-compounding/executive-ask-tracker",
+            "/sterile-compounding/reviewer-attestation",
+            "/sterile-compounding/decision-log",
+        ]:
+            return response
+
+        if response.status_code != 200:
+            return response
+
+        content_type = response.headers.get("Content-Type", "")
+        if "text/html" not in content_type:
+            return response
+
+        if getattr(response, "direct_passthrough", False):
+            return response
+
+        html = response.get_data(as_text=True)
+
+        if not html or "sterile-inspection-packet-export-panel" in html:
+            return response
+
+        panel = """
+        <section class="st-panel" id="sterile-inspection-packet-export-panel">
+            <h2>Inspection Packet Export Bundle + Route Index</h2>
+            <p class="st-note">
+                Organizes inspection-style evidence routes, packet sections, supporting registers,
+                safe claims, not-safe claims, and reviewer questions. Not an official inspection submission.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <a class="st-button" href="/sterile-compounding/inspection-packet-export">Inspection Packet Export</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index">Inspection Route Index</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-packet-export/export">Export Packet Bundle</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/inspection-route-index/export">Export Route Index</a>
+            </div>
+        </section>
+        """
+
+        lower_html = html.lower()
+
+        if "</body>" in lower_html:
+            index = lower_html.rfind("</body>")
+            updated_html = html[:index] + panel + html[index:]
+        else:
+            updated_html = html + panel
+
+        response.set_data(updated_html)
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        return response
+
+    except Exception as exc:
+        print(f"Sterile inspection packet export injection skipped safely: {exc}")
+        return response
+
 if __name__ == "__main__":
     app.run(debug=True)
