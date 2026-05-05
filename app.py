@@ -66040,5 +66040,719 @@ def sterile_compounding_powerbi_visual_interaction_map_export():
         headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_visual_interaction_map_export.csv"},
     )
 
+
+# ============================================================
+# STERILE_COMPOUNDING_VERTICAL_CONTROL_CENTER_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 60 Repair: Sterile Vertical Control Center + Phase Register
+#
+# Routes:
+#   /sterile-compounding/vertical-control-center
+#   /sterile-compounding/vertical-control-center/export
+#   /sterile-compounding/phase-register
+#   /sterile-compounding/phase-register/export
+#
+# Registers:
+#   sterile_compounding_vertical_control_center.csv
+#   sterile_compounding_phase_register.csv
+#
+# Boundary:
+#   Sterile-only summary layer. Does not modify protected global modules,
+#   ServiceNow, Entra, CI, Knowledge Governance, Operational Lineage,
+#   Release Notes, Monday Demo, Platform Health, or Manufacturing/Wole.
+# ============================================================
+
+try:
+    import pandas as sterile_vcc_pd
+    import json as sterile_vcc_json
+    from flask import request as sterile_vcc_request
+    from flask import Response as sterile_vcc_Response
+except Exception as sterile_vcc_import_error:
+    raise RuntimeError(f"Sterile vertical control center import failed: {sterile_vcc_import_error}")
+
+
+STERILE_VERTICAL_CONTROL_CENTER_REGISTER = "sterile_compounding_vertical_control_center.csv"
+STERILE_PHASE_REGISTER = "sterile_compounding_phase_register.csv"
+
+STERILE_VERTICAL_CONTROL_CENTER_COLUMNS = [
+    "control_id",
+    "control_domain",
+    "domain_status",
+    "domain_score",
+    "domain_summary",
+    "primary_route",
+    "supporting_route",
+    "evidence_register",
+    "leadership_message",
+    "safe_claim",
+    "not_safe_claim",
+    "recommended_next_action",
+    "last_checked",
+    "control_hash",
+]
+
+STERILE_PHASE_REGISTER_COLUMNS = [
+    "phase_id",
+    "phase_number",
+    "phase_name",
+    "phase_status",
+    "active_marker",
+    "primary_route",
+    "secondary_route",
+    "registers_created",
+    "business_purpose",
+    "safe_boundary",
+    "verification_signal",
+    "recommended_action",
+    "last_checked",
+    "phase_hash",
+]
+
+
+def sterile_vcc_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile vertical control center dependencies missing: " + ", ".join(missing))
+
+
+def sterile_vcc_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_vcc_make_id(prefix, *parts):
+    raw = "|".join(str(part) for part in parts)
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_vcc_badge(status):
+    status = sterile_vcc_safe(status).upper()
+
+    if status in ["GREEN", "READY", "ACTIVE", "COMPLETE", "AVAILABLE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "PARTIAL", "CONDITIONAL", "PENDING"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "MISSING", "BLOCKED", "BROKEN"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_vcc_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_vcc_marker_exists(marker_text):
+    try:
+        source = Path("app.py").read_text(encoding="utf-8", errors="replace")
+        return marker_text in source
+    except Exception:
+        return False
+
+
+def sterile_vcc_status(primary_route, active_marker):
+    route_ok = sterile_vcc_route_exists(primary_route)
+    marker_ok = sterile_vcc_marker_exists(active_marker)
+
+    if route_ok and marker_ok:
+        return "GREEN"
+    if route_ok or marker_ok:
+        return "YELLOW"
+    return "RED"
+
+
+def sterile_vcc_score(status):
+    status = sterile_vcc_safe(status).upper()
+    if status == "GREEN":
+        return 95
+    if status == "YELLOW":
+        return 70
+    return 35
+
+
+def sterile_vcc_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+    return df
+
+
+def sterile_vcc_add_control(rows, domain, summary, primary, supporting, register_name, leadership, safe, unsafe, next_action, marker_text):
+    status = sterile_vcc_status(primary, marker_text)
+
+    payload = {
+        "control_id": sterile_vcc_make_id("ST-VCC", domain, primary),
+        "control_domain": domain,
+        "domain_status": status,
+        "domain_score": sterile_vcc_score(status),
+        "domain_summary": summary,
+        "primary_route": primary,
+        "supporting_route": supporting,
+        "evidence_register": register_name,
+        "leadership_message": leadership,
+        "safe_claim": safe,
+        "not_safe_claim": unsafe,
+        "recommended_next_action": next_action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["control_hash"] = sterile_hash_text(
+        sterile_vcc_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_vcc_add_phase(rows, phase_number, phase_name, marker_text, primary, secondary, registers, purpose, boundary, action):
+    status = sterile_vcc_status(primary, marker_text)
+
+    if status == "GREEN":
+        verification = "Active marker found and primary route registered."
+    elif status == "YELLOW":
+        verification = "Partial verification. Marker or primary route found, but not both."
+    else:
+        verification = "Marker and primary route not verified."
+
+    payload = {
+        "phase_id": sterile_vcc_make_id("ST-PHASE", phase_number, phase_name),
+        "phase_number": phase_number,
+        "phase_name": phase_name,
+        "phase_status": status,
+        "active_marker": marker_text,
+        "primary_route": primary,
+        "secondary_route": secondary,
+        "registers_created": registers,
+        "business_purpose": purpose,
+        "safe_boundary": boundary,
+        "verification_signal": verification,
+        "recommended_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["phase_hash"] = sterile_hash_text(
+        sterile_vcc_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_vcc_build_registers():
+    sterile_vcc_require_dependencies()
+
+    control_rows = []
+
+    sterile_vcc_add_control(
+        control_rows,
+        "01 Core Sterile Vertical",
+        "Core Compound Sterile AssuranceLayer™ route set and evidence-readiness landing page.",
+        "/sterile-compounding",
+        "/sterile-compounding/review",
+        "sterile_compounding_register.csv",
+        "This is the main sterile governance entry point.",
+        "Safe to say this is a sterile compounding governance and evidence-readiness vertical.",
+        "Do not claim it replaces QMS, QA release, validated systems, or source systems.",
+        "Use this as the entry point for sterile demos and navigation.",
+        "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "02 Inspection Readiness",
+        "Inspection packet, route index, inspection narrative, and reviewer-question mapping.",
+        "/sterile-compounding/inspection-packet-export",
+        "/sterile-compounding/inspection-route-index",
+        "sterile_compounding_inspection_packet_export.csv",
+        "This organizes inspection-style evidence into a reviewable story.",
+        "Safe to say it supports inspection preparation and reviewer question mapping.",
+        "Do not claim official inspection submission, regulatory approval, or QMS approval.",
+        "Use inspection packet export as the inspection handoff route.",
+        "STERILE_COMPOUNDING_INSPECTION_PACKET_EXPORT_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "03 Readiness and Route Health",
+        "Route probe, manual route test log, build acceptance, stability, and readiness checks.",
+        "/sterile-compounding/route-probe-check",
+        "/sterile-compounding/manual-route-test-log",
+        "sterile_compounding_route_probe_check.csv",
+        "This separates internal route registration from manual browser testing.",
+        "Safe to say the app has route registration checks and manual route test logging.",
+        "Do not claim automated uptime, Azure SLA monitoring, or production validation.",
+        "Use route probe before demos and manual log after deployment checks.",
+        "STERILE_COMPOUNDING_ROUTE_PROBE_CHECK_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "04 Leadership Mode",
+        "Leadership mode, executive handoff, value scorecard, and executive ask tracking.",
+        "/sterile-compounding/leadership-mode",
+        "/sterile-compounding/executive-ask-tracker",
+        "sterile_compounding_leadership_mode.csv",
+        "This gives leadership a concise route: problem, solution, readiness, value, and ask.",
+        "Safe to say this is a leadership-facing summary for the sterile vertical.",
+        "Do not claim leadership approval unless recorded in the decision log later.",
+        "Use leadership mode for short executive walkthroughs.",
+        "STERILE_COMPOUNDING_LEADERSHIP_MODE_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "05 Integration Sandbox",
+        "Future connector blueprint, sandbox controls, no-writeback boundary, and POC planning.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "/sterile-compounding/sandbox-control-checklist",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "This documents future non-production integration planning.",
+        "Safe to say it defines blueprint-first integration governance.",
+        "Do not claim live ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or Azure Ledger integration.",
+        "Use sandbox checklist before any future connector discussion.",
+        "STERILE_COMPOUNDING_CONNECTOR_SANDBOX_BLUEPRINT_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "06 Power BI Planning",
+        "Dataset contract, KPI dictionary, relationship map, dashboard wireframe, export pack, build checklist, DAX blueprint, and visual interaction map.",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "/sterile-compounding/powerbi-visual-interaction-map",
+        "sterile_compounding_powerbi_dax_blueprint.csv",
+        "This turns sterile registers into a future analytics blueprint.",
+        "Safe to say it defines a future reporting model and dashboard design.",
+        "Do not claim a Power BI dataset, report, refresh schedule, or semantic model has been built.",
+        "Use export pack and build checklist before any future dashboard build.",
+        "STERILE_COMPOUNDING_POWERBI_DAX_BLUEPRINT_ACTIVE",
+    )
+
+    sterile_vcc_add_control(
+        control_rows,
+        "07 Protected Boundary",
+        "Protected-boundary documentation for global routes and protected modules.",
+        "/sterile-compounding/protected-boundary-check",
+        "/sterile-compounding/global-exposure-map",
+        "sterile_compounding_protected_boundary_check.csv",
+        "This documents that sterile expansion is additive and boundary-aware.",
+        "Safe to say protected boundaries are documented by the sterile vertical.",
+        "Do not claim protected modules were changed or improved unless explicitly patched.",
+        "Use protected boundary check after every major expansion.",
+        "STERILE_COMPOUNDING_GLOBAL_EXPOSURE_VALIDATION_ACTIVE",
+    )
+
+    phase_rows = []
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        1,
+        "Core Compound Sterile AssuranceLayer Vertical",
+        "STERILE_COMPOUNDING_VERTICAL_ACTIVE",
+        "/sterile-compounding",
+        "/sterile-compounding/review",
+        "sterile_compounding_register.csv; sterile_compounding_review_register.csv; sterile_compounding_lineage_register.csv",
+        "Create the first sterile compounding vertical and route set.",
+        "Sterile-only; no protected module overwrite.",
+        "Keep as core entry point.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        46,
+        "Global Exposure Validation + Protected Boundary Check",
+        "STERILE_COMPOUNDING_GLOBAL_EXPOSURE_VALIDATION_ACTIVE",
+        "/sterile-compounding/global-exposure-map",
+        "/sterile-compounding/protected-boundary-check",
+        "sterile_compounding_global_exposure_map.csv; sterile_compounding_protected_boundary_check.csv",
+        "Document sterile visibility across global pages and protected-module boundaries.",
+        "After-request entry bridges only; no protected route overwrite.",
+        "Use after global exposure changes.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        53,
+        "One-Click Leadership Mode + Executive Ask Tracker",
+        "STERILE_COMPOUNDING_LEADERSHIP_MODE_ACTIVE",
+        "/sterile-compounding/leadership-mode",
+        "/sterile-compounding/executive-ask-tracker",
+        "sterile_compounding_leadership_mode.csv; sterile_compounding_executive_ask_tracker.csv",
+        "Create concise executive mode and decision ask tracker.",
+        "Leadership summary only.",
+        "Use for short executive walkthroughs.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        54,
+        "Inspection Packet Export Bundle + Route Index",
+        "STERILE_COMPOUNDING_INSPECTION_PACKET_EXPORT_ACTIVE",
+        "/sterile-compounding/inspection-packet-export",
+        "/sterile-compounding/inspection-route-index",
+        "sterile_compounding_inspection_packet_export.csv; sterile_compounding_inspection_route_index.csv",
+        "Create inspection packet export bundle and route index.",
+        "Not an official inspection submission.",
+        "Use for inspection-style handoff.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        55,
+        "Route Probe Check + Manual Test Log",
+        "STERILE_COMPOUNDING_ROUTE_PROBE_CHECK_ACTIVE",
+        "/sterile-compounding/route-probe-check",
+        "/sterile-compounding/manual-route-test-log",
+        "sterile_compounding_route_probe_check.csv; sterile_compounding_manual_route_test_log.csv",
+        "Check Flask route registration and capture manual browser test evidence.",
+        "No external HTTP probing or Azure monitoring.",
+        "Use before and after deployment review.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        56,
+        "Power BI Dataset Contract + KPI Dictionary",
+        "STERILE_COMPOUNDING_POWERBI_READINESS_ACTIVE",
+        "/sterile-compounding/powerbi-readiness-blueprint",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+        "sterile_compounding_powerbi_readiness_blueprint.csv; sterile_compounding_powerbi_kpi_dictionary.csv",
+        "Define candidate reporting tables and KPI dictionary.",
+        "No Power BI connection or dataset publication.",
+        "Use as the analytics contract.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        57,
+        "Power BI Relationship Map + Dashboard Wireframe",
+        "STERILE_COMPOUNDING_POWERBI_RELATIONSHIP_MAP_ACTIVE",
+        "/sterile-compounding/powerbi-relationship-map",
+        "/sterile-compounding/powerbi-dashboard-wireframe",
+        "sterile_compounding_powerbi_relationship_map.csv; sterile_compounding_powerbi_dashboard_wireframe.csv",
+        "Define reporting relationships, pages, visuals, filters, and drill-throughs.",
+        "Report design only.",
+        "Use before building a report.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        58,
+        "Power BI Export Pack + Build Checklist",
+        "STERILE_COMPOUNDING_POWERBI_EXPORT_PACK_ACTIVE",
+        "/sterile-compounding/powerbi-export-pack",
+        "/sterile-compounding/powerbi-build-checklist",
+        "sterile_compounding_powerbi_export_pack.csv; sterile_compounding_powerbi_build_checklist.csv",
+        "Define export manifest and dashboard build readiness gate.",
+        "Manual export planning only.",
+        "Use before importing CSV files into Power BI.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        59,
+        "Power BI DAX Blueprint + Visual Interaction Map",
+        "STERILE_COMPOUNDING_POWERBI_DAX_BLUEPRINT_ACTIVE",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "/sterile-compounding/powerbi-visual-interaction-map",
+        "sterile_compounding_powerbi_dax_blueprint.csv; sterile_compounding_powerbi_visual_interaction_map.csv",
+        "Define proposed DAX-style measures and visual interaction behavior.",
+        "Does not run DAX or build a Power BI report.",
+        "Use as implementation guide for future reporting build.",
+    )
+
+    sterile_vcc_add_phase(
+        phase_rows,
+        60,
+        "Sterile Vertical Control Center + Phase Register",
+        "STERILE_COMPOUNDING_VERTICAL_CONTROL_CENTER_ACTIVE",
+        "/sterile-compounding/vertical-control-center",
+        "/sterile-compounding/phase-register",
+        "sterile_compounding_vertical_control_center.csv; sterile_compounding_phase_register.csv",
+        "Create master sterile control center and phase register.",
+        "Sterile-only summary layer; no protected module overwrite.",
+        "Use as the main sterile control page going forward.",
+    )
+
+    control_df = sterile_vcc_pd.DataFrame(control_rows).reindex(columns=STERILE_VERTICAL_CONTROL_CENTER_COLUMNS).fillna("")
+    phase_df = sterile_vcc_pd.DataFrame(phase_rows).reindex(columns=STERILE_PHASE_REGISTER_COLUMNS).fillna("")
+
+    sterile_vcc_write_register(STERILE_VERTICAL_CONTROL_CENTER_REGISTER, control_df, STERILE_VERTICAL_CONTROL_CENTER_COLUMNS)
+    sterile_vcc_write_register(STERILE_PHASE_REGISTER, phase_df, STERILE_PHASE_REGISTER_COLUMNS)
+
+    return control_df, phase_df
+
+
+@app.route("/sterile-compounding/vertical-control-center")
+def sterile_compounding_vertical_control_center():
+    control_df, phase_df = sterile_vcc_build_registers()
+
+    status_filter = sterile_vcc_safe(sterile_vcc_request.args.get("status", ""))
+
+    filtered = control_df.copy()
+    if status_filter:
+        filtered = filtered[filtered["domain_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["domain_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["domain_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["domain_status"] == "RED").sum()) if total else 0
+
+    avg_score = 0
+    if total:
+        avg_score = round(sterile_vcc_pd.to_numeric(filtered["domain_score"], errors="coerce").fillna(0).mean(), 1)
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Domain Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    cards_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["control_domain"]).iterrows():
+            primary = sterile_vcc_safe(row.get("primary_route", ""))
+            supporting = sterile_vcc_safe(row.get("supporting_route", ""))
+
+            primary_link = f'<a class="st-button" href="{primary}">Open Primary</a>' if primary else ""
+            supporting_link = f'<a class="st-button st-button-dark" href="{supporting}">Open Supporting</a>' if supporting else ""
+
+            cards_html += f"""
+            <div class="st-panel">
+                <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:13px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:#475569;">
+                            {sterile_vcc_safe(row.get("control_domain", ""))}
+                        </div>
+                        <h2 style="margin-top:6px;">{sterile_vcc_safe(row.get("domain_summary", ""))}</h2>
+                    </div>
+                    <div>{sterile_vcc_badge(row.get("domain_status", ""))}</div>
+                </div>
+                <p><b>Leadership message:</b> {sterile_vcc_safe(row.get("leadership_message", ""))}</p>
+                <p><b>Evidence register:</b> <code>{sterile_vcc_safe(row.get("evidence_register", ""))}</code></p>
+                <p><b>Safe claim:</b> {sterile_vcc_safe(row.get("safe_claim", ""))}</p>
+                <p><b>Do not claim:</b> {sterile_vcc_safe(row.get("not_safe_claim", ""))}</p>
+                <p><b>Next action:</b> {sterile_vcc_safe(row.get("recommended_next_action", ""))}</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                    {primary_link}
+                    {supporting_link}
+                </div>
+            </div>
+            """
+    else:
+        cards_html = '<div class="st-panel"><p>No vertical control rows found.</p></div>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Vertical Control Center</h1>
+        <p>
+            Master control page for Compound Sterile AssuranceLayer™. This summarizes major sterile domains,
+            proof routes, evidence registers, safe claims, not-safe claims, and next actions.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Domains</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">Average Score</div><div class="st-value">{avg_score}%</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Control Center Filters</h2>
+        <form method="GET" action="/sterile-compounding/vertical-control-center">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Domain Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/vertical-control-center">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/phase-register">Phase Register</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/vertical-control-center/export">Export Control Center</a>
+            </div>
+        </form>
+    </div>
+
+    {cards_html}
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This page is a sterile-only summary layer. It does not modify protected modules, connect to enterprise
+            systems, publish Power BI datasets, approve QMS records, or change source systems.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "VERTICAL-CONTROL-CENTER",
+            "STERILE_VERTICAL_CONTROL_CENTER_VIEW",
+            "Sterile vertical control center viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/vertical-control-center",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Vertical Control Center", body)
+
+
+@app.route("/sterile-compounding/phase-register")
+def sterile_compounding_phase_register():
+    control_df, phase_df = sterile_vcc_build_registers()
+
+    status_filter = sterile_vcc_safe(sterile_vcc_request.args.get("status", ""))
+
+    filtered = phase_df.copy()
+    if status_filter:
+        filtered = filtered[filtered["phase_status"].astype(str) == status_filter]
+
+    total = len(filtered)
+    green = int((filtered["phase_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["phase_status"] == "YELLOW").sum()) if total else 0
+    red = int((filtered["phase_status"] == "RED").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Phase Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["phase_number"]).iterrows():
+            primary = sterile_vcc_safe(row.get("primary_route", ""))
+            secondary = sterile_vcc_safe(row.get("secondary_route", ""))
+            primary_link = f'<a href="{primary}">{primary}</a>' if primary else ""
+            secondary_link = f'<a href="{secondary}">{secondary}</a>' if secondary else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_vcc_badge(row.get("phase_status", ""))}</td>
+                <td>{sterile_vcc_safe(row.get("phase_number", ""))}</td>
+                <td>{sterile_vcc_safe(row.get("phase_name", ""))}</td>
+                <td><code>{sterile_vcc_safe(row.get("active_marker", ""))}</code></td>
+                <td>{primary_link}</td>
+                <td>{secondary_link}</td>
+                <td>{sterile_vcc_safe(row.get("business_purpose", ""))}</td>
+                <td>{sterile_vcc_safe(row.get("safe_boundary", ""))}</td>
+                <td>{sterile_vcc_safe(row.get("verification_signal", ""))}</td>
+                <td>{sterile_vcc_safe(row.get("recommended_action", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="10" style="text-align:center; padding:24px;">No phase rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Sterile Phase Register</h1>
+        <p>
+            Phase-level register for the sterile vertical build. This verifies active markers, primary routes,
+            secondary routes, registers created, business purpose, and safe boundary.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Phases</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+        <div class="st-card"><div class="st-label">RED</div><div class="st-value">{red}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Phase Filters</h2>
+        <form method="GET" action="/sterile-compounding/phase-register">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:240px;">
+                    <label>Phase Status</label>
+                    <select name="status">{status_options}</select>
+                </div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/phase-register">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/vertical-control-center">Vertical Control Center</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/phase-register/export">Export Phase Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Phase Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Phase</th><th>Name</th><th>Marker</th>
+                        <th>Primary Route</th><th>Secondary Route</th><th>Purpose</th>
+                        <th>Boundary</th><th>Verification</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "PHASE-REGISTER",
+            "STERILE_PHASE_REGISTER_VIEW",
+            "Sterile phase register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/phase-register",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Sterile Phase Register", body)
+
+
+@app.route("/sterile-compounding/vertical-control-center/export")
+def sterile_compounding_vertical_control_center_export():
+    control_df, phase_df = sterile_vcc_build_registers()
+
+    if control_df.empty:
+        control_df = sterile_vcc_pd.DataFrame(columns=STERILE_VERTICAL_CONTROL_CENTER_COLUMNS)
+
+    csv_data = control_df.to_csv(index=False)
+
+    return sterile_vcc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_vertical_control_center_export.csv"},
+    )
+
+
+@app.route("/sterile-compounding/phase-register/export")
+def sterile_compounding_phase_register_export():
+    control_df, phase_df = sterile_vcc_build_registers()
+
+    if phase_df.empty:
+        phase_df = sterile_vcc_pd.DataFrame(columns=STERILE_PHASE_REGISTER_COLUMNS)
+
+    csv_data = phase_df.to_csv(index=False)
+
+    return sterile_vcc_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_phase_register_export.csv"},
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
