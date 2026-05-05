@@ -65340,5 +65340,705 @@ def sterile_compounding_powerbi_export_pack_dashboard_injection(response):
         print(f"Sterile Power BI export pack injection skipped safely: {exc}")
         return response
 
+
+# ============================================================
+# STERILE_COMPOUNDING_POWERBI_DAX_BLUEPRINT_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 59 Repair: Power BI DAX Blueprint + Visual Interaction Map
+#
+# Routes:
+#   /sterile-compounding/powerbi-dax-blueprint
+#   /sterile-compounding/powerbi-dax-blueprint/export
+#   /sterile-compounding/powerbi-visual-interaction-map
+#   /sterile-compounding/powerbi-visual-interaction-map/export
+#
+# Registers:
+#   sterile_compounding_powerbi_dax_blueprint.csv
+#   sterile_compounding_powerbi_visual_interaction_map.csv
+#
+# Boundary:
+#   Planning/export only. No Power BI connection, no API call,
+#   no credentials, no dataset publish, no semantic model creation,
+#   no protected module modification.
+# ============================================================
+
+try:
+    import pandas as sterile_dax_pd
+    import json as sterile_dax_json
+    from flask import request as sterile_dax_request
+    from flask import Response as sterile_dax_Response
+except Exception as sterile_dax_import_error:
+    raise RuntimeError(f"Sterile Power BI DAX blueprint import failed: {sterile_dax_import_error}")
+
+
+STERILE_POWERBI_DAX_BLUEPRINT_REGISTER = "sterile_compounding_powerbi_dax_blueprint.csv"
+STERILE_POWERBI_VISUAL_INTERACTION_REGISTER = "sterile_compounding_powerbi_visual_interaction_map.csv"
+
+STERILE_POWERBI_DAX_COLUMNS = [
+    "measure_id",
+    "measure_group",
+    "measure_name",
+    "measure_status",
+    "measure_priority",
+    "target_table",
+    "business_definition",
+    "dax_pattern",
+    "plain_english_logic",
+    "required_fields",
+    "filter_context_note",
+    "target_behavior",
+    "risk_interpretation",
+    "recommended_visual",
+    "not_allowed_claim",
+    "supporting_route",
+    "last_checked",
+    "measure_hash",
+]
+
+STERILE_POWERBI_INTERACTION_COLUMNS = [
+    "interaction_id",
+    "report_page",
+    "source_visual",
+    "target_visual",
+    "interaction_status",
+    "interaction_priority",
+    "interaction_type",
+    "filter_fields",
+    "drillthrough_target",
+    "expected_behavior",
+    "business_reason",
+    "risk_if_missing",
+    "not_allowed_claim",
+    "supporting_route",
+    "last_checked",
+    "interaction_hash",
+]
+
+
+def sterile_dax_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile Power BI DAX dependencies missing: " + ", ".join(missing))
+
+
+def sterile_dax_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_dax_make_id(prefix, *parts):
+    raw = "|".join(str(part) for part in parts)
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_dax_badge(status):
+    status = sterile_dax_safe(status).upper()
+    if status in ["GREEN", "READY", "AVAILABLE", "RECOMMENDED"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "PROPOSED", "REVIEW", "OPTIONAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_dax_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_dax_status_for_route(route):
+    return "GREEN" if sterile_dax_route_exists(route) else "YELLOW"
+
+
+def sterile_dax_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+    return df
+
+
+def sterile_dax_add_measure(rows, group, name, priority, table, definition, dax_pattern, logic, fields, context_note, target, risk, visual, not_allowed, route):
+    status = sterile_dax_status_for_route(route)
+    payload = {
+        "measure_id": sterile_dax_make_id("ST-PBI-MEASURE", group, name, table),
+        "measure_group": group,
+        "measure_name": name,
+        "measure_status": status,
+        "measure_priority": priority,
+        "target_table": table,
+        "business_definition": definition,
+        "dax_pattern": dax_pattern,
+        "plain_english_logic": logic,
+        "required_fields": fields,
+        "filter_context_note": context_note,
+        "target_behavior": target,
+        "risk_interpretation": risk,
+        "recommended_visual": visual,
+        "not_allowed_claim": not_allowed,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+    payload["measure_hash"] = sterile_hash_text(sterile_dax_json.dumps(payload, sort_keys=True))
+    rows.append(payload)
+
+
+def sterile_dax_add_interaction(rows, page, source, target, priority, interaction_type, fields, drill, expected, reason, risk, not_allowed, route):
+    status = sterile_dax_status_for_route(route)
+    payload = {
+        "interaction_id": sterile_dax_make_id("ST-PBI-INTERACT", page, source, target),
+        "report_page": page,
+        "source_visual": source,
+        "target_visual": target,
+        "interaction_status": status,
+        "interaction_priority": priority,
+        "interaction_type": interaction_type,
+        "filter_fields": fields,
+        "drillthrough_target": drill,
+        "expected_behavior": expected,
+        "business_reason": reason,
+        "risk_if_missing": risk,
+        "not_allowed_claim": not_allowed,
+        "supporting_route": route,
+        "last_checked": sterile_now(),
+    }
+    payload["interaction_hash"] = sterile_hash_text(sterile_dax_json.dumps(payload, sort_keys=True))
+    rows.append(payload)
+
+
+def sterile_dax_build_registers():
+    sterile_dax_require_dependencies()
+
+    measure_rows = []
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Executive",
+        "Leadership Value Score",
+        "P0",
+        "FactValueScorecard",
+        "Average value score across sterile value domains.",
+        "Leadership Value Score = AVERAGE(FactValueScorecard[value_score])",
+        "Average all value score rows in the value scorecard table.",
+        "value_score; value_domain; value_status",
+        "Respects value domain and status filters.",
+        "Higher is better.",
+        "Low score means the leadership value story needs refinement.",
+        "KPI card and value-domain bar chart.",
+        "Do not claim measured ROI or realized savings.",
+        "/sterile-compounding/value-scorecard",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Executive",
+        "Open P0 Ask Count",
+        "P0",
+        "FactExecutiveAsk",
+        "Count of P0 asks that are not GREEN.",
+        "Open P0 Ask Count = COUNTROWS(FILTER(FactExecutiveAsk, FactExecutiveAsk[ask_priority] = \"P0\" && FactExecutiveAsk[ask_status] <> \"GREEN\"))",
+        "Count high-priority executive asks still open.",
+        "ask_priority; ask_status; ask_group",
+        "Respects ask group and owner filters.",
+        "Lower is better.",
+        "High count means the demo has not produced clear decisions.",
+        "KPI card and open ask table.",
+        "Do not claim leadership approval unless explicitly recorded.",
+        "/sterile-compounding/executive-ask-tracker",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Inspection",
+        "Inspection Packet Coverage",
+        "P0",
+        "FactInspectionPacket",
+        "Percentage of inspection packet sections with GREEN status.",
+        "Inspection Packet Coverage = DIVIDE(COUNTROWS(FILTER(FactInspectionPacket, FactInspectionPacket[packet_status] = \"GREEN\")), COUNTROWS(FactInspectionPacket))",
+        "Divide GREEN packet sections by all packet sections.",
+        "packet_status; packet_priority; packet_section",
+        "Respects priority and packet section filters.",
+        "Higher is better.",
+        "Low coverage means the inspection evidence story has gaps.",
+        "Donut chart and packet table.",
+        "Do not call this an official inspection submission.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Route Health",
+        "P0 Route Registration Rate",
+        "P0",
+        "FactRouteProbe",
+        "Percentage of P0 routes registered in Flask url_map.",
+        "P0 Route Registration Rate = DIVIDE(COUNTROWS(FILTER(FactRouteProbe, FactRouteProbe[business_criticality] = \"P0\" && FactRouteProbe[registration_status] = \"GREEN\")), COUNTROWS(FILTER(FactRouteProbe, FactRouteProbe[business_criticality] = \"P0\")))",
+        "Divide registered P0 routes by all P0 routes.",
+        "business_criticality; registration_status; route_url",
+        "Registration does not mean browser uptime.",
+        "Higher is better.",
+        "Low rate means critical routes may not exist in Flask.",
+        "KPI card and route table.",
+        "Do not claim live browser availability without manual route testing.",
+        "/sterile-compounding/route-probe-check",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Route Health",
+        "Manual Browser Pass Rate",
+        "P1",
+        "FactManualRouteTest",
+        "Percentage of manually tested routes marked PASS, excluding UNTESTED rows.",
+        "Manual Browser Pass Rate = DIVIDE(COUNTROWS(FILTER(FactManualRouteTest, FactManualRouteTest[observed_status] = \"PASS\")), COUNTROWS(FILTER(FactManualRouteTest, FactManualRouteTest[observed_status] <> \"UNTESTED\")))",
+        "Divide PASS manual tests by tested rows.",
+        "observed_status; route_url; tester_name",
+        "Respects route and tester filters.",
+        "Higher is better.",
+        "Low pass rate means deployment/browser issues need follow-up.",
+        "KPI card and manual test table.",
+        "Do not claim automated monitoring or SLA.",
+        "/sterile-compounding/manual-route-test-log",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Integration",
+        "Average Sandbox Readiness Score",
+        "P1",
+        "FactConnectorSandbox",
+        "Average sandbox score across future connector candidates.",
+        "Average Sandbox Readiness Score = AVERAGE(FactConnectorSandbox[sandbox_score])",
+        "Average all connector sandbox readiness scores.",
+        "sandbox_score; system_key; sandbox_status",
+        "Respects system and status filters.",
+        "Higher is better.",
+        "Low score means connector POC work is premature.",
+        "Horizontal bar chart by system.",
+        "Do not claim live connector readiness or API approval.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Governance",
+        "Reviewer Attestation Completion",
+        "P1",
+        "FactReviewerAttestation",
+        "Percentage of attestations that are GREEN or do not require follow-up.",
+        "Reviewer Attestation Completion = DIVIDE(COUNTROWS(FILTER(FactReviewerAttestation, FactReviewerAttestation[attestation_status] = \"GREEN\" || FactReviewerAttestation[follow_up_needed] = \"NO\")), COUNTROWS(FactReviewerAttestation))",
+        "Count completed attestations and divide by all attestations.",
+        "attestation_status; follow_up_needed; reviewer_group",
+        "Respects reviewer group and route filters.",
+        "Higher is better.",
+        "Low completion means reviewer decisions remain unresolved.",
+        "KPI card and reviewer group chart.",
+        "Do not call reviewer attestation QMS approval.",
+        "/sterile-compounding/reviewer-attestation",
+    )
+
+    sterile_dax_add_measure(
+        measure_rows,
+        "Build Readiness",
+        "Power BI Export Readiness Rate",
+        "P0",
+        "ModelExportPack",
+        "Percentage of required export rows with GREEN status.",
+        "Power BI Export Readiness Rate = DIVIDE(COUNTROWS(FILTER(ModelExportPack, ModelExportPack[required_for_dashboard] = \"YES\" && ModelExportPack[export_status] = \"GREEN\")), COUNTROWS(FILTER(ModelExportPack, ModelExportPack[required_for_dashboard] = \"YES\")))",
+        "Count required GREEN exports and divide by all required exports.",
+        "required_for_dashboard; export_status; export_priority",
+        "Should be checked before any dashboard build.",
+        "Higher is better.",
+        "Low rate means source exports are not ready.",
+        "KPI card and export pack table.",
+        "Do not claim a dashboard is build-ready if required exports are missing.",
+        "/sterile-compounding/powerbi-export-pack",
+    )
+
+    interaction_rows = []
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Executive Overview",
+        "Leadership Value Score KPI",
+        "Value Domain Ranking",
+        "P0",
+        "Cross-filter",
+        "value_domain; value_status",
+        "/sterile-compounding/value-scorecard",
+        "Selecting a value domain filters related value details.",
+        "Allows leadership to move from value score to explanation.",
+        "Without this, executive score is static.",
+        "Do not imply filtered score is measured ROI.",
+        "/sterile-compounding/value-scorecard",
+    )
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Executive Overview",
+        "Executive Ask Status Chart",
+        "Open Ask Detail Table",
+        "P0",
+        "Cross-filter",
+        "ask_priority; ask_status; ask_group",
+        "/sterile-compounding/executive-ask-tracker",
+        "Selecting P0/YELLOW filters the table to open asks.",
+        "Keeps leadership next actions visible.",
+        "Without this, open decisions may be missed.",
+        "Do not treat open asks as approvals.",
+        "/sterile-compounding/executive-ask-tracker",
+    )
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Inspection Readiness",
+        "Inspection Packet Coverage Donut",
+        "Inspection Packet Detail Table",
+        "P0",
+        "Cross-filter",
+        "packet_status; packet_priority",
+        "/sterile-compounding/inspection-packet-export",
+        "Selecting YELLOW or RED filters packet sections needing attention.",
+        "Helps reviewers focus on incomplete evidence sections.",
+        "Without this, gaps are harder to isolate.",
+        "Do not call packet coverage official inspection readiness.",
+        "/sterile-compounding/inspection-packet-export",
+    )
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Route Health",
+        "Route Probe Table",
+        "Manual Test Log Table",
+        "P1",
+        "Relationship filter",
+        "route_url",
+        "/sterile-compounding/manual-route-test-log",
+        "Selecting a route filters manual test records for that route.",
+        "Compares route registration with observed browser behavior.",
+        "Without this, registration and browser evidence remain disconnected.",
+        "Do not claim automated monitoring.",
+        "/sterile-compounding/manual-route-test-log",
+    )
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Integration Sandbox",
+        "Sandbox Readiness Ranking",
+        "Sandbox Control Matrix",
+        "P1",
+        "Cross-filter",
+        "system_key; sandbox_status",
+        "/sterile-compounding/sandbox-control-checklist",
+        "Selecting a system filters its sandbox control checklist.",
+        "Shows why a connector candidate is or is not ready.",
+        "Without this, ranking lacks control evidence.",
+        "Do not imply live API approval.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+    )
+
+    sterile_dax_add_interaction(
+        interaction_rows,
+        "Data Model QA",
+        "KPI Dictionary Table",
+        "DAX Blueprint Table",
+        "P1",
+        "Cross-reference",
+        "kpi_name; measure_name; source_table",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "Selecting a KPI should show its proposed measure pattern.",
+        "Prevents measure creation without definition discipline.",
+        "Without this, dashboard measures may be built without governance context.",
+        "Do not treat proposed DAX as validated production DAX.",
+        "/sterile-compounding/powerbi-kpi-dictionary",
+    )
+
+    measure_df = sterile_dax_pd.DataFrame(measure_rows).reindex(columns=STERILE_POWERBI_DAX_COLUMNS).fillna("")
+    interaction_df = sterile_dax_pd.DataFrame(interaction_rows).reindex(columns=STERILE_POWERBI_INTERACTION_COLUMNS).fillna("")
+
+    sterile_dax_write_register(STERILE_POWERBI_DAX_BLUEPRINT_REGISTER, measure_df, STERILE_POWERBI_DAX_COLUMNS)
+    sterile_dax_write_register(STERILE_POWERBI_VISUAL_INTERACTION_REGISTER, interaction_df, STERILE_POWERBI_INTERACTION_COLUMNS)
+
+    return measure_df, interaction_df
+
+
+@app.route("/sterile-compounding/powerbi-dax-blueprint")
+def sterile_compounding_powerbi_dax_blueprint():
+    measure_df, interaction_df = sterile_dax_build_registers()
+
+    status_filter = sterile_dax_safe(sterile_dax_request.args.get("status", ""))
+    priority_filter = sterile_dax_safe(sterile_dax_request.args.get("priority", ""))
+    group_filter = sterile_dax_safe(sterile_dax_request.args.get("group", ""))
+
+    filtered = measure_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["measure_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["measure_priority"].astype(str) == priority_filter]
+    if group_filter:
+        filtered = filtered[filtered["measure_group"].astype(str) == group_filter]
+
+    total = len(filtered)
+    green = int((filtered["measure_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["measure_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["measure_priority"] == "P0").sum()) if total else 0
+
+    group_options = '<option value="">All Measure Groups</option>'
+    for group in sorted(measure_df["measure_group"].dropna().unique().tolist()) if not measure_df.empty else []:
+        selected = "selected" if group == group_filter else ""
+        group_options += f'<option value="{group}" {selected}>{group}</option>'
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["measure_priority", "measure_group", "measure_name"]).iterrows():
+            route = sterile_dax_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dax_badge(row.get("measure_status", ""))}</td>
+                <td>{sterile_dax_safe(row.get("measure_priority", ""))}</td>
+                <td>{sterile_dax_safe(row.get("measure_group", ""))}</td>
+                <td>{sterile_dax_safe(row.get("measure_name", ""))}</td>
+                <td>{sterile_dax_safe(row.get("target_table", ""))}</td>
+                <td>{sterile_dax_safe(row.get("business_definition", ""))}</td>
+                <td><code>{sterile_dax_safe(row.get("dax_pattern", ""))}</code></td>
+                <td>{sterile_dax_safe(row.get("recommended_visual", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No DAX blueprint rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI DAX Measure Blueprint</h1>
+        <p>
+            Proposed measure logic for a future sterile Power BI dashboard. This does not run DAX,
+            publish a dataset, connect to Power BI, or validate production KPIs.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Measures</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Measure Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-dax-blueprint">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:200px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <div style="min-width:240px;"><label>Measure Group</label><select name="group">{group_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dax-blueprint">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-visual-interaction-map">Visual Interaction Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dax-blueprint/export">Export DAX Blueprint</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>DAX Blueprint Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Group</th><th>Measure</th>
+                        <th>Target Table</th><th>Definition</th><th>DAX Pattern</th><th>Visual</th><th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-DAX-BLUEPRINT",
+            "STERILE_POWERBI_DAX_BLUEPRINT_VIEW",
+            "Sterile Power BI DAX blueprint viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-dax-blueprint",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI DAX Measure Blueprint", body)
+
+
+@app.route("/sterile-compounding/powerbi-visual-interaction-map")
+def sterile_compounding_powerbi_visual_interaction_map():
+    measure_df, interaction_df = sterile_dax_build_registers()
+
+    status_filter = sterile_dax_safe(sterile_dax_request.args.get("status", ""))
+    priority_filter = sterile_dax_safe(sterile_dax_request.args.get("priority", ""))
+
+    filtered = interaction_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["interaction_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["interaction_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["interaction_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["interaction_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["interaction_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["report_page", "interaction_priority", "source_visual"]).iterrows():
+            route = sterile_dax_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+            rows_html += f"""
+            <tr>
+                <td>{sterile_dax_badge(row.get("interaction_status", ""))}</td>
+                <td>{sterile_dax_safe(row.get("interaction_priority", ""))}</td>
+                <td>{sterile_dax_safe(row.get("report_page", ""))}</td>
+                <td>{sterile_dax_safe(row.get("source_visual", ""))}</td>
+                <td>{sterile_dax_safe(row.get("target_visual", ""))}</td>
+                <td>{sterile_dax_safe(row.get("interaction_type", ""))}</td>
+                <td>{sterile_dax_safe(row.get("filter_fields", ""))}</td>
+                <td>{sterile_dax_safe(row.get("expected_behavior", ""))}</td>
+                <td>{route_link}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No visual interaction rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Power BI Visual Interaction Map</h1>
+        <p>
+            Proposed report interaction design for the future sterile Power BI dashboard.
+            This does not build, publish, or connect to Power BI.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Interactions</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Interaction Filters</h2>
+        <form method="GET" action="/sterile-compounding/powerbi-visual-interaction-map">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:200px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-visual-interaction-map">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-dax-blueprint">DAX Blueprint</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/powerbi-visual-interaction-map/export">Export Interaction Map</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Visual Interaction Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Report Page</th><th>Source</th>
+                        <th>Target</th><th>Type</th><th>Fields</th><th>Expected Behavior</th><th>Route</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "POWERBI-VISUAL-INTERACTION-MAP",
+            "STERILE_POWERBI_VISUAL_INTERACTION_MAP_VIEW",
+            "Sterile Power BI visual interaction map viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/powerbi-visual-interaction-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Power BI Visual Interaction Map", body)
+
+
+@app.route("/sterile-compounding/powerbi-dax-blueprint/export")
+def sterile_compounding_powerbi_dax_blueprint_export():
+    measure_df, interaction_df = sterile_dax_build_registers()
+
+    if measure_df.empty:
+        measure_df = sterile_dax_pd.DataFrame(columns=STERILE_POWERBI_DAX_COLUMNS)
+
+    csv_data = measure_df.to_csv(index=False)
+
+    return sterile_dax_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_dax_blueprint_export.csv"},
+    )
+
+
+@app.route("/sterile-compounding/powerbi-visual-interaction-map/export")
+def sterile_compounding_powerbi_visual_interaction_map_export():
+    measure_df, interaction_df = sterile_dax_build_registers()
+
+    if interaction_df.empty:
+        interaction_df = sterile_dax_pd.DataFrame(columns=STERILE_POWERBI_INTERACTION_COLUMNS)
+
+    csv_data = interaction_df.to_csv(index=False)
+
+    return sterile_dax_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_powerbi_visual_interaction_map_export.csv"},
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
