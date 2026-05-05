@@ -67454,5 +67454,698 @@ def sterile_compounding_claim_evidence_map_export():
         headers={"Content-Disposition": "attachment;filename=sterile_compounding_claim_evidence_map_export.csv"},
     )
 
+
+# ============================================================
+# STERILE_COMPOUNDING_INNOVATION_EVIDENCE_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 62 Repair: Innovation Evidence Pack + Research Translation Map
+#
+# Routes:
+#   /sterile-compounding/innovation-evidence-pack
+#   /sterile-compounding/innovation-evidence-pack/export
+#   /sterile-compounding/research-translation-map
+#   /sterile-compounding/research-translation-map/export
+#
+# Registers:
+#   sterile_compounding_innovation_evidence_pack.csv
+#   sterile_compounding_research_translation_map.csv
+#
+# Boundary:
+#   Sterile-only innovation/research evidence layer.
+#   Does not make legal, immigration, IP-ownership, regulatory approval,
+#   QMS approval, enterprise-adoption, or production-validation claims.
+# ============================================================
+
+try:
+    import pandas as sterile_iep_pd
+    import json as sterile_iep_json
+    from flask import request as sterile_iep_request
+    from flask import Response as sterile_iep_Response
+except Exception as sterile_iep_import_error:
+    raise RuntimeError(f"Sterile innovation evidence pack import failed: {sterile_iep_import_error}")
+
+
+STERILE_INNOVATION_EVIDENCE_PACK_REGISTER = "sterile_compounding_innovation_evidence_pack.csv"
+STERILE_RESEARCH_TRANSLATION_MAP_REGISTER = "sterile_compounding_research_translation_map.csv"
+
+STERILE_INNOVATION_EVIDENCE_COLUMNS = [
+    "evidence_id",
+    "evidence_domain",
+    "evidence_status",
+    "evidence_priority",
+    "evidence_title",
+    "evidence_summary",
+    "proof_route",
+    "proof_register",
+    "what_it_supports",
+    "what_it_does_not_support",
+    "safe_language",
+    "language_to_avoid",
+    "audience",
+    "recommended_use",
+    "last_checked",
+    "evidence_hash",
+]
+
+STERILE_RESEARCH_TRANSLATION_COLUMNS = [
+    "translation_id",
+    "research_domain",
+    "translation_status",
+    "translation_priority",
+    "research_angle",
+    "app_evidence_route",
+    "app_evidence_register",
+    "academic_use",
+    "practical_use",
+    "possible_section",
+    "control_or_governance_concept",
+    "safe_research_claim",
+    "not_safe_research_claim",
+    "recommended_next_action",
+    "last_checked",
+    "translation_hash",
+]
+
+
+def sterile_iep_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile innovation evidence dependencies missing: " + ", ".join(missing))
+
+
+def sterile_iep_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_iep_make_id(prefix, *parts):
+    raw = "|".join(str(part) for part in parts)
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_iep_badge(status):
+    status = sterile_iep_safe(status).upper()
+
+    if status in ["GREEN", "READY", "STRONG", "AVAILABLE"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "REVIEW", "CONDITIONAL", "MODERATE", "PARTIAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "BLOCKED", "WEAK", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_iep_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_iep_status_for_route(route):
+    return "GREEN" if sterile_iep_route_exists(route) else "YELLOW"
+
+
+def sterile_iep_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+    return df
+
+
+def sterile_iep_add_evidence(rows, domain, priority, title, summary, route, register_name, supports, does_not_support, safe, avoid, audience, use):
+    status = sterile_iep_status_for_route(route)
+
+    payload = {
+        "evidence_id": sterile_iep_make_id("ST-INNOV", domain, title, route),
+        "evidence_domain": domain,
+        "evidence_status": status,
+        "evidence_priority": priority,
+        "evidence_title": title,
+        "evidence_summary": summary,
+        "proof_route": route,
+        "proof_register": register_name,
+        "what_it_supports": supports,
+        "what_it_does_not_support": does_not_support,
+        "safe_language": safe,
+        "language_to_avoid": avoid,
+        "audience": audience,
+        "recommended_use": use,
+        "last_checked": sterile_now(),
+    }
+
+    payload["evidence_hash"] = sterile_hash_text(
+        sterile_iep_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_iep_add_translation(rows, domain, priority, angle, route, register_name, academic, practical, section, concept, safe_claim, not_safe_claim, action):
+    status = sterile_iep_status_for_route(route)
+
+    payload = {
+        "translation_id": sterile_iep_make_id("ST-RESEARCH", domain, angle, route),
+        "research_domain": domain,
+        "translation_status": status,
+        "translation_priority": priority,
+        "research_angle": angle,
+        "app_evidence_route": route,
+        "app_evidence_register": register_name,
+        "academic_use": academic,
+        "practical_use": practical,
+        "possible_section": section,
+        "control_or_governance_concept": concept,
+        "safe_research_claim": safe_claim,
+        "not_safe_research_claim": not_safe_claim,
+        "recommended_next_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["translation_hash"] = sterile_hash_text(
+        sterile_iep_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_iep_build_registers():
+    sterile_iep_require_dependencies()
+
+    evidence_rows = []
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Architecture Evidence",
+        "P0",
+        "Phased sterile governance architecture",
+        "The sterile vertical has a visible control center and phase register showing active markers, primary routes, secondary routes, registers, purpose, and safe boundaries.",
+        "/sterile-compounding/phase-register",
+        "sterile_compounding_phase_register.csv",
+        "Supports the claim that the sterile module was built as a phased governance architecture rather than a loose page collection.",
+        "Does not prove regulatory approval, enterprise adoption, legal ownership, or production validation.",
+        "The build demonstrates a structured governance architecture with phased evidence and route controls.",
+        "The build is approved by regulators, adopted by enterprise, or legally protected by itself.",
+        "Dissertation reviewers, innovation reviewers, leadership, technical reviewers",
+        "Use as the main build-history and architecture-evidence route.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Control Evidence",
+        "P0",
+        "Claim control and safe-language discipline",
+        "The claim control register maps safe claims, language to avoid, proof routes, evidence registers, and review audiences.",
+        "/sterile-compounding/claim-control-register",
+        "sterile_compounding_claim_control_register.csv",
+        "Supports disciplined communication for leadership, QA, academic, and innovation conversations.",
+        "Does not provide legal, compliance, immigration, or IP advice.",
+        "The sterile vertical includes a claim governance layer to prevent overstatement.",
+        "The claim register makes legal, USCIS, regulatory, or enterprise approval claims valid.",
+        "Leadership, QA, dissertation reviewers, innovation reviewers",
+        "Use before sending descriptions externally or presenting to reviewers.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Inspection Evidence",
+        "P0",
+        "Inspection packet and route index",
+        "The inspection packet export and route index organize reviewer questions, packet sections, route support, and evidence registers.",
+        "/sterile-compounding/inspection-packet-export",
+        "sterile_compounding_inspection_packet_export.csv",
+        "Supports the claim that the app can organize inspection-style evidence and reviewer navigation.",
+        "Does not prove official inspection submission, compliance approval, or regulatory acceptance.",
+        "The sterile vertical supports inspection preparation by organizing evidence routes and reviewer questions.",
+        "The sterile vertical is an official inspection response system.",
+        "QA, compliance, audit-readiness reviewers, dissertation reviewers",
+        "Use to demonstrate evidence-to-reviewer-question traceability.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Integration Evidence",
+        "P1",
+        "Blueprint-first connector governance",
+        "The connector sandbox blueprint and sandbox checklist define no-credential, no-writeback, non-production-only connector planning.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "Supports the claim that future integration thinking is governed before technical connector work.",
+        "Does not prove live ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, Azure Blob, or Azure Ledger integration.",
+        "The sterile vertical defines a safe, blueprint-first path for future non-production integration planning.",
+        "The sterile vertical is already integrated with enterprise systems.",
+        "System owners, architecture, security, QA, dissertation reviewers",
+        "Use when explaining future roadmap without overclaiming live integrations.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Analytics Evidence",
+        "P1",
+        "Power BI analytics blueprint",
+        "The app includes dataset contract, KPI dictionary, relationship map, dashboard wireframe, export pack, build checklist, DAX-style blueprint, and visual interaction map.",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "sterile_compounding_powerbi_dax_blueprint.csv",
+        "Supports the claim that analytics design has been planned at dataset, KPI, relationship, visual, export, and measure levels.",
+        "Does not prove a Power BI report, semantic model, refresh schedule, dataset, or dashboard has been built.",
+        "The sterile vertical includes a future Power BI analytics blueprint.",
+        "A Power BI dashboard is already live or published.",
+        "Leadership, analytics owner, Power BI developer, dissertation reviewers",
+        "Use to explain analytics readiness and future dashboard direction.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Build Evidence",
+        "P0",
+        "Route probe and manual test evidence",
+        "The route probe checks Flask route registration, while the manual route test log captures observed browser results.",
+        "/sterile-compounding/route-probe-check",
+        "sterile_compounding_route_probe_check.csv",
+        "Supports the claim that the build includes route-level self-checking and manual verification tracking.",
+        "Does not prove automated uptime monitoring, Azure SLA, or production validation.",
+        "The sterile vertical has internal route registration checks and manual browser-test logging.",
+        "The app performs automated production monitoring.",
+        "Technical reviewers, app owner, leadership",
+        "Use before demos and after deployments.",
+    )
+
+    sterile_iep_add_evidence(
+        evidence_rows,
+        "Leadership Evidence",
+        "P0",
+        "One-click leadership summary",
+        "Leadership mode condenses the sterile vertical into problem, solution, readiness, integration, value, and ask.",
+        "/sterile-compounding/leadership-mode",
+        "sterile_compounding_leadership_mode.csv",
+        "Supports concise executive communication and demo discipline.",
+        "Does not prove leadership approval or sponsorship unless separately captured.",
+        "The sterile vertical has a leadership-facing summary route.",
+        "Leadership has approved or adopted the app.",
+        "Leadership, sponsor, dissertation reviewers",
+        "Use as the first page in short demos.",
+    )
+
+    translation_rows = []
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Dissertation Architecture",
+        "P0",
+        "Governance-first assurance architecture for regulated digital processes",
+        "/sterile-compounding/vertical-control-center",
+        "sterile_compounding_vertical_control_center.csv",
+        "Can support discussion of how governance controls, evidence routes, readiness checks, and review artifacts can be operationalized in a prototype.",
+        "Shows how a regulated process could be represented as an assurance workflow rather than a simple dashboard.",
+        "Chapter 4 findings discussion or Chapter 5 framework contribution",
+        "Governance overlay; control-to-evidence traceability; evidence readiness",
+        "The prototype demonstrates a governance-first assurance pattern for regulated operations.",
+        "The prototype is validated, adopted, or approved for production use.",
+        "Use this route as the main evidence point for architecture discussion.",
+    )
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Inspection Readiness Research",
+        "P0",
+        "Inspection-style evidence organization and reviewer question mapping",
+        "/sterile-compounding/inspection-packet-export",
+        "sterile_compounding_inspection_packet_export.csv",
+        "Can support discussion of audit readiness, inspection narrative, and evidence-to-question mapping.",
+        "Shows how evidence can be organized into packet sections and route-indexed reviewer questions.",
+        "Chapter 4 findings or Chapter 5 practical framework",
+        "Audit readiness; inspection preparation; evidence indexing",
+        "The prototype supports inspection-preparation logic through evidence routing and packetization.",
+        "The prototype is an official inspection submission system.",
+        "Use as evidence of audit-readiness design, not regulatory approval.",
+    )
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Integration Governance Research",
+        "P1",
+        "Blueprint-first integration controls before API work",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "Can support discussion of integration risk, source-of-truth boundaries, data contracts, no-writeback rules, and approval gates.",
+        "Shows that enterprise integration should be governed before technical connection.",
+        "Implementation considerations or recommendations",
+        "Integration governance; source-of-truth boundary; non-production sandbox controls",
+        "The prototype documents how future integrations can be governed before connector work begins.",
+        "The prototype is already integrated with enterprise systems.",
+        "Use this when discussing responsible implementation roadmap.",
+    )
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Analytics Governance Research",
+        "P1",
+        "Reporting model and KPI governance before dashboard build",
+        "/sterile-compounding/powerbi-export-pack",
+        "sterile_compounding_powerbi_export_pack.csv",
+        "Can support discussion of how analytics should be governed through dataset contracts, KPI dictionaries, relationship maps, and build checklists.",
+        "Shows that dashboard design can inherit governance metadata instead of becoming an uncontrolled reporting layer.",
+        "Recommendations or future work",
+        "Analytics governance; KPI definition control; reporting readiness",
+        "The prototype defines a future analytics governance blueprint.",
+        "The prototype has a live Power BI dashboard or validated production KPIs.",
+        "Use as roadmap evidence for future Power BI build.",
+    )
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Claim Governance Research",
+        "P0",
+        "Safe-claim control for regulated innovation communication",
+        "/sterile-compounding/claim-control-register",
+        "sterile_compounding_claim_control_register.csv",
+        "Can support discussion of how innovation claims should be controlled in regulated environments.",
+        "Shows a practical mechanism for preventing overclaiming during prototype, leadership, and academic discussions.",
+        "Limitations, ethics, recommendations, or implementation governance",
+        "Claim governance; safe language; evidence-backed claims",
+        "The prototype includes claim control to distinguish supported claims from unsupported claims.",
+        "The claim register provides legal or immigration advice.",
+        "Use before writing dissertation claims, posts, or leadership language.",
+    )
+
+    sterile_iep_add_translation(
+        translation_rows,
+        "Innovation Evidence Packaging",
+        "P0",
+        "Phase register as implementation evidence index",
+        "/sterile-compounding/phase-register",
+        "sterile_compounding_phase_register.csv",
+        "Can support a controlled appendix or evidence index showing build phases, markers, routes, and registers.",
+        "Shows structured implementation effort and traceability across phases.",
+        "Appendix, implementation evidence, or viva/presentation support",
+        "Implementation traceability; phase control; evidence pack",
+        "The phase register can be used as a structured evidence index for the prototype build.",
+        "The phase register proves external adoption, legal ownership, or regulatory approval.",
+        "Use as implementation evidence, not as legal proof.",
+    )
+
+    evidence_df = sterile_iep_pd.DataFrame(evidence_rows).reindex(columns=STERILE_INNOVATION_EVIDENCE_COLUMNS).fillna("")
+    translation_df = sterile_iep_pd.DataFrame(translation_rows).reindex(columns=STERILE_RESEARCH_TRANSLATION_COLUMNS).fillna("")
+
+    sterile_iep_write_register(STERILE_INNOVATION_EVIDENCE_PACK_REGISTER, evidence_df, STERILE_INNOVATION_EVIDENCE_COLUMNS)
+    sterile_iep_write_register(STERILE_RESEARCH_TRANSLATION_MAP_REGISTER, translation_df, STERILE_RESEARCH_TRANSLATION_COLUMNS)
+
+    return evidence_df, translation_df
+
+
+@app.route("/sterile-compounding/innovation-evidence-pack")
+def sterile_compounding_innovation_evidence_pack():
+    evidence_df, translation_df = sterile_iep_build_registers()
+
+    status_filter = sterile_iep_safe(sterile_iep_request.args.get("status", ""))
+    priority_filter = sterile_iep_safe(sterile_iep_request.args.get("priority", ""))
+    domain_filter = sterile_iep_safe(sterile_iep_request.args.get("domain", ""))
+
+    filtered = evidence_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["evidence_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["evidence_priority"].astype(str) == priority_filter]
+    if domain_filter:
+        filtered = filtered[filtered["evidence_domain"].astype(str) == domain_filter]
+
+    total = len(filtered)
+    green = int((filtered["evidence_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["evidence_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["evidence_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Evidence Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    domain_options = '<option value="">All Evidence Domains</option>'
+    for domain in sorted(evidence_df["evidence_domain"].dropna().unique().tolist()) if not evidence_df.empty else []:
+        selected = "selected" if domain == domain_filter else ""
+        domain_options += f'<option value="{domain}" {selected}>{domain}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["evidence_priority", "evidence_domain"]).iterrows():
+            route = sterile_iep_safe(row.get("proof_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_iep_badge(row.get("evidence_status", ""))}</td>
+                <td>{sterile_iep_safe(row.get("evidence_priority", ""))}</td>
+                <td>{sterile_iep_safe(row.get("evidence_domain", ""))}</td>
+                <td>{sterile_iep_safe(row.get("evidence_title", ""))}</td>
+                <td>{sterile_iep_safe(row.get("evidence_summary", ""))}</td>
+                <td>{route_link}</td>
+                <td><code>{sterile_iep_safe(row.get("proof_register", ""))}</code></td>
+                <td>{sterile_iep_safe(row.get("what_it_supports", ""))}</td>
+                <td>{sterile_iep_safe(row.get("what_it_does_not_support", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No innovation evidence rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Innovation Evidence Pack</h1>
+        <p>
+            Controlled evidence pack for explaining the sterile vertical as an innovation, dissertation prototype,
+            leadership demo, or governed assurance pattern. This does not make legal, immigration, IP, regulatory,
+            enterprise-adoption, QMS, or production-validation claims.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Evidence Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Filters</h2>
+        <form method="GET" action="/sterile-compounding/innovation-evidence-pack">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <div style="min-width:260px;"><label>Domain</label><select name="domain">{domain_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/innovation-evidence-pack">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/research-translation-map">Research Translation Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/innovation-evidence-pack/export">Export Evidence Pack</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Innovation Evidence Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Domain</th><th>Title</th>
+                        <th>Summary</th><th>Proof Route</th><th>Register</th>
+                        <th>Supports</th><th>Does Not Support</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "INNOVATION-EVIDENCE-PACK",
+            "STERILE_INNOVATION_EVIDENCE_PACK_VIEW",
+            "Sterile innovation evidence pack viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/innovation-evidence-pack",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Innovation Evidence Pack", body)
+
+
+@app.route("/sterile-compounding/research-translation-map")
+def sterile_compounding_research_translation_map():
+    evidence_df, translation_df = sterile_iep_build_registers()
+
+    status_filter = sterile_iep_safe(sterile_iep_request.args.get("status", ""))
+    priority_filter = sterile_iep_safe(sterile_iep_request.args.get("priority", ""))
+    domain_filter = sterile_iep_safe(sterile_iep_request.args.get("domain", ""))
+
+    filtered = translation_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["translation_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["translation_priority"].astype(str) == priority_filter]
+    if domain_filter:
+        filtered = filtered[filtered["research_domain"].astype(str) == domain_filter]
+
+    total = len(filtered)
+    green = int((filtered["translation_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["translation_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["translation_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Translation Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    domain_options = '<option value="">All Research Domains</option>'
+    for domain in sorted(translation_df["research_domain"].dropna().unique().tolist()) if not translation_df.empty else []:
+        selected = "selected" if domain == domain_filter else ""
+        domain_options += f'<option value="{domain}" {selected}>{domain}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["translation_priority", "research_domain"]).iterrows():
+            route = sterile_iep_safe(row.get("app_evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_iep_badge(row.get("translation_status", ""))}</td>
+                <td>{sterile_iep_safe(row.get("translation_priority", ""))}</td>
+                <td>{sterile_iep_safe(row.get("research_domain", ""))}</td>
+                <td>{sterile_iep_safe(row.get("research_angle", ""))}</td>
+                <td>{route_link}</td>
+                <td><code>{sterile_iep_safe(row.get("app_evidence_register", ""))}</code></td>
+                <td>{sterile_iep_safe(row.get("academic_use", ""))}</td>
+                <td>{sterile_iep_safe(row.get("possible_section", ""))}</td>
+                <td>{sterile_iep_safe(row.get("safe_research_claim", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No research translation rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Research Translation Map</h1>
+        <p>
+            Maps sterile app evidence to dissertation, research, innovation, and implementation-framework language.
+            This is a writing and evidence-positioning aid only. It does not prove legal ownership, USCIS eligibility,
+            regulatory approval, enterprise adoption, or production validation.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Translation Items</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Translation Filters</h2>
+        <form method="GET" action="/sterile-compounding/research-translation-map">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <div style="min-width:260px;"><label>Research Domain</label><select name="domain">{domain_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/research-translation-map">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/innovation-evidence-pack">Innovation Evidence Pack</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/research-translation-map/export">Export Translation Map</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Research Translation Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Domain</th><th>Research Angle</th>
+                        <th>Evidence Route</th><th>Register</th><th>Academic Use</th>
+                        <th>Possible Section</th><th>Safe Claim</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "RESEARCH-TRANSLATION-MAP",
+            "STERILE_RESEARCH_TRANSLATION_MAP_VIEW",
+            "Sterile research translation map viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/research-translation-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Research Translation Map", body)
+
+
+@app.route("/sterile-compounding/innovation-evidence-pack/export")
+def sterile_compounding_innovation_evidence_pack_export():
+    evidence_df, translation_df = sterile_iep_build_registers()
+
+    if evidence_df.empty:
+        evidence_df = sterile_iep_pd.DataFrame(columns=STERILE_INNOVATION_EVIDENCE_COLUMNS)
+
+    csv_data = evidence_df.to_csv(index=False)
+
+    return sterile_iep_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_innovation_evidence_pack_export.csv"},
+    )
+
+
+@app.route("/sterile-compounding/research-translation-map/export")
+def sterile_compounding_research_translation_map_export():
+    evidence_df, translation_df = sterile_iep_build_registers()
+
+    if translation_df.empty:
+        translation_df = sterile_iep_pd.DataFrame(columns=STERILE_RESEARCH_TRANSLATION_COLUMNS)
+
+    csv_data = translation_df.to_csv(index=False)
+
+    return sterile_iep_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_research_translation_map_export.csv"},
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
