@@ -27,11 +27,68 @@ from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__)
 
+# AZURE_BLOB_LOCAL_IMPORT_GUARD_ACTIVE
 AZURE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER_NAME = "cobitchain-evidence"
 
-blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
-container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+blob_service_client = None
+container_client = None
+
+if AZURE_CONNECTION_STRING:
+    blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
+    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+else:
+    from pathlib import Path as _AzureLocalPath
+
+    class _LocalBlobDownload:
+        def __init__(self, blob_name):
+            self.blob_name = blob_name
+
+        def readall(self):
+            p = _AzureLocalPath(self.blob_name)
+            if not p.exists():
+                raise FileNotFoundError(self.blob_name)
+            return p.read_bytes()
+
+    class _LocalBlobClient:
+        def __init__(self, blob_name):
+            self.blob_name = blob_name
+
+        def download_blob(self):
+            return _LocalBlobDownload(self.blob_name)
+
+        def upload_blob(self, data, overwrite=True):
+            p = _AzureLocalPath(self.blob_name)
+            if p.exists() and not overwrite:
+                raise FileExistsError(self.blob_name)
+
+            if hasattr(data, "read"):
+                payload = data.read()
+            else:
+                payload = data
+
+            if isinstance(payload, bytes):
+                p.write_bytes(payload)
+            else:
+                p.write_text(str(payload), encoding="utf-8")
+
+            return True
+
+        def exists(self):
+            return _AzureLocalPath(self.blob_name).exists()
+
+    class _LocalContainerClient:
+        def get_blob_client(self, blob):
+            return _LocalBlobClient(blob)
+
+        def upload_blob(self, name, data, overwrite=True):
+            return _LocalBlobClient(name).upload_blob(data, overwrite=overwrite)
+
+        def download_blob(self, name):
+            return _LocalBlobClient(name).download_blob()
+
+    container_client = _LocalContainerClient()
+    print("AZURE_STORAGE_CONNECTION_STRING is not set. Using local file-backed Blob mock for Cloud Shell import/audit only.")
 
 BASELINE_FILE = "baseline_hashes.csv"
 LOG_FILE = "logs.csv"
