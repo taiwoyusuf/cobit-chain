@@ -66754,5 +66754,705 @@ def sterile_compounding_phase_register_export():
         headers={"Content-Disposition": "attachment;filename=sterile_compounding_phase_register_export.csv"},
     )
 
+
+# ============================================================
+# STERILE_COMPOUNDING_CLAIM_CONTROL_ACTIVE
+# Compound Sterile AssuranceLayer™
+# Phase 61 Repair: Claim Control Register + Claim Evidence Map
+#
+# Routes:
+#   /sterile-compounding/claim-control-register
+#   /sterile-compounding/claim-control-register/export
+#   /sterile-compounding/claim-evidence-map
+#   /sterile-compounding/claim-evidence-map/export
+#
+# Registers:
+#   sterile_compounding_claim_control_register.csv
+#   sterile_compounding_claim_evidence_map.csv
+#
+# Boundary:
+#   Sterile-only claim governance layer. Does not approve QMS,
+#   does not validate production use, does not create legal/IP/USCIS
+#   claims, and does not modify protected global modules.
+# ============================================================
+
+try:
+    import pandas as sterile_ccr_pd
+    import json as sterile_ccr_json
+    from flask import request as sterile_ccr_request
+    from flask import Response as sterile_ccr_Response
+except Exception as sterile_ccr_import_error:
+    raise RuntimeError(f"Sterile claim control register import failed: {sterile_ccr_import_error}")
+
+
+STERILE_CLAIM_CONTROL_REGISTER = "sterile_compounding_claim_control_register.csv"
+STERILE_CLAIM_EVIDENCE_MAP_REGISTER = "sterile_compounding_claim_evidence_map.csv"
+
+STERILE_CLAIM_CONTROL_COLUMNS = [
+    "claim_id",
+    "claim_domain",
+    "claim_status",
+    "claim_priority",
+    "safe_claim",
+    "claim_context",
+    "supporting_route",
+    "supporting_register",
+    "evidence_strength",
+    "approved_language",
+    "language_to_avoid",
+    "risk_if_overclaimed",
+    "review_audience",
+    "recommended_use",
+    "last_checked",
+    "claim_hash",
+]
+
+STERILE_CLAIM_EVIDENCE_COLUMNS = [
+    "evidence_map_id",
+    "claim_id",
+    "claim_domain",
+    "evidence_status",
+    "evidence_priority",
+    "evidence_route",
+    "evidence_register",
+    "evidence_type",
+    "what_it_proves",
+    "what_it_does_not_prove",
+    "reviewer_question_supported",
+    "follow_up_needed",
+    "recommended_next_action",
+    "last_checked",
+    "evidence_hash",
+]
+
+
+def sterile_ccr_require_dependencies():
+    required = [
+        "sterile_page_shell",
+        "sterile_clean",
+        "sterile_hash_text",
+        "sterile_now",
+        "sterile_write_register",
+        "sterile_add_lineage",
+    ]
+    missing = [name for name in required if name not in globals()]
+    if missing:
+        raise RuntimeError("Sterile claim control dependencies missing: " + ", ".join(missing))
+
+
+def sterile_ccr_safe(value):
+    value = sterile_clean(value)
+    if value.lower() in ["nan", "none", "null"]:
+        return ""
+    return value
+
+
+def sterile_ccr_make_id(prefix, *parts):
+    raw = "|".join(str(part) for part in parts)
+    return prefix + "-" + sterile_hash_text(raw)[:12].upper()
+
+
+def sterile_ccr_badge(status):
+    status = sterile_ccr_safe(status).upper()
+
+    if status in ["GREEN", "APPROVED", "SAFE", "STRONG", "READY"]:
+        return '<span class="st-badge st-green">GREEN</span>'
+    if status in ["YELLOW", "CONDITIONAL", "REVIEW", "MODERATE", "PARTIAL"]:
+        return '<span class="st-badge st-yellow">YELLOW</span>'
+    if status in ["RED", "UNSAFE", "BLOCKED", "WEAK", "MISSING"]:
+        return '<span class="st-badge st-red">RED</span>'
+
+    return '<span class="st-badge st-gray">UNKNOWN</span>'
+
+
+def sterile_ccr_route_exists(route):
+    try:
+        return route in set(str(rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return False
+
+
+def sterile_ccr_status_for_route(route):
+    return "GREEN" if sterile_ccr_route_exists(route) else "YELLOW"
+
+
+def sterile_ccr_strength_for_status(status):
+    status = sterile_ccr_safe(status).upper()
+    if status == "GREEN":
+        return "Strong"
+    if status == "YELLOW":
+        return "Moderate"
+    return "Weak"
+
+
+def sterile_ccr_write_register(register_name, df, columns):
+    df = df.reindex(columns=columns).fillna("")
+    try:
+        sterile_write_register(register_name, df, columns)
+    except Exception:
+        df.to_csv(register_name, index=False)
+    return df
+
+
+def sterile_ccr_add_claim(rows, domain, priority, safe_claim, context, route, register_name, approved, avoid, risk, audience, use):
+    status = sterile_ccr_status_for_route(route)
+    claim_id = sterile_ccr_make_id("ST-CLAIM", domain, safe_claim)
+
+    payload = {
+        "claim_id": claim_id,
+        "claim_domain": domain,
+        "claim_status": status,
+        "claim_priority": priority,
+        "safe_claim": safe_claim,
+        "claim_context": context,
+        "supporting_route": route,
+        "supporting_register": register_name,
+        "evidence_strength": sterile_ccr_strength_for_status(status),
+        "approved_language": approved,
+        "language_to_avoid": avoid,
+        "risk_if_overclaimed": risk,
+        "review_audience": audience,
+        "recommended_use": use,
+        "last_checked": sterile_now(),
+    }
+
+    payload["claim_hash"] = sterile_hash_text(
+        sterile_ccr_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+    return claim_id
+
+
+def sterile_ccr_add_evidence(rows, claim_id, domain, route, register_name, evidence_type, proves, does_not_prove, question, follow_up, action, priority="P1"):
+    status = sterile_ccr_status_for_route(route)
+
+    payload = {
+        "evidence_map_id": sterile_ccr_make_id("ST-CLAIM-EVID", claim_id, route),
+        "claim_id": claim_id,
+        "claim_domain": domain,
+        "evidence_status": status,
+        "evidence_priority": priority,
+        "evidence_route": route,
+        "evidence_register": register_name,
+        "evidence_type": evidence_type,
+        "what_it_proves": proves,
+        "what_it_does_not_prove": does_not_prove,
+        "reviewer_question_supported": question,
+        "follow_up_needed": follow_up,
+        "recommended_next_action": action,
+        "last_checked": sterile_now(),
+    }
+
+    payload["evidence_hash"] = sterile_hash_text(
+        sterile_ccr_json.dumps(payload, sort_keys=True)
+    )
+
+    rows.append(payload)
+
+
+def sterile_ccr_build_registers():
+    sterile_ccr_require_dependencies()
+
+    claim_rows = []
+    evidence_rows = []
+
+    c1 = sterile_ccr_add_claim(
+        claim_rows,
+        "Governance Overlay",
+        "P0",
+        "Compound Sterile AssuranceLayer™ is a governance and evidence-readiness overlay for sterile compounding processes.",
+        "Use this as the main high-level description of the sterile vertical.",
+        "/sterile-compounding/vertical-control-center",
+        "sterile_compounding_vertical_control_center.csv",
+        "This is a governance and evidence-readiness overlay that organizes sterile evidence, routes, readiness checks, and review artifacts.",
+        "This is a validated QMS, official batch release system, or replacement for QA.",
+        "Overclaiming may create compliance, validation, and credibility risk.",
+        "Leadership, QA, IT, dissertation reviewers",
+        "Use as the main description in leadership and academic conversations.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c1,
+        "Governance Overlay",
+        "/sterile-compounding/vertical-control-center",
+        "sterile_compounding_vertical_control_center.csv",
+        "Control center summary",
+        "Shows sterile domains, safe claims, proof routes, and next actions.",
+        "Does not prove enterprise adoption or production validation.",
+        "What is this app and what does it do?",
+        "NO",
+        "Use vertical control center as the main proof route.",
+        "P0",
+    )
+
+    c2 = sterile_ccr_add_claim(
+        claim_rows,
+        "Inspection Readiness",
+        "P0",
+        "The sterile vertical supports inspection preparation by organizing evidence routes, packet sections, route indexes, and reviewer questions.",
+        "Use this when discussing audit or inspection-readiness value.",
+        "/sterile-compounding/inspection-packet-export",
+        "sterile_compounding_inspection_packet_export.csv",
+        "The sterile vertical structures inspection-style evidence and reviewer questions into a packetized route map.",
+        "This is an official inspection response, regulatory submission, or approved compliance interpretation.",
+        "Overclaiming may make the app appear to replace formal QA or compliance processes.",
+        "QA, compliance, audit-readiness reviewers",
+        "Use during inspection-readiness walkthroughs.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c2,
+        "Inspection Readiness",
+        "/sterile-compounding/inspection-packet-export",
+        "sterile_compounding_inspection_packet_export.csv",
+        "Inspection packet export bundle",
+        "Shows packet sections, inspection questions, evidence summaries, routes, safe claims, and not-safe claims.",
+        "Does not prove official inspection submission or regulatory approval.",
+        "How would a reviewer navigate the evidence story?",
+        "NO",
+        "Use packet export and route index together.",
+        "P0",
+    )
+
+    c3 = sterile_ccr_add_claim(
+        claim_rows,
+        "Route Readiness",
+        "P0",
+        "The sterile vertical includes internal route registration checks and manual browser test logging.",
+        "Use this when explaining build readiness and deployment confidence.",
+        "/sterile-compounding/route-probe-check",
+        "sterile_compounding_route_probe_check.csv",
+        "The app checks Flask route registration and allows manual test evidence to be recorded after Azure deployment.",
+        "This is automated uptime monitoring, Azure health monitoring, or production validation.",
+        "Overclaiming route registration as live availability can mislead technical reviewers.",
+        "Technical reviewers, app owner, leadership",
+        "Use before demos and after deployments.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c3,
+        "Route Readiness",
+        "/sterile-compounding/route-probe-check",
+        "sterile_compounding_route_probe_check.csv",
+        "Internal route registration check",
+        "Shows whether expected routes are registered in Flask url_map.",
+        "Does not prove the public Azure URL loaded in a browser.",
+        "Are the expected routes registered?",
+        "YES",
+        "Use manual route test log to capture browser observations.",
+        "P0",
+    )
+
+    c4 = sterile_ccr_add_claim(
+        claim_rows,
+        "Integration Governance",
+        "P0",
+        "The sterile vertical defines blueprint-first, non-production-only integration planning before any connector work.",
+        "Use this when discussing future ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or Azure paths.",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "The app documents future connector candidates, sandbox patterns, no-credential rules, no-writeback boundaries, and approvals required.",
+        "The app is live-connected to ServiceNow, Veeva, Blue Mountain, myAccess, Entra, Power BI, or Azure ledger.",
+        "Overclaiming live integration can create security, compliance, and stakeholder-trust risk.",
+        "System owners, architecture, security, QA",
+        "Use when explaining the future integration path.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c4,
+        "Integration Governance",
+        "/sterile-compounding/connector-sandbox-blueprint",
+        "sterile_compounding_connector_sandbox_blueprint.csv",
+        "Connector sandbox blueprint",
+        "Shows future non-production connector candidates and boundary controls.",
+        "Does not prove any live API connection or production data access.",
+        "How would future integration be governed safely?",
+        "YES",
+        "Use sandbox checklist before any POC conversation.",
+        "P0",
+    )
+
+    c5 = sterile_ccr_add_claim(
+        claim_rows,
+        "Power BI Planning",
+        "P1",
+        "The sterile vertical defines a future Power BI reporting blueprint, including dataset contract, KPI dictionary, relationships, wireframe, export pack, DAX-style measures, and visual interactions.",
+        "Use this when discussing analytics roadmap and dashboard readiness.",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "sterile_compounding_powerbi_dax_blueprint.csv",
+        "The app defines future reporting metadata and implementation planning artifacts.",
+        "A Power BI dashboard, semantic model, dataset, refresh schedule, or DAX model has already been built or published.",
+        "Overclaiming can mislead leaders into thinking analytics integration already exists.",
+        "Leadership, analytics owner, Power BI developer, dissertation reviewers",
+        "Use as the analytics blueprint claim.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c5,
+        "Power BI Planning",
+        "/sterile-compounding/powerbi-dax-blueprint",
+        "sterile_compounding_powerbi_dax_blueprint.csv",
+        "DAX-style measure blueprint",
+        "Shows proposed measure logic, filter context notes, and not-allowed claims.",
+        "Does not run DAX or validate production KPIs.",
+        "How would KPIs be calculated later?",
+        "YES",
+        "Use as implementation guide only.",
+        "P1",
+    )
+
+    c6 = sterile_ccr_add_claim(
+        claim_rows,
+        "Protected Boundary",
+        "P0",
+        "The sterile vertical was expanded as an additive module while documenting protected route boundaries.",
+        "Use this when explaining that sterile work did not intentionally overwrite protected app areas.",
+        "/sterile-compounding/protected-boundary-check",
+        "sterile_compounding_protected_boundary_check.csv",
+        "The app documents protected routes and sterile-specific boundary checks.",
+        "Protected modules were redesigned, improved, or changed by sterile phases unless a specific patch did that.",
+        "Overclaiming protected-route changes can create trust and regression risk.",
+        "App owner, technical reviewer",
+        "Use after major patches to confirm protected-boundary posture.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c6,
+        "Protected Boundary",
+        "/sterile-compounding/protected-boundary-check",
+        "sterile_compounding_protected_boundary_check.csv",
+        "Protected boundary register",
+        "Shows protected modules and boundary posture.",
+        "Does not prove protected modules were functionally improved.",
+        "Did this sterile module respect protected areas?",
+        "YES",
+        "Open protected global pages after deployment for manual confidence.",
+        "P0",
+    )
+
+    c7 = sterile_ccr_add_claim(
+        claim_rows,
+        "Research / Innovation Positioning",
+        "P1",
+        "The sterile vertical demonstrates a governance-first assurance pattern for regulated operations.",
+        "Use this in dissertation, concept-paper, or innovation-positioning discussions.",
+        "/sterile-compounding/phase-register",
+        "sterile_compounding_phase_register.csv",
+        "The app shows phased governance architecture covering evidence, readiness, inspection, integration, analytics, and decision governance.",
+        "This proves regulatory approval, enterprise adoption, commercial deployment, or clinical validation.",
+        "Academic or external-facing overclaiming can reduce credibility.",
+        "Dissertation reviewers, innovation reviewers, leadership",
+        "Use as a controlled novelty and implementation-evidence claim.",
+    )
+
+    sterile_ccr_add_evidence(
+        evidence_rows,
+        c7,
+        "Research / Innovation Positioning",
+        "/sterile-compounding/phase-register",
+        "sterile_compounding_phase_register.csv",
+        "Phase register",
+        "Shows controlled build phases, active markers, routes, registers, and safe boundaries.",
+        "Does not prove external adoption or regulatory endorsement.",
+        "What evidence shows this was built as a structured governance system?",
+        "YES",
+        "Use phase register as implementation-evidence index.",
+        "P1",
+    )
+
+    claim_df = sterile_ccr_pd.DataFrame(claim_rows).reindex(columns=STERILE_CLAIM_CONTROL_COLUMNS).fillna("")
+    evidence_df = sterile_ccr_pd.DataFrame(evidence_rows).reindex(columns=STERILE_CLAIM_EVIDENCE_COLUMNS).fillna("")
+
+    sterile_ccr_write_register(STERILE_CLAIM_CONTROL_REGISTER, claim_df, STERILE_CLAIM_CONTROL_COLUMNS)
+    sterile_ccr_write_register(STERILE_CLAIM_EVIDENCE_MAP_REGISTER, evidence_df, STERILE_CLAIM_EVIDENCE_COLUMNS)
+
+    return claim_df, evidence_df
+
+
+@app.route("/sterile-compounding/claim-control-register")
+def sterile_compounding_claim_control_register():
+    claim_df, evidence_df = sterile_ccr_build_registers()
+
+    status_filter = sterile_ccr_safe(sterile_ccr_request.args.get("status", ""))
+    priority_filter = sterile_ccr_safe(sterile_ccr_request.args.get("priority", ""))
+    domain_filter = sterile_ccr_safe(sterile_ccr_request.args.get("domain", ""))
+
+    filtered = claim_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["claim_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["claim_priority"].astype(str) == priority_filter]
+    if domain_filter:
+        filtered = filtered[filtered["claim_domain"].astype(str) == domain_filter]
+
+    total = len(filtered)
+    green = int((filtered["claim_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["claim_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["claim_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Claim Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    domain_options = '<option value="">All Claim Domains</option>'
+    for domain in sorted(claim_df["claim_domain"].dropna().unique().tolist()) if not claim_df.empty else []:
+        selected = "selected" if domain == domain_filter else ""
+        domain_options += f'<option value="{domain}" {selected}>{domain}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["claim_priority", "claim_domain"]).iterrows():
+            route = sterile_ccr_safe(row.get("supporting_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ccr_badge(row.get("claim_status", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("claim_priority", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("claim_domain", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("safe_claim", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("approved_language", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("language_to_avoid", ""))}</td>
+                <td>{route_link}</td>
+                <td><code>{sterile_ccr_safe(row.get("supporting_register", ""))}</code></td>
+                <td>{sterile_ccr_safe(row.get("review_audience", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No claim control rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Claim Control Register</h1>
+        <p>
+            Controlled language register for the sterile vertical. Use this page to decide what can be safely claimed,
+            what language must be avoided, and which proof route supports each claim.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Claims</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Claim Filters</h2>
+        <form method="GET" action="/sterile-compounding/claim-control-register">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <div style="min-width:260px;"><label>Domain</label><select name="domain">{domain_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-control-register">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-evidence-map">Claim Evidence Map</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-control-register/export">Export Claim Register</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Claim Control Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Domain</th><th>Safe Claim</th>
+                        <th>Approved Language</th><th>Language to Avoid</th><th>Route</th>
+                        <th>Register</th><th>Audience</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Boundary</h2>
+        <p>
+            This page controls language only. It does not approve QMS claims, validate production use,
+            prove enterprise adoption, or authorize integration work.
+        </p>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CLAIM-CONTROL-REGISTER",
+            "STERILE_CLAIM_CONTROL_REGISTER_VIEW",
+            "Sterile claim control register viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/claim-control-register",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Claim Control Register", body)
+
+
+@app.route("/sterile-compounding/claim-evidence-map")
+def sterile_compounding_claim_evidence_map():
+    claim_df, evidence_df = sterile_ccr_build_registers()
+
+    status_filter = sterile_ccr_safe(sterile_ccr_request.args.get("status", ""))
+    priority_filter = sterile_ccr_safe(sterile_ccr_request.args.get("priority", ""))
+
+    filtered = evidence_df.copy()
+
+    if status_filter:
+        filtered = filtered[filtered["evidence_status"].astype(str) == status_filter]
+    if priority_filter:
+        filtered = filtered[filtered["evidence_priority"].astype(str) == priority_filter]
+
+    total = len(filtered)
+    green = int((filtered["evidence_status"] == "GREEN").sum()) if total else 0
+    yellow = int((filtered["evidence_status"] == "YELLOW").sum()) if total else 0
+    p0 = int((filtered["evidence_priority"] == "P0").sum()) if total else 0
+
+    status_options = ""
+    for option in ["", "GREEN", "YELLOW", "RED"]:
+        label = "All Evidence Statuses" if option == "" else option
+        selected = "selected" if option == status_filter else ""
+        status_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    priority_options = ""
+    for option in ["", "P0", "P1", "P2"]:
+        label = "All Priorities" if option == "" else option
+        selected = "selected" if option == priority_filter else ""
+        priority_options += f'<option value="{option}" {selected}>{label}</option>'
+
+    rows_html = ""
+
+    if not filtered.empty:
+        for _, row in filtered.sort_values(by=["evidence_priority", "claim_domain"]).iterrows():
+            route = sterile_ccr_safe(row.get("evidence_route", ""))
+            route_link = f'<a href="{route}">{route}</a>' if route else ""
+
+            rows_html += f"""
+            <tr>
+                <td>{sterile_ccr_badge(row.get("evidence_status", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("evidence_priority", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("claim_domain", ""))}</td>
+                <td>{route_link}</td>
+                <td><code>{sterile_ccr_safe(row.get("evidence_register", ""))}</code></td>
+                <td>{sterile_ccr_safe(row.get("evidence_type", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("what_it_proves", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("what_it_does_not_prove", ""))}</td>
+                <td>{sterile_ccr_safe(row.get("reviewer_question_supported", ""))}</td>
+            </tr>
+            """
+    else:
+        rows_html = '<tr><td colspan="9" style="text-align:center; padding:24px;">No claim evidence rows found.</td></tr>'
+
+    body = f"""
+    <div class="st-hero">
+        <h1>Claim Evidence Map</h1>
+        <p>
+            Evidence map for controlled claims. This shows what each route proves, what it does not prove,
+            and which reviewer question it supports.
+        </p>
+    </div>
+
+    <div class="st-cards">
+        <div class="st-card"><div class="st-label">Evidence Links</div><div class="st-value">{total}</div></div>
+        <div class="st-card"><div class="st-label">P0</div><div class="st-value">{p0}</div></div>
+        <div class="st-card"><div class="st-label">GREEN</div><div class="st-value">{green}</div></div>
+        <div class="st-card"><div class="st-label">YELLOW</div><div class="st-value">{yellow}</div></div>
+    </div>
+
+    <div class="st-panel">
+        <h2>Evidence Filters</h2>
+        <form method="GET" action="/sterile-compounding/claim-evidence-map">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div style="min-width:220px;"><label>Status</label><select name="status">{status_options}</select></div>
+                <div style="min-width:180px;"><label>Priority</label><select name="priority">{priority_options}</select></div>
+                <button class="st-button" type="submit">Apply Filter</button>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-evidence-map">Reset</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-control-register">Claim Register</a>
+                <a class="st-button st-button-dark" href="/sterile-compounding/claim-evidence-map/export">Export Evidence Map</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="st-panel">
+        <h2>Claim Evidence Map Register</h2>
+        <div class="st-table-wrap">
+            <table class="st-table">
+                <thead>
+                    <tr>
+                        <th>Status</th><th>Priority</th><th>Domain</th><th>Evidence Route</th>
+                        <th>Register</th><th>Evidence Type</th><th>What It Proves</th>
+                        <th>What It Does Not Prove</th><th>Reviewer Question</th>
+                    </tr>
+                </thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+    try:
+        sterile_add_lineage(
+            "CLAIM-EVIDENCE-MAP",
+            "STERILE_CLAIM_EVIDENCE_MAP_VIEW",
+            "Sterile claim evidence map viewed and rebuilt",
+            actor="system",
+            source_route="/sterile-compounding/claim-evidence-map",
+        )
+    except Exception:
+        pass
+
+    return sterile_page_shell("Claim Evidence Map", body)
+
+
+@app.route("/sterile-compounding/claim-control-register/export")
+def sterile_compounding_claim_control_register_export():
+    claim_df, evidence_df = sterile_ccr_build_registers()
+
+    if claim_df.empty:
+        claim_df = sterile_ccr_pd.DataFrame(columns=STERILE_CLAIM_CONTROL_COLUMNS)
+
+    csv_data = claim_df.to_csv(index=False)
+
+    return sterile_ccr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_claim_control_register_export.csv"},
+    )
+
+
+@app.route("/sterile-compounding/claim-evidence-map/export")
+def sterile_compounding_claim_evidence_map_export():
+    claim_df, evidence_df = sterile_ccr_build_registers()
+
+    if evidence_df.empty:
+        evidence_df = sterile_ccr_pd.DataFrame(columns=STERILE_CLAIM_EVIDENCE_COLUMNS)
+
+    csv_data = evidence_df.to_csv(index=False)
+
+    return sterile_ccr_Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=sterile_compounding_claim_evidence_map_export.csv"},
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
