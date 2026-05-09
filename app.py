@@ -68494,5 +68494,1917 @@ def enterprise_workspace_hub():
 
 
 
+
+# ============================================================
+# ROLE_BASED_ENTERPRISE_VIEWS_ACTIVE
+# Safe additive route only.
+# Adds /role-based-views without modifying protected modules.
+# ============================================================
+
+@app.route("/role-based-views")
+def role_based_enterprise_views():
+    roles = [
+        {
+            "role": "Executive View",
+            "persona": "Chris / leadership / site stakeholders",
+            "focus": "Operational readiness, governance confidence, audit posture, open risk, and platform-level visibility.",
+            "kpis": ["Governance Confidence", "Audit Readiness", "Critical Risks", "Coverage Integrity"],
+            "primary_actions": [
+                "Open Enterprise Workspace Hub",
+                "Review Power BI readiness routes",
+                "View Platform Health",
+                "Open Monday Demo",
+            ],
+            "routes": [
+                {"label": "Enterprise Workspace Hub", "url": "/enterprise-workspaces"},
+                {"label": "Command Center", "url": "/command-center"},
+                {"label": "Monday Demo", "url": "/monday-demo"},
+                {"label": "Platform Health", "url": "/platform-health"},
+            ],
+            "value": "Gives leadership a clean view of what the platform can do without exposing operational detail too early.",
+        },
+        {
+            "role": "Supervisor View",
+            "persona": "Operations supervisor / system owner / team lead",
+            "focus": "Shift handoff, unresolved issues, equipment continuity, evidence readiness, and escalation ownership.",
+            "kpis": ["Open Handoffs", "Evidence Pending", "Escalations", "Equipment Risk"],
+            "primary_actions": [
+                "Review operational lineage",
+                "Check unresolved tickets",
+                "Validate evidence readiness",
+                "Confirm supervisor review checkpoints",
+            ],
+            "routes": [
+                {"label": "Operational Lineage", "url": "/operational-lineage"},
+                {"label": "Platform Health", "url": "/platform-health"},
+                {"label": "Sterile Compounding", "url": "/sterile-compounding"},
+                {"label": "Sterile Audit Lineage", "url": "/sterile-compounding/audit-lineage"},
+            ],
+            "value": "Turns supervision into governed continuity instead of informal follow-up across email, Excel, Teams, and tickets.",
+        },
+        {
+            "role": "Technician View",
+            "persona": "Technician / analyst / equipment support user",
+            "focus": "Assigned work, required evidence, equipment state, handoff notes, and task closure readiness.",
+            "kpis": ["Assigned Tasks", "Evidence Required", "Open Equipment Issues", "Handoff Status"],
+            "primary_actions": [
+                "Review assigned equipment context",
+                "Upload or prepare evidence",
+                "Acknowledge handoff",
+                "Confirm task closure requirements",
+            ],
+            "routes": [
+                {"label": "Sterile Compounding", "url": "/sterile-compounding"},
+                {"label": "Sterile Review", "url": "/sterile-compounding/review"},
+                {"label": "Sterile Evidence Vault", "url": "/sterile-compounding/evidence-vault"},
+                {"label": "Operational Lineage", "url": "/operational-lineage"},
+            ],
+            "value": "Makes the technician experience clearer by showing exactly what evidence and accountability are expected.",
+        },
+        {
+            "role": "QA / Audit View",
+            "persona": "QA reviewer / auditor / compliance stakeholder",
+            "focus": "Audit-ready lineage, evidence completeness, control mapping, inspection readiness, and exception handling.",
+            "kpis": ["Audit Readiness", "Evidence Completeness", "Open Exceptions", "Control Coverage"],
+            "primary_actions": [
+                "Review evidence vault",
+                "Open audit lineage",
+                "Check inspection readiness",
+                "Export audit-ready registers",
+            ],
+            "routes": [
+                {"label": "Sterile Audit Lineage", "url": "/sterile-compounding/audit-lineage"},
+                {"label": "Sterile Evidence Vault", "url": "/sterile-compounding/evidence-vault"},
+                {"label": "Sterile Inspection Readiness", "url": "/sterile-compounding/inspection-readiness"},
+                {"label": "Platform Health", "url": "/platform-health"},
+            ],
+            "value": "Creates defensible audit visibility by connecting records, evidence, control posture, and lineage.",
+        },
+        {
+            "role": "Platform Admin View",
+            "persona": "Platform owner / developer / governance architect",
+            "focus": "Route health, module registry, protected routes, CSV registers, export packs, and integration readiness.",
+            "kpis": ["Route Health", "Register Count", "Module Status", "Export Readiness"],
+            "primary_actions": [
+                "Check platform health",
+                "Review workspace hub",
+                "Validate Power BI dataset routes",
+                "Confirm protected modules remain intact",
+            ],
+            "routes": [
+                {"label": "Platform Health", "url": "/platform-health"},
+                {"label": "Enterprise Workspace Hub", "url": "/enterprise-workspaces"},
+                {"label": "Sterile Power BI Readiness", "url": "/sterile-compounding/powerbi-readiness-blueprint"},
+                {"label": "Sterile Power BI Export Pack", "url": "/sterile-compounding/powerbi-export-pack"},
+            ],
+            "value": "Provides a governance architecture view for maintaining, extending, and protecting the platform.",
+        },
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Role-Based Enterprise Views</title>
+        <style>
+            body {
+                margin:0;
+                font-family:Arial, Helvetica, sans-serif;
+                background:#f4f7fb;
+                color:#0f172a;
+            }
+            .hero {
+                background:linear-gradient(135deg,#111827,#4338ca);
+                color:white;
+                padding:36px 44px 72px;
+                border-bottom-left-radius:28px;
+                border-bottom-right-radius:28px;
+            }
+            .hero h1 {
+                margin:0 0 10px;
+                font-size:40px;
+            }
+            .hero p {
+                color:#e0e7ff;
+                max-width:1040px;
+                line-height:1.55;
+                font-size:16px;
+            }
+            .badge {
+                display:inline-block;
+                background:rgba(255,255,255,.14);
+                border:1px solid rgba(255,255,255,.25);
+                color:white;
+                padding:8px 13px;
+                border-radius:999px;
+                margin:10px 8px 0 0;
+                font-size:12px;
+                font-weight:800;
+            }
+            .wrap {
+                max-width:1320px;
+                margin:-42px auto 40px;
+                padding:0 24px;
+            }
+            .note {
+                background:#ecfeff;
+                border:1px solid #a5f3fc;
+                color:#155e75;
+                border-radius:16px;
+                padding:16px;
+                margin-bottom:24px;
+                box-shadow:0 8px 22px rgba(15,23,42,.06);
+            }
+            .role-card {
+                background:white;
+                border-radius:22px;
+                padding:24px;
+                box-shadow:0 12px 30px rgba(15,23,42,.09);
+                margin-bottom:24px;
+            }
+            .role-head {
+                display:flex;
+                justify-content:space-between;
+                gap:18px;
+                align-items:flex-start;
+                flex-wrap:wrap;
+            }
+            .role-card h2 {
+                margin:0 0 8px;
+                font-size:26px;
+            }
+            .persona {
+                color:#64748b;
+                font-weight:800;
+                margin-bottom:10px;
+            }
+            .focus {
+                color:#334155;
+                line-height:1.55;
+                max-width:900px;
+            }
+            .grid {
+                display:grid;
+                grid-template-columns:repeat(4,1fr);
+                gap:14px;
+                margin-top:18px;
+            }
+            .mini {
+                background:#f8fafc;
+                border:1px solid #e2e8f0;
+                border-radius:16px;
+                padding:16px;
+            }
+            .mini b {
+                display:block;
+                color:#1e3a8a;
+                margin-bottom:8px;
+            }
+            .pill {
+                display:inline-block;
+                background:#e0e7ff;
+                color:#3730a3;
+                padding:7px 10px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:900;
+                margin:0 6px 7px 0;
+            }
+            .action-list {
+                margin:0;
+                padding-left:18px;
+                line-height:1.7;
+                color:#334155;
+            }
+            .route-link {
+                display:inline-block;
+                text-decoration:none;
+                background:#0f172a;
+                color:white;
+                padding:9px 12px;
+                border-radius:10px;
+                margin:0 8px 8px 0;
+                font-size:13px;
+                font-weight:800;
+            }
+            .value {
+                background:#f5f3ff;
+                border:1px solid #ddd6fe;
+                color:#4c1d95;
+                border-radius:16px;
+                padding:14px;
+                margin-top:18px;
+                line-height:1.5;
+            }
+            .toplinks {
+                margin-top:18px;
+            }
+            .toplinks a {
+                color:white;
+                text-decoration:none;
+                font-weight:800;
+                margin-right:16px;
+            }
+            @media(max-width:1000px) {
+                .grid { grid-template-columns:repeat(2,1fr); }
+            }
+            @media(max-width:680px) {
+                .grid { grid-template-columns:1fr; }
+                .hero h1 { font-size:30px; }
+            }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Role-Based Enterprise Views</h1>
+            <p>
+                A leadership-friendly role model showing how different stakeholders would experience the same governance platform.
+                This is not a login/security implementation yet; it is a controlled presentation layer for explaining enterprise value by role.
+            </p>
+            <span class="badge">EXECUTIVE</span>
+            <span class="badge">SUPERVISOR</span>
+            <span class="badge">TECHNICIAN</span>
+            <span class="badge">QA / AUDIT</span>
+            <span class="badge">PLATFORM ADMIN</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/command-center">Command Center</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+                <a href="/platform-health">Platform Health</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <div class="note">
+                <b>Positioning:</b> Role-based views help leadership understand that COBIT-Chain can serve different users
+                without changing the core platform. Each role sees the governance information relevant to their responsibility.
+            </div>
+
+            {% for role in roles %}
+            <section class="role-card">
+                <div class="role-head">
+                    <div>
+                        <h2>{{ role.role }}</h2>
+                        <div class="persona">{{ role.persona }}</div>
+                        <div class="focus">{{ role.focus }}</div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="mini">
+                        <b>Key KPIs</b>
+                        {% for kpi in role.kpis %}
+                            <span class="pill">{{ kpi }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mini">
+                        <b>Primary Actions</b>
+                        <ul class="action-list">
+                            {% for action in role.primary_actions %}
+                                <li>{{ action }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="mini">
+                        <b>Relevant Routes</b>
+                        {% for route in role.routes %}
+                            <a class="route-link" href="{{ route.url }}">{{ route.label }}</a>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mini">
+                        <b>Enterprise Value</b>
+                        <p>{{ role.value }}</p>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, roles=roles)
+
+
+
+
+# ============================================================
+# SHIFT_OVERLAP_INTELLIGENCE_ACTIVE
+# Safe additive route only.
+# Adds /shift-overlap-intelligence without modifying protected modules.
+# Based on Chris' 12-hour overlap support model.
+# ============================================================
+
+@app.route("/shift-overlap-intelligence")
+def shift_overlap_intelligence():
+    shifts = [
+        {
+            "shift": "A",
+            "window": "10:00 - 22:00",
+            "role": "Day Coverage Anchor",
+            "coverage_strength": "Strong",
+            "overlap_partner": "B",
+            "risk": "LOW",
+            "governance_note": "Primary day coverage established. Handoff preparation begins before 22:00."
+        },
+        {
+            "shift": "B",
+            "window": "11:00 - 23:00",
+            "role": "Day Overlap / Transition Bridge",
+            "coverage_strength": "Strong",
+            "overlap_partner": "A and C",
+            "risk": "LOW",
+            "governance_note": "Critical overlap bridge between day operations and night coverage."
+        },
+        {
+            "shift": "C",
+            "window": "22:00 - 10:00",
+            "role": "Night Coverage Anchor",
+            "coverage_strength": "Moderate",
+            "overlap_partner": "B and D",
+            "risk": "MEDIUM",
+            "governance_note": "Night shift receives unresolved issues and confirms carryover ownership."
+        },
+        {
+            "shift": "D",
+            "window": "23:00 - 11:00",
+            "role": "Night Overlap / Morning Bridge",
+            "coverage_strength": "Strong",
+            "overlap_partner": "C and A",
+            "risk": "LOW",
+            "governance_note": "Morning transition bridge protects continuity into the next day cycle."
+        },
+    ]
+
+    overlap_windows = [
+        {
+            "overlap": "A + B",
+            "time": "11:00 - 22:00",
+            "purpose": "Day redundancy and shared equipment coverage",
+            "governance_action": "Validate open tickets, evidence status, and equipment assignment before day close.",
+            "risk": "LOW"
+        },
+        {
+            "overlap": "B + C",
+            "time": "22:00 - 23:00",
+            "purpose": "Critical day-to-night transition",
+            "governance_action": "Mandatory unresolved issue review, escalation carryover, and incoming acknowledgement.",
+            "risk": "MEDIUM"
+        },
+        {
+            "overlap": "C + D",
+            "time": "23:00 - 10:00",
+            "purpose": "Night redundancy and escalation support",
+            "governance_action": "Monitor active issues, evidence gaps, and high-risk equipment through night coverage.",
+            "risk": "LOW"
+        },
+        {
+            "overlap": "D + A",
+            "time": "10:00 - 11:00",
+            "purpose": "Morning transition and day-start readiness",
+            "governance_action": "Confirm overnight issues, evidence closure, and day-shift ownership acceptance.",
+            "risk": "MEDIUM"
+        },
+    ]
+
+    intelligence_signals = [
+        {
+            "signal": "Orphaned Ticket Risk",
+            "status": "Detected",
+            "severity": "HIGH",
+            "meaning": "One unresolved ticket lacks confirmed incoming owner during B-to-C transition."
+        },
+        {
+            "signal": "Evidence Carryover Gap",
+            "status": "Open",
+            "severity": "MEDIUM",
+            "meaning": "Required evidence is pending before supervisor review can be considered audit-ready."
+        },
+        {
+            "signal": "Overlap Coverage Integrity",
+            "status": "Controlled",
+            "severity": "LOW",
+            "meaning": "A/B and C/D overlaps provide redundancy across day and night operations."
+        },
+        {
+            "signal": "Escalation Continuity",
+            "status": "Watch",
+            "severity": "MEDIUM",
+            "meaning": "Escalation must survive the shift transition without losing ownership or context."
+        },
+    ]
+
+    pre_deviation_predictions = [
+        {
+            "prediction": "Potential deviation risk if evidence remains missing through C/D night overlap",
+            "driver": "Escalated equipment issue + missing audit trail export + pending incoming acknowledgement",
+            "probability": "High",
+            "recommended_action": "Force supervisor checkpoint before closure."
+        },
+        {
+            "prediction": "Potential handoff breakdown during B-to-C transition",
+            "driver": "Short overlap window + unresolved ticket + equipment still in warning state",
+            "probability": "Medium",
+            "recommended_action": "Require incoming owner acknowledgement before 23:00."
+        },
+        {
+            "prediction": "Low risk of day coverage gap",
+            "driver": "A/B overlap provides redundant coverage and backup ownership",
+            "probability": "Low",
+            "recommended_action": "Continue normal monitoring."
+        },
+    ]
+
+    digital_twin = [
+        {"object": "Ticket", "state": "Open / Escalated", "governance_link": "Must remain linked to shift owner and equipment context"},
+        {"object": "Shift", "state": "B-to-C transition", "governance_link": "Overlap window becomes mandatory control point"},
+        {"object": "Technician", "state": "Incoming acknowledgement pending", "governance_link": "Ownership cannot be assumed until accepted"},
+        {"object": "Equipment", "state": "Warning / escalated", "governance_link": "Equipment state drives risk level and evidence requirement"},
+        {"object": "Evidence", "state": "Partially complete", "governance_link": "Missing evidence blocks audit-ready closure"},
+        {"object": "Supervisor Review", "state": "Required", "governance_link": "Review checkpoint prevents silent closure of weak records"},
+    ]
+
+    kpis = {
+        "continuity_score": "91%",
+        "overlap_strength": "94%",
+        "handoff_integrity": "87%",
+        "pre_deviation_risk": "HIGH",
+        "orphaned_items": "1",
+        "evidence_gaps": "2",
+        "governance_confidence": "89%",
+        "audit_readiness": "86%"
+    }
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Shift Overlap Intelligence</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#0f766e); color:white; padding:34px 42px 74px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#ccfbf1; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-42px auto 40px; padding:0 24px; }
+            .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+            .kpi, .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            .kpi span { color:#64748b; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:.07em; }
+            .kpi strong { display:block; margin-top:9px; font-size:30px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#ecfeff; color:#115e59; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW, .Low { background:#dcfce7; color:#166534; }
+            .MEDIUM, .Medium { background:#fef3c7; color:#92400e; }
+            .HIGH, .High { background:#fee2e2; color:#991b1b; }
+            .Detected, .Open, .Watch { background:#fef3c7; color:#92400e; }
+            .Controlled { background:#dcfce7; color:#166534; }
+            .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+            .flow-card { background:#f8fafc; border:1px solid #ccfbf1; border-radius:16px; padding:16px; }
+            .flow-card b { display:block; color:#0f766e; margin-bottom:8px; }
+            .note { background:#ecfeff; border:1px solid #99f6e4; color:#115e59; padding:16px; border-radius:16px; margin-bottom:22px; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            @media(max-width:1000px){ .grid4,.flow{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:680px){ .grid4,.flow{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Shift Overlap Intelligence Center</h1>
+            <p>
+                Converts Chris' 12-hour overlapping support model into an operational continuity governance engine.
+                The purpose is not scheduling. The purpose is to prove that coverage, escalation, ownership, evidence,
+                and audit readiness remain governed across shift transitions.
+            </p>
+            <span class="badge">A: 10:00–22:00</span>
+            <span class="badge">B: 11:00–23:00</span>
+            <span class="badge">C: 22:00–10:00</span>
+            <span class="badge">D: 23:00–11:00</span>
+            <span class="badge">PRE-DEVIATION INTELLIGENCE</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/role-based-views">Role-Based Views</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+                <a href="/platform-health">Platform Health</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <div class="note">
+                <b>Executive message:</b> This is not a shift scheduler. It is a continuity assurance layer that detects whether
+                work, ownership, equipment risk, and evidence remain controlled as one shift hands over to another.
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Continuity Score</span><strong>{{ kpis.continuity_score }}</strong></div>
+                <div class="kpi"><span>Overlap Strength</span><strong>{{ kpis.overlap_strength }}</strong></div>
+                <div class="kpi"><span>Handoff Integrity</span><strong>{{ kpis.handoff_integrity }}</strong></div>
+                <div class="kpi"><span>Pre-Deviation Risk</span><strong>{{ kpis.pre_deviation_risk }}</strong></div>
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Orphaned Items</span><strong>{{ kpis.orphaned_items }}</strong></div>
+                <div class="kpi"><span>Evidence Gaps</span><strong>{{ kpis.evidence_gaps }}</strong></div>
+                <div class="kpi"><span>Governance Confidence</span><strong>{{ kpis.governance_confidence }}</strong></div>
+                <div class="kpi"><span>Audit Readiness</span><strong>{{ kpis.audit_readiness }}</strong></div>
+            </div>
+
+            <section class="panel">
+                <h2>1. Chris' Overlap Shift Model</h2>
+                <table>
+                    <tr><th>Shift</th><th>Window</th><th>Role</th><th>Overlap Partner</th><th>Coverage Strength</th><th>Risk</th><th>Governance Note</th></tr>
+                    {% for s in shifts %}
+                    <tr>
+                        <td><b>{{ s.shift }}</b></td>
+                        <td>{{ s.window }}</td>
+                        <td>{{ s.role }}</td>
+                        <td>{{ s.overlap_partner }}</td>
+                        <td>{{ s.coverage_strength }}</td>
+                        <td><span class="pill {{ s.risk }}">{{ s.risk }}</span></td>
+                        <td>{{ s.governance_note }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>2. Overlap Governance Windows</h2>
+                <table>
+                    <tr><th>Overlap</th><th>Time</th><th>Purpose</th><th>Governance Action</th><th>Risk</th></tr>
+                    {% for o in overlap_windows %}
+                    <tr>
+                        <td><b>{{ o.overlap }}</b></td>
+                        <td>{{ o.time }}</td>
+                        <td>{{ o.purpose }}</td>
+                        <td>{{ o.governance_action }}</td>
+                        <td><span class="pill {{ o.risk }}">{{ o.risk }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Continuity Intelligence Signals</h2>
+                <table>
+                    <tr><th>Signal</th><th>Status</th><th>Severity</th><th>Meaning</th></tr>
+                    {% for i in intelligence_signals %}
+                    <tr>
+                        <td><b>{{ i.signal }}</b></td>
+                        <td><span class="pill {{ i.status }}">{{ i.status }}</span></td>
+                        <td><span class="pill {{ i.severity }}">{{ i.severity }}</span></td>
+                        <td>{{ i.meaning }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>4. Pre-Deviation Prediction Engine</h2>
+                <table>
+                    <tr><th>Prediction</th><th>Driver</th><th>Probability</th><th>Recommended Action</th></tr>
+                    {% for p in pre_deviation_predictions %}
+                    <tr>
+                        <td><b>{{ p.prediction }}</b></td>
+                        <td>{{ p.driver }}</td>
+                        <td><span class="pill {{ p.probability }}">{{ p.probability }}</span></td>
+                        <td>{{ p.recommended_action }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>5. Operational Digital Twin View</h2>
+                <div class="flow">
+                    {% for d in digital_twin %}
+                    <div class="flow-card">
+                        <b>{{ d.object }}</b>
+                        <p><strong>State:</strong> {{ d.state }}</p>
+                        <p>{{ d.governance_link }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>6. Why This Is Revolutionary</h2>
+                <p>
+                    Traditional shift tools tell leaders who is working. This module tells leaders whether the operation remained governed.
+                    It detects weak overlap, orphaned ownership, evidence gaps, escalation carryover, and pre-deviation risk before those weaknesses
+                    become audit findings, deviations, or operational failures.
+                </p>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        shifts=shifts,
+        overlap_windows=overlap_windows,
+        intelligence_signals=intelligence_signals,
+        pre_deviation_predictions=pre_deviation_predictions,
+        digital_twin=digital_twin,
+        kpis=kpis
+    )
+
+
+
+
+# ============================================================
+# GOVERNANCE_CONFIDENCE_ENGINE_ACTIVE
+# Safe additive route only.
+# Adds /governance-confidence-engine without modifying protected modules.
+# ============================================================
+
+@app.route("/governance-confidence-engine")
+def governance_confidence_engine():
+    confidence_inputs = [
+        {"factor": "Overlap Integrity", "score": 94, "weight": "15%", "signal": "A/B and C/D overlap windows provide redundancy", "risk": "LOW"},
+        {"factor": "Handoff Integrity", "score": 87, "weight": "15%", "signal": "One B-to-C transition requires incoming acknowledgement", "risk": "MEDIUM"},
+        {"factor": "Evidence Completeness", "score": 82, "weight": "20%", "signal": "Two evidence gaps remain open before audit-ready closure", "risk": "MEDIUM"},
+        {"factor": "Escalation Ownership", "score": 85, "weight": "15%", "signal": "One escalation needs supervisor confirmation", "risk": "MEDIUM"},
+        {"factor": "Audit Readiness", "score": 88, "weight": "15%", "signal": "Audit export structure ready; missing evidence blocks full readiness", "risk": "MEDIUM"},
+        {"factor": "Lineage Continuity", "score": 96, "weight": "10%", "signal": "Ticket-to-evidence chain is connected through operational lineage", "risk": "LOW"},
+        {"factor": "Platform Health", "score": 92, "weight": "10%", "signal": "Core routes and registers are visible through platform health", "risk": "LOW"},
+    ]
+
+    weighted_score = 89
+
+    confidence_bands = [
+        {"band": "95-100", "label": "Trusted / Audit-Ready", "meaning": "Evidence, ownership, review, and lineage are complete enough for executive confidence.", "color": "green"},
+        {"band": "85-94", "label": "Governed / Review Minor Gaps", "meaning": "Operation is controlled, but some evidence or review gaps require attention.", "color": "yellow"},
+        {"band": "70-84", "label": "At Risk / Governance Weakness", "meaning": "Open gaps could become audit findings, deviation triggers, or continuity failures.", "color": "orange"},
+        {"band": "<70", "label": "Critical / Not Defensible", "meaning": "Records are not ready for audit or leadership reliance without remediation.", "color": "red"},
+    ]
+
+    recommendations = [
+        {
+            "priority": "P1",
+            "title": "Close missing evidence before shift closure",
+            "action": "Attach or verify required audit trail export before supervisor signoff.",
+            "impact": "+5 confidence points"
+        },
+        {
+            "priority": "P1",
+            "title": "Force incoming owner acknowledgement",
+            "action": "Require B-to-C incoming technician acknowledgement for unresolved items.",
+            "impact": "+3 confidence points"
+        },
+        {
+            "priority": "P2",
+            "title": "Confirm escalation owner",
+            "action": "Assign named escalation owner and backup before closure.",
+            "impact": "+2 confidence points"
+        },
+        {
+            "priority": "P2",
+            "title": "Link evidence to lineage package",
+            "action": "Ensure evidence nodes connect to ticket, shift, equipment, and review records.",
+            "impact": "+4 confidence points"
+        },
+    ]
+
+    executive_summary = [
+        {"question": "Can leadership rely on the operational record?", "answer": "Mostly yes, with minor gaps", "basis": "Governance confidence is 89%, with evidence and handoff items still open."},
+        {"question": "Is the record audit-ready?", "answer": "Conditionally", "basis": "Audit package is structurally ready, but missing evidence must be closed."},
+        {"question": "Is there pre-deviation risk?", "answer": "Yes", "basis": "Evidence gap plus incomplete B-to-C handoff could become a governance failure."},
+        {"question": "What does COBIT-Chain add?", "answer": "Trust layer", "basis": "It calculates whether work is governed, not merely whether work exists."},
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Governance Confidence Engine</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#7c3aed); color:white; padding:36px 44px 78px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#ede9fe; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-46px auto 40px; padding:0 24px; }
+            .score-card { background:white; border-radius:24px; padding:30px; box-shadow:0 14px 34px rgba(15,23,42,.12); margin-bottom:24px; display:grid; grid-template-columns:280px 1fr; gap:28px; align-items:center; }
+            .score-circle { width:220px; height:220px; border-radius:50%; background:conic-gradient(#7c3aed 0 89%, #e2e8f0 89% 100%); display:flex; align-items:center; justify-content:center; margin:auto; }
+            .score-inner { width:160px; height:160px; border-radius:50%; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px #e5e7eb; }
+            .score-inner strong { font-size:46px; color:#5b21b6; }
+            .score-inner span { color:#64748b; font-size:12px; font-weight:900; text-transform:uppercase; }
+            .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#f5f3ff; color:#5b21b6; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW { background:#dcfce7; color:#166534; }
+            .MEDIUM { background:#fef3c7; color:#92400e; }
+            .HIGH { background:#fee2e2; color:#991b1b; }
+            .P1 { background:#fee2e2; color:#991b1b; }
+            .P2 { background:#fef3c7; color:#92400e; }
+            .green { background:#dcfce7; color:#166534; }
+            .yellow { background:#fef3c7; color:#92400e; }
+            .orange { background:#ffedd5; color:#9a3412; }
+            .red { background:#fee2e2; color:#991b1b; }
+            .mini { background:white; border-radius:20px; padding:20px; box-shadow:0 12px 30px rgba(15,23,42,.09); }
+            .mini h3 { margin:0 0 8px; }
+            .mini p { color:#475569; line-height:1.5; }
+            .bar { height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+            .fill { height:12px; background:#7c3aed; border-radius:999px; }
+            .note { background:#f5f3ff; border:1px solid #ddd6fe; color:#4c1d95; padding:16px; border-radius:16px; margin-bottom:22px; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            @media(max-width:1000px){ .score-card{grid-template-columns:1fr;} .grid4{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:680px){ .grid4{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Governance Confidence Engine</h1>
+            <p>
+                A cross-platform trust layer that converts overlap integrity, evidence completeness, escalation ownership,
+                audit readiness, lineage continuity, and platform health into one leadership-friendly confidence score.
+            </p>
+            <span class="badge">EXECUTIVE TRUST SCORE</span>
+            <span class="badge">PRE-DEVIATION SIGNALS</span>
+            <span class="badge">AUDIT READINESS</span>
+            <span class="badge">LINEAGE CONFIDENCE</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/shift-overlap-intelligence">Shift Overlap Intelligence</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+                <a href="/platform-health">Platform Health</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <section class="score-card">
+                <div class="score-circle">
+                    <div class="score-inner">
+                        <strong>{{ weighted_score }}%</strong>
+                        <span>Confidence</span>
+                    </div>
+                </div>
+                <div>
+                    <h2>Current Governance Confidence: Governed / Review Minor Gaps</h2>
+                    <p>
+                        The operation is broadly controlled, but evidence completion and B-to-C handoff acknowledgement remain the key confidence limiters.
+                        This score is designed for leadership review, audit posture assessment, and pre-deviation risk visibility.
+                    </p>
+                    <div class="bar"><div class="fill" style="width:{{ weighted_score }}%;"></div></div>
+                </div>
+            </section>
+
+            <div class="note">
+                <b>Executive meaning:</b> ServiceNow can show the work exists. COBIT-Chain shows whether the work is reliable enough to trust.
+            </div>
+
+            <section class="panel">
+                <h2>1. Confidence Score Inputs</h2>
+                <table>
+                    <tr><th>Factor</th><th>Score</th><th>Weight</th><th>Signal</th><th>Risk</th></tr>
+                    {% for c in confidence_inputs %}
+                    <tr>
+                        <td><b>{{ c.factor }}</b></td>
+                        <td>{{ c.score }}%</td>
+                        <td>{{ c.weight }}</td>
+                        <td>{{ c.signal }}</td>
+                        <td><span class="pill {{ c.risk }}">{{ c.risk }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>2. Confidence Bands</h2>
+                <table>
+                    <tr><th>Score Band</th><th>Label</th><th>Meaning</th></tr>
+                    {% for b in confidence_bands %}
+                    <tr>
+                        <td><b>{{ b.band }}</b></td>
+                        <td><span class="pill {{ b.color }}">{{ b.label }}</span></td>
+                        <td>{{ b.meaning }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Confidence Recovery Recommendations</h2>
+                <table>
+                    <tr><th>Priority</th><th>Recommendation</th><th>Action</th><th>Expected Impact</th></tr>
+                    {% for r in recommendations %}
+                    <tr>
+                        <td><span class="pill {{ r.priority }}">{{ r.priority }}</span></td>
+                        <td><b>{{ r.title }}</b></td>
+                        <td>{{ r.action }}</td>
+                        <td>{{ r.impact }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>4. Executive Trust Questions</h2>
+                <table>
+                    <tr><th>Question</th><th>Answer</th><th>Basis</th></tr>
+                    {% for e in executive_summary %}
+                    <tr>
+                        <td><b>{{ e.question }}</b></td>
+                        <td>{{ e.answer }}</td>
+                        <td>{{ e.basis }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="grid4">
+                <div class="mini">
+                    <h3>Pre-Deviation Use</h3>
+                    <p>Highlights weak signals before they become deviations, audit findings, or unresolved operational failures.</p>
+                </div>
+                <div class="mini">
+                    <h3>Audit Use</h3>
+                    <p>Shows whether evidence, lineage, ownership, and review state are strong enough for audit reliance.</p>
+                </div>
+                <div class="mini">
+                    <h3>Leadership Use</h3>
+                    <p>Turns complex operational governance into one explainable confidence score.</p>
+                </div>
+                <div class="mini">
+                    <h3>Platform Use</h3>
+                    <p>Connects sterile compounding, shift overlap, operational lineage, and platform health into one trust layer.</p>
+                </div>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        confidence_inputs=confidence_inputs,
+        confidence_bands=confidence_bands,
+        recommendations=recommendations,
+        executive_summary=executive_summary,
+        weighted_score=weighted_score
+    )
+
+
+
+
+# ============================================================
+# GOVERNANCE_BLAST_RADIUS_ENGINE_ACTIVE
+# Safe additive route only.
+# Adds /governance-blast-radius without modifying protected modules.
+# Shows downstream governance impact when one control weakness appears.
+# ============================================================
+
+@app.route("/governance-blast-radius")
+def governance_blast_radius():
+    scenario = {
+        "trigger": "Missing B-to-C handoff acknowledgement",
+        "source": "Shift Overlap Intelligence",
+        "initial_risk": "MEDIUM",
+        "current_blast_radius": "HIGH",
+        "confidence_impact": "-8 points",
+        "audit_readiness_impact": "-6 points",
+        "recommended_response": "Require incoming owner acknowledgement, attach missing evidence, and force supervisor checkpoint before closure."
+    }
+
+    blast_chain = [
+        {
+            "level": "1",
+            "domain": "Shift Continuity",
+            "impact": "Incoming owner not confirmed during B-to-C transition.",
+            "severity": "MEDIUM",
+            "control_response": "Force acknowledgement before shift transition closes."
+        },
+        {
+            "level": "2",
+            "domain": "Equipment Ownership",
+            "impact": "Equipment issue may become orphaned if no incoming owner accepts it.",
+            "severity": "HIGH",
+            "control_response": "Assign named primary and backup owner."
+        },
+        {
+            "level": "3",
+            "domain": "Evidence Integrity",
+            "impact": "Required evidence may not be attached before closure.",
+            "severity": "HIGH",
+            "control_response": "Block audit-ready status until evidence is attached."
+        },
+        {
+            "level": "4",
+            "domain": "Supervisor Review",
+            "impact": "Supervisor may approve incomplete operational record.",
+            "severity": "MEDIUM",
+            "control_response": "Trigger mandatory review checkpoint."
+        },
+        {
+            "level": "5",
+            "domain": "Audit Readiness",
+            "impact": "Record becomes weak during inspection or internal audit.",
+            "severity": "HIGH",
+            "control_response": "Generate audit gap warning and remediation note."
+        },
+        {
+            "level": "6",
+            "domain": "Deviation / CAPA Exposure",
+            "impact": "If repeated, weak handoff pattern may become deviation or CAPA signal.",
+            "severity": "MEDIUM",
+            "control_response": "Track recurrence and route to governance review."
+        },
+    ]
+
+    impacted_assets = [
+        {"asset": "Shift B to C Transition", "type": "Coverage Window", "impact": "Handoff integrity reduced", "severity": "MEDIUM"},
+        {"asset": "Environmental Monitoring Device", "type": "Equipment", "impact": "Ownership risk increased", "severity": "HIGH"},
+        {"asset": "Audit Trail Export", "type": "Evidence", "impact": "Audit package incomplete", "severity": "HIGH"},
+        {"asset": "Supervisor Review Queue", "type": "Review Control", "impact": "Review required before closure", "severity": "MEDIUM"},
+        {"asset": "Governance Confidence Score", "type": "Executive KPI", "impact": "Confidence reduced by 8 points", "severity": "MEDIUM"},
+        {"asset": "Audit Readiness Score", "type": "Audit KPI", "impact": "Readiness reduced by 6 points", "severity": "HIGH"},
+    ]
+
+    containment_actions = [
+        {"priority": "P1", "action": "Lock closure until incoming owner acknowledgement is captured", "owner": "Shift Supervisor", "expected_result": "Prevents orphaned ownership"},
+        {"priority": "P1", "action": "Attach missing audit trail evidence", "owner": "Technician / Equipment Support", "expected_result": "Restores evidence integrity"},
+        {"priority": "P2", "action": "Trigger supervisor review checkpoint", "owner": "Supervisor", "expected_result": "Prevents silent approval of weak record"},
+        {"priority": "P2", "action": "Update governance confidence score after remediation", "owner": "Platform / Governance", "expected_result": "Shows recovery path to leadership"},
+        {"priority": "P3", "action": "Monitor recurrence across overlap windows", "owner": "Operational Excellence", "expected_result": "Detects systemic shift-transition weakness"},
+    ]
+
+    heatmap = [
+        {"domain": "Shift", "before": "LOW", "after": "MEDIUM", "delta": "+1"},
+        {"domain": "Equipment", "before": "MEDIUM", "after": "HIGH", "delta": "+1"},
+        {"domain": "Evidence", "before": "MEDIUM", "after": "HIGH", "delta": "+1"},
+        {"domain": "Review", "before": "LOW", "after": "MEDIUM", "delta": "+1"},
+        {"domain": "Audit", "before": "MEDIUM", "after": "HIGH", "delta": "+1"},
+        {"domain": "CAPA Exposure", "before": "LOW", "after": "MEDIUM", "delta": "+1"},
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Governance Blast Radius Engine</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#b91c1c); color:white; padding:36px 44px 78px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#fee2e2; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-46px auto 40px; padding:0 24px; }
+            .scenario { background:white; border-radius:24px; padding:28px; box-shadow:0 14px 34px rgba(15,23,42,.12); margin-bottom:24px; }
+            .scenario-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:18px; }
+            .metric { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px; }
+            .metric span { color:#64748b; font-size:12px; font-weight:900; text-transform:uppercase; }
+            .metric strong { display:block; font-size:24px; margin-top:8px; }
+            .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#fee2e2; color:#991b1b; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW { background:#dcfce7; color:#166534; }
+            .MEDIUM { background:#fef3c7; color:#92400e; }
+            .HIGH { background:#fee2e2; color:#991b1b; }
+            .P1 { background:#fee2e2; color:#991b1b; }
+            .P2 { background:#fef3c7; color:#92400e; }
+            .P3 { background:#e0e7ff; color:#3730a3; }
+            .chain { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-top:16px; }
+            .node { background:#fff7ed; border:1px solid #fed7aa; border-radius:16px; padding:15px; min-height:170px; }
+            .node b { color:#9a3412; display:block; margin-bottom:8px; }
+            .node small { color:#64748b; font-weight:800; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            .note { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; padding:16px; border-radius:16px; margin-bottom:22px; }
+            @media(max-width:1100px){ .chain{grid-template-columns:repeat(3,1fr);} .scenario-grid{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:700px){ .chain,.scenario-grid{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Governance Blast Radius Engine</h1>
+            <p>
+                Shows how one governance weakness spreads across shift continuity, equipment ownership,
+                evidence integrity, supervisor review, audit readiness, and deviation/CAPA exposure.
+            </p>
+            <span class="badge">IMPACT ANALYSIS</span>
+            <span class="badge">CONTROL RESPONSE</span>
+            <span class="badge">AUDIT EXPOSURE</span>
+            <span class="badge">CAPA SIGNAL</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/shift-overlap-intelligence">Shift Overlap Intelligence</a>
+                <a href="/governance-confidence-engine">Governance Confidence</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <section class="scenario">
+                <h2>Active Blast Radius Scenario</h2>
+                <p><b>Trigger:</b> {{ scenario.trigger }}</p>
+                <p><b>Recommended Response:</b> {{ scenario.recommended_response }}</p>
+                <div class="scenario-grid">
+                    <div class="metric"><span>Source</span><strong>{{ scenario.source }}</strong></div>
+                    <div class="metric"><span>Initial Risk</span><strong>{{ scenario.initial_risk }}</strong></div>
+                    <div class="metric"><span>Current Radius</span><strong>{{ scenario.current_blast_radius }}</strong></div>
+                    <div class="metric"><span>Confidence Impact</span><strong>{{ scenario.confidence_impact }}</strong></div>
+                </div>
+            </section>
+
+            <div class="note">
+                <b>Executive meaning:</b> A small missing handoff is not just an admin issue. It can weaken ownership,
+                evidence integrity, audit readiness, and deviation defensibility if not contained.
+            </div>
+
+            <section class="panel">
+                <h2>1. Visual Blast Radius Chain</h2>
+                <div class="chain">
+                    {% for b in blast_chain %}
+                    <div class="node">
+                        <small>Level {{ b.level }}</small>
+                        <b>{{ b.domain }}</b>
+                        <p>{{ b.impact }}</p>
+                        <span class="pill {{ b.severity }}">{{ b.severity }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>2. Blast Radius Detail</h2>
+                <table>
+                    <tr><th>Level</th><th>Domain</th><th>Impact</th><th>Severity</th><th>Control Response</th></tr>
+                    {% for b in blast_chain %}
+                    <tr>
+                        <td><b>{{ b.level }}</b></td>
+                        <td><b>{{ b.domain }}</b></td>
+                        <td>{{ b.impact }}</td>
+                        <td><span class="pill {{ b.severity }}">{{ b.severity }}</span></td>
+                        <td>{{ b.control_response }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Impacted Assets</h2>
+                <table>
+                    <tr><th>Asset</th><th>Type</th><th>Impact</th><th>Severity</th></tr>
+                    {% for a in impacted_assets %}
+                    <tr>
+                        <td><b>{{ a.asset }}</b></td>
+                        <td>{{ a.type }}</td>
+                        <td>{{ a.impact }}</td>
+                        <td><span class="pill {{ a.severity }}">{{ a.severity }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>4. Containment Actions</h2>
+                <table>
+                    <tr><th>Priority</th><th>Action</th><th>Owner</th><th>Expected Result</th></tr>
+                    {% for c in containment_actions %}
+                    <tr>
+                        <td><span class="pill {{ c.priority }}">{{ c.priority }}</span></td>
+                        <td><b>{{ c.action }}</b></td>
+                        <td>{{ c.owner }}</td>
+                        <td>{{ c.expected_result }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>5. Risk Heatmap Delta</h2>
+                <table>
+                    <tr><th>Domain</th><th>Before</th><th>After</th><th>Delta</th></tr>
+                    {% for h in heatmap %}
+                    <tr>
+                        <td><b>{{ h.domain }}</b></td>
+                        <td><span class="pill {{ h.before }}">{{ h.before }}</span></td>
+                        <td><span class="pill {{ h.after }}">{{ h.after }}</span></td>
+                        <td>{{ h.delta }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        scenario=scenario,
+        blast_chain=blast_chain,
+        impacted_assets=impacted_assets,
+        containment_actions=containment_actions,
+        heatmap=heatmap
+    )
+
+
+
+
+# ============================================================
+# AUDIT_SIMULATION_ENGINE_ACTIVE
+# Safe additive route only.
+# Adds /audit-simulation-engine without modifying protected modules.
+# Simulates audit readiness questions and likely inspection weak points.
+# ============================================================
+
+@app.route("/audit-simulation-engine")
+def audit_simulation_engine():
+    audit_kpis = {
+        "overall_readiness": "84%",
+        "evidence_completeness": "82%",
+        "lineage_strength": "91%",
+        "review_readiness": "78%",
+        "critical_findings": "1",
+        "major_observations": "3",
+        "minor_observations": "5",
+        "remediation_priority": "HIGH"
+    }
+
+    simulated_questions = [
+        {
+            "question": "Show the complete evidence trail for the open equipment issue.",
+            "expected_evidence": "Ticket, shift owner, equipment state, audit trail export, supervisor review, closure rationale.",
+            "current_state": "Partially Ready",
+            "gap": "Audit trail export missing.",
+            "risk": "HIGH"
+        },
+        {
+            "question": "Who owned the issue during the B-to-C transition?",
+            "expected_evidence": "Incoming technician acknowledgement and backup ownership.",
+            "current_state": "Review Needed",
+            "gap": "Incoming acknowledgement not yet confirmed.",
+            "risk": "MEDIUM"
+        },
+        {
+            "question": "Was the issue reviewed before closure?",
+            "expected_evidence": "Supervisor review checkpoint and exception disposition.",
+            "current_state": "Pending",
+            "gap": "Supervisor review required before closure.",
+            "risk": "MEDIUM"
+        },
+        {
+            "question": "Can you prove the evidence was not modified after upload?",
+            "expected_evidence": "Hash baseline, verification status, evidence register, immutable or controlled log.",
+            "current_state": "Ready",
+            "gap": "No critical gap detected in simulated evidence structure.",
+            "risk": "LOW"
+        },
+        {
+            "question": "What would be impacted if this issue repeated?",
+            "expected_evidence": "Blast radius, affected equipment, shifts, evidence, CAPA exposure, and remediation plan.",
+            "current_state": "Ready",
+            "gap": "Blast radius model available.",
+            "risk": "LOW"
+        }
+    ]
+
+    likely_findings = [
+        {
+            "finding": "Missing audit trail evidence before closure",
+            "classification": "Critical",
+            "why_it_matters": "A record may not be defensible if required evidence is missing.",
+            "linked_module": "Governance Blast Radius / Confidence Engine",
+            "risk": "HIGH"
+        },
+        {
+            "finding": "Incomplete shift transition acknowledgement",
+            "classification": "Major",
+            "why_it_matters": "Ownership continuity is unclear during operational handoff.",
+            "linked_module": "Shift Overlap Intelligence",
+            "risk": "MEDIUM"
+        },
+        {
+            "finding": "Supervisor review checkpoint not completed",
+            "classification": "Major",
+            "why_it_matters": "Operational closure may occur without governance oversight.",
+            "linked_module": "Operational Lineage",
+            "risk": "MEDIUM"
+        },
+        {
+            "finding": "Evidence package not fully export-ready",
+            "classification": "Minor",
+            "why_it_matters": "Audit response may be delayed by incomplete packaging.",
+            "linked_module": "Platform Health / Sterile Evidence",
+            "risk": "LOW"
+        },
+    ]
+
+    remediation_plan = [
+        {
+            "priority": "P1",
+            "action": "Attach missing audit trail export",
+            "owner": "Technician / Equipment Support",
+            "due": "Before closure",
+            "confidence_gain": "+5"
+        },
+        {
+            "priority": "P1",
+            "action": "Capture incoming owner acknowledgement",
+            "owner": "Shift Supervisor",
+            "due": "Before B-to-C transition closes",
+            "confidence_gain": "+3"
+        },
+        {
+            "priority": "P2",
+            "action": "Complete supervisor review checkpoint",
+            "owner": "Supervisor",
+            "due": "Before audit package export",
+            "confidence_gain": "+4"
+        },
+        {
+            "priority": "P2",
+            "action": "Recalculate governance confidence score",
+            "owner": "Governance Platform",
+            "due": "After remediation",
+            "confidence_gain": "+2"
+        },
+        {
+            "priority": "P3",
+            "action": "Monitor recurrence trend across overlap windows",
+            "owner": "Operational Excellence",
+            "due": "Weekly",
+            "confidence_gain": "+1"
+        },
+    ]
+
+    audit_pack_sections = [
+        {"section": "Operational Trigger", "status": "Ready", "content": "Ticket, priority, event time, equipment area, current state"},
+        {"section": "Ownership Timeline", "status": "Review Needed", "content": "Outgoing owner, incoming owner, backup, handoff acknowledgement"},
+        {"section": "Evidence Register", "status": "Gap Detected", "content": "Uploaded files, missing evidence, hash readiness, verification state"},
+        {"section": "Supervisor Review", "status": "Pending", "content": "Review decision, exception notes, closure readiness"},
+        {"section": "Blast Radius", "status": "Ready", "content": "Impacted shifts, equipment, evidence, audit posture, CAPA exposure"},
+        {"section": "Confidence Recovery", "status": "Ready", "content": "Remediation actions and expected score improvement"},
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Audit Simulation Engine</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#0369a1); color:white; padding:36px 44px 78px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#e0f2fe; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-46px auto 40px; padding:0 24px; }
+            .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+            .kpi, .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            .kpi span { color:#64748b; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:.07em; }
+            .kpi strong { display:block; margin-top:9px; font-size:30px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#e0f2fe; color:#075985; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW, .Ready { background:#dcfce7; color:#166534; }
+            .MEDIUM, .Pending, .Review { background:#fef3c7; color:#92400e; }
+            .HIGH, .Critical, .Gap { background:#fee2e2; color:#991b1b; }
+            .Major { background:#fef3c7; color:#92400e; }
+            .Minor { background:#e0e7ff; color:#3730a3; }
+            .P1 { background:#fee2e2; color:#991b1b; }
+            .P2 { background:#fef3c7; color:#92400e; }
+            .P3 { background:#e0e7ff; color:#3730a3; }
+            .note { background:#e0f2fe; border:1px solid #7dd3fc; color:#075985; padding:16px; border-radius:16px; margin-bottom:22px; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            @media(max-width:1000px){ .grid4{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:680px){ .grid4{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Audit Simulation Engine</h1>
+            <p>
+                Simulates what an FDA, QA, or internal auditor may ask tomorrow and identifies what would fail first:
+                missing evidence, weak lineage, incomplete handoff, supervisor review gaps, and audit package readiness.
+            </p>
+            <span class="badge">AUDIT READINESS</span>
+            <span class="badge">INSPECTION QUESTIONS</span>
+            <span class="badge">REMEDIATION PLAN</span>
+            <span class="badge">EVIDENCE DEFENSIBILITY</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/governance-confidence-engine">Governance Confidence</a>
+                <a href="/governance-blast-radius">Blast Radius</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <div class="note">
+                <b>Executive meaning:</b> This gives leadership a pre-audit view of what needs fixing before a real inspection or internal audit.
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Overall Readiness</span><strong>{{ audit_kpis.overall_readiness }}</strong></div>
+                <div class="kpi"><span>Evidence Completeness</span><strong>{{ audit_kpis.evidence_completeness }}</strong></div>
+                <div class="kpi"><span>Lineage Strength</span><strong>{{ audit_kpis.lineage_strength }}</strong></div>
+                <div class="kpi"><span>Review Readiness</span><strong>{{ audit_kpis.review_readiness }}</strong></div>
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Critical Findings</span><strong>{{ audit_kpis.critical_findings }}</strong></div>
+                <div class="kpi"><span>Major Observations</span><strong>{{ audit_kpis.major_observations }}</strong></div>
+                <div class="kpi"><span>Minor Observations</span><strong>{{ audit_kpis.minor_observations }}</strong></div>
+                <div class="kpi"><span>Remediation Priority</span><strong>{{ audit_kpis.remediation_priority }}</strong></div>
+            </div>
+
+            <section class="panel">
+                <h2>1. Simulated Auditor Questions</h2>
+                <table>
+                    <tr><th>Question</th><th>Expected Evidence</th><th>Current State</th><th>Gap</th><th>Risk</th></tr>
+                    {% for q in simulated_questions %}
+                    <tr>
+                        <td><b>{{ q.question }}</b></td>
+                        <td>{{ q.expected_evidence }}</td>
+                        <td>{{ q.current_state }}</td>
+                        <td>{{ q.gap }}</td>
+                        <td><span class="pill {{ q.risk }}">{{ q.risk }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>2. Likely Findings If Audited Today</h2>
+                <table>
+                    <tr><th>Finding</th><th>Classification</th><th>Why It Matters</th><th>Linked Module</th><th>Risk</th></tr>
+                    {% for f in likely_findings %}
+                    <tr>
+                        <td><b>{{ f.finding }}</b></td>
+                        <td><span class="pill {{ f.classification }}">{{ f.classification }}</span></td>
+                        <td>{{ f.why_it_matters }}</td>
+                        <td>{{ f.linked_module }}</td>
+                        <td><span class="pill {{ f.risk }}">{{ f.risk }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Remediation Plan</h2>
+                <table>
+                    <tr><th>Priority</th><th>Action</th><th>Owner</th><th>Due</th><th>Confidence Gain</th></tr>
+                    {% for r in remediation_plan %}
+                    <tr>
+                        <td><span class="pill {{ r.priority }}">{{ r.priority }}</span></td>
+                        <td><b>{{ r.action }}</b></td>
+                        <td>{{ r.owner }}</td>
+                        <td>{{ r.due }}</td>
+                        <td>{{ r.confidence_gain }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>4. Audit Pack Readiness</h2>
+                <table>
+                    <tr><th>Section</th><th>Status</th><th>Content</th></tr>
+                    {% for a in audit_pack_sections %}
+                    <tr>
+                        <td><b>{{ a.section }}</b></td>
+                        <td><span class="pill {{ a.status.split()[0] }}">{{ a.status }}</span></td>
+                        <td>{{ a.content }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>5. Why This Is Revolutionary</h2>
+                <p>
+                    Most systems help teams respond after an audit finding. This engine simulates audit pressure before the audit happens,
+                    showing what would fail first and how to recover governance confidence before inspection risk becomes real.
+                </p>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        audit_kpis=audit_kpis,
+        simulated_questions=simulated_questions,
+        likely_findings=likely_findings,
+        remediation_plan=remediation_plan,
+        audit_pack_sections=audit_pack_sections
+    )
+
+
+
+
+# ============================================================
+# SERVICENOW_GOVERNANCE_OVERLAY_ACTIVE
+# Safe additive route only.
+# Adds /servicenow-governance-overlay without modifying protected modules.
+# Shows ServiceNow as workflow state and COBIT-Chain as governance trust state.
+# ============================================================
+
+@app.route("/servicenow-governance-overlay")
+def servicenow_governance_overlay():
+    overlay_kpis = {
+        "tickets_analyzed": "12",
+        "governed_tickets": "9",
+        "governance_exceptions": "3",
+        "confidence_score": "88%",
+        "orphaned_ownership": "1",
+        "missing_evidence": "2",
+        "audit_exposure": "MEDIUM",
+        "overlay_status": "Simulation Ready"
+    }
+
+    ticket_overlay = [
+        {
+            "ticket": "SNOW-INC-10052",
+            "servicenow_state": "In Progress",
+            "workflow_owner": "Support Queue",
+            "equipment": "Environmental Monitoring Device",
+            "cobitchain_state": "Governance Exception",
+            "trust_score": "74%",
+            "exception": "Missing incoming handoff acknowledgement and evidence export",
+            "risk": "HIGH"
+        },
+        {
+            "ticket": "SNOW-WO-20488",
+            "servicenow_state": "Assigned",
+            "workflow_owner": "Technician Group",
+            "equipment": "Sterile Process Support Unit",
+            "cobitchain_state": "Evidence Pending",
+            "trust_score": "82%",
+            "exception": "PM evidence not yet attached to closure package",
+            "risk": "MEDIUM"
+        },
+        {
+            "ticket": "SNOW-INC-10041",
+            "servicenow_state": "Resolved",
+            "workflow_owner": "BMS Support",
+            "equipment": "Critical Utility Monitor",
+            "cobitchain_state": "Governed",
+            "trust_score": "96%",
+            "exception": "No governance exception detected",
+            "risk": "LOW"
+        },
+        {
+            "ticket": "SNOW-WO-20517",
+            "servicenow_state": "Closed",
+            "workflow_owner": "Night Support",
+            "equipment": "GMP Equipment Cluster",
+            "cobitchain_state": "Governed With Review",
+            "trust_score": "91%",
+            "exception": "Supervisor review completed; evidence lineage intact",
+            "risk": "LOW"
+        },
+    ]
+
+    governance_controls = [
+        {
+            "control": "Ownership Continuity",
+            "servicenow_view": "Assigned to group / individual",
+            "cobitchain_overlay": "Checks whether ownership survived shift transition and backup owner exists.",
+            "value": "Prevents orphaned tickets."
+        },
+        {
+            "control": "Evidence Completeness",
+            "servicenow_view": "Attachment may exist on ticket",
+            "cobitchain_overlay": "Checks whether required evidence exists, is linked to equipment, and is audit-ready.",
+            "value": "Prevents weak closure."
+        },
+        {
+            "control": "Audit Defensibility",
+            "servicenow_view": "Ticket is resolved or closed",
+            "cobitchain_overlay": "Checks whether closure is supported by lineage, review, evidence, and confidence score.",
+            "value": "Makes closure defensible."
+        },
+        {
+            "control": "Pre-Deviation Risk",
+            "servicenow_view": "No deviation until deviation is created",
+            "cobitchain_overlay": "Detects weak signals before deviation/CAPA risk materializes.",
+            "value": "Supports proactive prevention."
+        },
+        {
+            "control": "Blast Radius",
+            "servicenow_view": "Ticket impact field or related records",
+            "cobitchain_overlay": "Maps downstream impact across shift, equipment, evidence, review, and audit readiness.",
+            "value": "Improves impact analysis."
+        },
+    ]
+
+    overlay_flow = [
+        {"step": "1", "title": "ServiceNow Ticket Created", "description": "Incident or work order enters the operational workflow."},
+        {"step": "2", "title": "COBIT-Chain Intake", "description": "Ticket is evaluated for equipment context, shift window, ownership, and evidence requirements."},
+        {"step": "3", "title": "Governance Scoring", "description": "Confidence score is calculated using ownership, evidence, handoff, review, and audit readiness."},
+        {"step": "4", "title": "Exception Detection", "description": "Orphaned ownership, missing evidence, weak handoff, or review gaps are flagged."},
+        {"step": "5", "title": "Audit-Ready Outcome", "description": "Ticket can be trusted, remediated, escalated, or blocked from weak closure."},
+    ]
+
+    executive_points = [
+        "ServiceNow remains the system of record for workflow and ticket state.",
+        "COBIT-Chain adds a governance trust state on top of the workflow state.",
+        "A closed ticket is not automatically a governed ticket.",
+        "The overlay identifies missing evidence, weak handoff, orphaned ownership, and audit exposure.",
+        "This lets leadership see which operational records are trustworthy before audit, deviation, or CAPA pressure."
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain ServiceNow Governance Overlay</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#0284c7); color:white; padding:36px 44px 78px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#e0f2fe; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-46px auto 40px; padding:0 24px; }
+            .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+            .kpi, .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            .kpi span { color:#64748b; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:.07em; }
+            .kpi strong { display:block; margin-top:9px; font-size:30px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#e0f2fe; color:#075985; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW, .Governed { background:#dcfce7; color:#166534; }
+            .MEDIUM, .Evidence { background:#fef3c7; color:#92400e; }
+            .HIGH, .Governance { background:#fee2e2; color:#991b1b; }
+            .flow { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:14px; }
+            .step { background:#f8fafc; border:1px solid #bae6fd; border-radius:16px; padding:16px; min-height:155px; }
+            .step b { display:block; color:#0369a1; margin-bottom:8px; font-size:18px; }
+            .note { background:#e0f2fe; border:1px solid #7dd3fc; color:#075985; padding:16px; border-radius:16px; margin-bottom:22px; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            ul { line-height:1.8; }
+            @media(max-width:1100px){ .flow{grid-template-columns:repeat(2,1fr);} .grid4{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:700px){ .flow,.grid4{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ ServiceNow Governance Overlay</h1>
+            <p>
+                ServiceNow shows workflow state. COBIT-Chain adds governance trust state: ownership continuity,
+                evidence completeness, handoff integrity, audit readiness, and pre-deviation risk.
+            </p>
+            <span class="badge">SERVICENOW-AWARE</span>
+            <span class="badge">GOVERNANCE TRUST STATE</span>
+            <span class="badge">EVIDENCE READINESS</span>
+            <span class="badge">AUDIT DEFENSIBILITY</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/governance-confidence-engine">Governance Confidence</a>
+                <a href="/audit-simulation-engine">Audit Simulation</a>
+                <a href="/operational-lineage">Operational Lineage</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <div class="note">
+                <b>Executive message:</b> A ServiceNow ticket can be closed but still weak from a governance perspective.
+                COBIT-Chain evaluates whether that ticket is operationally and auditably trustworthy.
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Tickets Analyzed</span><strong>{{ overlay_kpis.tickets_analyzed }}</strong></div>
+                <div class="kpi"><span>Governed Tickets</span><strong>{{ overlay_kpis.governed_tickets }}</strong></div>
+                <div class="kpi"><span>Governance Exceptions</span><strong>{{ overlay_kpis.governance_exceptions }}</strong></div>
+                <div class="kpi"><span>Confidence Score</span><strong>{{ overlay_kpis.confidence_score }}</strong></div>
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Orphaned Ownership</span><strong>{{ overlay_kpis.orphaned_ownership }}</strong></div>
+                <div class="kpi"><span>Missing Evidence</span><strong>{{ overlay_kpis.missing_evidence }}</strong></div>
+                <div class="kpi"><span>Audit Exposure</span><strong>{{ overlay_kpis.audit_exposure }}</strong></div>
+                <div class="kpi"><span>Overlay Status</span><strong>{{ overlay_kpis.overlay_status }}</strong></div>
+            </div>
+
+            <section class="panel">
+                <h2>1. Ticket Governance Overlay</h2>
+                <table>
+                    <tr><th>Ticket</th><th>ServiceNow State</th><th>Workflow Owner</th><th>Equipment</th><th>COBIT-Chain State</th><th>Trust Score</th><th>Exception</th><th>Risk</th></tr>
+                    {% for t in ticket_overlay %}
+                    <tr>
+                        <td><b>{{ t.ticket }}</b></td>
+                        <td>{{ t.servicenow_state }}</td>
+                        <td>{{ t.workflow_owner }}</td>
+                        <td>{{ t.equipment }}</td>
+                        <td>{{ t.cobitchain_state }}</td>
+                        <td><b>{{ t.trust_score }}</b></td>
+                        <td>{{ t.exception }}</td>
+                        <td><span class="pill {{ t.risk }}">{{ t.risk }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>2. ServiceNow State vs COBIT-Chain Trust State</h2>
+                <table>
+                    <tr><th>Control Area</th><th>ServiceNow View</th><th>COBIT-Chain Overlay</th><th>Enterprise Value</th></tr>
+                    {% for c in governance_controls %}
+                    <tr>
+                        <td><b>{{ c.control }}</b></td>
+                        <td>{{ c.servicenow_view }}</td>
+                        <td>{{ c.cobitchain_overlay }}</td>
+                        <td>{{ c.value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Overlay Flow</h2>
+                <div class="flow">
+                    {% for f in overlay_flow %}
+                    <div class="step">
+                        <b>{{ f.step }}. {{ f.title }}</b>
+                        <p>{{ f.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>4. Executive Talking Points</h2>
+                <ul>
+                    {% for point in executive_points %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        overlay_kpis=overlay_kpis,
+        ticket_overlay=ticket_overlay,
+        governance_controls=governance_controls,
+        overlay_flow=overlay_flow,
+        executive_points=executive_points
+    )
+
+
+
+
+# ============================================================
+# GOVERNANCE_DIGITAL_TWIN_ACTIVE
+# Safe additive route only.
+# Adds /governance-digital-twin without modifying protected modules.
+# Shows connected governance state across ticket, shift, technician,
+# equipment, evidence, review, confidence, and audit readiness.
+# ============================================================
+
+@app.route("/governance-digital-twin")
+def governance_digital_twin():
+    twin_kpis = {
+        "governance_state": "Watch",
+        "trust_score": "89%",
+        "connected_nodes": "8",
+        "open_gaps": "3",
+        "audit_readiness": "84%",
+        "blast_radius": "HIGH",
+        "pre_deviation": "Active",
+        "confidence_trend": "Recoverable"
+    }
+
+    twin_nodes = [
+        {"node": "ServiceNow Ticket", "state": "In Progress", "signal": "SNOW-INC-10052 active with equipment linkage", "risk": "MEDIUM"},
+        {"node": "Shift Window", "state": "B-to-C Transition", "signal": "Critical overlap window active", "risk": "MEDIUM"},
+        {"node": "Technician Owner", "state": "Acknowledgement Pending", "signal": "Incoming owner not confirmed", "risk": "HIGH"},
+        {"node": "Equipment", "state": "Warning", "signal": "Environmental monitoring device under watch", "risk": "HIGH"},
+        {"node": "Evidence", "state": "Partial", "signal": "Audit trail export missing", "risk": "HIGH"},
+        {"node": "Supervisor Review", "state": "Required", "signal": "Review checkpoint needed before closure", "risk": "MEDIUM"},
+        {"node": "Confidence Score", "state": "89%", "signal": "Governed with minor gaps", "risk": "MEDIUM"},
+        {"node": "Audit State", "state": "Conditionally Ready", "signal": "Export pack ready after evidence closure", "risk": "MEDIUM"},
+    ]
+
+    relationships = [
+        {"from": "Ticket", "to": "Equipment", "relationship": "Ticket impact linked to equipment state", "governance_value": "Prevents orphaned technical issue"},
+        {"from": "Ticket", "to": "Shift", "relationship": "Ticket belongs to active overlap window", "governance_value": "Supports ownership continuity"},
+        {"from": "Shift", "to": "Technician", "relationship": "Incoming owner must acknowledge unresolved item", "governance_value": "Prevents handoff failure"},
+        {"from": "Technician", "to": "Evidence", "relationship": "Technician must attach required evidence", "governance_value": "Supports audit defensibility"},
+        {"from": "Evidence", "to": "Supervisor Review", "relationship": "Supervisor review depends on evidence completeness", "governance_value": "Prevents weak closure"},
+        {"from": "Review", "to": "Audit State", "relationship": "Review outcome determines audit package confidence", "governance_value": "Supports inspection readiness"},
+        {"from": "All Nodes", "to": "Confidence Score", "relationship": "Each node contributes to trust score", "governance_value": "Creates executive confidence view"},
+    ]
+
+    scenario_questions = [
+        {"question": "What if the incoming technician never acknowledges the issue?", "answer": "Ownership risk increases, confidence drops, supervisor review is forced, and audit readiness weakens."},
+        {"question": "What if evidence is attached before closure?", "answer": "Evidence integrity improves, audit readiness increases, and confidence score recovers."},
+        {"question": "What if the issue repeats across multiple transitions?", "answer": "The system treats it as a systemic continuity weakness and raises CAPA/deviation exposure."},
+        {"question": "What if leadership asks whether the operation is safe to trust?", "answer": "The digital twin shows current state, weak nodes, confidence score, and remediation path."},
+    ]
+
+    recovery_path = [
+        {"step": "1", "action": "Capture incoming technician acknowledgement", "effect": "Reduces ownership risk"},
+        {"step": "2", "action": "Attach missing audit trail export", "effect": "Improves evidence integrity"},
+        {"step": "3", "action": "Complete supervisor review checkpoint", "effect": "Improves closure defensibility"},
+        {"step": "4", "action": "Recalculate governance confidence", "effect": "Updates executive trust score"},
+        {"step": "5", "action": "Export audit package", "effect": "Creates inspection-ready record"},
+    ]
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>COBIT-Chain Governance Digital Twin</title>
+        <style>
+            body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f7fb; color:#0f172a; }
+            .hero { background:linear-gradient(135deg,#111827,#0f766e); color:white; padding:36px 44px 78px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; }
+            .hero h1 { margin:0 0 10px; font-size:40px; }
+            .hero p { color:#ccfbf1; max-width:1080px; line-height:1.55; font-size:16px; }
+            .badge { display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); padding:8px 13px; border-radius:999px; margin:10px 8px 0 0; font-size:12px; font-weight:800; }
+            .wrap { max-width:1320px; margin:-46px auto 40px; padding:0 24px; }
+            .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+            .kpi, .panel { background:white; border-radius:20px; padding:22px; box-shadow:0 12px 30px rgba(15,23,42,.09); margin-bottom:22px; }
+            .kpi span { color:#64748b; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:.07em; }
+            .kpi strong { display:block; margin-top:9px; font-size:30px; }
+            .twin { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+            .node { background:#f8fafc; border:1px solid #ccfbf1; border-radius:18px; padding:18px; min-height:145px; }
+            .node h3 { margin:0 0 8px; color:#0f766e; }
+            .node p { color:#475569; line-height:1.45; font-size:13px; }
+            table { width:100%; border-collapse:collapse; }
+            th { background:#ecfeff; color:#115e59; text-align:left; padding:12px; font-size:13px; }
+            td { border-bottom:1px solid #e5e7eb; padding:12px; font-size:13px; vertical-align:top; }
+            .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:11px; }
+            .LOW { background:#dcfce7; color:#166534; }
+            .MEDIUM, .Watch, .Recoverable, .Active { background:#fef3c7; color:#92400e; }
+            .HIGH { background:#fee2e2; color:#991b1b; }
+            .note { background:#ecfeff; border:1px solid #99f6e4; color:#115e59; padding:16px; border-radius:16px; margin-bottom:22px; }
+            .toplinks { margin-top:18px; }
+            .toplinks a { color:white; text-decoration:none; font-weight:800; margin-right:16px; }
+            @media(max-width:1100px){ .twin,.grid4{grid-template-columns:repeat(2,1fr);} }
+            @media(max-width:700px){ .twin,.grid4{grid-template-columns:1fr;} .hero h1{font-size:30px;} }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>COBIT-Chain™ Governance Digital Twin</h1>
+            <p>
+                A connected operational governance model showing the live relationship between ServiceNow ticket,
+                shift window, technician ownership, equipment state, evidence, supervisor review, confidence, and audit readiness.
+            </p>
+            <span class="badge">CONNECTED GOVERNANCE MODEL</span>
+            <span class="badge">OPERATIONAL TRUST GRAPH</span>
+            <span class="badge">PRE-DEVIATION SIGNALS</span>
+            <span class="badge">AUDIT STATE</span>
+            <div class="toplinks">
+                <a href="/enterprise-workspaces">Enterprise Workspaces</a>
+                <a href="/servicenow-governance-overlay">ServiceNow Overlay</a>
+                <a href="/governance-confidence-engine">Governance Confidence</a>
+                <a href="/audit-simulation-engine">Audit Simulation</a>
+            </div>
+        </section>
+
+        <main class="wrap">
+            <div class="note">
+                <b>Executive meaning:</b> The digital twin does not just show records. It shows how records depend on each other
+                and where operational trust can break.
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Governance State</span><strong>{{ twin_kpis.governance_state }}</strong></div>
+                <div class="kpi"><span>Trust Score</span><strong>{{ twin_kpis.trust_score }}</strong></div>
+                <div class="kpi"><span>Connected Nodes</span><strong>{{ twin_kpis.connected_nodes }}</strong></div>
+                <div class="kpi"><span>Open Gaps</span><strong>{{ twin_kpis.open_gaps }}</strong></div>
+            </div>
+
+            <div class="grid4">
+                <div class="kpi"><span>Audit Readiness</span><strong>{{ twin_kpis.audit_readiness }}</strong></div>
+                <div class="kpi"><span>Blast Radius</span><strong>{{ twin_kpis.blast_radius }}</strong></div>
+                <div class="kpi"><span>Pre-Deviation</span><strong>{{ twin_kpis.pre_deviation }}</strong></div>
+                <div class="kpi"><span>Confidence Trend</span><strong>{{ twin_kpis.confidence_trend }}</strong></div>
+            </div>
+
+            <section class="panel">
+                <h2>1. Digital Twin Nodes</h2>
+                <div class="twin">
+                    {% for n in twin_nodes %}
+                    <div class="node">
+                        <h3>{{ n.node }}</h3>
+                        <p><b>State:</b> {{ n.state }}</p>
+                        <p>{{ n.signal }}</p>
+                        <span class="pill {{ n.risk }}">{{ n.risk }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>2. Governance Relationships</h2>
+                <table>
+                    <tr><th>From</th><th>To</th><th>Relationship</th><th>Governance Value</th></tr>
+                    {% for r in relationships %}
+                    <tr>
+                        <td><b>{{ r.from }}</b></td>
+                        <td><b>{{ r.to }}</b></td>
+                        <td>{{ r.relationship }}</td>
+                        <td>{{ r.governance_value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>3. Scenario Questions</h2>
+                <table>
+                    <tr><th>Leadership Question</th><th>Digital Twin Answer</th></tr>
+                    {% for q in scenario_questions %}
+                    <tr>
+                        <td><b>{{ q.question }}</b></td>
+                        <td>{{ q.answer }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>4. Recovery Path</h2>
+                <table>
+                    <tr><th>Step</th><th>Action</th><th>Effect</th></tr>
+                    {% for r in recovery_path %}
+                    <tr>
+                        <td><b>{{ r.step }}</b></td>
+                        <td>{{ r.action }}</td>
+                        <td>{{ r.effect }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+        </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        twin_kpis=twin_kpis,
+        twin_nodes=twin_nodes,
+        relationships=relationships,
+        scenario_questions=scenario_questions,
+        recovery_path=recovery_path
+    )
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
