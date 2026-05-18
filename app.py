@@ -126439,7 +126439,7 @@ def _rlttrust_radioactive_material_ledger_data(payload=None):
             "persona": "Data Integrity Reviewer",
             "question": "Can you prove the material record was not altered or disconnected from approvals?",
             "best_evidence": "Hash chain, previous-hash linkage, approval lineage, evidence timestamps, system-owner/radiation safety attestation.",
-            "readiness": "Strong" if evidence_integrity if 'evidence_integrity' in payload else True else "Warning"
+            "readiness": "Strong" if accountability_score >= 85 and missing_evidence <= 1 and stale_records <= 1 else "Warning"
         },
         {
             "persona": "Commercial Readiness Leader",
