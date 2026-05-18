@@ -114050,7 +114050,11 @@ def shift_mission_control():
             <a href="/shift-niagara-drift-federation">Niagara Drift Federation</a>
             <!-- SHIFT_NIAGARA_GOVERNANCE_WAR_ROOM_LINKS_ACTIVE -->
             <a href="/shift-niagara-governance-mesh-federation">Governance Mesh Federation</a>
+            <a href="/shift-niagara-narrative-federation">Narrative Federation</a>
+            <!-- SHIFT_NIAGARA_NARRATIVE_FEDERATION_LINKS_ACTIVE -->
             <a href="/shift-niagara-governance-war-room">Governance War Room</a>
+            <a href="/shift-niagara-narrative-federation">Narrative Federation</a>
+            <a href="/shift-niagara-narrative-federation">Narrative Federation</a>
             <a href="/shift-niagara-governance-war-room">Governance War Room</a>
             <a href="/shift-niagara-governance-mesh-federation">Governance Mesh Federation</a>
             <!-- SHIFT_NIAGARA_DRIFT_FEDERATION_LINKS_ACTIVE -->
@@ -114192,6 +114196,7 @@ def shift_mission_control():
             <tr><td>Niagara Drift Federation™</td><td>Provides governance drift federation, anomaly propagation analytics, survivability reasoning, and resilience telemetry orchestration.</td><td><a href="/shift-niagara-drift-federation">Open</a></td></tr>
             <tr><td>Governance Mesh Federation™</td><td>Provides enterprise governance topology federation, survivability orchestration, governance telemetry correlation, and resilience federation analytics.</td><td><a href="/shift-niagara-governance-mesh-federation">Open</a></td></tr>
             <tr><td>Governance War Room™</td><td>Provides executive governance coordination, survivability telemetry orchestration, operational trust federation, and resilience escalation analytics.</td><td><a href="/shift-niagara-governance-war-room">Open</a></td></tr>
+            <tr><td>Narrative Federation™</td><td>Provides executive storytelling federation, governance telemetry orchestration, survivability communication intelligence, and operational narrative correlation.</td><td><a href="/shift-niagara-narrative-federation">Open</a></td></tr>
         </table>
     </div>
 
@@ -114317,6 +114322,7 @@ def shift_executive_summary():
             <tr><td>39</td><td><a href="/shift-niagara-drift-federation">Niagara Drift Federation</a></td><td>This federates governance drift telemetry into continuously correlated enterprise resilience intelligence.</td></tr>
             <tr><td>40</td><td><a href="/shift-niagara-governance-mesh-federation">Governance Mesh Federation</a></td><td>This federates enterprise governance topology into continuously orchestrated resilience intelligence.</td></tr>
             <tr><td>41</td><td><a href="/shift-niagara-governance-war-room">Governance War Room</a></td><td>This orchestrates enterprise governance telemetry into executive resilience coordination intelligence.</td></tr>
+            <tr><td>42</td><td><a href="/shift-niagara-narrative-federation">Narrative Federation</a></td><td>This federates governance telemetry into continuously orchestrated executive storytelling intelligence.</td></tr>
         </table>
     </div>
     """
@@ -119438,6 +119444,3567 @@ def shift_niagara_narrative_federation():
     """
 
     return rlt_page("ShiftTrust Niagara Narrative Federation", body)
+
+
+
+# ============================================================
+# SHIFT_GOVERNANCE_INTERVENTION_ENGINE_ACTIVE
+# ShiftTrust™ Governance Intervention Engine
+# ============================================================
+
+@app.route("/shift-governance-intervention-engine")
+def shift_governance_intervention_engine():
+
+    intervention_matrix = [
+        {
+            "signal": "Governance Drift Escalation",
+            "risk": "Moderate",
+            "recommended_action": "Stabilize operational ownership alignment",
+            "confidence": "94%"
+        },
+        {
+            "signal": "Evidence Lineage Weakening",
+            "risk": "High",
+            "recommended_action": "Trigger controlled reconciliation review",
+            "confidence": "97%"
+        },
+        {
+            "signal": "Operational Trust Degradation",
+            "risk": "Moderate",
+            "recommended_action": "Increase survivability governance monitoring",
+            "confidence": "95%"
+        },
+        {
+            "signal": "Dependency Closure Instability",
+            "risk": "Critical",
+            "recommended_action": "Suspend release closure pending dependency validation",
+            "confidence": "99%"
+        }
+    ]
+
+    rows = ''.join([
+        f"""
+        <tr>
+            <td>{x["signal"]}</td>
+            <td>{x["risk"]}</td>
+            <td>{x["recommended_action"]}</td>
+            <td>{x["confidence"]}</td>
+        </tr>
+        """
+        for x in intervention_matrix
+    ])
+
+    body = f"""
+    <div class="hero">
+        <h1>ShiftTrust™ Governance Intervention Engine</h1>
+
+        <div class="sub">
+            Enterprise governance reasoning layer correlating survivability telemetry,
+            governance drift analytics,
+            operational trust degradation, and continuity-preserving intervention intelligence.
+        </div>
+
+        <div class="nav">
+            <a href="/shift-executive-command-center">Executive Command Center</a>
+            <a href="/shift-niagara-governance-war-room">Governance War Room</a>
+            <a href="/shift-niagara-narrative-federation">Narrative Federation</a>
+            <a href="/governance-scenario-simulator">Scenario Simulator</a>
+            <a href="/shift-advanced">Advanced Launcher</a>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card"><div class="label">Intervention Engine</div><div class="value">ACTIVE</div></div>
+        <div class="card"><div class="label">Governance Reasoning</div><div class="value">LIVE</div></div>
+        <div class="card"><div class="label">Continuity Intelligence</div><div class="value">CONNECTED</div></div>
+        <div class="card"><div class="label">Operational Survivability</div><div class="value">98%</div></div>
+    </div>
+
+    <div class="section">
+        <h2>Executive Governance Decision</h2>
+
+        <div class="decision">
+            SHIFTTRUST™ CAN REASON ABOUT GOVERNANCE STABILIZATION BEFORE OPERATIONAL FAILURE PROPAGATES
+        </div>
+
+        <p>
+            ShiftTrust™ Governance Intervention Engine transforms governance telemetry
+            into continuity-preserving intervention intelligence capable of survivability reasoning,
+            governance stabilization orchestration,
+            operational trust preservation,
+            and executive intervention coordination.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Governance Intervention Matrix</h2>
+
+        <table>
+            <tr>
+                <th>Governance Signal</th>
+                <th>Risk State</th>
+                <th>Recommended Intervention</th>
+                <th>Executive Confidence</th>
+            </tr>
+
+            {rows}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Executive Meaning</h2>
+
+        <div class="decision">
+            SHIFTTRUST™ EVOLVES FROM GOVERNANCE VISIBILITY INTO GOVERNANCE REASONING
+        </div>
+
+        <p>
+            Traditional governance ecosystems display operational state and alert conditions.
+            ShiftTrust™ Governance Intervention Engine reasons about survivability stabilization,
+            governance intervention sequencing,
+            continuity-preserving actions,
+            and operational resilience orchestration before instability propagates across regulated operations.
+        </p>
+    </div>
+    """
+
+    return rlt_page("ShiftTrust Governance Intervention Engine", body)
+
+
+
+# ============================================================
+# PROTOCOL_TO_EVIDENCE_INTEGRITY_GRAPH_ACTIVE
+# Protocol-to-Evidence Integrity GraphT
+# ============================================================
+
+@app.route('/protocol-to-evidence-integrity-graph')
+def protocol_to_evidence_integrity_graph():
+
+   body = """
+   <div class="hero">
+       <h1>Protocol-to-Evidence Integrity GraphT</h1>
+
+       <div class="sub">
+           Enterprise clinical-trial governance topology correlating protocol lineage,
+           ALCOA+ evidence integrity,
+           governance reconciliation,
+           immutable verification,
+           and submission-trust orchestration.
+       </div>
+   </div>
+
+   <div class="grid">
+       <div class="card"><div class="label">Submission Trust</div><div class="value">98.4%%</div></div>
+       <div class="card"><div class="label">ALCOA+ Integrity</div><div class="value">VERIFIED</div></div>
+       <div class="card"><div class="label">Governance Drift</div><div class="value">CONTROLLED</div></div>
+       <div class="card"><div class="label">Immutable Verification</div><div class="value">PASS</div></div>
+   </div>
+
+   <div class="section">
+       <h2>Protocol-to-Evidence Governance Graph</h2>
+
+       <table>
+           <tr><th>Governance Node</th><th>Operational State</th><th>Trust Confidence</th></tr>
+           <tr><td>Clinical Protocol</td><td>Approved</td><td>98%%</td></tr>
+           <tr><td>eConsent Evidence</td><td>Verified</td><td>99%%</td></tr>
+           <tr><td>EDC Capture</td><td>Validated</td><td>98%%</td></tr>
+           <tr><td>Safety Signal Monitoring</td><td>Active</td><td>97%%</td></tr>
+           <tr><td>Deviation Management</td><td>Connected</td><td>95%%</td></tr>
+           <tr><td>Purview Classification</td><td>Mapped</td><td>98%%</td></tr>
+           <tr><td>Hash Verification</td><td>PASS</td><td>100%%</td></tr>
+           <tr><td>Immutable Ledger</td><td>Anchored</td><td>100%%</td></tr>
+           <tr><td>Governance Reconciliation</td><td>Resolved</td><td>97%%</td></tr>
+           <tr><td>Submission Trust Verdict</td><td>APPROVED</td><td>98.4%%</td></tr>
+       </table>
+   </div>
+
+   <div class="section">
+       <h2>Protocol Drift Intelligence</h2>
+
+       <div class="decision">
+           SITE 11 DEVIATED FROM PROTOCOL AMENDMENT v4.1 - GOVERNANCE RECONCILIATION REQUIRED
+       </div>
+   </div>
+
+   """
+
+   return rlt_page("Protocol-to-Evidence Integrity Graph", body)
+
+
+
+
+# CLINICAL_TRIAL_TRUST_GRAPH_ACTIVE
+@app.route("/clinical-trial-trust-graph")
+def clinical_trial_trust_graph():
+
+    body = """
+    <style>
+
+    body{
+        background:#06131f;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#0f172a,#082f49);
+        margin-bottom:30px;
+        border:1px solid #164e63;
+    }
+
+    .hero h1{
+        font-size:42px;
+        color:#7dd3fc;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        color:#94a3b8;
+        margin-bottom:10px;
+        text-transform:uppercase;
+    }
+
+    .value{
+        font-size:28px;
+        font-weight:800;
+    }
+
+    .graph{
+        position:relative;
+        height:720px;
+        background:#020617;
+        border-radius:24px;
+        border:1px solid #1e293b;
+        overflow:hidden;
+        margin-top:30px;
+    }
+
+    .node{
+        position:absolute;
+        width:180px;
+        padding:18px;
+        border-radius:18px;
+        background:#0f172a;
+        text-align:center;
+        border:2px solid #334155;
+    }
+
+    .green{border-color:#22c55e;}
+    .yellow{border-color:#f59e0b;}
+    .red{border-color:#ef4444;}
+    .blue{border-color:#38bdf8;}
+
+    .line{
+        position:absolute;
+        background:#334155;
+        height:3px;
+        transform-origin:left center;
+    }
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .timeline{
+        margin-top:25px;
+    }
+
+    .event{
+        border-left:4px solid #38bdf8;
+        padding-left:18px;
+        margin-bottom:20px;
+    }
+
+    </style>
+
+    <div class="hero">
+        <h1>Clinical Trial Trust Graph</h1>
+
+        <p>
+        A governed protocol-to-evidence intelligence fabric connecting
+        protocol lineage, Purview governance, AI anomaly detection,
+        cryptographic evidence integrity, deviation intelligence,
+        dependency validation, and release defensibility.
+        </p>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Governance Confidence</div>
+            <div class="value">94%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Ledger Integrity</div>
+            <div class="value">VERIFIED</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Purview Classification</div>
+            <div class="value">PHI + GxP</div>
+        </div>
+
+        <div class="card">
+            <div class="label">AI Risk Signal</div>
+            <div class="value">REVIEW REQUIRED</div>
+        </div>
+
+    </div>
+
+    <div class="graph">
+
+        <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+
+            <defs>
+
+                <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#38bdf8"/>
+                </marker>
+
+                <marker id="greenArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#22c55e"/>
+                </marker>
+
+                <marker id="yellowArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#f59e0b"/>
+                </marker>
+
+                <marker id="redArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#ef4444"/>
+                </marker>
+
+            </defs>
+
+            <line x1="190" y1="145" x2="320" y2="145" stroke="#38bdf8" stroke-width="4" marker-end="url(#blueArrow)"/>
+            <line x1="150" y1="210" x2="150" y2="360" stroke="#38bdf8" stroke-width="4" marker-end="url(#blueArrow)"/>
+
+            <line x1="270" y1="390" x2="390" y2="390" stroke="#22c55e" stroke-width="4" marker-end="url(#greenArrow)"/>
+            <line x1="510" y1="160" x2="620" y2="160" stroke="#22c55e" stroke-width="4" marker-end="url(#greenArrow)"/>
+
+            <line x1="810" y1="160" x2="960" y2="160" stroke="#f59e0b" stroke-width="4" marker-end="url(#yellowArrow)"/>
+
+            <line x1="700" y1="420" x2="820" y2="420" stroke="#ef4444" stroke-width="4" stroke-dasharray="10,10" marker-end="url(#redArrow)"/>
+            <line x1="980" y1="420" x2="980" y2="220" stroke="#ef4444" stroke-width="4" stroke-dasharray="10,10" marker-end="url(#redArrow)"/>
+
+            <line x1="500" y1="260" x2="560" y2="360" stroke="#38bdf8" stroke-width="4" marker-end="url(#blueArrow)"/>
+            <line x1="660" y1="420" x2="760" y2="540" stroke="#38bdf8" stroke-width="4" marker-end="url(#blueArrow)"/>
+
+            <line x1="270" y1="510" x2="330" y2="560" stroke="#22c55e" stroke-width="4" marker-end="url(#greenArrow)"/>
+            <line x1="510" y1="610" x2="760" y2="610" stroke="#22c55e" stroke-width="4" marker-end="url(#greenArrow)"/>
+
+        </svg>
+
+        <div class="node blue" style="top:50px;left:60px;">
+            <h3>Protocol</h3>
+            <p>CT-PROT-4421</p>
+        </div>
+
+        <div class="node green" style="top:160px;left:320px;">
+            <h3>eConsent</h3>
+            <p>Immutable verified</p>
+        </div>
+
+        <div class="node green" style="top:360px;left:90px;">
+            <h3>Patient Cohort</h3>
+            <p>24 active participants</p>
+        </div>
+
+        <div class="node yellow" style="top:150px;left:620px;">
+            <h3>AI Anomaly</h3>
+            <p>Dosage variance</p>
+        </div>
+
+        <div class="node blue" style="top:360px;left:520px;">
+            <h3>Purview</h3>
+            <p>DLP retention enforced</p>
+        </div>
+
+        <div class="node green" style="top:560px;left:330px;">
+            <h3>Evidence Ledger</h3>
+            <p>Hash verified</p>
+        </div>
+
+        <div class="node red" style="top:540px;left:760px;">
+            <h3>Deviation</h3>
+            <p>CAPA unresolved</p>
+        </div>
+
+        <div class="node yellow" style="top:140px;left:930px;">
+            <h3>Release Gate</h3>
+            <p>Conditional hold</p>
+        </div>
+
+        <div style="position:absolute;bottom:18px;left:40px;display:flex;gap:35px;font-size:14px;">
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:40px;height:4px;background:#38bdf8;"></div>
+                <span>Protocol & Governance Flow</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:40px;height:4px;background:#22c55e;"></div>
+                <span>Evidence Integrity Flow</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:40px;height:4px;background:#f59e0b;"></div>
+                <span>Risk & Anomaly Flow</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:40px;height:4px;background:#ef4444;"></div>
+                <span>Deviation & Blocker Flow</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Narrative</h2>
+
+        <p>
+        The Clinical Trial Trust Graph transforms isolated records
+        into an explainable governance intelligence fabric capable of
+        evaluating protocol defensibility, evidence integrity,
+        Purview governance, anomaly propagation, and release readiness.
+        </p>
+
+        <div class="timeline">
+
+            <div class="event">
+                <h3>Protocol Registered</h3>
+                <p>Clinical protocol hashed and baseline established.</p>
+            </div>
+
+            <div class="event">
+                <h3>Purview Classification Applied</h3>
+                <p>DLP retention and PHI controls attached.</p>
+            </div>
+
+            <div class="event">
+                <h3>AI Anomaly Detected</h3>
+                <p>Human governance review required before action.</p>
+            </div>
+
+            <div class="event">
+                <h3>Release Gate Blocked</h3>
+                <p>Dependency validation detected unresolved CAPA linkage.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Clinical Trial Trust Graph", body)
+
+
+
+
+
+# REGULATORY_SUBMISSION_DIGITAL_TWIN_ACTIVE
+@app.route("/regulatory-submission-digital-twin")
+def regulatory_submission_digital_twin():
+
+    body = """
+    <style>
+
+    body{
+        background:#06131f;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#08111f,#0d2f46);
+        margin-bottom:30px;
+        border:1px solid #164e63;
+    }
+
+    .hero h1{
+        font-size:44px;
+        color:#7dd3fc;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        text-transform:uppercase;
+        color:#94a3b8;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:25px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        padding:16px;
+        text-align:left;
+        border:1px solid #1e293b;
+    }
+
+    td{
+        padding:16px;
+        border:1px solid #1e293b;
+        background:#08111f;
+    }
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-weight:700;
+        font-size:22px;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    .timeline{
+        margin-top:25px;
+    }
+
+    .event{
+        border-left:4px solid #38bdf8;
+        padding-left:18px;
+        margin-bottom:22px;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Regulatory Submission Digital Twin</h1>
+
+        <p>
+        A governance intelligence environment that evaluates
+        submission defensibility, protocol survivability,
+        evidence trust propagation, dependency validation,
+        inspection attack surface exposure, and cross-system governance drift
+        before regulatory release approval.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">FDA Exposure Risk</div>
+            <div class="value red">HIGH</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Submission Survivability</div>
+            <div class="value yellow">82%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Inspection Defensibility</div>
+            <div class="value yellow">CONDITIONAL</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Cross-System Drift</div>
+            <div class="value red">DETECTED</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Submission Attack Surface</h2>
+
+        <table>
+
+            <tr>
+                <th>Governance Layer</th>
+                <th>Operational State</th>
+                <th>Submission Impact</th>
+            </tr>
+
+            <tr>
+                <td>Protocol Integrity</td>
+                <td class="green">PASS</td>
+                <td>Stable lineage maintained</td>
+            </tr>
+
+            <tr>
+                <td>TMF Completeness</td>
+                <td class="yellow">WARNING</td>
+                <td>Missing monitoring evidence</td>
+            </tr>
+
+            <tr>
+                <td>Safety Governance</td>
+                <td class="red">BLOCKED</td>
+                <td>SAE review unresolved</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Closure</td>
+                <td class="red">FAIL</td>
+                <td>Deviation dependency incomplete</td>
+            </tr>
+
+            <tr>
+                <td>Purview Retention</td>
+                <td class="green">PASS</td>
+                <td>DLP and retention aligned</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Blast Radius</h2>
+
+        <table>
+
+            <tr>
+                <th>Failure Node</th>
+                <th>Downstream Exposure</th>
+                <th>Risk Severity</th>
+            </tr>
+
+            <tr>
+                <td>SAE Review Delay</td>
+                <td>Safety governance chain unstable</td>
+                <td class="red">CRITICAL</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Dependency Failure</td>
+                <td>Submission defensibility reduced</td>
+                <td class="red">HIGH</td>
+            </tr>
+
+            <tr>
+                <td>Retention Drift</td>
+                <td>Purview evidence trust weakened</td>
+                <td class="yellow">MEDIUM</td>
+            </tr>
+
+            <tr>
+                <td>Monitoring Evidence Missing</td>
+                <td>Inspection narrative weakened</td>
+                <td class="yellow">MEDIUM</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Reasoning Engine</h2>
+
+        <div class="decision danger">
+            SUBMISSION CURRENTLY NON-DEFENSIBLE
+        </div>
+
+        <div class="timeline">
+
+            <div class="event">
+                <h3>Safety governance unresolved</h3>
+                <p>
+                SAE evidence remains incomplete across downstream review layers.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>Deviation reconciliation incomplete</h3>
+                <p>
+                CAPA closure dependency chain remains unresolved.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>Inspection attack surface elevated</h3>
+                <p>
+                Missing monitoring lineage weakens regulatory narrative continuity.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="decision safe">
+            RECOMMENDATION: RECONCILIATION REQUIRED BEFORE RELEASE AUTHORIZATION
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Regulatory Submission Digital Twin", body)
+
+
+
+
+
+# CLINICAL_TRIAL_NODE_INTELLIGENCE_ACTIVE
+@app.route("/clinical-trial-node-intelligence")
+def clinical_trial_node_intelligence():
+
+    body = """
+    <style>
+
+    body{
+        background:#06131f;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#08111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:44px;
+        color:#7dd3fc;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        color:#94a3b8;
+        text-transform:uppercase;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:25px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        border:1px solid #1e293b;
+        padding:16px;
+        background:#08111f;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-weight:700;
+        font-size:22px;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    .timeline{
+        margin-top:25px;
+    }
+
+    .event{
+        border-left:4px solid #38bdf8;
+        padding-left:18px;
+        margin-bottom:22px;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Clinical Trial Node Intelligence</h1>
+
+        <p>
+        An explainable governance intelligence layer that evaluates
+        operational blast radius, evidence dependency propagation,
+        protocol exposure, inspection impact, Purview lineage,
+        CAPA linkage, and submission defensibility for individual
+        governance nodes across regulated clinical-trial ecosystems.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Selected Node</div>
+            <div class="value blue">Deviation</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Governance Exposure</div>
+            <div class="value red">HIGH</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Blast Radius</div>
+            <div class="value yellow">4 Systems</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Inspection Survivability</div>
+            <div class="value yellow">CONDITIONAL</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Dependency Propagation Map</h2>
+
+        <table>
+
+            <tr>
+                <th>Upstream Dependency</th>
+                <th>Operational State</th>
+                <th>Downstream Exposure</th>
+            </tr>
+
+            <tr>
+                <td>SAE Review Evidence</td>
+                <td class="red">UNRESOLVED</td>
+                <td>Safety governance instability</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Closure</td>
+                <td class="red">FAILED</td>
+                <td>Submission defensibility reduced</td>
+            </tr>
+
+            <tr>
+                <td>Monitoring Lineage</td>
+                <td class="yellow">INCOMPLETE</td>
+                <td>Inspection continuity weakened</td>
+            </tr>
+
+            <tr>
+                <td>Purview Retention Mapping</td>
+                <td class="green">VERIFIED</td>
+                <td>Evidence residency controlled</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Blast Radius Analysis</h2>
+
+        <table>
+
+            <tr>
+                <th>Affected Layer</th>
+                <th>Exposure Level</th>
+                <th>Operational Impact</th>
+            </tr>
+
+            <tr>
+                <td>TMF Defensibility</td>
+                <td class="red">CRITICAL</td>
+                <td>Inspection narrative instability</td>
+            </tr>
+
+            <tr>
+                <td>Submission Readiness</td>
+                <td class="red">HIGH</td>
+                <td>Release gate blocked</td>
+            </tr>
+
+            <tr>
+                <td>Protocol Reconciliation</td>
+                <td class="yellow">MEDIUM</td>
+                <td>Cross-system drift detected</td>
+            </tr>
+
+            <tr>
+                <td>Evidence Integrity</td>
+                <td class="yellow">MEDIUM</td>
+                <td>Trust confidence reduction</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Reasoning Engine</h2>
+
+        <div class="decision danger">
+            NODE CURRENTLY CAUSING REGULATORY EXPOSURE PROPAGATION
+        </div>
+
+        <div class="timeline">
+
+            <div class="event">
+                <h3>Deviation dependency unresolved</h3>
+                <p>
+                CAPA closure chain remains incomplete across governance review layers.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>Inspection attack surface increased</h3>
+                <p>
+                Missing monitoring evidence weakens operational defensibility.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>Submission release risk elevated</h3>
+                <p>
+                Governance drift propagated into downstream release gates.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="decision safe">
+            RECOMMENDATION: GOVERNANCE RECONCILIATION REQUIRED BEFORE RELEASE APPROVAL
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Clinical Trial Node Intelligence", body)
+
+
+
+
+
+# GOVERNANCE_COMMAND_CENTER_ACTIVE
+@app.route("/governance-command-center")
+def governance_command_center():
+
+    body = """
+    <style>
+
+    body{
+        background:#05111d;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#07111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:46px;
+        color:#7dd3fc;
+    }
+
+    .hero p{
+        max-width:1200px;
+        line-height:1.8;
+        color:#cbd5e1;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+        transition:0.2s;
+    }
+
+    .card:hover{
+        transform:translateY(-4px);
+        border-color:#38bdf8;
+    }
+
+    .label{
+        font-size:12px;
+        color:#94a3b8;
+        text-transform:uppercase;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .topology{
+        position:relative;
+        height:520px;
+        border-radius:24px;
+        background:#020617;
+        overflow:hidden;
+        border:1px solid #1e293b;
+        margin-top:20px;
+    }
+
+    .node{
+        position:absolute;
+        width:170px;
+        padding:16px;
+        border-radius:18px;
+        background:#0f172a;
+        text-align:center;
+        border:2px solid #334155;
+    }
+
+    .line{
+        position:absolute;
+        height:4px;
+        background:#334155;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-size:22px;
+        font-weight:700;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        background:#08111f;
+        border:1px solid #1e293b;
+        padding:16px;
+    }
+
+    a{
+        color:#7dd3fc;
+        text-decoration:none;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Governance Command Center</h1>
+
+        <p>
+        A federated governance intelligence cockpit that orchestrates
+        protocol defensibility, operational trust propagation,
+        evidence lineage, Purview governance, dependency validation,
+        submission survivability, inspection exposure,
+        and explainable governance reasoning across regulated ecosystems.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Operational Trust</div>
+            <div class="value green">94%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Inspection Exposure</div>
+            <div class="value red">HIGH</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Submission Readiness</div>
+            <div class="value yellow">CONDITIONAL</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Protocol Drift</div>
+            <div class="value red">DETECTED</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Federated Governance Topology</h2>
+
+        <div class="topology">
+
+            <div class="node blue" style="top:40px;left:80px;">
+                <h3>Protocol</h3>
+                <p>Governed baseline</p>
+            </div>
+
+            <div class="node green" style="top:180px;left:320px;">
+                <h3>Purview</h3>
+                <p>DLP and retention</p>
+            </div>
+
+            <div class="node yellow" style="top:100px;left:620px;">
+                <h3>AI Anomaly</h3>
+                <p>Review escalation</p>
+            </div>
+
+            <div class="node red" style="top:320px;left:640px;">
+                <h3>Deviation</h3>
+                <p>CAPA unresolved</p>
+            </div>
+
+            <div class="node green" style="top:360px;left:300px;">
+                <h3>Evidence Ledger</h3>
+                <p>Immutable verification</p>
+            </div>
+
+            <div class="node yellow" style="top:180px;left:920px;">
+                <h3>Release Gate</h3>
+                <p>Conditional hold</p>
+            </div>
+
+            <div class="line" style="top:120px;left:240px;width:140px;background:#38bdf8;"></div>
+            <div class="line" style="top:210px;left:500px;width:160px;background:#22c55e;"></div>
+            <div class="line" style="top:390px;left:470px;width:180px;background:#ef4444;"></div>
+            <div class="line" style="top:220px;left:790px;width:150px;background:#f59e0b;"></div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Intelligence Modules</h2>
+
+        <table>
+
+            <tr>
+                <th>Module</th>
+                <th>Purpose</th>
+                <th>Route</th>
+            </tr>
+
+            <tr>
+                <td>Clinical Trial Trust Graph</td>
+                <td>Protocol-to-evidence governance topology</td>
+                <td><a href="/clinical-trial-trust-graph">Open</a></td>
+            </tr>
+
+            <tr>
+                <td>Regulatory Submission Digital Twin</td>
+                <td>Submission survivability intelligence</td>
+                <td><a href="/regulatory-submission-digital-twin">Open</a></td>
+            </tr>
+
+            <tr>
+                <td>Clinical Trial Node Intelligence</td>
+                <td>Blast radius and dependency propagation</td>
+                <td><a href="/clinical-trial-node-intelligence">Open</a></td>
+            </tr>
+
+            <tr>
+                <td>Protocol-to-Evidence Integrity Graph</td>
+                <td>Evidence lineage federation</td>
+                <td><a href="/protocol-to-evidence-integrity-graph">Open</a></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Alert Feed</h2>
+
+        <table>
+
+            <tr>
+                <th>Alert</th>
+                <th>Severity</th>
+                <th>Impact</th>
+            </tr>
+
+            <tr>
+                <td>SAE review unresolved</td>
+                <td class="red">CRITICAL</td>
+                <td>Safety governance exposure</td>
+            </tr>
+
+            <tr>
+                <td>Retention mismatch detected</td>
+                <td class="yellow">MEDIUM</td>
+                <td>Purview trust reduction</td>
+            </tr>
+
+            <tr>
+                <td>Protocol drift identified</td>
+                <td class="red">HIGH</td>
+                <td>Cross-system reconciliation required</td>
+            </tr>
+
+            <tr>
+                <td>Release dependency failure</td>
+                <td class="red">CRITICAL</td>
+                <td>Submission hold activated</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Executive Governance Reasoning</h2>
+
+        <div class="decision danger">
+            CURRENT RELEASE POSTURE REMAINS CONDITIONALLY DEFENSIBLE
+        </div>
+
+        <p style="margin-top:25px;line-height:1.9;">
+        Submission governance remains unstable because unresolved safety review evidence,
+        incomplete CAPA dependency closure, monitoring lineage gaps,
+        and protocol reconciliation drift continue propagating risk into downstream
+        release authorization layers.
+        </p>
+
+        <div class="decision safe">
+            RECOMMENDATION: COMPLETE GOVERNANCE RECONCILIATION BEFORE RELEASE AUTHORIZATION
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Governance Command Center", body)
+
+
+
+
+
+# GOVERNANCE_REASONING_ENGINE_ACTIVE
+@app.route("/governance-reasoning-engine")
+def governance_reasoning_engine():
+
+    body = """
+    <style>
+
+    body{
+        background:#06131f;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#07111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:46px;
+        color:#7dd3fc;
+    }
+
+    .hero p{
+        max-width:1200px;
+        line-height:1.8;
+        color:#cbd5e1;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        text-transform:uppercase;
+        color:#94a3b8;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .chain{
+        margin-top:30px;
+        padding:20px;
+    }
+
+    .step{
+        margin-bottom:22px;
+        padding:20px;
+        border-radius:18px;
+        background:#08111f;
+        border-left:6px solid #38bdf8;
+    }
+
+    .arrow{
+        text-align:center;
+        font-size:36px;
+        color:#38bdf8;
+        margin-bottom:16px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        background:#08111f;
+        border:1px solid #1e293b;
+        padding:16px;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-size:22px;
+        font-weight:700;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Governance Reasoning Engine</h1>
+
+        <p>
+        An explainable governance intelligence layer that traces
+        protocol exposure, dependency propagation, evidence drift,
+        AI-assisted anomaly escalation, operational trust degradation,
+        and release defensibility reasoning across regulated ecosystems.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Governance Confidence</div>
+            <div class="value green">91%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Reasoning Traceability</div>
+            <div class="value blue">ACTIVE</div>
+        </div>
+
+        <div class="card">
+            <div class="label">AI Advisory Status</div>
+            <div class="value yellow">HUMAN REVIEW</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Release Posture</div>
+            <div class="value red">BLOCKED</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Reasoning Chain</h2>
+
+        <div class="chain">
+
+            <div class="step">
+                <h3>AI anomaly detected</h3>
+                <p>
+                Dosage variance identified across monitored evidence streams.
+                </p>
+            </div>
+
+            <div class="arrow">?</div>
+
+            <div class="step">
+                <h3>Cross-system drift verified</h3>
+                <p>
+                Protocol reconciliation mismatch detected between monitoring and TMF layers.
+                </p>
+            </div>
+
+            <div class="arrow">?</div>
+
+            <div class="step">
+                <h3>CAPA dependency unresolved</h3>
+                <p>
+                Governance closure chain remains incomplete across downstream review layers.
+                </p>
+            </div>
+
+            <div class="arrow">?</div>
+
+            <div class="step">
+                <h3>Submission exposure elevated</h3>
+                <p>
+                Inspection defensibility weakened because evidence continuity is incomplete.
+                </p>
+            </div>
+
+            <div class="arrow">?</div>
+
+            <div class="step">
+                <h3>Release gate blocked</h3>
+                <p>
+                Human governance authorization required before operational release approval.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Explainability Matrix</h2>
+
+        <table>
+
+            <tr>
+                <th>Governance Signal</th>
+                <th>Confidence</th>
+                <th>Operational Impact</th>
+            </tr>
+
+            <tr>
+                <td>Protocol Drift</td>
+                <td class="red">96%</td>
+                <td>High submission exposure</td>
+            </tr>
+
+            <tr>
+                <td>Retention Mismatch</td>
+                <td class="yellow">81%</td>
+                <td>Medium governance instability</td>
+            </tr>
+
+            <tr>
+                <td>Missing Monitoring Evidence</td>
+                <td class="red">92%</td>
+                <td>Critical inspection impact</td>
+            </tr>
+
+            <tr>
+                <td>Ledger Integrity</td>
+                <td class="green">99%</td>
+                <td>Evidence trust maintained</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Human Governance Authority</h2>
+
+        <div class="decision danger">
+            AI DID NOT MAKE THE REGULATED DECISION
+        </div>
+
+        <p style="margin-top:25px;line-height:1.9;">
+        The AI layer remains advisory only.
+        Governance recommendations are routed into human QA,
+        compliance, validation, and operational review workflows.
+        Human governance remains the authoritative control layer.
+        </p>
+
+        <div class="decision safe">
+            RECOMMENDATION: DO NOT AUTHORIZE RELEASE UNTIL RECONCILIATION IS COMPLETE
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Governance Reasoning Engine", body)
+
+
+
+
+
+# GOVERNANCE_SIMULATION_LAB_ACTIVE
+@app.route("/governance-simulation-lab")
+def governance_simulation_lab():
+
+    body = """
+    <style>
+
+    body{
+        background:#05111d;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#07111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:46px;
+        color:#7dd3fc;
+    }
+
+    .hero p{
+        line-height:1.9;
+        max-width:1200px;
+        color:#cbd5e1;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        text-transform:uppercase;
+        color:#94a3b8;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .timeline{
+        margin-top:25px;
+    }
+
+    .event{
+        border-left:4px solid #38bdf8;
+        padding-left:18px;
+        margin-bottom:22px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        background:#08111f;
+        border:1px solid #1e293b;
+        padding:16px;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-size:22px;
+        font-weight:700;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Governance Simulation Lab</h1>
+
+        <p>
+        A predictive governance intelligence environment used to simulate
+        operational trust degradation, inspection exposure propagation,
+        protocol survivability, evidence continuity instability,
+        dependency escalation, and release authorization outcomes
+        before real-world regulatory impact occurs.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Current Survivability</div>
+            <div class="value yellow">82%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Projected After Reconciliation</div>
+            <div class="value green">96%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Projected After Additional Drift</div>
+            <div class="value red">61%</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Inspection Exposure Forecast</div>
+            <div class="value red">ELEVATED</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Stress Timeline</h2>
+
+        <div class="timeline">
+
+            <div class="event">
+                <h3>T+0 : AI anomaly detected</h3>
+                <p>
+                Unexpected dosage variance identified across monitored evidence streams.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>T+1 : Protocol drift propagates</h3>
+                <p>
+                Cross-system reconciliation mismatch spreads into downstream governance layers.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>T+2 : CAPA dependency exposed</h3>
+                <p>
+                Governance closure chain instability begins affecting release defensibility.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>T+3 : Inspection exposure elevated</h3>
+                <p>
+                Missing monitoring evidence weakens inspection continuity narrative.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>T+4 : Release gate blocked</h3>
+                <p>
+                Human governance authorization required before operational release approval.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Predictive Governance Scenarios</h2>
+
+        <table>
+
+            <tr>
+                <th>Scenario</th>
+                <th>Predicted Outcome</th>
+                <th>Governance Impact</th>
+            </tr>
+
+            <tr>
+                <td>Missing Monitoring Evidence</td>
+                <td class="yellow">Submission Risk Increase</td>
+                <td>Inspection defensibility weakened</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Unresolved</td>
+                <td class="red">Release Blocked</td>
+                <td>Operational trust instability</td>
+            </tr>
+
+            <tr>
+                <td>Purview Retention Drift</td>
+                <td class="yellow">Evidence Trust Reduction</td>
+                <td>Governance continuity weakened</td>
+            </tr>
+
+            <tr>
+                <td>Ledger Verification Failure</td>
+                <td class="red">Defensibility Collapse</td>
+                <td>Evidence authenticity compromised</td>
+            </tr>
+
+            <tr>
+                <td>Protocol Drift</td>
+                <td class="red">Inspection Exposure Increase</td>
+                <td>Cross-system reconciliation required</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Attack Surface Projection</h2>
+
+        <table>
+
+            <tr>
+                <th>Operational Layer</th>
+                <th>Projected Risk</th>
+                <th>Future Exposure</th>
+            </tr>
+
+            <tr>
+                <td>Submission Defensibility</td>
+                <td class="red">HIGH</td>
+                <td>Release survivability instability</td>
+            </tr>
+
+            <tr>
+                <td>Inspection Continuity</td>
+                <td class="yellow">MEDIUM</td>
+                <td>Monitoring lineage gaps</td>
+            </tr>
+
+            <tr>
+                <td>Evidence Integrity</td>
+                <td class="green">LOW</td>
+                <td>Ledger trust remains stable</td>
+            </tr>
+
+            <tr>
+                <td>Governance Reconciliation</td>
+                <td class="red">HIGH</td>
+                <td>Cross-system drift propagation</td>
+            </tr>
+
+        </table>
+
+        <div class="decision danger">
+            PROJECTED RELEASE POSTURE WILL BECOME NON-DEFENSIBLE IF CURRENT DRIFT CONTINUES
+        </div>
+
+        <div class="decision safe">
+            RECOMMENDATION: EXECUTE RECONCILIATION AND CAPA CLOSURE BEFORE RELEASE WINDOW
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Governance Simulation Lab", body)
+
+
+
+
+
+# GOVERNANCE_ORCHESTRATION_FABRIC_ACTIVE
+@app.route("/governance-orchestration-fabric")
+def governance_orchestration_fabric():
+
+    body = """
+    <style>
+
+    body{
+        background:#05111d;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#07111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:46px;
+        color:#7dd3fc;
+    }
+
+    .hero p{
+        max-width:1200px;
+        line-height:1.9;
+        color:#cbd5e1;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        text-transform:uppercase;
+        color:#94a3b8;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .fabric{
+        position:relative;
+        height:760px;
+        border-radius:24px;
+        background:#020617;
+        overflow:hidden;
+        border:1px solid #1e293b;
+        margin-top:30px;
+    }
+
+    .node{
+        position:absolute;
+        width:180px;
+        padding:18px;
+        border-radius:18px;
+        background:#0f172a;
+        border:2px solid #334155;
+        text-align:center;
+    }
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        background:#08111f;
+        border:1px solid #1e293b;
+        padding:16px;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-size:22px;
+        font-weight:700;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Governance Orchestration Fabric</h1>
+
+        <p>
+        A governed orchestration intelligence fabric that supervises
+        escalation propagation, operational trust routing,
+        explainable AI recommendations, human governance approvals,
+        dependency reconciliation, and release authorization flows
+        across regulated enterprise ecosystems.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Governance Fabric State</div>
+            <div class="value green">ACTIVE</div>
+        </div>
+
+        <div class="card">
+            <div class="label">AI Supervision Layer</div>
+            <div class="value yellow">MONITORED</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Escalation Propagation</div>
+            <div class="value red">IN PROGRESS</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Release Authorization</div>
+            <div class="value yellow">PENDING REVIEW</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Propagation Fabric</h2>
+
+        <div class="fabric">
+
+            <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+
+                <defs>
+
+                    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#38bdf8"/>
+                    </marker>
+
+                    <marker id="redArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#ef4444"/>
+                    </marker>
+
+                    <marker id="greenArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#22c55e"/>
+                    </marker>
+
+                </defs>
+
+                <line x1="250" y1="140" x2="410" y2="140" stroke="#38bdf8" stroke-width="5" marker-end="url(#blueArrow)"/>
+                <line x1="590" y1="140" x2="760" y2="140" stroke="#ef4444" stroke-width="5" marker-end="url(#redArrow)"/>
+                <line x1="930" y1="140" x2="1080" y2="140" stroke="#ef4444" stroke-width="5" marker-end="url(#redArrow)"/>
+
+                <line x1="1140" y1="230" x2="1140" y2="360" stroke="#22c55e" stroke-width="5" marker-end="url(#greenArrow)"/>
+
+                <line x1="1000" y1="470" x2="820" y2="470" stroke="#38bdf8" stroke-width="5" marker-end="url(#blueArrow)"/>
+                <line x1="650" y1="470" x2="470" y2="470" stroke="#22c55e" stroke-width="5" marker-end="url(#greenArrow)"/>
+                <line x1="300" y1="470" x2="170" y2="470" stroke="#22c55e" stroke-width="5" marker-end="url(#greenArrow)"/>
+
+            </svg>
+
+            <div class="node blue" style="top:80px;left:60px;">
+                <h3>AI Anomaly</h3>
+                <p>Governance signal generated</p>
+            </div>
+
+            <div class="node blue" style="top:80px;left:410px;">
+                <h3>Protocol Drift</h3>
+                <p>Cross-system mismatch</p>
+            </div>
+
+            <div class="node red" style="top:80px;left:760px;">
+                <h3>CAPA Exposure</h3>
+                <p>Dependency unresolved</p>
+            </div>
+
+            <div class="node red" style="top:80px;left:1080px;">
+                <h3>Release Gate</h3>
+                <p>Authorization blocked</p>
+            </div>
+
+            <div class="node green" style="top:380px;left:1040px;">
+                <h3>QA Review</h3>
+                <p>Human governance review</p>
+            </div>
+
+            <div class="node green" style="top:380px;left:660px;">
+                <h3>Executive Escalation</h3>
+                <p>Operational supervision</p>
+            </div>
+
+            <div class="node green" style="top:380px;left:300px;">
+                <h3>Audit Evidence</h3>
+                <p>Trust continuity verified</p>
+            </div>
+
+            <div class="node green" style="top:380px;left:40px;">
+                <h3>Purview Governance</h3>
+                <p>DLP and retention enforced</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Intervention Engine</h2>
+
+        <table>
+
+            <tr>
+                <th>Governance Event</th>
+                <th>Automated Response</th>
+                <th>Human Oversight</th>
+            </tr>
+
+            <tr>
+                <td>Protocol Drift</td>
+                <td>Reconciliation triggered</td>
+                <td>QA review required</td>
+            </tr>
+
+            <tr>
+                <td>Missing Evidence</td>
+                <td>Inspection escalation initiated</td>
+                <td>Compliance approval required</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Failure</td>
+                <td>Release gate locked</td>
+                <td>Executive authorization required</td>
+            </tr>
+
+            <tr>
+                <td>Retention Mismatch</td>
+                <td>Purview escalation triggered</td>
+                <td>Governance reconciliation required</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Human Governance Authority</h2>
+
+        <div class="decision danger">
+            AI RECOMMENDATIONS REMAIN ADVISORY ONLY
+        </div>
+
+        <p style="margin-top:25px;line-height:1.9;">
+        The orchestration fabric supervises governance escalation routing,
+        operational trust propagation, dependency reconciliation,
+        and release exposure analysis.
+        Human governance reviewers remain the authoritative approval layer
+        for regulated operational decisions.
+        </p>
+
+        <div class="decision safe">
+            RECOMMENDATION: EXECUTE HUMAN REVIEW BEFORE OPERATIONAL RELEASE AUTHORIZATION
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Governance Orchestration Fabric", body)
+
+
+
+
+
+# GOVERNANCE_MEMORY_VAULT_ACTIVE
+@app.route("/governance-memory-vault")
+def governance_memory_vault():
+
+    body = """
+    <style>
+
+    body{
+        background:#05111d;
+        font-family:Arial,sans-serif;
+        color:#e2e8f0;
+    }
+
+    .hero{
+        padding:40px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#07111f,#0d2f46);
+        border:1px solid #164e63;
+        margin-bottom:30px;
+    }
+
+    .hero h1{
+        font-size:46px;
+        color:#7dd3fc;
+    }
+
+    .hero p{
+        max-width:1200px;
+        line-height:1.9;
+        color:#cbd5e1;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:20px;
+        margin-top:25px;
+        margin-bottom:30px;
+    }
+
+    .card{
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+        border-radius:20px;
+        padding:24px;
+    }
+
+    .label{
+        font-size:12px;
+        text-transform:uppercase;
+        color:#94a3b8;
+        margin-bottom:10px;
+    }
+
+    .value{
+        font-size:30px;
+        font-weight:800;
+    }
+
+    .green{color:#22c55e;}
+    .yellow{color:#f59e0b;}
+    .red{color:#ef4444;}
+    .blue{color:#38bdf8;}
+
+    .panel{
+        margin-top:30px;
+        padding:28px;
+        border-radius:24px;
+        background:#0f172a;
+        border:1px solid #1e3a5f;
+    }
+
+    .timeline{
+        margin-top:25px;
+    }
+
+    .event{
+        border-left:4px solid #38bdf8;
+        padding-left:18px;
+        margin-bottom:22px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#0f172a;
+        color:#7dd3fc;
+        border:1px solid #1e293b;
+        padding:16px;
+        text-align:left;
+    }
+
+    td{
+        background:#08111f;
+        border:1px solid #1e293b;
+        padding:16px;
+    }
+
+    .decision{
+        margin-top:25px;
+        padding:24px;
+        border-radius:20px;
+        font-size:22px;
+        font-weight:700;
+    }
+
+    .danger{
+        background:linear-gradient(135deg,#3a0911,#1b0c12);
+        border:1px solid #ef4444;
+        color:#ffb4bd;
+    }
+
+    .safe{
+        background:linear-gradient(135deg,#0d3529,#09231a);
+        border:1px solid #22c55e;
+        color:#b7ffd2;
+    }
+
+    </style>
+
+    <div class="hero">
+
+        <h1>Governance Memory Vault</h1>
+
+        <p>
+        An institutional governance lineage repository that preserves
+        intervention history, operational trust evolution,
+        escalation continuity, reconciliation outcomes,
+        governance learning loops, and explainable audit memory
+        across regulated enterprise ecosystems.
+        </p>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="label">Governance Memory State</div>
+            <div class="value green">ACTIVE</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Operational Lineage Records</div>
+            <div class="value blue">4,281</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Trust Continuity</div>
+            <div class="value green">STABLE</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Institutional Learning State</div>
+            <div class="value yellow">EVOLVING</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Event Timeline</h2>
+
+        <div class="timeline">
+
+            <div class="event">
+                <h3>May 01 : Protocol drift detected</h3>
+                <p>
+                Cross-system governance reconciliation mismatch identified.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>May 02 : CAPA escalation initiated</h3>
+                <p>
+                Dependency propagation triggered governance exposure review.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>May 03 : Purview reconciliation completed</h3>
+                <p>
+                Retention and DLP trust continuity restored.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>May 04 : QA authorization restored</h3>
+                <p>
+                Human governance reviewers completed reconciliation validation.
+                </p>
+            </div>
+
+            <div class="event">
+                <h3>May 05 : Release gate reopened</h3>
+                <p>
+                Operational trust posture stabilized after intervention closure.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Governance Learning Registry</h2>
+
+        <table>
+
+            <tr>
+                <th>Prior Governance Failure</th>
+                <th>Institutional Learning Control</th>
+                <th>Future Mitigation</th>
+            </tr>
+
+            <tr>
+                <td>Missing Monitoring Evidence</td>
+                <td>Mandatory lineage validation</td>
+                <td>Inspection continuity stabilization</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Drift</td>
+                <td>Dependency lock enforcement</td>
+                <td>Release survivability improvement</td>
+            </tr>
+
+            <tr>
+                <td>Retention Mismatch</td>
+                <td>Purview synchronization checks</td>
+                <td>Evidence trust continuity maintained</td>
+            </tr>
+
+            <tr>
+                <td>Protocol Drift</td>
+                <td>Cross-system reconciliation triggers</td>
+                <td>Governance propagation reduction</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Operational Lineage Vault</h2>
+
+        <table>
+
+            <tr>
+                <th>Governance Artifact</th>
+                <th>Recorded Lineage</th>
+                <th>Trust State</th>
+            </tr>
+
+            <tr>
+                <td>Original AI Anomaly</td>
+                <td>Governance escalation chain preserved</td>
+                <td class="yellow">MONITORED</td>
+            </tr>
+
+            <tr>
+                <td>CAPA Reconciliation</td>
+                <td>Reviewer intervention lineage recorded</td>
+                <td class="green">VERIFIED</td>
+            </tr>
+
+            <tr>
+                <td>Release Authorization</td>
+                <td>Human governance decision preserved</td>
+                <td class="green">TRUSTED</td>
+            </tr>
+
+            <tr>
+                <td>Purview Retention Alignment</td>
+                <td>Evidence continuity chain recorded</td>
+                <td class="green">STABLE</td>
+            </tr>
+
+        </table>
+
+        <div class="decision danger">
+            GOVERNANCE MEMORY PRESERVES EXPLAINABLE OPERATIONAL LINEAGE
+        </div>
+
+        <div class="decision safe">
+            RECOMMENDATION: MAINTAIN INSTITUTIONAL GOVERNANCE LEARNING CONTINUITY
+        </div>
+
+    </div>
+
+    """
+
+    return rlt_page("Governance Memory Vault", body)
+
+
+
+
+
+# ============================================================
+# RLTTRUST_IRLT_COMMERCIAL_READINESS_COMMAND_CENTER_V1_ACTIVE
+# COBIT-Chain™ / AssuranceLayer™ Platform A
+# Module: RLTTrust™ / IRLT Commercial Readiness Governance Command Center™
+# Purpose: Operational Governance Assurance for Commercial IRLT Scale-Up
+# Safe additive module: does not overwrite protected modules/routes.
+# ============================================================
+
+from flask import render_template_string, jsonify
+
+def _rlttrust_command_center_data():
+    domains = [
+        {
+            "name": "QC Readiness",
+            "score": 87,
+            "status": "Governed Warning",
+            "signal": "QC evidence exists, but release timing and method readiness need continuous monitoring.",
+            "owner": "QC / QA",
+            "risk": "Late QC result can consume isotope usability window."
+        },
+        {
+            "name": "Validation Readiness",
+            "score": 82,
+            "status": "Governed Warning",
+            "signal": "Core validation package is progressing, but dependency evidence must remain linked to release processes.",
+            "owner": "Validation",
+            "risk": "Unlinked validation evidence weakens inspection defensibility."
+        },
+        {
+            "name": "Environmental Monitoring",
+            "score": 79,
+            "status": "At Risk",
+            "signal": "EM controls are active, but unresolved excursion lineage would affect release defensibility.",
+            "owner": "Manufacturing / QA",
+            "risk": "EM exception can propagate to batch release and treatment confidence."
+        },
+        {
+            "name": "SOP Governance",
+            "score": 91,
+            "status": "Strong",
+            "signal": "SOP control layer is suitable for SOPTrust™ drift detection and execution-readiness mapping.",
+            "owner": "QA / SOP Governance",
+            "risk": "SOP drift can create training and execution gaps."
+        },
+        {
+            "name": "Deviation / CAPA",
+            "score": 76,
+            "status": "At Risk",
+            "signal": "Open deviation dependencies need CAPATrust™ closure defensibility before commercial release confidence.",
+            "owner": "QA / CAPA",
+            "risk": "Open CAPA dependency can block audit-ready release."
+        },
+        {
+            "name": "Training Readiness",
+            "score": 84,
+            "status": "Governed Warning",
+            "signal": "Training evidence must stay current against SOP versions, roles, access, and treatment-chain tasks.",
+            "owner": "Training / QA",
+            "risk": "Trained-on-old-SOP issue can become inspection finding."
+        },
+        {
+            "name": "Backup Review",
+            "score": 88,
+            "status": "Strong",
+            "signal": "Backup review should feed AuditVault™ and disaster recovery governance lineage.",
+            "owner": "IT / System Owner",
+            "risk": "Restore proof gap weakens operational continuity."
+        },
+        {
+            "name": "Access Governance",
+            "score": 81,
+            "status": "Governed Warning",
+            "signal": "AccessTrust™ should confirm role appropriateness, privileged access, and orphaned access exposure.",
+            "owner": "IAM / System Owner",
+            "risk": "Incorrect access can invalidate accountability and audit trail trust."
+        },
+        {
+            "name": "Chain of Custody",
+            "score": 86,
+            "status": "Governed Warning",
+            "signal": "Isotope-to-patient custody chain must be continuously verified across manufacturing, release, shipment, and receipt.",
+            "owner": "Supply Chain / QA",
+            "risk": "Custody gap can damage patient delivery confidence and inspection survivability."
+        },
+        {
+            "name": "Release Governance",
+            "score": 78,
+            "status": "At Risk",
+            "signal": "Release can be approved only when QC, QA, EM, deviation, training, and custody evidence converge.",
+            "owner": "QA Release",
+            "risk": "Release approval without full evidence lineage creates defensibility risk."
+        },
+        {
+            "name": "Audit Readiness",
+            "score": 83,
+            "status": "Governed Warning",
+            "signal": "AuditVault™ should assemble evidence into inspection-survivable packets and passports.",
+            "owner": "QA / Compliance",
+            "risk": "Evidence may exist but remain scattered, stale, or hard to retrieve."
+        },
+        {
+            "name": "Operational Trust Scoring",
+            "score": 85,
+            "status": "Governed Warning",
+            "signal": "IntegrityLens™ converts domain-level evidence into leadership-level readiness intelligence.",
+            "owner": "Operations Leadership",
+            "risk": "Leadership may see status without understanding evidence strength."
+        }
+    ]
+
+    overall_score = round(sum(d["score"] for d in domains) / len(domains))
+
+    executive_answer = "Commercial readiness is promising, but not yet fully inspection-defensible without closing release, CAPA, EM, and dependency evidence gaps."
+
+    flagship_features = [
+        {
+            "name": "Decay-Aware Commercial Readiness Twin™",
+            "level": "Flagship",
+            "pain_point": "IRLT readiness decays with time because isotope activity, QC release, courier timing, and treatment windows are perishable.",
+            "capability": "Calculates whether manufacturing, QC, QA release, shipment, receipt, and treatment coordination remain defensible inside the isotope window.",
+            "buyer_value": "Leadership can see whether a dose can still reach the patient safely, compliantly, and on time."
+        },
+        {
+            "name": "Isotope-to-Patient Evidence Graph™",
+            "level": "Flagship",
+            "pain_point": "Evidence is scattered across manufacturing, QC, QA, logistics, treatment coordination, and compliance systems.",
+            "capability": "Connects isotope source, batch, QC result, QA release, shipment custody, receipt, treatment readiness, and final governance passport.",
+            "buyer_value": "Creates one governed trace from isotope origin to patient-treatment readiness."
+        },
+        {
+            "name": "Release Defensibility Engine™",
+            "level": "Critical",
+            "pain_point": "Release status alone does not prove that release can survive inspection.",
+            "capability": "Scores whether QA can defend release using QC evidence, EM evidence, deviation/CAPA status, SOP version, training, access, and custody evidence.",
+            "buyer_value": "Turns release from a checkbox into an evidence-backed governance decision."
+        },
+        {
+            "name": "Inspection Tomorrow Simulator™",
+            "level": "Critical",
+            "pain_point": "Organizations often do not know what would fail until an auditor asks.",
+            "capability": "Runs a simulated FDA/NRC/QA inspection and identifies missing evidence, weak approvals, stale records, open deviations, and custody breaks.",
+            "buyer_value": "Shows whether the operation can survive inspection tomorrow."
+        },
+        {
+            "name": "Dependency Propagation Map™",
+            "level": "Critical",
+            "pain_point": "A small issue in SOP, EM, access, QC, or CAPA can silently affect release readiness.",
+            "capability": "Maps how one weak control propagates across batch release, shipment, treatment, and commercial readiness.",
+            "buyer_value": "Makes hidden operational risk visible before it becomes a launch blocker."
+        },
+        {
+            "name": "Governed Dose Journey Passport™",
+            "level": "Critical",
+            "pain_point": "There is often no single defensible file for the full dose journey.",
+            "capability": "Generates a passport showing source, batch, QC, release, custody, shipment, treatment readiness, approvals, and evidence integrity.",
+            "buyer_value": "Creates an audit-ready story for every governed dose journey."
+        },
+        {
+            "name": "Radioactive Material Accountability Ledger™",
+            "level": "Critical",
+            "pain_point": "Radioactive material must be governed from receipt through use, decay, waste, transfer, and reconciliation.",
+            "capability": "Tracks governed events for receipt, preparation, use, transfer, decay, waste, disposal, reconciliation, and closure evidence.",
+            "buyer_value": "Strengthens radioactive material accountability and inspection defensibility."
+        },
+        {
+            "name": "Evidence Expiry / Staleness Engine™",
+            "level": "Important",
+            "pain_point": "Evidence can exist but still be stale, expired, mismatched, or no longer tied to the correct SOP or role.",
+            "capability": "Flags expired training, outdated SOPs, overdue access reviews, stale backup reviews, and aged QC evidence.",
+            "buyer_value": "Prevents false readiness caused by outdated evidence."
+        },
+        {
+            "name": "Commercial Readiness Confidence Score™",
+            "level": "Executive",
+            "pain_point": "Executives need one defensible readiness answer, not twelve disconnected departmental reports.",
+            "capability": "Aggregates QC, validation, SOP, CAPA, access, backup, custody, release, audit, and operational trust into one score.",
+            "buyer_value": "Gives leadership a single governed answer: ready, warning, or not defensible."
+        },
+        {
+            "name": "AI Governance Reasoning Panel™",
+            "level": "Governed AI",
+            "pain_point": "AI cannot be allowed to become the regulated source of truth.",
+            "capability": "Explains risk, blockers, and evidence gaps while preserving human approval as the authoritative control layer.",
+            "buyer_value": "Provides explainable intelligence without replacing QA, compliance, or system-owner accountability."
+        },
+        {
+            "name": "Readiness-to-Release War Room™",
+            "level": "Launch Mode",
+            "pain_point": "Commercial launch readiness fails when blockers, owners, and dependencies are unclear.",
+            "capability": "Shows launch-week blockers, owners, due dates, evidence gaps, release risks, and dependency impact.",
+            "buyer_value": "Gives commercialization teams one operational command surface."
+        }
+    ]
+
+    futuristic_features = [
+        {
+            "name": "Patient Slot Protection Engine™",
+            "vision": "Protects scheduled patient treatment windows by linking isotope timing, batch release, courier status, receiving readiness, and treatment-site readiness.",
+            "why_it_wows": "Moves the product from batch governance to patient-impact governance."
+        },
+        {
+            "name": "Cross-Site RLT Network Readiness Mesh™",
+            "vision": "Compares readiness across multiple RLT manufacturing sites, QC labs, hot cells, couriers, and treatment territories.",
+            "why_it_wows": "Creates a network-level governance brain for commercial radiopharma scale-up."
+        },
+        {
+            "name": "Auditor Question-to-Evidence Engine™",
+            "vision": "Allows a QA leader to type an inspection question and instantly retrieve the governed evidence trail, approval chain, hash status, and passport link.",
+            "why_it_wows": "Turns inspection response from manual searching into evidence-driven audit survivability."
+        },
+        {
+            "name": "Governance Black Box Recorder™",
+            "vision": "Records every critical readiness signal, evidence change, approval event, custody movement, release dependency, and AI recommendation as a governed timeline.",
+            "why_it_wows": "Gives radiopharma operations an aircraft-style black box for inspection, deviation investigation, and leadership review."
+        },
+        {
+            "name": "Physics-Aware Readiness Decay Model™",
+            "vision": "Models readiness as a perishable asset affected by isotope decay, QC delay, courier latency, treatment appointment risk, and evidence staleness.",
+            "why_it_wows": "Applies the physics of radiopharma directly to operational governance."
+        },
+        {
+            "name": "Commercialization Stress Test Simulator™",
+            "vision": "Runs scenarios such as QC delay, hot-cell outage, EM excursion, courier failure, SOP mismatch, or QA release bottleneck.",
+            "why_it_wows": "Lets leadership test commercial scale-up resilience before failure happens."
+        },
+        {
+            "name": "Human-Controlled AI Governance Firewall™",
+            "vision": "Separates AI insight from regulated decision-making by requiring human approval, evidence confirmation, and controlled escalation.",
+            "why_it_wows": "Makes the AI safe for GxP and inspection-sensitive environments."
+        }
+    ]
+
+    propagation_scenarios = [
+        {
+            "trigger": "QC release delay",
+            "propagation": "QC delay → QA release compression → courier dispatch risk → treatment window risk → patient slot exposure",
+            "severity": "Critical",
+            "control": "Activate Decay-Aware Twin and Release Defensibility Engine."
+        },
+        {
+            "trigger": "Environmental monitoring excursion",
+            "propagation": "EM exception → batch impact assessment → QA hold → release defensibility reduction → audit readiness warning",
+            "severity": "High",
+            "control": "Require CAPATrust™ linkage and QA closure evidence before release confidence improves."
+        },
+        {
+            "trigger": "SOP version drift",
+            "propagation": "SOP mismatch → training mismatch → operator execution risk → audit finding exposure",
+            "severity": "High",
+            "control": "Run SOPTrust™ drift check and Evidence Expiry Engine."
+        },
+        {
+            "trigger": "Privileged access not reviewed",
+            "propagation": "Access gap → accountability weakness → audit trail trust reduction → release evidence challenge",
+            "severity": "Medium",
+            "control": "Run AccessTrust™ review and owner attestation."
+        },
+        {
+            "trigger": "Courier cold-chain exception",
+            "propagation": "Temperature/custody alert → shipment risk → receipt investigation → treatment readiness risk",
+            "severity": "Critical",
+            "control": "Activate custody governance and dose journey passport escalation."
+        }
+    ]
+
+    inspection_findings = [
+        {
+            "question": "Can you prove this dose journey from isotope source to treatment readiness?",
+            "answer": "Partially defensible",
+            "gap": "Treatment-site receipt and final custody confirmation need stronger evidence linkage.",
+            "engine": "Isotope-to-Patient Evidence Graph™"
+        },
+        {
+            "question": "Can QA defend release if QC was delayed?",
+            "answer": "Warning",
+            "gap": "Release rationale must explicitly document decay-window impact and QA risk acceptance.",
+            "engine": "Release Defensibility Engine™"
+        },
+        {
+            "question": "Are all operators trained on the effective SOP version?",
+            "answer": "Needs verification",
+            "gap": "Training-to-SOP version matching should be confirmed before launch readiness signoff.",
+            "engine": "Evidence Expiry / Staleness Engine™"
+        },
+        {
+            "question": "Can radioactive material reconciliation survive inspection?",
+            "answer": "Buildable control",
+            "gap": "Ledger should show receipt, use, waste, decay, disposal, reconciliation, and approval closure.",
+            "engine": "Radioactive Material Accountability Ledger™"
+        }
+    ]
+
+    passports = [
+        "Commercial Readiness Passport",
+        "Batch Governance Passport",
+        "Dose Journey Passport",
+        "Shipment Governance Passport",
+        "Treatment Readiness Passport",
+        "Release Defensibility Passport",
+        "Radioactive Material Accountability Passport",
+        "Inspection Survivability Passport"
+    ]
+
+    return {
+        "overall_score": overall_score,
+        "executive_answer": executive_answer,
+        "domains": domains,
+        "flagship_features": flagship_features,
+        "futuristic_features": futuristic_features,
+        "propagation_scenarios": propagation_scenarios,
+        "inspection_findings": inspection_findings,
+        "passports": passports
+    }
+
+
+@app.route("/irlt-commercial-readiness")
+@app.route("/irlt-commercial-readiness/command-center")
+@app.route("/rlttrust-command-center")
+@app.route("/rlttrust/commercial-readiness")
+def rlttrust_irlt_commercial_readiness_command_center():
+    data = _rlttrust_command_center_data()
+
+    html = """
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>RLTTrust™ | IRLT Commercial Readiness Governance Command Center™</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            :root {
+                --bg: #05070f;
+                --panel: #101827;
+                --panel2: #141f33;
+                --line: rgba(255,255,255,0.12);
+                --text: #edf4ff;
+                --muted: #a8b8d8;
+                --green: #37d67a;
+                --yellow: #ffd166;
+                --red: #ff5c7a;
+                --blue: #56ccf2;
+                --purple: #a78bfa;
+                --orange: #ffb86b;
+            }
+            body {
+                margin: 0;
+                font-family: Inter, Segoe UI, Arial, sans-serif;
+                background:
+                    radial-gradient(circle at top left, rgba(86,204,242,0.22), transparent 32%),
+                    radial-gradient(circle at top right, rgba(167,139,250,0.18), transparent 30%),
+                    linear-gradient(180deg, #05070f 0%, #08101f 45%, #05070f 100%);
+                color: var(--text);
+            }
+            .wrap { max-width: 1440px; margin: 0 auto; padding: 30px; }
+            .hero {
+                border: 1px solid var(--line);
+                border-radius: 28px;
+                padding: 34px;
+                background:
+                    linear-gradient(135deg, rgba(86,204,242,0.16), rgba(167,139,250,0.10)),
+                    rgba(16,24,39,0.92);
+                box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+            }
+            .eyebrow {
+                text-transform: uppercase;
+                letter-spacing: 0.16em;
+                font-size: 12px;
+                color: var(--blue);
+                font-weight: 800;
+            }
+            h1 { font-size: 42px; line-height: 1.05; margin: 12px 0; }
+            h2 { font-size: 25px; margin: 0 0 16px; }
+            h3 { font-size: 17px; margin: 0 0 8px; }
+            p { color: var(--muted); line-height: 1.55; }
+            .hero-grid {
+                display: grid;
+                grid-template-columns: 1.45fr 0.8fr;
+                gap: 24px;
+                align-items: stretch;
+            }
+            .score-card {
+                background: rgba(5,7,15,0.56);
+                border: 1px solid var(--line);
+                border-radius: 24px;
+                padding: 24px;
+            }
+            .score {
+                font-size: 72px;
+                font-weight: 900;
+                color: var(--yellow);
+                letter-spacing: -0.06em;
+            }
+            .label-pill {
+                display: inline-flex;
+                padding: 8px 12px;
+                border-radius: 999px;
+                background: rgba(255,209,102,0.12);
+                border: 1px solid rgba(255,209,102,0.32);
+                color: var(--yellow);
+                font-weight: 800;
+                font-size: 12px;
+                margin: 5px 7px 5px 0;
+            }
+            .nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 22px;
+            }
+            .nav a {
+                color: var(--text);
+                text-decoration: none;
+                border: 1px solid var(--line);
+                background: rgba(255,255,255,0.05);
+                border-radius: 999px;
+                padding: 9px 13px;
+                font-size: 13px;
+            }
+            .section { margin-top: 30px; }
+            .grid-4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+            .grid-3 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+            .grid-2 {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .card {
+                background: rgba(16,24,39,0.88);
+                border: 1px solid var(--line);
+                border-radius: 22px;
+                padding: 18px;
+                box-shadow: 0 16px 50px rgba(0,0,0,0.25);
+            }
+            .metric {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .bar {
+                height: 9px;
+                background: rgba(255,255,255,0.08);
+                border-radius: 999px;
+                overflow: hidden;
+                margin: 12px 0;
+            }
+            .bar span {
+                display: block;
+                height: 100%;
+                background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+                border-radius: 999px;
+            }
+            .tag {
+                display: inline-block;
+                padding: 5px 9px;
+                border-radius: 999px;
+                background: rgba(86,204,242,0.10);
+                border: 1px solid rgba(86,204,242,0.22);
+                color: var(--blue);
+                font-size: 11px;
+                font-weight: 800;
+                margin-bottom: 10px;
+            }
+            .tag.red { color: var(--red); border-color: rgba(255,92,122,0.28); background: rgba(255,92,122,0.10); }
+            .tag.yellow { color: var(--yellow); border-color: rgba(255,209,102,0.28); background: rgba(255,209,102,0.10); }
+            .tag.green { color: var(--green); border-color: rgba(55,214,122,0.28); background: rgba(55,214,122,0.10); }
+            .feature {
+                min-height: 238px;
+                position: relative;
+                overflow: hidden;
+            }
+            .feature:after {
+                content: "";
+                position: absolute;
+                width: 130px;
+                height: 130px;
+                right: -50px;
+                top: -50px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(86,204,242,0.18), transparent 70%);
+            }
+            .timeline {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 12px;
+                margin-top: 16px;
+            }
+            .step {
+                padding: 14px;
+                border-radius: 18px;
+                border: 1px solid var(--line);
+                background: rgba(255,255,255,0.045);
+                min-height: 105px;
+            }
+            .step b { display: block; margin-bottom: 8px; color: var(--text); }
+            .step small { color: var(--muted); }
+            .warning-panel {
+                border: 1px solid rgba(255,209,102,0.38);
+                background: linear-gradient(135deg, rgba(255,209,102,0.13), rgba(16,24,39,0.92));
+                border-radius: 24px;
+                padding: 22px;
+            }
+            .critical-panel {
+                border: 1px solid rgba(255,92,122,0.38);
+                background: linear-gradient(135deg, rgba(255,92,122,0.13), rgba(16,24,39,0.92));
+                border-radius: 24px;
+                padding: 22px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                overflow: hidden;
+                border-radius: 18px;
+                background: rgba(16,24,39,0.88);
+                border: 1px solid var(--line);
+            }
+            th, td {
+                padding: 14px;
+                border-bottom: 1px solid var(--line);
+                text-align: left;
+                vertical-align: top;
+                color: var(--muted);
+                font-size: 14px;
+            }
+            th {
+                color: var(--text);
+                background: rgba(255,255,255,0.045);
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+            }
+            td strong { color: var(--text); }
+            .passport-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .passport {
+                border: 1px solid rgba(55,214,122,0.28);
+                background: rgba(55,214,122,0.09);
+                color: #d7ffe7;
+                padding: 10px 12px;
+                border-radius: 14px;
+                font-weight: 800;
+                font-size: 13px;
+            }
+            .ai-box {
+                border: 1px solid rgba(167,139,250,0.42);
+                background: linear-gradient(135deg, rgba(167,139,250,0.16), rgba(86,204,242,0.08));
+                border-radius: 24px;
+                padding: 22px;
+            }
+            .footer {
+                color: var(--muted);
+                font-size: 12px;
+                margin: 34px 0 10px;
+                border-top: 1px solid var(--line);
+                padding-top: 18px;
+            }
+            @media (max-width: 1100px) {
+                .hero-grid, .grid-4, .grid-3, .grid-2, .timeline {
+                    grid-template-columns: 1fr;
+                }
+                h1 { font-size: 32px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+
+            <section class="hero">
+                <div class="hero-grid">
+                    <div>
+                        <div class="eyebrow">COBIT-Chain™ / AssuranceLayer™ Platform A</div>
+                        <h1>RLTTrust™ / IRLT Commercial Readiness Governance Command Center™</h1>
+                        <p>
+                            A governance assurance and operational trust overlay for commercial radioligand therapy scale-up.
+                            It does not replace Veeva, MES, LIMS, ERP, ServiceNow, CTMS, or manufacturing systems.
+                            It validates readiness, evidence, dependencies, release defensibility, chain-of-custody integrity,
+                            and inspection survivability across the IRLT lifecycle.
+                        </p>
+                        <div>
+                            <span class="label-pill">Decay-Aware</span>
+                            <span class="label-pill">Evidence-Governed</span>
+                            <span class="label-pill">Inspection-Survivable</span>
+                            <span class="label-pill">Human-Controlled AI</span>
+                        </div>
+                        <div class="nav">
+                            <a href="#domains">Readiness Domains</a>
+                            <a href="#decay">Decay-Aware Twin</a>
+                            <a href="#features">World-Class Features</a>
+                            <a href="#futuristic">Futuristic Layer</a>
+                            <a href="#inspection">Inspection Simulator</a>
+                            <a href="#warroom">Release War Room</a>
+                            <a href="#passports">Governance Passports</a>
+                            <a href="/irlt-commercial-readiness/api">API Summary</a>
+                        </div>
+                    </div>
+                    <div class="score-card">
+                        <div class="eyebrow">Commercial Readiness Confidence</div>
+                        <div class="score">{{ overall_score }}%</div>
+                        <h3>Executive Answer</h3>
+                        <p>{{ executive_answer }}</p>
+                        <div class="bar"><span style="width: {{ overall_score }}%;"></span></div>
+                        <p><strong style="color:#ffd166;">Status:</strong> Governed Warning — strong foundation, but release defensibility and dependency closure must improve before full commercial confidence.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="decay">
+                <div class="warning-panel">
+                    <div class="eyebrow">Flagship Invention</div>
+                    <h2>Decay-Aware Commercial Readiness Twin™</h2>
+                    <p>
+                        In IRLT, readiness is perishable. The command center treats readiness as a time-sensitive governed asset
+                        affected by isotope decay, QC delay, QA release compression, courier latency, custody confirmation,
+                        patient slot timing, and evidence staleness.
+                    </p>
+                    <div class="timeline">
+                        <div class="step"><b>1. Isotope Source</b><small>Origin, activity, receipt evidence, radioactive material accountability.</small></div>
+                        <div class="step"><b>2. Radiolabeling</b><small>Batch process, operator accountability, SOP version, manufacturing evidence.</small></div>
+                        <div class="step"><b>3. QC Testing</b><small>Test completion, method readiness, deviation impact, release timer pressure.</small></div>
+                        <div class="step"><b>4. QA Release</b><small>Release defensibility, approvals, evidence completeness, CAPA dependencies.</small></div>
+                        <div class="step"><b>5. Shipment</b><small>Custody, cold-chain, courier timing, Class 7 control evidence.</small></div>
+                        <div class="step"><b>6. Treatment Readiness</b><small>Receipt, patient slot, nuclear medicine readiness, final governance passport.</small></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="domains">
+                <h2>Commercial Readiness Domains</h2>
+                <div class="grid-4">
+                    {% for d in domains %}
+                    <div class="card">
+                        {% if d.score >= 88 %}
+                            <span class="tag green">{{ d.status }}</span>
+                        {% elif d.score >= 80 %}
+                            <span class="tag yellow">{{ d.status }}</span>
+                        {% else %}
+                            <span class="tag red">{{ d.status }}</span>
+                        {% endif %}
+                        <div class="metric">
+                            <h3>{{ d.name }}</h3>
+                            <strong>{{ d.score }}%</strong>
+                        </div>
+                        <div class="bar"><span style="width: {{ d.score }}%;"></span></div>
+                        <p>{{ d.signal }}</p>
+                        <p><strong>Owner:</strong> {{ d.owner }}</p>
+                        <p><strong>Risk:</strong> {{ d.risk }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section" id="features">
+                <h2>World-Class Product Features Added</h2>
+                <div class="grid-3">
+                    {% for f in flagship_features %}
+                    <div class="card feature">
+                        <span class="tag">{{ f.level }}</span>
+                        <h3>{{ f.name }}</h3>
+                        <p><strong>Pain point:</strong> {{ f.pain_point }}</p>
+                        <p><strong>Capability:</strong> {{ f.capability }}</p>
+                        <p><strong>Buyer value:</strong> {{ f.buyer_value }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section" id="futuristic">
+                <div class="ai-box">
+                    <div class="eyebrow">Novartis-Grade Future Layer</div>
+                    <h2>Advanced IRLT Governance Intelligence Layer</h2>
+                    <p>
+                        These features position RLTTrust™ beyond ordinary compliance dashboards. The product becomes a
+                        radiopharma operating intelligence layer that protects patient slots, release timing, network capacity,
+                        inspection response, and human-governed AI decision support.
+                    </p>
+                </div>
+                <div class="grid-3" style="margin-top:16px;">
+                    {% for f in futuristic_features %}
+                    <div class="card">
+                        <span class="tag">{{ f.name }}</span>
+                        <p><strong>Vision:</strong> {{ f.vision }}</p>
+                        <p><strong>Why it wows:</strong> {{ f.why_it_wows }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Dependency Propagation Map™</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trigger</th>
+                            <th>Propagation</th>
+                            <th>Severity</th>
+                            <th>Governance Control</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in propagation_scenarios %}
+                        <tr>
+                            <td><strong>{{ s.trigger }}</strong></td>
+                            <td>{{ s.propagation }}</td>
+                            <td>{{ s.severity }}</td>
+                            <td>{{ s.control }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="section" id="inspection">
+                <h2>Inspection Tomorrow Simulator™</h2>
+                <div class="critical-panel">
+                    <p>
+                        One executive question: <strong style="color:#fff;">If FDA, NRC, QA, or a partner auditor walked in tomorrow,
+                        what would fail, what would survive, and what evidence would we show?</strong>
+                    </p>
+                </div>
+                <table style="margin-top:16px;">
+                    <thead>
+                        <tr>
+                            <th>Inspection Question</th>
+                            <th>Current Answer</th>
+                            <th>Evidence Gap</th>
+                            <th>Engine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in inspection_findings %}
+                        <tr>
+                            <td><strong>{{ i.question }}</strong></td>
+                            <td>{{ i.answer }}</td>
+                            <td>{{ i.gap }}</td>
+                            <td>{{ i.engine }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="section" id="warroom">
+                <h2>Readiness-to-Release War Room™</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <span class="tag red">Critical Launch Blockers</span>
+                        <h3>Release Defensibility Watchlist</h3>
+                        <p>Open deviation/CAPA dependencies, EM exception status, QC timing pressure, QA release rationale, custody evidence, and patient slot exposure must converge before commercial confidence can be marked defensible.</p>
+                    </div>
+                    <div class="card">
+                        <span class="tag yellow">Leadership Question</span>
+                        <h3>Can We Treat Tomorrow?</h3>
+                        <p>The command center produces a governed answer: Yes, Yes with warnings, No due to evidence gaps, or No due to release/treatment dependency blockage.</p>
+                    </div>
+                    <div class="card">
+                        <span class="tag">AI Advisory Only</span>
+                        <h3>Human-Controlled AI Governance Firewall™</h3>
+                        <p>AI may explain risk and recommend actions, but QA, compliance, system owners, and operational leadership remain the authoritative decision layer.</p>
+                    </div>
+                    <div class="card">
+                        <span class="tag green">AuditVault™ Ready</span>
+                        <h3>Governance Black Box Recorder™</h3>
+                        <p>Records readiness signals, evidence changes, approval lineage, custody events, AI recommendations, and human decisions into an inspection-survivable timeline.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="passports">
+                <h2>Governance Passport Factory™</h2>
+                <p>
+                    The passport layer converts operational readiness into defensible artifacts for leadership, QA, compliance,
+                    inspections, partners, and commercialization teams.
+                </p>
+                <div class="passport-list">
+                    {% for p in passports %}
+                    <div class="passport">{{ p }}</div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="ai-box">
+                    <div class="eyebrow">Positioning</div>
+                    <h2>What Makes This Different</h2>
+                    <p>
+                        RLTTrust™ is not another dashboard. It is a governed operational trust layer that combines physics-aware readiness,
+                        evidence integrity, release defensibility, inspection survivability, dependency intelligence, radioactive material
+                        accountability, and human-controlled AI into one commercial readiness command center.
+                    </p>
+                </div>
+            </section>
+
+            <div class="footer">
+                RLTTrust™ / IRLT Commercial Readiness Governance Command Center™ — COBIT-Chain™ / AssuranceLayer™ Platform A.
+                Advisory AI only. Human governance remains the authoritative control layer.
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, **data)
+
+
+@app.route("/irlt-commercial-readiness/api")
+@app.route("/rlttrust/commercial-readiness/api")
+def rlttrust_irlt_commercial_readiness_api():
+    return jsonify(_rlttrust_command_center_data())
+
+
+@app.route("/irlt-commercial-readiness/passport")
+@app.route("/rlttrust/commercial-readiness/passport")
+def rlttrust_irlt_commercial_readiness_passport():
+    data = _rlttrust_command_center_data()
+    html = """
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>RLTTrust™ Governance Passport Factory™</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                margin: 0;
+                font-family: Inter, Segoe UI, Arial, sans-serif;
+                background: #05070f;
+                color: #edf4ff;
+            }
+            .wrap { max-width: 1100px; margin: 0 auto; padding: 34px; }
+            .panel {
+                border: 1px solid rgba(255,255,255,0.12);
+                border-radius: 26px;
+                padding: 28px;
+                background: linear-gradient(135deg, rgba(86,204,242,0.13), rgba(167,139,250,0.09)), #101827;
+                box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+            }
+            .eyebrow {
+                text-transform: uppercase;
+                letter-spacing: 0.16em;
+                color: #56ccf2;
+                font-weight: 900;
+                font-size: 12px;
+            }
+            h1 { font-size: 36px; margin: 10px 0; }
+            p { color: #a8b8d8; line-height: 1.55; }
+            .score {
+                font-size: 64px;
+                font-weight: 900;
+                color: #ffd166;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                margin-top: 18px;
+            }
+            .card {
+                border: 1px solid rgba(255,255,255,0.12);
+                border-radius: 20px;
+                padding: 18px;
+                background: rgba(255,255,255,0.045);
+            }
+            .passport {
+                display: inline-block;
+                margin: 6px;
+                padding: 10px 12px;
+                border-radius: 14px;
+                background: rgba(55,214,122,0.09);
+                border: 1px solid rgba(55,214,122,0.28);
+                color: #d7ffe7;
+                font-weight: 800;
+            }
+            a { color: #56ccf2; }
+            @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="panel">
+                <div class="eyebrow">Governance Passport Factory™</div>
+                <h1>RLTTrust™ Commercial Readiness Passport</h1>
+                <p>
+                    This passport is a leadership-facing readiness artifact that summarizes commercial readiness,
+                    evidence defensibility, release confidence, custody governance, and inspection survivability.
+                </p>
+                <div class="score">{{ overall_score }}%</div>
+                <p><strong>Executive Answer:</strong> {{ executive_answer }}</p>
+
+                <h2>Available Passport Types</h2>
+                {% for p in passports %}
+                    <span class="passport">{{ p }}</span>
+                {% endfor %}
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Evidence Integrity</h3>
+                        <p>Designed to connect with AuditVault™ for evidence hashing, tamper detection, immutable lineage, and inspection survivability.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Release Defensibility</h3>
+                        <p>Designed to connect with QA release evidence, QC results, deviations/CAPA, SOP version, training, access, and chain-of-custody confirmation.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Decay-Aware Readiness</h3>
+                        <p>Designed to evaluate whether isotope, batch, QC, release, courier, and treatment-site readiness remain aligned inside the operational window.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Human Governance</h3>
+                        <p>AI remains advisory. Final control authority remains with QA, compliance, system owners, and operational leadership.</p>
+                    </div>
+                </div>
+
+                <p style="margin-top:24px;"><a href="/irlt-commercial-readiness">Back to Command Center</a></p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    return render_template_string(html, **data)
+
+# ============================================================
+# End RLTTrust™ / IRLT Commercial Readiness Command Center
+# ============================================================
+
 
 
 if __name__ == "__main__":
