@@ -142143,5 +142143,23483 @@ def rlttrust_powerbi_routes_api():
 
 
 
+
+
+# ============================================================
+# IRLT_EVIDENCE_VAULT_SIMPLE_V1_ACTIVE
+# ============================================================
+
+IRLT_EVIDENCE_SIMPLE = [
+    {
+        "id": "IRLT-001",
+        "title": "Release Defensibility Packet",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "id": "IRLT-002",
+        "title": "Isotope-to-Patient Evidence",
+        "status": "Verified",
+        "score": 94
+    },
+    {
+        "id": "IRLT-003",
+        "title": "Radioactive Material Ledger",
+        "status": "Verified",
+        "score": 92
+    }
+]
+
+@app.route("/irlt-commercial-readiness/evidence-vault")
+def irlt_evidence_vault_simple():
+
+    html = '''
+
+    <html>
+    <head>
+        <title>IRLT Evidence Vault</title>
+
+        <style>
+
+            body{
+                background:#0b1020;
+                color:white;
+                font-family:Arial;
+                padding:40px;
+            }
+
+            .card{
+                background:#151c2e;
+                border-radius:18px;
+                padding:20px;
+                margin-bottom:20px;
+                border:1px solid #ff9f1c;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:48px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Evidence Vault</h1>
+
+        {% for row in records %}
+
+            <div class="card">
+
+                <h2>{{ row.title }}</h2>
+
+                <p><b>Evidence ID:</b> {{ row.id }}</p>
+
+                <p><b>Status:</b> {{ row.status }}</p>
+
+                <p><b>Trust Score:</b> {{ row.score }}%</p>
+
+            </div>
+
+        {% endfor %}
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        records=IRLT_EVIDENCE_SIMPLE
+    )
+
+# ============================================================
+# END IRLT_EVIDENCE_VAULT_SIMPLE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_TRUST_CONTROL_TOWER_V2_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+IRLT_CONTROL_TOWER_KPIS_V2 = [
+    {
+        "domain": "Release Defensibility",
+        "score": 92,
+        "status": "Strong"
+    },
+    {
+        "domain": "Dose Lineage",
+        "score": 95,
+        "status": "Verified"
+    },
+    {
+        "domain": "Environmental Monitoring",
+        "score": 88,
+        "status": "Review"
+    },
+    {
+        "domain": "CAPA Governance",
+        "score": 84,
+        "status": "Attention"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "score": 93,
+        "status": "Ready"
+    },
+    {
+        "domain": "Operational Trust",
+        "score": 91,
+        "status": "Strong"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/control-tower")
+@app.route("/rlttrust/control-tower")
+def irlt_operational_trust_control_tower_v2():
+
+    overall_score = round(
+        sum(x["score"] for x in IRLT_CONTROL_TOWER_KPIS_V2)
+        / len(IRLT_CONTROL_TOWER_KPIS_V2)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>IRLT Operational Trust Control Tower</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .grid {
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:24px;
+            }
+
+            .kpi {
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .kpi strong {
+                display:block;
+                font-size:48px;
+                color:#ff9f1c;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:24px;
+                border-radius:20px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+            }
+
+            @media (max-width:1200px) {
+
+                .grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:42px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>IRLT Operational Trust Control Tower</h1>
+
+                <p>
+                    Executive operational governance cockpit for commercialization readiness,
+                    inspection survivability, release defensibility, and radiopharma trust assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ overall_score }}%</strong>
+
+                    Enterprise Operational Trust Score
+
+                </div>
+
+                <div class="grid">
+
+                    {% for row in kpis %}
+
+                    <div class="kpi">
+
+                        <strong>{{ row.score }}%</strong>
+
+                        {{ row.domain }}
+
+                        <br><br>
+
+                        <span class="pill">
+
+                            {{ row.status }}
+
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Dependency Propagation Intelligence</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Dependency</th>
+                            <th>Risk</th>
+                            <th>Impact</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>CAPA Closure Delay</td>
+                            <td>Moderate</td>
+                            <td>Inspection Readiness</td>
+                            <td><span class="pill">Monitoring</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Environmental Review Lag</td>
+                            <td>Medium</td>
+                            <td>Release Governance</td>
+                            <td><span class="pill">Escalated</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Training Recertification</td>
+                            <td>Low</td>
+                            <td>Operational Readiness</td>
+                            <td><span class="pill">Controlled</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Shipment Coordination</td>
+                            <td>Low</td>
+                            <td>Treatment Coordination</td>
+                            <td><span class="pill">Stable</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        kpis=IRLT_CONTROL_TOWER_KPIS_V2,
+        overall_score=overall_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/control-tower/api")
+@app.route("/rlttrust/control-tower/api")
+def irlt_control_tower_api_v2():
+
+    return jsonify({
+        "overall_score": round(
+            sum(x["score"] for x in IRLT_CONTROL_TOWER_KPIS_V2)
+            / len(IRLT_CONTROL_TOWER_KPIS_V2)
+        ),
+        "domains": IRLT_CONTROL_TOWER_KPIS_V2
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_TRUST_CONTROL_TOWER_V2
+# ============================================================
+
+
+
+
+
+# ============================================================
+# SHARED_GOVERNANCE_TRUST_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+SHARED_TRUST_DOMAINS_V1 = [
+    {
+        "domain": "Evidence Integrity",
+        "weight": 0.20,
+        "score": 94
+    },
+    {
+        "domain": "Inspection Survivability",
+        "weight": 0.18,
+        "score": 91
+    },
+    {
+        "domain": "Release Defensibility",
+        "weight": 0.18,
+        "score": 92
+    },
+    {
+        "domain": "Operational Readiness",
+        "weight": 0.15,
+        "score": 89
+    },
+    {
+        "domain": "Dependency Governance",
+        "weight": 0.12,
+        "score": 85
+    },
+    {
+        "domain": "CAPA Governance",
+        "weight": 0.10,
+        "score": 84
+    },
+    {
+        "domain": "Access Governance",
+        "weight": 0.07,
+        "score": 88
+    }
+]
+
+
+def calculate_shared_governance_trust_score_v1():
+
+    total = 0
+
+    for row in SHARED_TRUST_DOMAINS_V1:
+        total += row["score"] * row["weight"]
+
+    return round(total)
+
+
+@app.route("/governance/shared-trust-engine")
+def governance_shared_trust_engine_v1():
+
+    overall_score = calculate_shared_governance_trust_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Shared Governance Trust Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1850px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:24px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:120px;
+                color:#ff9f1c;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Shared Governance Trust Engine</h1>
+
+                <p>
+                    Centralized governance scoring and operational trust intelligence
+                    engine reusable across all AssuranceLayer verticals.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ overall_score }}%</strong>
+
+                    Enterprise Governance Trust Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Shared Governance Scoring Domains</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Governance Domain</th>
+                            <th>Weight</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in domains %}
+
+                        <tr>
+
+                            <td>{{ row.domain }}</td>
+
+                            <td>{{ row.weight }}</td>
+
+                            <td>{{ row.score }}%</td>
+
+                            <td>
+
+                                <span class="pill">
+
+                                    {% if row.score >= 90 %}
+                                        Strong
+                                    {% elif row.score >= 85 %}
+                                        Stable
+                                    {% else %}
+                                        Attention
+                                    {% endif %}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Engine Vision</h2>
+
+                <p>
+                    This engine provides centralized governance trust scoring
+                    across all COBIT-Chain AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    Shared governance scoring enables:
+                </p>
+
+                <ul>
+
+                    <li>Cross-platform trust normalization</li>
+
+                    <li>Operational readiness scoring consistency</li>
+
+                    <li>Inspection survivability calculations</li>
+
+                    <li>Release defensibility intelligence</li>
+
+                    <li>Governance maturity alignment</li>
+
+                    <li>Shared dependency propagation logic</li>
+
+                    <li>Reusable governance intelligence APIs</li>
+
+                    <li>Executive governance orchestration</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        domains=SHARED_TRUST_DOMAINS_V1,
+        overall_score=overall_score
+    )
+
+
+@app.route("/governance/shared-trust-engine/api")
+def governance_shared_trust_engine_api_v1():
+
+    return jsonify({
+        "overall_score": calculate_shared_governance_trust_score_v1(),
+        "domains": SHARED_TRUST_DOMAINS_V1
+    })
+
+# ============================================================
+# END SHARED_GOVERNANCE_TRUST_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# SHARED_GOVERNANCE_PASSPORT_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+GOVERNANCE_PASSPORTS_V1 = [
+    {
+        "passport_id": "PASS-IRLT-001",
+        "module": "IRLTTrust",
+        "passport_type": "Release Defensibility",
+        "trust_score": 94,
+        "status": "Certified",
+        "inspection": "Ready"
+    },
+    {
+        "passport_id": "PASS-IRLT-002",
+        "module": "IRLTTrust",
+        "passport_type": "Dose Journey",
+        "trust_score": 96,
+        "status": "Verified",
+        "inspection": "Ready"
+    },
+    {
+        "passport_id": "PASS-COMP-001",
+        "module": "CompoundTrust",
+        "passport_type": "Sterile Governance",
+        "trust_score": 91,
+        "status": "Certified",
+        "inspection": "Controlled"
+    },
+    {
+        "passport_id": "PASS-TRIAL-001",
+        "module": "TrialTrust",
+        "passport_type": "Clinical Governance",
+        "trust_score": 89,
+        "status": "Review",
+        "inspection": "Monitoring"
+    },
+    {
+        "passport_id": "PASS-DSCSA-001",
+        "module": "DSCSATrust",
+        "passport_type": "Chain of Custody",
+        "trust_score": 93,
+        "status": "Certified",
+        "inspection": "Ready"
+    }
+]
+
+
+def calculate_passport_engine_score_v1():
+
+    total = 0
+
+    for row in GOVERNANCE_PASSPORTS_V1:
+        total += row["trust_score"]
+
+    return round(total / len(GOVERNANCE_PASSPORTS_V1))
+
+
+@app.route("/governance/passport-engine")
+def governance_passport_engine_v1():
+
+    overall_score = calculate_passport_engine_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Shared Governance Passport Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:24px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:120px;
+                color:#ff9f1c;
+            }
+
+            .passport-grid {
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:24px;
+            }
+
+            .passport-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .passport-card strong {
+                display:block;
+                font-size:38px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .passport-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Shared Governance Passport Engine</h1>
+
+                <p>
+                    Portable governance certification and operational trust passport
+                    infrastructure reusable across all AssuranceLayer operational verticals.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ overall_score }}%</strong>
+
+                    Enterprise Governance Passport Trust Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Passport Registry</h2>
+
+                <div class="passport-grid">
+
+                    {% for row in passports %}
+
+                    <div class="passport-card">
+
+                        <strong>{{ row.trust_score }}%</strong>
+
+                        <h3>{{ row.passport_type }}</h3>
+
+                        <p>
+                            Module:
+                            <strong style="font-size:18px;color:white;">
+                                {{ row.module }}
+                            </strong>
+                        </p>
+
+                        <p>
+                            Passport ID:
+                            {{ row.passport_id }}
+                        </p>
+
+                        <span class="pill">
+                            {{ row.status }}
+                        </span>
+
+                        <br>
+
+                        <span class="pill">
+                            Inspection: {{ row.inspection }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Certification Vision</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Strategic Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Operational Trust Certification</td>
+                            <td>Portable readiness validation</td>
+                            <td>Cross-platform defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Inspection Survivability Passports</td>
+                            <td>Inspection readiness certification</td>
+                            <td>Audit defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Release Governance Passports</td>
+                            <td>Release readiness validation</td>
+                            <td>Commercialization assurance</td>
+                        </tr>
+
+                        <tr>
+                            <td>Evidence Completeness Certification</td>
+                            <td>Governed evidence verification</td>
+                            <td>Operational trust assurance</td>
+                        </tr>
+
+                        <tr>
+                            <td>Cross-Module Governance Portability</td>
+                            <td>Reusable governance intelligence</td>
+                            <td>Enterprise orchestration</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        passports=GOVERNANCE_PASSPORTS_V1,
+        overall_score=overall_score
+    )
+
+
+@app.route("/governance/passport-engine/api")
+def governance_passport_engine_api_v1():
+
+    return jsonify({
+        "overall_score": calculate_passport_engine_score_v1(),
+        "passports": GOVERNANCE_PASSPORTS_V1
+    })
+
+# ============================================================
+# END SHARED_GOVERNANCE_PASSPORT_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# SHARED_DEPENDENCY_PROPAGATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+DEPENDENCY_PROPAGATION_DATA_V1 = [
+    {
+        "trigger": "CAPA Closure Delay",
+        "impacted_area": "Inspection Survivability",
+        "severity": "High",
+        "trust_impact": -7,
+        "status": "Escalated"
+    },
+    {
+        "trigger": "Environmental Monitoring Review Delay",
+        "impacted_area": "Release Defensibility",
+        "severity": "Medium",
+        "trust_impact": -5,
+        "status": "Monitoring"
+    },
+    {
+        "trigger": "Training Recertification Gap",
+        "impacted_area": "Operational Readiness",
+        "severity": "Medium",
+        "trust_impact": -4,
+        "status": "Controlled"
+    },
+    {
+        "trigger": "Shipment Coordination Failure",
+        "impacted_area": "Treatment Coordination",
+        "severity": "High",
+        "trust_impact": -8,
+        "status": "Escalated"
+    },
+    {
+        "trigger": "Backup Governance Drift",
+        "impacted_area": "Audit Defensibility",
+        "severity": "Low",
+        "trust_impact": -2,
+        "status": "Review"
+    }
+]
+
+
+def calculate_dependency_engine_score_v1():
+
+    base_score = 100
+
+    for row in DEPENDENCY_PROPAGATION_DATA_V1:
+        base_score += row["trust_impact"]
+
+    if base_score < 0:
+        base_score = 0
+
+    return round(base_score)
+
+
+@app.route("/governance/dependency-propagation-engine")
+def governance_dependency_propagation_engine_v1():
+
+    overall_score = calculate_dependency_engine_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Dependency Propagation Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:24px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:120px;
+                color:#ff9f1c;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+            }
+
+            .flow-grid {
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:24px;
+            }
+
+            .flow-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .flow-card strong {
+                display:block;
+                font-size:34px;
+                color:#ff9f1c;
+                margin-bottom:10px;
+            }
+
+            @media (max-width:1200px) {
+
+                .flow-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Dependency Propagation Engine</h1>
+
+                <p>
+                    Enterprise governance dependency reasoning and operational
+                    blast radius intelligence engine for commercialization readiness,
+                    inspection survivability, and operational trust assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ overall_score }}%</strong>
+
+                    Dependency Governance Stability Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Blast Radius Intelligence</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Trigger Event</th>
+                            <th>Impacted Area</th>
+                            <th>Severity</th>
+                            <th>Trust Impact</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in dependencies %}
+
+                        <tr>
+
+                            <td>{{ row.trigger }}</td>
+
+                            <td>{{ row.impacted_area }}</td>
+
+                            <td>{{ row.severity }}</td>
+
+                            <td>{{ row.trust_impact }}</td>
+
+                            <td>
+
+                                <span class="pill">
+                                    {{ row.status }}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Propagation Flows</h2>
+
+                <div class="flow-grid">
+
+                    <div class="flow-card">
+
+                        <strong>Inspection Survivability</strong>
+
+                        CAPA closure delays propagate into inspection readiness,
+                        evidence defensibility, and operational trust posture.
+
+                    </div>
+
+                    <div class="flow-card">
+
+                        <strong>Release Defensibility</strong>
+
+                        Environmental review gaps propagate into release governance
+                        and commercialization readiness degradation.
+
+                    </div>
+
+                    <div class="flow-card">
+
+                        <strong>Operational Readiness</strong>
+
+                        Training and coordination failures propagate into treatment
+                        continuity and operational governance instability.
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Intelligence Vision</h2>
+
+                <p>
+                    The Dependency Propagation Engine enables explainable governance
+                    reasoning across all AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Operational blast radius analysis</li>
+
+                    <li>Governance dependency intelligence</li>
+
+                    <li>Inspection survivability modeling</li>
+
+                    <li>Commercialization readiness impact analysis</li>
+
+                    <li>Cross-domain trust degradation reasoning</li>
+
+                    <li>Executive escalation orchestration</li>
+
+                    <li>Dependency-aware operational trust scoring</li>
+
+                    <li>Governance propagation intelligence APIs</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        dependencies=DEPENDENCY_PROPAGATION_DATA_V1,
+        overall_score=overall_score
+    )
+
+
+@app.route("/governance/dependency-propagation-engine/api")
+def governance_dependency_propagation_engine_api_v1():
+
+    return jsonify({
+        "overall_score": calculate_dependency_engine_score_v1(),
+        "dependencies": DEPENDENCY_PROPAGATION_DATA_V1
+    })
+
+# ============================================================
+# END SHARED_DEPENDENCY_PROPAGATION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# SHARED_GOVERNANCE_REASONING_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+GOVERNANCE_REASONING_STREAM_V1 = [
+    {
+        "domain": "Inspection Survivability",
+        "reasoning": "CAPA closure delays are beginning to propagate into inspection defensibility posture.",
+        "priority": "High",
+        "recommendation": "Accelerate unresolved CAPA governance review."
+    },
+    {
+        "domain": "Release Defensibility",
+        "reasoning": "Environmental review dependencies remain partially unresolved.",
+        "priority": "Medium",
+        "recommendation": "Escalate environmental governance review workflow."
+    },
+    {
+        "domain": "Operational Trust",
+        "reasoning": "Backup governance maturity improved after evidence reconciliation validation.",
+        "priority": "Stable",
+        "recommendation": "Continue monthly governance verification cadence."
+    },
+    {
+        "domain": "Treatment Coordination",
+        "reasoning": "Shipment coordination governance remains operationally stable.",
+        "priority": "Low",
+        "recommendation": "Maintain current coordination controls."
+    }
+]
+
+
+def calculate_reasoning_confidence_v1():
+
+    base = 92
+
+    return round(base)
+
+
+@app.route("/governance/reasoning-engine")
+def governance_reasoning_engine_v1():
+
+    confidence = calculate_reasoning_confidence_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Reasoning Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .confidence {
+                margin-top:24px;
+                text-align:center;
+                padding:24px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .confidence strong {
+                display:block;
+                font-size:120px;
+                color:#ff9f1c;
+            }
+
+            .reason-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .reason-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .reason-card strong {
+                display:block;
+                font-size:28px;
+                color:#ff9f1c;
+                margin-bottom:14px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .reason-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Reasoning Engine</h1>
+
+                <p>
+                    Explainable operational governance reasoning infrastructure
+                    for commercialization readiness, inspection survivability,
+                    release defensibility, and operational trust intelligence.
+                </p>
+
+                <div class="confidence">
+
+                    <strong>{{ confidence }}%</strong>
+
+                    Governance Reasoning Confidence
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Reasoning Stream</h2>
+
+                <div class="reason-grid">
+
+                    {% for row in reasoning %}
+
+                    <div class="reason-card">
+
+                        <strong>{{ row.domain }}</strong>
+
+                        <p>
+                            {{ row.reasoning }}
+                        </p>
+
+                        <p>
+                            Recommendation:
+                            {{ row.recommendation }}
+                        </p>
+
+                        <span class="pill">
+                            Priority: {{ row.priority }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Explainability Principles</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Principle</th>
+                            <th>Description</th>
+                            <th>Governance Position</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Evidence Authoritativeness</td>
+                            <td>Governed evidence remains the source of truth.</td>
+                            <td>Mandatory</td>
+                        </tr>
+
+                        <tr>
+                            <td>Human Governance Control</td>
+                            <td>Humans remain the authoritative decision-makers.</td>
+                            <td>Mandatory</td>
+                        </tr>
+
+                        <tr>
+                            <td>Explainable Reasoning</td>
+                            <td>Operational trust calculations remain explainable.</td>
+                            <td>Required</td>
+                        </tr>
+
+                        <tr>
+                            <td>Dependency Awareness</td>
+                            <td>Governance reasoning includes operational dependency analysis.</td>
+                            <td>Enabled</td>
+                        </tr>
+
+                        <tr>
+                            <td>Inspection Defensibility</td>
+                            <td>Reasoning outputs support audit defensibility posture.</td>
+                            <td>Critical</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Intelligence Vision</h2>
+
+                <p>
+                    The Governance Reasoning Engine provides explainable operational
+                    governance intelligence across all COBIT-Chain AssuranceLayer verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Operational governance explainability</li>
+
+                    <li>Inspection survivability reasoning</li>
+
+                    <li>Executive governance prioritization</li>
+
+                    <li>Commercialization readiness justification</li>
+
+                    <li>Dependency-aware governance analysis</li>
+
+                    <li>Evidence gap explainability</li>
+
+                    <li>Operational trust narrative generation</li>
+
+                    <li>Human-governed advisory intelligence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        reasoning=GOVERNANCE_REASONING_STREAM_V1,
+        confidence=confidence
+    )
+
+
+@app.route("/governance/reasoning-engine/api")
+def governance_reasoning_engine_api_v1():
+
+    return jsonify({
+        "confidence": calculate_reasoning_confidence_v1(),
+        "reasoning_stream": GOVERNANCE_REASONING_STREAM_V1
+    })
+
+# ============================================================
+# END SHARED_GOVERNANCE_REASONING_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_MISSION_CONTROL_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+MISSION_CONTROL_KPIS_V1 = [
+    {
+        "domain": "Operational Trust",
+        "score": 92,
+        "status": "Strong"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "score": 91,
+        "status": "Ready"
+    },
+    {
+        "domain": "Commercialization Readiness",
+        "score": 89,
+        "status": "Stable"
+    },
+    {
+        "domain": "Dependency Governance",
+        "score": 85,
+        "status": "Attention"
+    },
+    {
+        "domain": "Governance Confidence",
+        "score": 93,
+        "status": "Verified"
+    },
+    {
+        "domain": "Release Defensibility",
+        "score": 90,
+        "status": "Controlled"
+    }
+]
+
+MISSION_CONTROL_ESCALATIONS_V1 = [
+    {
+        "issue": "CAPA Closure Lag",
+        "impact": "Inspection Readiness",
+        "priority": "High"
+    },
+    {
+        "issue": "Environmental Review Delay",
+        "impact": "Release Governance",
+        "priority": "Medium"
+    },
+    {
+        "issue": "Training Recertification Window",
+        "impact": "Operational Readiness",
+        "priority": "Low"
+    }
+]
+
+MISSION_CONTROL_REASONING_V1 = [
+    "Operational trust posture remains commercially defensible.",
+    "Inspection survivability remains stable but dependent on CAPA closure velocity.",
+    "Environmental review escalation remains the largest unresolved governance dependency.",
+    "Governance confidence improved after evidence reconciliation validation.",
+    "Operational readiness remains within commercialization thresholds."
+]
+
+
+def calculate_mission_control_score_v1():
+
+    total = 0
+
+    for row in MISSION_CONTROL_KPIS_V1:
+        total += row["score"]
+
+    return round(total / len(MISSION_CONTROL_KPIS_V1))
+
+
+@app.route("/governance/mission-control")
+def governance_mission_control_v1():
+
+    overall_score = calculate_mission_control_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Mission Control</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1950px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:78px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .kpi-grid {
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:24px;
+            }
+
+            .kpi-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .kpi-card strong {
+                display:block;
+                font-size:42px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+            }
+
+            .split {
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:20px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c5cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .kpi-grid,
+                .split {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Mission Control</h1>
+
+                <p>
+                    Executive operational governance orchestration layer for commercialization readiness,
+                    inspection survivability, operational trust assurance, dependency governance,
+                    and enterprise governance intelligence.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ overall_score }}%</strong>
+
+                    Enterprise Governance Orchestration Score
+
+                </div>
+
+                <div class="kpi-grid">
+
+                    {% for row in kpis %}
+
+                    <div class="kpi-card">
+
+                        <strong>{{ row.score }}%</strong>
+
+                        {{ row.domain }}
+
+                        <br>
+
+                        <span class="pill">
+
+                            {{ row.status }}
+
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <div class="split">
+
+                <section class="panel">
+
+                    <h2>Governance Escalation Command Queue</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Issue</th>
+                                <th>Impact Area</th>
+                                <th>Priority</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in escalations %}
+
+                            <tr>
+
+                                <td>{{ row.issue }}</td>
+
+                                <td>{{ row.impact }}</td>
+
+                                <td>
+
+                                    <span class="pill">
+                                        {{ row.priority }}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Reasoning Stream</h2>
+
+                    <ul>
+
+                        {% for item in reasoning %}
+
+                        <li>{{ item }}</li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                </section>
+
+            </div>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Orchestration Vision</h2>
+
+                <p>
+                    Governance Mission Control unifies operational trust scoring,
+                    governance reasoning, dependency propagation, inspection survivability,
+                    and commercialization readiness orchestration into one executive
+                    governance intelligence layer.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Cross-platform governance orchestration</li>
+
+                    <li>Operational governance command visibility</li>
+
+                    <li>Commercialization readiness coordination</li>
+
+                    <li>Executive escalation intelligence</li>
+
+                    <li>Governance dependency awareness</li>
+
+                    <li>Inspection survivability oversight</li>
+
+                    <li>Operational trust federation</li>
+
+                    <li>Enterprise governance intelligence convergence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        kpis=MISSION_CONTROL_KPIS_V1,
+        escalations=MISSION_CONTROL_ESCALATIONS_V1,
+        reasoning=MISSION_CONTROL_REASONING_V1,
+        overall_score=overall_score
+    )
+
+
+@app.route("/governance/mission-control/api")
+def governance_mission_control_api_v1():
+
+    return jsonify({
+        "overall_score": calculate_mission_control_score_v1(),
+        "kpis": MISSION_CONTROL_KPIS_V1,
+        "escalations": MISSION_CONTROL_ESCALATIONS_V1,
+        "reasoning": MISSION_CONTROL_REASONING_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_MISSION_CONTROL_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_DIGITAL_TWIN_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+DIGITAL_TWIN_SCENARIOS_V1 = [
+    {
+        "scenario": "Inspection Disruption",
+        "projected_score": 81,
+        "impact": "Inspection Survivability",
+        "severity": "High",
+        "recommendation": "Accelerate CAPA remediation and evidence reconciliation."
+    },
+    {
+        "scenario": "Environmental Monitoring Drift",
+        "projected_score": 84,
+        "impact": "Release Defensibility",
+        "severity": "Medium",
+        "recommendation": "Increase environmental governance review cadence."
+    },
+    {
+        "scenario": "Training Readiness Degradation",
+        "projected_score": 86,
+        "impact": "Operational Readiness",
+        "severity": "Medium",
+        "recommendation": "Escalate recertification governance workflow."
+    },
+    {
+        "scenario": "Backup Governance Failure",
+        "projected_score": 78,
+        "impact": "Audit Defensibility",
+        "severity": "High",
+        "recommendation": "Initiate recovery governance validation immediately."
+    },
+    {
+        "scenario": "Shipment Coordination Failure",
+        "projected_score": 80,
+        "impact": "Treatment Coordination",
+        "severity": "High",
+        "recommendation": "Activate operational continuity escalation pathway."
+    }
+]
+
+
+def calculate_digital_twin_resilience_v1():
+
+    total = 0
+
+    for row in DIGITAL_TWIN_SCENARIOS_V1:
+        total += row["projected_score"]
+
+    return round(total / len(DIGITAL_TWIN_SCENARIOS_V1))
+
+
+@app.route("/governance/digital-twin")
+def governance_digital_twin_engine_v1():
+
+    resilience_score = calculate_digital_twin_resilience_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Digital Twin Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1950px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:76px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .scenario-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .scenario-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .scenario-card strong {
+                display:block;
+                font-size:34px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .scenario-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Digital Twin Engine</h1>
+
+                <p>
+                    Predictive operational governance simulation infrastructure
+                    for commercialization readiness, inspection survivability,
+                    governance stress testing, and operational resilience forecasting.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ resilience_score }}%</strong>
+
+                    Governance Resilience Forecast
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Simulation Scenarios</h2>
+
+                <div class="scenario-grid">
+
+                    {% for row in scenarios %}
+
+                    <div class="scenario-card">
+
+                        <strong>{{ row.projected_score }}%</strong>
+
+                        <h3>{{ row.scenario }}</h3>
+
+                        <p>
+                            Impact Area:
+                            {{ row.impact }}
+                        </p>
+
+                        <p>
+                            {{ row.recommendation }}
+                        </p>
+
+                        <span class="pill">
+                            Severity: {{ row.severity }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Simulation Intelligence</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Simulation Area</th>
+                            <th>Purpose</th>
+                            <th>Strategic Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Inspection Stress Simulation</td>
+                            <td>Forecast inspection survivability degradation</td>
+                            <td>Inspection defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Readiness Modeling</td>
+                            <td>Predict readiness degradation pathways</td>
+                            <td>Commercialization resilience</td>
+                        </tr>
+
+                        <tr>
+                            <td>Dependency Cascade Simulation</td>
+                            <td>Model governance blast radius propagation</td>
+                            <td>Operational foresight</td>
+                        </tr>
+
+                        <tr>
+                            <td>Release Governance Forecasting</td>
+                            <td>Predict release defensibility degradation</td>
+                            <td>Operational assurance</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Recovery Prioritization</td>
+                            <td>Recommend stabilization actions</td>
+                            <td>Executive orchestration</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Foresight Vision</h2>
+
+                <p>
+                    The Governance Digital Twin Engine enables predictive operational
+                    governance intelligence across all COBIT-Chain AssuranceLayer verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance stress testing</li>
+
+                    <li>Operational survivability forecasting</li>
+
+                    <li>Dependency cascade simulation</li>
+
+                    <li>Inspection disruption modeling</li>
+
+                    <li>Commercialization resilience analysis</li>
+
+                    <li>Governance stabilization prioritization</li>
+
+                    <li>Predictive operational trust intelligence</li>
+
+                    <li>Executive governance foresight orchestration</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        scenarios=DIGITAL_TWIN_SCENARIOS_V1,
+        resilience_score=resilience_score
+    )
+
+
+@app.route("/governance/digital-twin/api")
+def governance_digital_twin_engine_api_v1():
+
+    return jsonify({
+        "resilience_score": calculate_digital_twin_resilience_v1(),
+        "scenarios": DIGITAL_TWIN_SCENARIOS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_DIGITAL_TWIN_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_EVIDENCE_LINEAGE_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+EVIDENCE_LINEAGE_CHAINS_V1 = [
+    {
+        "chain_id": "LINEAGE-001",
+        "trigger": "Environmental Monitoring Alert",
+        "evidence": "EM Review Packet",
+        "approval": "QA Approval",
+        "release": "Commercial Batch Release",
+        "inspection": "Inspection Defensible",
+        "trust_score": 95
+    },
+    {
+        "chain_id": "LINEAGE-002",
+        "trigger": "Dose Preparation Verification",
+        "evidence": "Dose Journey Evidence",
+        "approval": "Radiopharma QA Review",
+        "release": "Treatment Coordination Authorization",
+        "inspection": "Operationally Traceable",
+        "trust_score": 96
+    },
+    {
+        "chain_id": "LINEAGE-003",
+        "trigger": "Backup Governance Review",
+        "evidence": "Backup Verification Log",
+        "approval": "Infrastructure Governance",
+        "release": "Operational Continuity Validation",
+        "inspection": "Audit Survivable",
+        "trust_score": 89
+    },
+    {
+        "chain_id": "LINEAGE-004",
+        "trigger": "CAPA Escalation",
+        "evidence": "CAPA Evidence Bundle",
+        "approval": "Compliance Governance",
+        "release": "Remediation Verification",
+        "inspection": "Monitoring Required",
+        "trust_score": 84
+    }
+]
+
+
+def calculate_lineage_integrity_v1():
+
+    total = 0
+
+    for row in EVIDENCE_LINEAGE_CHAINS_V1:
+        total += row["trust_score"]
+
+    return round(total / len(EVIDENCE_LINEAGE_CHAINS_V1))
+
+
+@app.route("/governance/evidence-lineage")
+def governance_evidence_lineage_engine_v1():
+
+    lineage_score = calculate_lineage_integrity_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Evidence Lineage Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1950px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:74px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .lineage-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .lineage-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .lineage-card strong {
+                display:block;
+                font-size:34px;
+                color:#ff9f1c;
+                margin-bottom:14px;
+            }
+
+            .flow {
+                margin-top:16px;
+                padding:14px;
+                border-radius:14px;
+                background:rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.05);
+            }
+
+            .arrow {
+                color:#ff9f1c;
+                font-weight:bold;
+                margin:10px 0;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:14px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .lineage-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Evidence Lineage Engine</h1>
+
+                <p>
+                    Operational governance provenance and cryptographic traceability
+                    infrastructure for inspection survivability, release defensibility,
+                    operational auditability, and commercialization readiness assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ lineage_score }}%</strong>
+
+                    Governance Lineage Integrity Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Lineage Chains</h2>
+
+                <div class="lineage-grid">
+
+                    {% for row in chains %}
+
+                    <div class="lineage-card">
+
+                        <strong>{{ row.chain_id }}</strong>
+
+                        <div class="flow">
+
+                            {{ row.trigger }}
+
+                            <div class="arrow">
+                                ↓
+                            </div>
+
+                            {{ row.evidence }}
+
+                            <div class="arrow">
+                                ↓
+                            </div>
+
+                            {{ row.approval }}
+
+                            <div class="arrow">
+                                ↓
+                            </div>
+
+                            {{ row.release }}
+
+                            <div class="arrow">
+                                ↓
+                            </div>
+
+                            {{ row.inspection }}
+
+                        </div>
+
+                        <span class="pill">
+                            Trust Score: {{ row.trust_score }}%
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Provenance Intelligence</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Operational Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Evidence Provenance Tracking</td>
+                            <td>Track governance evidence origins and flows</td>
+                            <td>Inspection defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Approval Lineage Mapping</td>
+                            <td>Visualize governance approval chains</td>
+                            <td>Operational traceability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Release Governance Lineage</td>
+                            <td>Track release defensibility pathways</td>
+                            <td>Commercialization assurance</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Audit Replay</td>
+                            <td>Reconstruct governance evidence pathways</td>
+                            <td>Audit survivability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Cryptographic Governance Traceability</td>
+                            <td>Support immutable governance provenance</td>
+                            <td>Enterprise trust assurance</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Provenance Vision</h2>
+
+                <p>
+                    The Governance Evidence Lineage Engine provides operational
+                    governance provenance intelligence across all COBIT-Chain
+                    AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Operational governance traceability</li>
+
+                    <li>Inspection replay intelligence</li>
+
+                    <li>Cryptographic evidence lineage</li>
+
+                    <li>Governance provenance reconstruction</li>
+
+                    <li>Operational audit survivability</li>
+
+                    <li>Release defensibility lineage</li>
+
+                    <li>Cross-domain evidence dependency mapping</li>
+
+                    <li>Enterprise governance trust preservation</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        chains=EVIDENCE_LINEAGE_CHAINS_V1,
+        lineage_score=lineage_score
+    )
+
+
+@app.route("/governance/evidence-lineage/api")
+def governance_evidence_lineage_engine_api_v1():
+
+    return jsonify({
+        "lineage_score": calculate_lineage_integrity_v1(),
+        "chains": EVIDENCE_LINEAGE_CHAINS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_EVIDENCE_LINEAGE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_RECOVERY_RESILIENCE_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+RECOVERY_RESILIENCE_SCENARIOS_V1 = [
+    {
+        "system": "Radiopharma Manufacturing",
+        "rto": "4 Hours",
+        "rpo": "15 Minutes",
+        "readiness": 92,
+        "status": "Recoverable",
+        "risk": "Low"
+    },
+    {
+        "system": "Environmental Monitoring",
+        "rto": "2 Hours",
+        "rpo": "5 Minutes",
+        "readiness": 88,
+        "status": "Monitoring",
+        "risk": "Medium"
+    },
+    {
+        "system": "Dose Coordination",
+        "rto": "1 Hour",
+        "rpo": "5 Minutes",
+        "readiness": 91,
+        "status": "Stable",
+        "risk": "Low"
+    },
+    {
+        "system": "Backup Governance",
+        "rto": "6 Hours",
+        "rpo": "30 Minutes",
+        "readiness": 82,
+        "status": "Attention",
+        "risk": "Medium"
+    },
+    {
+        "system": "Release Governance",
+        "rto": "3 Hours",
+        "rpo": "10 Minutes",
+        "readiness": 90,
+        "status": "Controlled",
+        "risk": "Low"
+    }
+]
+
+
+def calculate_recovery_resilience_score_v1():
+
+    total = 0
+
+    for row in RECOVERY_RESILIENCE_SCENARIOS_V1:
+        total += row["readiness"]
+
+    return round(total / len(RECOVERY_RESILIENCE_SCENARIOS_V1))
+
+
+@app.route("/governance/recovery-resilience")
+def governance_recovery_resilience_engine_v1():
+
+    resilience_score = calculate_recovery_resilience_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Recovery and Resilience Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1950px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:72px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .resilience-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .resilience-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .resilience-card strong {
+                display:block;
+                font-size:34px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .resilience-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Recovery and Resilience Engine</h1>
+
+                <p>
+                    Operational governance survivability and recovery orchestration
+                    infrastructure for GMP operations, radiopharma continuity,
+                    inspection survivability, and commercialization resilience assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ resilience_score }}%</strong>
+
+                    Operational Recovery Resilience Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Recovery Governance Command Center</h2>
+
+                <div class="resilience-grid">
+
+                    {% for row in scenarios %}
+
+                    <div class="resilience-card">
+
+                        <strong>{{ row.readiness }}%</strong>
+
+                        <h3>{{ row.system }}</h3>
+
+                        <p>
+                            RTO:
+                            {{ row.rto }}
+                        </p>
+
+                        <p>
+                            RPO:
+                            {{ row.rpo }}
+                        </p>
+
+                        <p>
+                            Operational Risk:
+                            {{ row.risk }}
+                        </p>
+
+                        <span class="pill">
+                            {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Recovery Governance Intelligence</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Strategic Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>RTO/RPO Governance Intelligence</td>
+                            <td>Track operational recovery objectives</td>
+                            <td>Operational survivability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Dependency-Aware Recovery</td>
+                            <td>Prioritize recovery based on governance dependencies</td>
+                            <td>Commercialization resilience</td>
+                        </tr>
+
+                        <tr>
+                            <td>Recovery Evidence Lineage</td>
+                            <td>Track restoration defensibility pathways</td>
+                            <td>Inspection readiness</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Restart Governance</td>
+                            <td>Validate GMP restart defensibility</td>
+                            <td>Operational assurance</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Survivability Modeling</td>
+                            <td>Forecast resilience degradation scenarios</td>
+                            <td>Executive resilience intelligence</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Recovery Governance Vision</h2>
+
+                <p>
+                    The Governance Recovery and Resilience Engine enables
+                    operational governance survivability orchestration across
+                    all COBIT-Chain AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Recovery governance orchestration</li>
+
+                    <li>Operational survivability intelligence</li>
+
+                    <li>Dependency-aware recovery prioritization</li>
+
+                    <li>Inspection survivability preservation</li>
+
+                    <li>Commercialization continuity assurance</li>
+
+                    <li>Operational restart defensibility</li>
+
+                    <li>Evidence-backed recovery governance</li>
+
+                    <li>Enterprise resilience trust intelligence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        scenarios=RECOVERY_RESILIENCE_SCENARIOS_V1,
+        resilience_score=resilience_score
+    )
+
+
+@app.route("/governance/recovery-resilience/api")
+def governance_recovery_resilience_api_v1():
+
+    return jsonify({
+        "resilience_score": calculate_recovery_resilience_score_v1(),
+        "scenarios": RECOVERY_RESILIENCE_SCENARIOS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_RECOVERY_RESILIENCE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# EXECUTIVE_GOVERNANCE_DECISION_INTELLIGENCE_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+EXECUTIVE_PRIORITY_QUEUE_V1 = [
+    {
+        "priority": 1,
+        "risk": "Environmental Governance Escalation",
+        "impact": "Release Defensibility",
+        "severity": "Critical",
+        "recommended_action": "Accelerate environmental review governance resolution.",
+        "executive_pressure": 96
+    },
+    {
+        "priority": 2,
+        "risk": "CAPA Closure Backlog",
+        "impact": "Inspection Survivability",
+        "severity": "High",
+        "recommended_action": "Escalate unresolved CAPA remediation workflow.",
+        "executive_pressure": 92
+    },
+    {
+        "priority": 3,
+        "risk": "Backup Governance Drift",
+        "impact": "Audit Survivability",
+        "severity": "Medium",
+        "recommended_action": "Validate operational restoration defensibility.",
+        "executive_pressure": 84
+    },
+    {
+        "priority": 4,
+        "risk": "Training Recertification Window",
+        "impact": "Operational Readiness",
+        "severity": "Medium",
+        "recommended_action": "Increase recertification governance cadence.",
+        "executive_pressure": 80
+    },
+    {
+        "priority": 5,
+        "risk": "Shipment Coordination Delay",
+        "impact": "Treatment Coordination",
+        "severity": "Low",
+        "recommended_action": "Maintain coordination governance monitoring.",
+        "executive_pressure": 73
+    }
+]
+
+
+def calculate_executive_decision_score_v1():
+
+    total = 0
+
+    for row in EXECUTIVE_PRIORITY_QUEUE_V1:
+        total += row["executive_pressure"]
+
+    return round(total / len(EXECUTIVE_PRIORITY_QUEUE_V1))
+
+
+@app.route("/governance/executive-decision-intelligence")
+def executive_governance_decision_intelligence_v1():
+
+    executive_score = calculate_executive_decision_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Executive Governance Decision Intelligence</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:76px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .decision-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .decision-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .decision-card strong {
+                display:block;
+                font-size:42px;
+                color:#ff9f1c;
+                margin-bottom:14px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:14px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .decision-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Executive Governance Decision Intelligence</h1>
+
+                <p>
+                    Executive operational governance prioritization infrastructure
+                    for commercialization readiness, inspection survivability,
+                    governance escalation ranking, and operational decision intelligence.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ executive_score }}%</strong>
+
+                    Executive Governance Pressure Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Executive Governance Priority Queue</h2>
+
+                <div class="decision-grid">
+
+                    {% for row in priorities %}
+
+                    <div class="decision-card">
+
+                        <strong>#{{ row.priority }}</strong>
+
+                        <h3>{{ row.risk }}</h3>
+
+                        <p>
+                            Impact Area:
+                            {{ row.impact }}
+                        </p>
+
+                        <p>
+                            Executive Recommendation:
+                            {{ row.recommended_action }}
+                        </p>
+
+                        <p>
+                            Executive Pressure:
+                            {{ row.executive_pressure }}%
+                        </p>
+
+                        <span class="pill">
+                            Severity: {{ row.severity }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Executive Governance Intelligence Matrix</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Executive Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Governance Prioritization</td>
+                            <td>Rank operational governance threats</td>
+                            <td>Executive decision clarity</td>
+                        </tr>
+
+                        <tr>
+                            <td>Commercialization Threat Intelligence</td>
+                            <td>Identify readiness destabilization risks</td>
+                            <td>Commercialization protection</td>
+                        </tr>
+
+                        <tr>
+                            <td>Inspection Risk Ranking</td>
+                            <td>Prioritize inspection survivability threats</td>
+                            <td>Audit defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Pressure Analysis</td>
+                            <td>Measure governance instability pressure</td>
+                            <td>Operational resilience</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Stabilization Sequencing</td>
+                            <td>Recommend remediation ordering</td>
+                            <td>Executive orchestration</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Decision Vision</h2>
+
+                <p>
+                    Executive Governance Decision Intelligence enables operational
+                    governance prioritization across all COBIT-Chain AssuranceLayer
+                    operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Executive governance prioritization</li>
+
+                    <li>Commercialization risk intelligence</li>
+
+                    <li>Operational pressure visibility</li>
+
+                    <li>Governance escalation ranking</li>
+
+                    <li>Release defensibility prioritization</li>
+
+                    <li>Inspection survivability intelligence</li>
+
+                    <li>Governance stabilization orchestration</li>
+
+                    <li>Executive operational trust preservation</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        priorities=EXECUTIVE_PRIORITY_QUEUE_V1,
+        executive_score=executive_score
+    )
+
+
+@app.route("/governance/executive-decision-intelligence/api")
+def executive_governance_decision_intelligence_api_v1():
+
+    return jsonify({
+        "executive_score": calculate_executive_decision_score_v1(),
+        "priorities": EXECUTIVE_PRIORITY_QUEUE_V1
+    })
+
+# ============================================================
+# END EXECUTIVE_GOVERNANCE_DECISION_INTELLIGENCE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_INSPECTION_REPLAY_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+INSPECTION_REPLAY_EVENTS_V1 = [
+    {
+        "timestamp": "2026-05-10 08:15",
+        "event": "Environmental Monitoring Alert Triggered",
+        "actor": "QC Operations",
+        "evidence": "EM Review Packet",
+        "governance_status": "Escalated"
+    },
+    {
+        "timestamp": "2026-05-10 09:40",
+        "event": "CAPA Investigation Opened",
+        "actor": "Quality Assurance",
+        "evidence": "CAPA Evidence Bundle",
+        "governance_status": "Under Review"
+    },
+    {
+        "timestamp": "2026-05-10 11:05",
+        "event": "Governance Evidence Reconciliation",
+        "actor": "Compliance Governance",
+        "evidence": "Evidence Integrity Validation",
+        "governance_status": "Validated"
+    },
+    {
+        "timestamp": "2026-05-10 13:10",
+        "event": "Release Defensibility Review",
+        "actor": "Release Governance",
+        "evidence": "Release Decision Packet",
+        "governance_status": "Approved"
+    },
+    {
+        "timestamp": "2026-05-10 14:45",
+        "event": "Commercialization Readiness Confirmation",
+        "actor": "Executive Governance",
+        "evidence": "Operational Readiness Passport",
+        "governance_status": "Operationally Defensible"
+    }
+]
+
+
+def calculate_replay_defensibility_score_v1():
+
+    return 94
+
+
+@app.route("/governance/inspection-replay")
+def governance_inspection_replay_engine_v1():
+
+    replay_score = calculate_replay_defensibility_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Inspection Replay Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:76px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .timeline {
+                position:relative;
+                margin-top:24px;
+                padding-left:40px;
+            }
+
+            .timeline:before {
+                content:'';
+                position:absolute;
+                left:15px;
+                top:0;
+                bottom:0;
+                width:3px;
+                background:#ff9f1c;
+            }
+
+            .event {
+                position:relative;
+                margin-bottom:28px;
+                padding:22px;
+                border-radius:20px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .event:before {
+                content:'';
+                position:absolute;
+                left:-33px;
+                top:28px;
+                width:18px;
+                height:18px;
+                border-radius:50%;
+                background:#ff9f1c;
+            }
+
+            .event strong {
+                display:block;
+                font-size:24px;
+                color:#ff9f1c;
+                margin-bottom:10px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:14px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Inspection Replay Engine</h1>
+
+                <p>
+                    Inspection survivability replay and operational governance
+                    reconstruction infrastructure for audit defensibility,
+                    evidence provenance playback, and commercialization traceability intelligence.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ replay_score }}%</strong>
+
+                    Inspection Replay Defensibility Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Replay Timeline</h2>
+
+                <div class="timeline">
+
+                    {% for row in events %}
+
+                    <div class="event">
+
+                        <strong>{{ row.event }}</strong>
+
+                        <p>
+                            Timestamp:
+                            {{ row.timestamp }}
+                        </p>
+
+                        <p>
+                            Governance Actor:
+                            {{ row.actor }}
+                        </p>
+
+                        <p>
+                            Evidence Source:
+                            {{ row.evidence }}
+                        </p>
+
+                        <span class="pill">
+                            {{ row.governance_status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Inspection Replay Intelligence Matrix</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Strategic Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Governance Reconstruction</td>
+                            <td>Replay operational governance history</td>
+                            <td>Inspection survivability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Evidence Playback</td>
+                            <td>Reconstruct evidence lineage pathways</td>
+                            <td>Audit defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Approval Replay</td>
+                            <td>Replay governance approval decisions</td>
+                            <td>Operational traceability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Storyline Reconstruction</td>
+                            <td>Narrate inspection-grade governance history</td>
+                            <td>Executive audit readiness</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Provenance Playback</td>
+                            <td>Replay operational provenance pathways</td>
+                            <td>Enterprise trust assurance</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Inspection Replay Vision</h2>
+
+                <p>
+                    The Governance Inspection Replay Engine enables operational
+                    governance replay intelligence across all COBIT-Chain
+                    AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Inspection replay orchestration</li>
+
+                    <li>Operational governance reconstruction</li>
+
+                    <li>Evidence lineage playback</li>
+
+                    <li>Approval chain replay</li>
+
+                    <li>Audit storyline intelligence</li>
+
+                    <li>Governance provenance reconstruction</li>
+
+                    <li>Operational defensibility replay</li>
+
+                    <li>Enterprise inspection survivability intelligence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        events=INSPECTION_REPLAY_EVENTS_V1,
+        replay_score=replay_score
+    )
+
+
+@app.route("/governance/inspection-replay/api")
+def governance_inspection_replay_api_v1():
+
+    return jsonify({
+        "replay_score": calculate_replay_defensibility_score_v1(),
+        "events": INSPECTION_REPLAY_EVENTS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_INSPECTION_REPLAY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_CONTROL_EFFECTIVENESS_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+CONTROL_EFFECTIVENESS_REGISTRY_V1 = [
+    {
+        "control_id": "CTRL-IRLT-001",
+        "control_name": "Environmental Monitoring Governance",
+        "effectiveness": 92,
+        "drift": "Stable",
+        "inspection_status": "Defensible",
+        "risk": "Low"
+    },
+    {
+        "control_id": "CTRL-IRLT-002",
+        "control_name": "CAPA Escalation Governance",
+        "effectiveness": 84,
+        "drift": "Monitoring",
+        "inspection_status": "Attention",
+        "risk": "Medium"
+    },
+    {
+        "control_id": "CTRL-IRLT-003",
+        "control_name": "Backup Governance Validation",
+        "effectiveness": 81,
+        "drift": "Degrading",
+        "inspection_status": "Review",
+        "risk": "Medium"
+    },
+    {
+        "control_id": "CTRL-IRLT-004",
+        "control_name": "Release Defensibility Control",
+        "effectiveness": 94,
+        "drift": "Stable",
+        "inspection_status": "Operationally Defensible",
+        "risk": "Low"
+    },
+    {
+        "control_id": "CTRL-IRLT-005",
+        "control_name": "Treatment Coordination Governance",
+        "effectiveness": 89,
+        "drift": "Stable",
+        "inspection_status": "Controlled",
+        "risk": "Low"
+    }
+]
+
+
+def calculate_control_effectiveness_score_v1():
+
+    total = 0
+
+    for row in CONTROL_EFFECTIVENESS_REGISTRY_V1:
+        total += row["effectiveness"]
+
+    return round(total / len(CONTROL_EFFECTIVENESS_REGISTRY_V1))
+
+
+@app.route("/governance/control-effectiveness")
+def governance_control_effectiveness_engine_v1():
+
+    effectiveness_score = calculate_control_effectiveness_score_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Control Effectiveness Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:74px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .control-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .control-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .control-card strong {
+                display:block;
+                font-size:38px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .control-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Control Effectiveness Engine</h1>
+
+                <p>
+                    Operational governance control intelligence infrastructure
+                    for control survivability, governance drift detection,
+                    inspection defensibility, and commercialization readiness assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ effectiveness_score }}%</strong>
+
+                    Governance Control Effectiveness Score
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Control Intelligence Registry</h2>
+
+                <div class="control-grid">
+
+                    {% for row in controls %}
+
+                    <div class="control-card">
+
+                        <strong>{{ row.effectiveness }}%</strong>
+
+                        <h3>{{ row.control_name }}</h3>
+
+                        <p>
+                            Control ID:
+                            {{ row.control_id }}
+                        </p>
+
+                        <p>
+                            Operational Risk:
+                            {{ row.risk }}
+                        </p>
+
+                        <span class="pill">
+                            Drift: {{ row.drift }}
+                        </span>
+
+                        <span class="pill">
+                            {{ row.inspection_status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Control Intelligence Matrix</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Capability</th>
+                            <th>Purpose</th>
+                            <th>Strategic Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Control Effectiveness Scoring</td>
+                            <td>Measure operational governance control strength</td>
+                            <td>Operational defensibility</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Drift Detection</td>
+                            <td>Detect weakening governance controls</td>
+                            <td>Inspection survivability</td>
+                        </tr>
+
+                        <tr>
+                            <td>Control Dependency Intelligence</td>
+                            <td>Map operational control relationships</td>
+                            <td>Commercialization resilience</td>
+                        </tr>
+
+                        <tr>
+                            <td>Governance Stabilization Recommendations</td>
+                            <td>Recommend control hardening actions</td>
+                            <td>Executive governance orchestration</td>
+                        </tr>
+
+                        <tr>
+                            <td>Operational Control Survivability</td>
+                            <td>Assess long-term governance stability</td>
+                            <td>Enterprise trust assurance</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Control Vision</h2>
+
+                <p>
+                    The Governance Control Effectiveness Engine enables
+                    operational governance control intelligence across all
+                    COBIT-Chain AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance control survivability</li>
+
+                    <li>Operational drift detection</li>
+
+                    <li>Inspection control defensibility</li>
+
+                    <li>Control dependency intelligence</li>
+
+                    <li>Commercialization readiness stabilization</li>
+
+                    <li>Governance hardening orchestration</li>
+
+                    <li>Operational control trust preservation</li>
+
+                    <li>Enterprise governance resilience intelligence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        controls=CONTROL_EFFECTIVENESS_REGISTRY_V1,
+        effectiveness_score=effectiveness_score
+    )
+
+
+@app.route("/governance/control-effectiveness/api")
+def governance_control_effectiveness_api_v1():
+
+    return jsonify({
+        "effectiveness_score": calculate_control_effectiveness_score_v1(),
+        "controls": CONTROL_EFFECTIVENESS_REGISTRY_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_CONTROL_EFFECTIVENESS_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# AUTONOMOUS_GOVERNANCE_STABILITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+GOVERNANCE_STABILITY_SIGNALS_V1 = [
+    {
+        "signal": "Escalation Accumulation",
+        "pressure": 91,
+        "trend": "Increasing",
+        "risk": "High",
+        "forecast": "Inspection survivability degradation risk emerging."
+    },
+    {
+        "signal": "CAPA Fatigue Indicators",
+        "pressure": 84,
+        "trend": "Monitoring",
+        "risk": "Medium",
+        "forecast": "Operational remediation velocity slowing."
+    },
+    {
+        "signal": "Environmental Governance Strain",
+        "pressure": 89,
+        "trend": "Increasing",
+        "risk": "High",
+        "forecast": "Release defensibility destabilization possible."
+    },
+    {
+        "signal": "Operational Coordination Pressure",
+        "pressure": 78,
+        "trend": "Stable",
+        "risk": "Low",
+        "forecast": "Commercial coordination posture remains stable."
+    },
+    {
+        "signal": "Backup Governance Drift",
+        "pressure": 82,
+        "trend": "Monitoring",
+        "risk": "Medium",
+        "forecast": "Audit survivability resilience weakening slowly."
+    }
+]
+
+STABILIZATION_RECOMMENDATIONS_V1 = [
+    "Accelerate unresolved CAPA governance closure workflows.",
+    "Increase environmental governance review frequency.",
+    "Reduce governance escalation backlog accumulation.",
+    "Strengthen operational survivability validation cadence.",
+    "Expand preventive inspection readiness simulation coverage."
+]
+
+
+def calculate_stability_index_v1():
+
+    total = 0
+
+    for row in GOVERNANCE_STABILITY_SIGNALS_V1:
+        total += row["pressure"]
+
+    return round(total / len(GOVERNANCE_STABILITY_SIGNALS_V1))
+
+
+@app.route("/governance/stability-engine")
+def governance_stability_engine_v1():
+
+    stability_index = calculate_stability_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Autonomous Governance Stability Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:74px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .signal-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .signal-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .signal-card strong {
+                display:block;
+                font-size:40px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .signal-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Autonomous Governance Stability Engine</h1>
+
+                <p>
+                    Preventive governance stabilization intelligence infrastructure
+                    for operational survivability preservation, commercialization
+                    continuity protection, and governance destabilization forecasting.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ stability_index }}%</strong>
+
+                    Governance Stability Pressure Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Stability Signal Network</h2>
+
+                <div class="signal-grid">
+
+                    {% for row in signals %}
+
+                    <div class="signal-card">
+
+                        <strong>{{ row.pressure }}%</strong>
+
+                        <h3>{{ row.signal }}</h3>
+
+                        <p>
+                            Forecast:
+                            {{ row.forecast }}
+                        </p>
+
+                        <span class="pill">
+                            Trend: {{ row.trend }}
+                        </span>
+
+                        <span class="pill">
+                            Risk: {{ row.risk }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Preventive Governance Stabilization Queue</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Stabilization Recommendation</th>
+                            <th>Strategic Objective</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in recommendations %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Operational governance preservation</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Preventive Governance Intelligence Vision</h2>
+
+                <p>
+                    The Autonomous Governance Stability Engine enables preventive
+                    governance stabilization intelligence across all COBIT-Chain
+                    AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance instability forecasting</li>
+
+                    <li>Operational survivability preservation</li>
+
+                    <li>Escalation accumulation intelligence</li>
+
+                    <li>Control fatigue detection</li>
+
+                    <li>Commercialization destabilization forecasting</li>
+
+                    <li>Preventive inspection survivability</li>
+
+                    <li>Governance stabilization orchestration</li>
+
+                    <li>Enterprise governance nervous system intelligence</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        signals=GOVERNANCE_STABILITY_SIGNALS_V1,
+        recommendations=STABILIZATION_RECOMMENDATIONS_V1,
+        stability_index=stability_index
+    )
+
+
+@app.route("/governance/stability-engine/api")
+def governance_stability_engine_api_v1():
+
+    return jsonify({
+        "stability_index": calculate_stability_index_v1(),
+        "signals": GOVERNANCE_STABILITY_SIGNALS_V1,
+        "recommendations": STABILIZATION_RECOMMENDATIONS_V1
+    })
+
+# ============================================================
+# END AUTONOMOUS_GOVERNANCE_STABILITY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_ECONOMIC_INTELLIGENCE_ENGINE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+GOVERNANCE_ECONOMIC_EXPOSURE_V1 = [
+    {
+        "domain": "Environmental Governance Delay",
+        "estimated_exposure": "$4.2M",
+        "impact_area": "Commercial Batch Release",
+        "severity": "Critical",
+        "trend": "Increasing"
+    },
+    {
+        "domain": "CAPA Escalation Backlog",
+        "estimated_exposure": "$2.8M",
+        "impact_area": "Inspection Survivability",
+        "severity": "High",
+        "trend": "Monitoring"
+    },
+    {
+        "domain": "Operational Downtime Risk",
+        "estimated_exposure": "$5.1M",
+        "impact_area": "Treatment Coordination",
+        "severity": "Critical",
+        "trend": "Increasing"
+    },
+    {
+        "domain": "Backup Governance Degradation",
+        "estimated_exposure": "$1.6M",
+        "impact_area": "Audit Defensibility",
+        "severity": "Medium",
+        "trend": "Stable"
+    },
+    {
+        "domain": "Release Governance Disruption",
+        "estimated_exposure": "$3.7M",
+        "impact_area": "Commercialization Readiness",
+        "severity": "High",
+        "trend": "Monitoring"
+    }
+]
+
+ECONOMIC_RECOMMENDATIONS_V1 = [
+    "Prioritize environmental governance stabilization to reduce commercialization exposure.",
+    "Reduce CAPA escalation backlog to preserve inspection survivability economics.",
+    "Increase operational continuity validation for treatment coordination resilience.",
+    "Expand preventive governance simulation coverage to reduce disruption costs.",
+    "Strengthen release governance defensibility before commercialization scale-up."
+]
+
+
+def calculate_governance_economic_index_v1():
+
+    return 91
+
+
+@app.route("/governance/economic-intelligence")
+def governance_economic_intelligence_engine_v1():
+
+    economic_index = calculate_governance_economic_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Economic Intelligence Engine</title>
+
+        <style>
+
+            body {
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .wrap {
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:74px;
+                color:#ff9f1c;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:26px;
+                border-radius:22px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:130px;
+                color:#ff9f1c;
+            }
+
+            .economics-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .economics-card {
+                border-radius:22px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .economics-card strong {
+                display:block;
+                font-size:42px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            ul li {
+                margin-bottom:14px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px) {
+
+                .economics-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Economic Intelligence Engine</h1>
+
+                <p>
+                    Executive governance economics and commercialization exposure
+                    intelligence infrastructure for operational survivability,
+                    disruption costing, remediation prioritization,
+                    and commercialization resilience assurance.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ economic_index }}%</strong>
+
+                    Governance Economic Resilience Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Economic Exposure Matrix</h2>
+
+                <div class="economics-grid">
+
+                    {% for row in exposures %}
+
+                    <div class="economics-card">
+
+                        <strong>{{ row.estimated_exposure }}</strong>
+
+                        <h3>{{ row.domain }}</h3>
+
+                        <p>
+                            Impact Area:
+                            {{ row.impact_area }}
+                        </p>
+
+                        <span class="pill">
+                            Severity: {{ row.severity }}
+                        </span>
+
+                        <span class="pill">
+                            Trend: {{ row.trend }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Executive Governance Economic Stabilization Queue</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Recommendation</th>
+                            <th>Strategic Objective</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in recommendations %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Operational governance economic preservation</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Economic Vision</h2>
+
+                <p>
+                    The Governance Economic Intelligence Engine enables executive
+                    governance economic intelligence across all COBIT-Chain
+                    AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance disruption costing</li>
+
+                    <li>Commercialization exposure intelligence</li>
+
+                    <li>Operational downtime economics</li>
+
+                    <li>Inspection risk financial visibility</li>
+
+                    <li>Remediation burn-rate forecasting</li>
+
+                    <li>Operational survivability economics</li>
+
+                    <li>Governance ROI intelligence</li>
+
+                    <li>Executive resilience economics orchestration</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        exposures=GOVERNANCE_ECONOMIC_EXPOSURE_V1,
+        recommendations=ECONOMIC_RECOMMENDATIONS_V1,
+        economic_index=economic_index
+    )
+
+
+@app.route("/governance/economic-intelligence/api")
+def governance_economic_intelligence_api_v1():
+
+    return jsonify({
+        "economic_index": calculate_governance_economic_index_v1(),
+        "exposures": GOVERNANCE_ECONOMIC_EXPOSURE_V1,
+        "recommendations": ECONOMIC_RECOMMENDATIONS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_ECONOMIC_INTELLIGENCE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_COMMAND_NEURAL_MESH_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+NEURAL_MESH_SIGNALS_V1 = [
+    {
+        "domain": "Environmental Governance",
+        "pulse": 92,
+        "synchronization": "Connected",
+        "propagation": "Release Governance",
+        "status": "Stable"
+    },
+    {
+        "domain": "CAPA Governance",
+        "pulse": 84,
+        "synchronization": "Strained",
+        "propagation": "Inspection Survivability",
+        "status": "Monitoring"
+    },
+    {
+        "domain": "Operational Continuity",
+        "pulse": 88,
+        "synchronization": "Connected",
+        "propagation": "Treatment Coordination",
+        "status": "Stable"
+    },
+    {
+        "domain": "Backup Governance",
+        "pulse": 79,
+        "synchronization": "Weakening",
+        "propagation": "Audit Defensibility",
+        "status": "Attention"
+    },
+    {
+        "domain": "Commercialization Readiness",
+        "pulse": 93,
+        "synchronization": "Strong",
+        "propagation": "Enterprise Readiness",
+        "status": "Operational"
+    }
+]
+
+NEURAL_MESH_COGNITION_STREAM_V1 = [
+    "Environmental governance strain is beginning to propagate into release defensibility posture.",
+    "CAPA escalation accumulation is weakening inspection survivability synchronization.",
+    "Operational continuity governance remains commercially stable across treatment coordination pathways.",
+    "Backup governance degradation may impact enterprise audit survivability resilience.",
+    "Commercialization readiness cognition remains operationally synchronized."
+]
+
+
+def calculate_neural_mesh_index_v1():
+
+    total = 0
+
+    for row in NEURAL_MESH_SIGNALS_V1:
+        total += row["pulse"]
+
+    return round(total / len(NEURAL_MESH_SIGNALS_V1))
+
+
+@app.route("/governance/neural-mesh")
+def governance_command_neural_mesh_v1():
+
+    neural_index = calculate_neural_mesh_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Command Neural Mesh</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow-x:hidden;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .pulse-bg {
+                position:fixed;
+                width:100%;
+                height:100%;
+                pointer-events:none;
+                opacity:0.08;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.2) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.2) 1px, transparent 1px);
+                background-size:40px 40px;
+                animation:pulsegrid 12s linear infinite;
+            }
+
+            @keyframes pulsegrid {
+                from {
+                    transform:translateY(0px);
+                }
+                to {
+                    transform:translateY(40px);
+                }
+            }
+
+            .wrap {
+                position:relative;
+                z-index:2;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel {
+                border-radius:30px;
+                padding:30px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                backdrop-filter:blur(10px);
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:78px;
+                color:#ff9f1c;
+                letter-spacing:-2px;
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.7;
+            }
+
+            .overall {
+                margin-top:24px;
+                text-align:center;
+                padding:28px;
+                border-radius:24px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:140px;
+                color:#ff9f1c;
+                text-shadow:0 0 30px rgba(255,159,28,0.25);
+            }
+
+            .mesh-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:22px;
+                margin-top:24px;
+            }
+
+            .mesh-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:24px;
+                padding:24px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .mesh-card:before {
+                content:'';
+                position:absolute;
+                top:-50%;
+                left:-50%;
+                width:200%;
+                height:200%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.10), transparent 60%);
+                animation:pulse 6s linear infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform:rotate(0deg);
+                }
+                100% {
+                    transform:rotate(360deg);
+                }
+            }
+
+            .mesh-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .mesh-card strong {
+                display:block;
+                font-size:44px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            ul li {
+                margin-bottom:16px;
+                color:#c6cfdb;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .mesh-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:44px;
+                }
+
+                .overall strong {
+                    font-size:90px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="pulse-bg"></div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Command Neural Mesh</h1>
+
+                <p>
+                    Enterprise governance cognition infrastructure for systemic
+                    survivability awareness, cross-domain governance synchronization,
+                    commercialization continuity intelligence,
+                    and operational nervous-system orchestration.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ neural_index }}%</strong>
+
+                    Enterprise Governance Cognition Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Operational Governance Neural Signal Grid</h2>
+
+                <div class="mesh-grid">
+
+                    {% for row in signals %}
+
+                    <div class="mesh-card">
+
+                        <strong>{{ row.pulse }}%</strong>
+
+                        <h3>{{ row.domain }}</h3>
+
+                        <p>
+                            Propagation Pathway:
+                            {{ row.propagation }}
+                        </p>
+
+                        <span class="pill">
+                            Synchronization: {{ row.synchronization }}
+                        </span>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Cognition Stream</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Cognition Insight</th>
+                            <th>Strategic Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Cross-domain governance synchronization intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Cognition Vision</h2>
+
+                <p>
+                    The Governance Command Neural Mesh enables enterprise governance
+                    cognition across all COBIT-Chain AssuranceLayer operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Cross-domain governance awareness</li>
+
+                    <li>Enterprise governance pulse intelligence</li>
+
+                    <li>Operational nervous-system synchronization</li>
+
+                    <li>Systemic survivability cognition</li>
+
+                    <li>Commercialization continuity intelligence</li>
+
+                    <li>Governance propagation awareness</li>
+
+                    <li>Enterprise stabilization coordination</li>
+
+                    <li>Governance cognition infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        signals=NEURAL_MESH_SIGNALS_V1,
+        cognition=NEURAL_MESH_COGNITION_STREAM_V1,
+        neural_index=neural_index
+    )
+
+
+@app.route("/governance/neural-mesh/api")
+def governance_command_neural_mesh_api_v1():
+
+    return jsonify({
+        "neural_index": calculate_neural_mesh_index_v1(),
+        "signals": NEURAL_MESH_SIGNALS_V1,
+        "cognition": NEURAL_MESH_COGNITION_STREAM_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_COMMAND_NEURAL_MESH_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_REALITY_FABRIC_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+REALITY_FABRIC_NODES_V1 = [
+    {
+        "node": "Commercialization Continuity",
+        "energy": 96,
+        "orbit": "Enterprise Readiness",
+        "status": "Synchronized"
+    },
+    {
+        "node": "Inspection Survivability",
+        "energy": 91,
+        "orbit": "Operational Trust",
+        "status": "Stable"
+    },
+    {
+        "node": "Environmental Governance",
+        "energy": 87,
+        "orbit": "Release Defensibility",
+        "status": "Monitoring"
+    },
+    {
+        "node": "CAPA Governance",
+        "energy": 82,
+        "orbit": "Governance Stabilization",
+        "status": "Strained"
+    },
+    {
+        "node": "Operational Resilience",
+        "energy": 94,
+        "orbit": "Recovery Survivability",
+        "status": "Operational"
+    }
+]
+
+REALITY_FABRIC_STREAMS_V1 = [
+    "Enterprise governance cognition remains synchronized across commercialization pathways.",
+    "Environmental governance energy fluctuations are propagating into release defensibility posture.",
+    "Operational resilience stabilization remains commercially survivable.",
+    "CAPA governance pressure fields are increasing inspection survivability strain.",
+    "Governance trust synchronization remains stable across enterprise continuity domains."
+]
+
+
+def calculate_reality_fabric_index_v1():
+
+    total = 0
+
+    for row in REALITY_FABRIC_NODES_V1:
+        total += row["energy"]
+
+    return round(total / len(REALITY_FABRIC_NODES_V1))
+
+
+@app.route("/governance/reality-fabric")
+def governance_reality_fabric_v1():
+
+    fabric_index = calculate_reality_fabric_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Reality Fabric</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 34%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.12), transparent 28%),
+                    linear-gradient(135deg,#040507 0%,#0f141d 45%,#050608 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .grid-bg {
+                position:fixed;
+                width:100%;
+                height:100%;
+                opacity:0.08;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.18) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.18) 1px, transparent 1px);
+                background-size:42px 42px;
+                animation:gridmove 20s linear infinite;
+            }
+
+            @keyframes gridmove {
+                from {
+                    transform:translateY(0px);
+                }
+                to {
+                    transform:translateY(42px);
+                }
+            }
+
+            .particles span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,159,28,0.18);
+                box-shadow:0 0 25px rgba(255,159,28,0.45);
+                animation:floatpulse linear infinite;
+            }
+
+            .particles span:nth-child(1){
+                width:10px;
+                height:10px;
+                left:10%;
+                animation-duration:18s;
+                top:90%;
+            }
+
+            .particles span:nth-child(2){
+                width:18px;
+                height:18px;
+                left:28%;
+                animation-duration:24s;
+                top:85%;
+            }
+
+            .particles span:nth-child(3){
+                width:12px;
+                height:12px;
+                left:50%;
+                animation-duration:20s;
+                top:92%;
+            }
+
+            .particles span:nth-child(4){
+                width:22px;
+                height:22px;
+                left:72%;
+                animation-duration:28s;
+                top:88%;
+            }
+
+            .particles span:nth-child(5){
+                width:14px;
+                height:14px;
+                left:88%;
+                animation-duration:22s;
+                top:95%;
+            }
+
+            @keyframes floatpulse {
+
+                0% {
+                    transform:translateY(0px) scale(1);
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                50% {
+                    transform:translateY(-450px) scale(1.4);
+                }
+
+                100% {
+                    transform:translateY(-950px) scale(0.8);
+                    opacity:0;
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:2;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                overflow-y:auto;
+                height:100vh;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:30px;
+                padding:30px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(20,24,33,0.82);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 60%);
+                animation:rotatefield 30s linear infinite;
+            }
+
+            @keyframes rotatefield {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:84px;
+                color:#ff9f1c;
+                letter-spacing:-3px;
+                text-shadow:0 0 28px rgba(255,159,28,0.25);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:28px;
+                text-align:center;
+                padding:30px;
+                border-radius:24px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:150px;
+                color:#ff9f1c;
+                text-shadow:0 0 35px rgba(255,159,28,0.35);
+            }
+
+            .fabric-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .fabric-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:24px;
+                padding:26px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .fabric-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:fieldrotate 18s linear infinite;
+            }
+
+            @keyframes fieldrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .fabric-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .fabric-card strong {
+                display:block;
+                font-size:52px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .fabric-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:46px;
+                }
+
+                .overall strong {
+                    font-size:92px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="grid-bg"></div>
+
+        <div class="particles">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Reality Fabric</h1>
+
+                <p>
+                    Enterprise governance spatial intelligence infrastructure
+                    for commercialization continuity cognition,
+                    survivability synchronization,
+                    governance constellation awareness,
+                    and operational reality orchestration.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ fabric_index }}%</strong>
+
+                    Enterprise Governance Reality Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Constellation Field</h2>
+
+                <div class="fabric-grid">
+
+                    {% for row in nodes %}
+
+                    <div class="fabric-card">
+
+                        <strong>{{ row.energy }}%</strong>
+
+                        <h3>{{ row.node }}</h3>
+
+                        <p>
+                            Governance Orbit:
+                            {{ row.orbit }}
+                        </p>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Cognition Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Cognition Stream</th>
+                            <th>Enterprise Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Spatial governance synchronization intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Reality Fabric Vision</h2>
+
+                <p>
+                    The Governance Reality Fabric enables enterprise governance
+                    spatial intelligence across all COBIT-Chain AssuranceLayer
+                    operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance constellation intelligence</li>
+
+                    <li>Operational cognition fields</li>
+
+                    <li>Commercialization continuity synchronization</li>
+
+                    <li>Systemic survivability awareness</li>
+
+                    <li>Governance spatial orchestration</li>
+
+                    <li>Enterprise trust stabilization fields</li>
+
+                    <li>Operational nervous-system visualization</li>
+
+                    <li>Spatial governance intelligence infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        nodes=REALITY_FABRIC_NODES_V1,
+        cognition=REALITY_FABRIC_STREAMS_V1,
+        fabric_index=fabric_index
+    )
+
+
+@app.route("/governance/reality-fabric/api")
+def governance_reality_fabric_api_v1():
+
+    return jsonify({
+        "fabric_index": calculate_reality_fabric_index_v1(),
+        "nodes": REALITY_FABRIC_NODES_V1,
+        "cognition": REALITY_FABRIC_STREAMS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_REALITY_FABRIC_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_TIME_NEXUS_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+TIME_NEXUS_EVENTS_V1 = [
+    {
+        "epoch": "Q1",
+        "event": "Commercialization Stabilization",
+        "trajectory": "Increasing",
+        "survivability": 88,
+        "status": "Stable"
+    },
+    {
+        "epoch": "Q2",
+        "event": "Environmental Governance Drift",
+        "trajectory": "Escalating",
+        "survivability": 81,
+        "status": "Monitoring"
+    },
+    {
+        "epoch": "Q3",
+        "event": "Inspection Readiness Recovery",
+        "trajectory": "Recovering",
+        "survivability": 92,
+        "status": "Operational"
+    },
+    {
+        "epoch": "Q4",
+        "event": "CAPA Pressure Accumulation",
+        "trajectory": "Increasing",
+        "survivability": 79,
+        "status": "Attention"
+    },
+    {
+        "epoch": "Q5",
+        "event": "Enterprise Governance Synchronization",
+        "trajectory": "Synchronized",
+        "survivability": 95,
+        "status": "Optimized"
+    }
+]
+
+TIME_NEXUS_MEMORY_STREAM_V1 = [
+    "Governance survivability remained commercially stable during operational escalation periods.",
+    "Environmental governance degradation accumulated gradually before release defensibility destabilization.",
+    "Inspection survivability recovered following governance stabilization orchestration.",
+    "Operational resilience synchronization improved after continuity hardening workflows.",
+    "Enterprise governance cognition remained synchronized across commercialization timelines."
+]
+
+
+def calculate_time_nexus_index_v1():
+
+    total = 0
+
+    for row in TIME_NEXUS_EVENTS_V1:
+        total += row["survivability"]
+
+    return round(total / len(TIME_NEXUS_EVENTS_V1))
+
+
+@app.route("/governance/time-nexus")
+def governance_time_nexus_v1():
+
+    nexus_index = calculate_time_nexus_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Time Nexus</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 32%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.10), transparent 26%),
+                    linear-gradient(135deg,#040507 0%,#0c1018 45%,#050608 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .timeline-grid {
+                position:fixed;
+                width:100%;
+                height:100%;
+                opacity:0.08;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.16) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.16) 1px, transparent 1px);
+                background-size:44px 44px;
+                animation:timemove 18s linear infinite;
+            }
+
+            @keyframes timemove {
+
+                from {
+                    transform:translateY(0px);
+                }
+
+                to {
+                    transform:translateY(44px);
+                }
+
+            }
+
+            .timeline-beams span {
+                position:absolute;
+                display:block;
+                width:2px;
+                height:220px;
+                background:linear-gradient(
+                    to bottom,
+                    rgba(255,159,28,0),
+                    rgba(255,159,28,0.55),
+                    rgba(255,159,28,0)
+                );
+                animation:beamflow linear infinite;
+            }
+
+            .timeline-beams span:nth-child(1){
+                left:12%;
+                animation-duration:9s;
+            }
+
+            .timeline-beams span:nth-child(2){
+                left:28%;
+                animation-duration:11s;
+            }
+
+            .timeline-beams span:nth-child(3){
+                left:48%;
+                animation-duration:8s;
+            }
+
+            .timeline-beams span:nth-child(4){
+                left:70%;
+                animation-duration:12s;
+            }
+
+            .timeline-beams span:nth-child(5){
+                left:88%;
+                animation-duration:10s;
+            }
+
+            @keyframes beamflow {
+
+                0% {
+                    top:-240px;
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                100% {
+                    top:120%;
+                    opacity:0;
+                }
+
+            }
+
+            .chrono-orbs span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,159,28,0.20);
+                box-shadow:0 0 30px rgba(255,159,28,0.35);
+                animation:orbitpulse linear infinite;
+            }
+
+            .chrono-orbs span:nth-child(1){
+                width:14px;
+                height:14px;
+                left:10%;
+                top:88%;
+                animation-duration:20s;
+            }
+
+            .chrono-orbs span:nth-child(2){
+                width:22px;
+                height:22px;
+                left:30%;
+                top:92%;
+                animation-duration:26s;
+            }
+
+            .chrono-orbs span:nth-child(3){
+                width:16px;
+                height:16px;
+                left:54%;
+                top:90%;
+                animation-duration:22s;
+            }
+
+            .chrono-orbs span:nth-child(4){
+                width:28px;
+                height:28px;
+                left:76%;
+                top:95%;
+                animation-duration:30s;
+            }
+
+            .chrono-orbs span:nth-child(5){
+                width:18px;
+                height:18px;
+                left:92%;
+                top:86%;
+                animation-duration:24s;
+            }
+
+            @keyframes orbitpulse {
+
+                0% {
+                    transform:translateY(0px) scale(1);
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                50% {
+                    transform:translateY(-420px) scale(1.45);
+                }
+
+                100% {
+                    transform:translateY(-920px) scale(0.7);
+                    opacity:0;
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:2;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                height:100vh;
+                overflow-y:auto;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:30px;
+                padding:30px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(20,24,33,0.82);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 60%);
+                animation:timefield 32s linear infinite;
+            }
+
+            @keyframes timefield {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:84px;
+                color:#ff9f1c;
+                letter-spacing:-3px;
+                text-shadow:0 0 28px rgba(255,159,28,0.25);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:28px;
+                text-align:center;
+                padding:30px;
+                border-radius:24px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:150px;
+                color:#ff9f1c;
+                text-shadow:0 0 35px rgba(255,159,28,0.35);
+            }
+
+            .timeline-cards {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .timeline-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:24px;
+                padding:26px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .timeline-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:chronofield 20s linear infinite;
+            }
+
+            @keyframes chronofield {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .timeline-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .timeline-card strong {
+                display:block;
+                font-size:54px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .timeline-cards {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:46px;
+                }
+
+                .overall strong {
+                    font-size:92px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="timeline-grid"></div>
+
+        <div class="timeline-beams">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="chrono-orbs">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Time Nexus</h1>
+
+                <p>
+                    Enterprise temporal governance intelligence infrastructure
+                    for survivability chronology awareness,
+                    governance evolution cognition,
+                    commercialization trajectory intelligence,
+                    and operational governance memory orchestration.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ nexus_index }}%</strong>
+
+                    Enterprise Temporal Governance Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Evolution Timeline</h2>
+
+                <div class="timeline-cards">
+
+                    {% for row in events %}
+
+                    <div class="timeline-card">
+
+                        <strong>{{ row.survivability }}%</strong>
+
+                        <h3>{{ row.event }}</h3>
+
+                        <p>
+                            Governance Epoch:
+                            {{ row.epoch }}
+                        </p>
+
+                        <span class="pill">
+                            Trajectory: {{ row.trajectory }}
+                        </span>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Memory Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Temporal Cognition Stream</th>
+                            <th>Enterprise Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in memory %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Temporal governance intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Time Nexus Vision</h2>
+
+                <p>
+                    The Governance Time Nexus enables enterprise temporal
+                    governance cognition across all COBIT-Chain AssuranceLayer
+                    operational verticals.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance timeline intelligence</li>
+
+                    <li>Operational survivability chronology</li>
+
+                    <li>Commercialization trajectory cognition</li>
+
+                    <li>Governance memory orchestration</li>
+
+                    <li>Temporal stabilization awareness</li>
+
+                    <li>Inspection evolution intelligence</li>
+
+                    <li>Enterprise governance chronology mapping</li>
+
+                    <li>Temporal governance intelligence infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        events=TIME_NEXUS_EVENTS_V1,
+        memory=TIME_NEXUS_MEMORY_STREAM_V1,
+        nexus_index=nexus_index
+    )
+
+
+@app.route("/governance/time-nexus/api")
+def governance_time_nexus_api_v1():
+
+    return jsonify({
+        "nexus_index": calculate_time_nexus_index_v1(),
+        "events": TIME_NEXUS_EVENTS_V1,
+        "memory": TIME_NEXUS_MEMORY_STREAM_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_TIME_NEXUS_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_SINGULARITY_CORE_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+SINGULARITY_SIGNALS_V1 = [
+    {
+        "domain": "Temporal Governance",
+        "harmonic": 94,
+        "convergence": "Synchronized",
+        "status": "Operational"
+    },
+    {
+        "domain": "Commercialization Continuity",
+        "harmonic": 97,
+        "convergence": "Unified",
+        "status": "Stable"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "harmonic": 91,
+        "convergence": "Connected",
+        "status": "Resilient"
+    },
+    {
+        "domain": "Governance Stabilization",
+        "harmonic": 86,
+        "convergence": "Adaptive",
+        "status": "Monitoring"
+    },
+    {
+        "domain": "Operational Trust",
+        "harmonic": 95,
+        "convergence": "Conscious",
+        "status": "Aligned"
+    }
+]
+
+SINGULARITY_COGNITION_STREAM_V1 = [
+    "Enterprise governance consciousness remains synchronized across operational survivability pathways.",
+    "Commercialization continuity harmonics remain operationally aligned.",
+    "Inspection survivability cognition is converging with stabilization orchestration.",
+    "Temporal governance memory remains synchronized with operational trust fields.",
+    "Governance consciousness harmonics remain commercially resilient."
+]
+
+
+def calculate_singularity_index_v1():
+
+    total = 0
+
+    for row in SINGULARITY_SIGNALS_V1:
+        total += row["harmonic"]
+
+    return round(total / len(SINGULARITY_SIGNALS_V1))
+
+
+@app.route("/governance/singularity-core")
+def governance_singularity_core_v1():
+
+    singularity_index = calculate_singularity_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Singularity Core</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at center, rgba(255,159,28,0.14), transparent 20%),
+                    radial-gradient(circle at top left, rgba(255,122,24,0.12), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.10), transparent 24%),
+                    linear-gradient(135deg,#030405 0%,#0b1018 45%,#050608 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .grid-layer {
+                position:fixed;
+                width:100%;
+                height:100%;
+                opacity:0.07;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.15) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.15) 1px, transparent 1px);
+                background-size:48px 48px;
+                animation:gridshift 22s linear infinite;
+            }
+
+            @keyframes gridshift {
+
+                from {
+                    transform:translateY(0px);
+                }
+
+                to {
+                    transform:translateY(48px);
+                }
+
+            }
+
+            .core-reactor {
+                position:fixed;
+                top:50%;
+                left:50%;
+                transform:translate(-50%, -50%);
+                width:420px;
+                height:420px;
+                border-radius:50%;
+                border:2px solid rgba(255,159,28,0.22);
+                box-shadow:
+                    0 0 45px rgba(255,159,28,0.20),
+                    inset 0 0 60px rgba(255,159,28,0.15);
+                animation:corepulse 8s ease-in-out infinite;
+            }
+
+            .core-reactor:before,
+            .core-reactor:after {
+                content:'';
+                position:absolute;
+                inset:28px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.20);
+                animation:rotor 16s linear infinite;
+            }
+
+            .core-reactor:after {
+                inset:70px;
+                animation-direction:reverse;
+                animation-duration:22s;
+            }
+
+            @keyframes rotor {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            @keyframes corepulse {
+
+                0% {
+                    transform:translate(-50%, -50%) scale(1);
+                }
+
+                50% {
+                    transform:translate(-50%, -50%) scale(1.04);
+                }
+
+                100% {
+                    transform:translate(-50%, -50%) scale(1);
+                }
+
+            }
+
+            .orbit span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,159,28,0.18);
+                box-shadow:0 0 30px rgba(255,159,28,0.35);
+                animation:orbital linear infinite;
+            }
+
+            .orbit span:nth-child(1){
+                width:16px;
+                height:16px;
+                top:18%;
+                left:20%;
+                animation-duration:16s;
+            }
+
+            .orbit span:nth-child(2){
+                width:26px;
+                height:26px;
+                top:32%;
+                left:74%;
+                animation-duration:22s;
+            }
+
+            .orbit span:nth-child(3){
+                width:18px;
+                height:18px;
+                top:72%;
+                left:18%;
+                animation-duration:18s;
+            }
+
+            .orbit span:nth-child(4){
+                width:30px;
+                height:30px;
+                top:78%;
+                left:80%;
+                animation-duration:24s;
+            }
+
+            .orbit span:nth-child(5){
+                width:14px;
+                height:14px;
+                top:52%;
+                left:50%;
+                animation-duration:14s;
+            }
+
+            @keyframes orbital {
+
+                0% {
+                    transform:translateY(0px) scale(1);
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                50% {
+                    transform:translateY(-220px) scale(1.5);
+                }
+
+                100% {
+                    transform:translateY(-520px) scale(0.7);
+                    opacity:0;
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:2;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                height:100vh;
+                overflow-y:auto;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:32px;
+                padding:32px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(20,24,33,0.80);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 60%);
+                animation:fieldrotate 30s linear infinite;
+            }
+
+            @keyframes fieldrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:90px;
+                color:#ff9f1c;
+                letter-spacing:-4px;
+                text-shadow:0 0 32px rgba(255,159,28,0.28);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:30px;
+                text-align:center;
+                padding:34px;
+                border-radius:28px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:160px;
+                color:#ff9f1c;
+                text-shadow:0 0 42px rgba(255,159,28,0.38);
+            }
+
+            .signal-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .signal-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:26px;
+                padding:28px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .signal-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:signalrotate 18s linear infinite;
+            }
+
+            @keyframes signalrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .signal-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .signal-card strong {
+                display:block;
+                font-size:58px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .signal-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:48px;
+                }
+
+                .overall strong {
+                    font-size:96px;
+                }
+
+                .core-reactor {
+                    width:240px;
+                    height:240px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="grid-layer"></div>
+
+        <div class="core-reactor"></div>
+
+        <div class="orbit">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Singularity Core</h1>
+
+                <p>
+                    Unified enterprise governance consciousness infrastructure
+                    for survivability convergence,
+                    commercialization continuity harmonization,
+                    operational trust synchronization,
+                    and systemic governance orchestration.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ singularity_index }}%</strong>
+
+                    Unified Governance Consciousness Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Harmonic Grid</h2>
+
+                <div class="signal-grid">
+
+                    {% for row in signals %}
+
+                    <div class="signal-card">
+
+                        <strong>{{ row.harmonic }}%</strong>
+
+                        <h3>{{ row.domain }}</h3>
+
+                        <p>
+                            Convergence State:
+                            {{ row.convergence }}
+                        </p>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Consciousness Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Consciousness Stream</th>
+                            <th>Enterprise Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Unified governance cognition intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Singularity Vision</h2>
+
+                <p>
+                    The Governance Singularity Core unifies enterprise governance
+                    cognition across all COBIT-Chain AssuranceLayer operational domains.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Unified governance consciousness</li>
+
+                    <li>Enterprise survivability harmonics</li>
+
+                    <li>Commercialization continuity convergence</li>
+
+                    <li>Operational trust synchronization</li>
+
+                    <li>Systemic governance awareness</li>
+
+                    <li>Governance cognition orchestration</li>
+
+                    <li>Enterprise stabilization harmonization</li>
+
+                    <li>Unified governance intelligence infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        signals=SINGULARITY_SIGNALS_V1,
+        cognition=SINGULARITY_COGNITION_STREAM_V1,
+        singularity_index=singularity_index
+    )
+
+
+@app.route("/governance/singularity-core/api")
+def governance_singularity_core_api_v1():
+
+    return jsonify({
+        "singularity_index": calculate_singularity_index_v1(),
+        "signals": SINGULARITY_SIGNALS_V1,
+        "cognition": SINGULARITY_COGNITION_STREAM_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_SINGULARITY_CORE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_INFINITY_OBSERVATORY_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+INFINITY_OBSERVATORY_SIGNALS_V1 = [
+    {
+        "sector": "Commercialization Continuity",
+        "trajectory": 97,
+        "wave": "Stable",
+        "gravity": "Strong",
+        "status": "Operational"
+    },
+    {
+        "sector": "Inspection Survivability",
+        "trajectory": 92,
+        "wave": "Synchronizing",
+        "gravity": "Connected",
+        "status": "Resilient"
+    },
+    {
+        "sector": "Governance Stabilization",
+        "trajectory": 86,
+        "wave": "Adaptive",
+        "gravity": "Dynamic",
+        "status": "Monitoring"
+    },
+    {
+        "sector": "Operational Trust",
+        "trajectory": 95,
+        "wave": "Unified",
+        "gravity": "Aligned",
+        "status": "Stable"
+    },
+    {
+        "sector": "Temporal Governance",
+        "trajectory": 93,
+        "wave": "Flowing",
+        "gravity": "Synchronized",
+        "status": "Optimized"
+    }
+]
+
+INFINITY_OBSERVATORY_STREAMS_V1 = [
+    "Enterprise governance trajectories remain commercially synchronized across operational continuity pathways.",
+    "Inspection survivability gravity fields remain operationally resilient.",
+    "Governance stabilization harmonics are adapting to commercialization acceleration.",
+    "Temporal governance cognition remains synchronized with enterprise trust fields.",
+    "Operational governance observability remains strategically aligned."
+]
+
+
+def calculate_infinity_observatory_index_v1():
+
+    total = 0
+
+    for row in INFINITY_OBSERVATORY_SIGNALS_V1:
+        total += row["trajectory"]
+
+    return round(total / len(INFINITY_OBSERVATORY_SIGNALS_V1))
+
+
+@app.route("/governance/infinity-observatory")
+def governance_infinity_observatory_v1():
+
+    observatory_index = calculate_infinity_observatory_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Infinity Observatory</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at center, rgba(255,159,28,0.10), transparent 18%),
+                    radial-gradient(circle at top left, rgba(255,122,24,0.08), transparent 30%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.08), transparent 24%),
+                    linear-gradient(135deg,#020304 0%,#090d15 45%,#040506 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .starfield span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,255,255,0.8);
+                animation:starfloat linear infinite;
+            }
+
+            .starfield span:nth-child(1){
+                width:2px;
+                height:2px;
+                left:8%;
+                top:10%;
+                animation-duration:20s;
+            }
+
+            .starfield span:nth-child(2){
+                width:4px;
+                height:4px;
+                left:22%;
+                top:28%;
+                animation-duration:24s;
+            }
+
+            .starfield span:nth-child(3){
+                width:3px;
+                height:3px;
+                left:42%;
+                top:16%;
+                animation-duration:18s;
+            }
+
+            .starfield span:nth-child(4){
+                width:5px;
+                height:5px;
+                left:66%;
+                top:34%;
+                animation-duration:28s;
+            }
+
+            .starfield span:nth-child(5){
+                width:3px;
+                height:3px;
+                left:84%;
+                top:20%;
+                animation-duration:22s;
+            }
+
+            .starfield span:nth-child(6){
+                width:2px;
+                height:2px;
+                left:92%;
+                top:42%;
+                animation-duration:26s;
+            }
+
+            @keyframes starfloat {
+
+                0% {
+                    transform:translateY(0px);
+                    opacity:0.2;
+                }
+
+                50% {
+                    opacity:1;
+                }
+
+                100% {
+                    transform:translateY(40px);
+                    opacity:0.2;
+                }
+
+            }
+
+            .observatory-rings {
+                position:fixed;
+                top:50%;
+                left:50%;
+                transform:translate(-50%, -50%);
+                width:520px;
+                height:520px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.16);
+                animation:ringrotate 28s linear infinite;
+            }
+
+            .observatory-rings:before,
+            .observatory-rings:after {
+                content:'';
+                position:absolute;
+                inset:38px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.14);
+            }
+
+            .observatory-rings:after {
+                inset:92px;
+            }
+
+            @keyframes ringrotate {
+
+                from {
+                    transform:translate(-50%, -50%) rotate(0deg);
+                }
+
+                to {
+                    transform:translate(-50%, -50%) rotate(360deg);
+                }
+
+            }
+
+            .wave-layer {
+                position:fixed;
+                width:100%;
+                height:100%;
+                overflow:hidden;
+            }
+
+            .wave-layer span {
+                position:absolute;
+                width:200%;
+                height:2px;
+                background:
+                    linear-gradient(
+                        to right,
+                        rgba(255,159,28,0),
+                        rgba(255,159,28,0.45),
+                        rgba(255,159,28,0)
+                    );
+                animation:waveflow linear infinite;
+            }
+
+            .wave-layer span:nth-child(1){
+                top:22%;
+                animation-duration:12s;
+            }
+
+            .wave-layer span:nth-child(2){
+                top:48%;
+                animation-duration:15s;
+            }
+
+            .wave-layer span:nth-child(3){
+                top:72%;
+                animation-duration:18s;
+            }
+
+            @keyframes waveflow {
+
+                0% {
+                    left:-120%;
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                100% {
+                    left:20%;
+                    opacity:0;
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:3;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                height:100vh;
+                overflow-y:auto;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:34px;
+                padding:34px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(18,22,30,0.82);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.06), transparent 60%);
+                animation:fieldrotate 36s linear infinite;
+            }
+
+            @keyframes fieldrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:92px;
+                color:#ff9f1c;
+                letter-spacing:-4px;
+                text-shadow:0 0 34px rgba(255,159,28,0.25);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:32px;
+                text-align:center;
+                padding:36px;
+                border-radius:30px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:170px;
+                color:#ff9f1c;
+                text-shadow:0 0 48px rgba(255,159,28,0.40);
+            }
+
+            .signal-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .signal-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:28px;
+                padding:28px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .signal-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:signalrotate 18s linear infinite;
+            }
+
+            @keyframes signalrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .signal-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .signal-card strong {
+                display:block;
+                font-size:60px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .signal-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:48px;
+                }
+
+                .overall strong {
+                    font-size:96px;
+                }
+
+                .observatory-rings {
+                    width:260px;
+                    height:260px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="starfield">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="observatory-rings"></div>
+
+        <div class="wave-layer">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Infinity Observatory</h1>
+
+                <p>
+                    Executive governance observability infrastructure
+                    for enterprise survivability horizon intelligence,
+                    commercialization continuity oversight,
+                    operational gravity visualization,
+                    and governance trajectory cognition.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ observatory_index }}%</strong>
+
+                    Enterprise Governance Observatory Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Horizon Observation Grid</h2>
+
+                <div class="signal-grid">
+
+                    {% for row in signals %}
+
+                    <div class="signal-card">
+
+                        <strong>{{ row.trajectory }}%</strong>
+
+                        <h3>{{ row.sector }}</h3>
+
+                        <p>
+                            Gravity Field:
+                            {{ row.gravity }}
+                        </p>
+
+                        <span class="pill">
+                            Wave: {{ row.wave }}
+                        </span>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Horizon Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Observatory Stream</th>
+                            <th>Executive Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Enterprise governance observability intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Infinity Observatory Vision</h2>
+
+                <p>
+                    The Governance Infinity Observatory enables enterprise governance
+                    observability across all COBIT-Chain AssuranceLayer operational domains.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance horizon intelligence</li>
+
+                    <li>Enterprise survivability observability</li>
+
+                    <li>Commercialization continuity oversight</li>
+
+                    <li>Operational gravity visualization</li>
+
+                    <li>Governance trajectory cognition</li>
+
+                    <li>Enterprise synchronization observability</li>
+
+                    <li>Systemic governance awareness</li>
+
+                    <li>Executive governance observatory infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        signals=INFINITY_OBSERVATORY_SIGNALS_V1,
+        cognition=INFINITY_OBSERVATORY_STREAMS_V1,
+        observatory_index=observatory_index
+    )
+
+
+@app.route("/governance/infinity-observatory/api")
+def governance_infinity_observatory_api_v1():
+
+    return jsonify({
+        "observatory_index": calculate_infinity_observatory_index_v1(),
+        "signals": INFINITY_OBSERVATORY_SIGNALS_V1,
+        "cognition": INFINITY_OBSERVATORY_STREAMS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_INFINITY_OBSERVATORY_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_QUANTUM_NEXUS_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+QUANTUM_NEXUS_FIELDS_V1 = [
+    {
+        "future_path": "Commercialization Continuity",
+        "probability": 96,
+        "trajectory": "Converging",
+        "uncertainty": "Low",
+        "status": "Optimal"
+    },
+    {
+        "future_path": "Inspection Survivability",
+        "probability": 91,
+        "trajectory": "Stable",
+        "uncertainty": "Moderate",
+        "status": "Resilient"
+    },
+    {
+        "future_path": "Governance Stabilization",
+        "probability": 84,
+        "trajectory": "Adaptive",
+        "uncertainty": "Elevated",
+        "status": "Monitoring"
+    },
+    {
+        "future_path": "Operational Continuity",
+        "probability": 94,
+        "trajectory": "Synchronized",
+        "uncertainty": "Low",
+        "status": "Operational"
+    },
+    {
+        "future_path": "Temporal Governance Memory",
+        "probability": 89,
+        "trajectory": "Expanding",
+        "uncertainty": "Moderate",
+        "status": "Active"
+    }
+]
+
+QUANTUM_COGNITION_STREAMS_V1 = [
+    "Commercialization continuity probabilities remain operationally convergent.",
+    "Inspection survivability futures remain resilient under stabilization harmonics.",
+    "Governance uncertainty fields are adapting to operational acceleration pressures.",
+    "Operational continuity cognition remains synchronized across enterprise pathways.",
+    "Enterprise governance futures remain commercially survivable."
+]
+
+
+def calculate_quantum_nexus_index_v1():
+
+    total = 0
+
+    for row in QUANTUM_NEXUS_FIELDS_V1:
+        total += row["probability"]
+
+    return round(total / len(QUANTUM_NEXUS_FIELDS_V1))
+
+
+@app.route("/governance/quantum-nexus")
+def governance_quantum_nexus_v1():
+
+    quantum_index = calculate_quantum_nexus_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Quantum Nexus</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at center, rgba(255,159,28,0.12), transparent 18%),
+                    radial-gradient(circle at top left, rgba(255,122,24,0.10), transparent 30%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.08), transparent 24%),
+                    linear-gradient(135deg,#020304 0%,#090d15 45%,#040506 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .quantum-grid {
+                position:fixed;
+                width:100%;
+                height:100%;
+                opacity:0.06;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.14) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.14) 1px, transparent 1px);
+                background-size:52px 52px;
+                animation:quantumshift 24s linear infinite;
+            }
+
+            @keyframes quantumshift {
+
+                from {
+                    transform:translateY(0px);
+                }
+
+                to {
+                    transform:translateY(52px);
+                }
+
+            }
+
+            .probability-rings {
+                position:fixed;
+                top:50%;
+                left:50%;
+                transform:translate(-50%, -50%);
+                width:620px;
+                height:620px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.14);
+                animation:ringrotate 40s linear infinite;
+            }
+
+            .probability-rings:before,
+            .probability-rings:after {
+                content:'';
+                position:absolute;
+                inset:48px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.12);
+            }
+
+            .probability-rings:after {
+                inset:120px;
+            }
+
+            @keyframes ringrotate {
+
+                from {
+                    transform:translate(-50%, -50%) rotate(0deg);
+                }
+
+                to {
+                    transform:translate(-50%, -50%) rotate(360deg);
+                }
+
+            }
+
+            .quantum-particles span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,159,28,0.18);
+                box-shadow:0 0 34px rgba(255,159,28,0.40);
+                animation:particleflow linear infinite;
+            }
+
+            .quantum-particles span:nth-child(1){
+                width:14px;
+                height:14px;
+                left:10%;
+                top:82%;
+                animation-duration:18s;
+            }
+
+            .quantum-particles span:nth-child(2){
+                width:24px;
+                height:24px;
+                left:26%;
+                top:90%;
+                animation-duration:24s;
+            }
+
+            .quantum-particles span:nth-child(3){
+                width:16px;
+                height:16px;
+                left:48%;
+                top:86%;
+                animation-duration:20s;
+            }
+
+            .quantum-particles span:nth-child(4){
+                width:28px;
+                height:28px;
+                left:72%;
+                top:92%;
+                animation-duration:28s;
+            }
+
+            .quantum-particles span:nth-child(5){
+                width:18px;
+                height:18px;
+                left:90%;
+                top:84%;
+                animation-duration:22s;
+            }
+
+            @keyframes particleflow {
+
+                0% {
+                    transform:translateY(0px) scale(1);
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                50% {
+                    transform:translateY(-260px) scale(1.5);
+                }
+
+                100% {
+                    transform:translateY(-720px) scale(0.7);
+                    opacity:0;
+                }
+
+            }
+
+            .branch-streams span {
+                position:absolute;
+                width:240%;
+                height:2px;
+                background:
+                    linear-gradient(
+                        to right,
+                        rgba(255,159,28,0),
+                        rgba(255,159,28,0.45),
+                        rgba(255,159,28,0)
+                    );
+                animation:branchflow linear infinite;
+            }
+
+            .branch-streams span:nth-child(1){
+                top:24%;
+                animation-duration:14s;
+            }
+
+            .branch-streams span:nth-child(2){
+                top:46%;
+                animation-duration:18s;
+            }
+
+            .branch-streams span:nth-child(3){
+                top:68%;
+                animation-duration:22s;
+            }
+
+            @keyframes branchflow {
+
+                0% {
+                    left:-140%;
+                    opacity:0;
+                    transform:rotate(-2deg);
+                }
+
+                30% {
+                    opacity:1;
+                }
+
+                100% {
+                    left:20%;
+                    opacity:0;
+                    transform:rotate(2deg);
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:3;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                height:100vh;
+                overflow-y:auto;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:34px;
+                padding:34px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(18,22,30,0.82);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.06), transparent 60%);
+                animation:fieldrotate 42s linear infinite;
+            }
+
+            @keyframes fieldrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:96px;
+                color:#ff9f1c;
+                letter-spacing:-4px;
+                text-shadow:0 0 38px rgba(255,159,28,0.30);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:32px;
+                text-align:center;
+                padding:38px;
+                border-radius:30px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:180px;
+                color:#ff9f1c;
+                text-shadow:0 0 52px rgba(255,159,28,0.42);
+            }
+
+            .signal-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .signal-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:28px;
+                padding:30px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .signal-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:signalrotate 18s linear infinite;
+            }
+
+            @keyframes signalrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .signal-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .signal-card strong {
+                display:block;
+                font-size:62px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .signal-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:50px;
+                }
+
+                .overall strong {
+                    font-size:98px;
+                }
+
+                .probability-rings {
+                    width:280px;
+                    height:280px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="quantum-grid"></div>
+
+        <div class="probability-rings"></div>
+
+        <div class="branch-streams">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="quantum-particles">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Quantum Nexus</h1>
+
+                <p>
+                    Probabilistic governance intelligence infrastructure
+                    for enterprise future-state cognition,
+                    survivability probability orchestration,
+                    commercialization pathway forecasting,
+                    and operational uncertainty visualization.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ quantum_index }}%</strong>
+
+                    Governance Probability Intelligence Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Probability Field Matrix</h2>
+
+                <div class="signal-grid">
+
+                    {% for row in fields %}
+
+                    <div class="signal-card">
+
+                        <strong>{{ row.probability }}%</strong>
+
+                        <h3>{{ row.future_path }}</h3>
+
+                        <p>
+                            Future Trajectory:
+                            {{ row.trajectory }}
+                        </p>
+
+                        <span class="pill">
+                            Uncertainty: {{ row.uncertainty }}
+                        </span>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Probability Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Probability Cognition Stream</th>
+                            <th>Executive Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Probabilistic governance intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Quantum Nexus Vision</h2>
+
+                <p>
+                    The Governance Quantum Nexus enables enterprise probabilistic
+                    governance cognition across all COBIT-Chain AssuranceLayer domains.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance future-state intelligence</li>
+
+                    <li>Enterprise survivability probability modeling</li>
+
+                    <li>Commercialization continuity forecasting</li>
+
+                    <li>Operational uncertainty cognition</li>
+
+                    <li>Governance branching pathway visualization</li>
+
+                    <li>Strategic continuity simulation</li>
+
+                    <li>Enterprise governance possibility fields</li>
+
+                    <li>Probabilistic governance intelligence infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        fields=QUANTUM_NEXUS_FIELDS_V1,
+        cognition=QUANTUM_COGNITION_STREAMS_V1,
+        quantum_index=quantum_index
+    )
+
+
+@app.route("/governance/quantum-nexus/api")
+def governance_quantum_nexus_api_v1():
+
+    return jsonify({
+        "quantum_index": calculate_quantum_nexus_index_v1(),
+        "fields": QUANTUM_NEXUS_FIELDS_V1,
+        "cognition": QUANTUM_COGNITION_STREAMS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_QUANTUM_NEXUS_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# GOVERNANCE_AUTONOMOUS_SIMULATION_CHAMBER_V1_ACTIVE
+# ============================================================
+
+from flask import jsonify
+
+SIMULATION_SCENARIOS_V1 = [
+    {
+        "scenario": "Commercialization Disruption",
+        "resilience": 91,
+        "impact": "High",
+        "recovery": "Stabilizing",
+        "status": "Contained"
+    },
+    {
+        "scenario": "Inspection Failure Cascade",
+        "resilience": 84,
+        "impact": "Critical",
+        "recovery": "Adaptive",
+        "status": "Monitoring"
+    },
+    {
+        "scenario": "Operational Continuity Breakdown",
+        "resilience": 88,
+        "impact": "Elevated",
+        "recovery": "Recovering",
+        "status": "Stabilized"
+    },
+    {
+        "scenario": "Governance Drift Acceleration",
+        "resilience": 80,
+        "impact": "Critical",
+        "recovery": "Active",
+        "status": "Escalated"
+    },
+    {
+        "scenario": "Enterprise Survivability Recovery",
+        "resilience": 96,
+        "impact": "Controlled",
+        "recovery": "Optimized",
+        "status": "Operational"
+    }
+]
+
+SIMULATION_STREAMS_V1 = [
+    "Commercialization resilience pathways remain operationally survivable.",
+    "Inspection failure simulations indicate stabilization orchestration effectiveness.",
+    "Governance drift acceleration is propagating through operational continuity pathways.",
+    "Enterprise survivability cognition remains synchronized during recovery simulations.",
+    "Strategic governance resilience rehearsals remain commercially aligned."
+]
+
+
+def calculate_simulation_chamber_index_v1():
+
+    total = 0
+
+    for row in SIMULATION_SCENARIOS_V1:
+        total += row["resilience"]
+
+    return round(total / len(SIMULATION_SCENARIOS_V1))
+
+
+@app.route("/governance/simulation-chamber")
+def governance_simulation_chamber_v1():
+
+    simulation_index = calculate_simulation_chamber_index_v1()
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Autonomous Simulation Chamber</title>
+
+        <style>
+
+            body {
+                margin:0;
+                overflow:hidden;
+                background:
+                    radial-gradient(circle at center, rgba(255,159,28,0.14), transparent 18%),
+                    radial-gradient(circle at top left, rgba(255,122,24,0.10), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(255,159,28,0.08), transparent 24%),
+                    linear-gradient(135deg,#010203 0%,#080c13 45%,#030405 100%);
+                color:white;
+                font-family:Arial,sans-serif;
+            }
+
+            .simulation-grid {
+                position:fixed;
+                width:100%;
+                height:100%;
+                opacity:0.06;
+                background-image:
+                    linear-gradient(rgba(255,159,28,0.12) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,159,28,0.12) 1px, transparent 1px);
+                background-size:54px 54px;
+                animation:gridflow 24s linear infinite;
+            }
+
+            @keyframes gridflow {
+
+                from {
+                    transform:translateY(0px);
+                }
+
+                to {
+                    transform:translateY(54px);
+                }
+
+            }
+
+            .reactor-rings {
+                position:fixed;
+                top:50%;
+                left:50%;
+                transform:translate(-50%, -50%);
+                width:700px;
+                height:700px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.14);
+                animation:ringrotate 46s linear infinite;
+            }
+
+            .reactor-rings:before,
+            .reactor-rings:after {
+                content:'';
+                position:absolute;
+                inset:56px;
+                border-radius:50%;
+                border:1px solid rgba(255,159,28,0.10);
+            }
+
+            .reactor-rings:after {
+                inset:140px;
+            }
+
+            @keyframes ringrotate {
+
+                from {
+                    transform:translate(-50%, -50%) rotate(0deg);
+                }
+
+                to {
+                    transform:translate(-50%, -50%) rotate(360deg);
+                }
+
+            }
+
+            .stress-waves span {
+                position:absolute;
+                width:260%;
+                height:2px;
+                background:
+                    linear-gradient(
+                        to right,
+                        rgba(255,159,28,0),
+                        rgba(255,159,28,0.55),
+                        rgba(255,159,28,0)
+                    );
+                animation:wavepulse linear infinite;
+            }
+
+            .stress-waves span:nth-child(1){
+                top:20%;
+                animation-duration:12s;
+            }
+
+            .stress-waves span:nth-child(2){
+                top:42%;
+                animation-duration:16s;
+            }
+
+            .stress-waves span:nth-child(3){
+                top:64%;
+                animation-duration:20s;
+            }
+
+            .stress-waves span:nth-child(4){
+                top:82%;
+                animation-duration:24s;
+            }
+
+            @keyframes wavepulse {
+
+                0% {
+                    left:-160%;
+                    opacity:0;
+                    transform:rotate(-3deg);
+                }
+
+                30% {
+                    opacity:1;
+                }
+
+                100% {
+                    left:20%;
+                    opacity:0;
+                    transform:rotate(3deg);
+                }
+
+            }
+
+            .simulation-particles span {
+                position:absolute;
+                display:block;
+                border-radius:50%;
+                background:rgba(255,159,28,0.20);
+                box-shadow:0 0 36px rgba(255,159,28,0.45);
+                animation:particlefloat linear infinite;
+            }
+
+            .simulation-particles span:nth-child(1){
+                width:16px;
+                height:16px;
+                left:10%;
+                top:88%;
+                animation-duration:18s;
+            }
+
+            .simulation-particles span:nth-child(2){
+                width:28px;
+                height:28px;
+                left:28%;
+                top:92%;
+                animation-duration:24s;
+            }
+
+            .simulation-particles span:nth-child(3){
+                width:18px;
+                height:18px;
+                left:50%;
+                top:86%;
+                animation-duration:20s;
+            }
+
+            .simulation-particles span:nth-child(4){
+                width:34px;
+                height:34px;
+                left:72%;
+                top:94%;
+                animation-duration:28s;
+            }
+
+            .simulation-particles span:nth-child(5){
+                width:20px;
+                height:20px;
+                left:90%;
+                top:84%;
+                animation-duration:22s;
+            }
+
+            @keyframes particlefloat {
+
+                0% {
+                    transform:translateY(0px) scale(1);
+                    opacity:0;
+                }
+
+                20% {
+                    opacity:1;
+                }
+
+                50% {
+                    transform:translateY(-320px) scale(1.6);
+                }
+
+                100% {
+                    transform:translateY(-820px) scale(0.6);
+                    opacity:0;
+                }
+
+            }
+
+            .wrap {
+                position:relative;
+                z-index:3;
+                max-width:1980px;
+                margin:auto;
+                padding:34px;
+                height:100vh;
+                overflow-y:auto;
+            }
+
+            .hero,.panel {
+                position:relative;
+                overflow:hidden;
+                border-radius:36px;
+                padding:36px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+                    rgba(18,22,30,0.82);
+                backdrop-filter:blur(12px);
+            }
+
+            .hero:before,
+            .panel:before {
+                content:'';
+                position:absolute;
+                width:220%;
+                height:220%;
+                top:-60%;
+                left:-60%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.06), transparent 60%);
+                animation:fieldrotate 44s linear infinite;
+            }
+
+            @keyframes fieldrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(360deg);
+                }
+
+            }
+
+            .hero *,
+            .panel * {
+                position:relative;
+                z-index:2;
+            }
+
+            h1 {
+                margin:0 0 12px;
+                font-size:98px;
+                color:#ff9f1c;
+                letter-spacing:-4px;
+                text-shadow:0 0 42px rgba(255,159,28,0.34);
+            }
+
+            h2 {
+                color:#ff9f1c;
+            }
+
+            p {
+                color:#b4bcc9;
+                line-height:1.8;
+            }
+
+            .overall {
+                margin-top:34px;
+                text-align:center;
+                padding:40px;
+                border-radius:32px;
+                background:rgba(255,255,255,0.04);
+            }
+
+            .overall strong {
+                display:block;
+                font-size:190px;
+                color:#ff9f1c;
+                text-shadow:0 0 56px rgba(255,159,28,0.46);
+            }
+
+            .signal-grid {
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:24px;
+                margin-top:24px;
+            }
+
+            .signal-card {
+                position:relative;
+                overflow:hidden;
+                border-radius:30px;
+                padding:32px;
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .signal-card:after {
+                content:'';
+                position:absolute;
+                width:180%;
+                height:180%;
+                top:-40%;
+                left:-40%;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.08), transparent 65%);
+                animation:signalrotate 18s linear infinite;
+            }
+
+            @keyframes signalrotate {
+
+                from {
+                    transform:rotate(0deg);
+                }
+
+                to {
+                    transform:rotate(-360deg);
+                }
+
+            }
+
+            .signal-card * {
+                position:relative;
+                z-index:2;
+            }
+
+            .signal-card strong {
+                display:block;
+                font-size:66px;
+                color:#ff9f1c;
+                margin-bottom:12px;
+            }
+
+            .pill {
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.24);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:800;
+                margin-top:12px;
+                margin-right:10px;
+            }
+
+            table {
+                width:100%;
+                border-collapse:collapse;
+                margin-top:24px;
+            }
+
+            th,td {
+                padding:15px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th {
+                color:#ff9f1c;
+                text-transform:uppercase;
+                font-size:12px;
+            }
+
+            @media (max-width:1200px) {
+
+                .signal-grid {
+                    grid-template-columns:1fr;
+                }
+
+                h1 {
+                    font-size:52px;
+                }
+
+                .overall strong {
+                    font-size:100px;
+                }
+
+                .reactor-rings {
+                    width:320px;
+                    height:320px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="simulation-grid"></div>
+
+        <div class="reactor-rings"></div>
+
+        <div class="stress-waves">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="simulation-particles">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Autonomous Simulation Chamber</h1>
+
+                <p>
+                    Enterprise governance simulation intelligence infrastructure
+                    for survivability stress testing,
+                    commercialization disruption modeling,
+                    operational collapse propagation analysis,
+                    and strategic governance resilience rehearsal.
+                </p>
+
+                <div class="overall">
+
+                    <strong>{{ simulation_index }}%</strong>
+
+                    Governance Simulation Intelligence Index
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Scenario Simulation Matrix</h2>
+
+                <div class="signal-grid">
+
+                    {% for row in scenarios %}
+
+                    <div class="signal-card">
+
+                        <strong>{{ row.resilience }}%</strong>
+
+                        <h3>{{ row.scenario }}</h3>
+
+                        <p>
+                            Recovery Pathway:
+                            {{ row.recovery }}
+                        </p>
+
+                        <span class="pill">
+                            Impact: {{ row.impact }}
+                        </span>
+
+                        <span class="pill">
+                            Status: {{ row.status }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Enterprise Governance Simulation Streams</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Simulation Cognition Stream</th>
+                            <th>Executive Interpretation</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in cognition %}
+
+                        <tr>
+
+                            <td>{{ item }}</td>
+
+                            <td>Enterprise governance simulation intelligence</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Governance Simulation Chamber Vision</h2>
+
+                <p>
+                    The Governance Autonomous Simulation Chamber enables enterprise
+                    governance stress-testing and survivability rehearsal
+                    across all COBIT-Chain AssuranceLayer operational domains.
+                </p>
+
+                <p>
+                    This architecture supports:
+                </p>
+
+                <ul>
+
+                    <li>Governance collapse simulation</li>
+
+                    <li>Commercialization disruption modeling</li>
+
+                    <li>Operational survivability rehearsal</li>
+
+                    <li>Governance resilience orchestration</li>
+
+                    <li>Strategic continuity simulations</li>
+
+                    <li>Enterprise recovery pathway cognition</li>
+
+                    <li>Governance stress-testing ecosystems</li>
+
+                    <li>Simulation governance intelligence infrastructure</li>
+
+                </ul>
+
+            </section>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        scenarios=SIMULATION_SCENARIOS_V1,
+        cognition=SIMULATION_STREAMS_V1,
+        simulation_index=simulation_index
+    )
+
+
+@app.route("/governance/simulation-chamber/api")
+def governance_simulation_chamber_api_v1():
+
+    return jsonify({
+        "simulation_index": calculate_simulation_chamber_index_v1(),
+        "scenarios": SIMULATION_SCENARIOS_V1,
+        "cognition": SIMULATION_STREAMS_V1
+    })
+
+# ============================================================
+# END GOVERNANCE_AUTONOMOUS_SIMULATION_CHAMBER_V1
+# ============================================================
+
+
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_SINGULARITY_LAYER_V2_ACTIVE
+# ============================================================
+
+IRLT_SINGULARITY_DOMAINS_V2 = [
+    {
+        "domain": "Operational Trust",
+        "score": 92,
+        "state": "Stable"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "score": 95,
+        "state": "Strong"
+    },
+    {
+        "domain": "Evidence Coherence",
+        "score": 94,
+        "state": "Verified"
+    },
+    {
+        "domain": "Commercialization Readiness",
+        "score": 91,
+        "state": "Controlled"
+    },
+    {
+        "domain": "Dependency Stability",
+        "score": 88,
+        "state": "Monitoring"
+    },
+    {
+        "domain": "Governance Integrity",
+        "score": 93,
+        "state": "Aligned"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/governance-singularity")
+def irlt_governance_singularity():
+
+    overall_score = round(
+        sum(x["score"] for x in IRLT_SINGULARITY_DOMAINS_V2)
+        / len(IRLT_SINGULARITY_DOMAINS_V2)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Singularity Layer</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.22), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:20px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:42px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Singularity Layer</h1>
+
+                <p>
+                    Unified operational governance cognition layer for
+                    enterprise radiopharma commercialization readiness,
+                    operational trust assurance, inspection survivability,
+                    governance coherence, and executive defensibility.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Unified Governance Cognition Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in domains %}
+
+                            <div class="card">
+
+                                <strong>{{ row.score }}%</strong>
+
+                                {{ row.domain }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ overall_score }}%</strong>
+
+                        Unified Governance State
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Operational Governance Cognition</h2>
+
+                    <ul>
+
+                        <li>
+                            Operational trust posture remains stable across commercialization domains.
+                        </li>
+
+                        <li>
+                            Evidence coherence remains aligned across governance pathways.
+                        </li>
+
+                        <li>
+                            Inspection survivability posture remains operationally defensible.
+                        </li>
+
+                        <li>
+                            Governance integrity remains synchronized across release, QA, and operational readiness domains.
+                        </li>
+
+                        <li>
+                            Escalation pressure remains observable but controlled.
+                        </li>
+
+                        <li>
+                            Commercialization readiness cognition remains within enterprise tolerance thresholds.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Coherence Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Layer</th>
+                                <th>State</th>
+                                <th>Operational Impact</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>Release Governance</td>
+                                <td>Aligned</td>
+                                <td>Commercialization Ready</td>
+                            </tr>
+
+                            <tr>
+                                <td>Inspection Survivability</td>
+                                <td>Stable</td>
+                                <td>Inspection Defensible</td>
+                            </tr>
+
+                            <tr>
+                                <td>Evidence Lineage</td>
+                                <td>Verified</td>
+                                <td>Audit Survivable</td>
+                            </tr>
+
+                            <tr>
+                                <td>Operational Trust</td>
+                                <td>Synchronized</td>
+                                <td>Operationally Stable</td>
+                            </tr>
+
+                            <tr>
+                                <td>Governance Escalation</td>
+                                <td>Observed</td>
+                                <td>Monitoring Required</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        domains=IRLT_SINGULARITY_DOMAINS_V2,
+        overall_score=overall_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-singularity/api")
+def irlt_governance_singularity_api():
+
+    return jsonify({
+        "overall_score": round(
+            sum(x["score"] for x in IRLT_SINGULARITY_DOMAINS_V2)
+            / len(IRLT_SINGULARITY_DOMAINS_V2)
+        ),
+        "domains": IRLT_SINGULARITY_DOMAINS_V2
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_SINGULARITY_LAYER_V2
+
+# ============================================================
+# IRLT_GOVERNANCE_RESILIENCE_FORECAST_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_RESILIENCE_FORECAST_V1 = [
+    {
+        "domain": "Operational Trust",
+        "current": 92,
+        "forecast": 89,
+        "state": "Stable"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "current": 95,
+        "forecast": 93,
+        "state": "Strong"
+    },
+    {
+        "domain": "Commercialization Readiness",
+        "current": 91,
+        "forecast": 87,
+        "state": "Controlled"
+    },
+    {
+        "domain": "CAPA Stability",
+        "current": 82,
+        "forecast": 76,
+        "state": "Pressure"
+    },
+    {
+        "domain": "Environmental Monitoring",
+        "current": 88,
+        "forecast": 83,
+        "state": "Monitoring"
+    },
+    {
+        "domain": "Governance Integrity",
+        "current": 93,
+        "forecast": 91,
+        "state": "Aligned"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/resilience-forecast")
+def irlt_resilience_forecast():
+
+    current_avg = round(
+        sum(x["current"] for x in IRLT_RESILIENCE_FORECAST_V1)
+        / len(IRLT_RESILIENCE_FORECAST_V1)
+    )
+
+    forecast_avg = round(
+        sum(x["forecast"] for x in IRLT_RESILIENCE_FORECAST_V1)
+        / len(IRLT_RESILIENCE_FORECAST_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Resilience Forecast Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:20px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:42px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            .forecast-bar{
+                height:12px;
+                border-radius:999px;
+                background:rgba(255,255,255,0.08);
+                overflow:hidden;
+                margin-top:8px;
+            }
+
+            .forecast-fill{
+                height:100%;
+                background:linear-gradient(90deg,#ff9f1c,#ffb347);
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Resilience Forecast</h1>
+
+                <p>
+                    Enterprise governance resilience forecasting engine for
+                    commercialization readiness sustainability, inspection survivability,
+                    operational trust durability, governance drift forecasting,
+                    and future operational defensibility modeling.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Resilience Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in forecast %}
+
+                            <div class="card">
+
+                                <strong>{{ row.forecast }}%</strong>
+
+                                {{ row.domain }}
+
+                                <div class="forecast-bar">
+
+                                    <div class="forecast-fill"
+                                         style="width:{{ row.forecast }}%">
+                                    </div>
+
+                                </div>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ forecast_avg }}%</strong>
+
+                        Forecast Governance Resilience
+
+                        <br><br>
+
+                        Current State: {{ current_avg }}%
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Commercialization Resilience Forecast</h2>
+
+                    <ul>
+
+                        <li>
+                            Operational trust resilience remains stable under projected commercialization pressure.
+                        </li>
+
+                        <li>
+                            Inspection survivability posture remains highly defensible over the forecast horizon.
+                        </li>
+
+                        <li>
+                            CAPA accumulation pressure remains the highest projected destabilization vector.
+                        </li>
+
+                        <li>
+                            Environmental monitoring governance may experience moderate resilience degradation under scale-up conditions.
+                        </li>
+
+                        <li>
+                            Governance integrity posture remains operationally aligned across enterprise readiness pathways.
+                        </li>
+
+                        <li>
+                            Commercialization readiness sustainability remains within enterprise governance tolerance thresholds.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Sustainability Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Domain</th>
+                                <th>Current</th>
+                                <th>Forecast</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in forecast %}
+
+                            <tr>
+
+                                <td>{{ row.domain }}</td>
+
+                                <td>{{ row.current }}%</td>
+
+                                <td>{{ row.forecast }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        forecast=IRLT_RESILIENCE_FORECAST_V1,
+        current_avg=current_avg,
+        forecast_avg=forecast_avg
+    )
+
+
+@app.route("/irlt-commercial-readiness/resilience-forecast/api")
+def irlt_resilience_forecast_api():
+
+    return jsonify({
+        "forecast": IRLT_RESILIENCE_FORECAST_V1,
+        "forecast_average": round(
+            sum(x["forecast"] for x in IRLT_RESILIENCE_FORECAST_V1)
+            / len(IRLT_RESILIENCE_FORECAST_V1)
+        )
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_RESILIENCE_FORECAST_ENGINE_V1
+
+# ============================================================
+# IRLT_AUTONOMOUS_INSPECTION_DEFENSE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_INSPECTION_DEFENSE_V1 = [
+    {
+        "domain": "QA Release Evidence",
+        "score": 96,
+        "state": "Strong",
+        "risk": "Low"
+    },
+    {
+        "domain": "Dose Lineage Integrity",
+        "score": 95,
+        "state": "Verified",
+        "risk": "Low"
+    },
+    {
+        "domain": "Environmental Monitoring",
+        "score": 84,
+        "state": "Review",
+        "risk": "Moderate"
+    },
+    {
+        "domain": "CAPA Closure Velocity",
+        "score": 79,
+        "state": "Pressure",
+        "risk": "Elevated"
+    },
+    {
+        "domain": "Access Governance",
+        "score": 90,
+        "state": "Controlled",
+        "risk": "Low"
+    },
+    {
+        "domain": "Backup Governance",
+        "score": 82,
+        "state": "Observed",
+        "risk": "Moderate"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/inspection-defense")
+def irlt_inspection_defense():
+
+    overall_score = round(
+        sum(x["score"] for x in IRLT_INSPECTION_DEFENSE_V1)
+        / len(IRLT_INSPECTION_DEFENSE_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Inspection Defense Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:20px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:42px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Inspection Defense Engine</h1>
+
+                <p>
+                    Enterprise operational inspection survivability intelligence
+                    layer for radiopharma commercialization readiness,
+                    audit defensibility, governance resilience,
+                    evidence survivability, and operational trust protection.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Inspection Defense Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in defense %}
+
+                            <div class="card">
+
+                                <strong>{{ row.score }}%</strong>
+
+                                {{ row.domain }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ overall_score }}%</strong>
+
+                        Inspection Survivability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Inspection Survivability Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            QA release evidence remains operationally defensible under simulated inspection pressure.
+                        </li>
+
+                        <li>
+                            Dose lineage integrity remains highly survivable across commercialization workflows.
+                        </li>
+
+                        <li>
+                            Environmental monitoring governance remains the highest observation-sensitive domain.
+                        </li>
+
+                        <li>
+                            CAPA closure velocity remains the primary projected inspection escalation vector.
+                        </li>
+
+                        <li>
+                            Governance integrity remains stable across operational trust pathways.
+                        </li>
+
+                        <li>
+                            Audit defensibility posture remains commercially sustainable.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Inspection Defense Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Domain</th>
+                                <th>Score</th>
+                                <th>Risk</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in defense %}
+
+                            <tr>
+
+                                <td>{{ row.domain }}</td>
+
+                                <td>{{ row.score }}%</td>
+
+                                <td>{{ row.risk }}</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        defense=IRLT_INSPECTION_DEFENSE_V1,
+        overall_score=overall_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/inspection-defense/api")
+def irlt_inspection_defense_api():
+
+    return jsonify({
+        "overall_score": round(
+            sum(x["score"] for x in IRLT_INSPECTION_DEFENSE_V1)
+            / len(IRLT_INSPECTION_DEFENSE_V1)
+        ),
+        "domains": IRLT_INSPECTION_DEFENSE_V1
+    })
+
+# ============================================================
+# END IRLT_AUTONOMOUS_INSPECTION_DEFENSE_ENGINE_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_RISK_PROPAGATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_RISK_PROPAGATION_V1 = [
+    {
+        "source": "CAPA Closure Delay",
+        "impact": "Inspection Survivability",
+        "severity": 88,
+        "state": "Escalating"
+    },
+    {
+        "source": "Environmental Excursion",
+        "impact": "Release Defensibility",
+        "severity": 92,
+        "state": "Critical"
+    },
+    {
+        "source": "Training Governance Gap",
+        "impact": "Operational Readiness",
+        "severity": 74,
+        "state": "Observed"
+    },
+    {
+        "source": "Backup Verification Failure",
+        "impact": "Evidence Survivability",
+        "severity": 81,
+        "state": "Elevated"
+    },
+    {
+        "source": "Shipment Delay",
+        "impact": "Treatment Coordination",
+        "severity": 79,
+        "state": "Monitoring"
+    },
+    {
+        "source": "Access Governance Drift",
+        "impact": "Audit Defensibility",
+        "severity": 76,
+        "state": "Observed"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/risk-propagation")
+def irlt_risk_propagation():
+
+    overall_risk = round(
+        sum(x["severity"] for x in IRLT_RISK_PROPAGATION_V1)
+        / len(IRLT_RISK_PROPAGATION_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Risk Propagation Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:20px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:42px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            .risk-line{
+                margin-top:18px;
+                padding:16px;
+                border-radius:16px;
+                background:rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.06);
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Risk Propagation Engine</h1>
+
+                <p>
+                    Enterprise governance blast-radius intelligence engine
+                    for commercialization readiness deterioration modeling,
+                    dependency propagation analysis, inspection survivability
+                    exposure, and operational trust degradation forecasting.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Blast Radius Intelligence</h2>
+
+                        {% for row in risks %}
+
+                        <div class="risk-line">
+
+                            <strong style="font-size:26px;color:#ff9f1c;">
+                                {{ row.source }}
+                            </strong>
+
+                            <p>
+                                Propagates operationally into:
+                                <b>{{ row.impact }}</b>
+                            </p>
+
+                            <span class="pill">
+                                Severity {{ row.severity }}%
+                            </span>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ overall_risk }}%</strong>
+
+                        Governance Blast Radius
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Operational Governance Propagation Analysis</h2>
+
+                    <ul>
+
+                        <li>
+                            CAPA closure degradation remains the strongest projected inspection destabilization pathway.
+                        </li>
+
+                        <li>
+                            Environmental monitoring excursions create the highest release defensibility exposure.
+                        </li>
+
+                        <li>
+                            Backup governance instability directly weakens audit evidence survivability posture.
+                        </li>
+
+                        <li>
+                            Shipment coordination instability propagates into treatment timing governance exposure.
+                        </li>
+
+                        <li>
+                            Governance dependency chains remain commercially survivable but require active monitoring.
+                        </li>
+
+                        <li>
+                            Operational trust degradation remains controllable under current escalation conditions.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Propagation Dependency Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Source Event</th>
+                                <th>Propagation Impact</th>
+                                <th>Severity</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in risks %}
+
+                            <tr>
+
+                                <td>{{ row.source }}</td>
+
+                                <td>{{ row.impact }}</td>
+
+                                <td>{{ row.severity }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        risks=IRLT_RISK_PROPAGATION_V1,
+        overall_risk=overall_risk
+    )
+
+
+@app.route("/irlt-commercial-readiness/risk-propagation/api")
+def irlt_risk_propagation_api():
+
+    return jsonify({
+        "overall_risk": round(
+            sum(x["severity"] for x in IRLT_RISK_PROPAGATION_V1)
+            / len(IRLT_RISK_PROPAGATION_V1)
+        ),
+        "propagation": IRLT_RISK_PROPAGATION_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_RISK_PROPAGATION_ENGINE_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_PASSPORT_ORCHESTRATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_PASSPORTS_V1 = [
+    {
+        "passport": "Release Passport",
+        "trust": 95,
+        "state": "Certified",
+        "scope": "Commercial Release"
+    },
+    {
+        "passport": "Inspection Passport",
+        "trust": 93,
+        "state": "Verified",
+        "scope": "Inspection Survivability"
+    },
+    {
+        "passport": "Dose Journey Passport",
+        "trust": 96,
+        "state": "Aligned",
+        "scope": "Isotope Lineage"
+    },
+    {
+        "passport": "Shipment Passport",
+        "trust": 91,
+        "state": "Stable",
+        "scope": "Chain of Custody"
+    },
+    {
+        "passport": "Environmental Passport",
+        "trust": 84,
+        "state": "Observed",
+        "scope": "EM Governance"
+    },
+    {
+        "passport": "Operational Readiness Passport",
+        "trust": 92,
+        "state": "Controlled",
+        "scope": "Commercialization Readiness"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/passport-orchestration")
+def irlt_passport_orchestration():
+
+    overall_trust = round(
+        sum(x["trust"] for x in IRLT_GOVERNANCE_PASSPORTS_V1)
+        / len(IRLT_GOVERNANCE_PASSPORTS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Passport Orchestration</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:20px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:38px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Passport Orchestration</h1>
+
+                <p>
+                    Enterprise operational trust certification layer for
+                    commercialization readiness assurance,
+                    governance survivability certification,
+                    inspection defensibility orchestration,
+                    and portable operational trust intelligence.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Passport Certifications</h2>
+
+                        <div class="grid">
+
+                            {% for row in passports %}
+
+                            <div class="card">
+
+                                <strong>{{ row.trust }}%</strong>
+
+                                {{ row.passport }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                                <br><br>
+
+                                <small style="color:#b8c1cd;">
+                                    {{ row.scope }}
+                                </small>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ overall_trust }}%</strong>
+
+                        Operational Trust Certification
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Operational Trust Certification Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Release governance certification remains commercially defensible across operational readiness pathways.
+                        </li>
+
+                        <li>
+                            Dose lineage governance certification remains highly survivable under inspection scrutiny.
+                        </li>
+
+                        <li>
+                            Shipment governance trust alignment remains operationally stable across chain-of-custody workflows.
+                        </li>
+
+                        <li>
+                            Environmental governance certification remains observable but commercially manageable.
+                        </li>
+
+                        <li>
+                            Operational readiness certification remains aligned with commercialization governance expectations.
+                        </li>
+
+                        <li>
+                            Governance passport orchestration maintains enterprise operational trust coherence.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Passport Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Passport</th>
+                                <th>Trust</th>
+                                <th>State</th>
+                                <th>Scope</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in passports %}
+
+                            <tr>
+
+                                <td>{{ row.passport }}</td>
+
+                                <td>{{ row.trust }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                                <td>{{ row.scope }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        passports=IRLT_GOVERNANCE_PASSPORTS_V1,
+        overall_trust=overall_trust
+    )
+
+
+@app.route("/irlt-commercial-readiness/passport-orchestration/api")
+def irlt_passport_orchestration_api():
+
+    return jsonify({
+        "overall_trust": round(
+            sum(x["trust"] for x in IRLT_GOVERNANCE_PASSPORTS_V1)
+            / len(IRLT_GOVERNANCE_PASSPORTS_V1)
+        ),
+        "passports": IRLT_GOVERNANCE_PASSPORTS_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_PASSPORT_ORCHESTRATION_ENGINE_V1
+
+# ============================================================
+# IRLT_OPERATIONAL_TRUST_TIMELINE_REPLAY_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_TIMELINE_EVENTS_V1 = [
+    {
+        "time": "2026-05-01",
+        "event": "Commercialization Readiness Review",
+        "impact": "Operational Trust Increased",
+        "trust": 88
+    },
+    {
+        "time": "2026-05-03",
+        "event": "Environmental Monitoring Escalation",
+        "impact": "Inspection Exposure Increased",
+        "trust": 82
+    },
+    {
+        "time": "2026-05-06",
+        "event": "CAPA Governance Intervention",
+        "impact": "Operational Stability Restored",
+        "trust": 86
+    },
+    {
+        "time": "2026-05-09",
+        "event": "Dose Lineage Verification",
+        "impact": "Audit Defensibility Improved",
+        "trust": 91
+    },
+    {
+        "time": "2026-05-12",
+        "event": "Backup Governance Reconciliation",
+        "impact": "Evidence Survivability Strengthened",
+        "trust": 93
+    },
+    {
+        "time": "2026-05-15",
+        "event": "Shipment Coordination Validation",
+        "impact": "Treatment Governance Stabilized",
+        "trust": 95
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/timeline-replay")
+def irlt_timeline_replay():
+
+    current_trust = IRLT_TIMELINE_EVENTS_V1[-1]["trust"]
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Operational Trust Timeline Replay</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .timeline{
+                margin-top:24px;
+            }
+
+            .event{
+                position:relative;
+                padding:24px;
+                margin-bottom:18px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .event:before{
+                content:"";
+                position:absolute;
+                left:-10px;
+                top:30px;
+                width:20px;
+                height:20px;
+                border-radius:50%;
+                background:#ff9f1c;
+                box-shadow:0 0 18px rgba(255,159,28,0.8);
+            }
+
+            .event strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Operational Trust Timeline Replay</h1>
+
+                <p>
+                    Enterprise operational governance replay engine for
+                    commercialization trust evolution,
+                    inspection survivability reconstruction,
+                    governance intervention analysis,
+                    and operational readiness history cognition.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Timeline Evolution</h2>
+
+                        <div class="timeline">
+
+                            {% for row in timeline %}
+
+                            <div class="event">
+
+                                <strong>{{ row.event }}</strong>
+
+                                <p>
+                                    {{ row.impact }}
+                                </p>
+
+                                <span class="pill">
+                                    {{ row.time }}
+                                </span>
+
+                                <span class="pill">
+                                    Trust {{ row.trust }}%
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ current_trust }}%</strong>
+
+                        Operational Trust State
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Governance Evolution Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Commercialization readiness governance evolved toward higher operational defensibility over the replay horizon.
+                        </li>
+
+                        <li>
+                            Environmental governance instability created the largest temporary trust degradation event.
+                        </li>
+
+                        <li>
+                            CAPA governance intervention successfully stabilized operational readiness exposure.
+                        </li>
+
+                        <li>
+                            Dose lineage verification significantly strengthened audit defensibility posture.
+                        </li>
+
+                        <li>
+                            Backup governance reconciliation materially improved evidence survivability confidence.
+                        </li>
+
+                        <li>
+                            Shipment governance validation restored treatment coordination trust alignment.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Operational Trust Replay Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Date</th>
+                                <th>Governance Event</th>
+                                <th>Impact</th>
+                                <th>Trust</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in timeline %}
+
+                            <tr>
+
+                                <td>{{ row.time }}</td>
+
+                                <td>{{ row.event }}</td>
+
+                                <td>{{ row.impact }}</td>
+
+                                <td>{{ row.trust }}%</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        timeline=IRLT_TIMELINE_EVENTS_V1,
+        current_trust=current_trust
+    )
+
+
+@app.route("/irlt-commercial-readiness/timeline-replay/api")
+def irlt_timeline_replay_api():
+
+    return jsonify({
+        "timeline": IRLT_TIMELINE_EVENTS_V1,
+        "current_trust": IRLT_TIMELINE_EVENTS_V1[-1]["trust"]
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_TRUST_TIMELINE_REPLAY_ENGINE_V1
+
+# ============================================================
+# IRLT_MULTI_SITE_COMMERCIALIZATION_FEDERATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_FEDERATION_SITES_V1 = [
+    {
+        "site": "Indianapolis IRLT Hub",
+        "trust": 94,
+        "inspection": "Strong",
+        "release": "Ready",
+        "state": "Stable"
+    },
+    {
+        "site": "Europe Radiopharma Node",
+        "trust": 89,
+        "inspection": "Moderate",
+        "release": "Review",
+        "state": "Observed"
+    },
+    {
+        "site": "West Coast Treatment Network",
+        "trust": 92,
+        "inspection": "Strong",
+        "release": "Ready",
+        "state": "Controlled"
+    },
+    {
+        "site": "Partner Manufacturing Site",
+        "trust": 81,
+        "inspection": "Elevated",
+        "release": "Escalated",
+        "state": "Monitoring"
+    },
+    {
+        "site": "Cold Chain Logistics Federation",
+        "trust": 90,
+        "inspection": "Stable",
+        "release": "Ready",
+        "state": "Aligned"
+    },
+    {
+        "site": "Commercial Packaging Network",
+        "trust": 87,
+        "inspection": "Observed",
+        "release": "Review",
+        "state": "Review"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/federation-command")
+def irlt_federation_command():
+
+    federation_score = round(
+        sum(x["trust"] for x in IRLT_FEDERATION_SITES_V1)
+        / len(IRLT_FEDERATION_SITES_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Federation Command Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:34px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Federation Command Engine</h1>
+
+                <p>
+                    Enterprise multi-site governance federation intelligence
+                    layer for radiopharma commercialization scaling,
+                    federated operational trust alignment,
+                    inspection survivability orchestration,
+                    and distributed governance readiness coordination.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Federated Operational Trust Sites</h2>
+
+                        <div class="grid">
+
+                            {% for row in sites %}
+
+                            <div class="card">
+
+                                <strong>{{ row.trust }}%</strong>
+
+                                {{ row.site }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.inspection }}
+                                </span>
+
+                                <span class="pill">
+                                    {{ row.release }}
+                                </span>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ federation_score }}%</strong>
+
+                        Federated Governance Trust
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Federated Commercialization Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Indianapolis governance readiness remains the strongest commercialization trust anchor across the federation.
+                        </li>
+
+                        <li>
+                            Partner manufacturing operations remain the highest projected inspection survivability exposure point.
+                        </li>
+
+                        <li>
+                            Cold-chain governance alignment remains operationally stable across distributed logistics pathways.
+                        </li>
+
+                        <li>
+                            European radiopharma readiness requires additional governance stabilization review.
+                        </li>
+
+                        <li>
+                            Multi-site operational trust coherence remains commercially sustainable under projected scale conditions.
+                        </li>
+
+                        <li>
+                            Federated governance intelligence remains aligned with enterprise commercialization objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Federation Governance Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Site</th>
+                                <th>Trust</th>
+                                <th>Inspection</th>
+                                <th>Release</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in sites %}
+
+                            <tr>
+
+                                <td>{{ row.site }}</td>
+
+                                <td>{{ row.trust }}%</td>
+
+                                <td>{{ row.inspection }}</td>
+
+                                <td>{{ row.release }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        sites=IRLT_FEDERATION_SITES_V1,
+        federation_score=federation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/federation-command/api")
+def irlt_federation_command_api():
+
+    return jsonify({
+        "federation_score": round(
+            sum(x["trust"] for x in IRLT_FEDERATION_SITES_V1)
+            / len(IRLT_FEDERATION_SITES_V1)
+        ),
+        "sites": IRLT_FEDERATION_SITES_V1
+    })
+
+# ============================================================
+# END IRLT_MULTI_SITE_COMMERCIALIZATION_FEDERATION_ENGINE_V1
+
+# ============================================================
+# IRLT_AUTONOMOUS_GOVERNANCE_COORDINATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_COORDINATION_ACTIONS_V1 = [
+    {
+        "condition": "CAPA Closure Delay",
+        "coordination": "Prioritize QA escalation review",
+        "priority": "Critical",
+        "confidence": 94
+    },
+    {
+        "condition": "Environmental Excursion",
+        "coordination": "Isolate release chain and trigger investigation",
+        "priority": "High",
+        "confidence": 92
+    },
+    {
+        "condition": "Shipment Delay",
+        "coordination": "Coordinate treatment timing stabilization",
+        "priority": "Elevated",
+        "confidence": 88
+    },
+    {
+        "condition": "Backup Verification Failure",
+        "coordination": "Escalate evidence survivability review",
+        "priority": "High",
+        "confidence": 90
+    },
+    {
+        "condition": "Training Governance Gap",
+        "coordination": "Freeze impacted approval workflow",
+        "priority": "Moderate",
+        "confidence": 84
+    },
+    {
+        "condition": "Access Governance Drift",
+        "coordination": "Restrict privileged governance actions",
+        "priority": "Observed",
+        "confidence": 82
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/governance-coordination")
+def irlt_governance_coordination():
+
+    coordination_score = round(
+        sum(x["confidence"] for x in IRLT_COORDINATION_ACTIONS_V1)
+        / len(IRLT_COORDINATION_ACTIONS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Coordination Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .action{
+                margin-top:18px;
+                padding:20px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .action strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Coordination Engine</h1>
+
+                <p>
+                    Enterprise operational governance coordination intelligence
+                    layer for commercialization stabilization,
+                    escalation orchestration,
+                    operational trust recovery sequencing,
+                    and governed remediation pathway intelligence.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Coordination Actions</h2>
+
+                        {% for row in actions %}
+
+                        <div class="action">
+
+                            <strong>{{ row.condition }}</strong>
+
+                            <p>
+                                {{ row.coordination }}
+                            </p>
+
+                            <span class="pill">
+                                {{ row.priority }}
+                            </span>
+
+                            <span class="pill">
+                                Confidence {{ row.confidence }}%
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ coordination_score }}%</strong>
+
+                        Coordination Confidence
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Governance Coordination Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            CAPA governance stabilization remains the highest enterprise coordination priority.
+                        </li>
+
+                        <li>
+                            Environmental governance excursions require immediate release defensibility isolation sequencing.
+                        </li>
+
+                        <li>
+                            Shipment coordination stabilization remains critical for treatment continuity assurance.
+                        </li>
+
+                        <li>
+                            Backup governance failures materially impact evidence survivability confidence pathways.
+                        </li>
+
+                        <li>
+                            Training governance drift remains operationally manageable under controlled intervention sequencing.
+                        </li>
+
+                        <li>
+                            Governance coordination intelligence remains aligned with commercialization stabilization objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Coordination Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Condition</th>
+                                <th>Coordination Action</th>
+                                <th>Priority</th>
+                                <th>Confidence</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in actions %}
+
+                            <tr>
+
+                                <td>{{ row.condition }}</td>
+
+                                <td>{{ row.coordination }}</td>
+
+                                <td>{{ row.priority }}</td>
+
+                                <td>{{ row.confidence }}%</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        actions=IRLT_COORDINATION_ACTIONS_V1,
+        coordination_score=coordination_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-coordination/api")
+def irlt_governance_coordination_api():
+
+    return jsonify({
+        "coordination_score": round(
+            sum(x["confidence"] for x in IRLT_COORDINATION_ACTIONS_V1)
+            / len(IRLT_COORDINATION_ACTIONS_V1)
+        ),
+        "actions": IRLT_COORDINATION_ACTIONS_V1
+    })
+
+# ============================================================
+# END IRLT_AUTONOMOUS_GOVERNANCE_COORDINATION_ENGINE_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_DIGITAL_TWIN_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_DIGITAL_TWIN_STATE_V1 = [
+    {
+        "domain": "Operational Trust",
+        "score": 94,
+        "state": "Stable"
+    },
+    {
+        "domain": "Commercialization Readiness",
+        "score": 91,
+        "state": "Controlled"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "score": 95,
+        "state": "Strong"
+    },
+    {
+        "domain": "Governance Drift",
+        "score": 18,
+        "state": "Contained"
+    },
+    {
+        "domain": "Escalation Pressure",
+        "score": 27,
+        "state": "Observed"
+    },
+    {
+        "domain": "Evidence Coherence",
+        "score": 96,
+        "state": "Verified"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/digital-twin")
+def irlt_digital_twin():
+
+    trust_score = round(
+        sum(x["score"] for x in IRLT_DIGITAL_TWIN_STATE_V1)
+        / len(IRLT_DIGITAL_TWIN_STATE_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Digital Twin Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:42px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            .pulse{
+                margin-top:20px;
+                height:14px;
+                border-radius:999px;
+                overflow:hidden;
+                background:rgba(255,255,255,0.08);
+            }
+
+            .pulse-fill{
+                height:100%;
+                background:linear-gradient(90deg,#ff9f1c,#ffb347);
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Digital Twin</h1>
+
+                <p>
+                    Enterprise governance-operational cognition twin for
+                    commercialization readiness state modeling,
+                    operational trust synchronization,
+                    governance drift intelligence,
+                    and inspection survivability simulation.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Twin State Model</h2>
+
+                        <div class="grid">
+
+                            {% for row in twin %}
+
+                            <div class="card">
+
+                                <strong>{{ row.score }}%</strong>
+
+                                {{ row.domain }}
+
+                                <div class="pulse">
+
+                                    <div class="pulse-fill"
+                                         style="width:{{ row.score }}%">
+                                    </div>
+
+                                </div>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ trust_score }}%</strong>
+
+                        Governance Twin Stability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Governance Twin Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Operational trust synchronization remains commercially stable across governance pathways.
+                        </li>
+
+                        <li>
+                            Commercialization readiness posture remains operationally defensible under projected scale conditions.
+                        </li>
+
+                        <li>
+                            Governance drift exposure remains contained within enterprise tolerance thresholds.
+                        </li>
+
+                        <li>
+                            Escalation pressure remains observable but operationally survivable.
+                        </li>
+
+                        <li>
+                            Evidence coherence remains highly aligned across operational lineage domains.
+                        </li>
+
+                        <li>
+                            Governance twin cognition remains synchronized with commercialization readiness objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Twin Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Domain</th>
+                                <th>Score</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in twin %}
+
+                            <tr>
+
+                                <td>{{ row.domain }}</td>
+
+                                <td>{{ row.score }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        twin=IRLT_DIGITAL_TWIN_STATE_V1,
+        trust_score=trust_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/digital-twin/api")
+def irlt_digital_twin_api():
+
+    return jsonify({
+        "trust_score": round(
+            sum(x["score"] for x in IRLT_DIGITAL_TWIN_STATE_V1)
+            / len(IRLT_DIGITAL_TWIN_STATE_V1)
+        ),
+        "twin_state": IRLT_DIGITAL_TWIN_STATE_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_DIGITAL_TWIN_ENGINE_V1
+
+# ============================================================
+# IRLT_RELEASE_DEFENSIBILITY_COMMAND_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_RELEASE_DEFENSE_V1 = [
+    {
+        "domain": "Batch Release Governance",
+        "score": 96,
+        "state": "Defensible",
+        "owner": "QA Release"
+    },
+    {
+        "domain": "Environmental Monitoring",
+        "score": 84,
+        "state": "Observed",
+        "owner": "EM Governance"
+    },
+    {
+        "domain": "Dose Lineage Integrity",
+        "score": 97,
+        "state": "Verified",
+        "owner": "Radiopharma Operations"
+    },
+    {
+        "domain": "CAPA Readiness",
+        "score": 81,
+        "state": "Pressure",
+        "owner": "Quality Systems"
+    },
+    {
+        "domain": "Shipment Governance",
+        "score": 92,
+        "state": "Stable",
+        "owner": "Distribution Operations"
+    },
+    {
+        "domain": "Evidence Survivability",
+        "score": 95,
+        "state": "Strong",
+        "owner": "Governance Assurance"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/release-defensibility")
+def irlt_release_defensibility():
+
+    defensibility_score = round(
+        sum(x["score"] for x in IRLT_RELEASE_DEFENSE_V1)
+        / len(IRLT_RELEASE_DEFENSE_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Release Defensibility Command Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:40px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Release Defensibility Command</h1>
+
+                <p>
+                    Enterprise commercialization release governance intelligence
+                    layer for inspection survivability,
+                    operational release defensibility,
+                    audit-ready batch governance,
+                    and enterprise trust certification orchestration.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Release Governance Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in defense %}
+
+                            <div class="card">
+
+                                <strong>{{ row.score }}%</strong>
+
+                                {{ row.domain }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                                <br><br>
+
+                                <small style="color:#b8c1cd;">
+                                    {{ row.owner }}
+                                </small>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ defensibility_score }}%</strong>
+
+                        Release Defensibility
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Release Governance Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Batch release governance remains commercially defensible under projected inspection pressure.
+                        </li>
+
+                        <li>
+                            Dose lineage verification remains the strongest operational release survivability domain.
+                        </li>
+
+                        <li>
+                            CAPA readiness remains the highest projected release governance escalation vector.
+                        </li>
+
+                        <li>
+                            Environmental monitoring governance remains operationally observable but manageable.
+                        </li>
+
+                        <li>
+                            Shipment governance alignment remains stable across commercialization pathways.
+                        </li>
+
+                        <li>
+                            Enterprise evidence survivability remains highly aligned with audit defensibility expectations.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Release Defensibility Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Domain</th>
+                                <th>Score</th>
+                                <th>State</th>
+                                <th>Owner</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in defense %}
+
+                            <tr>
+
+                                <td>{{ row.domain }}</td>
+
+                                <td>{{ row.score }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                                <td>{{ row.owner }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        defense=IRLT_RELEASE_DEFENSE_V1,
+        defensibility_score=defensibility_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/release-defensibility/api")
+def irlt_release_defensibility_api():
+
+    return jsonify({
+        "defensibility_score": round(
+            sum(x["score"] for x in IRLT_RELEASE_DEFENSE_V1)
+            / len(IRLT_RELEASE_DEFENSE_V1)
+        ),
+        "domains": IRLT_RELEASE_DEFENSE_V1
+    })
+
+# ============================================================
+# END IRLT_RELEASE_DEFENSIBILITY_COMMAND_ENGINE_V1
+
+# ============================================================
+# IRLT_OPERATIONAL_WARROOM_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+IRLT_WARROOM_STREAMS_V1 = [
+    {
+        "stream": "Commercial Release",
+        "status": "Stable",
+        "severity": "Low",
+        "score": 95
+    },
+    {
+        "stream": "Environmental Monitoring",
+        "status": "Observed",
+        "severity": "Moderate",
+        "score": 84
+    },
+    {
+        "stream": "CAPA Escalation",
+        "status": "Pressure",
+        "severity": "Elevated",
+        "score": 79
+    },
+    {
+        "stream": "Dose Lineage Integrity",
+        "status": "Verified",
+        "severity": "Low",
+        "score": 97
+    },
+    {
+        "stream": "Cold Chain Governance",
+        "status": "Controlled",
+        "severity": "Low",
+        "score": 91
+    },
+    {
+        "stream": "Inspection Readiness",
+        "status": "Strong",
+        "severity": "Low",
+        "score": 94
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/warroom")
+def irlt_operational_warroom():
+
+    warroom_score = round(
+        sum(x["score"] for x in IRLT_WARROOM_STREAMS_V1)
+        / len(IRLT_WARROOM_STREAMS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Operational Warroom Command Center</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:40px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            .alert{
+                margin-top:16px;
+                padding:16px;
+                border-radius:16px;
+                background:rgba(255,255,255,0.04);
+                border-left:5px solid orange;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Operational Warroom</h1>
+
+                <p>
+                    Enterprise commercialization command center for
+                    radiopharma operational escalation visibility,
+                    inspection survivability monitoring,
+                    governance stabilization coordination,
+                    and operational trust defense orchestration.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Operational Governance Streams</h2>
+
+                        <div class="grid">
+
+                            {% for row in streams %}
+
+                            <div class="card">
+
+                                <strong>{{ row.score }}%</strong>
+
+                                {{ row.stream }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.status }}
+                                </span>
+
+                                <span class="pill">
+                                    {{ row.severity }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ warroom_score }}%</strong>
+
+                        Operational Stability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Active Governance Escalations</h2>
+
+                    <div class="alert">
+                        CAPA closure acceleration required for inspection stability preservation.
+                    </div>
+
+                    <div class="alert">
+                        Environmental monitoring governance requires enhanced observation review.
+                    </div>
+
+                    <div class="alert">
+                        Commercial release governance remains operationally stable.
+                    </div>
+
+                    <div class="alert">
+                        Dose lineage survivability remains highly defensible.
+                    </div>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Warroom Governance Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Operational Stream</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Score</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in streams %}
+
+                            <tr>
+
+                                <td>{{ row.stream }}</td>
+
+                                <td>{{ row.status }}</td>
+
+                                <td>{{ row.severity }}</td>
+
+                                <td>{{ row.score }}%</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        streams=IRLT_WARROOM_STREAMS_V1,
+        warroom_score=warroom_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/warroom/api")
+def irlt_operational_warroom_api():
+
+    return jsonify({
+        "warroom_score": round(
+            sum(x["score"] for x in IRLT_WARROOM_STREAMS_V1)
+            / len(IRLT_WARROOM_STREAMS_V1)
+        ),
+        "streams": IRLT_WARROOM_STREAMS_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_WARROOM_COMMAND_CENTER_V1
+
+# ============================================================
+# IRLT_INSPECTION_SIMULATION_CHAMBER_V1_ACTIVE
+# ============================================================
+
+IRLT_INSPECTION_SCENARIOS_V1 = [
+    {
+        "scenario": "FDA Commercialization Inspection",
+        "exposure": "Moderate",
+        "survivability": 93,
+        "state": "Defensible"
+    },
+    {
+        "scenario": "Environmental Monitoring Escalation",
+        "exposure": "Elevated",
+        "survivability": 81,
+        "state": "Observed"
+    },
+    {
+        "scenario": "CAPA Closure Backlog",
+        "exposure": "Critical",
+        "survivability": 76,
+        "state": "Pressure"
+    },
+    {
+        "scenario": "Cold Chain Deviation",
+        "exposure": "High",
+        "survivability": 84,
+        "state": "Controlled"
+    },
+    {
+        "scenario": "Dose Traceability Review",
+        "exposure": "Low",
+        "survivability": 97,
+        "state": "Verified"
+    },
+    {
+        "scenario": "Multi-Site Governance Audit",
+        "exposure": "Moderate",
+        "survivability": 88,
+        "state": "Stable"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/inspection-simulator")
+def irlt_inspection_simulator():
+
+    survivability_score = round(
+        sum(x["survivability"] for x in IRLT_INSPECTION_SCENARIOS_V1)
+        / len(IRLT_INSPECTION_SCENARIOS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Inspection Simulation Chamber</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .scenario{
+                margin-top:18px;
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .scenario strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Inspection Simulation Chamber</h1>
+
+                <p>
+                    Enterprise governance survivability simulation environment
+                    for radiopharma inspection rehearsal,
+                    commercialization defense testing,
+                    operational exposure simulation,
+                    and audit survivability cognition.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Inspection Simulation Scenarios</h2>
+
+                        {% for row in scenarios %}
+
+                        <div class="scenario">
+
+                            <strong>{{ row.scenario }}</strong>
+
+                            <p>
+                                Inspection exposure:
+                                <b>{{ row.exposure }}</b>
+                            </p>
+
+                            <span class="pill">
+                                Survivability {{ row.survivability }}%
+                            </span>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ survivability_score }}%</strong>
+
+                        Inspection Survivability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Simulation Chamber Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            FDA commercialization inspection survivability remains operationally defensible.
+                        </li>
+
+                        <li>
+                            CAPA backlog accumulation remains the highest projected inspection destabilization pathway.
+                        </li>
+
+                        <li>
+                            Cold-chain governance remains commercially survivable under simulated deviation conditions.
+                        </li>
+
+                        <li>
+                            Dose traceability integrity remains the strongest audit survivability control layer.
+                        </li>
+
+                        <li>
+                            Multi-site governance federation remains stable under projected inspection load.
+                        </li>
+
+                        <li>
+                            Simulation cognition remains aligned with commercialization governance defense objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Inspection Survivability Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Exposure</th>
+                                <th>Survivability</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in scenarios %}
+
+                            <tr>
+
+                                <td>{{ row.scenario }}</td>
+
+                                <td>{{ row.exposure }}</td>
+
+                                <td>{{ row.survivability }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        scenarios=IRLT_INSPECTION_SCENARIOS_V1,
+        survivability_score=survivability_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/inspection-simulator/api")
+def irlt_inspection_simulator_api():
+
+    return jsonify({
+        "survivability_score": round(
+            sum(x["survivability"] for x in IRLT_INSPECTION_SCENARIOS_V1)
+            / len(IRLT_INSPECTION_SCENARIOS_V1)
+        ),
+        "scenarios": IRLT_INSPECTION_SCENARIOS_V1
+    })
+
+# ============================================================
+# END IRLT_INSPECTION_SIMULATION_CHAMBER_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_RECOVERY_ORCHESTRATOR_V1_ACTIVE
+# ============================================================
+
+IRLT_RECOVERY_STREAMS_V1 = [
+    {
+        "incident": "Environmental Monitoring Excursion",
+        "recovery": "Controlled Recovery Sequence",
+        "confidence": 89,
+        "state": "Stabilizing"
+    },
+    {
+        "incident": "CAPA Escalation Surge",
+        "recovery": "Governance Intervention Pathway",
+        "confidence": 83,
+        "state": "Observed"
+    },
+    {
+        "incident": "Cold Chain Disruption",
+        "recovery": "Distribution Recovery Workflow",
+        "confidence": 91,
+        "state": "Controlled"
+    },
+    {
+        "incident": "Backup Validation Failure",
+        "recovery": "Evidence Restoration Sequence",
+        "confidence": 87,
+        "state": "Recovering"
+    },
+    {
+        "incident": "Shipment Coordination Breakdown",
+        "recovery": "Treatment Continuity Recovery",
+        "confidence": 86,
+        "state": "Active"
+    },
+    {
+        "incident": "Inspection Escalation Event",
+        "recovery": "Inspection Defense Stabilization",
+        "confidence": 93,
+        "state": "Strong"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/recovery-orchestrator")
+def irlt_recovery_orchestrator():
+
+    recovery_score = round(
+        sum(x["confidence"] for x in IRLT_RECOVERY_STREAMS_V1)
+        / len(IRLT_RECOVERY_STREAMS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Recovery Orchestrator</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .recovery{
+                margin-top:18px;
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .recovery strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Recovery Orchestrator</h1>
+
+                <p>
+                    Enterprise governance recovery intelligence engine for
+                    commercialization stabilization,
+                    operational survivability restoration,
+                    governance recovery sequencing,
+                    and inspection resilience orchestration.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Recovery Orchestration Streams</h2>
+
+                        {% for row in recovery %}
+
+                        <div class="recovery">
+
+                            <strong>{{ row.incident }}</strong>
+
+                            <p>
+                                {{ row.recovery }}
+                            </p>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                            <span class="pill">
+                                Confidence {{ row.confidence }}%
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ recovery_score }}%</strong>
+
+                        Recovery Survivability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Recovery Intelligence Analysis</h2>
+
+                    <ul>
+
+                        <li>
+                            Environmental monitoring recovery sequencing remains operationally stable under escalation pressure.
+                        </li>
+
+                        <li>
+                            CAPA recovery orchestration remains the primary enterprise stabilization dependency.
+                        </li>
+
+                        <li>
+                            Cold-chain recovery survivability remains commercially defensible.
+                        </li>
+
+                        <li>
+                            Evidence restoration governance remains aligned with audit survivability expectations.
+                        </li>
+
+                        <li>
+                            Shipment continuity recovery remains operationally manageable under projected disruption conditions.
+                        </li>
+
+                        <li>
+                            Governance recovery orchestration remains synchronized with commercialization continuity objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Recovery Governance Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Incident</th>
+                                <th>Recovery Pathway</th>
+                                <th>Confidence</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in recovery %}
+
+                            <tr>
+
+                                <td>{{ row.incident }}</td>
+
+                                <td>{{ row.recovery }}</td>
+
+                                <td>{{ row.confidence }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        recovery=IRLT_RECOVERY_STREAMS_V1,
+        recovery_score=recovery_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/recovery-orchestrator/api")
+def irlt_recovery_orchestrator_api():
+
+    return jsonify({
+        "recovery_score": round(
+            sum(x["confidence"] for x in IRLT_RECOVERY_STREAMS_V1)
+            / len(IRLT_RECOVERY_STREAMS_V1)
+        ),
+        "recovery_streams": IRLT_RECOVERY_STREAMS_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_RECOVERY_ORCHESTRATOR_V1
+
+# ============================================================
+# IRLT_DEPENDENCY_COGNITION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_DEPENDENCY_CHAINS_V1 = [
+    {
+        "source": "Environmental Monitoring",
+        "dependency": "Commercial Batch Release",
+        "criticality": 94,
+        "state": "High Coupling"
+    },
+    {
+        "source": "CAPA Governance",
+        "dependency": "Inspection Survivability",
+        "criticality": 96,
+        "state": "Critical"
+    },
+    {
+        "source": "Dose Lineage",
+        "dependency": "Patient Treatment Integrity",
+        "criticality": 98,
+        "state": "Verified"
+    },
+    {
+        "source": "Cold Chain Monitoring",
+        "dependency": "Shipment Release Stability",
+        "criticality": 89,
+        "state": "Controlled"
+    },
+    {
+        "source": "Access Governance",
+        "dependency": "Operational Defensibility",
+        "criticality": 83,
+        "state": "Observed"
+    },
+    {
+        "source": "Backup Survivability",
+        "dependency": "Audit Evidence Continuity",
+        "criticality": 91,
+        "state": "Stable"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/dependency-cognition")
+def irlt_dependency_cognition():
+
+    cognition_score = round(
+        sum(x["criticality"] for x in IRLT_DEPENDENCY_CHAINS_V1)
+        / len(IRLT_DEPENDENCY_CHAINS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Dependency Cognition Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .dependency{
+                margin-top:18px;
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .dependency strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Dependency Cognition Engine</h1>
+
+                <p>
+                    Enterprise governance dependency intelligence engine for
+                    commercialization readiness dependency mapping,
+                    operational trust propagation analysis,
+                    governance coupling visibility,
+                    and inspection survivability dependency cognition.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Operational Dependency Chains</h2>
+
+                        {% for row in dependencies %}
+
+                        <div class="dependency">
+
+                            <strong>{{ row.source }}</strong>
+
+                            <p>
+                                Operationally coupled to:
+                                <b>{{ row.dependency }}</b>
+                            </p>
+
+                            <span class="pill">
+                                Criticality {{ row.criticality }}%
+                            </span>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ cognition_score }}%</strong>
+
+                        Dependency Stability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Dependency Intelligence Analysis</h2>
+
+                    <ul>
+
+                        <li>
+                            CAPA governance remains the strongest inspection survivability dependency driver.
+                        </li>
+
+                        <li>
+                            Environmental monitoring stability remains directly coupled to release defensibility posture.
+                        </li>
+
+                        <li>
+                            Dose lineage governance remains foundational to treatment integrity assurance.
+                        </li>
+
+                        <li>
+                            Backup survivability remains operationally critical for evidence continuity preservation.
+                        </li>
+
+                        <li>
+                            Access governance drift remains observable but commercially manageable.
+                        </li>
+
+                        <li>
+                            Dependency cognition intelligence remains aligned with commercialization governance survivability objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Dependency Coupling Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Source</th>
+                                <th>Dependency Target</th>
+                                <th>Criticality</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in dependencies %}
+
+                            <tr>
+
+                                <td>{{ row.source }}</td>
+
+                                <td>{{ row.dependency }}</td>
+
+                                <td>{{ row.criticality }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        dependencies=IRLT_DEPENDENCY_CHAINS_V1,
+        cognition_score=cognition_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/dependency-cognition/api")
+def irlt_dependency_cognition_api():
+
+    return jsonify({
+        "cognition_score": round(
+            sum(x["criticality"] for x in IRLT_DEPENDENCY_CHAINS_V1)
+            / len(IRLT_DEPENDENCY_CHAINS_V1)
+        ),
+        "dependencies": IRLT_DEPENDENCY_CHAINS_V1
+    })
+
+# ============================================================
+# END IRLT_DEPENDENCY_COGNITION_ENGINE_V1
+
+# ============================================================
+# IRLT_EVIDENCE_LINEAGE_INTELLIGENCE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_EVIDENCE_LINEAGE_V1 = [
+    {
+        "evidence": "Batch Release Packet",
+        "origin": "QA Governance",
+        "destination": "Commercial Release",
+        "integrity": 97,
+        "state": "Verified"
+    },
+    {
+        "evidence": "Environmental Monitoring Records",
+        "origin": "EM Operations",
+        "destination": "Inspection Readiness",
+        "integrity": 86,
+        "state": "Observed"
+    },
+    {
+        "evidence": "Dose Traceability Chain",
+        "origin": "Radiopharma Manufacturing",
+        "destination": "Patient Administration",
+        "integrity": 99,
+        "state": "Strong"
+    },
+    {
+        "evidence": "Shipment Governance Logs",
+        "origin": "Distribution Operations",
+        "destination": "Cold Chain Verification",
+        "integrity": 91,
+        "state": "Stable"
+    },
+    {
+        "evidence": "Backup Verification Records",
+        "origin": "Infrastructure Governance",
+        "destination": "Audit Survivability",
+        "integrity": 89,
+        "state": "Controlled"
+    },
+    {
+        "evidence": "CAPA Closure Evidence",
+        "origin": "Quality Systems",
+        "destination": "Inspection Defensibility",
+        "integrity": 82,
+        "state": "Monitoring"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/evidence-lineage")
+def irlt_evidence_lineage():
+
+    lineage_score = round(
+        sum(x["integrity"] for x in IRLT_EVIDENCE_LINEAGE_V1)
+        / len(IRLT_EVIDENCE_LINEAGE_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Evidence Lineage Intelligence Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .lineage{
+                margin-top:18px;
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .lineage strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Evidence Lineage Intelligence</h1>
+
+                <p>
+                    Enterprise evidence survivability and lineage intelligence
+                    engine for commercialization defensibility,
+                    audit-ready traceability,
+                    governance integrity preservation,
+                    and operational trust continuity.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Evidence Lineage Streams</h2>
+
+                        {% for row in lineage %}
+
+                        <div class="lineage">
+
+                            <strong>{{ row.evidence }}</strong>
+
+                            <p>
+                                {{ row.origin }}
+                                →
+                                <b>{{ row.destination }}</b>
+                            </p>
+
+                            <span class="pill">
+                                Integrity {{ row.integrity }}%
+                            </span>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ lineage_score }}%</strong>
+
+                        Evidence Integrity
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Evidence Survivability Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Dose traceability lineage remains the strongest operational trust preservation pathway.
+                        </li>
+
+                        <li>
+                            Environmental monitoring evidence requires continued governance observation.
+                        </li>
+
+                        <li>
+                            Commercial release lineage remains operationally defensible under inspection scrutiny.
+                        </li>
+
+                        <li>
+                            Backup verification continuity remains critical for audit survivability preservation.
+                        </li>
+
+                        <li>
+                            CAPA evidence integrity remains commercially manageable but operationally sensitive.
+                        </li>
+
+                        <li>
+                            Evidence lineage cognition remains aligned with enterprise commercialization defensibility objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Evidence Lineage Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Evidence</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Integrity</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in lineage %}
+
+                            <tr>
+
+                                <td>{{ row.evidence }}</td>
+
+                                <td>{{ row.origin }}</td>
+
+                                <td>{{ row.destination }}</td>
+
+                                <td>{{ row.integrity }}%</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        lineage=IRLT_EVIDENCE_LINEAGE_V1,
+        lineage_score=lineage_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/evidence-lineage/api")
+def irlt_evidence_lineage_api():
+
+    return jsonify({
+        "lineage_score": round(
+            sum(x["integrity"] for x in IRLT_EVIDENCE_LINEAGE_V1)
+            / len(IRLT_EVIDENCE_LINEAGE_V1)
+        ),
+        "lineage": IRLT_EVIDENCE_LINEAGE_V1
+    })
+
+# ============================================================
+# END IRLT_EVIDENCE_LINEAGE_INTELLIGENCE_ENGINE_V1
+
+# ============================================================
+# IRLT_OPERATIONAL_TRUST_FABRIC_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_TRUST_FABRIC_V1 = [
+    {
+        "fabric": "Commercial Release Fabric",
+        "trust": 96,
+        "state": "Strong",
+        "governance": "Aligned"
+    },
+    {
+        "fabric": "Inspection Survivability Fabric",
+        "trust": 94,
+        "state": "Defensible",
+        "governance": "Verified"
+    },
+    {
+        "fabric": "Cold Chain Trust Fabric",
+        "trust": 89,
+        "state": "Stable",
+        "governance": "Controlled"
+    },
+    {
+        "fabric": "Dose Traceability Fabric",
+        "trust": 98,
+        "state": "Verified",
+        "governance": "Certified"
+    },
+    {
+        "fabric": "Evidence Integrity Fabric",
+        "trust": 93,
+        "state": "Protected",
+        "governance": "Stable"
+    },
+    {
+        "fabric": "CAPA Governance Fabric",
+        "trust": 82,
+        "state": "Observed",
+        "governance": "Monitoring"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/trust-fabric")
+def irlt_trust_fabric():
+
+    trust_score = round(
+        sum(x["trust"] for x in IRLT_TRUST_FABRIC_V1)
+        / len(IRLT_TRUST_FABRIC_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Operational Trust Fabric Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:40px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Operational Trust Fabric</h1>
+
+                <p>
+                    Enterprise operational trust orchestration fabric for
+                    commercialization survivability,
+                    governance continuity preservation,
+                    evidence integrity synchronization,
+                    and inspection defense alignment.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Trust Fabric Layers</h2>
+
+                        <div class="grid">
+
+                            {% for row in fabric %}
+
+                            <div class="card">
+
+                                <strong>{{ row.trust }}%</strong>
+
+                                {{ row.fabric }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                                <span class="pill">
+                                    {{ row.governance }}
+                                </span>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ trust_score }}%</strong>
+
+                        Trust Fabric Stability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Operational Trust Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Dose traceability governance remains the strongest operational trust preservation fabric.
+                        </li>
+
+                        <li>
+                            Commercial release governance remains inspection-defensible under projected scale conditions.
+                        </li>
+
+                        <li>
+                            CAPA governance pressure remains observable but commercially survivable.
+                        </li>
+
+                        <li>
+                            Evidence integrity continuity remains strongly synchronized across governance domains.
+                        </li>
+
+                        <li>
+                            Cold-chain governance alignment remains operationally stable across commercialization pathways.
+                        </li>
+
+                        <li>
+                            Trust fabric cognition remains aligned with enterprise operational survivability objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Trust Fabric Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Fabric Domain</th>
+                                <th>Trust</th>
+                                <th>State</th>
+                                <th>Governance</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in fabric %}
+
+                            <tr>
+
+                                <td>{{ row.fabric }}</td>
+
+                                <td>{{ row.trust }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                                <td>{{ row.governance }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        fabric=IRLT_TRUST_FABRIC_V1,
+        trust_score=trust_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/trust-fabric/api")
+def irlt_trust_fabric_api():
+
+    return jsonify({
+        "trust_score": round(
+            sum(x["trust"] for x in IRLT_TRUST_FABRIC_V1)
+            / len(IRLT_TRUST_FABRIC_V1)
+        ),
+        "fabric": IRLT_TRUST_FABRIC_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_TRUST_FABRIC_ENGINE_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_NEXUS_COMMAND_CORE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_NEXUS_V1 = [
+    {
+        "nexus": "Inspection Defense Nexus",
+        "stability": 95,
+        "state": "Strong",
+        "impact": "Inspection Survivability"
+    },
+    {
+        "nexus": "Commercial Readiness Nexus",
+        "stability": 92,
+        "state": "Controlled",
+        "impact": "Operational Launch"
+    },
+    {
+        "nexus": "Evidence Integrity Nexus",
+        "stability": 97,
+        "state": "Verified",
+        "impact": "Audit Defense"
+    },
+    {
+        "nexus": "CAPA Escalation Nexus",
+        "stability": 79,
+        "state": "Observed",
+        "impact": "Quality Governance"
+    },
+    {
+        "nexus": "Cold Chain Governance Nexus",
+        "stability": 90,
+        "state": "Stable",
+        "impact": "Treatment Continuity"
+    },
+    {
+        "nexus": "Dose Traceability Nexus",
+        "stability": 99,
+        "state": "Certified",
+        "impact": "Patient Integrity"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/governance-nexus")
+def irlt_governance_nexus():
+
+    nexus_score = round(
+        sum(x["stability"] for x in IRLT_GOVERNANCE_NEXUS_V1)
+        / len(IRLT_GOVERNANCE_NEXUS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Nexus Command Core</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:40px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Nexus Core</h1>
+
+                <p>
+                    Enterprise governance nexus intelligence layer for
+                    operational trust synchronization,
+                    commercialization survivability alignment,
+                    evidence coherence orchestration,
+                    and inspection defense convergence.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Nexus Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in nexus %}
+
+                            <div class="card">
+
+                                <strong>{{ row.stability }}%</strong>
+
+                                {{ row.nexus }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                                <br><br>
+
+                                <small style="color:#b8c1cd;">
+                                    {{ row.impact }}
+                                </small>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ nexus_score }}%</strong>
+
+                        Nexus Stability
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Nexus Intelligence Analysis</h2>
+
+                    <ul>
+
+                        <li>
+                            Dose traceability governance remains the strongest enterprise trust nexus.
+                        </li>
+
+                        <li>
+                            CAPA escalation governance remains the largest projected operational destabilization vector.
+                        </li>
+
+                        <li>
+                            Evidence integrity synchronization remains highly aligned with inspection defensibility objectives.
+                        </li>
+
+                        <li>
+                            Commercial readiness governance remains operationally survivable under projected scale conditions.
+                        </li>
+
+                        <li>
+                            Cold-chain governance continuity remains commercially stable.
+                        </li>
+
+                        <li>
+                            Governance nexus cognition remains synchronized with enterprise operational trust objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Nexus Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Nexus Domain</th>
+                                <th>Stability</th>
+                                <th>State</th>
+                                <th>Impact</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in nexus %}
+
+                            <tr>
+
+                                <td>{{ row.nexus }}</td>
+
+                                <td>{{ row.stability }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                                <td>{{ row.impact }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        nexus=IRLT_GOVERNANCE_NEXUS_V1,
+        nexus_score=nexus_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-nexus/api")
+def irlt_governance_nexus_api():
+
+    return jsonify({
+        "nexus_score": round(
+            sum(x["stability"] for x in IRLT_GOVERNANCE_NEXUS_V1)
+            / len(IRLT_GOVERNANCE_NEXUS_V1)
+        ),
+        "nexus": IRLT_GOVERNANCE_NEXUS_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_NEXUS_COMMAND_CORE_V1
+
+# ============================================================
+# IRLT_AUTONOMOUS_GOVERNANCE_REASONING_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_REASONING_STREAMS_V1 = [
+    {
+        "signal": "Environmental Monitoring Drift",
+        "reasoning": "Potential inspection exposure propagation detected",
+        "confidence": 91,
+        "state": "Escalating"
+    },
+    {
+        "signal": "CAPA Closure Delay",
+        "reasoning": "Commercial release defensibility degradation risk increasing",
+        "confidence": 94,
+        "state": "Critical"
+    },
+    {
+        "signal": "Dose Traceability Alignment",
+        "reasoning": "Operational trust survivability remains stable",
+        "confidence": 98,
+        "state": "Verified"
+    },
+    {
+        "signal": "Cold Chain Stability",
+        "reasoning": "Treatment continuity risk remains controlled",
+        "confidence": 89,
+        "state": "Stable"
+    },
+    {
+        "signal": "Evidence Integrity Validation",
+        "reasoning": "Audit survivability confidence remains strong",
+        "confidence": 96,
+        "state": "Protected"
+    },
+    {
+        "signal": "Access Governance Drift",
+        "reasoning": "Privileged governance exposure becoming observable",
+        "confidence": 83,
+        "state": "Observed"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/autonomous-reasoning")
+def irlt_autonomous_reasoning():
+
+    reasoning_score = round(
+        sum(x["confidence"] for x in IRLT_REASONING_STREAMS_V1)
+        / len(IRLT_REASONING_STREAMS_V1)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Autonomous Governance Reasoning Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .reasoning{
+                margin-top:18px;
+                padding:22px;
+                border-radius:18px;
+                background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .reasoning strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:28px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Autonomous Governance Reasoning</h1>
+
+                <p>
+                    Enterprise governance cognition and reasoning intelligence
+                    layer for commercialization survivability prediction,
+                    inspection exposure reasoning,
+                    operational trust inference,
+                    and governance escalation analysis.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Reasoning Streams</h2>
+
+                        {% for row in reasoning %}
+
+                        <div class="reasoning">
+
+                            <strong>{{ row.signal }}</strong>
+
+                            <p>
+                                {{ row.reasoning }}
+                            </p>
+
+                            <span class="pill">
+                                Confidence {{ row.confidence }}%
+                            </span>
+
+                            <span class="pill">
+                                {{ row.state }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ reasoning_score }}%</strong>
+
+                        Governance Cognition
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Governance Reasoning Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            CAPA governance deterioration remains the strongest projected release defensibility destabilizer.
+                        </li>
+
+                        <li>
+                            Environmental monitoring drift continues propagating inspection survivability exposure.
+                        </li>
+
+                        <li>
+                            Dose lineage reasoning confirms strong operational trust preservation pathways.
+                        </li>
+
+                        <li>
+                            Evidence survivability cognition remains highly aligned with audit defense expectations.
+                        </li>
+
+                        <li>
+                            Access governance drift remains observable but commercially survivable.
+                        </li>
+
+                        <li>
+                            Autonomous governance reasoning remains synchronized with enterprise commercialization objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Reasoning Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Signal</th>
+                                <th>Reasoning</th>
+                                <th>Confidence</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in reasoning %}
+
+                            <tr>
+
+                                <td>{{ row.signal }}</td>
+
+                                <td>{{ row.reasoning }}</td>
+
+                                <td>{{ row.confidence }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        reasoning=IRLT_REASONING_STREAMS_V1,
+        reasoning_score=reasoning_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/autonomous-reasoning/api")
+def irlt_autonomous_reasoning_api():
+
+    return jsonify({
+        "reasoning_score": round(
+            sum(x["confidence"] for x in IRLT_REASONING_STREAMS_V1)
+            / len(IRLT_REASONING_STREAMS_V1)
+        ),
+        "reasoning": IRLT_REASONING_STREAMS_V1
+    })
+
+# ============================================================
+# END IRLT_AUTONOMOUS_GOVERNANCE_REASONING_ENGINE_V1
+
+# ============================================================
+# IRLT_GOVERNANCE_SINGULARITY_ENGINE_V2_ACTIVE
+# ============================================================
+
+IRLT_SINGULARITY_STREAMS_V2 = [
+    {
+        "domain": "Commercialization Governance",
+        "fusion": "Unified Operational Readiness",
+        "stability": 96,
+        "state": "Converged"
+    },
+    {
+        "domain": "Inspection Survivability",
+        "fusion": "Enterprise Audit Defense",
+        "stability": 95,
+        "state": "Protected"
+    },
+    {
+        "domain": "Dose Traceability",
+        "fusion": "Patient Trust Continuity",
+        "stability": 99,
+        "state": "Verified"
+    },
+    {
+        "domain": "Evidence Integrity",
+        "fusion": "Immutable Governance Lineage",
+        "stability": 97,
+        "state": "Certified"
+    },
+    {
+        "domain": "CAPA Governance",
+        "fusion": "Escalation Stabilization",
+        "stability": 81,
+        "state": "Observed"
+    },
+    {
+        "domain": "Cold Chain Assurance",
+        "fusion": "Treatment Coordination Stability",
+        "stability": 92,
+        "state": "Aligned"
+    }
+]
+
+
+@app.route("/irlt-commercial-readiness/governance-singularity")
+def irlt_governance_singularity_legacy_disabled():
+
+    singularity_score = round(
+        sum(x["stability"] for x in IRLT_SINGULARITY_STREAMS_V2)
+        / len(IRLT_SINGULARITY_STREAMS_V2)
+    )
+
+    html = '''
+
+    <!doctype html>
+
+    <html>
+
+    <head>
+
+        <title>Governance Singularity Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.20), transparent 34%),
+                    linear-gradient(135deg,#050608 0%,#11151f 48%,#06070b 100%);
+                color:white;
+                font-family:Arial;
+            }
+
+            .wrap{
+                max-width:1900px;
+                margin:auto;
+                padding:34px;
+            }
+
+            .hero,.panel{
+                background:
+                    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                    rgba(20,24,33,0.88);
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:74px;
+                margin:0 0 12px;
+                letter-spacing:-0.05em;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+            p{
+                color:#c0c7d2;
+                line-height:1.7;
+            }
+
+            .hero-grid{
+                display:grid;
+                grid-template-columns:1.2fr .8fr;
+                gap:24px;
+            }
+
+            .overall{
+                height:320px;
+                border-radius:24px;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:
+                    radial-gradient(circle, rgba(255,159,28,0.20), transparent 70%),
+                    rgba(255,255,255,0.03);
+                border:1px solid rgba(255,159,28,0.18);
+            }
+
+            .overall strong{
+                font-size:110px;
+                color:#ff9f1c;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:18px;
+                margin-top:22px;
+            }
+
+            .card{
+                background:rgba(255,255,255,0.04);
+                border-radius:18px;
+                padding:22px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card strong{
+                display:block;
+                color:#ff9f1c;
+                font-size:40px;
+            }
+
+            .pill{
+                display:inline-block;
+                margin-top:12px;
+                margin-right:8px;
+                padding:7px 12px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.12);
+                border:1px solid rgba(255,122,24,0.25);
+                color:#ffd7ad;
+                font-size:12px;
+                font-weight:bold;
+            }
+
+            .ops-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:22px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,td{
+                padding:14px;
+                border-bottom:1px solid rgba(255,255,255,0.08);
+                text-align:left;
+            }
+
+            th{
+                color:#ff9f1c;
+                font-size:12px;
+                text-transform:uppercase;
+            }
+
+            ul li{
+                margin-bottom:12px;
+                color:#c6cfdb;
+            }
+
+            @media (max-width:1200px){
+
+                .hero-grid,
+                .ops-grid,
+                .grid{
+                    grid-template-columns:1fr;
+                }
+
+                h1{
+                    font-size:44px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="wrap">
+
+            <section class="hero">
+
+                <h1>Governance Singularity</h1>
+
+                <p>
+                    Enterprise governance convergence engine for
+                    operational trust unification,
+                    commercialization survivability synchronization,
+                    evidence integrity convergence,
+                    and inspection defense orchestration.
+                </p>
+
+                <div class="hero-grid">
+
+                    <div class="panel">
+
+                        <h2>Governance Convergence Domains</h2>
+
+                        <div class="grid">
+
+                            {% for row in streams %}
+
+                            <div class="card">
+
+                                <strong>{{ row.stability }}%</strong>
+
+                                {{ row.domain }}
+
+                                <br>
+
+                                <span class="pill">
+                                    {{ row.state }}
+                                </span>
+
+                                <br><br>
+
+                                <small style="color:#b8c1cd;">
+                                    {{ row.fusion }}
+                                </small>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="overall">
+
+                        <strong>{{ singularity_score }}%</strong>
+
+                        Governance Convergence
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="ops-grid">
+
+                <section class="panel">
+
+                    <h2>Governance Convergence Intelligence</h2>
+
+                    <ul>
+
+                        <li>
+                            Dose traceability governance remains the strongest enterprise convergence anchor.
+                        </li>
+
+                        <li>
+                            Evidence integrity convergence remains highly aligned with audit survivability expectations.
+                        </li>
+
+                        <li>
+                            Commercialization governance synchronization remains operationally defensible under projected scale conditions.
+                        </li>
+
+                        <li>
+                            CAPA governance convergence remains the primary operational instability vector.
+                        </li>
+
+                        <li>
+                            Cold-chain governance continuity remains commercially stable across treatment coordination pathways.
+                        </li>
+
+                        <li>
+                            Governance singularity cognition remains synchronized with enterprise operational trust objectives.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+                <section class="panel">
+
+                    <h2>Governance Singularity Matrix</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Governance Domain</th>
+                                <th>Fusion Layer</th>
+                                <th>Stability</th>
+                                <th>State</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in streams %}
+
+                            <tr>
+
+                                <td>{{ row.domain }}</td>
+
+                                <td>{{ row.fusion }}</td>
+
+                                <td>{{ row.stability }}%</td>
+
+                                <td>{{ row.state }}</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    '''
+
+    return render_template_string(
+        html,
+        streams=IRLT_SINGULARITY_STREAMS_V2,
+        singularity_score=singularity_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-singularity/api")
+def irlt_governance_singularity_api_legacy_disabled():
+
+    return jsonify({
+        "singularity_score": round(
+            sum(x["stability"] for x in IRLT_SINGULARITY_STREAMS_V2)
+            / len(IRLT_SINGULARITY_STREAMS_V2)
+        ),
+        "streams": IRLT_SINGULARITY_STREAMS_V2
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_SINGULARITY_ENGINE_V2
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+# ============================================================
+
+
+
+
+
+
+
+# ============================================================
+# IRLT_BOARDROOM_ORCHESTRATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_BOARDROOM_STREAMS_V1 = [
+    {
+        "pillar": "Commercialization Readiness",
+        "score": 96,
+        "state": "Board Ready"
+    },
+    {
+        "pillar": "Inspection Defense",
+        "score": 94,
+        "state": "Defensible"
+    },
+    {
+        "pillar": "Dose Traceability",
+        "score": 99,
+        "state": "Verified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/boardroom")
+def irlt_boardroom():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Boardroom Orchestration</title>
+
+        <style>
+
+            body{
+                background:#0b0f14;
+                color:white;
+                font-family:Arial;
+                padding:40px;
+            }
+
+            .card{
+                background:#1a2230;
+                padding:20px;
+                border-radius:18px;
+                margin-bottom:20px;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:58px;
+            }
+
+            h2{
+                color:#ff9f1c;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Boardroom Orchestration</h1>
+
+        {% for row in streams %}
+
+        <div class="card">
+
+            <h2>{{ row.pillar }}</h2>
+
+            <p>Score: {{ row.score }}%</p>
+
+            <p>Status: {{ row.state }}</p>
+
+        </div>
+
+        {% endfor %}
+
+    </body>
+
+    </html>
+
+    ''', streams=IRLT_BOARDROOM_STREAMS_V1)
+
+
+@app.route("/irlt-commercial-readiness/boardroom/api")
+def irlt_boardroom_api():
+
+    return jsonify(IRLT_BOARDROOM_STREAMS_V1)
+
+# ============================================================
+# END IRLT_BOARDROOM_ORCHESTRATION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_STRATEGIC_INTELLIGENCE_GRID_V1_ACTIVE
+# ============================================================
+
+IRLT_STRATEGIC_GRID_V1 = [
+    {
+        "domain": "Commercial Scale-Up",
+        "confidence": 96,
+        "state": "Stable"
+    },
+    {
+        "domain": "Inspection Readiness",
+        "confidence": 95,
+        "state": "Defensible"
+    },
+    {
+        "domain": "Dose Integrity",
+        "confidence": 99,
+        "state": "Verified"
+    },
+    {
+        "domain": "Cold Chain Stability",
+        "confidence": 91,
+        "state": "Controlled"
+    },
+    {
+        "domain": "CAPA Pressure",
+        "confidence": 82,
+        "state": "Observed"
+    },
+    {
+        "domain": "Evidence Survivability",
+        "confidence": 97,
+        "state": "Protected"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/strategic-grid")
+def irlt_strategic_grid():
+
+    strategic_score = round(
+        sum(x["confidence"] for x in IRLT_STRATEGIC_GRID_V1)
+        / len(IRLT_STRATEGIC_GRID_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Strategic Intelligence Grid</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Strategic Intelligence Grid</h1>
+
+        <p>
+            Executive strategic governance intelligence environment
+            for commercialization readiness,
+            operational survivability,
+            radiopharma trust continuity,
+            and inspection defense orchestration.
+        </p>
+
+        <div class="score">
+            {{ strategic_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in grid %}
+
+            <div class="card">
+
+                <h2>{{ row.domain }}</h2>
+
+                <p>
+                    Confidence: {{ row.confidence }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    grid=IRLT_STRATEGIC_GRID_V1,
+    strategic_score=strategic_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/strategic-grid/api")
+def irlt_strategic_grid_api():
+
+    return jsonify({
+        "strategic_score": round(
+            sum(x["confidence"] for x in IRLT_STRATEGIC_GRID_V1)
+            / len(IRLT_STRATEGIC_GRID_V1)
+        ),
+        "grid": IRLT_STRATEGIC_GRID_V1
+    })
+
+# ============================================================
+# END IRLT_STRATEGIC_INTELLIGENCE_GRID_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_DIGITAL_TWIN_GRID_V1_ACTIVE
+# ============================================================
+
+IRLT_OPERATIONAL_TWIN_V1 = [
+    {
+        "system": "Commercial Release",
+        "health": 96,
+        "state": "Stable"
+    },
+    {
+        "system": "Inspection Defense",
+        "health": 94,
+        "state": "Protected"
+    },
+    {
+        "system": "Dose Traceability",
+        "health": 99,
+        "state": "Verified"
+    },
+    {
+        "system": "Cold Chain Governance",
+        "health": 91,
+        "state": "Controlled"
+    },
+    {
+        "system": "CAPA Governance",
+        "health": 82,
+        "state": "Observed"
+    },
+    {
+        "system": "Evidence Integrity",
+        "health": 97,
+        "state": "Strong"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-twin")
+def irlt_operational_twin():
+
+    twin_score = round(
+        sum(x["health"] for x in IRLT_OPERATIONAL_TWIN_V1)
+        / len(IRLT_OPERATIONAL_TWIN_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Operational Digital Twin</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Operational Digital Twin</h1>
+
+        <p>
+            Enterprise operational twin intelligence environment
+            for commercialization readiness monitoring,
+            governance survivability visibility,
+            radiopharma operational cognition,
+            and inspection defense synchronization.
+        </p>
+
+        <div class="score">
+            {{ twin_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in twin %}
+
+            <div class="card">
+
+                <h2>{{ row.system }}</h2>
+
+                <p>
+                    Health: {{ row.health }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    twin=IRLT_OPERATIONAL_TWIN_V1,
+    twin_score=twin_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/operational-twin/api")
+def irlt_operational_twin_api():
+
+    return jsonify({
+        "twin_score": round(
+            sum(x["health"] for x in IRLT_OPERATIONAL_TWIN_V1)
+            / len(IRLT_OPERATIONAL_TWIN_V1)
+        ),
+        "twin": IRLT_OPERATIONAL_TWIN_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_DIGITAL_TWIN_GRID_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COMMERCIALIZATION_READINESS_FUSION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_READINESS_FUSION_V1 = [
+    {
+        "pillar": "Manufacturing Readiness",
+        "readiness": 95,
+        "state": "Launch Ready"
+    },
+    {
+        "pillar": "Inspection Defense",
+        "readiness": 94,
+        "state": "Defensible"
+    },
+    {
+        "pillar": "Dose Governance",
+        "readiness": 99,
+        "state": "Verified"
+    },
+    {
+        "pillar": "Cold Chain Stability",
+        "readiness": 91,
+        "state": "Stable"
+    },
+    {
+        "pillar": "CAPA Recovery",
+        "readiness": 83,
+        "state": "Observed"
+    },
+    {
+        "pillar": "Evidence Continuity",
+        "readiness": 97,
+        "state": "Protected"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/readiness-fusion")
+def irlt_readiness_fusion():
+
+    fusion_score = round(
+        sum(x["readiness"] for x in IRLT_READINESS_FUSION_V1)
+        / len(IRLT_READINESS_FUSION_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Commercialization Readiness Fusion</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Commercialization Readiness Fusion</h1>
+
+        <p>
+            Enterprise commercialization governance fusion environment
+            for operational readiness synchronization,
+            radiopharma survivability alignment,
+            inspection readiness convergence,
+            and executive trust orchestration.
+        </p>
+
+        <div class="score">
+            {{ fusion_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in fusion %}
+
+            <div class="card">
+
+                <h2>{{ row.pillar }}</h2>
+
+                <p>
+                    Readiness: {{ row.readiness }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    fusion=IRLT_READINESS_FUSION_V1,
+    fusion_score=fusion_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/readiness-fusion/api")
+def irlt_readiness_fusion_api():
+
+    return jsonify({
+        "fusion_score": round(
+            sum(x["readiness"] for x in IRLT_READINESS_FUSION_V1)
+            / len(IRLT_READINESS_FUSION_V1)
+        ),
+        "fusion": IRLT_READINESS_FUSION_V1
+    })
+
+# ============================================================
+# END IRLT_COMMERCIALIZATION_READINESS_FUSION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_INSPECTION_WARROOM_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_INSPECTION_WARROOM_V1 = [
+    {
+        "zone": "Audit Defense",
+        "integrity": 96,
+        "state": "Defensible"
+    },
+    {
+        "zone": "Evidence Verification",
+        "integrity": 98,
+        "state": "Protected"
+    },
+    {
+        "zone": "CAPA Exposure",
+        "integrity": 82,
+        "state": "Observed"
+    },
+    {
+        "zone": "Training Governance",
+        "integrity": 91,
+        "state": "Controlled"
+    },
+    {
+        "zone": "Environmental Monitoring",
+        "integrity": 89,
+        "state": "Stable"
+    },
+    {
+        "zone": "Dose Traceability",
+        "integrity": 99,
+        "state": "Verified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/inspection-warroom")
+def irlt_inspection_warroom():
+
+    warroom_score = round(
+        sum(x["integrity"] for x in IRLT_INSPECTION_WARROOM_V1)
+        / len(IRLT_INSPECTION_WARROOM_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Inspection Warroom</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Inspection Warroom</h1>
+
+        <p>
+            Enterprise inspection defense environment for
+            regulatory survivability,
+            operational governance escalation,
+            audit defense intelligence,
+            and evidence integrity coordination.
+        </p>
+
+        <div class="score">
+            {{ warroom_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in warroom %}
+
+            <div class="card">
+
+                <h2>{{ row.zone }}</h2>
+
+                <p>
+                    Integrity: {{ row.integrity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    warroom=IRLT_INSPECTION_WARROOM_V1,
+    warroom_score=warroom_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/inspection-warroom/api")
+def irlt_inspection_warroom_api():
+
+    return jsonify({
+        "warroom_score": round(
+            sum(x["integrity"] for x in IRLT_INSPECTION_WARROOM_V1)
+            / len(IRLT_INSPECTION_WARROOM_V1)
+        ),
+        "warroom": IRLT_INSPECTION_WARROOM_V1
+    })
+
+# ============================================================
+# END IRLT_INSPECTION_WARROOM_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_AUTONOMOUS_RECOVERY_GRID_V1_ACTIVE
+# ============================================================
+
+IRLT_RECOVERY_GRID_V1 = [
+    {
+        "recovery": "CAPA Recovery",
+        "score": 84,
+        "state": "Recovering"
+    },
+    {
+        "recovery": "Inspection Recovery",
+        "score": 95,
+        "state": "Protected"
+    },
+    {
+        "recovery": "Cold Chain Recovery",
+        "score": 91,
+        "state": "Stable"
+    },
+    {
+        "recovery": "Evidence Restoration",
+        "score": 98,
+        "state": "Verified"
+    },
+    {
+        "recovery": "Commercial Continuity",
+        "score": 94,
+        "state": "Operational"
+    },
+    {
+        "recovery": "Dose Traceability",
+        "score": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/autonomous-recovery")
+def irlt_autonomous_recovery():
+
+    recovery_score = round(
+        sum(x["score"] for x in IRLT_RECOVERY_GRID_V1)
+        / len(IRLT_RECOVERY_GRID_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Autonomous Recovery Grid</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Autonomous Recovery Grid</h1>
+
+        <p>
+            Enterprise recovery governance environment for
+            operational survivability restoration,
+            commercialization continuity stabilization,
+            inspection resilience coordination,
+            and evidence recovery intelligence.
+        </p>
+
+        <div class="score">
+            {{ recovery_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in recovery %}
+
+            <div class="card">
+
+                <h2>{{ row.recovery }}</h2>
+
+                <p>
+                    Recovery Score: {{ row.score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    recovery=IRLT_RECOVERY_GRID_V1,
+    recovery_score=recovery_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/autonomous-recovery/api")
+def irlt_autonomous_recovery_api():
+
+    return jsonify({
+        "recovery_score": round(
+            sum(x["score"] for x in IRLT_RECOVERY_GRID_V1)
+            / len(IRLT_RECOVERY_GRID_V1)
+        ),
+        "recovery": IRLT_RECOVERY_GRID_V1
+    })
+
+# ============================================================
+# END IRLT_AUTONOMOUS_RECOVERY_GRID_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_RESILIENCE_FABRIC_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_RESILIENCE_FABRIC_V1 = [
+    {
+        "fabric": "Commercial Continuity",
+        "strength": 96,
+        "state": "Operational"
+    },
+    {
+        "fabric": "Inspection Survivability",
+        "strength": 95,
+        "state": "Protected"
+    },
+    {
+        "fabric": "Evidence Preservation",
+        "strength": 98,
+        "state": "Verified"
+    },
+    {
+        "fabric": "Cold Chain Assurance",
+        "strength": 92,
+        "state": "Stable"
+    },
+    {
+        "fabric": "CAPA Stabilization",
+        "strength": 84,
+        "state": "Recovering"
+    },
+    {
+        "fabric": "Dose Governance",
+        "strength": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/resilience-fabric")
+def irlt_resilience_fabric():
+
+    resilience_score = round(
+        sum(x["strength"] for x in IRLT_RESILIENCE_FABRIC_V1)
+        / len(IRLT_RESILIENCE_FABRIC_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Resilience Fabric Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Resilience Fabric Engine</h1>
+
+        <p>
+            Enterprise operational resilience environment for
+            commercialization survivability preservation,
+            governance continuity orchestration,
+            radiopharma operational stabilization,
+            and inspection resilience synchronization.
+        </p>
+
+        <div class="score">
+            {{ resilience_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in resilience %}
+
+            <div class="card">
+
+                <h2>{{ row.fabric }}</h2>
+
+                <p>
+                    Strength: {{ row.strength }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    resilience=IRLT_RESILIENCE_FABRIC_V1,
+    resilience_score=resilience_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/resilience-fabric/api")
+def irlt_resilience_fabric_api():
+
+    return jsonify({
+        "resilience_score": round(
+            sum(x["strength"] for x in IRLT_RESILIENCE_FABRIC_V1)
+            / len(IRLT_RESILIENCE_FABRIC_V1)
+        ),
+        "resilience": IRLT_RESILIENCE_FABRIC_V1
+    })
+
+# ============================================================
+# END IRLT_RESILIENCE_FABRIC_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_NEURAL_MESH_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_NEURAL_MESH_V1 = [
+    {
+        "mesh": "Commercial Intelligence",
+        "synchronization": 96,
+        "state": "Aligned"
+    },
+    {
+        "mesh": "Inspection Cognition",
+        "synchronization": 95,
+        "state": "Protected"
+    },
+    {
+        "mesh": "Evidence Correlation",
+        "synchronization": 98,
+        "state": "Verified"
+    },
+    {
+        "mesh": "Cold Chain Coordination",
+        "synchronization": 92,
+        "state": "Stable"
+    },
+    {
+        "mesh": "CAPA Escalation Awareness",
+        "synchronization": 84,
+        "state": "Observed"
+    },
+    {
+        "mesh": "Dose Governance Intelligence",
+        "synchronization": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/neural-mesh")
+def irlt_neural_mesh():
+
+    neural_score = round(
+        sum(x["synchronization"] for x in IRLT_NEURAL_MESH_V1)
+        / len(IRLT_NEURAL_MESH_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Neural Mesh</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Neural Mesh</h1>
+
+        <p>
+            Enterprise governance cognition mesh for
+            operational intelligence synchronization,
+            commercialization trust orchestration,
+            inspection survivability awareness,
+            and radiopharma governance correlation.
+        </p>
+
+        <div class="score">
+            {{ neural_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in neural %}
+
+            <div class="card">
+
+                <h2>{{ row.mesh }}</h2>
+
+                <p>
+                    Synchronization: {{ row.synchronization }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    neural=IRLT_NEURAL_MESH_V1,
+    neural_score=neural_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/neural-mesh/api")
+def irlt_neural_mesh_api():
+
+    return jsonify({
+        "neural_score": round(
+            sum(x["synchronization"] for x in IRLT_NEURAL_MESH_V1)
+            / len(IRLT_NEURAL_MESH_V1)
+        ),
+        "neural": IRLT_NEURAL_MESH_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_NEURAL_MESH_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_COSMOS_V1 = [
+    {
+        "cluster": "Commercial Operations",
+        "gravity": 96,
+        "state": "Stable"
+    },
+    {
+        "cluster": "Inspection Defense",
+        "gravity": 95,
+        "state": "Protected"
+    },
+    {
+        "cluster": "Evidence Intelligence",
+        "gravity": 98,
+        "state": "Verified"
+    },
+    {
+        "cluster": "Cold Chain Governance",
+        "gravity": 92,
+        "state": "Controlled"
+    },
+    {
+        "cluster": "CAPA Stabilization",
+        "gravity": 85,
+        "state": "Observed"
+    },
+    {
+        "cluster": "Dose Traceability",
+        "gravity": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-cosmos")
+def irlt_governance_cosmos():
+
+    cosmos_score = round(
+        sum(x["gravity"] for x in IRLT_GOVERNANCE_COSMOS_V1)
+        / len(IRLT_GOVERNANCE_COSMOS_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Cosmos Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Cosmos Engine</h1>
+
+        <p>
+            Enterprise governance cosmos environment for
+            commercialization intelligence orchestration,
+            operational survivability synchronization,
+            inspection resilience visibility,
+            and radiopharma governance convergence.
+        </p>
+
+        <div class="score">
+            {{ cosmos_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in cosmos %}
+
+            <div class="card">
+
+                <h2>{{ row.cluster }}</h2>
+
+                <p>
+                    Gravity Index: {{ row.gravity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    cosmos=IRLT_GOVERNANCE_COSMOS_V1,
+    cosmos_score=cosmos_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-cosmos/api")
+def irlt_governance_cosmos_api():
+
+    return jsonify({
+        "cosmos_score": round(
+            sum(x["gravity"] for x in IRLT_GOVERNANCE_COSMOS_V1)
+            / len(IRLT_GOVERNANCE_COSMOS_V1)
+        ),
+        "cosmos": IRLT_GOVERNANCE_COSMOS_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_COSMOS_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_QUANTUM_GOVERNANCE_ORCHESTRATOR_V1_ACTIVE
+# ============================================================
+
+IRLT_QUANTUM_GOVERNANCE_V1 = [
+    {
+        "vector": "Commercial Intelligence",
+        "coherence": 97,
+        "state": "Synchronized"
+    },
+    {
+        "vector": "Inspection Survivability",
+        "coherence": 95,
+        "state": "Protected"
+    },
+    {
+        "vector": "Evidence Correlation",
+        "coherence": 99,
+        "state": "Verified"
+    },
+    {
+        "vector": "Cold Chain Coordination",
+        "coherence": 92,
+        "state": "Stable"
+    },
+    {
+        "vector": "CAPA Escalation Mapping",
+        "coherence": 85,
+        "state": "Observed"
+    },
+    {
+        "vector": "Dose Governance Continuity",
+        "coherence": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/quantum-governance")
+def irlt_quantum_governance():
+
+    quantum_score = round(
+        sum(x["coherence"] for x in IRLT_QUANTUM_GOVERNANCE_V1)
+        / len(IRLT_QUANTUM_GOVERNANCE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Quantum Governance Orchestrator</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Quantum Governance Orchestrator</h1>
+
+        <p>
+            Enterprise governance orchestration environment for
+            operational coherence synchronization,
+            commercialization survivability intelligence,
+            radiopharma governance continuity,
+            and inspection defense correlation mapping.
+        </p>
+
+        <div class="score">
+            {{ quantum_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in quantum %}
+
+            <div class="card">
+
+                <h2>{{ row.vector }}</h2>
+
+                <p>
+                    Coherence: {{ row.coherence }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    quantum=IRLT_QUANTUM_GOVERNANCE_V1,
+    quantum_score=quantum_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/quantum-governance/api")
+def irlt_quantum_governance_api():
+
+    return jsonify({
+        "quantum_score": round(
+            sum(x["coherence"] for x in IRLT_QUANTUM_GOVERNANCE_V1)
+            / len(IRLT_QUANTUM_GOVERNANCE_V1)
+        ),
+        "quantum": IRLT_QUANTUM_GOVERNANCE_V1
+    })
+
+# ============================================================
+# END IRLT_QUANTUM_GOVERNANCE_ORCHESTRATOR_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_CONSTELLATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_CONSTELLATION_V1 = [
+    {
+        "node": "Commercial Readiness",
+        "stability": 96,
+        "state": "Operational"
+    },
+    {
+        "node": "Inspection Defense",
+        "stability": 95,
+        "state": "Protected"
+    },
+    {
+        "node": "Evidence Intelligence",
+        "stability": 98,
+        "state": "Verified"
+    },
+    {
+        "node": "Cold Chain Governance",
+        "stability": 92,
+        "state": "Stable"
+    },
+    {
+        "node": "CAPA Recovery",
+        "stability": 85,
+        "state": "Observed"
+    },
+    {
+        "node": "Dose Traceability",
+        "stability": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-constellation")
+def irlt_operational_constellation():
+
+    constellation_score = round(
+        sum(x["stability"] for x in IRLT_CONSTELLATION_V1)
+        / len(IRLT_CONSTELLATION_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Operational Constellation Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Operational Constellation Engine</h1>
+
+        <p>
+            Enterprise constellation intelligence environment for
+            commercialization synchronization,
+            operational survivability mapping,
+            governance coordination visibility,
+            and inspection readiness orchestration.
+        </p>
+
+        <div class="score">
+            {{ constellation_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in constellation %}
+
+            <div class="card">
+
+                <h2>{{ row.node }}</h2>
+
+                <p>
+                    Stability: {{ row.stability }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    constellation=IRLT_CONSTELLATION_V1,
+    constellation_score=constellation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/operational-constellation/api")
+def irlt_operational_constellation_api():
+
+    return jsonify({
+        "constellation_score": round(
+            sum(x["stability"] for x in IRLT_CONSTELLATION_V1)
+            / len(IRLT_CONSTELLATION_V1)
+        ),
+        "constellation": IRLT_CONSTELLATION_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_CONSTELLATION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_TRUST_ORBIT_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_TRUST_ORBIT_V1 = [
+    {
+        "orbit": "Commercial Governance",
+        "trust": 96,
+        "state": "Stable"
+    },
+    {
+        "orbit": "Inspection Intelligence",
+        "trust": 95,
+        "state": "Protected"
+    },
+    {
+        "orbit": "Evidence Continuity",
+        "trust": 98,
+        "state": "Verified"
+    },
+    {
+        "orbit": "Cold Chain Operations",
+        "trust": 92,
+        "state": "Controlled"
+    },
+    {
+        "orbit": "CAPA Recovery",
+        "trust": 85,
+        "state": "Observed"
+    },
+    {
+        "orbit": "Dose Traceability",
+        "trust": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/trust-orbit")
+def irlt_trust_orbit():
+
+    orbit_score = round(
+        sum(x["trust"] for x in IRLT_TRUST_ORBIT_V1)
+        / len(IRLT_TRUST_ORBIT_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Trust Orbit Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Trust Orbit Engine</h1>
+
+        <p>
+            Enterprise trust orbit environment for
+            commercialization survivability synchronization,
+            governance continuity visibility,
+            inspection resilience coordination,
+            and radiopharma operational trust mapping.
+        </p>
+
+        <div class="score">
+            {{ orbit_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in orbit %}
+
+            <div class="card">
+
+                <h2>{{ row.orbit }}</h2>
+
+                <p>
+                    Trust Index: {{ row.trust }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    orbit=IRLT_TRUST_ORBIT_V1,
+    orbit_score=orbit_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/trust-orbit/api")
+def irlt_trust_orbit_api():
+
+    return jsonify({
+        "orbit_score": round(
+            sum(x["trust"] for x in IRLT_TRUST_ORBIT_V1)
+            / len(IRLT_TRUST_ORBIT_V1)
+        ),
+        "orbit": IRLT_TRUST_ORBIT_V1
+    })
+
+# ============================================================
+# END IRLT_TRUST_ORBIT_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EXECUTIVE_COMMAND_BRIDGE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_COMMAND_BRIDGE_V1 = [
+    {
+        "bridge": "Commercial Release Coordination",
+        "alignment": 96,
+        "state": "Operational"
+    },
+    {
+        "bridge": "Inspection Defense Synchronization",
+        "alignment": 95,
+        "state": "Protected"
+    },
+    {
+        "bridge": "Evidence Governance Correlation",
+        "alignment": 98,
+        "state": "Verified"
+    },
+    {
+        "bridge": "Cold Chain Continuity",
+        "alignment": 92,
+        "state": "Stable"
+    },
+    {
+        "bridge": "CAPA Stabilization Coordination",
+        "alignment": 85,
+        "state": "Observed"
+    },
+    {
+        "bridge": "Dose Governance Integrity",
+        "alignment": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/command-bridge")
+def irlt_command_bridge():
+
+    bridge_score = round(
+        sum(x["alignment"] for x in IRLT_COMMAND_BRIDGE_V1)
+        / len(IRLT_COMMAND_BRIDGE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Executive Command Bridge</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Executive Command Bridge</h1>
+
+        <p>
+            Enterprise governance bridge environment for
+            commercialization synchronization,
+            operational survivability alignment,
+            inspection defense coordination,
+            and radiopharma command continuity.
+        </p>
+
+        <div class="score">
+            {{ bridge_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in bridge %}
+
+            <div class="card">
+
+                <h2>{{ row.bridge }}</h2>
+
+                <p>
+                    Alignment: {{ row.alignment }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    bridge=IRLT_COMMAND_BRIDGE_V1,
+    bridge_score=bridge_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/command-bridge/api")
+def irlt_command_bridge_api():
+
+    return jsonify({
+        "bridge_score": round(
+            sum(x["alignment"] for x in IRLT_COMMAND_BRIDGE_V1)
+            / len(IRLT_COMMAND_BRIDGE_V1)
+        ),
+        "bridge": IRLT_COMMAND_BRIDGE_V1
+    })
+
+# ============================================================
+# END IRLT_EXECUTIVE_COMMAND_BRIDGE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_INSPECTION_SATELLITE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_INSPECTION_SATELLITE_V1 = [
+    {
+        "satellite": "Audit Defense Monitoring",
+        "coverage": 96,
+        "state": "Protected"
+    },
+    {
+        "satellite": "Evidence Surveillance",
+        "coverage": 98,
+        "state": "Verified"
+    },
+    {
+        "satellite": "CAPA Escalation Visibility",
+        "coverage": 84,
+        "state": "Observed"
+    },
+    {
+        "satellite": "Cold Chain Monitoring",
+        "coverage": 92,
+        "state": "Stable"
+    },
+    {
+        "satellite": "Training Governance Tracking",
+        "coverage": 90,
+        "state": "Controlled"
+    },
+    {
+        "satellite": "Dose Traceability Oversight",
+        "coverage": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/inspection-satellite")
+def irlt_inspection_satellite():
+
+    satellite_score = round(
+        sum(x["coverage"] for x in IRLT_INSPECTION_SATELLITE_V1)
+        / len(IRLT_INSPECTION_SATELLITE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Inspection Satellite Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Inspection Satellite Engine</h1>
+
+        <p>
+            Enterprise inspection surveillance environment for
+            regulatory visibility synchronization,
+            governance monitoring continuity,
+            operational inspection awareness,
+            and evidence oversight orchestration.
+        </p>
+
+        <div class="score">
+            {{ satellite_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in satellite %}
+
+            <div class="card">
+
+                <h2>{{ row.satellite }}</h2>
+
+                <p>
+                    Coverage: {{ row.coverage }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    satellite=IRLT_INSPECTION_SATELLITE_V1,
+    satellite_score=satellite_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/inspection-satellite/api")
+def irlt_inspection_satellite_api():
+
+    return jsonify({
+        "satellite_score": round(
+            sum(x["coverage"] for x in IRLT_INSPECTION_SATELLITE_V1)
+            / len(IRLT_INSPECTION_SATELLITE_V1)
+        ),
+        "satellite": IRLT_INSPECTION_SATELLITE_V1
+    })
+
+# ============================================================
+# END IRLT_INSPECTION_SATELLITE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_RELEASE_CONSTELLATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_RELEASE_CONSTELLATION_V1 = [
+    {
+        "domain": "Batch Release Governance",
+        "readiness": 97,
+        "state": "Approved"
+    },
+    {
+        "domain": "Inspection Defense",
+        "readiness": 95,
+        "state": "Protected"
+    },
+    {
+        "domain": "Evidence Verification",
+        "readiness": 99,
+        "state": "Verified"
+    },
+    {
+        "domain": "Cold Chain Coordination",
+        "readiness": 92,
+        "state": "Stable"
+    },
+    {
+        "domain": "Deviation Recovery",
+        "readiness": 85,
+        "state": "Observed"
+    },
+    {
+        "domain": "Dose Traceability",
+        "readiness": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/release-constellation")
+def irlt_release_constellation():
+
+    constellation_score = round(
+        sum(x["readiness"] for x in IRLT_RELEASE_CONSTELLATION_V1)
+        / len(IRLT_RELEASE_CONSTELLATION_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Release Constellation Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Release Constellation Engine</h1>
+
+        <p>
+            Enterprise release governance environment for
+            commercialization synchronization,
+            operational release survivability,
+            inspection defense continuity,
+            and radiopharma release intelligence orchestration.
+        </p>
+
+        <div class="score">
+            {{ constellation_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in constellation %}
+
+            <div class="card">
+
+                <h2>{{ row.domain }}</h2>
+
+                <p>
+                    Readiness: {{ row.readiness }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    constellation=IRLT_RELEASE_CONSTELLATION_V1,
+    constellation_score=constellation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/release-constellation/api")
+def irlt_release_constellation_api():
+
+    return jsonify({
+        "constellation_score": round(
+            sum(x["readiness"] for x in IRLT_RELEASE_CONSTELLATION_V1)
+            / len(IRLT_RELEASE_CONSTELLATION_V1)
+        ),
+        "constellation": IRLT_RELEASE_CONSTELLATION_V1
+    })
+
+# ============================================================
+# END IRLT_RELEASE_CONSTELLATION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_STARFIELD_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_STARFIELD_V1 = [
+    {
+        "sector": "Commercial Governance",
+        "luminosity": 97,
+        "state": "Operational"
+    },
+    {
+        "sector": "Inspection Survivability",
+        "luminosity": 95,
+        "state": "Protected"
+    },
+    {
+        "sector": "Evidence Intelligence",
+        "luminosity": 99,
+        "state": "Verified"
+    },
+    {
+        "sector": "Cold Chain Assurance",
+        "luminosity": 92,
+        "state": "Stable"
+    },
+    {
+        "sector": "CAPA Recovery Mapping",
+        "luminosity": 85,
+        "state": "Observed"
+    },
+    {
+        "sector": "Dose Traceability",
+        "luminosity": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-starfield")
+def irlt_governance_starfield():
+
+    starfield_score = round(
+        sum(x["luminosity"] for x in IRLT_STARFIELD_V1)
+        / len(IRLT_STARFIELD_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Starfield Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Starfield Engine</h1>
+
+        <p>
+            Enterprise governance starfield environment for
+            commercialization intelligence synchronization,
+            operational survivability visibility,
+            inspection defense orchestration,
+            and radiopharma governance continuity.
+        </p>
+
+        <div class="score">
+            {{ starfield_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in starfield %}
+
+            <div class="card">
+
+                <h2>{{ row.sector }}</h2>
+
+                <p>
+                    Luminosity: {{ row.luminosity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    starfield=IRLT_STARFIELD_V1,
+    starfield_score=starfield_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-starfield/api")
+def irlt_governance_starfield_api():
+
+    return jsonify({
+        "starfield_score": round(
+            sum(x["luminosity"] for x in IRLT_STARFIELD_V1)
+            / len(IRLT_STARFIELD_V1)
+        ),
+        "starfield": IRLT_STARFIELD_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_STARFIELD_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_NEXUS_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_OPERATIONAL_NEXUS_V1 = [
+    {
+        "nexus": "Commercial Readiness",
+        "index": 97,
+        "state": "Operational"
+    },
+    {
+        "nexus": "Inspection Defense",
+        "index": 95,
+        "state": "Protected"
+    },
+    {
+        "nexus": "Evidence Continuity",
+        "index": 99,
+        "state": "Verified"
+    },
+    {
+        "nexus": "Cold Chain Governance",
+        "index": 92,
+        "state": "Stable"
+    },
+    {
+        "nexus": "CAPA Recovery",
+        "index": 85,
+        "state": "Observed"
+    },
+    {
+        "nexus": "Dose Traceability",
+        "index": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-nexus")
+def irlt_operational_nexus():
+
+    nexus_score = round(
+        sum(x["index"] for x in IRLT_OPERATIONAL_NEXUS_V1)
+        / len(IRLT_OPERATIONAL_NEXUS_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Operational Nexus Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Operational Nexus Engine</h1>
+
+        <p>
+            Enterprise operational nexus environment for
+            commercialization synchronization,
+            governance survivability intelligence,
+            inspection readiness continuity,
+            and radiopharma operational correlation.
+        </p>
+
+        <div class="score">
+            {{ nexus_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in nexus %}
+
+            <div class="card">
+
+                <h2>{{ row.nexus }}</h2>
+
+                <p>
+                    Nexus Index: {{ row.index }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    nexus=IRLT_OPERATIONAL_NEXUS_V1,
+    nexus_score=nexus_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/operational-nexus/api")
+def irlt_operational_nexus_api():
+
+    return jsonify({
+        "nexus_score": round(
+            sum(x["index"] for x in IRLT_OPERATIONAL_NEXUS_V1)
+            / len(IRLT_OPERATIONAL_NEXUS_V1)
+        ),
+        "nexus": IRLT_OPERATIONAL_NEXUS_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_NEXUS_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_HYPERGRID_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_HYPERGRID_V1 = [
+    {
+        "grid": "Commercial Operations",
+        "velocity": 97,
+        "state": "Operational"
+    },
+    {
+        "grid": "Inspection Defense",
+        "velocity": 95,
+        "state": "Protected"
+    },
+    {
+        "grid": "Evidence Intelligence",
+        "velocity": 99,
+        "state": "Verified"
+    },
+    {
+        "grid": "Cold Chain Continuity",
+        "velocity": 92,
+        "state": "Stable"
+    },
+    {
+        "grid": "CAPA Recovery Mapping",
+        "velocity": 86,
+        "state": "Observed"
+    },
+    {
+        "grid": "Dose Governance",
+        "velocity": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-hypergrid")
+def irlt_governance_hypergrid():
+
+    hypergrid_score = round(
+        sum(x["velocity"] for x in IRLT_HYPERGRID_V1)
+        / len(IRLT_HYPERGRID_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance HyperGrid Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance HyperGrid Engine</h1>
+
+        <p>
+            Enterprise hypergrid intelligence environment for
+            commercialization governance acceleration,
+            operational survivability synchronization,
+            inspection defense coordination,
+            and radiopharma trust orchestration.
+        </p>
+
+        <div class="score">
+            {{ hypergrid_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in hypergrid %}
+
+            <div class="card">
+
+                <h2>{{ row.grid }}</h2>
+
+                <p>
+                    Velocity Index: {{ row.velocity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    hypergrid=IRLT_HYPERGRID_V1,
+    hypergrid_score=hypergrid_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-hypergrid/api")
+def irlt_governance_hypergrid_api():
+
+    return jsonify({
+        "hypergrid_score": round(
+            sum(x["velocity"] for x in IRLT_HYPERGRID_V1)
+            / len(IRLT_HYPERGRID_V1)
+        ),
+        "hypergrid": IRLT_HYPERGRID_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_HYPERGRID_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_INSPECTION_RADAR_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_INSPECTION_RADAR_V1 = [
+    {
+        "radar": "Audit Defense Coverage",
+        "signal": 97,
+        "state": "Protected"
+    },
+    {
+        "radar": "Evidence Integrity Tracking",
+        "signal": 99,
+        "state": "Verified"
+    },
+    {
+        "radar": "CAPA Escalation Monitoring",
+        "signal": 86,
+        "state": "Observed"
+    },
+    {
+        "radar": "Cold Chain Surveillance",
+        "signal": 92,
+        "state": "Stable"
+    },
+    {
+        "radar": "Training Governance Detection",
+        "signal": 91,
+        "state": "Controlled"
+    },
+    {
+        "radar": "Dose Traceability Monitoring",
+        "signal": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/inspection-radar")
+def irlt_inspection_radar():
+
+    radar_score = round(
+        sum(x["signal"] for x in IRLT_INSPECTION_RADAR_V1)
+        / len(IRLT_INSPECTION_RADAR_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Inspection Radar Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Inspection Radar Engine</h1>
+
+        <p>
+            Enterprise inspection radar environment for
+            operational surveillance synchronization,
+            governance defense visibility,
+            regulatory monitoring continuity,
+            and radiopharma inspection intelligence.
+        </p>
+
+        <div class="score">
+            {{ radar_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in radar %}
+
+            <div class="card">
+
+                <h2>{{ row.radar }}</h2>
+
+                <p>
+                    Signal Strength: {{ row.signal }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    radar=IRLT_INSPECTION_RADAR_V1,
+    radar_score=radar_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/inspection-radar/api")
+def irlt_inspection_radar_api():
+
+    return jsonify({
+        "radar_score": round(
+            sum(x["signal"] for x in IRLT_INSPECTION_RADAR_V1)
+            / len(IRLT_INSPECTION_RADAR_V1)
+        ),
+        "radar": IRLT_INSPECTION_RADAR_V1
+    })
+
+# ============================================================
+# END IRLT_INSPECTION_RADAR_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_SURVIVABILITY_MATRIX_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_SURVIVABILITY_MATRIX_V1 = [
+    {
+        "matrix": "Commercial Continuity",
+        "survivability": 97,
+        "state": "Operational"
+    },
+    {
+        "matrix": "Inspection Defense",
+        "survivability": 96,
+        "state": "Protected"
+    },
+    {
+        "matrix": "Evidence Preservation",
+        "survivability": 99,
+        "state": "Verified"
+    },
+    {
+        "matrix": "Cold Chain Resilience",
+        "survivability": 92,
+        "state": "Stable"
+    },
+    {
+        "matrix": "CAPA Recovery Intelligence",
+        "survivability": 86,
+        "state": "Observed"
+    },
+    {
+        "matrix": "Dose Governance",
+        "survivability": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/survivability-matrix")
+def irlt_survivability_matrix():
+
+    survivability_score = round(
+        sum(x["survivability"] for x in IRLT_SURVIVABILITY_MATRIX_V1)
+        / len(IRLT_SURVIVABILITY_MATRIX_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Survivability Matrix Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Survivability Matrix Engine</h1>
+
+        <p>
+            Enterprise survivability intelligence environment for
+            commercialization resilience synchronization,
+            governance continuity preservation,
+            inspection survivability coordination,
+            and radiopharma operational defense orchestration.
+        </p>
+
+        <div class="score">
+            {{ survivability_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in survivability %}
+
+            <div class="card">
+
+                <h2>{{ row.matrix }}</h2>
+
+                <p>
+                    Survivability Index: {{ row.survivability }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    survivability=IRLT_SURVIVABILITY_MATRIX_V1,
+    survivability_score=survivability_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/survivability-matrix/api")
+def irlt_survivability_matrix_api():
+
+    return jsonify({
+        "survivability_score": round(
+            sum(x["survivability"] for x in IRLT_SURVIVABILITY_MATRIX_V1)
+            / len(IRLT_SURVIVABILITY_MATRIX_V1)
+        ),
+        "survivability": IRLT_SURVIVABILITY_MATRIX_V1
+    })
+
+# ============================================================
+# END IRLT_SURVIVABILITY_MATRIX_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_BEACON_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_BEACON_V1 = [
+    {
+        "beacon": "Commercial Launch Readiness",
+        "signal": 97,
+        "state": "Operational"
+    },
+    {
+        "beacon": "Inspection Defense",
+        "signal": 96,
+        "state": "Protected"
+    },
+    {
+        "beacon": "Evidence Integrity",
+        "signal": 99,
+        "state": "Verified"
+    },
+    {
+        "beacon": "Cold Chain Governance",
+        "signal": 92,
+        "state": "Stable"
+    },
+    {
+        "beacon": "CAPA Recovery Tracking",
+        "signal": 86,
+        "state": "Observed"
+    },
+    {
+        "beacon": "Dose Traceability",
+        "signal": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-beacon")
+def irlt_governance_beacon():
+
+    beacon_score = round(
+        sum(x["signal"] for x in IRLT_GOVERNANCE_BEACON_V1)
+        / len(IRLT_GOVERNANCE_BEACON_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Beacon Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Beacon Engine</h1>
+
+        <p>
+            Enterprise governance beacon environment for
+            commercialization visibility synchronization,
+            operational survivability signaling,
+            inspection readiness coordination,
+            and radiopharma trust intelligence.
+        </p>
+
+        <div class="score">
+            {{ beacon_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in beacon %}
+
+            <div class="card">
+
+                <h2>{{ row.beacon }}</h2>
+
+                <p>
+                    Signal Strength: {{ row.signal }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    beacon=IRLT_GOVERNANCE_BEACON_V1,
+    beacon_score=beacon_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-beacon/api")
+def irlt_governance_beacon_api():
+
+    return jsonify({
+        "beacon_score": round(
+            sum(x["signal"] for x in IRLT_GOVERNANCE_BEACON_V1)
+            / len(IRLT_GOVERNANCE_BEACON_V1)
+        ),
+        "beacon": IRLT_GOVERNANCE_BEACON_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_BEACON_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_SUPERGRID_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_OPERATIONAL_SUPERGRID_V1 = [
+    {
+        "supergrid": "Commercial Release Governance",
+        "capacity": 97,
+        "state": "Operational"
+    },
+    {
+        "supergrid": "Inspection Defense Intelligence",
+        "capacity": 96,
+        "state": "Protected"
+    },
+    {
+        "supergrid": "Evidence Correlation",
+        "capacity": 99,
+        "state": "Verified"
+    },
+    {
+        "supergrid": "Cold Chain Continuity",
+        "capacity": 93,
+        "state": "Stable"
+    },
+    {
+        "supergrid": "CAPA Recovery Synchronization",
+        "capacity": 87,
+        "state": "Observed"
+    },
+    {
+        "supergrid": "Dose Governance Assurance",
+        "capacity": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-supergrid")
+def irlt_operational_supergrid():
+
+    supergrid_score = round(
+        sum(x["capacity"] for x in IRLT_OPERATIONAL_SUPERGRID_V1)
+        / len(IRLT_OPERATIONAL_SUPERGRID_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Operational SuperGrid Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Operational SuperGrid Engine</h1>
+
+        <p>
+            Enterprise operational supergrid environment for
+            commercialization synchronization,
+            governance survivability orchestration,
+            inspection continuity intelligence,
+            and radiopharma operational coordination.
+        </p>
+
+        <div class="score">
+            {{ supergrid_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in supergrid %}
+
+            <div class="card">
+
+                <h2>{{ row.supergrid }}</h2>
+
+                <p>
+                    Capacity Index: {{ row.capacity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    supergrid=IRLT_OPERATIONAL_SUPERGRID_V1,
+    supergrid_score=supergrid_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/operational-supergrid/api")
+def irlt_operational_supergrid_api():
+
+    return jsonify({
+        "supergrid_score": round(
+            sum(x["capacity"] for x in IRLT_OPERATIONAL_SUPERGRID_V1)
+            / len(IRLT_OPERATIONAL_SUPERGRID_V1)
+        ),
+        "supergrid": IRLT_OPERATIONAL_SUPERGRID_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_SUPERGRID_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_OVERWATCH_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_OVERWATCH_V1 = [
+    {
+        "watchtower": "Commercial Launch Oversight",
+        "awareness": 97,
+        "state": "Operational"
+    },
+    {
+        "watchtower": "Inspection Defense Visibility",
+        "awareness": 96,
+        "state": "Protected"
+    },
+    {
+        "watchtower": "Evidence Governance Tracking",
+        "awareness": 99,
+        "state": "Verified"
+    },
+    {
+        "watchtower": "Cold Chain Monitoring",
+        "awareness": 93,
+        "state": "Stable"
+    },
+    {
+        "watchtower": "CAPA Escalation Surveillance",
+        "awareness": 87,
+        "state": "Observed"
+    },
+    {
+        "watchtower": "Dose Traceability Intelligence",
+        "awareness": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-overwatch")
+def irlt_governance_overwatch():
+
+    overwatch_score = round(
+        sum(x["awareness"] for x in IRLT_GOVERNANCE_OVERWATCH_V1)
+        / len(IRLT_GOVERNANCE_OVERWATCH_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Overwatch Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Overwatch Engine</h1>
+
+        <p>
+            Enterprise governance overwatch environment for
+            commercialization surveillance synchronization,
+            operational survivability visibility,
+            inspection defense awareness,
+            and radiopharma governance intelligence.
+        </p>
+
+        <div class="score">
+            {{ overwatch_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in overwatch %}
+
+            <div class="card">
+
+                <h2>{{ row.watchtower }}</h2>
+
+                <p>
+                    Awareness Index: {{ row.awareness }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    overwatch=IRLT_GOVERNANCE_OVERWATCH_V1,
+    overwatch_score=overwatch_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-overwatch/api")
+def irlt_governance_overwatch_api():
+
+    return jsonify({
+        "overwatch_score": round(
+            sum(x["awareness"] for x in IRLT_GOVERNANCE_OVERWATCH_V1)
+            / len(IRLT_GOVERNANCE_OVERWATCH_V1)
+        ),
+        "overwatch": IRLT_GOVERNANCE_OVERWATCH_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_OVERWATCH_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_SINGULARITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_OPERATIONAL_SINGULARITY_V1 = [
+    {
+        "core": "Commercial Governance",
+        "intensity": 98,
+        "state": "Operational"
+    },
+    {
+        "core": "Inspection Defense",
+        "intensity": 96,
+        "state": "Protected"
+    },
+    {
+        "core": "Evidence Integrity",
+        "intensity": 99,
+        "state": "Verified"
+    },
+    {
+        "core": "Cold Chain Coordination",
+        "intensity": 93,
+        "state": "Stable"
+    },
+    {
+        "core": "CAPA Recovery Intelligence",
+        "intensity": 88,
+        "state": "Observed"
+    },
+    {
+        "core": "Dose Traceability",
+        "intensity": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-singularity")
+def irlt_operational_singularity():
+
+    singularity_score = round(
+        sum(x["intensity"] for x in IRLT_OPERATIONAL_SINGULARITY_V1)
+        / len(IRLT_OPERATIONAL_SINGULARITY_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Operational Singularity Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Operational Singularity Engine</h1>
+
+        <p>
+            Enterprise operational singularity environment for
+            commercialization intelligence convergence,
+            governance survivability synchronization,
+            inspection defense orchestration,
+            and radiopharma operational trust coordination.
+        </p>
+
+        <div class="score">
+            {{ singularity_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in singularity %}
+
+            <div class="card">
+
+                <h2>{{ row.core }}</h2>
+
+                <p>
+                    Intensity Index: {{ row.intensity }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    singularity=IRLT_OPERATIONAL_SINGULARITY_V1,
+    singularity_score=singularity_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/operational-singularity/api")
+def irlt_operational_singularity_api():
+
+    return jsonify({
+        "singularity_score": round(
+            sum(x["intensity"] for x in IRLT_OPERATIONAL_SINGULARITY_V1)
+            / len(IRLT_OPERATIONAL_SINGULARITY_V1)
+        ),
+        "singularity": IRLT_OPERATIONAL_SINGULARITY_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_SINGULARITY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_TRUST_FUSION_CORE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_TRUST_FUSION_CORE_V1 = [
+    {
+        "fusion": "Commercial Readiness Intelligence",
+        "fusion_score": 98,
+        "state": "Operational"
+    },
+    {
+        "fusion": "Inspection Survivability",
+        "fusion_score": 96,
+        "state": "Protected"
+    },
+    {
+        "fusion": "Evidence Correlation",
+        "fusion_score": 99,
+        "state": "Verified"
+    },
+    {
+        "fusion": "Cold Chain Governance",
+        "fusion_score": 93,
+        "state": "Stable"
+    },
+    {
+        "fusion": "CAPA Recovery Synchronization",
+        "fusion_score": 88,
+        "state": "Observed"
+    },
+    {
+        "fusion": "Dose Governance Integrity",
+        "fusion_score": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/trust-fusion-core")
+def irlt_trust_fusion_core():
+
+    fusion_score = round(
+        sum(x["fusion_score"] for x in IRLT_TRUST_FUSION_CORE_V1)
+        / len(IRLT_TRUST_FUSION_CORE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Trust Fusion Core Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Trust Fusion Core Engine</h1>
+
+        <p>
+            Enterprise trust fusion environment for
+            commercialization intelligence convergence,
+            governance survivability orchestration,
+            inspection defense synchronization,
+            and radiopharma operational trust continuity.
+        </p>
+
+        <div class="score">
+            {{ fusion_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in fusion %}
+
+            <div class="card">
+
+                <h2>{{ row.fusion }}</h2>
+
+                <p>
+                    Fusion Score: {{ row.fusion_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    fusion=IRLT_TRUST_FUSION_CORE_V1,
+    fusion_score=fusion_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/trust-fusion-core/api")
+def irlt_trust_fusion_core_api():
+
+    return jsonify({
+        "fusion_score": round(
+            sum(x["fusion_score"] for x in IRLT_TRUST_FUSION_CORE_V1)
+            / len(IRLT_TRUST_FUSION_CORE_V1)
+        ),
+        "fusion": IRLT_TRUST_FUSION_CORE_V1
+    })
+
+# ============================================================
+# END IRLT_TRUST_FUSION_CORE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COMMAND_SINGULARITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_COMMAND_SINGULARITY_V1 = [
+    {
+        "command": "Commercial Release Governance",
+        "command_score": 98,
+        "state": "Operational"
+    },
+    {
+        "command": "Inspection Defense Intelligence",
+        "command_score": 97,
+        "state": "Protected"
+    },
+    {
+        "command": "Evidence Integrity Correlation",
+        "command_score": 99,
+        "state": "Verified"
+    },
+    {
+        "command": "Cold Chain Continuity",
+        "command_score": 93,
+        "state": "Stable"
+    },
+    {
+        "command": "CAPA Recovery Synchronization",
+        "command_score": 88,
+        "state": "Observed"
+    },
+    {
+        "command": "Dose Governance Assurance",
+        "command_score": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/command-singularity")
+def irlt_command_singularity():
+
+    singularity_score = round(
+        sum(x["command_score"] for x in IRLT_COMMAND_SINGULARITY_V1)
+        / len(IRLT_COMMAND_SINGULARITY_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Command Singularity Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Command Singularity Engine</h1>
+
+        <p>
+            Enterprise command singularity environment for
+            commercialization governance convergence,
+            operational survivability orchestration,
+            inspection intelligence synchronization,
+            and radiopharma command continuity.
+        </p>
+
+        <div class="score">
+            {{ singularity_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in command %}
+
+            <div class="card">
+
+                <h2>{{ row.command }}</h2>
+
+                <p>
+                    Command Score: {{ row.command_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    command=IRLT_COMMAND_SINGULARITY_V1,
+    singularity_score=singularity_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/command-singularity/api")
+def irlt_command_singularity_api():
+
+    return jsonify({
+        "singularity_score": round(
+            sum(x["command_score"] for x in IRLT_COMMAND_SINGULARITY_V1)
+            / len(IRLT_COMMAND_SINGULARITY_V1)
+        ),
+        "command": IRLT_COMMAND_SINGULARITY_V1
+    })
+
+# ============================================================
+# END IRLT_COMMAND_SINGULARITY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_INFINITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_INFINITY_V1 = [
+    {
+        "infinity": "Commercial Readiness Intelligence",
+        "continuum": 98,
+        "state": "Operational"
+    },
+    {
+        "infinity": "Inspection Survivability",
+        "continuum": 97,
+        "state": "Protected"
+    },
+    {
+        "infinity": "Evidence Governance Integrity",
+        "continuum": 99,
+        "state": "Verified"
+    },
+    {
+        "infinity": "Cold Chain Continuity",
+        "continuum": 94,
+        "state": "Stable"
+    },
+    {
+        "infinity": "CAPA Recovery Coordination",
+        "continuum": 88,
+        "state": "Observed"
+    },
+    {
+        "infinity": "Dose Governance Traceability",
+        "continuum": 99,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-infinity")
+def irlt_governance_infinity():
+
+    infinity_score = round(
+        sum(x["continuum"] for x in IRLT_GOVERNANCE_INFINITY_V1)
+        / len(IRLT_GOVERNANCE_INFINITY_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Infinity Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Infinity Engine</h1>
+
+        <p>
+            Enterprise governance infinity environment for
+            commercialization continuity synchronization,
+            operational survivability orchestration,
+            inspection defense intelligence,
+            and radiopharma governance convergence.
+        </p>
+
+        <div class="score">
+            {{ infinity_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in infinity %}
+
+            <div class="card">
+
+                <h2>{{ row.infinity }}</h2>
+
+                <p>
+                    Continuum Index: {{ row.continuum }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    infinity=IRLT_GOVERNANCE_INFINITY_V1,
+    infinity_score=infinity_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-infinity/api")
+def irlt_governance_infinity_api():
+
+    return jsonify({
+        "infinity_score": round(
+            sum(x["continuum"] for x in IRLT_GOVERNANCE_INFINITY_V1)
+            / len(IRLT_GOVERNANCE_INFINITY_V1)
+        ),
+        "infinity": IRLT_GOVERNANCE_INFINITY_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_INFINITY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_OMNIVERSE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_OMNIVERSE_V1 = [
+    {
+        "omniverse": "Commercial Readiness",
+        "unification": 99,
+        "state": "Operational"
+    },
+    {
+        "omniverse": "Inspection Survivability",
+        "unification": 97,
+        "state": "Protected"
+    },
+    {
+        "omniverse": "Evidence Integrity",
+        "unification": 100,
+        "state": "Verified"
+    },
+    {
+        "omniverse": "Cold Chain Governance",
+        "unification": 94,
+        "state": "Stable"
+    },
+    {
+        "omniverse": "CAPA Recovery Intelligence",
+        "unification": 89,
+        "state": "Observed"
+    },
+    {
+        "omniverse": "Dose Governance Assurance",
+        "unification": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-omniverse")
+def irlt_governance_omniverse():
+
+    omniverse_score = round(
+        sum(x["unification"] for x in IRLT_GOVERNANCE_OMNIVERSE_V1)
+        / len(IRLT_GOVERNANCE_OMNIVERSE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Omniverse Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Omniverse Engine</h1>
+
+        <p>
+            Enterprise governance omniverse environment for
+            commercialization intelligence unification,
+            operational survivability orchestration,
+            inspection defense synchronization,
+            and radiopharma trust convergence.
+        </p>
+
+        <div class="score">
+            {{ omniverse_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in omniverse %}
+
+            <div class="card">
+
+                <h2>{{ row.omniverse }}</h2>
+
+                <p>
+                    Unification Index: {{ row.unification }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    omniverse=IRLT_GOVERNANCE_OMNIVERSE_V1,
+    omniverse_score=omniverse_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-omniverse/api")
+def irlt_governance_omniverse_api():
+
+    return jsonify({
+        "omniverse_score": round(
+            sum(x["unification"] for x in IRLT_GOVERNANCE_OMNIVERSE_V1)
+            / len(IRLT_GOVERNANCE_OMNIVERSE_V1)
+        ),
+        "omniverse": IRLT_GOVERNANCE_OMNIVERSE_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_OMNIVERSE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_TRANSCENDENCE_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_TRANSCENDENCE_V1 = [
+    {
+        "transcendence": "Commercial Governance Intelligence",
+        "elevation": 99,
+        "state": "Operational"
+    },
+    {
+        "transcendence": "Inspection Survivability",
+        "elevation": 98,
+        "state": "Protected"
+    },
+    {
+        "transcendence": "Evidence Integrity Correlation",
+        "elevation": 100,
+        "state": "Verified"
+    },
+    {
+        "transcendence": "Cold Chain Governance",
+        "elevation": 95,
+        "state": "Stable"
+    },
+    {
+        "transcendence": "CAPA Recovery Synchronization",
+        "elevation": 89,
+        "state": "Observed"
+    },
+    {
+        "transcendence": "Dose Traceability Assurance",
+        "elevation": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-transcendence")
+def irlt_governance_transcendence():
+
+    transcendence_score = round(
+        sum(x["elevation"] for x in IRLT_GOVERNANCE_TRANSCENDENCE_V1)
+        / len(IRLT_GOVERNANCE_TRANSCENDENCE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Transcendence Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Transcendence Engine</h1>
+
+        <p>
+            Enterprise governance transcendence environment for
+            commercialization intelligence elevation,
+            operational survivability orchestration,
+            inspection defense synchronization,
+            and radiopharma trust convergence.
+        </p>
+
+        <div class="score">
+            {{ transcendence_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in transcendence %}
+
+            <div class="card">
+
+                <h2>{{ row.transcendence }}</h2>
+
+                <p>
+                    Elevation Index: {{ row.elevation }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    transcendence=IRLT_GOVERNANCE_TRANSCENDENCE_V1,
+    transcendence_score=transcendence_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-transcendence/api")
+def irlt_governance_transcendence_api():
+
+    return jsonify({
+        "transcendence_score": round(
+            sum(x["elevation"] for x in IRLT_GOVERNANCE_TRANSCENDENCE_V1)
+            / len(IRLT_GOVERNANCE_TRANSCENDENCE_V1)
+        ),
+        "transcendence": IRLT_GOVERNANCE_TRANSCENDENCE_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_TRANSCENDENCE_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_APEX_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_APEX_V1 = [
+    {
+        "apex": "Commercial Readiness Command",
+        "apex_score": 99,
+        "state": "Operational"
+    },
+    {
+        "apex": "Inspection Survivability",
+        "apex_score": 98,
+        "state": "Protected"
+    },
+    {
+        "apex": "Evidence Integrity Assurance",
+        "apex_score": 100,
+        "state": "Verified"
+    },
+    {
+        "apex": "Cold Chain Governance",
+        "apex_score": 95,
+        "state": "Stable"
+    },
+    {
+        "apex": "CAPA Recovery Intelligence",
+        "apex_score": 90,
+        "state": "Observed"
+    },
+    {
+        "apex": "Dose Traceability Coordination",
+        "apex_score": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-apex")
+def irlt_governance_apex():
+
+    apex_score = round(
+        sum(x["apex_score"] for x in IRLT_GOVERNANCE_APEX_V1)
+        / len(IRLT_GOVERNANCE_APEX_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Apex Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Apex Engine</h1>
+
+        <p>
+            Enterprise governance apex environment for
+            commercialization intelligence leadership,
+            operational survivability orchestration,
+            inspection defense synchronization,
+            and radiopharma governance convergence.
+        </p>
+
+        <div class="score">
+            {{ apex_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in apex %}
+
+            <div class="card">
+
+                <h2>{{ row.apex }}</h2>
+
+                <p>
+                    Apex Score: {{ row.apex_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    apex=IRLT_GOVERNANCE_APEX_V1,
+    apex_score=apex_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-apex/api")
+def irlt_governance_apex_api():
+
+    return jsonify({
+        "apex_score": round(
+            sum(x["apex_score"] for x in IRLT_GOVERNANCE_APEX_V1)
+            / len(IRLT_GOVERNANCE_APEX_V1)
+        ),
+        "apex": IRLT_GOVERNANCE_APEX_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_APEX_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_CITADEL_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_CITADEL_V1 = [
+    {
+        "citadel": "Commercial Readiness Fortress",
+        "fortification": 99,
+        "state": "Operational"
+    },
+    {
+        "citadel": "Inspection Defense Shield",
+        "fortification": 98,
+        "state": "Protected"
+    },
+    {
+        "citadel": "Evidence Integrity Vault",
+        "fortification": 100,
+        "state": "Verified"
+    },
+    {
+        "citadel": "Cold Chain Governance",
+        "fortification": 95,
+        "state": "Stable"
+    },
+    {
+        "citadel": "CAPA Recovery Intelligence",
+        "fortification": 90,
+        "state": "Observed"
+    },
+    {
+        "citadel": "Dose Traceability Command",
+        "fortification": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-citadel")
+def irlt_governance_citadel():
+
+    citadel_score = round(
+        sum(x["fortification"] for x in IRLT_GOVERNANCE_CITADEL_V1)
+        / len(IRLT_GOVERNANCE_CITADEL_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Citadel Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Citadel Engine</h1>
+
+        <p>
+            Enterprise governance citadel environment for
+            commercialization defense orchestration,
+            operational survivability protection,
+            inspection resilience synchronization,
+            and radiopharma governance fortification.
+        </p>
+
+        <div class="score">
+            {{ citadel_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in citadel %}
+
+            <div class="card">
+
+                <h2>{{ row.citadel }}</h2>
+
+                <p>
+                    Fortification Index: {{ row.fortification }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    citadel=IRLT_GOVERNANCE_CITADEL_V1,
+    citadel_score=citadel_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-citadel/api")
+def irlt_governance_citadel_api():
+
+    return jsonify({
+        "citadel_score": round(
+            sum(x["fortification"] for x in IRLT_GOVERNANCE_CITADEL_V1)
+            / len(IRLT_GOVERNANCE_CITADEL_V1)
+        ),
+        "citadel": IRLT_GOVERNANCE_CITADEL_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_CITADEL_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_TITAN_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_TITAN_V1 = [
+    {
+        "titan": "Commercial Governance Dominance",
+        "power": 100,
+        "state": "Operational"
+    },
+    {
+        "titan": "Inspection Defense Command",
+        "power": 99,
+        "state": "Protected"
+    },
+    {
+        "titan": "Evidence Integrity Supremacy",
+        "power": 100,
+        "state": "Verified"
+    },
+    {
+        "titan": "Cold Chain Governance",
+        "power": 96,
+        "state": "Stable"
+    },
+    {
+        "titan": "CAPA Recovery Intelligence",
+        "power": 91,
+        "state": "Observed"
+    },
+    {
+        "titan": "Dose Traceability Assurance",
+        "power": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-titan")
+def irlt_governance_titan():
+
+    titan_score = round(
+        sum(x["power"] for x in IRLT_GOVERNANCE_TITAN_V1)
+        / len(IRLT_GOVERNANCE_TITAN_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Titan Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Titan Engine</h1>
+
+        <p>
+            Enterprise governance titan environment for
+            commercialization command dominance,
+            operational survivability protection,
+            inspection defense synchronization,
+            and radiopharma governance supremacy.
+        </p>
+
+        <div class="score">
+            {{ titan_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in titan %}
+
+            <div class="card">
+
+                <h2>{{ row.titan }}</h2>
+
+                <p>
+                    Power Index: {{ row.power }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    titan=IRLT_GOVERNANCE_TITAN_V1,
+    titan_score=titan_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-titan/api")
+def irlt_governance_titan_api():
+
+    return jsonify({
+        "titan_score": round(
+            sum(x["power"] for x in IRLT_GOVERNANCE_TITAN_V1)
+            / len(IRLT_GOVERNANCE_TITAN_V1)
+        ),
+        "titan": IRLT_GOVERNANCE_TITAN_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_TITAN_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_NEXUS_PRIME_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_NEXUS_PRIME_V1 = [
+    {
+        "prime": "Commercial Readiness Core",
+        "synchronization": 100,
+        "state": "Operational"
+    },
+    {
+        "prime": "Inspection Defense Matrix",
+        "synchronization": 99,
+        "state": "Protected"
+    },
+    {
+        "prime": "Evidence Integrity Nexus",
+        "synchronization": 100,
+        "state": "Verified"
+    },
+    {
+        "prime": "Cold Chain Coordination",
+        "synchronization": 96,
+        "state": "Stable"
+    },
+    {
+        "prime": "CAPA Recovery Governance",
+        "synchronization": 92,
+        "state": "Observed"
+    },
+    {
+        "prime": "Dose Traceability Command",
+        "synchronization": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-nexus-prime")
+def irlt_governance_nexus_prime():
+
+    prime_score = round(
+        sum(x["synchronization"] for x in IRLT_GOVERNANCE_NEXUS_PRIME_V1)
+        / len(IRLT_GOVERNANCE_NEXUS_PRIME_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Nexus Prime Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Nexus Prime Engine</h1>
+
+        <p>
+            Enterprise governance nexus prime environment for
+            commercialization intelligence synchronization,
+            operational survivability orchestration,
+            inspection defense convergence,
+            and radiopharma governance command continuity.
+        </p>
+
+        <div class="score">
+            {{ prime_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in prime %}
+
+            <div class="card">
+
+                <h2>{{ row.prime }}</h2>
+
+                <p>
+                    Synchronization Index: {{ row.synchronization }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    prime=IRLT_GOVERNANCE_NEXUS_PRIME_V1,
+    prime_score=prime_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-nexus-prime/api")
+def irlt_governance_nexus_prime_api():
+
+    return jsonify({
+        "prime_score": round(
+            sum(x["synchronization"] for x in IRLT_GOVERNANCE_NEXUS_PRIME_V1)
+            / len(IRLT_GOVERNANCE_NEXUS_PRIME_V1)
+        ),
+        "prime": IRLT_GOVERNANCE_NEXUS_PRIME_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_NEXUS_PRIME_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_ETERNITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_ETERNITY_V1 = [
+    {
+        "eternity": "Commercial Governance Continuity",
+        "eternity_score": 100,
+        "state": "Operational"
+    },
+    {
+        "eternity": "Inspection Survivability Shield",
+        "eternity_score": 99,
+        "state": "Protected"
+    },
+    {
+        "eternity": "Evidence Integrity Preservation",
+        "eternity_score": 100,
+        "state": "Verified"
+    },
+    {
+        "eternity": "Cold Chain Governance Stability",
+        "eternity_score": 96,
+        "state": "Stable"
+    },
+    {
+        "eternity": "CAPA Recovery Synchronization",
+        "eternity_score": 92,
+        "state": "Observed"
+    },
+    {
+        "eternity": "Dose Traceability Assurance",
+        "eternity_score": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-eternity")
+def irlt_governance_eternity():
+
+    eternity_score = round(
+        sum(x["eternity_score"] for x in IRLT_GOVERNANCE_ETERNITY_V1)
+        / len(IRLT_GOVERNANCE_ETERNITY_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Eternity Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Eternity Engine</h1>
+
+        <p>
+            Enterprise governance eternity environment for
+            commercialization continuity preservation,
+            operational survivability orchestration,
+            inspection defense permanence,
+            and radiopharma governance assurance longevity.
+        </p>
+
+        <div class="score">
+            {{ eternity_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in eternity %}
+
+            <div class="card">
+
+                <h2>{{ row.eternity }}</h2>
+
+                <p>
+                    Eternity Index: {{ row.eternity_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    eternity=IRLT_GOVERNANCE_ETERNITY_V1,
+    eternity_score=eternity_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-eternity/api")
+def irlt_governance_eternity_api():
+
+    return jsonify({
+        "eternity_score": round(
+            sum(x["eternity_score"] for x in IRLT_GOVERNANCE_ETERNITY_V1)
+            / len(IRLT_GOVERNANCE_ETERNITY_V1)
+        ),
+        "eternity": IRLT_GOVERNANCE_ETERNITY_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_ETERNITY_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_OMEGA_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_OMEGA_V1 = [
+    {
+        "omega": "Commercial Governance Supremacy",
+        "omega_score": 100,
+        "state": "Operational"
+    },
+    {
+        "omega": "Inspection Survivability Shield",
+        "omega_score": 100,
+        "state": "Protected"
+    },
+    {
+        "omega": "Evidence Integrity Preservation",
+        "omega_score": 100,
+        "state": "Verified"
+    },
+    {
+        "omega": "Cold Chain Governance Continuity",
+        "omega_score": 97,
+        "state": "Stable"
+    },
+    {
+        "omega": "CAPA Recovery Intelligence",
+        "omega_score": 93,
+        "state": "Observed"
+    },
+    {
+        "omega": "Dose Traceability Assurance",
+        "omega_score": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-omega")
+def irlt_governance_omega():
+
+    omega_score = round(
+        sum(x["omega_score"] for x in IRLT_GOVERNANCE_OMEGA_V1)
+        / len(IRLT_GOVERNANCE_OMEGA_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Omega Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Omega Engine</h1>
+
+        <p>
+            Enterprise governance omega environment for
+            commercialization command supremacy,
+            operational survivability permanence,
+            inspection defense orchestration,
+            and radiopharma governance convergence.
+        </p>
+
+        <div class="score">
+            {{ omega_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in omega %}
+
+            <div class="card">
+
+                <h2>{{ row.omega }}</h2>
+
+                <p>
+                    Omega Index: {{ row.omega_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    omega=IRLT_GOVERNANCE_OMEGA_V1,
+    omega_score=omega_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-omega/api")
+def irlt_governance_omega_api():
+
+    return jsonify({
+        "omega_score": round(
+            sum(x["omega_score"] for x in IRLT_GOVERNANCE_OMEGA_V1)
+            / len(IRLT_GOVERNANCE_OMEGA_V1)
+        ),
+        "omega": IRLT_GOVERNANCE_OMEGA_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_OMEGA_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_GENESIS_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_GENESIS_V1 = [
+    {
+        "genesis": "Commercial Readiness Foundation",
+        "origin_score": 100,
+        "state": "Operational"
+    },
+    {
+        "genesis": "Inspection Defense Core",
+        "origin_score": 100,
+        "state": "Protected"
+    },
+    {
+        "genesis": "Evidence Integrity Genesis",
+        "origin_score": 100,
+        "state": "Verified"
+    },
+    {
+        "genesis": "Cold Chain Governance",
+        "origin_score": 97,
+        "state": "Stable"
+    },
+    {
+        "genesis": "CAPA Recovery Intelligence",
+        "origin_score": 94,
+        "state": "Observed"
+    },
+    {
+        "genesis": "Dose Traceability Assurance",
+        "origin_score": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-genesis")
+def irlt_governance_genesis():
+
+    genesis_score = round(
+        sum(x["origin_score"] for x in IRLT_GOVERNANCE_GENESIS_V1)
+        / len(IRLT_GOVERNANCE_GENESIS_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Genesis Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Genesis Engine</h1>
+
+        <p>
+            Enterprise governance genesis environment for
+            commercialization foundation orchestration,
+            operational survivability continuity,
+            inspection defense synchronization,
+            and radiopharma governance origin intelligence.
+        </p>
+
+        <div class="score">
+            {{ genesis_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in genesis %}
+
+            <div class="card">
+
+                <h2>{{ row.genesis }}</h2>
+
+                <p>
+                    Origin Index: {{ row.origin_score }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    genesis=IRLT_GOVERNANCE_GENESIS_V1,
+    genesis_score=genesis_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-genesis/api")
+def irlt_governance_genesis_api():
+
+    return jsonify({
+        "genesis_score": round(
+            sum(x["origin_score"] for x in IRLT_GOVERNANCE_GENESIS_V1)
+            / len(IRLT_GOVERNANCE_GENESIS_V1)
+        ),
+        "genesis": IRLT_GOVERNANCE_GENESIS_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_GENESIS_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_ORIGIN_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_ORIGIN_V1 = [
+    {
+        "origin": "Commercial Governance Foundation",
+        "origin_index": 100,
+        "state": "Operational"
+    },
+    {
+        "origin": "Inspection Defense Framework",
+        "origin_index": 100,
+        "state": "Protected"
+    },
+    {
+        "origin": "Evidence Integrity Architecture",
+        "origin_index": 100,
+        "state": "Verified"
+    },
+    {
+        "origin": "Cold Chain Governance",
+        "origin_index": 98,
+        "state": "Stable"
+    },
+    {
+        "origin": "CAPA Recovery Synchronization",
+        "origin_index": 94,
+        "state": "Observed"
+    },
+    {
+        "origin": "Dose Traceability Assurance",
+        "origin_index": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-origin")
+def irlt_governance_origin():
+
+    origin_score = round(
+        sum(x["origin_index"] for x in IRLT_GOVERNANCE_ORIGIN_V1)
+        / len(IRLT_GOVERNANCE_ORIGIN_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Origin Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Origin Engine</h1>
+
+        <p>
+            Enterprise governance origin environment for
+            commercialization foundation intelligence,
+            operational survivability orchestration,
+            inspection defense continuity,
+            and radiopharma governance synchronization.
+        </p>
+
+        <div class="score">
+            {{ origin_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in origin %}
+
+            <div class="card">
+
+                <h2>{{ row.origin }}</h2>
+
+                <p>
+                    Origin Index: {{ row.origin_index }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    origin=IRLT_GOVERNANCE_ORIGIN_V1,
+    origin_score=origin_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-origin/api")
+def irlt_governance_origin_api():
+
+    return jsonify({
+        "origin_score": round(
+            sum(x["origin_index"] for x in IRLT_GOVERNANCE_ORIGIN_V1)
+            / len(IRLT_GOVERNANCE_ORIGIN_V1)
+        ),
+        "origin": IRLT_GOVERNANCE_ORIGIN_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_ORIGIN_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_NEBULA_ENGINE_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_NEBULA_V1 = [
+    {
+        "nebula": "Commercial Readiness Expansion",
+        "density": 100,
+        "state": "Operational"
+    },
+    {
+        "nebula": "Inspection Defense Field",
+        "density": 100,
+        "state": "Protected"
+    },
+    {
+        "nebula": "Evidence Integrity Constellation",
+        "density": 100,
+        "state": "Verified"
+    },
+    {
+        "nebula": "Cold Chain Governance",
+        "density": 98,
+        "state": "Stable"
+    },
+    {
+        "nebula": "CAPA Recovery Coordination",
+        "density": 95,
+        "state": "Observed"
+    },
+    {
+        "nebula": "Dose Traceability Assurance",
+        "density": 100,
+        "state": "Certified"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-nebula")
+def irlt_governance_nebula():
+
+    nebula_score = round(
+        sum(x["density"] for x in IRLT_GOVERNANCE_NEBULA_V1)
+        / len(IRLT_GOVERNANCE_NEBULA_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>Governance Nebula Engine</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Governance Nebula Engine</h1>
+
+        <p>
+            Enterprise governance nebula environment for
+            commercialization intelligence expansion,
+            operational survivability synchronization,
+            inspection defense orchestration,
+            and radiopharma governance convergence.
+        </p>
+
+        <div class="score">
+            {{ nebula_score }}%
+        </div>
+
+        <div class="grid">
+
+            {% for row in nebula %}
+
+            <div class="card">
+
+                <h2>{{ row.nebula }}</h2>
+
+                <p>
+                    Density Index: {{ row.density }}%
+                </p>
+
+                <div class="pill">
+                    {{ row.state }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    nebula=IRLT_GOVERNANCE_NEBULA_V1,
+    nebula_score=nebula_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-nebula/api")
+def irlt_governance_nebula_api():
+
+    return jsonify({
+        "nebula_score": round(
+            sum(x["density"] for x in IRLT_GOVERNANCE_NEBULA_V1)
+            / len(IRLT_GOVERNANCE_NEBULA_V1)
+        ),
+        "nebula": IRLT_GOVERNANCE_NEBULA_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_NEBULA_ENGINE_V1
+# ============================================================
+
+
+
 if __name__ == "__main__":
+
     app.run(debug=True)
