@@ -20,7 +20,7 @@
 # DEIDENTIFIED_DEMO_LANGUAGE_ACTIVE
 # VISUAL_HIERARCHY_RLT_DSCSA_ACTIVE
 # RLT_DSCSA_POSITIONING_ACTIVE
-from flask import Flask, request, render_template_string, redirect, Response
+from flask import Flask, render_template_string, jsonify, request, render_template_string, redirect, Response
 import os, io, hashlib, datetime
 import pandas as pd
 from azure.storage.blob import BlobServiceClient
@@ -165620,6 +165620,7332 @@ def irlt_governance_nebula_api():
 
 
 
-if __name__ == "__main__":
 
+
+# ============================================================
+# IRLT_MASTER_NAVIGATION_HUB_V1_ACTIVE
+# ============================================================
+
+IRLT_MASTER_ROUTES_V1 = [
+    {"name": "Governance Omega", "url": "/irlt-commercial-readiness/governance-omega"},
+    {"name": "Governance Titan", "url": "/irlt-commercial-readiness/governance-titan"},
+    {"name": "Governance Citadel", "url": "/irlt-commercial-readiness/governance-citadel"},
+    {"name": "Governance Omniverse", "url": "/irlt-commercial-readiness/governance-omniverse"},
+    {"name": "Governance Infinity", "url": "/irlt-commercial-readiness/governance-infinity"},
+    {"name": "Governance Genesis", "url": "/irlt-commercial-readiness/governance-genesis"},
+    {"name": "Governance Origin", "url": "/irlt-commercial-readiness/governance-origin"},
+    {"name": "Governance Nebula", "url": "/irlt-commercial-readiness/governance-nebula"},
+    {"name": "Governance Cosmos", "url": "/irlt-commercial-readiness/governance-cosmos"},
+    {"name": "Governance Beacon", "url": "/irlt-commercial-readiness/governance-beacon"},
+    {"name": "Governance HyperGrid", "url": "/irlt-commercial-readiness/governance-hypergrid"},
+    {"name": "Operational Nexus", "url": "/irlt-commercial-readiness/operational-nexus"},
+    {"name": "Operational Singularity", "url": "/irlt-commercial-readiness/operational-singularity"},
+    {"name": "Trust Fusion Core", "url": "/irlt-commercial-readiness/trust-fusion-core"},
+    {"name": "Inspection Radar", "url": "/irlt-commercial-readiness/inspection-radar"},
+    {"name": "Survivability Matrix", "url": "/irlt-commercial-readiness/survivability-matrix"},
+    {"name": "Command Singularity", "url": "/irlt-commercial-readiness/command-singularity"}
+]
+
+@app.route("/irlt-commercial-readiness/navigation-hub")
+def irlt_master_navigation_hub():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Master Navigation Hub</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:72px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1100px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            a{
+                color:#ffd7ad;
+                text-decoration:none;
+                font-weight:bold;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Master Navigation Hub</h1>
+
+        <p>
+            Central access layer for the IRLT Commercial Readiness Governance Command Center.
+            This hub links the governance intelligence engines, survivability layers,
+            inspection defense environments, and operational trust modules in one place.
+        </p>
+
+        <div class="grid">
+
+            {% for row in routes %}
+
+            <div class="card">
+
+                <h2>{{ row.name }}</h2>
+
+                <a href="{{ row.url }}">Open Module</a>
+
+                <br>
+
+                <div class="pill">
+                    Active Governance Engine
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', routes=IRLT_MASTER_ROUTES_V1)
+
+
+@app.route("/irlt-commercial-readiness/navigation-hub/api")
+def irlt_master_navigation_hub_api():
+
+    return jsonify({
+        "total_modules": len(IRLT_MASTER_ROUTES_V1),
+        "routes": IRLT_MASTER_ROUTES_V1
+    })
+
+# ============================================================
+# END IRLT_MASTER_NAVIGATION_HUB_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EXECUTIVE_LAUNCHPAD_V1_ACTIVE
+# ============================================================
+
+IRLT_EXECUTIVE_LAUNCHPAD_V1 = [
+    {
+        "area": "Commercialization Readiness",
+        "score": 98,
+        "route": "/irlt-commercial-readiness/governance-omega"
+    },
+    {
+        "area": "Inspection Defense",
+        "score": 97,
+        "route": "/irlt-commercial-readiness/inspection-radar"
+    },
+    {
+        "area": "Evidence Integrity",
+        "score": 99,
+        "route": "/irlt-commercial-readiness/trust-fusion-core"
+    },
+    {
+        "area": "Operational Survivability",
+        "score": 96,
+        "route": "/irlt-commercial-readiness/survivability-matrix"
+    },
+    {
+        "area": "Governance Navigation",
+        "score": 100,
+        "route": "/irlt-commercial-readiness/navigation-hub"
+    },
+    {
+        "area": "Executive Command",
+        "score": 98,
+        "route": "/irlt-commercial-readiness/command-singularity"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/executive-launchpad")
+def irlt_executive_launchpad():
+
+    launchpad_score = round(
+        sum(x["score"] for x in IRLT_EXECUTIVE_LAUNCHPAD_V1)
+        / len(IRLT_EXECUTIVE_LAUNCHPAD_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Executive Launchpad</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:20px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            .card h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            a{
+                color:#ffd7ad;
+                text-decoration:none;
+                font-weight:bold;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Executive Launchpad</h1>
+
+        <p>
+            Executive landing page for the IRLT Commercial Readiness Governance Command Center.
+            This view gives leadership a fast entry point into commercialization readiness,
+            inspection defense, evidence integrity, operational survivability, and governance navigation.
+        </p>
+
+        <div class="score">
+            {{ launchpad_score }}%
+        </div>
+
+        <p>
+            Unified Executive Readiness Score
+        </p>
+
+        <div class="grid">
+
+            {% for row in launchpad %}
+
+            <div class="card">
+
+                <h2>{{ row.area }}</h2>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <a href="{{ row.route }}">Open View</a>
+
+                <br>
+
+                <div class="pill">
+                    Executive Access Point
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    launchpad=IRLT_EXECUTIVE_LAUNCHPAD_V1,
+    launchpad_score=launchpad_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/executive-launchpad/api")
+def irlt_executive_launchpad_api():
+
+    return jsonify({
+        "launchpad_score": round(
+            sum(x["score"] for x in IRLT_EXECUTIVE_LAUNCHPAD_V1)
+            / len(IRLT_EXECUTIVE_LAUNCHPAD_V1)
+        ),
+        "launchpad": IRLT_EXECUTIVE_LAUNCHPAD_V1
+    })
+
+# ============================================================
+# END IRLT_EXECUTIVE_LAUNCHPAD_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EXECUTIVE_DEMO_STORYBOARD_V1_ACTIVE
+# ============================================================
+
+IRLT_DEMO_STORYBOARD_V1 = [
+    {
+        "step": "1",
+        "title": "Executive Launchpad",
+        "message": "Start with the unified readiness score and executive access points.",
+        "route": "/irlt-commercial-readiness/executive-launchpad"
+    },
+    {
+        "step": "2",
+        "title": "Navigation Hub",
+        "message": "Show all active governance engines in one controlled access layer.",
+        "route": "/irlt-commercial-readiness/navigation-hub"
+    },
+    {
+        "step": "3",
+        "title": "Governance Omega",
+        "message": "Demonstrate top-level commercialization governance readiness.",
+        "route": "/irlt-commercial-readiness/governance-omega"
+    },
+    {
+        "step": "4",
+        "title": "Inspection Radar",
+        "message": "Show inspection surveillance, audit readiness, and evidence visibility.",
+        "route": "/irlt-commercial-readiness/inspection-radar"
+    },
+    {
+        "step": "5",
+        "title": "Survivability Matrix",
+        "message": "Explain operational survivability and commercialization resilience.",
+        "route": "/irlt-commercial-readiness/survivability-matrix"
+    },
+    {
+        "step": "6",
+        "title": "Trust Fusion Core",
+        "message": "Close with the operational trust and evidence integrity layer.",
+        "route": "/irlt-commercial-readiness/trust-fusion-core"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/demo-storyboard")
+def irlt_demo_storyboard():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Executive Demo Storyboard</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .timeline{
+                margin-top:34px;
+                display:grid;
+                grid-template-columns:1fr;
+                gap:18px;
+            }
+
+            .step{
+                background:#161d28;
+                border-radius:22px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+                display:grid;
+                grid-template-columns:100px 1fr 160px;
+                gap:20px;
+                align-items:center;
+            }
+
+            .num{
+                font-size:56px;
+                color:#ff9f1c;
+                font-weight:bold;
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin:0 0 10px 0;
+            }
+
+            a{
+                color:#ffd7ad;
+                text-decoration:none;
+                font-weight:bold;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Executive Demo Storyboard</h1>
+
+        <p>
+            Guided executive demo path for Nicole and IRLT leadership.
+            This storyboard explains the recommended sequence for presenting the platform:
+            launchpad, navigation, commercialization governance, inspection intelligence,
+            survivability, and operational trust.
+        </p>
+
+        <div class="timeline">
+
+            {% for row in storyboard %}
+
+            <div class="step">
+
+                <div class="num">{{ row.step }}</div>
+
+                <div>
+                    <h2>{{ row.title }}</h2>
+                    <p>{{ row.message }}</p>
+                </div>
+
+                <div>
+                    <a href="{{ row.route }}">Open View</a>
+                    <br><br>
+                    <span class="pill">Demo Step</span>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', storyboard=IRLT_DEMO_STORYBOARD_V1)
+
+
+@app.route("/irlt-commercial-readiness/demo-storyboard/api")
+def irlt_demo_storyboard_api():
+
+    return jsonify({
+        "total_steps": len(IRLT_DEMO_STORYBOARD_V1),
+        "storyboard": IRLT_DEMO_STORYBOARD_V1
+    })
+
+# ============================================================
+# END IRLT_EXECUTIVE_DEMO_STORYBOARD_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_INVESTOR_DEMO_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_INVESTOR_DEMO_V1 = [
+    {
+        "signal": "Market Relevance",
+        "score": 98,
+        "message": "IRLT commercialization creates a strong need for operational governance assurance."
+    },
+    {
+        "signal": "Enterprise Differentiation",
+        "score": 97,
+        "message": "COBIT-Chain is positioned as a governance assurance layer, not a replacement system."
+    },
+    {
+        "signal": "Inspection Defensibility",
+        "score": 96,
+        "message": "The platform supports evidence-backed inspection readiness and survivability."
+    },
+    {
+        "signal": "Scalability",
+        "score": 95,
+        "message": "The modular architecture can expand across IRLT, SOP, access, audit, and manufacturing governance."
+    },
+    {
+        "signal": "Commercial Story",
+        "score": 98,
+        "message": "Leadership can see readiness, risk, evidence, and trust in one operational command environment."
+    },
+    {
+        "signal": "Platform Potential",
+        "score": 97,
+        "message": "The architecture supports future SaaS-style governance intelligence expansion."
+    }
+]
+
+@app.route("/irlt-commercial-readiness/investor-demo")
+def irlt_investor_demo():
+
+    investor_score = round(
+        sum(x["score"] for x in IRLT_INVESTOR_DEMO_V1)
+        / len(IRLT_INVESTOR_DEMO_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Investor Demo View</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Investor Demo View</h1>
+
+        <p>
+            Investor and executive-facing strategic view showing why the IRLT Commercial Readiness
+            Governance Command Center has enterprise value, market relevance, differentiation,
+            and scalable governance assurance potential.
+        </p>
+
+        <div class="score">{{ investor_score }}%</div>
+
+        <p>Strategic Demo Confidence</p>
+
+        <div class="grid">
+
+            {% for row in demo %}
+
+            <div class="card">
+
+                <h2>{{ row.signal }}</h2>
+
+                <p>{{ row.message }}</p>
+
+                <div class="pill">Score {{ row.score }}%</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    demo=IRLT_INVESTOR_DEMO_V1,
+    investor_score=investor_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/investor-demo/api")
+def irlt_investor_demo_api():
+
+    return jsonify({
+        "investor_score": round(
+            sum(x["score"] for x in IRLT_INVESTOR_DEMO_V1)
+            / len(IRLT_INVESTOR_DEMO_V1)
+        ),
+        "demo": IRLT_INVESTOR_DEMO_V1
+    })
+
+# ============================================================
+# END IRLT_INVESTOR_DEMO_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_BUYER_VALUE_MAP_V1_ACTIVE
+# ============================================================
+
+IRLT_BUYER_VALUE_MAP_V1 = [
+    {
+        "buyer": "QA Leadership",
+        "value": "Inspection defensibility and evidence readiness",
+        "score": 98
+    },
+    {
+        "buyer": "Operations Leadership",
+        "value": "Commercial readiness and operational survivability visibility",
+        "score": 97
+    },
+    {
+        "buyer": "Compliance Leadership",
+        "value": "Governed evidence, audit traceability, and risk visibility",
+        "score": 98
+    },
+    {
+        "buyer": "Radiopharma Leadership",
+        "value": "Dose traceability, cold-chain governance, and treatment continuity assurance",
+        "score": 99
+    },
+    {
+        "buyer": "IT / Digital Leadership",
+        "value": "Governance overlay above existing enterprise systems",
+        "score": 96
+    },
+    {
+        "buyer": "Executive Sponsors",
+        "value": "One operational trust picture for commercialization readiness",
+        "score": 99
+    }
+]
+
+@app.route("/irlt-commercial-readiness/buyer-value-map")
+def irlt_buyer_value_map():
+
+    value_score = round(
+        sum(x["score"] for x in IRLT_BUYER_VALUE_MAP_V1)
+        / len(IRLT_BUYER_VALUE_MAP_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Buyer Value Map</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Buyer Value Map</h1>
+
+        <p>
+            Executive buyer-value map showing how the IRLT Commercial Readiness
+            Governance Command Center creates value for QA, Operations, Compliance,
+            Radiopharma Leadership, IT/Digital, and Executive Sponsors.
+        </p>
+
+        <div class="score">{{ value_score }}%</div>
+
+        <p>Buyer Value Alignment Score</p>
+
+        <div class="grid">
+
+            {% for row in buyers %}
+
+            <div class="card">
+
+                <h2>{{ row.buyer }}</h2>
+
+                <p>{{ row.value }}</p>
+
+                <div class="pill">Value Score {{ row.score }}%</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    buyers=IRLT_BUYER_VALUE_MAP_V1,
+    value_score=value_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/buyer-value-map/api")
+def irlt_buyer_value_map_api():
+
+    return jsonify({
+        "value_score": round(
+            sum(x["score"] for x in IRLT_BUYER_VALUE_MAP_V1)
+            / len(IRLT_BUYER_VALUE_MAP_V1)
+        ),
+        "buyers": IRLT_BUYER_VALUE_MAP_V1
+    })
+
+# ============================================================
+# END IRLT_BUYER_VALUE_MAP_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COMPETITIVE_POSITIONING_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_COMPETITIVE_POSITIONING_V1 = [
+    {
+        "category": "Traditional Systems",
+        "description": "Veeva, ServiceNow, MES, ERP, LIMS, and quality systems manage records and workflows.",
+        "gap": "They do not provide one unified governance trust layer."
+    },
+    {
+        "category": "COBIT-Chain Position",
+        "description": "COBIT-Chain operates above existing systems as a governance assurance overlay.",
+        "gap": "It connects readiness, evidence, inspection, and survivability intelligence."
+    },
+    {
+        "category": "Differentiation",
+        "description": "Evidence integrity, operational trust scoring, governance lineage, and inspection survivability.",
+        "gap": "This creates defensibility beyond dashboards and workflow tracking."
+    },
+    {
+        "category": "IRLT Relevance",
+        "description": "Designed around radiopharma complexity, cold-chain coordination, dose traceability, and release defensibility.",
+        "gap": "Supports commercialization readiness in high-risk regulated environments."
+    },
+    {
+        "category": "Executive Value",
+        "description": "Provides one readiness and governance view for leadership decision-making.",
+        "gap": "Helps answer whether commercialization readiness can be defended."
+    },
+    {
+        "category": "Commercial Potential",
+        "description": "Can expand into SOPTrust, AccessTrust, AuditVault, IntegrityLens, DSCSATrust, and CompoundTrust.",
+        "gap": "Creates a modular governance assurance product family."
+    }
+]
+
+@app.route("/irlt-commercial-readiness/competitive-positioning")
+def irlt_competitive_positioning():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Competitive Positioning</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:24px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Competitive Positioning</h1>
+
+        <p>
+            Strategic positioning view explaining why COBIT-Chain is not another system of record,
+            but a governance assurance and operational trust layer above existing enterprise systems.
+        </p>
+
+        <div class="grid">
+
+            {% for row in positioning %}
+
+            <div class="card">
+
+                <h2>{{ row.category }}</h2>
+
+                <p>{{ row.description }}</p>
+
+                <p><b>Strategic Gap:</b> {{ row.gap }}</p>
+
+                <div class="pill">Positioning Layer</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', positioning=IRLT_COMPETITIVE_POSITIONING_V1)
+
+
+@app.route("/irlt-commercial-readiness/competitive-positioning/api")
+def irlt_competitive_positioning_api():
+
+    return jsonify({
+        "positioning": IRLT_COMPETITIVE_POSITIONING_V1
+    })
+
+# ============================================================
+# END IRLT_COMPETITIVE_POSITIONING_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COMMERCIAL_STORYLINE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_COMMERCIAL_STORYLINE_V1 = [
+    {
+        "chapter": "1. IRLT Commercialization Pressure",
+        "story": "Radiopharma commercialization creates operational pressure across manufacturing, release, cold-chain, treatment timing, evidence, and inspection readiness."
+    },
+    {
+        "chapter": "2. Fragmented Enterprise Systems",
+        "story": "Existing systems manage records and workflows, but leadership still lacks one governed view of operational trust and readiness."
+    },
+    {
+        "chapter": "3. Governance Assurance Gap",
+        "story": "The gap is not data capture. The gap is whether readiness can be defended with governed, traceable, inspection-ready evidence."
+    },
+    {
+        "chapter": "4. COBIT-Chain Overlay",
+        "story": "COBIT-Chain sits above existing systems as a governance assurance and operational trust layer."
+    },
+    {
+        "chapter": "5. Executive Readiness Intelligence",
+        "story": "The platform gives leadership a clear view of readiness, risk, survivability, evidence integrity, and commercialization defensibility."
+    },
+    {
+        "chapter": "6. Future Enterprise Expansion",
+        "story": "The IRLT command center becomes the foundation for broader governance products such as SOPTrust, AccessTrust, AuditVault, and IntegrityLens."
+    }
+]
+
+@app.route("/irlt-commercial-readiness/commercial-storyline")
+def irlt_commercial_storyline():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Commercial Storyline</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .story{
+                margin-top:30px;
+                display:grid;
+                grid-template-columns:1fr;
+                gap:18px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:26px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Commercial Storyline</h1>
+
+        <p>
+            Executive narrative view explaining why the IRLT Commercial Readiness Governance Command Center matters,
+            what problem it solves, and how it becomes a governance assurance layer for commercial radiopharma scale-up.
+        </p>
+
+        <div class="story">
+
+            {% for row in storyline %}
+
+            <div class="card">
+
+                <h2>{{ row.chapter }}</h2>
+
+                <p>{{ row.story }}</p>
+
+                <div class="pill">Executive Story Layer</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', storyline=IRLT_COMMERCIAL_STORYLINE_V1)
+
+
+@app.route("/irlt-commercial-readiness/commercial-storyline/api")
+def irlt_commercial_storyline_api():
+
+    return jsonify({
+        "storyline": IRLT_COMMERCIAL_STORYLINE_V1
+    })
+
+# ============================================================
+# END IRLT_COMMERCIAL_STORYLINE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_BUSINESS_CASE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_BUSINESS_CASE_V1 = [
+    {
+        "case": "Commercial Readiness Defense",
+        "value": "Provides leadership with a governed readiness picture before commercial launch.",
+        "impact": 98
+    },
+    {
+        "case": "Inspection Survivability",
+        "value": "Improves ability to defend evidence, workflows, and readiness during inspection.",
+        "impact": 97
+    },
+    {
+        "case": "Operational Risk Visibility",
+        "value": "Connects risk signals across release, cold chain, CAPA, training, and evidence domains.",
+        "impact": 96
+    },
+    {
+        "case": "Evidence Integrity",
+        "value": "Creates a governance layer for evidence completeness, traceability, and defensibility.",
+        "impact": 99
+    },
+    {
+        "case": "Executive Decision Support",
+        "value": "Gives sponsors a clear operational trust view instead of fragmented system reports.",
+        "impact": 98
+    },
+    {
+        "case": "Scalable Platform Potential",
+        "value": "Can extend into SOP, access, audit, DSCSA, clinical trial, and compounding governance.",
+        "impact": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/business-case")
+def irlt_business_case():
+
+    business_score = round(
+        sum(x["impact"] for x in IRLT_BUSINESS_CASE_V1)
+        / len(IRLT_BUSINESS_CASE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Business Case</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:26px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Business Case</h1>
+
+        <p>
+            Executive business-case view showing why the IRLT Commercial Readiness
+            Governance Command Center creates operational, regulatory, and commercial value.
+        </p>
+
+        <div class="score">{{ business_score }}%</div>
+
+        <p>Business Value Confidence</p>
+
+        <div class="grid">
+
+            {% for row in cases %}
+
+            <div class="card">
+
+                <h2>{{ row.case }}</h2>
+
+                <p>{{ row.value }}</p>
+
+                <div class="pill">Impact {{ row.impact }}%</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    cases=IRLT_BUSINESS_CASE_V1,
+    business_score=business_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/business-case/api")
+def irlt_business_case_api():
+
+    return jsonify({
+        "business_score": round(
+            sum(x["impact"] for x in IRLT_BUSINESS_CASE_V1)
+            / len(IRLT_BUSINESS_CASE_V1)
+        ),
+        "cases": IRLT_BUSINESS_CASE_V1
+    })
+
+# ============================================================
+# END IRLT_BUSINESS_CASE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_PILOT_READINESS_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_PILOT_READINESS_V1 = [
+    {
+        "pilot": "Executive Demo Readiness",
+        "readiness": 98,
+        "status": "Ready"
+    },
+    {
+        "pilot": "Cloud Deployment Readiness",
+        "readiness": 95,
+        "status": "Validate After Push"
+    },
+    {
+        "pilot": "Governance Storyline Readiness",
+        "readiness": 99,
+        "status": "Ready"
+    },
+    {
+        "pilot": "Buyer Value Narrative",
+        "readiness": 98,
+        "status": "Ready"
+    },
+    {
+        "pilot": "Technical Stability",
+        "readiness": 94,
+        "status": "Local Verified"
+    },
+    {
+        "pilot": "Integration Roadmap",
+        "readiness": 90,
+        "status": "Planned"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/pilot-readiness")
+def irlt_pilot_readiness():
+
+    pilot_score = round(
+        sum(x["readiness"] for x in IRLT_PILOT_READINESS_V1)
+        / len(IRLT_PILOT_READINESS_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Pilot Readiness</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:26px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Pilot Readiness</h1>
+
+        <p>
+            Pilot readiness view showing whether the IRLT Commercial Readiness Governance Command Center
+            is ready for executive demonstration, cloud validation, buyer storytelling, and next-stage integration planning.
+        </p>
+
+        <div class="score">{{ pilot_score }}%</div>
+
+        <p>Overall Pilot Readiness Score</p>
+
+        <div class="grid">
+
+            {% for row in pilots %}
+
+            <div class="card">
+
+                <h2>{{ row.pilot }}</h2>
+
+                <p>Readiness: {{ row.readiness }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    pilots=IRLT_PILOT_READINESS_V1,
+    pilot_score=pilot_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/pilot-readiness/api")
+def irlt_pilot_readiness_api():
+
+    return jsonify({
+        "pilot_score": round(
+            sum(x["readiness"] for x in IRLT_PILOT_READINESS_V1)
+            / len(IRLT_PILOT_READINESS_V1)
+        ),
+        "pilots": IRLT_PILOT_READINESS_V1
+    })
+
+# ============================================================
+# END IRLT_PILOT_READINESS_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_NICOLE_BRIEFING_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_NICOLE_BRIEFING_V1 = [
+    {
+        "section": "What We Built",
+        "summary": "A governance assurance command center for IRLT commercialization readiness, inspection defense, evidence integrity, and operational trust.",
+        "score": 98
+    },
+    {
+        "section": "Why It Matters",
+        "summary": "IRLT operations require governed visibility across release, cold chain, dose traceability, CAPA, evidence, and inspection readiness.",
+        "score": 97
+    },
+    {
+        "section": "Strategic Difference",
+        "summary": "The platform is not replacing Veeva, ServiceNow, MES, LIMS, or ERP. It acts as the governance trust layer above them.",
+        "score": 99
+    },
+    {
+        "section": "Current Demo Value",
+        "summary": "Leadership can navigate readiness views, buyer value, business case, pilot readiness, and executive demo storyline.",
+        "score": 96
+    },
+    {
+        "section": "Next Build Direction",
+        "summary": "Next steps include live integrations, Power BI dashboards, Governance Passport, dependency mapping, and inspection simulation.",
+        "score": 94
+    },
+    {
+        "section": "Executive Ask",
+        "summary": "Use this as a pilot conversation starter for IRLT governance assurance, operational readiness visibility, and commercialization trust.",
+        "score": 98
+    }
+]
+
+@app.route("/irlt-commercial-readiness/nicole-briefing")
+def irlt_nicole_briefing():
+
+    briefing_score = round(
+        sum(x["score"] for x in IRLT_NICOLE_BRIEFING_V1)
+        / len(IRLT_NICOLE_BRIEFING_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Nicole Briefing View</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:26px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>Nicole Briefing View</h1>
+
+        <p>
+            Executive briefing page for presenting the IRLT Commercial Readiness Governance Command Center
+            to Nicole. This view summarizes what has been built, why it matters, how it is different,
+            and what the next phase should focus on.
+        </p>
+
+        <div class="score">{{ briefing_score }}%</div>
+
+        <p>Briefing Readiness Score</p>
+
+        <div class="grid">
+
+            {% for row in briefing %}
+
+            <div class="card">
+
+                <h2>{{ row.section }}</h2>
+
+                <p>{{ row.summary }}</p>
+
+                <div class="pill">Readiness {{ row.score }}%</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    briefing=IRLT_NICOLE_BRIEFING_V1,
+    briefing_score=briefing_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/nicole-briefing/api")
+def irlt_nicole_briefing_api():
+
+    return jsonify({
+        "briefing_score": round(
+            sum(x["score"] for x in IRLT_NICOLE_BRIEFING_V1)
+            / len(IRLT_NICOLE_BRIEFING_V1)
+        ),
+        "briefing": IRLT_NICOLE_BRIEFING_V1
+    })
+
+# ============================================================
+# END IRLT_NICOLE_BRIEFING_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EXECUTIVE_ONEPAGER_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_EXECUTIVE_ONEPAGER_V1 = [
+    {
+        "title": "Problem",
+        "summary": "IRLT commercialization readiness is spread across systems, evidence sources, operational workflows, and governance owners."
+    },
+    {
+        "title": "Gap",
+        "summary": "Existing systems manage records and transactions, but leadership lacks one governed operational trust view."
+    },
+    {
+        "title": "Solution",
+        "summary": "COBIT-Chain provides a governance assurance layer above existing systems for readiness, evidence, inspection, and survivability."
+    },
+    {
+        "title": "Value",
+        "summary": "The platform helps leadership defend commercialization readiness with governed evidence and operational trust intelligence."
+    },
+    {
+        "title": "Current Build",
+        "summary": "The IRLT command center now includes launchpad, navigation hub, demo storyboard, buyer value map, business case, and Nicole briefing views."
+    },
+    {
+        "title": "Next Step",
+        "summary": "Move from demo foundation into live integrations, Power BI dashboards, Governance Passport, dependency mapping, and pilot validation."
+    }
+]
+
+@app.route("/irlt-commercial-readiness/executive-onepager")
+def irlt_executive_onepager():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Executive One-Pager</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .footer{
+                margin-top:36px;
+                padding:24px;
+                border-radius:22px;
+                background:rgba(255,122,24,0.10);
+                border:1px solid rgba(255,122,24,0.25);
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Executive One-Pager</h1>
+
+        <p>
+            One-page executive summary for presenting the COBIT-Chain IRLT Commercial Readiness
+            Governance Command Center as a governance assurance and operational trust platform.
+        </p>
+
+        <div class="grid">
+
+            {% for row in onepager %}
+
+            <div class="card">
+
+                <h2>{{ row.title }}</h2>
+
+                <p>{{ row.summary }}</p>
+
+                <div class="pill">Executive Summary Layer</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="footer">
+
+            <h2>Final Message</h2>
+
+            <p>
+                COBIT-Chain does not replace Veeva, ServiceNow, MES, LIMS, ERP, or quality systems.
+                It becomes the governance assurance layer above them, helping IRLT leadership defend
+                commercialization readiness through governed evidence, operational trust intelligence,
+                and inspection survivability.
+            </p>
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', onepager=IRLT_EXECUTIVE_ONEPAGER_V1)
+
+
+@app.route("/irlt-commercial-readiness/executive-onepager/api")
+def irlt_executive_onepager_api():
+
+    return jsonify({
+        "onepager": IRLT_EXECUTIVE_ONEPAGER_V1
+    })
+
+# ============================================================
+# END IRLT_EXECUTIVE_ONEPAGER_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_MEETING_PACK_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_MEETING_PACK_V1 = [
+    {
+        "item": "Opening Story",
+        "detail": "Explain that COBIT-Chain is a governance assurance layer for IRLT commercialization readiness."
+    },
+    {
+        "item": "Problem Statement",
+        "detail": "IRLT readiness is fragmented across systems, workflows, evidence owners, and operational teams."
+    },
+    {
+        "item": "Demo Flow",
+        "detail": "Start with Executive Launchpad, then Navigation Hub, Demo Storyboard, Buyer Value Map, and Business Case."
+    },
+    {
+        "item": "Leadership Value",
+        "detail": "Shows readiness, inspection defense, evidence integrity, survivability, and operational trust in one place."
+    },
+    {
+        "item": "What Is Next",
+        "detail": "Power BI, ServiceNow, Veeva, MyAccess, Governance Passport, dependency mapping, and pilot validation."
+    },
+    {
+        "item": "Executive Ask",
+        "detail": "Position this as a pilot-ready IRLT governance assurance concept for leadership feedback."
+    }
+]
+
+@app.route("/irlt-commercial-readiness/meeting-pack")
+def irlt_meeting_pack():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Meeting Pack</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Meeting Pack</h1>
+
+        <p>
+            Executive meeting pack for presenting the IRLT Commercial Readiness Governance Command Center.
+            This view gives a simple meeting structure, talking points, and recommended demo sequence.
+        </p>
+
+        <div class="grid">
+
+            {% for row in pack %}
+
+            <div class="card">
+
+                <h2>{{ row.item }}</h2>
+
+                <p>{{ row.detail }}</p>
+
+                <div class="pill">Meeting Talking Point</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', pack=IRLT_MEETING_PACK_V1)
+
+
+@app.route("/irlt-commercial-readiness/meeting-pack/api")
+def irlt_meeting_pack_api():
+
+    return jsonify({
+        "meeting_pack": IRLT_MEETING_PACK_V1
+    })
+
+# ============================================================
+# END IRLT_MEETING_PACK_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_NEXT_STEPS_TRACKER_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_NEXT_STEPS_TRACKER_V1 = [
+    {
+        "step": "Cloud Deployment Validation",
+        "owner": "Platform / Technical",
+        "status": "Next"
+    },
+    {
+        "step": "Executive Demo Walkthrough",
+        "owner": "Yusuf / IRLT Stakeholders",
+        "status": "Ready"
+    },
+    {
+        "step": "Power BI Readiness Dashboard",
+        "owner": "Analytics",
+        "status": "Planned"
+    },
+    {
+        "step": "ServiceNow Integration Mapping",
+        "owner": "ITSM / Governance",
+        "status": "Planned"
+    },
+    {
+        "step": "Veeva / Quality Evidence Mapping",
+        "owner": "QA / Compliance",
+        "status": "Planned"
+    },
+    {
+        "step": "Governance Passport Prototype",
+        "owner": "COBIT-Chain",
+        "status": "Planned"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/next-steps")
+def irlt_next_steps_tracker():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Next Steps Tracker</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Next Steps Tracker</h1>
+
+        <p>
+            Roadmap tracker for moving the IRLT Commercial Readiness Governance Command Center
+            from demo foundation into validated cloud deployment, executive walkthrough,
+            analytics integration, system mapping, and pilot readiness.
+        </p>
+
+        <div class="grid">
+
+            {% for row in steps %}
+
+            <div class="card">
+
+                <h2>{{ row.step }}</h2>
+
+                <p><b>Owner:</b> {{ row.owner }}</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', steps=IRLT_NEXT_STEPS_TRACKER_V1)
+
+
+@app.route("/irlt-commercial-readiness/next-steps/api")
+def irlt_next_steps_tracker_api():
+
+    return jsonify({
+        "next_steps": IRLT_NEXT_STEPS_TRACKER_V1
+    })
+
+# ============================================================
+# END IRLT_NEXT_STEPS_TRACKER_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_OPERATIONAL_RISK_MAP_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_OPERATIONAL_RISK_MAP_V1 = [
+    {
+        "risk": "Cold Chain Failure",
+        "severity": "Critical",
+        "impact": "Dose viability and treatment continuity risk"
+    },
+    {
+        "risk": "Inspection Evidence Gap",
+        "severity": "High",
+        "impact": "Inspection defensibility exposure"
+    },
+    {
+        "risk": "Release Governance Breakdown",
+        "severity": "Critical",
+        "impact": "Commercial shipment delay and compliance exposure"
+    },
+    {
+        "risk": "CAPA Closure Drift",
+        "severity": "Medium",
+        "impact": "Operational governance inconsistency"
+    },
+    {
+        "risk": "Training Readiness Gap",
+        "severity": "High",
+        "impact": "Operational execution and audit readiness risk"
+    },
+    {
+        "risk": "Cross-System Visibility Failure",
+        "severity": "Critical",
+        "impact": "Leadership loses unified commercialization readiness visibility"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/operational-risk-map")
+def irlt_operational_risk_map():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Operational Risk Map</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .critical{
+                color:#ff4d4d;
+                font-weight:bold;
+            }
+
+            .high{
+                color:#ffb347;
+                font-weight:bold;
+            }
+
+            .medium{
+                color:#ffd966;
+                font-weight:bold;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Operational Risk Map</h1>
+
+        <p>
+            Executive operational risk visibility layer showing major commercialization,
+            inspection, release, evidence, training, and cross-system governance risks
+            across IRLT operations.
+        </p>
+
+        <div class="grid">
+
+            {% for row in risks %}
+
+            <div class="card">
+
+                <h2>{{ row.risk }}</h2>
+
+                <p><b>Impact:</b> {{ row.impact }}</p>
+
+                <div class="pill">
+                    Severity:
+                    {% if row.severity == "Critical" %}
+                        <span class="critical">{{ row.severity }}</span>
+                    {% elif row.severity == "High" %}
+                        <span class="high">{{ row.severity }}</span>
+                    {% else %}
+                        <span class="medium">{{ row.severity }}</span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', risks=IRLT_OPERATIONAL_RISK_MAP_V1)
+
+
+@app.route("/irlt-commercial-readiness/operational-risk-map/api")
+def irlt_operational_risk_map_api():
+
+    return jsonify({
+        "risks": IRLT_OPERATIONAL_RISK_MAP_V1
+    })
+
+# ============================================================
+# END IRLT_OPERATIONAL_RISK_MAP_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_BLAST_RADIUS_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_BLAST_RADIUS_V1 = [
+    {
+        "trigger": "Cold Chain Excursion",
+        "affected": "Dose release, shipment timing, patient administration, QA review",
+        "radius": "Enterprise Critical"
+    },
+    {
+        "trigger": "CAPA Delay",
+        "affected": "Inspection readiness, release defensibility, quality governance",
+        "radius": "High"
+    },
+    {
+        "trigger": "Training Gap",
+        "affected": "Operator readiness, batch execution, audit defense",
+        "radius": "High"
+    },
+    {
+        "trigger": "Evidence Missing",
+        "affected": "Inspection response, audit survivability, governance confidence",
+        "radius": "Critical"
+    },
+    {
+        "trigger": "Access Drift",
+        "affected": "Privileged activity, system accountability, compliance posture",
+        "radius": "Medium"
+    },
+    {
+        "trigger": "Release Governance Failure",
+        "affected": "Commercial shipment, QA approval, patient treatment continuity",
+        "radius": "Enterprise Critical"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/blast-radius")
+def irlt_blast_radius():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Blast Radius Intelligence</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Blast Radius Intelligence</h1>
+
+        <p>
+            Operational blast-radius view showing how one governance failure can propagate
+            across release, cold chain, dose traceability, inspection readiness, QA governance,
+            and commercial continuity.
+        </p>
+
+        <div class="grid">
+
+            {% for row in blast %}
+
+            <div class="card">
+
+                <h2>{{ row.trigger }}</h2>
+
+                <p><b>Affected Areas:</b> {{ row.affected }}</p>
+
+                <div class="pill">Blast Radius: {{ row.radius }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', blast=IRLT_BLAST_RADIUS_V1)
+
+
+@app.route("/irlt-commercial-readiness/blast-radius/api")
+def irlt_blast_radius_api():
+
+    return jsonify({
+        "blast_radius": IRLT_BLAST_RADIUS_V1
+    })
+
+# ============================================================
+# END IRLT_BLAST_RADIUS_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DEPENDENCY_GRAPH_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_DEPENDENCY_GRAPH_V1 = [
+    {
+        "source": "Cold Chain Governance",
+        "depends_on": "Shipment Timing, Dose Viability, QA Release",
+        "risk": "Critical"
+    },
+    {
+        "source": "Dose Traceability",
+        "depends_on": "Manufacturing Records, Chain of Custody, Treatment Coordination",
+        "risk": "Critical"
+    },
+    {
+        "source": "Inspection Readiness",
+        "depends_on": "Evidence Completeness, CAPA Closure, Training Readiness",
+        "risk": "High"
+    },
+    {
+        "source": "Commercial Release",
+        "depends_on": "QA Approval, Batch Records, Environmental Monitoring, Cold Chain",
+        "risk": "Critical"
+    },
+    {
+        "source": "Governance Passport",
+        "depends_on": "Trust Score, Evidence Lineage, Owner Validation, Control Mapping",
+        "risk": "High"
+    },
+    {
+        "source": "Executive Readiness",
+        "depends_on": "All Operational Governance Domains",
+        "risk": "Enterprise Critical"
+    }
+]
+
+@app.route("/irlt-commercial-readiness/dependency-graph")
+def irlt_dependency_graph():
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Dependency Graph</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Dependency Graph</h1>
+
+        <p>
+            Dependency intelligence view showing how major IRLT governance domains
+            depend on each other across release, cold chain, dose traceability,
+            evidence readiness, inspection defense, and executive commercialization confidence.
+        </p>
+
+        <div class="grid">
+
+            {% for row in graph %}
+
+            <div class="card">
+
+                <h2>{{ row.source }}</h2>
+
+                <p><b>Depends On:</b> {{ row.depends_on }}</p>
+
+                <div class="pill">Risk Level: {{ row.risk }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''', graph=IRLT_DEPENDENCY_GRAPH_V1)
+
+
+@app.route("/irlt-commercial-readiness/dependency-graph/api")
+def irlt_dependency_graph_api():
+
+    return jsonify({
+        "dependency_graph": IRLT_DEPENDENCY_GRAPH_V1
+    })
+
+# ============================================================
+# END IRLT_DEPENDENCY_GRAPH_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_PASSPORT_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_GOVERNANCE_PASSPORT_V1 = [
+    {
+        "passport": "Commercial Readiness Passport",
+        "certification": "Ready",
+        "score": 97
+    },
+    {
+        "passport": "Inspection Defense Passport",
+        "certification": "Defensible",
+        "score": 96
+    },
+    {
+        "passport": "Evidence Integrity Passport",
+        "certification": "Verified",
+        "score": 99
+    },
+    {
+        "passport": "Cold Chain Governance Passport",
+        "certification": "Stable",
+        "score": 93
+    },
+    {
+        "passport": "CAPA Recovery Passport",
+        "certification": "Observed",
+        "score": 88
+    },
+    {
+        "passport": "Dose Traceability Passport",
+        "certification": "Certified",
+        "score": 99
+    }
+]
+
+@app.route("/irlt-commercial-readiness/governance-passport-view")
+def irlt_governance_passport_view():
+
+    passport_score = round(
+        sum(x["score"] for x in IRLT_GOVERNANCE_PASSPORT_V1)
+        / len(IRLT_GOVERNANCE_PASSPORT_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Governance Passport View</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Governance Passport View</h1>
+
+        <p>
+            Portable governance readiness certification view for IRLT commercialization.
+            This page shows how operational domains can be certified through readiness,
+            defensibility, evidence integrity, and trust scoring.
+        </p>
+
+        <div class="score">{{ passport_score }}%</div>
+
+        <p>Overall Governance Passport Readiness</p>
+
+        <div class="grid">
+
+            {% for row in passports %}
+
+            <div class="card">
+
+                <h2>{{ row.passport }}</h2>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.certification }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    passports=IRLT_GOVERNANCE_PASSPORT_V1,
+    passport_score=passport_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/governance-passport-view/api")
+def irlt_governance_passport_view_api():
+
+    return jsonify({
+        "passport_score": round(
+            sum(x["score"] for x in IRLT_GOVERNANCE_PASSPORT_V1)
+            / len(IRLT_GOVERNANCE_PASSPORT_V1)
+        ),
+        "passports": IRLT_GOVERNANCE_PASSPORT_V1
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_PASSPORT_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_READINESS_CERTIFICATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_READINESS_CERTIFICATE_V1 = [
+    {
+        "certificate": "Commercialization Readiness",
+        "status": "Certified Ready",
+        "score": 97
+    },
+    {
+        "certificate": "Inspection Survivability",
+        "status": "Inspection Defensible",
+        "score": 96
+    },
+    {
+        "certificate": "Evidence Integrity",
+        "status": "Evidence Verified",
+        "score": 99
+    },
+    {
+        "certificate": "Cold Chain Governance",
+        "status": "Operationally Stable",
+        "score": 93
+    },
+    {
+        "certificate": "CAPA Governance",
+        "status": "Monitored",
+        "score": 88
+    },
+    {
+        "certificate": "Dose Traceability",
+        "status": "Traceability Certified",
+        "score": 99
+    }
+]
+
+@app.route("/irlt-commercial-readiness/readiness-certificate")
+def irlt_readiness_certificate():
+
+    certificate_score = round(
+        sum(x["score"] for x in IRLT_READINESS_CERTIFICATE_V1)
+        / len(IRLT_READINESS_CERTIFICATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Readiness Certificate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Readiness Certificate</h1>
+
+        <p>
+            Executive certification-style view showing whether the major IRLT commercialization
+            governance domains are ready, defensible, verified, stable, or still under monitoring.
+        </p>
+
+        <div class="score">{{ certificate_score }}%</div>
+
+        <p>Overall Readiness Certification Score</p>
+
+        <div class="grid">
+
+            {% for row in certificates %}
+
+            <div class="card">
+
+                <h2>{{ row.certificate }}</h2>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    certificates=IRLT_READINESS_CERTIFICATE_V1,
+    certificate_score=certificate_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/readiness-certificate/api")
+def irlt_readiness_certificate_api():
+
+    return jsonify({
+        "certificate_score": round(
+            sum(x["score"] for x in IRLT_READINESS_CERTIFICATE_V1)
+            / len(IRLT_READINESS_CERTIFICATE_V1)
+        ),
+        "certificates": IRLT_READINESS_CERTIFICATE_V1
+    })
+
+# ============================================================
+# END IRLT_READINESS_CERTIFICATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_RELEASE_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_RELEASE_GATE_V1 = [
+    {
+        "gate": "QA Release Approval",
+        "condition": "Batch record, deviation review, and QA signoff must be complete.",
+        "status": "Ready",
+        "score": 97
+    },
+    {
+        "gate": "Evidence Completeness",
+        "condition": "Required evidence must be traceable, complete, and inspection-ready.",
+        "status": "Verified",
+        "score": 99
+    },
+    {
+        "gate": "Cold Chain Confirmation",
+        "condition": "Shipment path, temperature control, and logistics evidence must be stable.",
+        "status": "Stable",
+        "score": 94
+    },
+    {
+        "gate": "Dose Traceability",
+        "condition": "Dose lineage must be connected from production through treatment coordination.",
+        "status": "Certified",
+        "score": 99
+    },
+    {
+        "gate": "CAPA / Deviation Check",
+        "condition": "Open quality issues must not block release defensibility.",
+        "status": "Monitored",
+        "score": 89
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Release decision must be defendable under audit or inspection review.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/release-gate")
+def irlt_release_gate():
+
+    gate_score = round(
+        sum(x["score"] for x in IRLT_RELEASE_GATE_V1)
+        / len(IRLT_RELEASE_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Release Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Release Gate</h1>
+
+        <p>
+            Governed release decision layer showing the required gates before an IRLT commercial
+            release can be considered operationally defensible, evidence-backed, and inspection-ready.
+        </p>
+
+        <div class="score">{{ gate_score }}%</div>
+
+        <p>Overall Release Gate Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_RELEASE_GATE_V1,
+    gate_score=gate_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/release-gate/api")
+def irlt_release_gate_api():
+
+    return jsonify({
+        "gate_score": round(
+            sum(x["score"] for x in IRLT_RELEASE_GATE_V1)
+            / len(IRLT_RELEASE_GATE_V1)
+        ),
+        "gates": IRLT_RELEASE_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_RELEASE_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DEVIATION_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_DEVIATION_GATE_V1 = [
+    {
+        "gate": "Deviation Identification",
+        "condition": "Deviation must be logged, categorized, and linked to impacted IRLT process.",
+        "status": "Controlled",
+        "score": 94
+    },
+    {
+        "gate": "Impact Assessment",
+        "condition": "Operational, quality, release, patient-treatment, and inspection impact must be assessed.",
+        "status": "Required",
+        "score": 96
+    },
+    {
+        "gate": "Evidence Linkage",
+        "condition": "Supporting evidence must be attached, traceable, and inspection-ready.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "CAPA Dependency Review",
+        "condition": "CAPA dependency must be reviewed before deviation closure or release decision.",
+        "status": "Monitored",
+        "score": 90
+    },
+    {
+        "gate": "QA Disposition",
+        "condition": "QA decision must be documented, approved, and governance-defensible.",
+        "status": "Pending Governance",
+        "score": 88
+    },
+    {
+        "gate": "Closure Defensibility",
+        "condition": "Closure must be explainable under inspection review with complete evidence lineage.",
+        "status": "Defensible",
+        "score": 95
+    }
+]
+
+@app.route("/irlt-commercial-readiness/deviation-gate")
+def irlt_deviation_gate():
+
+    deviation_score = round(
+        sum(x["score"] for x in IRLT_DEVIATION_GATE_V1)
+        / len(IRLT_DEVIATION_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Deviation Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Deviation Gate</h1>
+
+        <p>
+            Governed deviation review layer for IRLT operations. This view shows the required
+            governance checkpoints before a deviation can be considered operationally understood,
+            evidence-backed, QA-dispositioned, and inspection-defensible.
+        </p>
+
+        <div class="score">{{ deviation_score }}%</div>
+
+        <p>Overall Deviation Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_DEVIATION_GATE_V1,
+    deviation_score=deviation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/deviation-gate/api")
+def irlt_deviation_gate_api():
+
+    return jsonify({
+        "deviation_score": round(
+            sum(x["score"] for x in IRLT_DEVIATION_GATE_V1)
+            / len(IRLT_DEVIATION_GATE_V1)
+        ),
+        "gates": IRLT_DEVIATION_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_DEVIATION_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_CAPA_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_CAPA_GATE_V1 = [
+    {
+        "gate": "CAPA Initiation",
+        "condition": "CAPA must be linked to deviation, audit finding, inspection risk, or operational failure mode.",
+        "status": "Controlled",
+        "score": 94
+    },
+    {
+        "gate": "Root Cause Governance",
+        "condition": "Root cause must be documented, reviewed, and defensible with supporting evidence.",
+        "status": "Required",
+        "score": 95
+    },
+    {
+        "gate": "Action Effectiveness",
+        "condition": "Corrective and preventive actions must be measurable, assigned, and linked to outcomes.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Operational Dependency Review",
+        "condition": "CAPA impact must be checked against release, training, equipment, cold chain, and inspection readiness.",
+        "status": "Active",
+        "score": 92
+    },
+    {
+        "gate": "Evidence Closure Pack",
+        "condition": "Closure evidence must be complete, approved, traceable, and inspection-ready.",
+        "status": "Evidence Required",
+        "score": 89
+    },
+    {
+        "gate": "QA Closure Defensibility",
+        "condition": "Final CAPA closure must be explainable and defensible under regulatory review.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/capa-gate")
+def irlt_capa_gate():
+
+    capa_score = round(
+        sum(x["score"] for x in IRLT_CAPA_GATE_V1)
+        / len(IRLT_CAPA_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT CAPA Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT CAPA Gate</h1>
+
+        <p>
+            Governed CAPA readiness layer for IRLT operations. This view checks whether CAPA initiation,
+            root cause, effectiveness, dependency impact, evidence closure, and QA defensibility are ready
+            for commercialization and inspection pressure.
+        </p>
+
+        <div class="score">{{ capa_score }}%</div>
+
+        <p>Overall CAPA Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_CAPA_GATE_V1,
+    capa_score=capa_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/capa-gate/api")
+def irlt_capa_gate_api():
+
+    return jsonify({
+        "capa_score": round(
+            sum(x["score"] for x in IRLT_CAPA_GATE_V1)
+            / len(IRLT_CAPA_GATE_V1)
+        ),
+        "gates": IRLT_CAPA_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_CAPA_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_TRAINING_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_TRAINING_GATE_V1 = [
+    {
+        "gate": "Role-Based Training Assignment",
+        "condition": "Operators, QA reviewers, release approvers, and support teams must have assigned role-based training.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Training Completion Evidence",
+        "condition": "Training completion must be traceable, current, and linked to operational responsibilities.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "GMP Readiness",
+        "condition": "Personnel involved in GMP activities must have active and relevant GMP training evidence.",
+        "status": "Ready",
+        "score": 97
+    },
+    {
+        "gate": "System Access Alignment",
+        "condition": "System access must align with completed training and approved operational role.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Training records must be explainable and defensible during regulatory inspection.",
+        "status": "Defensible",
+        "score": 96
+    },
+    {
+        "gate": "Training Drift Detection",
+        "condition": "Expired, missing, or misaligned training must be flagged before operational execution risk emerges.",
+        "status": "Observed",
+        "score": 89
+    }
+]
+
+@app.route("/irlt-commercial-readiness/training-gate")
+def irlt_training_gate():
+
+    training_score = round(
+        sum(x["score"] for x in IRLT_TRAINING_GATE_V1)
+        / len(IRLT_TRAINING_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Training Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Training Gate</h1>
+
+        <p>
+            Governed training readiness layer for IRLT commercialization. This view checks whether
+            role-based training, GMP readiness, system access alignment, and inspection defensibility
+            are sufficiently controlled before operational execution.
+        </p>
+
+        <div class="score">{{ training_score }}%</div>
+
+        <p>Overall Training Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_TRAINING_GATE_V1,
+    training_score=training_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/training-gate/api")
+def irlt_training_gate_api():
+
+    return jsonify({
+        "training_score": round(
+            sum(x["score"] for x in IRLT_TRAINING_GATE_V1)
+            / len(IRLT_TRAINING_GATE_V1)
+        ),
+        "gates": IRLT_TRAINING_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_TRAINING_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_ACCESS_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_ACCESS_GATE_V1 = [
+    {
+        "gate": "Role-Based Access Validation",
+        "condition": "Access must match approved operational role, system responsibility, and training readiness.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Privileged Access Review",
+        "condition": "Admin or elevated access must have owner approval, justification, and review evidence.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Joiner / Mover / Leaver Alignment",
+        "condition": "User access must stay aligned with onboarding, transfer, and termination workflows.",
+        "status": "Observed",
+        "score": 90
+    },
+    {
+        "gate": "GMP System Access Traceability",
+        "condition": "Access to GMP-impacting systems must be traceable and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    },
+    {
+        "gate": "Orphaned Access Detection",
+        "condition": "Inactive, duplicate, or unsupported accounts must be identified before audit exposure.",
+        "status": "Active Control",
+        "score": 91
+    },
+    {
+        "gate": "Access Governance Evidence",
+        "condition": "Approval, review, and access-change evidence must be complete and linked to governance records.",
+        "status": "Verified",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/access-gate")
+def irlt_access_gate():
+
+    access_score = round(
+        sum(x["score"] for x in IRLT_ACCESS_GATE_V1)
+        / len(IRLT_ACCESS_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Access Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Access Gate</h1>
+
+        <p>
+            Governed identity and access readiness layer for IRLT operations. This view checks whether
+            system access, privileged roles, user lifecycle governance, and GMP system accountability
+            are controlled, traceable, and inspection-defensible.
+        </p>
+
+        <div class="score">{{ access_score }}%</div>
+
+        <p>Overall Access Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_ACCESS_GATE_V1,
+    access_score=access_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/access-gate/api")
+def irlt_access_gate_api():
+
+    return jsonify({
+        "access_score": round(
+            sum(x["score"] for x in IRLT_ACCESS_GATE_V1)
+            / len(IRLT_ACCESS_GATE_V1)
+        ),
+        "gates": IRLT_ACCESS_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_ACCESS_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EVIDENCE_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_EVIDENCE_GATE_V1 = [
+    {
+        "gate": "Evidence Completeness",
+        "condition": "Required operational, quality, release, training, access, and inspection evidence must be complete.",
+        "status": "Verified",
+        "score": 98
+    },
+    {
+        "gate": "Evidence Traceability",
+        "condition": "Evidence must be traceable to owner, system, process, timestamp, and governance decision.",
+        "status": "Controlled",
+        "score": 97
+    },
+    {
+        "gate": "Evidence Integrity",
+        "condition": "Evidence must be protected from unauthorized change and validated for authenticity.",
+        "status": "Protected",
+        "score": 99
+    },
+    {
+        "gate": "Inspection Readiness",
+        "condition": "Evidence must be organized and explainable during audit or regulatory inspection.",
+        "status": "Defensible",
+        "score": 96
+    },
+    {
+        "gate": "Cross-System Linkage",
+        "condition": "Evidence must connect across systems such as Veeva, ServiceNow, MyAccess, SharePoint, and CMDB.",
+        "status": "Planned Integration",
+        "score": 91
+    },
+    {
+        "gate": "Governance Approval Lineage",
+        "condition": "Evidence must show approval history, review ownership, and governance decision context.",
+        "status": "Governed",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/evidence-gate")
+def irlt_evidence_gate():
+
+    evidence_score = round(
+        sum(x["score"] for x in IRLT_EVIDENCE_GATE_V1)
+        / len(IRLT_EVIDENCE_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Evidence Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Evidence Gate</h1>
+
+        <p>
+            Governed evidence readiness layer for IRLT commercialization. This view checks whether
+            evidence is complete, traceable, authentic, inspection-ready, cross-system linked, and
+            supported by governance approval lineage.
+        </p>
+
+        <div class="score">{{ evidence_score }}%</div>
+
+        <p>Overall Evidence Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_EVIDENCE_GATE_V1,
+    evidence_score=evidence_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/evidence-gate/api")
+def irlt_evidence_gate_api():
+
+    return jsonify({
+        "evidence_score": round(
+            sum(x["score"] for x in IRLT_EVIDENCE_GATE_V1)
+            / len(IRLT_EVIDENCE_GATE_V1)
+        ),
+        "gates": IRLT_EVIDENCE_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_EVIDENCE_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COLD_CHAIN_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_COLD_CHAIN_GATE_V1 = [
+    {
+        "gate": "Shipment Temperature Control",
+        "condition": "Temperature limits must be defined, monitored, and documented throughout shipment.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Courier / Logistics Readiness",
+        "condition": "Courier readiness, handoff responsibility, and shipment timing must be confirmed.",
+        "status": "Ready",
+        "score": 95
+    },
+    {
+        "gate": "Dose Viability Protection",
+        "condition": "Cold-chain governance must protect dose viability and treatment timing.",
+        "status": "Critical",
+        "score": 98
+    },
+    {
+        "gate": "Excursion Response",
+        "condition": "Temperature excursion response must include QA review, evidence capture, and disposition logic.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Chain-of-Custody Evidence",
+        "condition": "Shipment custody evidence must be traceable from release through delivery.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Cold-chain records must be complete and explainable during regulatory review.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/cold-chain-gate")
+def irlt_cold_chain_gate():
+
+    cold_chain_score = round(
+        sum(x["score"] for x in IRLT_COLD_CHAIN_GATE_V1)
+        / len(IRLT_COLD_CHAIN_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Cold Chain Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Cold Chain Gate</h1>
+
+        <p>
+            Governed cold-chain readiness layer for IRLT operations. This view checks whether
+            shipment temperature control, logistics readiness, dose viability protection,
+            excursion response, chain-of-custody evidence, and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ cold_chain_score }}%</div>
+
+        <p>Overall Cold Chain Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_COLD_CHAIN_GATE_V1,
+    cold_chain_score=cold_chain_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/cold-chain-gate/api")
+def irlt_cold_chain_gate_api():
+
+    return jsonify({
+        "cold_chain_score": round(
+            sum(x["score"] for x in IRLT_COLD_CHAIN_GATE_V1)
+            / len(IRLT_COLD_CHAIN_GATE_V1)
+        ),
+        "gates": IRLT_COLD_CHAIN_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_COLD_CHAIN_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DOSE_TRACEABILITY_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_DOSE_TRACEABILITY_GATE_V1 = [
+    {
+        "gate": "Dose Identity Confirmation",
+        "condition": "Each dose must have a unique identity connected to batch, release, shipment, and treatment coordination.",
+        "status": "Certified",
+        "score": 99
+    },
+    {
+        "gate": "Chain-of-Custody Lineage",
+        "condition": "Custody must be traceable from manufacturing through shipment, receipt, and administration readiness.",
+        "status": "Verified",
+        "score": 98
+    },
+    {
+        "gate": "Treatment Timing Alignment",
+        "condition": "Dose readiness must align with patient schedule, delivery timing, and radioactive decay constraints.",
+        "status": "Critical",
+        "score": 97
+    },
+    {
+        "gate": "Release-to-Administration Evidence",
+        "condition": "Evidence must connect QA release, logistics, receiving, and treatment coordination.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Exception / Deviation Linkage",
+        "condition": "Any exception affecting dose movement, timing, or quality must be linked to deviation governance.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Dose traceability records must be complete, explainable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 98
+    }
+]
+
+@app.route("/irlt-commercial-readiness/dose-traceability-gate")
+def irlt_dose_traceability_gate():
+
+    dose_score = round(
+        sum(x["score"] for x in IRLT_DOSE_TRACEABILITY_GATE_V1)
+        / len(IRLT_DOSE_TRACEABILITY_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Dose Traceability Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Dose Traceability Gate</h1>
+
+        <p>
+            Governed dose traceability layer for IRLT operations. This view checks whether dose identity,
+            custody lineage, treatment timing, release-to-administration evidence, deviation linkage,
+            and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ dose_score }}%</div>
+
+        <p>Overall Dose Traceability Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_DOSE_TRACEABILITY_GATE_V1,
+    dose_score=dose_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/dose-traceability-gate/api")
+def irlt_dose_traceability_gate_api():
+
+    return jsonify({
+        "dose_score": round(
+            sum(x["score"] for x in IRLT_DOSE_TRACEABILITY_GATE_V1)
+            / len(IRLT_DOSE_TRACEABILITY_GATE_V1)
+        ),
+        "gates": IRLT_DOSE_TRACEABILITY_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_DOSE_TRACEABILITY_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_SHIPMENT_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_SHIPMENT_GATE_V1 = [
+    {
+        "gate": "Shipment Authorization",
+        "condition": "Shipment must be authorized only after QA release, logistics confirmation, and dose readiness validation.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Courier Handoff Governance",
+        "condition": "Courier handoff must be documented with custody owner, timestamp, route, and shipment condition.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "Route and Timing Assurance",
+        "condition": "Shipment route and timing must align with dose viability, treatment schedule, and operational constraints.",
+        "status": "Critical",
+        "score": 98
+    },
+    {
+        "gate": "Shipment Evidence Capture",
+        "condition": "Shipment records, temperature data, handoff logs, and exception records must be captured and traceable.",
+        "status": "Evidence Required",
+        "score": 95
+    },
+    {
+        "gate": "Exception Escalation",
+        "condition": "Shipment delay, temperature excursion, custody issue, or delivery exception must trigger governance review.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Delivery Confirmation",
+        "condition": "Delivery confirmation must be linked to receiving evidence, treatment coordination, and inspection defensibility.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/shipment-gate")
+def irlt_shipment_gate():
+
+    shipment_score = round(
+        sum(x["score"] for x in IRLT_SHIPMENT_GATE_V1)
+        / len(IRLT_SHIPMENT_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Shipment Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Shipment Gate</h1>
+
+        <p>
+            Governed shipment readiness layer for IRLT operations. This view checks whether shipment
+            authorization, courier handoff, route timing, evidence capture, exception escalation,
+            and delivery confirmation are controlled before treatment-impacting risk occurs.
+        </p>
+
+        <div class="score">{{ shipment_score }}%</div>
+
+        <p>Overall Shipment Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_SHIPMENT_GATE_V1,
+    shipment_score=shipment_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/shipment-gate/api")
+def irlt_shipment_gate_api():
+
+    return jsonify({
+        "shipment_score": round(
+            sum(x["score"] for x in IRLT_SHIPMENT_GATE_V1)
+            / len(IRLT_SHIPMENT_GATE_V1)
+        ),
+        "gates": IRLT_SHIPMENT_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_SHIPMENT_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_TREATMENT_COORDINATION_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_TREATMENT_COORDINATION_GATE_V1 = [
+    {
+        "gate": "Patient Schedule Alignment",
+        "condition": "Treatment schedule must align with dose production, release, shipment, and receiving readiness.",
+        "status": "Critical",
+        "score": 98
+    },
+    {
+        "gate": "Site Readiness Confirmation",
+        "condition": "Treatment site must confirm receiving capacity, handling readiness, and administration preparation.",
+        "status": "Ready",
+        "score": 96
+    },
+    {
+        "gate": "Dose Arrival Verification",
+        "condition": "Dose arrival must be verified against identity, shipment record, timing window, and custody evidence.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "Clinical Coordination Handoff",
+        "condition": "Operational handoff between manufacturing, logistics, QA, and treatment team must be documented.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Exception Escalation",
+        "condition": "Any delay, mismatch, handling issue, or schedule conflict must trigger governance escalation.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Treatment Readiness Defensibility",
+        "condition": "Treatment coordination evidence must be complete, explainable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/treatment-coordination-gate")
+def irlt_treatment_coordination_gate():
+
+    treatment_score = round(
+        sum(x["score"] for x in IRLT_TREATMENT_COORDINATION_GATE_V1)
+        / len(IRLT_TREATMENT_COORDINATION_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Treatment Coordination Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Treatment Coordination Gate</h1>
+
+        <p>
+            Governed treatment coordination readiness layer for IRLT operations. This view checks whether
+            patient schedule alignment, site readiness, dose arrival verification, clinical handoff,
+            exception escalation, and treatment readiness defensibility are controlled.
+        </p>
+
+        <div class="score">{{ treatment_score }}%</div>
+
+        <p>Overall Treatment Coordination Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_TREATMENT_COORDINATION_GATE_V1,
+    treatment_score=treatment_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/treatment-coordination-gate/api")
+def irlt_treatment_coordination_gate_api():
+
+    return jsonify({
+        "treatment_score": round(
+            sum(x["score"] for x in IRLT_TREATMENT_COORDINATION_GATE_V1)
+            / len(IRLT_TREATMENT_COORDINATION_GATE_V1)
+        ),
+        "gates": IRLT_TREATMENT_COORDINATION_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_TREATMENT_COORDINATION_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_BATCH_RECORD_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_BATCH_RECORD_GATE_V1 = [
+    {
+        "gate": "Batch Record Completeness",
+        "condition": "Batch record must include required manufacturing, QC, release, deviation, and approval evidence.",
+        "status": "Verified",
+        "score": 98
+    },
+    {
+        "gate": "Manufacturing Execution Evidence",
+        "condition": "Execution evidence must support that the batch was produced according to approved process requirements.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Review By Exception",
+        "condition": "Any exception, deviation, or unexplained gap must be identified before QA disposition.",
+        "status": "Monitored",
+        "score": 93
+    },
+    {
+        "gate": "QA Review Readiness",
+        "condition": "QA must have complete evidence, traceability, and decision context before batch release.",
+        "status": "Ready",
+        "score": 97
+    },
+    {
+        "gate": "Release Dependency Check",
+        "condition": "Batch record readiness must align with cold chain, dose traceability, shipment, and treatment readiness.",
+        "status": "Active Control",
+        "score": 95
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Batch record must be complete, explainable, and defensible during inspection review.",
+        "status": "Defensible",
+        "score": 98
+    }
+]
+
+@app.route("/irlt-commercial-readiness/batch-record-gate")
+def irlt_batch_record_gate():
+
+    batch_score = round(
+        sum(x["score"] for x in IRLT_BATCH_RECORD_GATE_V1)
+        / len(IRLT_BATCH_RECORD_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Batch Record Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Batch Record Gate</h1>
+
+        <p>
+            Governed batch record readiness layer for IRLT operations. This view checks whether
+            batch record completeness, manufacturing evidence, exception review, QA review,
+            release dependency alignment, and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ batch_score }}%</div>
+
+        <p>Overall Batch Record Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_BATCH_RECORD_GATE_V1,
+    batch_score=batch_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/batch-record-gate/api")
+def irlt_batch_record_gate_api():
+
+    return jsonify({
+        "batch_score": round(
+            sum(x["score"] for x in IRLT_BATCH_RECORD_GATE_V1)
+            / len(IRLT_BATCH_RECORD_GATE_V1)
+        ),
+        "gates": IRLT_BATCH_RECORD_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_BATCH_RECORD_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_QC_RELEASE_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_QC_RELEASE_GATE_V1 = [
+    {
+        "gate": "QC Result Availability",
+        "condition": "Required QC results must be available, reviewed, and linked to batch release readiness.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "Specification Confirmation",
+        "condition": "QC results must be assessed against approved specifications and acceptance criteria.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Out-of-Specification Check",
+        "condition": "Any OOS, OOT, atypical, or questionable result must trigger investigation governance.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "QC Review Evidence",
+        "condition": "QC review evidence must show reviewer, timestamp, decision context, and approval lineage.",
+        "status": "Evidence Ready",
+        "score": 95
+    },
+    {
+        "gate": "Release Dependency Alignment",
+        "condition": "QC readiness must align with QA release, batch record review, cold chain, and shipment timing.",
+        "status": "Active Control",
+        "score": 94
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "QC release evidence must be complete, explainable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/qc-release-gate")
+def irlt_qc_release_gate():
+
+    qc_score = round(
+        sum(x["score"] for x in IRLT_QC_RELEASE_GATE_V1)
+        / len(IRLT_QC_RELEASE_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT QC Release Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT QC Release Gate</h1>
+
+        <p>
+            Governed QC release readiness layer for IRLT operations. This view checks whether
+            QC results, specifications, OOS/OOT review, QC evidence, release dependency alignment,
+            and inspection defensibility are controlled before commercial release.
+        </p>
+
+        <div class="score">{{ qc_score }}%</div>
+
+        <p>Overall QC Release Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_QC_RELEASE_GATE_V1,
+    qc_score=qc_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/qc-release-gate/api")
+def irlt_qc_release_gate_api():
+
+    return jsonify({
+        "qc_score": round(
+            sum(x["score"] for x in IRLT_QC_RELEASE_GATE_V1)
+            / len(IRLT_QC_RELEASE_GATE_V1)
+        ),
+        "gates": IRLT_QC_RELEASE_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_QC_RELEASE_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_ENVIRONMENTAL_MONITORING_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_ENVIRONMENTAL_MONITORING_GATE_V1 = [
+    {
+        "gate": "EM Data Availability",
+        "condition": "Required environmental monitoring data must be available, reviewed, and linked to batch/release readiness.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "Alert / Action Limit Review",
+        "condition": "Any alert or action limit excursion must be reviewed and dispositioned before release defensibility.",
+        "status": "Controlled",
+        "score": 94
+    },
+    {
+        "gate": "Cleanroom State Confirmation",
+        "condition": "Cleanroom operating state must support GMP manufacturing and inspection readiness.",
+        "status": "Ready",
+        "score": 95
+    },
+    {
+        "gate": "Deviation Linkage",
+        "condition": "Any EM excursion must be linked to deviation, CAPA, QA review, and evidence lineage where required.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Trend Review",
+        "condition": "EM trend signals must be reviewed for recurring contamination, drift, or operational weakness.",
+        "status": "Observed",
+        "score": 90
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "EM records must be complete, explainable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/environmental-monitoring-gate")
+def irlt_environmental_monitoring_gate():
+
+    em_score = round(
+        sum(x["score"] for x in IRLT_ENVIRONMENTAL_MONITORING_GATE_V1)
+        / len(IRLT_ENVIRONMENTAL_MONITORING_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Environmental Monitoring Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Environmental Monitoring Gate</h1>
+
+        <p>
+            Governed environmental monitoring readiness layer for IRLT operations. This view checks whether
+            EM data availability, alert/action limit review, cleanroom state, deviation linkage, trend review,
+            and inspection defensibility are controlled before release or inspection pressure.
+        </p>
+
+        <div class="score">{{ em_score }}%</div>
+
+        <p>Overall Environmental Monitoring Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_ENVIRONMENTAL_MONITORING_GATE_V1,
+    em_score=em_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/environmental-monitoring-gate/api")
+def irlt_environmental_monitoring_gate_api():
+
+    return jsonify({
+        "em_score": round(
+            sum(x["score"] for x in IRLT_ENVIRONMENTAL_MONITORING_GATE_V1)
+            / len(IRLT_ENVIRONMENTAL_MONITORING_GATE_V1)
+        ),
+        "gates": IRLT_ENVIRONMENTAL_MONITORING_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_ENVIRONMENTAL_MONITORING_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_BACKUP_RESTORE_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_BACKUP_RESTORE_GATE_V1 = [
+    {
+        "gate": "Backup Completion Evidence",
+        "condition": "Required backup evidence must show completion status, timestamp, system scope, and reviewer visibility.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "Restore Test Readiness",
+        "condition": "Restore capability must be periodically tested or supported by governed recovery evidence.",
+        "status": "Controlled",
+        "score": 93
+    },
+    {
+        "gate": "GMP System Recovery Priority",
+        "condition": "GMP-impacting systems must be prioritized based on operational criticality, RTO, and RPO expectations.",
+        "status": "Critical",
+        "score": 97
+    },
+    {
+        "gate": "Evidence Retention",
+        "condition": "Backup and restore evidence must be retained, traceable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 95
+    },
+    {
+        "gate": "Failure Escalation",
+        "condition": "Backup failure or restore uncertainty must trigger governance escalation and documented risk review.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Recovery Dependency Mapping",
+        "condition": "System recovery dependencies must be mapped across infrastructure, applications, data, users, and process owners.",
+        "status": "Planned Integration",
+        "score": 90
+    }
+]
+
+@app.route("/irlt-commercial-readiness/backup-restore-gate")
+def irlt_backup_restore_gate():
+
+    backup_score = round(
+        sum(x["score"] for x in IRLT_BACKUP_RESTORE_GATE_V1)
+        / len(IRLT_BACKUP_RESTORE_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Backup Restore Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Backup Restore Gate</h1>
+
+        <p>
+            Governed backup and restore readiness layer for IRLT operations. This view checks whether
+            backup evidence, restore readiness, GMP recovery prioritization, retention, failure escalation,
+            and recovery dependency mapping are controlled and inspection-defensible.
+        </p>
+
+        <div class="score">{{ backup_score }}%</div>
+
+        <p>Overall Backup Restore Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_BACKUP_RESTORE_GATE_V1,
+    backup_score=backup_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/backup-restore-gate/api")
+def irlt_backup_restore_gate_api():
+
+    return jsonify({
+        "backup_score": round(
+            sum(x["score"] for x in IRLT_BACKUP_RESTORE_GATE_V1)
+            / len(IRLT_BACKUP_RESTORE_GATE_V1)
+        ),
+        "gates": IRLT_BACKUP_RESTORE_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_BACKUP_RESTORE_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DISASTER_RECOVERY_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_DISASTER_RECOVERY_GATE_V1 = [
+    {
+        "gate": "DR Activation Criteria",
+        "condition": "Activation criteria must define when system, site, process, or operational recovery governance is triggered.",
+        "status": "Defined",
+        "score": 94
+    },
+    {
+        "gate": "RTO / RPO Governance",
+        "condition": "Recovery time and recovery point expectations must be defined for GMP and IRLT-critical systems.",
+        "status": "Controlled",
+        "score": 93
+    },
+    {
+        "gate": "Recovery Role Assignment",
+        "condition": "Recovery roles, approvers, system owners, QA reviewers, and escalation owners must be documented.",
+        "status": "Ready",
+        "score": 95
+    },
+    {
+        "gate": "Dependency Recovery Mapping",
+        "condition": "Recovery dependencies across infrastructure, applications, users, evidence, and operations must be mapped.",
+        "status": "Planned Integration",
+        "score": 90
+    },
+    {
+        "gate": "GMP Restart Gate",
+        "condition": "GMP operations must not restart until recovery evidence, system readiness, and QA approval are confirmed.",
+        "status": "Critical",
+        "score": 97
+    },
+    {
+        "gate": "Recovery Evidence Lineage",
+        "condition": "Recovery actions must produce evidence that is traceable, reviewable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/disaster-recovery-gate")
+def irlt_disaster_recovery_gate():
+
+    dr_score = round(
+        sum(x["score"] for x in IRLT_DISASTER_RECOVERY_GATE_V1)
+        / len(IRLT_DISASTER_RECOVERY_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Disaster Recovery Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Disaster Recovery Gate</h1>
+
+        <p>
+            Governed disaster recovery readiness layer for IRLT operations. This view checks whether
+            DR activation criteria, RTO/RPO governance, recovery roles, dependency mapping,
+            GMP restart gates, and recovery evidence lineage are controlled and inspection-defensible.
+        </p>
+
+        <div class="score">{{ dr_score }}%</div>
+
+        <p>Overall Disaster Recovery Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_DISASTER_RECOVERY_GATE_V1,
+    dr_score=dr_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/disaster-recovery-gate/api")
+def irlt_disaster_recovery_gate_api():
+
+    return jsonify({
+        "dr_score": round(
+            sum(x["score"] for x in IRLT_DISASTER_RECOVERY_GATE_V1)
+            / len(IRLT_DISASTER_RECOVERY_GATE_V1)
+        ),
+        "gates": IRLT_DISASTER_RECOVERY_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_DISASTER_RECOVERY_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DATA_RECONCILIATION_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_DATA_RECONCILIATION_GATE_V1 = [
+    {
+        "gate": "Source Data Identification",
+        "condition": "Critical IRLT data sources must be identified across batch, QC, release, shipment, dose, and treatment systems.",
+        "status": "Defined",
+        "score": 95
+    },
+    {
+        "gate": "Cross-System Consistency",
+        "condition": "Data must reconcile across Veeva, ServiceNow, SharePoint, batch records, shipment records, and governance logs.",
+        "status": "Planned Integration",
+        "score": 91
+    },
+    {
+        "gate": "Evidence-to-Data Match",
+        "condition": "Operational evidence must match the underlying record values, timestamps, owner, and approval state.",
+        "status": "Controlled",
+        "score": 94
+    },
+    {
+        "gate": "Exception Detection",
+        "condition": "Mismatch, missing data, duplicate entries, or unsupported status changes must trigger governance review.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Approval Reconciliation",
+        "condition": "Approval records must align with QA disposition, release decisions, CAPA closure, and access governance.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Reconciled data must be explainable, traceable, and defensible during audit or regulatory inspection.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/data-reconciliation-gate")
+def irlt_data_reconciliation_gate():
+
+    reconciliation_score = round(
+        sum(x["score"] for x in IRLT_DATA_RECONCILIATION_GATE_V1)
+        / len(IRLT_DATA_RECONCILIATION_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Data Reconciliation Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Data Reconciliation Gate</h1>
+
+        <p>
+            Governed data reconciliation layer for IRLT operations. This view checks whether source data,
+            cross-system consistency, evidence matching, exception detection, approval reconciliation,
+            and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ reconciliation_score }}%</div>
+
+        <p>Overall Data Reconciliation Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_DATA_RECONCILIATION_GATE_V1,
+    reconciliation_score=reconciliation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/data-reconciliation-gate/api")
+def irlt_data_reconciliation_gate_api():
+
+    return jsonify({
+        "reconciliation_score": round(
+            sum(x["score"] for x in IRLT_DATA_RECONCILIATION_GATE_V1)
+            / len(IRLT_DATA_RECONCILIATION_GATE_V1)
+        ),
+        "gates": IRLT_DATA_RECONCILIATION_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_DATA_RECONCILIATION_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_AUDIT_TRAIL_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_AUDIT_TRAIL_GATE_V1 = [
+    {
+        "gate": "Audit Trail Availability",
+        "condition": "Audit trail records must be available for GMP-impacting systems, release activities, access changes, and evidence events.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "Reviewer Accountability",
+        "condition": "Audit review must show reviewer identity, review date, scope, and decision outcome.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Critical Event Detection",
+        "condition": "Critical events such as admin changes, deleted records, failed logins, data edits, and release-impacting actions must be flagged.",
+        "status": "Active Control",
+        "score": 94
+    },
+    {
+        "gate": "Change Control Linkage",
+        "condition": "Audit trail changes must be linked to approved change control, deviation, CAPA, or documented operational justification.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Periodic Review Evidence",
+        "condition": "Monthly or quarterly audit trail review evidence must be retained and inspection-ready.",
+        "status": "Evidence Ready",
+        "score": 96
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Audit trail review must be complete, explainable, and defensible during regulatory inspection.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/audit-trail-gate")
+def irlt_audit_trail_gate():
+
+    audit_score = round(
+        sum(x["score"] for x in IRLT_AUDIT_TRAIL_GATE_V1)
+        / len(IRLT_AUDIT_TRAIL_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Audit Trail Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Audit Trail Gate</h1>
+
+        <p>
+            Governed audit trail readiness layer for IRLT operations. This view checks whether audit trail
+            availability, reviewer accountability, critical event detection, change-control linkage,
+            periodic review evidence, and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ audit_score }}%</div>
+
+        <p>Overall Audit Trail Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_AUDIT_TRAIL_GATE_V1,
+    audit_score=audit_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/audit-trail-gate/api")
+def irlt_audit_trail_gate_api():
+
+    return jsonify({
+        "audit_score": round(
+            sum(x["score"] for x in IRLT_AUDIT_TRAIL_GATE_V1)
+            / len(IRLT_AUDIT_TRAIL_GATE_V1)
+        ),
+        "gates": IRLT_AUDIT_TRAIL_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_AUDIT_TRAIL_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_CHANGE_CONTROL_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_CHANGE_CONTROL_GATE_V1 = [
+    {
+        "gate": "Change Request Definition",
+        "condition": "Change must be clearly defined with scope, system/process impact, owner, and business justification.",
+        "status": "Defined",
+        "score": 95
+    },
+    {
+        "gate": "GMP Impact Assessment",
+        "condition": "Potential GMP, validation, release, quality, training, and inspection impact must be assessed before execution.",
+        "status": "Required",
+        "score": 97
+    },
+    {
+        "gate": "Approval Lineage",
+        "condition": "Approvals must be traceable to system owner, QA, IT, validation, and affected business stakeholders.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Implementation Evidence",
+        "condition": "Implementation evidence must show what changed, when it changed, who performed it, and verification outcome.",
+        "status": "Evidence Ready",
+        "score": 95
+    },
+    {
+        "gate": "Rollback / Recovery Plan",
+        "condition": "Change must include rollback, recovery, or mitigation plan for failed implementation or operational instability.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Post-Change Verification",
+        "condition": "Post-change verification must confirm operational readiness, evidence completeness, and inspection defensibility.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/change-control-gate")
+def irlt_change_control_gate():
+
+    change_score = round(
+        sum(x["score"] for x in IRLT_CHANGE_CONTROL_GATE_V1)
+        / len(IRLT_CHANGE_CONTROL_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Change Control Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Change Control Gate</h1>
+
+        <p>
+            Governed change-control readiness layer for IRLT operations. This view checks whether
+            change scope, GMP impact, approval lineage, implementation evidence, rollback planning,
+            and post-change verification are controlled before regulated operational impact occurs.
+        </p>
+
+        <div class="score">{{ change_score }}%</div>
+
+        <p>Overall Change Control Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_CHANGE_CONTROL_GATE_V1,
+    change_score=change_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/change-control-gate/api")
+def irlt_change_control_gate_api():
+
+    return jsonify({
+        "change_score": round(
+            sum(x["score"] for x in IRLT_CHANGE_CONTROL_GATE_V1)
+            / len(IRLT_CHANGE_CONTROL_GATE_V1)
+        ),
+        "gates": IRLT_CHANGE_CONTROL_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_CHANGE_CONTROL_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_VALIDATION_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_VALIDATION_GATE_V1 = [
+    {
+        "gate": "Validation Scope Confirmation",
+        "condition": "System, process, equipment, or workflow validation scope must be clearly defined before operational use.",
+        "status": "Defined",
+        "score": 95
+    },
+    {
+        "gate": "GMP Impact Classification",
+        "condition": "Validation impact must be classified based on GMP relevance, release impact, data integrity, and patient risk.",
+        "status": "Required",
+        "score": 97
+    },
+    {
+        "gate": "Protocol / Test Evidence",
+        "condition": "Validation protocol, executed test evidence, deviations, and acceptance outcomes must be complete.",
+        "status": "Evidence Ready",
+        "score": 96
+    },
+    {
+        "gate": "Deviation During Validation",
+        "condition": "Any validation deviation must be assessed, justified, approved, and linked to governance evidence.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Approval and Release to Use",
+        "condition": "Validation approval must be complete before system/process release to GMP operational use.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Validation package must be complete, explainable, traceable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/validation-gate")
+def irlt_validation_gate():
+
+    validation_score = round(
+        sum(x["score"] for x in IRLT_VALIDATION_GATE_V1)
+        / len(IRLT_VALIDATION_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Validation Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Validation Gate</h1>
+
+        <p>
+            Governed validation readiness layer for IRLT operations. This view checks whether validation scope,
+            GMP impact, protocol evidence, validation deviations, approval-to-use, and inspection defensibility
+            are controlled before regulated operational reliance.
+        </p>
+
+        <div class="score">{{ validation_score }}%</div>
+
+        <p>Overall Validation Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_VALIDATION_GATE_V1,
+    validation_score=validation_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/validation-gate/api")
+def irlt_validation_gate_api():
+
+    return jsonify({
+        "validation_score": round(
+            sum(x["score"] for x in IRLT_VALIDATION_GATE_V1)
+            / len(IRLT_VALIDATION_GATE_V1)
+        ),
+        "gates": IRLT_VALIDATION_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_VALIDATION_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EQUIPMENT_READINESS_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_EQUIPMENT_READINESS_GATE_V1 = [
+    {
+        "gate": "Equipment Qualification Status",
+        "condition": "Critical equipment must have current qualification or validation status before GMP operational use.",
+        "status": "Controlled",
+        "score": 96
+    },
+    {
+        "gate": "Calibration Readiness",
+        "condition": "Calibration status must be current, documented, and linked to equipment readiness evidence.",
+        "status": "Verified",
+        "score": 97
+    },
+    {
+        "gate": "Preventive Maintenance Status",
+        "condition": "PM activities must be current with no overdue or release-impacting maintenance gaps.",
+        "status": "Ready",
+        "score": 95
+    },
+    {
+        "gate": "Equipment Deviation Linkage",
+        "condition": "Equipment failures, alarms, or excursions must be linked to deviation or CAPA governance where required.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Backup / Redundancy Readiness",
+        "condition": "Critical equipment must have documented contingency, backup, or operational recovery pathway.",
+        "status": "Planned Control",
+        "score": 90
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Equipment readiness evidence must be complete, traceable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/equipment-readiness-gate")
+def irlt_equipment_readiness_gate():
+
+    equipment_score = round(
+        sum(x["score"] for x in IRLT_EQUIPMENT_READINESS_GATE_V1)
+        / len(IRLT_EQUIPMENT_READINESS_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Equipment Readiness Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Equipment Readiness Gate</h1>
+
+        <p>
+            Governed equipment readiness layer for IRLT operations. This view checks whether qualification,
+            calibration, preventive maintenance, equipment deviation linkage, redundancy readiness,
+            and inspection defensibility are controlled before operational reliance.
+        </p>
+
+        <div class="score">{{ equipment_score }}%</div>
+
+        <p>Overall Equipment Readiness Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_EQUIPMENT_READINESS_GATE_V1,
+    equipment_score=equipment_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/equipment-readiness-gate/api")
+def irlt_equipment_readiness_gate_api():
+
+    return jsonify({
+        "equipment_score": round(
+            sum(x["score"] for x in IRLT_EQUIPMENT_READINESS_GATE_V1)
+            / len(IRLT_EQUIPMENT_READINESS_GATE_V1)
+        ),
+        "gates": IRLT_EQUIPMENT_READINESS_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_EQUIPMENT_READINESS_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_MANUFACTURING_READINESS_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_MANUFACTURING_READINESS_GATE_V1 = [
+    {
+        "gate": "Manufacturing Schedule Readiness",
+        "condition": "Manufacturing schedule must align with batch planning, equipment readiness, staffing, QC timing, and release expectations.",
+        "status": "Ready",
+        "score": 96
+    },
+    {
+        "gate": "Material Availability",
+        "condition": "Critical raw materials, consumables, isotope-related dependencies, and controlled materials must be available and documented.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Operator Readiness",
+        "condition": "Operators must have training, access, gowning readiness, and role authorization aligned with production activity.",
+        "status": "Verified",
+        "score": 96
+    },
+    {
+        "gate": "Manufacturing Evidence Capture",
+        "condition": "Manufacturing evidence must capture execution records, timestamps, deviations, approvals, and batch lineage.",
+        "status": "Evidence Ready",
+        "score": 97
+    },
+    {
+        "gate": "Process Deviation Monitoring",
+        "condition": "Any process drift, equipment issue, hold time concern, or production exception must trigger deviation governance.",
+        "status": "Monitored",
+        "score": 92
+    },
+    {
+        "gate": "Commercial Scale-Up Defensibility",
+        "condition": "Manufacturing readiness must be explainable and defensible for commercial launch, inspection, and operational scale-up.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/manufacturing-readiness-gate")
+def irlt_manufacturing_readiness_gate():
+
+    manufacturing_score = round(
+        sum(x["score"] for x in IRLT_MANUFACTURING_READINESS_GATE_V1)
+        / len(IRLT_MANUFACTURING_READINESS_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Manufacturing Readiness Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Manufacturing Readiness Gate</h1>
+
+        <p>
+            Governed manufacturing readiness layer for IRLT operations. This view checks whether
+            production schedule, material availability, operator readiness, manufacturing evidence,
+            process deviation monitoring, and commercial scale-up defensibility are controlled.
+        </p>
+
+        <div class="score">{{ manufacturing_score }}%</div>
+
+        <p>Overall Manufacturing Readiness Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_MANUFACTURING_READINESS_GATE_V1,
+    manufacturing_score=manufacturing_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/manufacturing-readiness-gate/api")
+def irlt_manufacturing_readiness_gate_api():
+
+    return jsonify({
+        "manufacturing_score": round(
+            sum(x["score"] for x in IRLT_MANUFACTURING_READINESS_GATE_V1)
+            / len(IRLT_MANUFACTURING_READINESS_GATE_V1)
+        ),
+        "gates": IRLT_MANUFACTURING_READINESS_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_MANUFACTURING_READINESS_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_MATERIAL_READINESS_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_MATERIAL_READINESS_GATE_V1 = [
+    {
+        "gate": "Material Availability",
+        "condition": "Critical materials, consumables, kits, reagents, and isotope-related dependencies must be available before production execution.",
+        "status": "Ready",
+        "score": 96
+    },
+    {
+        "gate": "Material Qualification",
+        "condition": "Material status must support GMP use with approved supplier, quality status, and release authorization where required.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Inventory Accuracy",
+        "condition": "Inventory records must reconcile against physical stock, batch planning, and operational consumption needs.",
+        "status": "Verified",
+        "score": 94
+    },
+    {
+        "gate": "Expiry / Shelf-Life Check",
+        "condition": "Material expiry, shelf life, and use window must be checked before batch execution or shipment dependency.",
+        "status": "Active Control",
+        "score": 96
+    },
+    {
+        "gate": "Shortage Escalation",
+        "condition": "Material shortage or supply risk must trigger governance escalation before production or release impact occurs.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Material readiness evidence must be complete, traceable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 97
+    }
+]
+
+@app.route("/irlt-commercial-readiness/material-readiness-gate")
+def irlt_material_readiness_gate():
+
+    material_score = round(
+        sum(x["score"] for x in IRLT_MATERIAL_READINESS_GATE_V1)
+        / len(IRLT_MATERIAL_READINESS_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Material Readiness Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Material Readiness Gate</h1>
+
+        <p>
+            Governed material readiness layer for IRLT operations. This view checks whether material
+            availability, qualification, inventory accuracy, expiry controls, shortage escalation,
+            and inspection defensibility are controlled before production or release impact occurs.
+        </p>
+
+        <div class="score">{{ material_score }}%</div>
+
+        <p>Overall Material Readiness Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_MATERIAL_READINESS_GATE_V1,
+    material_score=material_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/material-readiness-gate/api")
+def irlt_material_readiness_gate_api():
+
+    return jsonify({
+        "material_score": round(
+            sum(x["score"] for x in IRLT_MATERIAL_READINESS_GATE_V1)
+            / len(IRLT_MATERIAL_READINESS_GATE_V1)
+        ),
+        "gates": IRLT_MATERIAL_READINESS_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_MATERIAL_READINESS_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_SUPPLIER_READINESS_GATE_VIEW_V1_ACTIVE
+# ============================================================
+
+IRLT_SUPPLIER_READINESS_GATE_V1 = [
+    {
+        "gate": "Supplier Qualification",
+        "condition": "Critical suppliers must be qualified, approved, and aligned with GMP or operational requirements.",
+        "status": "Controlled",
+        "score": 95
+    },
+    {
+        "gate": "Supplier Quality Status",
+        "condition": "Supplier quality status, audit standing, deviations, and risk profile must support continued use.",
+        "status": "Verified",
+        "score": 94
+    },
+    {
+        "gate": "Material / Service Dependency",
+        "condition": "Supplier dependencies must be mapped to manufacturing, QC, release, shipment, and treatment continuity.",
+        "status": "Mapped",
+        "score": 93
+    },
+    {
+        "gate": "Supply Disruption Risk",
+        "condition": "Supplier delay, shortage, or quality issue must trigger governance escalation before operational impact.",
+        "status": "Monitored",
+        "score": 91
+    },
+    {
+        "gate": "Alternative Supplier Readiness",
+        "condition": "Critical supplier pathways should include backup sourcing, contingency, or recovery governance.",
+        "status": "Planned Control",
+        "score": 89
+    },
+    {
+        "gate": "Inspection Defensibility",
+        "condition": "Supplier readiness evidence must be complete, traceable, and inspection-defensible.",
+        "status": "Defensible",
+        "score": 96
+    }
+]
+
+@app.route("/irlt-commercial-readiness/supplier-readiness-gate")
+def irlt_supplier_readiness_gate():
+
+    supplier_score = round(
+        sum(x["score"] for x in IRLT_SUPPLIER_READINESS_GATE_V1)
+        / len(IRLT_SUPPLIER_READINESS_GATE_V1)
+    )
+
+    return render_template_string('''
+
+    <html>
+
+    <head>
+
+        <title>IRLT Supplier Readiness Gate</title>
+
+        <style>
+
+            body{
+                margin:0;
+                padding:40px;
+                background:
+                    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 30%),
+                    linear-gradient(135deg,#050608,#10151d,#050608);
+                color:white;
+                font-family:Arial;
+            }
+
+            h1{
+                color:#ff9f1c;
+                font-size:76px;
+                margin-bottom:10px;
+            }
+
+            p{
+                color:#bfc7d4;
+                line-height:1.7;
+                max-width:1150px;
+            }
+
+            .score{
+                font-size:120px;
+                color:#ff9f1c;
+                margin:30px 0;
+            }
+
+            .grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+                margin-top:30px;
+            }
+
+            .card{
+                background:#161d28;
+                border-radius:22px;
+                padding:28px;
+                border:1px solid rgba(255,255,255,0.08);
+            }
+
+            h2{
+                color:#ff9f1c;
+                margin-top:0;
+            }
+
+            .pill{
+                display:inline-block;
+                padding:8px 14px;
+                border-radius:999px;
+                background:rgba(255,122,24,0.15);
+                border:1px solid rgba(255,122,24,0.35);
+                margin-top:12px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>IRLT Supplier Readiness Gate</h1>
+
+        <p>
+            Governed supplier readiness layer for IRLT operations. This view checks whether supplier
+            qualification, quality status, material or service dependency, disruption risk,
+            alternative supplier readiness, and inspection defensibility are controlled.
+        </p>
+
+        <div class="score">{{ supplier_score }}%</div>
+
+        <p>Overall Supplier Readiness Governance Confidence</p>
+
+        <div class="grid">
+
+            {% for row in gates %}
+
+            <div class="card">
+
+                <h2>{{ row.gate }}</h2>
+
+                <p>{{ row.condition }}</p>
+
+                <p>Score: {{ row.score }}%</p>
+
+                <div class="pill">{{ row.status }}</div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </body>
+
+    </html>
+
+    ''',
+    gates=IRLT_SUPPLIER_READINESS_GATE_V1,
+    supplier_score=supplier_score
+    )
+
+
+@app.route("/irlt-commercial-readiness/supplier-readiness-gate/api")
+def irlt_supplier_readiness_gate_api():
+
+    return jsonify({
+        "supplier_score": round(
+            sum(x["score"] for x in IRLT_SUPPLIER_READINESS_GATE_V1)
+            / len(IRLT_SUPPLIER_READINESS_GATE_V1)
+        ),
+        "gates": IRLT_SUPPLIER_READINESS_GATE_V1
+    })
+
+# ============================================================
+# END IRLT_SUPPLIER_READINESS_GATE_VIEW_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DYNAMIC_MODULE_REGISTRY_V2_ACTIVE
+# ============================================================
+
+IRLT_DYNAMIC_MODULES_V2 = {
+    "cold-chain-gate": {"title": "Cold Chain Gate", "summary": "Governed cold-chain readiness and shipment temperature assurance.", "score": 96, "status": "Stable", "category": "Operations", "gates": ["Temperature control", "Courier readiness", "Dose viability", "Excursion response", "Chain-of-custody", "Inspection defensibility"]},
+    "dose-traceability-gate": {"title": "Dose Traceability Gate", "summary": "Governed dose lineage and treatment timing assurance.", "score": 98, "status": "Certified", "category": "Traceability", "gates": ["Dose identity", "Chain-of-custody", "Treatment timing", "Release linkage", "Deviation linkage", "Inspection defensibility"]},
+    "shipment-gate": {"title": "Shipment Gate", "summary": "Governed logistics and shipment readiness assurance.", "score": 95, "status": "Controlled", "category": "Logistics", "gates": ["Shipment authorization", "Courier handoff", "Route timing", "Evidence capture", "Exception escalation", "Delivery confirmation"]},
+    "qc-release-gate": {"title": "QC Release Gate", "summary": "Governed QC release and specification assurance.", "score": 96, "status": "Verified", "category": "Quality", "gates": ["QC result review", "Specification confirmation", "OOS monitoring", "QC evidence", "Release dependencies", "Inspection defensibility"]},
+    "access-gate": {"title": "Access Governance Gate", "summary": "Governed identity and access assurance.", "score": 94, "status": "Controlled", "category": "Cybersecurity", "gates": ["Role-based access", "Privileged access", "JML governance", "GMP access traceability", "Orphaned account detection", "Approval lineage"]},
+    "backup-restore-gate": {"title": "Backup Restore Gate", "summary": "Governed backup and operational recovery assurance.", "score": 93, "status": "Monitored", "category": "Recovery", "gates": ["Backup completion", "Restore readiness", "Recovery priority", "Evidence retention", "Failure escalation", "Dependency mapping"]},
+    "disaster-recovery-gate": {"title": "Disaster Recovery Gate", "summary": "Governed disaster recovery and GMP restart assurance.", "score": 94, "status": "Defensible", "category": "Recovery", "gates": ["DR activation", "RTO/RPO governance", "Recovery ownership", "Dependency mapping", "GMP restart", "Recovery evidence"]},
+    "manufacturing-readiness-gate": {"title": "Manufacturing Readiness Gate", "summary": "Governed commercial manufacturing readiness assurance.", "score": 96, "status": "Ready", "category": "Manufacturing", "gates": ["Schedule readiness", "Material readiness", "Operator readiness", "Manufacturing evidence", "Process monitoring", "Commercial scale-up"]}
+}
+
+@app.route("/irlt-commercial-readiness/modules-v2")
+def irlt_registry_v2():
+    overall_score = round(sum(x["score"] for x in IRLT_DYNAMIC_MODULES_V2.values()) / len(IRLT_DYNAMIC_MODULES_V2))
+    html = """
+    <html><head><title>IRLT Registry V2</title>
+    <style>
+    body{margin:0;padding:40px;background:linear-gradient(135deg,#050608,#10151d,#050608);font-family:Arial;color:white;}
+    h1{font-size:76px;color:#ff9f1c;margin-bottom:10px}.score{font-size:110px;color:#ff9f1c;margin:20px 0}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:30px}
+    .card{background:#151c27;border-radius:24px;padding:28px;border:1px solid rgba(255,255,255,0.08)}
+    h2{color:#ff9f1c}.pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,0.15)}
+    a{color:#ff9f1c;text-decoration:none} li{line-height:1.8;color:#d4d9e2}
+    </style></head><body>
+    <h1>IRLT Registry V2</h1>
+    <p>Enterprise governance registry for IRLT commercialization readiness.</p>
+    <div class="score">{{ overall_score }}%</div><p>Overall Governance Readiness</p>
+    <div class="grid">
+    {% for slug, module in modules.items() %}
+      <div class="card">
+        <h2>{{ module.title }}</h2>
+        <p>{{ module.summary }}</p>
+        <p><b>Category:</b> {{ module.category }}</p>
+        <p><b>Score:</b> {{ module.score }}%</p>
+        <div class="pill">{{ module.status }}</div>
+        <ul>{% for item in module.gates %}<li>{{ item }}</li>{% endfor %}</ul>
+        <p><a href="/irlt-commercial-readiness/module-v2/{{ slug }}">Open Module</a></p>
+      </div>
+    {% endfor %}
+    </div></body></html>
+    """
+    return render_template_string(html, modules=IRLT_DYNAMIC_MODULES_V2, overall_score=overall_score)
+
+@app.route("/irlt-commercial-readiness/module-v2/<module_slug>")
+def irlt_module_v2(module_slug):
+    module = IRLT_DYNAMIC_MODULES_V2.get(module_slug)
+    if not module:
+        return "Module not found", 404
+    html = """
+    <html><head><title>{{ module.title }}</title>
+    <style>
+    body{margin:0;padding:40px;background:linear-gradient(135deg,#050608,#10151d,#050608);font-family:Arial;color:white}
+    h1{font-size:76px;color:#ff9f1c}.score{font-size:110px;color:#ff9f1c}
+    .card{margin-top:30px;background:#151c27;border-radius:24px;padding:28px;border:1px solid rgba(255,255,255,0.08)}
+    .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,0.15)} li{line-height:2}
+    </style></head><body>
+    <h1>{{ module.title }}</h1><p>{{ module.summary }}</p>
+    <div class="score">{{ module.score }}%</div><div class="pill">{{ module.status }}</div>
+    <div class="card"><h2>Governance Controls</h2><ul>{% for item in module.gates %}<li>{{ item }}</li>{% endfor %}</ul></div>
+    </body></html>
+    """
+    return render_template_string(html, module=module)
+
+@app.route("/irlt-commercial-readiness/modules-v2/api")
+def irlt_registry_v2_api():
+    return jsonify({
+        "overall_score": round(sum(x["score"] for x in IRLT_DYNAMIC_MODULES_V2.values()) / len(IRLT_DYNAMIC_MODULES_V2)),
+        "modules": IRLT_DYNAMIC_MODULES_V2
+    })
+
+# ============================================================
+# END IRLT_DYNAMIC_MODULE_REGISTRY_V2
+# ============================================================
+
+
+
+if __name__ == "__main__":
     app.run(debug=True)
