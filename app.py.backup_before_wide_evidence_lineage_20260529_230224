@@ -174646,8 +174646,6 @@ def irlt_trust_score_fixed_v1():
 
 
 
-
-
 # ============================================================
 # IRLT_EVIDENCE_LINEAGE_INTELLIGENCE_V1_ACTIVE
 # ============================================================
@@ -174663,61 +174661,51 @@ def irlt_evidence_lineage_intelligence_v1():
         <style>
             body{
                 margin:0;
-                padding:24px;
+                padding:40px;
                 background:linear-gradient(135deg,#050608,#11151f,#050608);
                 color:white;
                 font-family:Arial,Segoe UI,sans-serif;
-                overflow:hidden;
             }
 
             h1{
-                font-size:58px;
+                font-size:76px;
                 color:#ff9f1c;
-                margin:0 0 10px;
-                letter-spacing:-0.04em;
+                margin-bottom:20px;
             }
 
             .panel{
                 background:#151c27;
-                border-radius:24px;
-                padding:24px;
-                margin-bottom:18px;
+                border-radius:28px;
+                padding:30px;
+                margin-bottom:24px;
                 border:1px solid rgba(255,255,255,.08);
             }
 
             .flow{
                 display:flex;
-                flex-direction:row;
-                justify-content:center;
-                align-items:stretch;
-                gap:16px;
+                flex-direction:column;
+                align-items:center;
+                gap:18px;
                 margin-top:20px;
+                margin-bottom:20px;
             }
 
             .box{
-                width:23%;
-                min-height:260px;
-                padding:20px;
+                width:420px;
+                padding:24px;
                 text-align:center;
                 background:rgba(255,255,255,.04);
-                border-radius:20px;
+                border-radius:18px;
                 border:1px solid rgba(255,255,255,.08);
-                display:flex;
-                flex-direction:column;
-                justify-content:center;
             }
 
             .title{
                 color:#ff9f1c;
-                font-size:25px;
+                font-size:26px;
                 font-weight:bold;
-                margin-bottom:14px;
             }
 
             .arrow{
-                display:flex;
-                align-items:center;
-                justify-content:center;
                 font-size:42px;
                 color:#ff9f1c;
                 font-weight:bold;
@@ -174725,14 +174713,7 @@ def irlt_evidence_lineage_intelligence_v1():
 
             p{
                 color:#c6cfdb;
-                line-height:1.55;
-                margin:8px 0;
-            }
-
-            .small{
-                font-size:15px;
-                color:#d7dee9;
-                line-height:1.7;
+                line-height:1.8;
             }
         </style>
     </head>
@@ -174743,59 +174724,48 @@ def irlt_evidence_lineage_intelligence_v1():
             <h1>Evidence Lineage Intelligence</h1>
 
             <p>
-                One-screen governance assurance chain showing how operational evidence becomes a defensible decision.
+                Governance assurance model showing how evidence is transformed
+                into a defensible operational decision.
             </p>
 
             <div class="flow">
 
                 <div class="box">
                     <div class="title">Evidence</div>
-                    <div class="small">
-                        QC Results<br>
-                        Deviation Records<br>
-                        Audit Logs<br>
-                        Chain of Custody<br>
-                        Batch Records
-                    </div>
+                    Deviation Records<br>
+                    QC Results<br>
+                    Audit Logs<br>
+                    Chain of Custody
                 </div>
 
-                <div class="arrow">→</div>
+                <div class="arrow">↓</div>
 
                 <div class="box">
                     <div class="title">Control Validation</div>
-                    <div class="small">
-                        SOP Verification<br>
-                        CAPA Review<br>
-                        Access Governance<br>
-                        Dependency Validation<br>
-                        Data Integrity Check
-                    </div>
+                    SOP Verification<br>
+                    CAPA Review<br>
+                    Access Governance<br>
+                    Dependency Validation
                 </div>
 
-                <div class="arrow">→</div>
+                <div class="arrow">↓</div>
 
                 <div class="box">
                     <div class="title">Approval Governance</div>
-                    <div class="small">
-                        QA Approval<br>
-                        Quality Review<br>
-                        GMP Authorization<br>
-                        Executive Sign-Off<br>
-                        Release Review
-                    </div>
+                    QA Approval<br>
+                    Quality Review<br>
+                    GMP Authorization<br>
+                    Executive Sign-Off
                 </div>
 
-                <div class="arrow">→</div>
+                <div class="arrow">↓</div>
 
                 <div class="box">
                     <div class="title">Decision</div>
-                    <div class="small">
-                        Release Decision<br>
-                        Inspection Defense<br>
-                        Commercial Readiness<br>
-                        Trust Certification<br>
-                        Governance Passport
-                    </div>
+                    Release Decision<br>
+                    Commercialization Decision<br>
+                    Inspection Defense<br>
+                    Operational Trust Certification
                 </div>
 
             </div>
@@ -174804,12 +174774,13 @@ def irlt_evidence_lineage_intelligence_v1():
 
         <div class="panel">
 
-            <h2 style="color:#ff9f1c;margin-top:0;">Governance Narrative</h2>
+            <h2 style="color:#ff9f1c;">Governance Narrative</h2>
 
             <p>
-                COBIT-Chain™ converts fragmented evidence into control validation, approval governance,
-                and defensible operational decisions. This supports audit survivability, inspection readiness,
-                and executive commercialization confidence.
+                Traditional systems stop at storing records.
+                COBIT-Chain™ extends governance by creating an explainable lineage
+                from evidence collection through control validation and approval governance
+                to final operational decisions.
             </p>
 
         </div>
@@ -174822,130 +174793,6 @@ def irlt_evidence_lineage_intelligence_v1():
 
 # ============================================================
 # END IRLT_EVIDENCE_LINEAGE_INTELLIGENCE_V1
-# ============================================================
-
-
-
-
-
-
-
-
-
-# ============================================================
-# COBITCHAIN_PLATFORM_HOME_V1_ACTIVE
-# ============================================================
-
-@app.route("/platform-home")
-@app.route("/cobit-chain")
-def cobitchain_platform_home_v1():
-
-    html = """
-    <html>
-    <head>
-        <title>COBIT-Chain Platform Home</title>
-        <style>
-            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
-            h1{font-size:82px;color:#ff9f1c;margin:0 0 14px;letter-spacing:-0.05em}
-            h2{color:#ff9f1c;margin-top:0}
-            p{color:#c6cfdb;line-height:1.7}
-            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
-            .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-            .card{background:rgba(255,255,255,.04);border-radius:22px;padding:24px;border:1px solid rgba(255,255,255,.08)}
-            .card strong{display:block;font-size:30px;color:#ff9f1c;margin-bottom:10px}
-            a{color:#ff9f1c;text-decoration:none;font-weight:bold}
-            .tag{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad;margin-right:8px;margin-bottom:8px}
-            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
-        </style>
-    </head>
-    <body>
-
-        <section class="hero">
-            <h1>COBIT-Chain™ / AssuranceLayer™</h1>
-            <p>
-                Enterprise Governance Assurance and Operational Trust Platform for regulated operations.
-                COBIT-Chain™ is not a replacement for ServiceNow, Veeva, MES, LIMS, ERP, CTMS, IAM, or quality systems.
-                It is a governance assurance overlay that converts fragmented operational evidence into defensible trust, readiness, lineage, and inspection intelligence.
-            </p>
-
-            <span class="tag">Governance Assurance</span>
-            <span class="tag">Evidence Lineage</span>
-            <span class="tag">Operational Trust</span>
-            <span class="tag">Inspection Readiness</span>
-            <span class="tag">Human-Governed AI</span>
-        </section>
-
-        <section class="panel">
-            <h2>Platform Modules</h2>
-
-            <div class="grid">
-                <div class="card">
-                    <strong>RLTTrust™ / IRLTTrust™</strong>
-                    IRLT commercialization readiness, radiopharma governance, chain-of-custody assurance, release defensibility, and inspection survivability.
-                    <p><a href="/irlt-commercial-readiness/mission-control">Open Mission Control</a></p>
-                </div>
-
-                <div class="card">
-                    <strong>Governance Passport™</strong>
-                    Portable readiness certification based on evidence completeness, trust scoring, dependency health, and inspection defensibility.
-                    <p><a href="/irlt-commercial-readiness/passport">Open Passport</a></p>
-                </div>
-
-                <div class="card">
-                    <strong>AuditVault™</strong>
-                    Immutable governance evidence, audit survivability, evidence verification, and inspection response readiness.
-                    <p><a href="/irlt-commercial-readiness/audit-simulation">Open Audit Simulation</a></p>
-                </div>
-
-                <div class="card">
-                    <strong>IntegrityLens™</strong>
-                    Operational trust analytics, risk heatmaps, governance intelligence, anomaly visibility, and executive scoring.
-                    <p><a href="/irlt-commercial-readiness/risk-heatmap">Open Risk Heatmap</a></p>
-                </div>
-
-                <div class="card">
-                    <strong>Dependency Engine™</strong>
-                    Cross-system dependency validation across quality, release, shipment, treatment, audit, and commercialization readiness.
-                    <p><a href="/irlt-commercial-readiness/dependency-validation">Open Dependency Validation</a></p>
-                </div>
-
-                <div class="card">
-                    <strong>AI Governance Copilot™</strong>
-                    Advisory-only governance analysis while human governance remains the authoritative control layer.
-                    <p><a href="/irlt-commercial-readiness/copilot">Open Copilot</a></p>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel">
-            <h2>Executive Screenshot Path</h2>
-
-            <div class="grid">
-                <div class="card">
-                    <strong>Executive Mission Control</strong>
-                    <a href="/irlt-commercial-readiness/mission-control">/irlt-commercial-readiness/mission-control</a>
-                </div>
-
-                <div class="card">
-                    <strong>Commercial Readiness Dashboard</strong>
-                    <a href="/irlt-commercial-readiness/commercial-dashboard">/irlt-commercial-readiness/commercial-dashboard</a>
-                </div>
-
-                <div class="card">
-                    <strong>Evidence Lineage Intelligence</strong>
-                    <a href="/irlt-commercial-readiness/evidence-lineage">/irlt-commercial-readiness/evidence-lineage</a>
-                </div>
-            </div>
-        </section>
-
-    </body>
-    </html>
-    """
-
-    return html
-
-# ============================================================
-# END COBITCHAIN_PLATFORM_HOME_V1
 # ============================================================
 
 
