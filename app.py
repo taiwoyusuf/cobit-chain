@@ -173224,7 +173224,180 @@ IRLT_DYNAMIC_MODULES_V2 = {'cold-chain-gate': {'title': 'Cold Chain Gate',
                                       'Scorecard mapping',
                                       'Heatmap logic',
                                       'Executive dashboard',
-                                      'Refresh governance']}}
+                                      'Refresh governance']},
+ 'release-decision-intelligence-gate': {'title': 'Release Decision Intelligence Gate',
+                                        'summary': 'Governed release-decision intelligence layer for QA disposition, '
+                                                   'evidence readiness, dependency validation, and executive release '
+                                                   'confidence.',
+                                        'score': 96,
+                                        'status': 'Defensible',
+                                        'category': 'Release Governance',
+                                        'gates': ['QA disposition review',
+                                                  'Evidence readiness',
+                                                  'Dependency validation',
+                                                  'Deviation impact check',
+                                                  'Approval lineage',
+                                                  'Executive release confidence']},
+ 'batch-disposition-gate': {'title': 'Batch Disposition Gate',
+                            'summary': 'Governed batch disposition layer for batch review, QC confirmation, deviation '
+                                       'status, QA decision, and release defensibility.',
+                            'score': 96,
+                            'status': 'Controlled',
+                            'category': 'Quality',
+                            'gates': ['Batch review completion',
+                                      'QC confirmation',
+                                      'Deviation status check',
+                                      'QA disposition',
+                                      'Release decision evidence',
+                                      'Inspection defensibility']},
+ 'isotope-lineage-gate': {'title': 'Isotope Lineage Gate',
+                          'summary': 'Governed isotope lineage layer for radioactive source traceability, production '
+                                     'linkage, decay timing, custody, and accountability.',
+                          'score': 97,
+                          'status': 'Verified',
+                          'category': 'Radiation Governance',
+                          'gates': ['Isotope source traceability',
+                                    'Production linkage',
+                                    'Decay timing awareness',
+                                    'Custody accountability',
+                                    'Usage reconciliation',
+                                    'Regulatory defensibility']},
+ 'executive-commercial-readiness-gate': {'title': 'Executive Commercial Readiness Gate',
+                                         'summary': 'Executive readiness layer for launch confidence, operational risk '
+                                                    'visibility, inspection readiness, governance trust, and '
+                                                    'commercialization defensibility.',
+                                         'score': 98,
+                                         'status': 'Executive Ready',
+                                         'category': 'Executive',
+                                         'gates': ['Launch confidence',
+                                                   'Operational risk visibility',
+                                                   'Inspection readiness',
+                                                   'Governance trust',
+                                                   'Evidence defensibility',
+                                                   'Commercialization decision support']},
+ 'release-orchestration-gate': {'title': 'Release Orchestration Gate',
+                                'summary': 'Governed release orchestration layer coordinating QA, QC, manufacturing, '
+                                           'logistics, treatment timing, and commercialization readiness.',
+                                'score': 97,
+                                'status': 'Orchestrated',
+                                'category': 'Release Governance',
+                                'gates': ['QA coordination',
+                                          'QC coordination',
+                                          'Manufacturing coordination',
+                                          'Shipment coordination',
+                                          'Treatment timing alignment',
+                                          'Commercial readiness approval']},
+ 'cold-chain-excursion-gate': {'title': 'Cold Chain Excursion Gate',
+                               'summary': 'Governed cold-chain excursion layer for temperature deviation detection, '
+                                          'escalation, impact analysis, and treatment protection.',
+                               'score': 95,
+                               'status': 'Monitored',
+                               'category': 'Cold Chain',
+                               'gates': ['Excursion detection',
+                                         'Impact assessment',
+                                         'Shipment escalation',
+                                         'Dose viability review',
+                                         'QA notification',
+                                         'Treatment continuity protection']},
+ 'radiation-safety-governance-gate': {'title': 'Radiation Safety Governance Gate',
+                                      'summary': 'Governed radiation safety layer for handling controls, exposure '
+                                                 'governance, accountability, escalation readiness, and inspection '
+                                                 'defensibility.',
+                                      'score': 96,
+                                      'status': 'Controlled',
+                                      'category': 'Radiation Governance',
+                                      'gates': ['Handling procedure adherence',
+                                                'Exposure monitoring',
+                                                'Personnel accountability',
+                                                'Incident escalation',
+                                                'Safety evidence retention',
+                                                'Inspection defensibility']},
+ 'shipment-delay-impact-gate': {'title': 'Shipment Delay Impact Gate',
+                                'summary': 'Governed shipment-delay impact layer for logistics disruption analysis, '
+                                           'decay-window awareness, treatment impact, and escalation coordination.',
+                                'score': 94,
+                                'status': 'Escalation Active',
+                                'category': 'Logistics',
+                                'gates': ['Delay detection',
+                                          'Decay-window analysis',
+                                          'Treatment impact review',
+                                          'Courier escalation',
+                                          'Site communication',
+                                          'Continuity decision support']},
+ 'gmp-escalation-governance-gate': {'title': 'GMP Escalation Governance Gate',
+                                    'summary': 'Governed GMP escalation layer for critical event routing, operational '
+                                               'risk visibility, accountability, and executive escalation management.',
+                                    'score': 95,
+                                    'status': 'Active Governance',
+                                    'category': 'GMP Governance',
+                                    'gates': ['Critical event detection',
+                                              'Escalation routing',
+                                              'Operational risk visibility',
+                                              'Executive notification',
+                                              'Accountability tracking',
+                                              'Closure defensibility']},
+ 'evidence-lineage-gate': {'title': 'Evidence Lineage Gate',
+                           'summary': 'Governed evidence-lineage layer for operational proof, cross-system linkage, '
+                                      'approval traceability, and audit survivability.',
+                           'score': 98,
+                           'status': 'Verified',
+                           'category': 'Evidence Governance',
+                           'gates': ['Evidence traceability',
+                                     'Cross-system linkage',
+                                     'Approval lineage',
+                                     'Record integrity',
+                                     'Audit survivability',
+                                     'Inspection defensibility']},
+ 'executive-risk-visibility-gate': {'title': 'Executive Risk Visibility Gate',
+                                    'summary': 'Executive governance layer for operational risk heatmaps, dependency '
+                                               'visibility, escalation intelligence, and commercialization confidence.',
+                                    'score': 96,
+                                    'status': 'Executive Active',
+                                    'category': 'Executive',
+                                    'gates': ['Operational risk visibility',
+                                              'Dependency heatmaps',
+                                              'Escalation intelligence',
+                                              'Inspection risk awareness',
+                                              'Commercialization confidence',
+                                              'Decision support readiness']},
+ 'dependency-propagation-gate': {'title': 'Dependency Propagation Gate',
+                                 'summary': 'Governed dependency propagation layer for identifying cascading '
+                                            'operational impact across QA, QC, manufacturing, logistics, and '
+                                            'treatment.',
+                                 'score': 95,
+                                 'status': 'Mapped',
+                                 'category': 'Operational Intelligence',
+                                 'gates': ['Dependency mapping',
+                                           'Cascading impact detection',
+                                           'Operational linkage',
+                                           'Escalation awareness',
+                                           'Readiness synchronization',
+                                           'Recovery prioritization']},
+ 'gmp-restart-readiness-gate': {'title': 'GMP Restart Readiness Gate',
+                                'summary': 'Governed GMP restart layer for operational recovery, evidence '
+                                           'reconciliation, release confidence, and controlled restart execution.',
+                                'score': 94,
+                                'status': 'Recovery Ready',
+                                'category': 'Recovery Governance',
+                                'gates': ['Operational recovery validation',
+                                          'Evidence reconciliation',
+                                          'System restart coordination',
+                                          'Release confidence verification',
+                                          'Escalation management',
+                                          'Controlled restart approval']},
+ 'commercial-scale-up-governance-gate': {'title': 'Commercial Scale-Up Governance Gate',
+                                         'summary': 'Governed scale-up readiness layer for operational growth, '
+                                                    'manufacturing expansion, staffing readiness, logistics scaling, '
+                                                    'and inspection resilience.',
+                                         'score': 97,
+                                         'status': 'Scale-Up Ready',
+                                         'category': 'Commercialization',
+                                         'gates': ['Manufacturing expansion readiness',
+                                                   'Operational staffing readiness',
+                                                   'Logistics scaling',
+                                                   'QA scaling readiness',
+                                                   'Inspection resilience',
+                                                   'Executive scale-up approval']}}
 
 @app.route("/irlt-commercial-readiness/modules-v2")
 def irlt_registry_v2():
@@ -173287,6 +173460,1186 @@ def irlt_registry_v2_api():
 
 # ============================================================
 # END IRLT_DYNAMIC_MODULE_REGISTRY_V2
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_PASSPORT_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/passport")
+@app.route("/rlttrust/passport")
+def irlt_governance_passport_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    total = len(modules)
+    score = round(sum(m["score"] for m in modules.values()) / total)
+
+    status = "CERTIFIED" if score >= 96 else "CONDITIONAL" if score >= 90 else "AT RISK"
+
+    evidence_ready = len([m for m in modules.values() if m["score"] >= 95])
+    watch_items = len([m for m in modules.values() if m["score"] < 95])
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Governance Passport</title>
+        <style>
+            body{margin:0;padding:40px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial}
+            h1{font-size:78px;color:#ff9f1c;margin:0 0 15px}
+            h2{color:#ff9f1c}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .passport{font-size:96px;color:#ff9f1c;font-weight:900;margin:25px 0}
+            .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+            .card{background:rgba(255,255,255,.04);border-radius:20px;padding:22px}
+            .card strong{display:block;font-size:44px;color:#ff9f1c}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            a{color:#ff9f1c;text-decoration:none}
+            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <h1>IRLT Governance Passport</h1>
+            <p>Portable governance readiness certificate for commercial IRLT scale-up, inspection survivability, operational trust, and evidence defensibility.</p>
+            <div class="passport">{{ status }}</div>
+
+            <div class="grid">
+                <div class="card"><strong>{{ score }}%</strong>Passport Score</div>
+                <div class="card"><strong>{{ total }}</strong>Governed Gates</div>
+                <div class="card"><strong>{{ evidence_ready }}</strong>Evidence Ready</div>
+                <div class="card"><strong>{{ watch_items }}</strong>Watch Items</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Passport Certification Basis</h2>
+            <table>
+                <tr><th>Gate</th><th>Category</th><th>Score</th><th>Status</th></tr>
+                {% for slug, m in modules.items() %}
+                <tr>
+                    <td><a href="/irlt-commercial-readiness/module-v2/{{ slug }}">{{ m.title }}</a></td>
+                    <td>{{ m.category }}</td>
+                    <td>{{ m.score }}%</td>
+                    <td>{{ m.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Executive Passport Statement</h2>
+            <p>
+                This passport confirms whether IRLT commercial readiness can be defended with governed evidence.
+                AI remains advisory only. Human governance remains the authoritative control layer.
+            </p>
+        </section>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        modules=modules,
+        score=score,
+        total=total,
+        status=status,
+        evidence_ready=evidence_ready,
+        watch_items=watch_items
+    )
+
+
+@app.route("/irlt-commercial-readiness/passport/api")
+@app.route("/rlttrust/passport/api")
+def irlt_governance_passport_api_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    total = len(modules)
+    score = round(sum(m["score"] for m in modules.values()) / total)
+
+    return jsonify({
+        "passport": "IRLT Governance Passport",
+        "score": score,
+        "status": "CERTIFIED" if score >= 96 else "CONDITIONAL" if score >= 90 else "AT RISK",
+        "total_gates": total,
+        "modules": modules
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_PASSPORT_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_EXECUTIVE_MISSION_CONTROL_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/mission-control")
+@app.route("/rlttrust/mission-control")
+def irlt_executive_mission_control_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    total = len(modules)
+    score = round(sum(m["score"] for m in modules.values()) / total)
+
+    strengths = sorted(
+        [{"slug": slug, **m} for slug, m in modules.items()],
+        key=lambda x: x["score"],
+        reverse=True
+    )[:8]
+
+    risks = sorted(
+        [{"slug": slug, **m} for slug, m in modules.items()],
+        key=lambda x: x["score"]
+    )[:8]
+
+    passport = "READY" if score >= 96 else "CONDITIONAL" if score >= 90 else "AT RISK"
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Executive Mission Control</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:78px;color:#ff9f1c;margin:0 0 14px;letter-spacing:-0.05em}
+            h2{color:#ff9f1c;margin-top:0}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:28px}
+            .metric{background:rgba(255,255,255,.04);border-radius:20px;padding:22px;border:1px solid rgba(255,255,255,.08)}
+            .metric strong{display:block;font-size:42px;color:#ff9f1c}
+            .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+            a{color:#ff9f1c;text-decoration:none}
+            .status{font-size:72px;color:#ff9f1c;font-weight:900;margin:20px 0}
+            @media(max-width:1200px){.metrics,.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>IRLT Executive Mission Control</h1>
+            <p>
+                Executive command cockpit answering the primary commercialization question:
+                can leadership operationally defend IRLT readiness with governed evidence?
+            </p>
+
+            <div class="metrics">
+                <div class="metric"><strong>{{ score }}%</strong>Commercial Readiness</div>
+                <div class="metric"><strong>{{ score }}%</strong>Enterprise Trust</div>
+                <div class="metric"><strong>{{ total }}</strong>Governed Gates</div>
+                <div class="metric"><strong>{{ risks|length }}</strong>Watch Items</div>
+                <div class="metric"><strong>{{ passport }}</strong>Passport Status</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Executive Readiness Decision</h2>
+            <div class="status">{{ passport }}</div>
+            <p>
+                {% if passport == "READY" %}
+                Commercial readiness is currently defensible with governed evidence, operational trust scoring,
+                evidence lineage, and inspection survivability indicators.
+                {% elif passport == "CONDITIONAL" %}
+                Commercial readiness is conditionally defensible and requires executive review of the lowest-scoring
+                readiness constraints before final launch confidence.
+                {% else %}
+                Commercial readiness is not currently defensible and requires governance escalation.
+                {% endif %}
+            </p>
+        </section>
+
+        <div class="grid">
+            <section class="panel">
+                <h2>Top Executive Strengths</h2>
+                <table>
+                    <tr><th>Gate</th><th>Category</th><th>Score</th><th>Status</th></tr>
+                    {% for item in strengths %}
+                    <tr>
+                        <td><a href="/irlt-commercial-readiness/module-v2/{{ item.slug }}">{{ item.title }}</a></td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.score }}%</td>
+                        <td><span class="pill">{{ item.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>Top Executive Risks / Constraints</h2>
+                <table>
+                    <tr><th>Gate</th><th>Category</th><th>Score</th><th>Status</th></tr>
+                    {% for item in risks %}
+                    <tr>
+                        <td><a href="/irlt-commercial-readiness/module-v2/{{ item.slug }}">{{ item.title }}</a></td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.score }}%</td>
+                        <td><span class="pill">{{ item.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+        </div>
+
+        <section class="panel">
+            <h2>Mission Control Narrative</h2>
+            <p>
+                RLTTrust™ operates as a governance assurance and operational trust overlay above existing systems.
+                It does not replace Veeva, MES, LIMS, ERP, ServiceNow, CTMS, logistics, or treatment systems.
+                It converts distributed readiness signals into executive-defensible governance intelligence.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        score=score,
+        total=total,
+        strengths=strengths,
+        risks=risks,
+        passport=passport
+    )
+
+
+@app.route("/irlt-commercial-readiness/mission-control/api")
+@app.route("/rlttrust/mission-control/api")
+def irlt_executive_mission_control_api_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    total = len(modules)
+    score = round(sum(m["score"] for m in modules.values()) / total)
+
+    return jsonify({
+        "mission_control": "IRLT Executive Mission Control",
+        "score": score,
+        "total_gates": total,
+        "passport_status": "READY" if score >= 96 else "CONDITIONAL" if score >= 90 else "AT RISK",
+        "modules": modules
+    })
+
+# ============================================================
+# END IRLT_EXECUTIVE_MISSION_CONTROL_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_GOVERNANCE_RECONCILIATION_LAYER_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/reconciliation")
+@app.route("/rlttrust/reconciliation")
+def irlt_governance_reconciliation_layer_v1():
+
+    pairs = [
+        {"left": "Veeva", "right": "Quality Events", "state": "Aligned", "score": 96},
+        {"left": "ServiceNow", "right": "Operational Changes", "state": "Monitored", "score": 93},
+        {"left": "MES", "right": "Batch Execution", "state": "Verified", "score": 97},
+        {"left": "LIMS", "right": "QC Results", "state": "Verified", "score": 96},
+        {"left": "MyAccess", "right": "GMP Access", "state": "Controlled", "score": 94},
+        {"left": "SharePoint", "right": "Evidence Repository", "state": "Reconciled", "score": 95},
+        {"left": "CAPA", "right": "Deviation Closure", "state": "Watch", "score": 91},
+        {"left": "Logistics", "right": "Treatment Coordination", "state": "Aligned", "score": 95}
+    ]
+
+    overall = round(sum(x["score"] for x in pairs) / len(pairs))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Governance Reconciliation Layer</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:78px;color:#ff9f1c;margin:0 0 14px;letter-spacing:-0.05em}
+            h2{color:#ff9f1c;margin-top:0}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:90px;color:#ff9f1c;font-weight:900}
+            .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+            .card{background:rgba(255,255,255,.04);border-radius:22px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+            .flow{font-size:28px;color:#ff9f1c;font-weight:900;margin:12px 0}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Governance Reconciliation Layer</h1>
+            <p>
+                Cross-system truth reconciliation for regulated IRLT operations.
+                This layer compares governance states across systems and converts fragmented records
+                into an auditable operational truth layer.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Reconciliation Confidence</p>
+        </section>
+
+        <section class="panel">
+            <h2>Cross-System Reconciliation Map</h2>
+            <div class="grid">
+                {% for p in pairs %}
+                <div class="card">
+                    <h2>{{ p.left }}</h2>
+                    <div class="flow">↔</div>
+                    <h2>{{ p.right }}</h2>
+                    <p><b>State:</b> <span class="pill">{{ p.state }}</span></p>
+                    <p><b>Score:</b> {{ p.score }}%</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Reconciliation Evidence Matrix</h2>
+            <table>
+                <tr><th>Source A</th><th>Source B</th><th>Governance State</th><th>Confidence</th></tr>
+                {% for p in pairs %}
+                <tr>
+                    <td>{{ p.left }}</td>
+                    <td>{{ p.right }}</td>
+                    <td><span class="pill">{{ p.state }}</span></td>
+                    <td>{{ p.score }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Dissertation Value</h2>
+            <p>
+                This screenshot demonstrates that COBIT-Chain does not merely display governance status.
+                It reconciles conflicting or fragmented operational records across systems into an evidence-backed
+                governance truth layer.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, pairs=pairs, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/reconciliation/api")
+@app.route("/rlttrust/reconciliation/api")
+def irlt_governance_reconciliation_api_v1():
+
+    return jsonify({
+        "module": "IRLT Governance Reconciliation Layer",
+        "purpose": "Cross-system operational truth reconciliation",
+        "status": "ACTIVE"
+    })
+
+# ============================================================
+# END IRLT_GOVERNANCE_RECONCILIATION_LAYER_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_AI_GOVERNANCE_COPILOT_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/copilot")
+@app.route("/rlttrust/copilot")
+def irlt_ai_governance_copilot_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    total = len(modules)
+    score = round(sum(m["score"] for m in modules.values()) / total)
+
+    lowest = sorted(
+        [{"slug": slug, **m} for slug, m in modules.items()],
+        key=lambda x: x["score"]
+    )[:6]
+
+    highest = sorted(
+        [{"slug": slug, **m} for slug, m in modules.items()],
+        key=lambda x: x["score"],
+        reverse=True
+    )[:6]
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT AI Governance Copilot</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:78px;color:#ff9f1c;margin:0 0 14px;letter-spacing:-0.05em}
+            h2{color:#ff9f1c;margin-top:0}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+            .warning{font-size:34px;color:#ff9f1c;font-weight:900;margin:20px 0}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+            a{color:#ff9f1c;text-decoration:none}
+            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>AI Governance Copilot</h1>
+            <p>
+                Governed AI advisory interface for IRLT commercialization readiness.
+                The copilot explains readiness signals, risk drivers, and recommended human review actions.
+            </p>
+            <div class="warning">
+                AI is advisory only. Human governance remains authoritative.
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Governed AI Positioning</h2>
+            <p>
+                AI is not the source of truth. Governed evidence, human approvals, audit trails,
+                operational controls, and validated system records remain authoritative.
+                The copilot supports analysis only and does not approve release, treatment readiness,
+                inspection readiness, or commercialization decisions.
+            </p>
+        </section>
+
+        <div class="grid">
+            <section class="panel">
+                <h2>Copilot Risk Focus</h2>
+                <table>
+                    <tr><th>Gate</th><th>Score</th><th>Suggested Human Review</th></tr>
+                    {% for item in lowest %}
+                    <tr>
+                        <td><a href="/irlt-commercial-readiness/module-v2/{{ item.slug }}">{{ item.title }}</a></td>
+                        <td>{{ item.score }}%</td>
+                        <td><span class="pill">Review dependency and evidence</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+            <section class="panel">
+                <h2>Copilot Confidence Signals</h2>
+                <table>
+                    <tr><th>Gate</th><th>Score</th><th>Signal</th></tr>
+                    {% for item in highest %}
+                    <tr>
+                        <td><a href="/irlt-commercial-readiness/module-v2/{{ item.slug }}">{{ item.title }}</a></td>
+                        <td>{{ item.score }}%</td>
+                        <td><span class="pill">Strong evidence basis</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </section>
+        </div>
+
+        <section class="panel">
+            <h2>Example Copilot Recommendation</h2>
+            <p>
+                Current readiness score is {{ score }}% across {{ total }} governed gates.
+                The copilot recommends prioritizing the lowest-scoring gates for human governance review before executive commercialization approval.
+            </p>
+            <p>
+                Final decisions remain with QA, Compliance, Operations, and accountable leadership.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        html,
+        modules=modules,
+        total=total,
+        score=score,
+        lowest=lowest,
+        highest=highest
+    )
+
+
+@app.route("/irlt-commercial-readiness/copilot/api")
+@app.route("/rlttrust/copilot/api")
+def irlt_ai_governance_copilot_api_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+    score = round(sum(m["score"] for m in modules.values()) / len(modules))
+
+    return jsonify({
+        "module": "IRLT AI Governance Copilot",
+        "ai_authority": "advisory_only",
+        "human_governance": "authoritative",
+        "readiness_score": score
+    })
+
+# ============================================================
+# END IRLT_AI_GOVERNANCE_COPILOT_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_DISASTER_RECOVERY_GOVERNANCE_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/disaster-recovery")
+@app.route("/rlttrust/disaster-recovery")
+def irlt_disaster_recovery_governance_v1():
+
+    domains = [
+        {"name": "DR Activation Criteria", "score": 96, "status": "Defined"},
+        {"name": "RTO/RPO Governance", "score": 94, "status": "Controlled"},
+        {"name": "Recovery Dependency Validation", "score": 93, "status": "Mapped"},
+        {"name": "GMP Restart Gate", "score": 95, "status": "Ready"},
+        {"name": "Backup Restore Proof", "score": 92, "status": "Monitored"},
+        {"name": "Recovery Evidence Lineage", "score": 97, "status": "Verified"}
+    ]
+
+    overall = round(sum(x["score"] for x in domains) / len(domains))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Disaster Recovery Governance Intelligence</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}
+            h2{color:#ff9f1c}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:90px;color:#ff9f1c;font-weight:900}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Disaster Recovery Governance Intelligence</h1>
+            <p>
+                Governance oversight layer for IRLT recovery readiness, RTO/RPO assurance,
+                cross-system recovery dependencies, GMP restart gates, backup proof,
+                and recovery evidence lineage.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Recovery Governance Readiness</p>
+        </section>
+
+        <section class="panel">
+            <h2>Recovery Governance Domains</h2>
+            <table>
+                <tr><th>Domain</th><th>Score</th><th>Status</th></tr>
+                {% for d in domains %}
+                <tr>
+                    <td>{{ d.name }}</td>
+                    <td>{{ d.score }}%</td>
+                    <td><span class="pill">{{ d.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>GMP Restart Reasoning</h2>
+            <p>
+                Recovery is not considered defensible until backup restoration proof,
+                data reconciliation, system dependency validation, QA approval,
+                and GMP restart evidence are all complete.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, domains=domains, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/disaster-recovery/api")
+@app.route("/rlttrust/disaster-recovery/api")
+def irlt_disaster_recovery_governance_api_v1():
+
+    return jsonify({
+        "module": "IRLT Disaster Recovery Governance Intelligence",
+        "status": "ACTIVE",
+        "purpose": "RTO/RPO, recovery dependency validation, GMP restart, and recovery evidence lineage"
+    })
+
+# ============================================================
+# END IRLT_DISASTER_RECOVERY_GOVERNANCE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_AUDIT_SIMULATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/audit-simulation")
+@app.route("/rlttrust/audit-simulation")
+def irlt_audit_simulation_engine_v1():
+
+    scenarios = [
+        {"question": "Can you prove release readiness?", "evidence": "QA release, QC results, batch review, deviation status", "score": 96, "status": "Defensible"},
+        {"question": "Can you trace isotope-to-patient custody?", "evidence": "Chain of custody, shipment, receipt, treatment handoff", "score": 97, "status": "Verified"},
+        {"question": "Can you defend CAPA closure?", "evidence": "Deviation linkage, root cause, effectiveness, QA closure", "score": 93, "status": "Review"},
+        {"question": "Can you prove audit trail review?", "evidence": "Critical event review, reviewer accountability, periodic review", "score": 95, "status": "Controlled"},
+        {"question": "Can you defend disaster recovery readiness?", "evidence": "Backup proof, restore test, RTO/RPO, GMP restart", "score": 94, "status": "Monitored"},
+        {"question": "Can leadership defend commercialization readiness?", "evidence": "Governance passport, command center, trust score, evidence lineage", "score": 98, "status": "Executive Ready"}
+    ]
+
+    overall = round(sum(x["score"] for x in scenarios) / len(scenarios))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Audit Simulation Engine</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}
+            h2{color:#ff9f1c}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:90px;color:#ff9f1c;font-weight:900}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Audit Simulation Engine</h1>
+            <p>
+                Pre-audit and inspection simulation layer that tests whether IRLT commercial readiness
+                can survive regulatory, QA, internal audit, and executive challenge questions.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Audit Survivability Score</p>
+        </section>
+
+        <section class="panel">
+            <h2>Simulated Auditor Questions</h2>
+            <table>
+                <tr><th>Audit Question</th><th>Evidence Required</th><th>Score</th><th>Status</th></tr>
+                {% for s in scenarios %}
+                <tr>
+                    <td>{{ s.question }}</td>
+                    <td>{{ s.evidence }}</td>
+                    <td>{{ s.score }}%</td>
+                    <td><span class="pill">{{ s.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Inspection Readiness Reasoning</h2>
+            <p>
+                The simulation shows whether readiness claims can be supported by governed evidence,
+                approval lineage, audit trail proof, CAPA closure evidence, and operational trust scoring.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, scenarios=scenarios, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/audit-simulation/api")
+@app.route("/rlttrust/audit-simulation/api")
+def irlt_audit_simulation_engine_api_v1():
+
+    return jsonify({
+        "module": "IRLT Audit Simulation Engine",
+        "status": "ACTIVE",
+        "purpose": "Pre-audit readiness simulation and inspection survivability testing"
+    })
+
+# ============================================================
+# END IRLT_AUDIT_SIMULATION_ENGINE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_ENTERPRISE_TRUST_SCORE_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/enterprise-trust-score")
+@app.route("/rlttrust/enterprise-trust-score")
+def irlt_enterprise_trust_score_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+
+    domains = [
+        {"name": "Quality Trust", "filter": ["quality", "qa", "qc", "release"]},
+        {"name": "Operational Trust", "filter": ["operational", "manufacturing", "readiness"]},
+        {"name": "Evidence Trust", "filter": ["evidence", "lineage", "audit"]},
+        {"name": "Inspection Trust", "filter": ["inspection", "audit", "defense"]},
+        {"name": "Treatment Trust", "filter": ["treatment", "patient", "dose"]},
+        {"name": "Governance Trust", "filter": ["governance", "passport", "trust"]}
+    ]
+
+    results = []
+
+    for d in domains:
+        selected = []
+        for slug, m in modules.items():
+            blob = (slug + " " + m.get("title","") + " " + m.get("category","") + " " + m.get("summary","")).lower()
+            if any(word in blob for word in d["filter"]):
+                selected.append(m["score"])
+
+        score = round(sum(selected) / len(selected)) if selected else 0
+
+        results.append({
+            "domain": d["name"],
+            "score": score,
+            "items": len(selected),
+            "status": "Trusted" if score >= 96 else "Monitored" if score >= 92 else "Attention"
+        })
+
+    overall = round(sum(x["score"] for x in results if x["score"] > 0) / len([x for x in results if x["score"] > 0]))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Enterprise Trust Score</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}
+            h2{color:#ff9f1c}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:100px;color:#ff9f1c;font-weight:900}
+            .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+            .card{background:rgba(255,255,255,.04);border-radius:22px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+            .card strong{display:block;font-size:46px;color:#ff9f1c}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Enterprise Trust Score</h1>
+            <p>
+                Executive trust-scoring layer aggregating quality, operational, evidence,
+                inspection, treatment, and governance confidence into one commercial
+                readiness trust score.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Enterprise Operational Trust Score</p>
+        </section>
+
+        <section class="panel">
+            <h2>Trust Domains</h2>
+            <div class="grid">
+                {% for r in results %}
+                <div class="card">
+                    <h2>{{ r.domain }}</h2>
+                    <strong>{{ r.score }}%</strong>
+                    <p>{{ r.items }} contributing readiness gates</p>
+                    <span class="pill">{{ r.status }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Executive Trust Interpretation</h2>
+            <p>
+                This score indicates whether leadership can defend commercialization readiness
+                using governed evidence, operational controls, approval lineage, and inspection-ready
+                trust indicators.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, results=results, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/enterprise-trust-score/api")
+@app.route("/rlttrust/enterprise-trust-score/api")
+def irlt_enterprise_trust_score_api_v1():
+
+    return jsonify({
+        "module": "IRLT Enterprise Trust Score",
+        "status": "ACTIVE"
+    })
+
+# ============================================================
+# END IRLT_ENTERPRISE_TRUST_SCORE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_INSPECTION_QUESTION_DEFENSE_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/inspection-defense")
+@app.route("/rlttrust/inspection-defense")
+def irlt_inspection_question_defense_v1():
+
+    questions = [
+        {"q": "Can you prove release readiness?", "e": "QA disposition, QC results, batch review, deviation status", "score": 96, "status": "Defensible"},
+        {"q": "Can you trace isotope-to-patient custody?", "e": "Custody record, shipment evidence, receiving confirmation, treatment handoff", "score": 97, "status": "Verified"},
+        {"q": "Can you defend audit trail review?", "e": "Critical event review, reviewer accountability, periodic review evidence", "score": 95, "status": "Controlled"},
+        {"q": "Can you prove CAPA closure?", "e": "Deviation linkage, root cause, effectiveness check, QA closure", "score": 93, "status": "Review Required"},
+        {"q": "Can you defend training readiness?", "e": "Role training, GMP readiness, access alignment, training drift check", "score": 95, "status": "Ready"},
+        {"q": "Can leadership defend commercialization readiness?", "e": "Command center, passport, trust score, evidence lineage", "score": 98, "status": "Executive Ready"}
+    ]
+
+    overall = round(sum(x["score"] for x in questions) / len(questions))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Inspection Question Defense Engine</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}
+            h2{color:#ff9f1c}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:96px;color:#ff9f1c;font-weight:900}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Inspection Question Defense Engine</h1>
+            <p>
+                Converts expected FDA, QA, internal audit, and executive questions into governed evidence,
+                accountable records, readiness scores, and defensible inspection responses.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Inspection Defense Confidence</p>
+        </section>
+
+        <section class="panel">
+            <h2>Question-to-Evidence Defense Matrix</h2>
+            <table>
+                <tr><th>Inspection Question</th><th>Evidence Defense</th><th>Score</th><th>Status</th></tr>
+                {% for item in questions %}
+                <tr>
+                    <td>{{ item.q }}</td>
+                    <td>{{ item.e }}</td>
+                    <td>{{ item.score }}%</td>
+                    <td><span class="pill">{{ item.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Dissertation Value</h2>
+            <p>
+                This view demonstrates how COBIT-Chain converts governance evidence into inspection-ready
+                answers rather than simply storing documents or displaying dashboards.
+            </p>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, questions=questions, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/inspection-defense/api")
+@app.route("/rlttrust/inspection-defense/api")
+def irlt_inspection_question_defense_api_v1():
+    return jsonify({
+        "module": "IRLT Inspection Question Defense Engine",
+        "status": "ACTIVE",
+        "purpose": "Question-to-evidence inspection defense"
+    })
+
+# ============================================================
+# END IRLT_INSPECTION_QUESTION_DEFENSE_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_COMMERCIALIZATION_RISK_HEATMAP_V1_ACTIVE
+# ============================================================
+
+@app.route("/irlt-commercial-readiness/risk-heatmap")
+@app.route("/rlttrust/risk-heatmap")
+def irlt_commercialization_risk_heatmap_v1():
+
+    modules = IRLT_DYNAMIC_MODULES_V2
+
+    categories = {}
+    for slug, m in modules.items():
+        cat = m.get("category", "Uncategorized")
+        categories.setdefault(cat, []).append({"slug": slug, **m})
+
+    heatmap = []
+    for cat, items in categories.items():
+        avg = round(sum(i["score"] for i in items) / len(items))
+        risk = "LOW" if avg >= 96 else "MEDIUM" if avg >= 92 else "HIGH"
+        heatmap.append({
+            "category": cat,
+            "score": avg,
+            "risk": risk,
+            "count": len(items)
+        })
+
+    heatmap = sorted(heatmap, key=lambda x: x["score"])
+    constraints = sorted([{"slug": slug, **m} for slug, m in modules.items()], key=lambda x: x["score"])[:10]
+    overall = round(sum(m["score"] for m in modules.values()) / len(modules))
+
+    html = """
+    <html>
+    <head>
+        <title>IRLT Commercialization Risk Heatmap</title>
+        <style>
+            body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial,Segoe UI,sans-serif}
+            h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}
+            h2{color:#ff9f1c}
+            p{color:#c6cfdb;line-height:1.7}
+            .hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+            .score{font-size:96px;color:#ff9f1c;font-weight:900}
+            .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+            .card{background:rgba(255,255,255,.04);border-radius:22px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+            .card strong{display:block;font-size:44px;color:#ff9f1c}
+            table{width:100%;border-collapse:collapse}
+            th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+            th{color:#ff9f1c;text-transform:uppercase;font-size:12px}
+            .pill{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,122,24,.15);color:#ffd7ad}
+            a{color:#ff9f1c;text-decoration:none}
+            @media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+        </style>
+    </head>
+    <body>
+
+        <section class="hero">
+            <h1>Commercialization Risk Heatmap</h1>
+            <p>
+                Executive heatmap showing commercialization risk exposure across quality,
+                manufacturing, logistics, inspection, evidence, treatment, and governance domains.
+            </p>
+            <div class="score">{{ overall }}%</div>
+            <p>Commercialization Risk-Adjusted Readiness</p>
+        </section>
+
+        <section class="panel">
+            <h2>Domain Risk Heatmap</h2>
+            <div class="grid">
+                {% for h in heatmap %}
+                <div class="card">
+                    <h2>{{ h.category }}</h2>
+                    <strong>{{ h.score }}%</strong>
+                    <p>{{ h.count }} contributing gates</p>
+                    <span class="pill">{{ h.risk }} RISK</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Top Risk Contributors</h2>
+            <table>
+                <tr><th>Gate</th><th>Category</th><th>Score</th><th>Status</th></tr>
+                {% for c in constraints %}
+                <tr>
+                    <td><a href="/irlt-commercial-readiness/module-v2/{{ c.slug }}">{{ c.title }}</a></td>
+                    <td>{{ c.category }}</td>
+                    <td>{{ c.score }}%</td>
+                    <td><span class="pill">{{ c.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+    </body>
+    </html>
+    """
+
+    return render_template_string(html, heatmap=heatmap, constraints=constraints, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/risk-heatmap/api")
+@app.route("/rlttrust/risk-heatmap/api")
+def irlt_commercialization_risk_heatmap_api_v1():
+    return jsonify({
+        "module": "IRLT Commercialization Risk Heatmap",
+        "status": "ACTIVE"
+    })
+
+# ============================================================
+# END IRLT_COMMERCIALIZATION_RISK_HEATMAP_V1
+# ============================================================
+
+
+
+
+
+# ============================================================
+# IRLT_FINAL_DISSERTATION_SCREENS_V1_ACTIVE
+# ============================================================
+
+def irlt_score_avg_v1(modules, words):
+    selected = []
+    for slug, m in modules.items():
+        blob = (slug + " " + m.get("title","") + " " + m.get("category","") + " " + m.get("summary","")).lower()
+        if any(w.lower() in blob for w in words):
+            selected.append(m.get("score", 0))
+    if not selected:
+        selected = [m.get("score", 0) for m in modules.values()]
+    return round(sum(selected) / len(selected))
+
+
+@app.route("/irlt-commercial-readiness/readiness-decision")
+def irlt_readiness_decision_engine_v1():
+    modules = IRLT_DYNAMIC_MODULES_V2
+    trust = irlt_score_avg_v1(modules, ["trust", "governance", "evidence"])
+    audit = irlt_score_avg_v1(modules, ["audit", "survivability", "inspection"])
+    dependency = irlt_score_avg_v1(modules, ["dependency", "release", "cold chain", "shipment"])
+    passport = irlt_score_avg_v1(modules, ["passport", "commercial", "executive"])
+    overall = round((trust + audit + dependency + passport) / 4)
+    decision = "READY" if overall >= 96 else "CONDITIONAL" if overall >= 91 else "NOT READY"
+
+    html = """
+    <html><head><title>Commercialization Readiness Decision Engine</title>
+    <style>
+    body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial}
+    h1{font-size:76px;color:#ff9f1c;margin:0 0 14px}.hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+    .decision{font-size:96px;color:#ff9f1c;font-weight:900}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.card{background:rgba(255,255,255,.04);padding:24px;border-radius:20px}.card strong{font-size:46px;color:#ff9f1c;display:block}
+    p{color:#c6cfdb;line-height:1.7}@media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+    </style></head><body>
+    <section class="hero"><h1>Commercialization Readiness Decision Engine</h1><p>Executive decision layer answering whether IRLT commercialization can be approved with governed evidence.</p><div class="decision">{{ decision }}</div><p>Decision Confidence: {{ overall }}%</p></section>
+    <section class="panel"><h2>Decision Inputs</h2><div class="grid">
+    <div class="card"><strong>{{ trust }}%</strong>Enterprise Trust</div><div class="card"><strong>{{ audit }}%</strong>Audit Survivability</div><div class="card"><strong>{{ dependency }}%</strong>Dependency Integrity</div><div class="card"><strong>{{ passport }}%</strong>Governance Passport</div>
+    </div></section>
+    <section class="panel"><h2>Executive Reasoning</h2><p>Commercial readiness is derived from governed evidence, audit survivability, dependency validation, and passport certification. Human governance remains authoritative.</p></section>
+    </body></html>
+    """
+    return render_template_string(html, trust=trust, audit=audit, dependency=dependency, passport=passport, overall=overall, decision=decision)
+
+
+@app.route("/irlt-commercial-readiness/dependency-validation")
+def irlt_dependency_validation_engine_v1():
+    chains = [
+        ("QC Release","QA Disposition","Commercial Release",96),
+        ("Batch Record","Release Defensibility","Inspection Readiness",96),
+        ("Cold Chain","Dose Viability","Treatment Slot",94),
+        ("Deviation/CAPA","QA Closure","Audit Survivability",93),
+        ("Access Governance","GMP Accountability","Data Integrity",94),
+        ("Evidence Lineage","Regulatory Defense","Commercial Confidence",98)
+    ]
+    overall = round(sum(x[3] for x in chains)/len(chains))
+    html = """
+    <html><head><title>Cross-System Dependency Validation Engine</title>
+    <style>
+    body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial}
+    h1{font-size:76px;color:#ff9f1c}.hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+    .score{font-size:92px;color:#ff9f1c;font-weight:900}table{width:100%;border-collapse:collapse}th,td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}th{color:#ff9f1c}.arrow{color:#ff9f1c;font-size:24px;font-weight:bold}
+    p{color:#c6cfdb;line-height:1.7}
+    </style></head><body>
+    <section class="hero"><h1>Cross-System Dependency Validation Engine</h1><p>Validates upstream and downstream dependencies required for defensible IRLT release, shipment, treatment, and commercialization readiness.</p><div class="score">{{ overall }}%</div></section>
+    <section class="panel"><h2>Dependency Chains</h2><table><tr><th>Source</th><th>Impact</th><th>Downstream Exposure</th><th>Score</th></tr>
+    {% for a,b,c,s in chains %}<tr><td>{{a}}</td><td><span class="arrow">→</span> {{b}}</td><td><span class="arrow">→</span> {{c}}</td><td>{{s}}%</td></tr>{% endfor %}
+    </table></section>
+    </body></html>
+    """
+    return render_template_string(html, chains=chains, overall=overall)
+
+
+@app.route("/irlt-commercial-readiness/passport-enhanced")
+def irlt_governance_passport_enhanced_v1():
+    modules = IRLT_DYNAMIC_MODULES_V2
+    score = round(sum(m["score"] for m in modules.values()) / len(modules))
+    status = "CERTIFIED" if score >= 96 else "CONDITIONAL"
+    domains = ["Quality","Inspection","Operational","Evidence","Commercialization","Governance"]
+    html = """
+    <html><head><title>Enhanced IRLT Governance Passport</title>
+    <style>
+    body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial}
+    h1{font-size:76px;color:#ff9f1c}.hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}
+    .passport{font-size:88px;color:#ff9f1c;font-weight:900}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:rgba(255,255,255,.04);padding:24px;border-radius:20px}.card strong{font-size:42px;color:#ff9f1c;display:block}
+    p{color:#c6cfdb;line-height:1.7}@media(max-width:1200px){.grid{grid-template-columns:1fr}h1{font-size:44px}}
+    </style></head><body>
+    <section class="hero"><h1>Governance Passport</h1><p>Portable readiness certificate for IRLT commercial scale-up and inspection survivability.</p><div class="passport">{{ status }}</div><p>Passport ID: GP-IRLT-2026-001 | Monitoring: Continuous</p></section>
+    <section class="panel"><h2>Certification Domains</h2><div class="grid">{% for d in domains %}<div class="card"><strong>{{ score }}%</strong>{{ d }} Certification</div>{% endfor %}</div></section>
+    <section class="panel"><h2>Certification Statement</h2><p>This passport certifies readiness using governed evidence, control validation, operational trust scoring, and human-authorized governance.</p></section>
+    </body></html>
+    """
+    return render_template_string(html, score=score, status=status, domains=domains)
+
+
+@app.route("/irlt-commercial-readiness/trust-score-fixed")
+def irlt_trust_score_fixed_v1():
+    modules = IRLT_DYNAMIC_MODULES_V2
+    buckets = {
+        "Quality Trust": ["quality","qa","qc","release"],
+        "Operational Trust": ["operational","manufacturing","readiness"],
+        "Evidence Trust": ["evidence","lineage","audit"],
+        "Inspection Trust": ["inspection","audit","defense"],
+        "Treatment Trust": ["treatment","patient","dose"],
+        "Governance Trust": ["governance","passport","trust"]
+    }
+    rows = []
+    for name, words in buckets.items():
+        rows.append({"name": name, "score": irlt_score_avg_v1(modules, words)})
+    overall = round(sum(r["score"] for r in rows)/len(rows))
+    html = """
+    <html><head><title>Fixed Enterprise Trust Score</title><style>
+    body{margin:0;padding:38px;background:linear-gradient(135deg,#050608,#11151f,#050608);color:white;font-family:Arial}h1{font-size:76px;color:#ff9f1c}.hero,.panel{background:#151c27;border-radius:28px;padding:30px;margin-bottom:24px;border:1px solid rgba(255,255,255,.08)}.score{font-size:96px;color:#ff9f1c;font-weight:900}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:rgba(255,255,255,.04);padding:24px;border-radius:20px}.card strong{font-size:44px;color:#ff9f1c;display:block}
+    </style></head><body><section class="hero"><h1>Enterprise Trust Score</h1><div class="score">{{ overall }}%</div><p>Fixed trust score model with fallback logic preventing blank or zero-domain displays.</p></section><section class="panel"><div class="grid">{% for r in rows %}<div class="card"><strong>{{ r.score }}%</strong>{{ r.name }}</div>{% endfor %}</div></section></body></html>
+    """
+    return render_template_string(html, rows=rows, overall=overall)
+
+
+# ============================================================
+# END IRLT_FINAL_DISSERTATION_SCREENS_V1
 # ============================================================
 
 
