@@ -4,57 +4,57 @@ APP = Path("app.py")
 
 text = APP.read_text(encoding="utf-8")
 
-MARKER = "IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE"
+MARKER = "IRLT_BUYER_VALUE_MAP_V1_ACTIVE"
 
 if MARKER in text:
-    print("Governance Cosmos Engine already exists.")
+    print("IRLT Buyer Value Map already exists.")
     raise SystemExit()
 
 insert = r"""
 
 # ============================================================
-# IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE
+# IRLT_BUYER_VALUE_MAP_V1_ACTIVE
 # ============================================================
 
-IRLT_GOVERNANCE_COSMOS_V1 = [
+IRLT_BUYER_VALUE_MAP_V1 = [
     {
-        "cosmos": "Commercial Readiness Universe",
-        "cosmos_score": 100,
-        "state": "Operational"
+        "buyer": "QA Leadership",
+        "value": "Inspection defensibility and evidence readiness",
+        "score": 98
     },
     {
-        "cosmos": "Inspection Defense Orbit",
-        "cosmos_score": 100,
-        "state": "Protected"
+        "buyer": "Operations Leadership",
+        "value": "Commercial readiness and operational survivability visibility",
+        "score": 97
     },
     {
-        "cosmos": "Evidence Integrity Galaxy",
-        "cosmos_score": 100,
-        "state": "Verified"
+        "buyer": "Compliance Leadership",
+        "value": "Governed evidence, audit traceability, and risk visibility",
+        "score": 98
     },
     {
-        "cosmos": "Cold Chain Governance",
-        "cosmos_score": 98,
-        "state": "Stable"
+        "buyer": "Radiopharma Leadership",
+        "value": "Dose traceability, cold-chain governance, and treatment continuity assurance",
+        "score": 99
     },
     {
-        "cosmos": "CAPA Recovery Intelligence",
-        "cosmos_score": 95,
-        "state": "Observed"
+        "buyer": "IT / Digital Leadership",
+        "value": "Governance overlay above existing enterprise systems",
+        "score": 96
     },
     {
-        "cosmos": "Dose Traceability Assurance",
-        "cosmos_score": 100,
-        "state": "Certified"
+        "buyer": "Executive Sponsors",
+        "value": "One operational trust picture for commercialization readiness",
+        "score": 99
     }
 ]
 
-@app.route("/irlt-commercial-readiness/governance-cosmos")
-def irlt_governance_cosmos():
+@app.route("/irlt-commercial-readiness/buyer-value-map")
+def irlt_buyer_value_map():
 
-    cosmos_score = round(
-        sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-        / len(IRLT_GOVERNANCE_COSMOS_V1)
+    value_score = round(
+        sum(x["score"] for x in IRLT_BUYER_VALUE_MAP_V1)
+        / len(IRLT_BUYER_VALUE_MAP_V1)
     )
 
     return render_template_string('''
@@ -63,7 +63,7 @@ def irlt_governance_cosmos():
 
     <head>
 
-        <title>Governance Cosmos Engine</title>
+        <title>IRLT Buyer Value Map</title>
 
         <style>
 
@@ -79,13 +79,14 @@ def irlt_governance_cosmos():
 
             h1{
                 color:#ff9f1c;
-                font-size:72px;
+                font-size:76px;
                 margin-bottom:10px;
             }
 
             p{
                 color:#bfc7d4;
                 line-height:1.7;
+                max-width:1150px;
             }
 
             .score{
@@ -103,12 +104,12 @@ def irlt_governance_cosmos():
 
             .card{
                 background:#161d28;
-                border-radius:20px;
+                border-radius:22px;
                 padding:24px;
                 border:1px solid rgba(255,255,255,0.08);
             }
 
-            .card h2{
+            h2{
                 color:#ff9f1c;
                 margin-top:0;
             }
@@ -128,35 +129,29 @@ def irlt_governance_cosmos():
 
     <body>
 
-        <h1>Governance Cosmos Engine</h1>
+        <h1>IRLT Buyer Value Map</h1>
 
         <p>
-            Enterprise governance cosmos environment for
-            commercialization intelligence expansion,
-            operational survivability synchronization,
-            inspection defense orchestration,
-            and radiopharma governance convergence.
+            Executive buyer-value map showing how the IRLT Commercial Readiness
+            Governance Command Center creates value for QA, Operations, Compliance,
+            Radiopharma Leadership, IT/Digital, and Executive Sponsors.
         </p>
 
-        <div class="score">
-            {{ cosmos_score }}%
-        </div>
+        <div class="score">{{ value_score }}%</div>
+
+        <p>Buyer Value Alignment Score</p>
 
         <div class="grid">
 
-            {% for row in cosmos %}
+            {% for row in buyers %}
 
             <div class="card">
 
-                <h2>{{ row.cosmos }}</h2>
+                <h2>{{ row.buyer }}</h2>
 
-                <p>
-                    Cosmos Index: {{ row.cosmos_score }}%
-                </p>
+                <p>{{ row.value }}</p>
 
-                <div class="pill">
-                    {{ row.state }}
-                </div>
+                <div class="pill">Value Score {{ row.score }}%</div>
 
             </div>
 
@@ -169,24 +164,24 @@ def irlt_governance_cosmos():
     </html>
 
     ''',
-    cosmos=IRLT_GOVERNANCE_COSMOS_V1,
-    cosmos_score=cosmos_score
+    buyers=IRLT_BUYER_VALUE_MAP_V1,
+    value_score=value_score
     )
 
 
-@app.route("/irlt-commercial-readiness/governance-cosmos/api")
-def irlt_governance_cosmos_api():
+@app.route("/irlt-commercial-readiness/buyer-value-map/api")
+def irlt_buyer_value_map_api():
 
     return jsonify({
-        "cosmos_score": round(
-            sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-            / len(IRLT_GOVERNANCE_COSMOS_V1)
+        "value_score": round(
+            sum(x["score"] for x in IRLT_BUYER_VALUE_MAP_V1)
+            / len(IRLT_BUYER_VALUE_MAP_V1)
         ),
-        "cosmos": IRLT_GOVERNANCE_COSMOS_V1
+        "buyers": IRLT_BUYER_VALUE_MAP_V1
     })
 
 # ============================================================
-# END IRLT_GOVERNANCE_COSMOS_ENGINE_V1
+# END IRLT_BUYER_VALUE_MAP_V1
 # ============================================================
 
 """
@@ -203,4 +198,4 @@ text = text[:idx] + insert + "\n\n" + text[idx:]
 
 APP.write_text(text, encoding="utf-8")
 
-print("Governance Cosmos Engine appended successfully.")
+print("IRLT Buyer Value Map appended successfully.")

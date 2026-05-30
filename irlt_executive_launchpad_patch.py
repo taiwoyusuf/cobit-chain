@@ -4,57 +4,57 @@ APP = Path("app.py")
 
 text = APP.read_text(encoding="utf-8")
 
-MARKER = "IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE"
+MARKER = "IRLT_EXECUTIVE_LAUNCHPAD_V1_ACTIVE"
 
 if MARKER in text:
-    print("Governance Cosmos Engine already exists.")
+    print("IRLT Executive Launchpad already exists.")
     raise SystemExit()
 
 insert = r"""
 
 # ============================================================
-# IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE
+# IRLT_EXECUTIVE_LAUNCHPAD_V1_ACTIVE
 # ============================================================
 
-IRLT_GOVERNANCE_COSMOS_V1 = [
+IRLT_EXECUTIVE_LAUNCHPAD_V1 = [
     {
-        "cosmos": "Commercial Readiness Universe",
-        "cosmos_score": 100,
-        "state": "Operational"
+        "area": "Commercialization Readiness",
+        "score": 98,
+        "route": "/irlt-commercial-readiness/governance-omega"
     },
     {
-        "cosmos": "Inspection Defense Orbit",
-        "cosmos_score": 100,
-        "state": "Protected"
+        "area": "Inspection Defense",
+        "score": 97,
+        "route": "/irlt-commercial-readiness/inspection-radar"
     },
     {
-        "cosmos": "Evidence Integrity Galaxy",
-        "cosmos_score": 100,
-        "state": "Verified"
+        "area": "Evidence Integrity",
+        "score": 99,
+        "route": "/irlt-commercial-readiness/trust-fusion-core"
     },
     {
-        "cosmos": "Cold Chain Governance",
-        "cosmos_score": 98,
-        "state": "Stable"
+        "area": "Operational Survivability",
+        "score": 96,
+        "route": "/irlt-commercial-readiness/survivability-matrix"
     },
     {
-        "cosmos": "CAPA Recovery Intelligence",
-        "cosmos_score": 95,
-        "state": "Observed"
+        "area": "Governance Navigation",
+        "score": 100,
+        "route": "/irlt-commercial-readiness/navigation-hub"
     },
     {
-        "cosmos": "Dose Traceability Assurance",
-        "cosmos_score": 100,
-        "state": "Certified"
+        "area": "Executive Command",
+        "score": 98,
+        "route": "/irlt-commercial-readiness/command-singularity"
     }
 ]
 
-@app.route("/irlt-commercial-readiness/governance-cosmos")
-def irlt_governance_cosmos():
+@app.route("/irlt-commercial-readiness/executive-launchpad")
+def irlt_executive_launchpad():
 
-    cosmos_score = round(
-        sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-        / len(IRLT_GOVERNANCE_COSMOS_V1)
+    launchpad_score = round(
+        sum(x["score"] for x in IRLT_EXECUTIVE_LAUNCHPAD_V1)
+        / len(IRLT_EXECUTIVE_LAUNCHPAD_V1)
     )
 
     return render_template_string('''
@@ -63,7 +63,7 @@ def irlt_governance_cosmos():
 
     <head>
 
-        <title>Governance Cosmos Engine</title>
+        <title>IRLT Executive Launchpad</title>
 
         <style>
 
@@ -79,13 +79,14 @@ def irlt_governance_cosmos():
 
             h1{
                 color:#ff9f1c;
-                font-size:72px;
+                font-size:76px;
                 margin-bottom:10px;
             }
 
             p{
                 color:#bfc7d4;
                 line-height:1.7;
+                max-width:1150px;
             }
 
             .score{
@@ -113,6 +114,12 @@ def irlt_governance_cosmos():
                 margin-top:0;
             }
 
+            a{
+                color:#ffd7ad;
+                text-decoration:none;
+                font-weight:bold;
+            }
+
             .pill{
                 display:inline-block;
                 padding:8px 14px;
@@ -128,34 +135,38 @@ def irlt_governance_cosmos():
 
     <body>
 
-        <h1>Governance Cosmos Engine</h1>
+        <h1>IRLT Executive Launchpad</h1>
 
         <p>
-            Enterprise governance cosmos environment for
-            commercialization intelligence expansion,
-            operational survivability synchronization,
-            inspection defense orchestration,
-            and radiopharma governance convergence.
+            Executive landing page for the IRLT Commercial Readiness Governance Command Center.
+            This view gives leadership a fast entry point into commercialization readiness,
+            inspection defense, evidence integrity, operational survivability, and governance navigation.
         </p>
 
         <div class="score">
-            {{ cosmos_score }}%
+            {{ launchpad_score }}%
         </div>
+
+        <p>
+            Unified Executive Readiness Score
+        </p>
 
         <div class="grid">
 
-            {% for row in cosmos %}
+            {% for row in launchpad %}
 
             <div class="card">
 
-                <h2>{{ row.cosmos }}</h2>
+                <h2>{{ row.area }}</h2>
 
-                <p>
-                    Cosmos Index: {{ row.cosmos_score }}%
-                </p>
+                <p>Score: {{ row.score }}%</p>
+
+                <a href="{{ row.route }}">Open View</a>
+
+                <br>
 
                 <div class="pill">
-                    {{ row.state }}
+                    Executive Access Point
                 </div>
 
             </div>
@@ -169,24 +180,24 @@ def irlt_governance_cosmos():
     </html>
 
     ''',
-    cosmos=IRLT_GOVERNANCE_COSMOS_V1,
-    cosmos_score=cosmos_score
+    launchpad=IRLT_EXECUTIVE_LAUNCHPAD_V1,
+    launchpad_score=launchpad_score
     )
 
 
-@app.route("/irlt-commercial-readiness/governance-cosmos/api")
-def irlt_governance_cosmos_api():
+@app.route("/irlt-commercial-readiness/executive-launchpad/api")
+def irlt_executive_launchpad_api():
 
     return jsonify({
-        "cosmos_score": round(
-            sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-            / len(IRLT_GOVERNANCE_COSMOS_V1)
+        "launchpad_score": round(
+            sum(x["score"] for x in IRLT_EXECUTIVE_LAUNCHPAD_V1)
+            / len(IRLT_EXECUTIVE_LAUNCHPAD_V1)
         ),
-        "cosmos": IRLT_GOVERNANCE_COSMOS_V1
+        "launchpad": IRLT_EXECUTIVE_LAUNCHPAD_V1
     })
 
 # ============================================================
-# END IRLT_GOVERNANCE_COSMOS_ENGINE_V1
+# END IRLT_EXECUTIVE_LAUNCHPAD_V1
 # ============================================================
 
 """
@@ -203,4 +214,4 @@ text = text[:idx] + insert + "\n\n" + text[idx:]
 
 APP.write_text(text, encoding="utf-8")
 
-print("Governance Cosmos Engine appended successfully.")
+print("IRLT Executive Launchpad appended successfully.")

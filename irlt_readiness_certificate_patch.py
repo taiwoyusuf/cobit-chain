@@ -4,57 +4,57 @@ APP = Path("app.py")
 
 text = APP.read_text(encoding="utf-8")
 
-MARKER = "IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE"
+MARKER = "IRLT_READINESS_CERTIFICATE_VIEW_V1_ACTIVE"
 
 if MARKER in text:
-    print("Governance Cosmos Engine already exists.")
+    print("IRLT Readiness Certificate View already exists.")
     raise SystemExit()
 
 insert = r"""
 
 # ============================================================
-# IRLT_GOVERNANCE_COSMOS_ENGINE_V1_ACTIVE
+# IRLT_READINESS_CERTIFICATE_VIEW_V1_ACTIVE
 # ============================================================
 
-IRLT_GOVERNANCE_COSMOS_V1 = [
+IRLT_READINESS_CERTIFICATE_V1 = [
     {
-        "cosmos": "Commercial Readiness Universe",
-        "cosmos_score": 100,
-        "state": "Operational"
+        "certificate": "Commercialization Readiness",
+        "status": "Certified Ready",
+        "score": 97
     },
     {
-        "cosmos": "Inspection Defense Orbit",
-        "cosmos_score": 100,
-        "state": "Protected"
+        "certificate": "Inspection Survivability",
+        "status": "Inspection Defensible",
+        "score": 96
     },
     {
-        "cosmos": "Evidence Integrity Galaxy",
-        "cosmos_score": 100,
-        "state": "Verified"
+        "certificate": "Evidence Integrity",
+        "status": "Evidence Verified",
+        "score": 99
     },
     {
-        "cosmos": "Cold Chain Governance",
-        "cosmos_score": 98,
-        "state": "Stable"
+        "certificate": "Cold Chain Governance",
+        "status": "Operationally Stable",
+        "score": 93
     },
     {
-        "cosmos": "CAPA Recovery Intelligence",
-        "cosmos_score": 95,
-        "state": "Observed"
+        "certificate": "CAPA Governance",
+        "status": "Monitored",
+        "score": 88
     },
     {
-        "cosmos": "Dose Traceability Assurance",
-        "cosmos_score": 100,
-        "state": "Certified"
+        "certificate": "Dose Traceability",
+        "status": "Traceability Certified",
+        "score": 99
     }
 ]
 
-@app.route("/irlt-commercial-readiness/governance-cosmos")
-def irlt_governance_cosmos():
+@app.route("/irlt-commercial-readiness/readiness-certificate")
+def irlt_readiness_certificate():
 
-    cosmos_score = round(
-        sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-        / len(IRLT_GOVERNANCE_COSMOS_V1)
+    certificate_score = round(
+        sum(x["score"] for x in IRLT_READINESS_CERTIFICATE_V1)
+        / len(IRLT_READINESS_CERTIFICATE_V1)
     )
 
     return render_template_string('''
@@ -63,7 +63,7 @@ def irlt_governance_cosmos():
 
     <head>
 
-        <title>Governance Cosmos Engine</title>
+        <title>IRLT Readiness Certificate</title>
 
         <style>
 
@@ -79,13 +79,14 @@ def irlt_governance_cosmos():
 
             h1{
                 color:#ff9f1c;
-                font-size:72px;
+                font-size:76px;
                 margin-bottom:10px;
             }
 
             p{
                 color:#bfc7d4;
                 line-height:1.7;
+                max-width:1150px;
             }
 
             .score{
@@ -103,12 +104,12 @@ def irlt_governance_cosmos():
 
             .card{
                 background:#161d28;
-                border-radius:20px;
-                padding:24px;
+                border-radius:22px;
+                padding:28px;
                 border:1px solid rgba(255,255,255,0.08);
             }
 
-            .card h2{
+            h2{
                 color:#ff9f1c;
                 margin-top:0;
             }
@@ -128,35 +129,28 @@ def irlt_governance_cosmos():
 
     <body>
 
-        <h1>Governance Cosmos Engine</h1>
+        <h1>IRLT Readiness Certificate</h1>
 
         <p>
-            Enterprise governance cosmos environment for
-            commercialization intelligence expansion,
-            operational survivability synchronization,
-            inspection defense orchestration,
-            and radiopharma governance convergence.
+            Executive certification-style view showing whether the major IRLT commercialization
+            governance domains are ready, defensible, verified, stable, or still under monitoring.
         </p>
 
-        <div class="score">
-            {{ cosmos_score }}%
-        </div>
+        <div class="score">{{ certificate_score }}%</div>
+
+        <p>Overall Readiness Certification Score</p>
 
         <div class="grid">
 
-            {% for row in cosmos %}
+            {% for row in certificates %}
 
             <div class="card">
 
-                <h2>{{ row.cosmos }}</h2>
+                <h2>{{ row.certificate }}</h2>
 
-                <p>
-                    Cosmos Index: {{ row.cosmos_score }}%
-                </p>
+                <p>Score: {{ row.score }}%</p>
 
-                <div class="pill">
-                    {{ row.state }}
-                </div>
+                <div class="pill">{{ row.status }}</div>
 
             </div>
 
@@ -169,24 +163,24 @@ def irlt_governance_cosmos():
     </html>
 
     ''',
-    cosmos=IRLT_GOVERNANCE_COSMOS_V1,
-    cosmos_score=cosmos_score
+    certificates=IRLT_READINESS_CERTIFICATE_V1,
+    certificate_score=certificate_score
     )
 
 
-@app.route("/irlt-commercial-readiness/governance-cosmos/api")
-def irlt_governance_cosmos_api():
+@app.route("/irlt-commercial-readiness/readiness-certificate/api")
+def irlt_readiness_certificate_api():
 
     return jsonify({
-        "cosmos_score": round(
-            sum(x["cosmos_score"] for x in IRLT_GOVERNANCE_COSMOS_V1)
-            / len(IRLT_GOVERNANCE_COSMOS_V1)
+        "certificate_score": round(
+            sum(x["score"] for x in IRLT_READINESS_CERTIFICATE_V1)
+            / len(IRLT_READINESS_CERTIFICATE_V1)
         ),
-        "cosmos": IRLT_GOVERNANCE_COSMOS_V1
+        "certificates": IRLT_READINESS_CERTIFICATE_V1
     })
 
 # ============================================================
-# END IRLT_GOVERNANCE_COSMOS_ENGINE_V1
+# END IRLT_READINESS_CERTIFICATE_VIEW_V1
 # ============================================================
 
 """
@@ -203,4 +197,4 @@ text = text[:idx] + insert + "\n\n" + text[idx:]
 
 APP.write_text(text, encoding="utf-8")
 
-print("Governance Cosmos Engine appended successfully.")
+print("IRLT Readiness Certificate View appended successfully.")
