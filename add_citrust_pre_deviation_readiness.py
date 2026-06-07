@@ -5,7 +5,7 @@ text = APP.read_text(encoding="utf-8")
 
 MARKER = "CITRUST_PRE_DEVIATION_READINESS_V1_ACTIVE"
 ROUTE_PRIMARY = '@app.route("/citrust/pre-deviation-readiness")'
-ROUTE_ALIAS = '@app.route("/citrust/pre-deviation-defense")'
+ROUTE_ALIAS = '@app.route("/citrust/deviation-prevention")'
 
 if MARKER in text or ROUTE_PRIMARY in text or ROUTE_ALIAS in text:
     print("CITrust Pre-Deviation Readiness Console already exists.")
@@ -18,7 +18,7 @@ block = r'''
 # ============================================================
 
 @app.route("/citrust/pre-deviation-readiness")
-@app.route("/citrust/pre-deviation-defense")
+@app.route("/citrust/deviation-prevention")
 def citrust_pre_deviation_readiness():
     html = """
     <!DOCTYPE html>
@@ -31,7 +31,6 @@ def citrust_pre_deviation_readiness():
         <style>
             :root {
                 --bg: #050d19;
-                --panel: #101d2f;
                 --line: rgba(255,255,255,0.12);
                 --text: #eef5ff;
                 --muted: #a9bdd6;
@@ -47,15 +46,15 @@ def citrust_pre_deviation_readiness():
                 margin: 0;
                 font-family: Arial, Helvetica, sans-serif;
                 background:
-                    radial-gradient(circle at top left, rgba(92,200,255,0.18), transparent 30%),
-                    radial-gradient(circle at top right, rgba(255,92,112,0.13), transparent 28%),
-                    radial-gradient(circle at bottom left, rgba(49,208,125,0.08), transparent 30%),
+                    radial-gradient(circle at top left, rgba(255,92,112,0.15), transparent 30%),
+                    radial-gradient(circle at top right, rgba(92,200,255,0.16), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(247,201,72,0.08), transparent 30%),
                     var(--bg);
                 color: var(--text);
             }
 
             .page {
-                max-width: 1400px;
+                max-width: 1420px;
                 margin: 0 auto;
                 padding: 28px;
             }
@@ -79,7 +78,7 @@ def citrust_pre_deviation_readiness():
 
             h1 {
                 margin: 0;
-                font-size: 39px;
+                font-size: 40px;
                 line-height: 1.1;
             }
 
@@ -87,7 +86,7 @@ def citrust_pre_deviation_readiness():
                 color: var(--muted);
                 font-size: 16px;
                 line-height: 1.6;
-                max-width: 1080px;
+                max-width: 1120px;
                 margin-top: 14px;
             }
 
@@ -174,35 +173,15 @@ def citrust_pre_deviation_readiness():
                 margin-top: 0;
             }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                overflow: hidden;
-                border-radius: 16px;
+            .answer {
+                border: 1px solid rgba(255,92,112,0.38);
+                background: rgba(255,92,112,0.10);
+                color: #ffe5e9;
+                border-radius: 18px;
+                padding: 20px;
                 margin-top: 16px;
-            }
-
-            th {
-                text-align: left;
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-                color: #c9dbef;
-                background: rgba(255,255,255,0.07);
-                padding: 13px 12px;
-                border-bottom: 1px solid var(--line);
-            }
-
-            td {
-                padding: 13px 12px;
-                border-bottom: 1px solid rgba(255,255,255,0.08);
-                color: #e9f2ff;
-                vertical-align: top;
-                font-size: 14px;
-            }
-
-            tr:hover td {
-                background: rgba(92,200,255,0.05);
+                line-height: 1.65;
+                font-size: 15px;
             }
 
             .badge {
@@ -245,17 +224,6 @@ def citrust_pre_deviation_readiness():
                 border: 1px solid rgba(92,200,255,0.34);
             }
 
-            .answer {
-                border: 1px solid rgba(247,201,72,0.38);
-                background: rgba(247,201,72,0.10);
-                color: #fff4cc;
-                border-radius: 18px;
-                padding: 20px;
-                margin-top: 16px;
-                line-height: 1.65;
-                font-size: 15px;
-            }
-
             .cards {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
@@ -268,6 +236,7 @@ def citrust_pre_deviation_readiness():
                 background: rgba(255,255,255,0.045);
                 border-radius: 18px;
                 padding: 18px;
+                min-height: 145px;
             }
 
             .card h3 {
@@ -280,6 +249,37 @@ def citrust_pre_deviation_readiness():
                 color: var(--muted);
                 font-size: 14px;
                 line-height: 1.55;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                overflow: hidden;
+                border-radius: 16px;
+                margin-top: 16px;
+            }
+
+            th {
+                text-align: left;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #c9dbef;
+                background: rgba(255,255,255,0.07);
+                padding: 13px 12px;
+                border-bottom: 1px solid var(--line);
+            }
+
+            td {
+                padding: 13px 12px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                color: #e9f2ff;
+                vertical-align: top;
+                font-size: 14px;
+            }
+
+            tr:hover td {
+                background: rgba(92,200,255,0.05);
             }
 
             .two-col {
@@ -309,32 +309,6 @@ def citrust_pre_deviation_readiness():
                 font-size: 14px;
             }
 
-            .prevention-grid {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                gap: 12px;
-                margin-top: 16px;
-            }
-
-            .prevention-step {
-                border: 1px solid rgba(247,201,72,0.28);
-                background: rgba(247,201,72,0.07);
-                border-radius: 18px;
-                padding: 16px;
-            }
-
-            .prevention-step h3 {
-                margin: 0 0 8px 0;
-                font-size: 15px;
-            }
-
-            .prevention-step p {
-                margin: 0;
-                font-size: 13px;
-                color: var(--muted);
-                line-height: 1.5;
-            }
-
             .footer {
                 color: var(--muted);
                 font-size: 12px;
@@ -343,7 +317,7 @@ def citrust_pre_deviation_readiness():
             }
 
             @media (max-width: 1180px) {
-                .kpis, .cards, .two-col, .prevention-grid {
+                .kpis, .cards, .two-col {
                     grid-template-columns: 1fr;
                 }
 
@@ -368,330 +342,278 @@ def citrust_pre_deviation_readiness():
                 <h1>CITrust™ Pre-Deviation Readiness Console</h1>
 
                 <div class="subtitle">
-                    Identifies weak CI ownership, support routing, MyAccess mapping, evidence lineage, lifecycle state, and dependency governance before those gaps become deviations, audit findings, failed approvals, incident-routing failures, or operational readiness blockers.
+                    Detects Configuration Item governance gaps before they become deviations, audit findings, failed access requests, failed cutovers, incident-routing failures, lifecycle ambiguity, or weak ServiceNow-style CMDB records.
                 </div>
 
                 <div class="positioning">
                     <strong>Pre-deviation boundary:</strong>
-                    CITrust™ does not replace deviation management, CAPA, ServiceNow, or the CMDB. It acts as a governance assurance overlay that detects CI governance weaknesses early, so teams can remediate records before operational failures or formal quality events occur.
+                    CITrust™ does not create deviations, approve quality events, update ServiceNow, or replace human governance. It identifies CI governance conditions that could become operational or audit issues if not remediated before execution, cutover, access change, lifecycle change, or submission review.
                 </div>
 
                 <div class="nav">
                     <a href="/citrust">CITrust™ Home</a>
-                    <a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a>
-                    <a href="/citrust/evidence-lineage">Evidence Lineage</a>
-                    <a href="/citrust/dependency-lineage">Dependency Lineage</a>
-                    <a href="/citrust/audit-readiness">Audit Readiness</a>
-                    <a href="/citrust/ownership-readiness">Ownership Readiness</a>
-                    <a href="/citrust/myaccess-readiness">MyAccess Readiness</a>
-                    <a href="/citrust/orphans">Orphan CI Intelligence</a>
+                    <a href="/citrust/readiness-command-center">Command Center</a>
+                    <a href="/citrust/risk-heatmap">Risk Heatmap</a>
+                    <a href="/citrust/governance-debt-register">Governance Debt</a>
+                    <a href="/citrust/change-impact-readiness">Change Impact</a>
+                    <a href="/citrust/evidence-pack-builder">Evidence Pack</a>
+                    <a href="/citrust/audit-question-bank">Audit Question Bank</a>
+                    <a href="/citrust/remediation-board">Remediation Board</a>
                 </div>
             </section>
 
             <section class="kpis">
                 <div class="metric">
-                    <div class="label">Pre-Deviation Checks</div>
-                    <div class="value">64</div>
-                    <div class="note">Checks across ownership, access, support, lifecycle, dependency, evidence, and audit readiness.</div>
+                    <div class="label">Pre-Deviation Signals</div>
+                    <div class="value">31</div>
+                    <div class="note">Open governance conditions that could become operational or audit events.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">Issues Prevented</div>
-                    <div class="value" style="color: var(--green);">21</div>
-                    <div class="note">Records with gaps detected before becoming formal operational or audit problems.</div>
+                    <div class="label">Critical Signals</div>
+                    <div class="value" style="color: var(--red);">8</div>
+                    <div class="note">Owner, support, access, lifecycle, or evidence gaps requiring immediate remediation.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">Conditional Watchlist</div>
-                    <div class="value" style="color: var(--yellow);">18</div>
-                    <div class="note">Records that can remain active only with tracked remediation or documented exception.</div>
+                    <div class="label">Watchlist Signals</div>
+                    <div class="value" style="color: var(--yellow);">14</div>
+                    <div class="note">Conditional risks that require tracking before trust or submission.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">High-Risk Gaps</div>
-                    <div class="value" style="color: var(--red);">9</div>
-                    <div class="note">Missing owner, support group, LCM, access path, evidence, or lifecycle closure.</div>
+                    <div class="label">Prevented Risks</div>
+                    <div class="value" style="color: var(--green);">9</div>
+                    <div class="note">Issues controlled through evidence, ownership, escalation, or remediation closure.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">Access-Routing Risks</div>
-                    <div class="value" style="color: var(--blue);">7</div>
-                    <div class="note">MyAccess, approver group, or role mapping weaknesses that could create approval defects.</div>
+                    <div class="label">Cutover Exposure</div>
+                    <div class="value" style="color: var(--orange);">6</div>
+                    <div class="note">Cutover-sensitive records with unresolved support, access, or evidence risk.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">Evidence Risks</div>
-                    <div class="value" style="color: var(--orange);">12</div>
-                    <div class="note">SOP, backup, audit trail, closure, validation, or submission evidence gaps.</div>
+                    <div class="label">Escalate Now</div>
+                    <div class="value" style="color: var(--blue);">4</div>
+                    <div class="note">Items requiring owner, support, lifecycle, access, or leadership action.</div>
                 </div>
             </section>
 
             <section class="section">
-                <h2>Pre-Deviation Readiness Answer</h2>
+                <h2>Pre-Deviation Answer</h2>
                 <p>
-                    This console answers whether CI governance gaps are being caught before they become formal problems.
+                    This console answers which CI governance gaps must be closed before they become formal operational problems.
                 </p>
 
                 <div class="answer">
-                    <strong>Current prevention interpretation:</strong>
-                    CITrust™ is detecting several early-warning signals before they become deviations or audit findings. The most important prevention opportunities are ownerless operational assets, partial MyAccess role mapping, missing support-group confirmation, OOS lifecycle closure gaps, incomplete evidence lineage, and hidden dependency records used for recurring reviews.
+                    <strong>Current pre-deviation interpretation:</strong>
+                    CITrust™ should treat missing owner, missing support group, unclear LCM, unmapped MyAccess route, hidden dependency, stale evidence, incomplete OOS closure, unresolved vendor handoff, and weak change-impact data as pre-deviation signals. These are not just administrative gaps; they are early warning indicators of failed support, failed access routing, audit weakness, or CMDB trust failure.
                 </div>
             </section>
 
             <section class="section">
-                <h2>Pre-Deviation Detection Model</h2>
+                <h2>Pre-Deviation Signal Domains</h2>
                 <p>
-                    CITrust™ turns CMDB weakness into an early-warning model. The goal is to find governance defects while they are still fixable.
+                    CITrust™ groups early warning signals into governance domains so remediation can happen before failure.
                 </p>
 
-                <div class="prevention-grid">
-                    <div class="prevention-step">
-                        <h3>1. Detect</h3>
-                        <p>Find missing owner, support group, LCM, access mapping, evidence, lifecycle, or dependency fields.</p>
+                <div class="cards">
+                    <div class="card">
+                        <h3>Ownership Signal</h3>
+                        <p>Owner, support group, LCM, backup owner, or escalation path is missing, stale, disputed, or not evidence-backed.</p>
                     </div>
 
-                    <div class="prevention-step">
-                        <h3>2. Classify</h3>
-                        <p>Separate low-risk cleanup items from high-risk operational, access, audit, and readiness gaps.</p>
+                    <div class="card">
+                        <h3>Access Signal</h3>
+                        <p>MyAccess role, approver group, admin route, vendor access path, or access-removal evidence is incomplete.</p>
                     </div>
 
-                    <div class="prevention-step">
-                        <h3>3. Route</h3>
-                        <p>Send the issue to ownership, MyAccess, reconciliation, orphan, evidence, or candidate review workflow.</p>
+                    <div class="card">
+                        <h3>Lifecycle Signal</h3>
+                        <p>Active, cutover, OOS, retired, or closed state cannot be defended with current lifecycle evidence.</p>
                     </div>
 
-                    <div class="prevention-step">
-                        <h3>4. Remediate</h3>
-                        <p>Assign owner, attach evidence, confirm support group, map access, or reconcile lifecycle state.</p>
-                    </div>
-
-                    <div class="prevention-step">
-                        <h3>5. Defend</h3>
-                        <p>Convert the CI from weak or conditional state into an operationally defensible record.</p>
+                    <div class="card">
+                        <h3>Evidence Signal</h3>
+                        <p>Evidence exists only informally, is stale, is disconnected from the CI, or cannot support audit-style questioning.</p>
                     </div>
                 </div>
             </section>
 
             <section class="section">
-                <h2>Pre-Deviation Readiness Matrix</h2>
+                <h2>CI Pre-Deviation Readiness Matrix</h2>
                 <p>
-                    This matrix identifies records that could become deviations, audit observations, access failures, support-routing issues, or ServiceNow-readiness blockers if not remediated early.
+                    This matrix identifies which CIs are likely to trigger governance, support, access, audit, or cutover issues if not remediated.
                 </p>
 
                 <table>
                     <thead>
                         <tr>
                             <th>Configuration Item</th>
-                            <th>Early Warning Signal</th>
+                            <th>Pre-Deviation Signal</th>
                             <th>Likely Failure Mode</th>
-                            <th>Governance Domain</th>
-                            <th>Pre-Deviation Action</th>
-                            <th>Risk Level</th>
-                            <th>Decision</th>
+                            <th>Current Control</th>
+                            <th>Readiness Decision</th>
+                            <th>Required Prevention Action</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr>
-                            <td><strong>Local Backup Review Workstation</strong><br><span style="color: var(--muted);">Monthly backup review dependency</span></td>
-                            <td>Owner, LCM, MyAccess, SOP, and evidence missing</td>
-                            <td>Backup review cannot be defended during audit or inspection</td>
-                            <td><span class="badge soft-red">Evidence / Ownership</span></td>
-                            <td>Create governed CI candidate and attach review evidence path</td>
-                            <td><span class="badge red">High</span></td>
-                            <td><span class="badge red">Immediate Remediation</span></td>
+                            <td><strong>Blue Mountain RAM</strong><br><span style="color: var(--muted);">Asset and calibration governance system</span></td>
+                            <td><span class="badge soft-green">No Material Signal</span></td>
+                            <td>Low likelihood if cadence remains current.</td>
+                            <td>Owner, support, evidence, lifecycle, and access context are aligned.</td>
+                            <td><span class="badge green">Prevented / Controlled</span></td>
+                            <td>Maintain periodic governance cadence and evidence refresh.</td>
                         </tr>
 
                         <tr>
-                            <td><strong>Speedy Glove 1802</strong><br><span style="color: var(--muted);">Out-of-service equipment</span></td>
-                            <td>OOS closure and access deactivation evidence incomplete</td>
-                            <td>Retired/OOS equipment appears active or insufficiently closed</td>
-                            <td><span class="badge soft-red">Lifecycle / Access</span></td>
-                            <td>Attach closure evidence and confirm access removal</td>
-                            <td><span class="badge red">High</span></td>
-                            <td><span class="badge red">Block Until Closed</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Niagara BMS Server</strong><br><span style="color: var(--muted);">BMS server / facility support dependency</span></td>
-                            <td>Support routing, access role, and cutover evidence remain partial</td>
-                            <td>Incident or access approval path may not be defendable after cutover</td>
-                            <td><span class="badge soft-yellow">Support / Access</span></td>
-                            <td>Confirm support group, MyAccess role, jump path, and cutover evidence</td>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td><span class="badge yellow">Conditional Watchlist</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Speedy Glove 1803</strong><br><span style="color: var(--muted);">Operational manufacturing equipment</span></td>
-                            <td>Support group and evidence linkage partial</td>
-                            <td>Operational support accountability may be unclear during issue response</td>
-                            <td><span class="badge soft-yellow">Support / Evidence</span></td>
-                            <td>Reconcile support group and evidence path before ServiceNow-readiness</td>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td><span class="badge yellow">Remediate Before Submission</span></td>
+                            <td><strong>Niagara BMS Server</strong><br><span style="color: var(--muted);">BMS / facility support dependency</span></td>
+                            <td><span class="badge orange">Cutover Signal</span></td>
+                            <td>Cutover support failure, vendor handoff gap, access route confusion, or incomplete rollback evidence.</td>
+                            <td>Owner and cutover context are known, but support, MyAccess, jump path, and evidence remain partial.</td>
+                            <td><span class="badge yellow">Watchlist</span></td>
+                            <td>Finalize support group, MyAccess role, jump path, vendor handoff, rollback, and cutover evidence.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Jump Server Access Path</strong><br><span style="color: var(--muted);">Controlled admin and vendor access route</span></td>
-                            <td>Admin access procedure evidence should be linked</td>
-                            <td>Privileged access model may be difficult to explain during audit</td>
-                            <td><span class="badge soft-blue">Access / Procedure</span></td>
-                            <td>Attach admin-access procedure or vendor-access governance evidence</td>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td><span class="badge yellow">Procedure Link Needed</span></td>
+                            <td><span class="badge yellow">Access Evidence Signal</span></td>
+                            <td>Privileged access could be challenged if admin/vendor procedure evidence is missing.</td>
+                            <td>Access route is known, but procedure evidence and backup support owner should be linked.</td>
+                            <td><span class="badge yellow">Conditional Prevention</span></td>
+                            <td>Attach admin/vendor procedure, access review evidence, and escalation owner.</td>
                         </tr>
 
                         <tr>
-                            <td><strong>Chromeleon Workstation</strong><br><span style="color: var(--muted);">Lab workstation dependency</span></td>
-                            <td>Role mapping and workstation dependency should be confirmed</td>
-                            <td>Access review may not align with actual workstation use</td>
-                            <td><span class="badge soft-blue">Access / Dependency</span></td>
-                            <td>Confirm role mapping, workstation reference, and support path</td>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td><span class="badge yellow">Controlled Review</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Blue Mountain RAM</strong><br><span style="color: var(--muted);">Asset and calibration governance system</span></td>
-                            <td>No major early warning signal</td>
-                            <td>Low immediate deviation risk from CI governance perspective</td>
-                            <td><span class="badge soft-green">Governed</span></td>
-                            <td>Maintain periodic ownership, access, and evidence review</td>
-                            <td><span class="badge green">Low</span></td>
-                            <td><span class="badge green">Monitor</span></td>
+                            <td><strong>Speedy Glove 1803</strong><br><span style="color: var(--muted);">Operational manufacturing equipment</span></td>
+                            <td><span class="badge yellow">Support / Evidence Signal</span></td>
+                            <td>Support routing delay, incomplete evidence trail, or weak operational readiness defense.</td>
+                            <td>Operational state is known, but support group, LCM, and evidence path need reconciliation.</td>
+                            <td><span class="badge yellow">Conditional Prevention</span></td>
+                            <td>Reconcile support group, LCM, access path, evidence, and operational classification.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Empower Lab System</strong><br><span style="color: var(--muted);">GMP lab application dependency</span></td>
-                            <td>Approver group confirmation needed</td>
-                            <td>Access approval route may require manual interpretation</td>
-                            <td><span class="badge soft-yellow">Access Governance</span></td>
-                            <td>Confirm approver group and role mapping evidence</td>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td><span class="badge yellow">Conditional Watchlist</span></td>
+                            <td><span class="badge yellow">Access Confirmation Signal</span></td>
+                            <td>Access request or audit question could fail if approver group evidence is incomplete.</td>
+                            <td>Core CI context is strong; MyAccess approver group needs final confirmation.</td>
+                            <td><span class="badge yellow">Near Controlled</span></td>
+                            <td>Confirm MyAccess approver group, role evidence, and access escalation path.</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Speedy Glove 1802</strong><br><span style="color: var(--muted);">Out-of-service equipment</span></td>
+                            <td><span class="badge red">Lifecycle Closure Signal</span></td>
+                            <td>OOS lifecycle ambiguity, access-removal failure, orphan CI exposure, or audit finding.</td>
+                            <td>OOS context exists but closure evidence, access removal, and lifecycle owner are not defensible.</td>
+                            <td><span class="badge red">High Risk Signal</span></td>
+                            <td>Attach closure evidence, confirm access deactivation, assign closure owner, and update decision ledger.</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Local Backup Review Workstation</strong><br><span style="color: var(--muted);">Monthly backup review dependency</span></td>
+                            <td><span class="badge red">Hidden Dependency Signal</span></td>
+                            <td>Recurring operational review depends on an unmanaged CI-like object with no owner, support, access, or evidence.</td>
+                            <td>Only operational discovery exists; no governed candidate record exists.</td>
+                            <td><span class="badge red">Immediate Prevention Needed</span></td>
+                            <td>Create governed candidate and assign owner, support, LCM, access route, evidence, cadence, and escalation path.</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
             <section class="section">
-                <h2>Pre-Deviation Control Domains</h2>
-                <p>
-                    These are the CI governance gaps most likely to become formal issues if they remain unmanaged.
-                </p>
-
-                <div class="cards">
-                    <div class="card">
-                        <h3>Ownerless CI Risk</h3>
-                        <p>Detects records that cannot answer who owns, supports, escalates, or approves decisions for the CI.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Access Routing Risk</h3>
-                        <p>Flags weak MyAccess roles, approver groups, vendor paths, admin routes, and requestability mapping.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Evidence Gap Risk</h3>
-                        <p>Identifies missing SOP, backup, audit trail, validation, lifecycle, closure, and submission evidence.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Dependency Blind Spot</h3>
-                        <p>Finds hidden workstations, local processes, jump paths, support relationships, and operational dependencies.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section">
                 <h2>Pre-Deviation Decision Logic</h2>
                 <p>
-                    CITrust™ classifies each weakness before it becomes a larger governance event.
+                    CITrust™ treats weak governance signals as preventable operational risk.
                 </p>
 
                 <div class="two-col">
                     <div class="logic-box">
-                        <h3>Prevented Issue</h3>
+                        <h3>Prevented / Controlled</h3>
                         <ul>
-                            <li>Weakness was detected before operational reliance.</li>
-                            <li>Owner, support group, or LCM can be assigned before audit or access impact.</li>
-                            <li>Evidence can be attached before submission or review.</li>
-                            <li>Access routing can be corrected before wrong approvals occur.</li>
-                            <li>OOS or retired records can be closed before orphan exposure persists.</li>
-                            <li>Candidate remains in governance review until trust criteria are met.</li>
+                            <li>Owner, support group, and LCM are confirmed.</li>
+                            <li>MyAccess, admin, vendor, or jump path is evidence-backed.</li>
+                            <li>Lifecycle state is clear and current.</li>
+                            <li>Dependencies and relationships are mapped.</li>
+                            <li>Evidence pack can answer audit-style questions.</li>
+                            <li>Decision ledger and cadence review are current.</li>
                         </ul>
                     </div>
 
                     <div class="logic-box">
-                        <h3>Escalation Needed</h3>
+                        <h3>Pre-Deviation Signal Active</h3>
                         <ul>
-                            <li>No clear CI owner, support group, LCM, or escalation path exists.</li>
-                            <li>Access approval routing cannot be defended.</li>
-                            <li>Evidence required for audit or inspection cannot be located.</li>
-                            <li>Lifecycle state is contradictory across sources.</li>
-                            <li>Hidden dependency affects recurring operational review.</li>
-                            <li>ServiceNow-ready status would create a weak or orphaned record.</li>
+                            <li>Owner, support, LCM, or escalation path is missing.</li>
+                            <li>Access approval or removal cannot be defended.</li>
+                            <li>OOS or retired state lacks closure evidence.</li>
+                            <li>Hidden dependency supports recurring work without governance.</li>
+                            <li>Change impact is based on incomplete relationship data.</li>
+                            <li>Evidence is stale, missing, or disconnected from the CI.</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
             <section class="section">
-                <h2>Pre-Deviation Remediation Queue</h2>
+                <h2>Pre-Deviation Prevention Queue</h2>
                 <p>
-                    These are the actions that should be completed before gaps become deviations, audit findings, or operational blockers.
+                    These actions should be completed before the gap becomes an operational issue, audit weakness, or formal deviation driver.
                 </p>
 
                 <table>
                     <thead>
                         <tr>
                             <th>Priority</th>
-                            <th>Record</th>
-                            <th>Preventive Action</th>
-                            <th>Owner Group</th>
-                            <th>Target Outcome</th>
+                            <th>Pre-Deviation Signal</th>
+                            <th>Why It Matters</th>
+                            <th>Prevention Action</th>
+                            <th>Expected Risk Reduction</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr>
-                            <td><span class="badge red">High</span></td>
-                            <td>Local Backup Review Workstation</td>
-                            <td>Create candidate record, assign owner, map support group, define LCM, and link backup review evidence.</td>
-                            <td>CMDB Governance / Infrastructure</td>
-                            <td>Prevent audit finding from undocumented review dependency.</td>
+                            <td><span class="badge red">1</span></td>
+                            <td>Hidden backup review workstation has no governed CI model.</td>
+                            <td>Backup review continuity and evidence may fail without ownership, support, access, and cadence.</td>
+                            <td>Create governed candidate and assign owner, support group, LCM, access route, evidence, and review cadence.</td>
+                            <td>High Risk Signal → Controlled Candidate</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge red">High</span></td>
-                            <td>Speedy Glove 1802</td>
-                            <td>Confirm OOS closure, attach closure evidence, and verify access deactivation.</td>
-                            <td>Lifecycle Governance / Access Governance</td>
-                            <td>Prevent orphaned lifecycle and access exposure.</td>
+                            <td><span class="badge red">2</span></td>
+                            <td>OOS equipment lacks closure and access deactivation evidence.</td>
+                            <td>Lifecycle ambiguity and access risk may become audit finding or governance exception.</td>
+                            <td>Attach closure evidence, confirm access removal, assign closure owner, and record decision.</td>
+                            <td>High Risk Signal → Closed / Defensible</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td>Niagara BMS Server</td>
-                            <td>Finalize support group, MyAccess role mapping, jump path, and cutover evidence linkage.</td>
-                            <td>Infrastructure / MyAccess Governance</td>
-                            <td>Prevent post-cutover routing and access ambiguity.</td>
+                            <td><span class="badge orange">3</span></td>
+                            <td>BMS cutover readiness has partial support/access evidence.</td>
+                            <td>Cutover failure, vendor access gap, or support-routing issue may occur after transition.</td>
+                            <td>Finalize support group, MyAccess role, jump path, vendor handoff, rollback, and cutover evidence.</td>
+                            <td>Watchlist → Controlled Cutover</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td>Empower Lab System</td>
-                            <td>Confirm approver group and access role evidence before treating as fully access-ready.</td>
-                            <td>Application Governance / Access Governance</td>
-                            <td>Prevent unsupported access approval route.</td>
+                            <td><span class="badge yellow">4</span></td>
+                            <td>Admin/vendor access procedure evidence is incomplete.</td>
+                            <td>Privileged access can be challenged during audit or operational review.</td>
+                            <td>Attach admin/vendor procedure, access review proof, and escalation owner.</td>
+                            <td>Conditional Prevention → Audit-Ready</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
             <div class="footer">
-                CITrust™ does not replace ServiceNow, CMDB governance, deviation management, CAPA, or audit systems. This pre-deviation readiness console is a governance assurance overlay for identifying weak CI ownership, support routing, MyAccess mapping, evidence lineage, lifecycle state, dependency gaps, ServiceNow-readiness blockers, and audit exposure before they become formal operational or quality events.
+                CITrust™ does not replace deviation management, quality event systems, ServiceNow, MyAccess, change control, audit systems, or human governance. This pre-deviation readiness console is a governance assurance overlay for early detection of CI owner gaps, support gaps, LCM gaps, access gaps, lifecycle gaps, evidence gaps, hidden dependencies, change-impact exposure, audit weakness, ServiceNow-readiness risk, and pre-deviation prevention.
             </div>
 
         </div>
