@@ -5,7 +5,7 @@ text = APP.read_text(encoding="utf-8")
 
 MARKER = "CITRUST_CHANGE_IMPACT_READINESS_V1_ACTIVE"
 ROUTE_PRIMARY = '@app.route("/citrust/change-impact-readiness")'
-ROUTE_ALIAS = '@app.route("/citrust/change-impact")'
+ROUTE_ALIAS = '@app.route("/citrust/ci-change-impact")'
 
 if MARKER in text or ROUTE_PRIMARY in text or ROUTE_ALIAS in text:
     print("CITrust Change Impact Readiness Console already exists.")
@@ -18,7 +18,7 @@ block = r'''
 # ============================================================
 
 @app.route("/citrust/change-impact-readiness")
-@app.route("/citrust/change-impact")
+@app.route("/citrust/ci-change-impact")
 def citrust_change_impact_readiness():
     html = """
     <!DOCTYPE html>
@@ -47,14 +47,14 @@ def citrust_change_impact_readiness():
                 font-family: Arial, Helvetica, sans-serif;
                 background:
                     radial-gradient(circle at top left, rgba(92,200,255,0.18), transparent 30%),
-                    radial-gradient(circle at top right, rgba(180,156,255,0.16), transparent 28%),
-                    radial-gradient(circle at bottom right, rgba(255,184,107,0.08), transparent 30%),
+                    radial-gradient(circle at top right, rgba(247,201,72,0.14), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(255,92,112,0.08), transparent 30%),
                     var(--bg);
                 color: var(--text);
             }
 
             .page {
-                max-width: 1400px;
+                max-width: 1420px;
                 margin: 0 auto;
                 padding: 28px;
             }
@@ -78,7 +78,7 @@ def citrust_change_impact_readiness():
 
             h1 {
                 margin: 0;
-                font-size: 39px;
+                font-size: 40px;
                 line-height: 1.1;
             }
 
@@ -86,7 +86,7 @@ def citrust_change_impact_readiness():
                 color: var(--muted);
                 font-size: 16px;
                 line-height: 1.6;
-                max-width: 1080px;
+                max-width: 1120px;
                 margin-top: 14px;
             }
 
@@ -173,35 +173,15 @@ def citrust_change_impact_readiness():
                 margin-top: 0;
             }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                overflow: hidden;
-                border-radius: 16px;
+            .answer {
+                border: 1px solid rgba(247,201,72,0.38);
+                background: rgba(247,201,72,0.10);
+                color: #fff4cc;
+                border-radius: 18px;
+                padding: 20px;
                 margin-top: 16px;
-            }
-
-            th {
-                text-align: left;
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-                color: #c9dbef;
-                background: rgba(255,255,255,0.07);
-                padding: 13px 12px;
-                border-bottom: 1px solid var(--line);
-            }
-
-            td {
-                padding: 13px 12px;
-                border-bottom: 1px solid rgba(255,255,255,0.08);
-                color: #e9f2ff;
-                vertical-align: top;
-                font-size: 14px;
-            }
-
-            tr:hover td {
-                background: rgba(92,200,255,0.05);
+                line-height: 1.65;
+                font-size: 15px;
             }
 
             .badge {
@@ -244,43 +224,6 @@ def citrust_change_impact_readiness():
                 border: 1px solid rgba(92,200,255,0.34);
             }
 
-            .answer {
-                border: 1px solid rgba(255,184,107,0.38);
-                background: rgba(255,184,107,0.10);
-                color: #ffefd8;
-                border-radius: 18px;
-                padding: 20px;
-                margin-top: 16px;
-                line-height: 1.65;
-                font-size: 15px;
-            }
-
-            .flow {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                gap: 12px;
-                margin-top: 16px;
-            }
-
-            .flow-step {
-                border: 1px solid rgba(255,184,107,0.28);
-                background: rgba(255,184,107,0.07);
-                border-radius: 18px;
-                padding: 16px;
-            }
-
-            .flow-step h3 {
-                margin: 0 0 8px 0;
-                font-size: 15px;
-            }
-
-            .flow-step p {
-                margin: 0;
-                font-size: 13px;
-                color: var(--muted);
-                line-height: 1.5;
-            }
-
             .cards {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
@@ -293,6 +236,7 @@ def citrust_change_impact_readiness():
                 background: rgba(255,255,255,0.045);
                 border-radius: 18px;
                 padding: 18px;
+                min-height: 145px;
             }
 
             .card h3 {
@@ -305,6 +249,37 @@ def citrust_change_impact_readiness():
                 color: var(--muted);
                 font-size: 14px;
                 line-height: 1.55;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                overflow: hidden;
+                border-radius: 16px;
+                margin-top: 16px;
+            }
+
+            th {
+                text-align: left;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #c9dbef;
+                background: rgba(255,255,255,0.07);
+                padding: 13px 12px;
+                border-bottom: 1px solid var(--line);
+            }
+
+            td {
+                padding: 13px 12px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                color: #e9f2ff;
+                vertical-align: top;
+                font-size: 14px;
+            }
+
+            tr:hover td {
+                background: rgba(92,200,255,0.05);
             }
 
             .two-col {
@@ -342,7 +317,7 @@ def citrust_change_impact_readiness():
             }
 
             @media (max-width: 1180px) {
-                .kpis, .flow, .cards, .two-col {
+                .kpis, .cards, .two-col {
                     grid-template-columns: 1fr;
                 }
 
@@ -367,114 +342,109 @@ def citrust_change_impact_readiness():
                 <h1>CITrust™ Change Impact Readiness Console</h1>
 
                 <div class="subtitle">
-                    Validates whether a Configuration Item can support change control, migration, cutover, patching, retirement, access modification, or dependency update without creating ownership, support, evidence, access, lifecycle, or audit risk.
+                    Validates whether each Configuration Item has enough ownership, support, dependency, lifecycle, access, evidence, vendor, and relationship context to support defensible change impact analysis before migration, cutover, reassignment, retirement, access change, or ServiceNow-style submission.
                 </div>
 
                 <div class="positioning">
-                    <strong>Change governance boundary:</strong>
-                    ServiceNow may manage change records and CMDB relationships. CITrust™ validates whether the CI has enough governed context to support change impact analysis. This page does not create ServiceNow changes, does not update ServiceNow CIs, and does not replace formal change control.
+                    <strong>Change impact boundary:</strong>
+                    CITrust™ does not approve changes, create ServiceNow change records, update CMDB relationships, or replace change control. It validates whether CI data is strong enough for change stakeholders to understand what will be affected, who must approve, what evidence is needed, and what risks must be remediated.
                 </div>
 
                 <div class="nav">
                     <a href="/citrust">CITrust™ Home</a>
-                    <a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a>
+                    <a href="/citrust/readiness-command-center">Command Center</a>
                     <a href="/citrust/dependency-lineage">Dependency Lineage</a>
-                    <a href="/citrust/lifecycle-readiness">Lifecycle Readiness</a>
+                    <a href="/citrust/relationship-readiness">Relationship Readiness</a>
+                    <a href="/citrust/vendor-handoff-readiness">Vendor Handoff</a>
                     <a href="/citrust/support-group-readiness">Support Routing</a>
-                    <a href="/citrust/evidence-lineage">Evidence Lineage</a>
-                    <a href="/citrust/pre-deviation-readiness">Pre-Deviation Readiness</a>
-                    <a href="/citrust/trust-score-model">Trust Score Model</a>
+                    <a href="/citrust/evidence-pack-builder">Evidence Pack</a>
+                    <a href="/citrust/risk-heatmap">Risk Heatmap</a>
                 </div>
             </section>
 
             <section class="kpis">
                 <div class="metric">
-                    <div class="label">Change Impact Checks</div>
+                    <div class="label">Change-Relevant CIs</div>
                     <div class="value">42</div>
-                    <div class="note">CIs assessed for change, cutover, migration, access, retirement, and support impact.</div>
+                    <div class="note">Records that may be affected by migration, cutover, support, access, lifecycle, or relationship changes.</div>
                 </div>
 
                 <div class="metric">
-                    <div class="label">Change-Ready CIs</div>
-                    <div class="value" style="color: var(--green);">17</div>
-                    <div class="note">Impact path is clear enough for controlled change review.</div>
+                    <div class="label">Impact-Ready</div>
+                    <div class="value" style="color: var(--green);">15</div>
+                    <div class="note">CIs with defensible owner, support, relationship, access, and evidence context.</div>
                 </div>
 
                 <div class="metric">
                     <div class="label">Conditional Impact</div>
-                    <div class="value" style="color: var(--yellow);">14</div>
-                    <div class="note">Change can proceed only after named governance gaps are closed.</div>
+                    <div class="value" style="color: var(--yellow);">18</div>
+                    <div class="note">CIs with known impact path but partial evidence or unresolved dependencies.</div>
                 </div>
 
                 <div class="metric">
                     <div class="label">Blocked Impact</div>
-                    <div class="value" style="color: var(--red);">7</div>
-                    <div class="note">Impact cannot be defended due to missing ownership, support, evidence, or dependency data.</div>
+                    <div class="value" style="color: var(--red);">9</div>
+                    <div class="note">CIs where impact analysis would be unreliable or incomplete.</div>
+                </div>
+
+                <div class="metric">
+                    <div class="label">Hidden Dependencies</div>
+                    <div class="value" style="color: var(--orange);">7</div>
+                    <div class="note">Dependencies that may affect change scope but are not fully governed.</div>
                 </div>
 
                 <div class="metric">
                     <div class="label">Cutover-Sensitive</div>
-                    <div class="value" style="color: var(--orange);">8</div>
-                    <div class="note">Records affected by migration, revalidation, jump path, or access model changes.</div>
-                </div>
-
-                <div class="metric">
-                    <div class="label">Access Impact Risks</div>
-                    <div class="value" style="color: var(--blue);">9</div>
-                    <div class="note">Changes may affect MyAccess roles, approver groups, admin paths, or vendor access.</div>
+                    <div class="value" style="color: var(--blue);">6</div>
+                    <div class="note">Records requiring stronger change impact review before transition.</div>
                 </div>
             </section>
 
             <section class="section">
-                <h2>Change Impact Readiness Answer</h2>
+                <h2>Change Impact Answer</h2>
                 <p>
-                    This console answers whether a CI has enough governed context to survive change impact review.
+                    This console answers whether CI data is strong enough to support a defensible change-impact decision.
                 </p>
 
                 <div class="answer">
-                    <strong>Current change interpretation:</strong>
-                    The CI estate is partially ready for change impact analysis. Some systems can support controlled change decisions, but records with partial dependency lineage, unclear support group, incomplete MyAccess mapping, missing evidence, or unresolved OOS lifecycle status should not be treated as change-ready until remediation is complete.
+                    <strong>Current change-impact interpretation:</strong>
+                    CITrust™ should not allow a CI to be treated as change-ready if dependencies, support group, owner, LCM, access path, vendor handoff, lifecycle state, or evidence path are incomplete. Weak CI data can cause change scope errors, missed approvers, failed cutover, unresolved access impacts, and post-change support gaps.
                 </div>
             </section>
 
             <section class="section">
-                <h2>Change Impact Chain</h2>
+                <h2>Change Impact Control Domains</h2>
                 <p>
-                    CITrust™ checks whether a proposed change can be traced across the operational trust chain.
+                    CITrust™ separates change impact into the domains required for reliable change reasoning.
                 </p>
 
-                <div class="flow">
-                    <div class="flow-step">
-                        <h3>1. Change Trigger</h3>
-                        <p>Cutover, patch, migration, retirement, access change, dependency update, or support model change.</p>
+                <div class="cards">
+                    <div class="card">
+                        <h3>Dependency Impact</h3>
+                        <p>Identifies upstream, downstream, hosted-on, accessed-through, vendor, and hidden dependencies affected by a change.</p>
                     </div>
 
-                    <div class="flow-step">
-                        <h3>2. CI Context</h3>
-                        <p>Owner, support group, LCM, lifecycle state, operational purpose, and CI class are checked.</p>
+                    <div class="card">
+                        <h3>Ownership Impact</h3>
+                        <p>Confirms which owner, support group, LCM, MyAccess approver, and governance reviewer must be engaged.</p>
                     </div>
 
-                    <div class="flow-step">
-                        <h3>3. Dependency Impact</h3>
-                        <p>Upstream, downstream, infrastructure, workstation, vendor, and access path dependencies are reviewed.</p>
+                    <div class="card">
+                        <h3>Operational Impact</h3>
+                        <p>Assesses effect on backup review, audit trail review, SOP linkage, lab/manufacturing operations, and support continuity.</p>
                     </div>
 
-                    <div class="flow-step">
-                        <h3>4. Evidence Impact</h3>
-                        <p>SOP, validation, backup, audit trail, access, closure, and submission evidence are checked.</p>
-                    </div>
-
-                    <div class="flow-step">
-                        <h3>5. Readiness Decision</h3>
-                        <p>CI is classified as change-ready, conditional, or blocked before relying on it operationally.</p>
+                    <div class="card">
+                        <h3>Evidence Impact</h3>
+                        <p>Defines which evidence must be refreshed after a change, including access, lifecycle, support, validation, and closure proof.</p>
                     </div>
                 </div>
             </section>
 
             <section class="section">
-                <h2>Change Impact Readiness Matrix</h2>
+                <h2>CI Change Impact Readiness Matrix</h2>
                 <p>
-                    This matrix shows whether each CI can support change impact analysis without relying on tribal knowledge.
+                    This matrix shows whether each CI can support change impact analysis.
                 </p>
 
                 <table>
@@ -482,164 +452,124 @@ def citrust_change_impact_readiness():
                         <tr>
                             <th>Configuration Item</th>
                             <th>Change Scenario</th>
-                            <th>Owner / LCM</th>
-                            <th>Support Impact</th>
+                            <th>Dependencies</th>
+                            <th>Owner / Support</th>
                             <th>Access Impact</th>
-                            <th>Dependency Impact</th>
                             <th>Evidence Impact</th>
-                            <th>Change Decision</th>
+                            <th>Impact Decision</th>
+                            <th>Required Action</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr>
                             <td><strong>Blue Mountain RAM</strong><br><span style="color: var(--muted);">Asset and calibration governance system</span></td>
-                            <td>Application governance update</td>
+                            <td>Routine support or record update.</td>
+                            <td><span class="badge soft-green">Known</span></td>
                             <td><span class="badge soft-green">Confirmed</span></td>
                             <td><span class="badge soft-green">Mapped</span></td>
-                            <td><span class="badge soft-green">Mapped</span></td>
-                            <td><span class="badge soft-green">Known</span></td>
-                            <td><span class="badge soft-green">Available</span></td>
-                            <td><span class="badge green">Change-Ready</span></td>
+                            <td><span class="badge soft-green">Refreshable</span></td>
+                            <td><span class="badge green">Impact-Ready</span></td>
+                            <td>Maintain periodic relationship and evidence review.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Niagara BMS Server</strong><br><span style="color: var(--muted);">BMS / facility support dependency</span></td>
-                            <td>Cutover / server transition</td>
-                            <td><span class="badge soft-green">Assigned</span></td>
-                            <td><span class="badge soft-yellow">Needs Final Confirmation</span></td>
-                            <td><span class="badge soft-yellow">Partial</span></td>
-                            <td><span class="badge soft-yellow">Jump Path Pending</span></td>
+                            <td>Cutover, server migration, support routing, vendor access.</td>
+                            <td><span class="badge soft-yellow">Jump Path / Vendor</span></td>
+                            <td><span class="badge soft-yellow">Support Pending</span></td>
+                            <td><span class="badge soft-yellow">MyAccess Partial</span></td>
                             <td><span class="badge soft-yellow">Cutover Evidence</span></td>
-                            <td><span class="badge yellow">Conditional</span></td>
+                            <td><span class="badge yellow">Conditional Impact</span></td>
+                            <td>Finalize support group, jump path, vendor handoff, role mapping, and cutover evidence.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Jump Server Access Path</strong><br><span style="color: var(--muted);">Controlled admin and vendor access route</span></td>
-                            <td>Access model change</td>
-                            <td><span class="badge soft-green">Confirmed</span></td>
-                            <td><span class="badge soft-green">Mapped</span></td>
-                            <td><span class="badge soft-green">Mapped</span></td>
+                            <td>Access path change, vendor support, privileged admin routing.</td>
                             <td><span class="badge soft-green">Known</span></td>
-                            <td><span class="badge soft-yellow">Procedure Link Needed</span></td>
-                            <td><span class="badge yellow">Conditional</span></td>
+                            <td><span class="badge soft-green">Mapped</span></td>
+                            <td><span class="badge soft-yellow">Procedure Needed</span></td>
+                            <td><span class="badge soft-yellow">Access Evidence</span></td>
+                            <td><span class="badge yellow">Conditional Impact</span></td>
+                            <td>Attach admin/vendor procedure and define post-change access evidence capture.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Speedy Glove 1803</strong><br><span style="color: var(--muted);">Operational manufacturing equipment</span></td>
-                            <td>Operational support update</td>
-                            <td><span class="badge soft-green">Assigned</span></td>
-                            <td><span class="badge soft-yellow">Pending</span></td>
-                            <td><span class="badge soft-yellow">Partial</span></td>
+                            <td>Support reassignment, lifecycle review, vendor or operational update.</td>
                             <td><span class="badge soft-yellow">Local Dependency</span></td>
+                            <td><span class="badge soft-yellow">Support Pending</span></td>
                             <td><span class="badge soft-yellow">Partial</span></td>
-                            <td><span class="badge yellow">Conditional</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Speedy Glove 1802</strong><br><span style="color: var(--muted);">Out-of-service equipment</span></td>
-                            <td>Retirement / closure</td>
-                            <td><span class="badge soft-red">Unclear</span></td>
-                            <td><span class="badge soft-red">Missing</span></td>
-                            <td><span class="badge soft-red">Not Confirmed</span></td>
-                            <td><span class="badge soft-red">Unknown</span></td>
-                            <td><span class="badge soft-yellow">Closure Needed</span></td>
-                            <td><span class="badge red">Blocked</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Chromeleon Workstation</strong><br><span style="color: var(--muted);">Lab workstation dependency</span></td>
-                            <td>Workstation / access review</td>
-                            <td><span class="badge soft-green">Confirmed</span></td>
-                            <td><span class="badge soft-green">Mapped</span></td>
-                            <td><span class="badge soft-yellow">Role Check</span></td>
-                            <td><span class="badge soft-yellow">Workstation Link</span></td>
-                            <td><span class="badge soft-green">Available</span></td>
-                            <td><span class="badge yellow">Conditional</span></td>
-                        </tr>
-
-                        <tr>
-                            <td><strong>Local Backup Review Workstation</strong><br><span style="color: var(--muted);">Monthly backup review dependency</span></td>
-                            <td>Backup review process change</td>
-                            <td><span class="badge soft-red">Missing</span></td>
-                            <td><span class="badge soft-yellow">Pending</span></td>
-                            <td><span class="badge soft-red">Not Mapped</span></td>
-                            <td><span class="badge soft-red">Hidden</span></td>
-                            <td><span class="badge soft-red">Missing</span></td>
-                            <td><span class="badge red">Blocked</span></td>
+                            <td><span class="badge soft-yellow">Partial</span></td>
+                            <td><span class="badge yellow">Conditional Impact</span></td>
+                            <td>Reconcile support group, LCM, evidence path, and dependency model.</td>
                         </tr>
 
                         <tr>
                             <td><strong>Empower Lab System</strong><br><span style="color: var(--muted);">GMP lab application dependency</span></td>
-                            <td>Application access update</td>
-                            <td><span class="badge soft-green">Confirmed</span></td>
-                            <td><span class="badge soft-green">Mapped</span></td>
-                            <td><span class="badge soft-yellow">Approver Check</span></td>
+                            <td>Access or support model update.</td>
                             <td><span class="badge soft-green">Known</span></td>
+                            <td><span class="badge soft-green">Confirmed</span></td>
+                            <td><span class="badge soft-yellow">Approver Check</span></td>
                             <td><span class="badge soft-green">Available</span></td>
-                            <td><span class="badge yellow">Conditional</span></td>
+                            <td><span class="badge yellow">Near Impact-Ready</span></td>
+                            <td>Confirm MyAccess approver group and access impact evidence.</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Speedy Glove 1802</strong><br><span style="color: var(--muted);">Out-of-service equipment</span></td>
+                            <td>OOS closure, retirement, access deactivation.</td>
+                            <td><span class="badge soft-red">Unknown</span></td>
+                            <td><span class="badge soft-red">Unclear</span></td>
+                            <td><span class="badge soft-red">Removal Not Confirmed</span></td>
+                            <td><span class="badge soft-red">Closure Missing</span></td>
+                            <td><span class="badge red">Impact Blocked</span></td>
+                            <td>Attach closure evidence, confirm access removal, assign closure owner, and reconcile dependencies.</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Local Backup Review Workstation</strong><br><span style="color: var(--muted);">Monthly backup review dependency</span></td>
+                            <td>Backup review process, workstation change, access or support update.</td>
+                            <td><span class="badge soft-red">Hidden</span></td>
+                            <td><span class="badge soft-red">Missing</span></td>
+                            <td><span class="badge soft-red">Not Mapped</span></td>
+                            <td><span class="badge soft-red">Missing</span></td>
+                            <td><span class="badge red">No Impact Model</span></td>
+                            <td>Create governed candidate and map owner, support, LCM, access, evidence, and dependency impact.</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
             <section class="section">
-                <h2>Change Impact Control Domains</h2>
+                <h2>Change Impact Decision Logic</h2>
                 <p>
-                    CITrust™ separates change impact into specific governance domains so teams know exactly what must be fixed.
-                </p>
-
-                <div class="cards">
-                    <div class="card">
-                        <h3>Ownership Impact</h3>
-                        <p>Confirms who owns the change impact decision and whether CI owner, LCM, and support group are aligned.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Access Impact</h3>
-                        <p>Checks whether the change affects MyAccess roles, approver groups, privileged access, vendor access, or jump paths.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Dependency Impact</h3>
-                        <p>Identifies upstream, downstream, workstation, server, infrastructure, and operational review dependencies.</p>
-                    </div>
-
-                    <div class="card">
-                        <h3>Evidence Impact</h3>
-                        <p>Links the change decision to SOPs, validation evidence, backup reviews, audit trail reviews, closure records, or cutover artifacts.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2>Change Decision Logic</h2>
-                <p>
-                    CITrust™ keeps change readiness separate from change execution.
+                    Change impact readiness requires relationship evidence, not assumptions.
                 </p>
 
                 <div class="two-col">
                     <div class="logic-box">
-                        <h3>Change-Ready CI</h3>
+                        <h3>Impact-Ready CI</h3>
                         <ul>
+                            <li>Dependencies and relationships are known.</li>
                             <li>Owner, support group, and LCM are confirmed.</li>
-                            <li>Change impact can be traced across dependencies.</li>
-                            <li>Access impact is mapped through MyAccess or governed access model.</li>
-                            <li>Evidence exists for current state and proposed transition.</li>
-                            <li>Lifecycle state is clear and current.</li>
-                            <li>Support and escalation paths are defined.</li>
+                            <li>MyAccess, admin, vendor, or jump-server access impact is mapped.</li>
+                            <li>Operational evidence impact is understood.</li>
+                            <li>Post-change evidence refresh is defined.</li>
+                            <li>Decision ledger can explain change-readiness status.</li>
                         </ul>
                     </div>
 
                     <div class="logic-box">
-                        <h3>Blocked Change Impact</h3>
+                        <h3>Impact-Blocked CI</h3>
                         <ul>
+                            <li>Dependency chain is hidden or undocumented.</li>
                             <li>Owner, support group, or LCM is missing.</li>
-                            <li>Access impact cannot be explained.</li>
-                            <li>Dependency impact is hidden or unknown.</li>
-                            <li>OOS or retired record lacks closure evidence.</li>
-                            <li>Evidence is missing or disconnected from the CI.</li>
-                            <li>Change would create audit, access, support, or operational readiness risk.</li>
+                            <li>Access impact cannot be defended.</li>
+                            <li>OOS or retirement impact lacks closure evidence.</li>
+                            <li>Vendor handoff or support route is unclear.</li>
+                            <li>Change scope would be based on incomplete CI data.</li>
                         </ul>
                     </div>
                 </div>
@@ -648,58 +578,58 @@ def citrust_change_impact_readiness():
             <section class="section">
                 <h2>Change Impact Remediation Queue</h2>
                 <p>
-                    These gaps should be resolved before the related CIs are used for change, cutover, migration, retirement, or access modification decisions.
+                    These actions close change-impact gaps before migration, cutover, reassignment, or lifecycle action.
                 </p>
 
                 <table>
                     <thead>
                         <tr>
                             <th>Priority</th>
-                            <th>Record</th>
-                            <th>Change Impact Gap</th>
+                            <th>Impact Gap</th>
+                            <th>Why It Matters</th>
                             <th>Required Action</th>
-                            <th>Target State</th>
+                            <th>Expected Readiness Upgrade</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr>
-                            <td><span class="badge red">High</span></td>
-                            <td>Local Backup Review Workstation</td>
-                            <td>Change impact cannot be assessed because owner, access, dependency, and evidence are missing.</td>
-                            <td>Create governed CI candidate and map owner, support group, LCM, access route, and backup evidence.</td>
-                            <td>Change-assessable governed dependency.</td>
+                            <td><span class="badge red">1</span></td>
+                            <td>Hidden backup review workstation has no impact model.</td>
+                            <td>Change could affect recurring backup review without governance visibility.</td>
+                            <td>Create governed candidate and map owner, support, LCM, access, evidence, and dependency impact.</td>
+                            <td>No Impact Model → Candidate Review</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge red">High</span></td>
-                            <td>Speedy Glove 1802</td>
-                            <td>Retirement and OOS impact cannot be defended without closure and access removal evidence.</td>
-                            <td>Attach closure evidence, confirm access deactivation, and reconcile lifecycle responsibility.</td>
-                            <td>Defensible closed or retired record.</td>
+                            <td><span class="badge red">2</span></td>
+                            <td>OOS equipment closure impact is not defensible.</td>
+                            <td>Retirement or closure could leave unresolved access, support, or dependency risk.</td>
+                            <td>Attach closure evidence, confirm access removal, and reconcile closure dependencies.</td>
+                            <td>Impact Blocked → Closed / Defensible</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td>Niagara BMS Server</td>
-                            <td>Cutover impact depends on support group, jump path, MyAccess, and validation evidence.</td>
-                            <td>Confirm support routing, jump access path, MyAccess role mapping, and cutover evidence.</td>
-                            <td>Change-ready cutover CI.</td>
+                            <td><span class="badge orange">3</span></td>
+                            <td>BMS cutover impact model is partial.</td>
+                            <td>Cutover failure risk increases when support, vendor, jump path, and MyAccess impacts are unresolved.</td>
+                            <td>Finalize support, MyAccess role, jump path, vendor handoff, and cutover evidence.</td>
+                            <td>Conditional Impact → Impact-Ready</td>
                         </tr>
 
                         <tr>
-                            <td><span class="badge yellow">Medium</span></td>
-                            <td>Empower Lab System</td>
-                            <td>Access change impact requires approver group and role mapping confirmation.</td>
-                            <td>Confirm MyAccess approver group and role evidence before access-related change reliance.</td>
-                            <td>Access-change-ready CI.</td>
+                            <td><span class="badge yellow">4</span></td>
+                            <td>Access-path impact evidence is incomplete.</td>
+                            <td>Privileged access changes require evidence-backed impact reasoning.</td>
+                            <td>Attach admin/vendor procedure and define access evidence refresh after change.</td>
+                            <td>Conditional Impact → Audit-Ready</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
             <div class="footer">
-                CITrust™ does not replace ServiceNow Change Management, create ServiceNow changes, create ServiceNow CIs, update CMDB relationships, or write directly into ServiceNow in this demo. This change impact readiness console is a governance assurance overlay for CI change readiness, cutover defensibility, migration impact, retirement impact, access modification readiness, dependency lineage, evidence lineage, audit readiness, and pre-deviation prevention.
+                CITrust™ does not replace ServiceNow change management, change approval, CMDB relationship updates, MyAccess approvals, quality systems, or human governance. This change impact readiness console is a governance assurance overlay for dependency impact, support impact, access impact, lifecycle impact, vendor handoff impact, evidence impact, cutover impact, audit defense, ServiceNow-readiness, and pre-deviation prevention.
             </div>
 
         </div>
