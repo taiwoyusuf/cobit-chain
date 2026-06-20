@@ -258073,5 +258073,1629 @@ def citrust_agentic_operating_model_json():
 
 
 
+
+
+# ============================================================
+# CITRUST_AGENTIC_CONTROL_LIBRARY_EVIDENCE_CATALOG_V1_ACTIVE
+# CITrust™ Agentic Control Library + Evidence Requirements Catalog
+# Agentic Policy Pack, Control Objectives, Evidence Catalog,
+# Control Testing Cadence, Exception Register, Control Simulator,
+# and JSON Export
+# ============================================================
+
+CITRUST_AGENTIC_CONTROL_LIBRARY = [
+    {
+        "control_id": "AC-001",
+        "control_name": "AI Agent Registration Control",
+        "control_objective": "Ensure every AI agent that touches ServiceNow, CMDB, CI records, access, change, or GxP workflows is registered and owner-controlled.",
+        "control_requirement": "Agent must have ID, owner, purpose, approved use case, operating boundary, and retirement condition.",
+        "evidence": "Agent registry, owner signoff, operating license, approved scope.",
+        "owner": "AI Agent Owner / Governance Owner",
+        "test_cadence": "Quarterly or before major workflow expansion."
+    },
+    {
+        "control_id": "AC-002",
+        "control_name": "Agent-to-CI Impact Mapping Control",
+        "control_objective": "Ensure every AI agent interaction is mapped to affected CI, CI field, relationship, workflow, owner, and support route.",
+        "control_requirement": "Agent must not influence CI actions unless impacted CI and affected field group are known.",
+        "evidence": "Agent-to-CI impact map, CI passport, field-risk matrix, relationship confidence.",
+        "owner": "CMDB / CI Owner",
+        "test_cadence": "Monthly or before AI workflow go-live."
+    },
+    {
+        "control_id": "AC-003",
+        "control_name": "CMDB Graph Trust Control",
+        "control_objective": "Prevent low-quality CMDB data from becoming trusted AI, RAG, knowledge graph, or data fabric input.",
+        "control_requirement": "CI owner, support group, LCM, lifecycle, validation, relationship, and orphan status must be scored.",
+        "evidence": "CMDB graph trust score, CI data quality scorecard, orphan remediation, relationship confidence.",
+        "owner": "CMDB / LCM Owner",
+        "test_cadence": "Monthly and before AI reliance."
+    },
+    {
+        "control_id": "AC-004",
+        "control_name": "Agent Trigger Governance Control",
+        "control_objective": "Ensure every AI agent action has a trusted, traceable, authorized trigger.",
+        "control_requirement": "Trigger source, event ID, requester, workflow context, CI ID, and timestamp must be captured.",
+        "evidence": "Trigger record, ServiceNow ticket/task/change, monitoring alert, access request, event log.",
+        "owner": "Workflow Owner / System Owner",
+        "test_cadence": "Continuous monitoring."
+    },
+    {
+        "control_id": "AC-005",
+        "control_name": "Prompt Chain Evidence Control",
+        "control_objective": "Ensure multi-step AI reasoning is reconstructable from input to recommendation and outcome.",
+        "control_requirement": "Prompt chain, retrieved context, intermediate outputs, risk classification, routing, and evaluator decision must be preserved.",
+        "evidence": "Prompt chain evidence, context provenance, evaluator score, reviewer decision.",
+        "owner": "AI Agent Owner / Governance Owner",
+        "test_cadence": "Per high-risk workflow and sampling monthly."
+    },
+    {
+        "control_id": "AC-006",
+        "control_name": "Agent Router Authorization Control",
+        "control_objective": "Ensure AI router sends work only to agents approved for the CI, workflow, GxP, cyber, and change context.",
+        "control_requirement": "Routing decision must include selected agent, rejected agents, approval scope, risk tier, and escalation rule.",
+        "evidence": "Router decision, agent scope, risk classification, escalation evidence.",
+        "owner": "AI Agent Owner / Governance Owner",
+        "test_cadence": "Before router release and quarterly."
+    },
+    {
+        "control_id": "AC-007",
+        "control_name": "Supervisor Agent Oversight Control",
+        "control_objective": "Ensure supervisor agents coordinate and validate but do not replace accountable human owners.",
+        "control_requirement": "Supervisor may validate completeness and escalate, but cannot approve QA, cyber, access, change, or CI owner decisions.",
+        "evidence": "Supervisor output, validation result, escalation record, human owner signoff.",
+        "owner": "Governance / Assurance Owner",
+        "test_cadence": "Quarterly and after major workflow change."
+    },
+    {
+        "control_id": "AC-008",
+        "control_name": "GxP / Validation Guardrail Control",
+        "control_objective": "Prevent AI from making or updating regulated conclusions without QA / validation approval.",
+        "control_requirement": "GMP class, validation status, QA owner, regulated impact, and inspection sensitivity must route to QA.",
+        "evidence": "GxP screen, validation evidence, QA decision, regulated reliance status.",
+        "owner": "QA / Validation Owner",
+        "test_cadence": "Per regulated workflow."
+    },
+    {
+        "control_id": "AC-009",
+        "control_name": "Cyber / Access Guardrail Control",
+        "control_objective": "Prevent AI from approving or changing access, entitlement, CyberArk, PSM, admin, or privileged route without cyber approval.",
+        "control_requirement": "Access-impacting AI outputs must route to cybersecurity / access owner and must not be autonomously approved.",
+        "evidence": "MyAccess request, approver group, CyberArk / PSM evidence, cyber decision.",
+        "owner": "Cybersecurity / Access Owner",
+        "test_cadence": "Per access-impacting workflow and quarterly recertification."
+    },
+    {
+        "control_id": "AC-010",
+        "control_name": "Agent Identity and Entitlement Control",
+        "control_objective": "Ensure AI agents are governed as non-human identities with least privilege, owner, SoD, access review, and telemetry.",
+        "control_requirement": "Agent identity, service account, entitlement, MyAccess route, CyberArk route, least privilege, and recertification must be documented.",
+        "evidence": "Identity register, service account map, entitlement review, access recertification.",
+        "owner": "Cybersecurity / Access Owner",
+        "test_cadence": "Quarterly."
+    },
+    {
+        "control_id": "AC-011",
+        "control_name": "Agent Memory and Context Provenance Control",
+        "control_objective": "Prevent stale, informal, unsupported, or unsafe memory from influencing CI, access, GxP, or change decisions.",
+        "control_requirement": "Memory must be source-traceable, current, authorized, bounded, correctable, and replayable.",
+        "evidence": "Context provenance, freshness check, source authority, suppression rule, correction workflow.",
+        "owner": "AI Agent Owner / Data Owner",
+        "test_cadence": "Monthly and when source-of-truth changes."
+    },
+    {
+        "control_id": "AC-012",
+        "control_name": "Observability Evidence Fabric Control",
+        "control_objective": "Ensure AI action can be reconstructed across ServiceNow, Azure telemetry, tool calls, CyberArk, CMDB, QA, change, and human review evidence.",
+        "control_requirement": "Correlation ID or unified trace must link runtime, ServiceNow, CMDB, cyber, QA, change, and human decision records.",
+        "evidence": "ServiceNow log, Azure Monitor / App Insights, tool-call log, CyberArk log, QA evidence, change record.",
+        "owner": "Governance / Observability Owner",
+        "test_cadence": "Continuous monitoring and monthly sampling."
+    },
+    {
+        "control_id": "AC-013",
+        "control_name": "AI-to-Change-Control Integration Control",
+        "control_objective": "Ensure AI-assisted actions route to task, change, access request, QA review, deviation/CAPA, exception, rollback, or closure dossier when required.",
+        "control_requirement": "Material CI actions must be classified, routed, approved, rollback-ready, post-checked, and closed with evidence.",
+        "evidence": "Action classifier, change/task/access/QA record, rollback plan, post-check, closure dossier.",
+        "owner": "Change Owner / System Owner",
+        "test_cadence": "Per material workflow."
+    },
+    {
+        "control_id": "AC-014",
+        "control_name": "Segregation of Duties Control",
+        "control_objective": "Prevent AI or one actor from recommending, approving, executing, and closing the same accountable action.",
+        "control_requirement": "Recommendation, approval, execution, post-check, and closure must have separated accountable steps.",
+        "evidence": "RACI matrix, approval authority map, role conflict checker, owner signoff.",
+        "owner": "Governance / Assurance Owner",
+        "test_cadence": "Quarterly and per high-risk workflow."
+    },
+    {
+        "control_id": "AC-015",
+        "control_name": "Rollback and Post-Check Control",
+        "control_objective": "Ensure AI-influenced material action can be reversed, verified, and closed defensibly.",
+        "control_requirement": "Before-state, rollback owner, rollback method, post-action verification, and closure signoff must exist.",
+        "evidence": "Before/after record, rollback plan, recovery owner, post-check, closure evidence.",
+        "owner": "Change Owner / System Owner",
+        "test_cadence": "Per material execution."
+    }
+]
+
+
+CITRUST_AGENTIC_EVIDENCE_REQUIREMENTS = [
+    {
+        "evidence_area": "Agent Identity Evidence",
+        "required_items": "Agent ID, owner, purpose, operating license, use case, service account, entitlement scope.",
+        "source": "Agent registry, identity platform, MyAccess, access review.",
+        "missing_impact": "Agent cannot be trusted as a governed actor."
+    },
+    {
+        "evidence_area": "CI Evidence",
+        "required_items": "CI ID, CI class, owner, support group, LCM, lifecycle, validation status, relationship map.",
+        "source": "ServiceNow CMDB, CI passport, graph trust score.",
+        "missing_impact": "AI impact cannot be tied to a trusted CI."
+    },
+    {
+        "evidence_area": "GxP / Validation Evidence",
+        "required_items": "GMP class, validation status, QA owner, GxP screen, regulated impact decision.",
+        "source": "QA / validation source, validation evidence, GxP review.",
+        "missing_impact": "No regulated reliance."
+    },
+    {
+        "evidence_area": "Cyber / Access Evidence",
+        "required_items": "MyAccess route, approver group, entitlement, CyberArk / PSM route, privileged access evidence.",
+        "source": "MyAccess, CyberArk, PSM, cybersecurity review.",
+        "missing_impact": "No access or privileged reliance."
+    },
+    {
+        "evidence_area": "Workflow Evidence",
+        "required_items": "Trigger, prompt chain, router decision, supervisor check, evaluator score, parallel conflict check.",
+        "source": "Agent runtime, workflow engine, evidence ledger.",
+        "missing_impact": "Agentic workflow cannot be reconstructed."
+    },
+    {
+        "evidence_area": "Memory / Context Evidence",
+        "required_items": "Source provenance, freshness, source authority, context boundary, suppression and correction workflow.",
+        "source": "Context provenance center, RAG evidence, memory correction workflow.",
+        "missing_impact": "AI may rely on stale or unsupported memory."
+    },
+    {
+        "evidence_area": "Change / Task Evidence",
+        "required_items": "Action class, CI impact, task/change/access/QA/deviation/exception route, rollback, post-check.",
+        "source": "ServiceNow task, change, access request, QA review, exception register.",
+        "missing_impact": "AI output may become operationally binding without control."
+    },
+    {
+        "evidence_area": "Observability Evidence",
+        "required_items": "Correlation ID, ServiceNow log, Azure telemetry, tool-call log, CyberArk log, QA evidence, human signoff.",
+        "source": "Observability evidence fabric and telemetry correlation center.",
+        "missing_impact": "No audit replay."
+    }
+]
+
+
+CITRUST_AGENTIC_POLICY_PACK = [
+    {
+        "policy": "No Unknown Agent Policy",
+        "rule": "No AI agent may influence CITrust or ServiceNow workflow unless registered and owner-controlled.",
+        "exception_allowed": "No",
+        "exception_owner": "Governance Owner"
+    },
+    {
+        "policy": "No Ownerless CI Reliance Policy",
+        "rule": "AI may not rely on or update ownerless, supportless, orphaned, or validation-unknown CIs.",
+        "exception_allowed": "Restricted advisory only",
+        "exception_owner": "CMDB / LCM Owner"
+    },
+    {
+        "policy": "No Autonomous GxP Conclusion Policy",
+        "rule": "AI may flag GxP impact but cannot make QA, validation, release, deviation, CAPA, or inspection conclusion.",
+        "exception_allowed": "No",
+        "exception_owner": "QA / Validation Owner"
+    },
+    {
+        "policy": "No Autonomous Access Approval Policy",
+        "rule": "AI may assist access request review but cannot approve MyAccess, CyberArk, PSM, privileged, or entitlement decisions.",
+        "exception_allowed": "No",
+        "exception_owner": "Cybersecurity / Access Owner"
+    },
+    {
+        "policy": "No Material CI Update Without Change Evidence Policy",
+        "rule": "Material AI-influenced CI update requires approval, change/task route, rollback, post-check, and closure evidence.",
+        "exception_allowed": "Time-bound with compensating control",
+        "exception_owner": "Change Owner / Risk Owner"
+    },
+    {
+        "policy": "No Stale Memory Reliance Policy",
+        "rule": "AI memory must be refreshed from approved source before it influences CI, GxP, cyber, access, or change decisions.",
+        "exception_allowed": "Advisory only",
+        "exception_owner": "Data Owner / Governance Owner"
+    },
+    {
+        "policy": "No Closure Without Evidence Policy",
+        "rule": "AI-assisted workflows must not close unless runtime, CMDB, owner, approval, rollback, and signoff evidence are complete.",
+        "exception_allowed": "No for regulated impact",
+        "exception_owner": "Governance / Assurance Owner"
+    }
+]
+
+
+CITRUST_AGENTIC_CONTROL_TEST_CADENCE = [
+    {
+        "test_type": "Pre-Go-Live Control Test",
+        "when_used": "Before releasing AI agentic workflow into ServiceNow / CMDB process.",
+        "test_focus": "Registry, identity, CI impact, GxP/cyber gates, change route, rollback, observability.",
+        "output": "Go / no-go assurance decision."
+    },
+    {
+        "test_type": "Monthly Evidence Sampling",
+        "when_used": "After workflow is active.",
+        "test_focus": "Prompt chain, ServiceNow logs, telemetry, owner approvals, CI impact, closure evidence.",
+        "output": "Evidence quality score and remediation actions."
+    },
+    {
+        "test_type": "Quarterly Access Recertification",
+        "when_used": "For agent identities, service accounts, MyAccess groups, API permissions, CyberArk/PSM routes.",
+        "test_focus": "Least privilege, owner, entitlement, privileged access, stale access removal.",
+        "output": "Access keep/remove/restrict decision."
+    },
+    {
+        "test_type": "GxP Impact Review",
+        "when_used": "Whenever agent touches GMP, validation, QA, release, deviation, CAPA, or inspection-sensitive context.",
+        "test_focus": "QA route, validation evidence, regulated reliance, deviation/CAPA implication.",
+        "output": "QA approval, restriction, or deviation route."
+    },
+    {
+        "test_type": "Change-Control Effectiveness Test",
+        "when_used": "For material CI update, lifecycle update, support route update, relationship update, or cutover-sensitive workflow.",
+        "test_focus": "Change record, approval, rollback, post-check, closure dossier.",
+        "output": "Change defensibility score."
+    },
+    {
+        "test_type": "Exception Aging Review",
+        "when_used": "For open agentic governance exceptions or risk acceptances.",
+        "test_focus": "Expiry, compensating control, owner, remediation, closure evidence.",
+        "output": "Close, extend, escalate, or block."
+    }
+]
+
+
+CITRUST_AGENTIC_POLICY_EXCEPTION_REGISTER = [
+    {
+        "exception_type": "Temporary Advisory Use",
+        "allowed_scope": "AI may summarize or recommend but cannot update, trigger, approve, or close.",
+        "required_controls": "Owner, expiry, limitation statement, evidence gap, remediation task.",
+        "closure_condition": "Missing evidence or owner route completed."
+    },
+    {
+        "exception_type": "Missing CI Owner",
+        "allowed_scope": "AI may identify owner gap and create remediation package only.",
+        "required_controls": "No operational reliance, no CI update, LCM escalation.",
+        "closure_condition": "CI owner and support route assigned."
+    },
+    {
+        "exception_type": "Missing Telemetry",
+        "allowed_scope": "AI output cannot be called audit-defensible.",
+        "required_controls": "Manual evidence capture and telemetry remediation.",
+        "closure_condition": "Correlation ID and runtime evidence restored."
+    },
+    {
+        "exception_type": "Stale Memory Detected",
+        "allowed_scope": "Suppress memory and use approved source only.",
+        "required_controls": "Memory suppression, context refresh, retest.",
+        "closure_condition": "Corrected source and replay evidence."
+    },
+    {
+        "exception_type": "GxP Evidence Gap",
+        "allowed_scope": "No regulated reliance.",
+        "required_controls": "QA review and validation evidence request.",
+        "closure_condition": "QA / validation owner decision."
+    },
+    {
+        "exception_type": "Cyber Evidence Gap",
+        "allowed_scope": "No access, privileged, CyberArk, PSM, or entitlement action.",
+        "required_controls": "Cybersecurity review and access decision.",
+        "closure_condition": "Cyber / access owner approval or rejection."
+    }
+]
+
+
+def citrust_control_library_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_CONTROL_LIBRARY:
+        rows += f"""
+        <tr>
+            <td><strong>{item["control_id"]}</strong></td>
+            <td><span class="badge blue">{item["control_name"]}</span></td>
+            <td>{item["control_objective"]}</td>
+            <td>{item["control_requirement"]}</td>
+            <td>{item["evidence"]}</td>
+            <td>{item["owner"]}</td>
+            <td><span class="badge yellow">{item["test_cadence"]}</span></td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_evidence_requirement_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_EVIDENCE_REQUIREMENTS:
+        rows += f"""
+        <tr>
+            <td><strong>{item["evidence_area"]}</strong></td>
+            <td>{item["required_items"]}</td>
+            <td>{item["source"]}</td>
+            <td><span class="badge red">{item["missing_impact"]}</span></td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_policy_pack_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_POLICY_PACK:
+        rows += f"""
+        <tr>
+            <td><strong>{item["policy"]}</strong></td>
+            <td>{item["rule"]}</td>
+            <td><span class="badge orange">{item["exception_allowed"]}</span></td>
+            <td>{item["exception_owner"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_testing_cadence_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_CONTROL_TEST_CADENCE:
+        rows += f"""
+        <tr>
+            <td><strong>{item["test_type"]}</strong></td>
+            <td>{item["when_used"]}</td>
+            <td>{item["test_focus"]}</td>
+            <td><span class="badge green">{item["output"]}</span></td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_exception_register_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_POLICY_EXCEPTION_REGISTER:
+        rows += f"""
+        <tr>
+            <td><strong>{item["exception_type"]}</strong></td>
+            <td>{item["allowed_scope"]}</td>
+            <td>{item["required_controls"]}</td>
+            <td><span class="badge yellow">{item["closure_condition"]}</span></td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_control_library_decision(objective, evidence, owner, cadence, exception, gxp, cyber, change, replay):
+    checks = [objective, evidence, owner, cadence, exception, replay]
+    score = int((sum(1 for item in checks if item == "yes") / len(checks)) * 100)
+
+    if objective != "yes":
+        return score, "Control Objective Missing", "red", "The control does not have a defined objective."
+    if evidence != "yes":
+        return score, "Evidence Requirement Missing", "red", "The control cannot be tested or defended without evidence."
+    if owner != "yes":
+        return score, "Control Owner Missing", "red", "No accountable owner is assigned."
+    if gxp == "yes":
+        return score, "QA-Controlled Evidence Required", "red", "GxP or validation impact requires QA / validation evidence."
+    if cyber == "yes":
+        return score, "Cyber-Controlled Evidence Required", "red", "Access, CyberArk, PSM, or privileged impact requires cyber evidence."
+    if change == "yes":
+        return score, "Change-Control Evidence Required", "orange", "Material CI impact requires task/change/rollback/post-check evidence."
+    if cadence != "yes":
+        return score, "Testing Cadence Required", "orange", "Control test cadence is missing."
+    if exception != "yes":
+        return score, "Exception Route Required", "orange", "Control failure or evidence gap has no exception route."
+    if replay != "yes":
+        return score, "Audit Replay Gap", "red", "Control evidence cannot be replayed from trigger to outcome."
+    if score == 100:
+        return score, "Control Ready", "green", "Control objective, evidence, owner, cadence, exception route, and replay are ready."
+    return score, "Conditional Control Readiness", "yellow", "Control may be used only with declared gaps and remediation tracking."
+
+
+try:
+    AGENTTRUST_EXPECTED_ROUTES.extend([
+        "/citrust/agentic-control-library",
+        "/citrust/agentic-policy-pack",
+        "/citrust/agentic-evidence-requirements-catalog",
+        "/citrust/agentic-control-testing-cadence",
+        "/citrust/agentic-policy-exception-register",
+        "/citrust/agentic-control-objectives",
+        "/citrust/agentic-control-library-simulator",
+        "/citrust/agentic-control-library-json"
+    ])
+except Exception:
+    pass
+
+
+@app.route("/citrust/agentic-control-library")
+@app.route("/citrust/agentic-control-objectives")
+@app.route("/citrust/ci-agentic-control-library")
+def citrust_agentic_control_library():
+    rows = citrust_control_library_rows()
+
+    body = f"""
+    <section class="kpis">
+        <div class="metric"><div class="label">Control Library</div><div class="value" style="color:var(--green);">Active</div><div class="note">Agentic CITrust controls defined.</div></div>
+        <div class="metric"><div class="label">Core Controls</div><div class="value" style="color:var(--blue);">15</div><div class="note">Registry, CI impact, graph trust, GxP, cyber, memory, observability, change.</div></div>
+        <div class="metric"><div class="label">Evidence Catalog</div><div class="value" style="color:var(--yellow);">Mapped</div><div class="note">Each control has evidence expectations.</div></div>
+        <div class="metric"><div class="label">Policy Pack</div><div class="value" style="color:var(--red);">Guarded</div><div class="note">No unknown agents, no autonomous GxP, no autonomous access approval.</div></div>
+        <div class="metric"><div class="label">Testing Cadence</div><div class="value" style="color:var(--orange);">Defined</div><div class="note">Pre-go-live, monthly, quarterly, GxP, change, exception aging.</div></div>
+        <div class="metric"><div class="label">Exceptions</div><div class="value" style="color:var(--purple);">Controlled</div><div class="note">Gaps are restricted, owned, time-bound, and closed.</div></div>
+    </section>
+
+    <section class="section">
+        <h2>CITrust™ Agentic Control Library</h2>
+        <div class="answer">
+            <strong>Purpose:</strong> provide the reusable control objectives, requirements, evidence, owners,
+            and testing cadence needed to govern AI agents that interact with ServiceNow CMDB, CIs, MyAccess,
+            CyberArk, PSM, GxP metadata, change control, and operational workflows.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Control ID</th>
+                    <th>Control</th>
+                    <th>Objective</th>
+                    <th>Requirement</th>
+                    <th>Evidence</th>
+                    <th>Owner</th>
+                    <th>Test Cadence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Control Library Rule</h2>
+        <div class="answer">
+            A CITrust™ agentic control is not complete unless it has a clear objective, evidence requirement,
+            accountable owner, test cadence, exception route, and replayable audit trail.
+        </div>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Control Library",
+        "Agentic control library for ServiceNow CMDB, AI agents, CI impact, GxP, cyber, access, observability, memory, change control, evidence, and exceptions.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-policy-pack")
+@app.route("/citrust/ai-agentic-policy-pack")
+@app.route("/citrust/ci-agentic-policy-pack")
+def citrust_agentic_policy_pack():
+    rows = citrust_policy_pack_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Policy Pack</h2>
+        <p>
+            This policy pack defines non-negotiable rules for AI agents operating against ServiceNow / CMDB / GxP / cyber / change workflows.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Policy</th>
+                    <th>Rule</th>
+                    <th>Exception Allowed</th>
+                    <th>Exception Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Policy Pack",
+        "Policy pack for unknown agents, ownerless CI reliance, autonomous GxP conclusion, autonomous access approval, material CI update, stale memory, and evidence closure.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-evidence-requirements-catalog")
+@app.route("/citrust/agentic-evidence-catalog")
+@app.route("/citrust/ci-agentic-evidence-catalog")
+def citrust_agentic_evidence_requirements_catalog():
+    rows = citrust_evidence_requirement_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Evidence Requirements Catalog</h2>
+        <p>
+            This catalog defines the evidence needed to defend AI-assisted CITrust workflows.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Evidence Area</th>
+                    <th>Required Items</th>
+                    <th>Source</th>
+                    <th>Missing Impact</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Evidence Requirements Catalog",
+        "Evidence requirements catalog for AI identity, CI evidence, GxP evidence, cyber evidence, workflow evidence, memory evidence, change evidence, and observability evidence.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-control-testing-cadence")
+@app.route("/citrust/agentic-testing-cadence")
+@app.route("/citrust/ci-agentic-control-testing")
+def citrust_agentic_control_testing_cadence():
+    rows = citrust_testing_cadence_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Control Testing Cadence</h2>
+        <p>
+            Control testing cadence defines when agentic governance controls must be tested, sampled, recertified, or escalated.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Test Type</th>
+                    <th>When Used</th>
+                    <th>Test Focus</th>
+                    <th>Output</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Control Testing Cadence",
+        "Testing cadence for CITrust agentic controls including pre-go-live, monthly evidence sampling, quarterly access recertification, GxP review, change-control testing, and exception aging.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-policy-exception-register")
+@app.route("/citrust/agentic-exception-register")
+@app.route("/citrust/ci-agentic-exception-register")
+def citrust_agentic_policy_exception_register():
+    rows = citrust_exception_register_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Policy Exception Register</h2>
+        <p>
+            This register defines what can happen when a control gap exists. Exceptions must be restricted, owned, time-bound, and closed.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Exception Type</th>
+                    <th>Allowed Scope</th>
+                    <th>Required Controls</th>
+                    <th>Closure Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Exception Rule</h2>
+        <div class="answer">
+            Exceptions do not mean AI can continue normally. CITrust™ restricts the AI action, assigns an owner,
+            defines an expiry, adds compensating control, and requires closure evidence.
+        </div>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Policy Exception Register",
+        "Exception register for temporary advisory use, missing CI owner, missing telemetry, stale memory, GxP evidence gap, and cyber evidence gap.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-control-library-simulator", methods=["GET", "POST"])
+@app.route("/citrust/agentic-control-simulator", methods=["GET", "POST"])
+@app.route("/citrust/ci-agentic-control-simulator", methods=["GET", "POST"])
+def citrust_agentic_control_library_simulator():
+    from flask import request
+
+    objective = request.form.get("objective", "yes")
+    evidence = request.form.get("evidence", "yes")
+    owner = request.form.get("owner", "yes")
+    cadence = request.form.get("cadence", "yes")
+    exception = request.form.get("exception", "yes")
+    gxp = request.form.get("gxp", "no")
+    cyber = request.form.get("cyber", "no")
+    change = request.form.get("change", "no")
+    replay = request.form.get("replay", "yes")
+
+    score, decision, badge, reason = citrust_control_library_decision(
+        objective, evidence, owner, cadence, exception, gxp, cyber, change, replay
+    )
+
+    def selected(value, expected):
+        return "selected" if value == expected else ""
+
+    body = f"""
+    <section class="kpis">
+        <div class="metric"><div class="label">Control Readiness Score</div><div class="value" style="color:var(--green);">{score}%</div><div class="note">Calculated from control design evidence.</div></div>
+        <div class="metric"><div class="label">Control Decision</div><div class="value" style="color:var(--yellow);">{decision}</div><div class="note">{reason}</div></div>
+    </section>
+
+    <section class="section">
+        <h2>CITrust™ Agentic Control Library Simulator</h2>
+        <p>
+            Simulate whether an agentic CITrust control is ready to be used for ServiceNow / CMDB / GxP / cyber / change workflows.
+        </p>
+
+        <form method="POST" action="/citrust/agentic-control-library-simulator">
+            <table>
+                <tbody>
+                    <tr><td><strong>Control Objective Defined?</strong></td><td><select name="objective" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(objective, "yes")}>Yes</option><option value="no" {selected(objective, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Evidence Requirement Defined?</strong></td><td><select name="evidence" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(evidence, "yes")}>Yes</option><option value="no" {selected(evidence, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Control Owner Assigned?</strong></td><td><select name="owner" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(owner, "yes")}>Yes</option><option value="no" {selected(owner, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Testing Cadence Defined?</strong></td><td><select name="cadence" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(cadence, "yes")}>Yes</option><option value="no" {selected(cadence, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Exception Route Defined?</strong></td><td><select name="exception" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(exception, "yes")}>Yes</option><option value="no" {selected(exception, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>GxP / Validation Impact Present?</strong></td><td><select name="gxp" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="no" {selected(gxp, "no")}>No</option><option value="yes" {selected(gxp, "yes")}>Yes</option></select></td></tr>
+                    <tr><td><strong>Cyber / Access / Privileged Impact Present?</strong></td><td><select name="cyber" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="no" {selected(cyber, "no")}>No</option><option value="yes" {selected(cyber, "yes")}>Yes</option></select></td></tr>
+                    <tr><td><strong>Material Change-Control Impact Present?</strong></td><td><select name="change" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="no" {selected(change, "no")}>No</option><option value="yes" {selected(change, "yes")}>Yes</option></select></td></tr>
+                    <tr><td><strong>Audit Replay Ready?</strong></td><td><select name="replay" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(replay, "yes")}>Yes</option><option value="no" {selected(replay, "no")}>No</option></select></td></tr>
+                </tbody>
+            </table>
+
+            <button type="submit" style="margin-top:16px;padding:12px 18px;border-radius:12px;border:0;background:#2563eb;color:white;font-weight:800;">Run Control Readiness Check</button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>Control Readiness Decision</h2>
+        <div class="answer">
+            <strong>Score:</strong> {score}%<br>
+            <strong>Decision:</strong> <span class="badge {badge}">{decision}</span><br>
+            <strong>Reason:</strong> {reason}
+        </div>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Control Library Simulator",
+        "Simulator for agentic control readiness across objective, evidence, owner, testing cadence, exception route, GxP, cyber, change, and audit replay.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-control-library-json")
+@app.route("/citrust/agentic-control-json")
+@app.route("/citrust/ci-agentic-control-library-json")
+def citrust_agentic_control_library_json():
+    from flask import jsonify
+
+    return jsonify({
+        "module": "CITrust™",
+        "capability": "Agentic Control Library + Evidence Requirements Catalog",
+        "primary_question": "Are the controls, evidence, owners, testing cadence, and exceptions defined for AI agents operating against ServiceNow / CMDB / GxP / cyber / change workflows?",
+        "control_library": CITRUST_AGENTIC_CONTROL_LIBRARY,
+        "evidence_requirements": CITRUST_AGENTIC_EVIDENCE_REQUIREMENTS,
+        "policy_pack": CITRUST_AGENTIC_POLICY_PACK,
+        "control_test_cadence": CITRUST_AGENTIC_CONTROL_TEST_CADENCE,
+        "policy_exception_register": CITRUST_AGENTIC_POLICY_EXCEPTION_REGISTER,
+        "minimum_conditions": [
+            "Control objective is defined",
+            "Control requirement is testable",
+            "Evidence requirement is clear",
+            "Control owner is assigned",
+            "Testing cadence is defined",
+            "Exception route is defined",
+            "GxP impact routes to QA where applicable",
+            "Cyber / access impact routes to cybersecurity where applicable",
+            "Material CI impact routes to change control where applicable",
+            "Audit replay evidence exists"
+        ],
+        "default_decision": "Do not treat an AI agentic workflow as controlled unless control objectives, evidence, owners, testing cadence, exceptions, GxP/cyber/change routes, and audit replay are complete"
+    })
+
+# ============================================================
+# END CITRUST_AGENTIC_CONTROL_LIBRARY_EVIDENCE_CATALOG_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# CITRUST_AGENTIC_CONTINUOUS_MONITORING_DRIFT_SENTINEL_V1_ACTIVE
+# CITrust™ Agentic Continuous Monitoring Center + Drift Sentinel
+# Control Health Dashboard, Runtime KPI Scorecard,
+# Drift Signal Register, Threshold Alert Catalog,
+# Exception Aging Monitor, Monitoring Escalation Router,
+# Monitoring Simulator, and JSON Export
+# ============================================================
+
+CITRUST_AGENTIC_MONITORING_DOMAINS = [
+    {
+        "domain": "Agent Inventory Health",
+        "monitoring_question": "Are all AI agents still registered, owned, approved, and operating inside their approved scope?",
+        "signal": "New agent, unknown agent, inactive owner, expired operating license, scope expansion.",
+        "owner": "AI Agent Owner / Governance Owner",
+        "alert_response": "Block unknown agent and require registration or recertification."
+    },
+    {
+        "domain": "CI Trust Health",
+        "monitoring_question": "Are CIs touched by AI still owner-complete, support-complete, LCM-assigned, relationship-valid, and non-orphaned?",
+        "signal": "Owner removed, support group missing, LCM missing, orphan status, weak relationship confidence.",
+        "owner": "CMDB / LCM Owner",
+        "alert_response": "Restrict AI reliance and open CI remediation task."
+    },
+    {
+        "domain": "GxP / Validation Health",
+        "monitoring_question": "Has any AI workflow touched GMP, validation, QA, release, deviation, CAPA, or inspection-sensitive context?",
+        "signal": "GxP flag changed, validation status changed, QA evidence missing, regulated output generated.",
+        "owner": "QA / Validation Owner",
+        "alert_response": "Route to QA and prevent regulated reliance until reviewed."
+    },
+    {
+        "domain": "Cyber / Access Health",
+        "monitoring_question": "Has any AI workflow touched MyAccess, CyberArk, PSM, privileged, admin, entitlement, or access route?",
+        "signal": "Access route change, privileged signal, new entitlement, CyberArk / PSM context, admin workflow.",
+        "owner": "Cybersecurity / Access Owner",
+        "alert_response": "Cyber-gated review and no autonomous approval."
+    },
+    {
+        "domain": "Prompt Chain Health",
+        "monitoring_question": "Are prompt chains captured for AI outputs that influence CI, GxP, cyber, access, or change decisions?",
+        "signal": "Final output without chain, missing intermediate step, missing evaluator score, missing reviewer decision.",
+        "owner": "AI Agent Owner / Governance Owner",
+        "alert_response": "Restrict reliance until prompt chain evidence is restored."
+    },
+    {
+        "domain": "Memory / Context Health",
+        "monitoring_question": "Is the agent using current, source-traceable, approved, bounded, and correctable context?",
+        "signal": "Stale owner, stale support group, stale validation status, stale access route, outdated relationship.",
+        "owner": "Data Owner / AI Agent Owner",
+        "alert_response": "Suppress stale memory and refresh from approved source."
+    },
+    {
+        "domain": "Observability Health",
+        "monitoring_question": "Can runtime, ServiceNow, Azure, CyberArk, CMDB, QA, change, and human review evidence be correlated?",
+        "signal": "Missing correlation ID, missing telemetry, missing tool-call evidence, missing ServiceNow log.",
+        "owner": "Observability / Governance Owner",
+        "alert_response": "Do not close as audit-defensible until evidence is correlated."
+    },
+    {
+        "domain": "Change Integration Health",
+        "monitoring_question": "Are material AI-assisted actions routed to task, change, access, QA, deviation, exception, rollback, and post-check where required?",
+        "signal": "Material CI action without change, missing rollback, missing post-check, missing closure dossier.",
+        "owner": "Change Owner / System Owner",
+        "alert_response": "Create change/task route and block closure until evidence is complete."
+    },
+    {
+        "domain": "Exception Aging Health",
+        "monitoring_question": "Are agentic exceptions time-bound, owned, remediated, retested, and closed?",
+        "signal": "Expired exception, owner missing, remediation overdue, repeated extension, no retest.",
+        "owner": "Governance / Risk Owner",
+        "alert_response": "Escalate overdue exception and restrict AI workflow."
+    }
+]
+
+
+CITRUST_AGENTIC_DRIFT_SIGNALS = [
+    {
+        "signal_id": "DRF-001",
+        "drift_signal": "New AI agent appears in logs but not in registry",
+        "risk": "Unknown AI actor influencing ServiceNow or CMDB workflow.",
+        "severity": "Critical",
+        "required_action": "Block and register agent before further use."
+    },
+    {
+        "signal_id": "DRF-002",
+        "drift_signal": "Agent begins touching new CI class or new workflow type",
+        "risk": "Agent scope expanded without governance review.",
+        "severity": "High",
+        "required_action": "Run operating license and impact map review."
+    },
+    {
+        "signal_id": "DRF-003",
+        "drift_signal": "CI owner, support group, LCM, or CMDB contact becomes blank",
+        "risk": "AI may rely on ownerless or unsupported CI.",
+        "severity": "Critical",
+        "required_action": "Open CI remediation and restrict AI reliance."
+    },
+    {
+        "signal_id": "DRF-004",
+        "drift_signal": "GxP or validation metadata changes after AI context retrieval",
+        "risk": "AI output may rely on outdated regulated state.",
+        "severity": "Critical",
+        "required_action": "Refresh context and route to QA."
+    },
+    {
+        "signal_id": "DRF-005",
+        "drift_signal": "Access route, MyAccess group, CyberArk, or PSM requirement changes",
+        "risk": "AI may recommend stale or unsafe access path.",
+        "severity": "Critical",
+        "required_action": "Suppress access memory and route to cyber owner."
+    },
+    {
+        "signal_id": "DRF-006",
+        "drift_signal": "Prompt chain capture rate drops",
+        "risk": "AI reasoning becomes unreplayable.",
+        "severity": "High",
+        "required_action": "Restrict reliance and restore prompt chain logging."
+    },
+    {
+        "signal_id": "DRF-007",
+        "drift_signal": "Telemetry correlation breaks",
+        "risk": "Audit replay cannot prove what happened.",
+        "severity": "High",
+        "required_action": "Fix correlation ID and evidence linkage."
+    },
+    {
+        "signal_id": "DRF-008",
+        "drift_signal": "Repeated AI recommendation rejected by human owner",
+        "risk": "Agent accuracy, context, or policy alignment may be degrading.",
+        "severity": "Medium",
+        "required_action": "Run evaluator review and memory/context correction."
+    },
+    {
+        "signal_id": "DRF-009",
+        "drift_signal": "Exception remains open beyond expiry",
+        "risk": "Temporary risk acceptance becomes permanent control weakness.",
+        "severity": "High",
+        "required_action": "Escalate to risk owner and restrict workflow."
+    },
+    {
+        "signal_id": "DRF-010",
+        "drift_signal": "Material AI action closes without rollback or post-check",
+        "risk": "Operational state may be changed without recovery or verification.",
+        "severity": "Critical",
+        "required_action": "Reopen closure, require rollback/post-check evidence."
+    }
+]
+
+
+CITRUST_AGENTIC_THRESHOLD_ALERTS = [
+    {
+        "threshold": "Agent registration coverage below 100%",
+        "alert_level": "Critical",
+        "meaning": "One or more agents are operating without registration.",
+        "owner": "Governance Owner",
+        "response": "Block unknown agent operation."
+    },
+    {
+        "threshold": "CI ownership completeness below 95%",
+        "alert_level": "High",
+        "meaning": "AI may rely on CIs without owner/support/LCM completeness.",
+        "owner": "CMDB / LCM Owner",
+        "response": "Open remediation and restrict AI reliance for affected CIs."
+    },
+    {
+        "threshold": "GxP route coverage below 100% for regulated outputs",
+        "alert_level": "Critical",
+        "meaning": "Regulated AI output may not have QA review.",
+        "owner": "QA / Validation Owner",
+        "response": "Block regulated reliance until QA route is complete."
+    },
+    {
+        "threshold": "Cyber route coverage below 100% for access-impacting outputs",
+        "alert_level": "Critical",
+        "meaning": "Access, CyberArk, PSM, or privileged context may bypass cyber review.",
+        "owner": "Cybersecurity / Access Owner",
+        "response": "Block access reliance until cyber route is complete."
+    },
+    {
+        "threshold": "Prompt chain capture below 98%",
+        "alert_level": "High",
+        "meaning": "AI reasoning is not consistently replayable.",
+        "owner": "AI Agent Owner",
+        "response": "Investigate logging gap and restrict high-risk reliance."
+    },
+    {
+        "threshold": "Telemetry correlation below 98%",
+        "alert_level": "High",
+        "meaning": "Evidence fabric may not support audit replay.",
+        "owner": "Observability Owner",
+        "response": "Repair correlation and evidence linkage."
+    },
+    {
+        "threshold": "Open critical findings older than 7 days",
+        "alert_level": "Critical",
+        "meaning": "High-risk agentic control failure remains unresolved.",
+        "owner": "Governance / Risk Owner",
+        "response": "Escalate to executive owner and restrict workflow."
+    },
+    {
+        "threshold": "Expired exceptions above 0",
+        "alert_level": "High",
+        "meaning": "Temporary exception has become uncontrolled.",
+        "owner": "Risk Owner",
+        "response": "Close, extend with approval, or block workflow."
+    }
+]
+
+
+CITRUST_AGENTIC_RUNTIME_KPIS = [
+    {
+        "kpi": "Agent Registration Coverage",
+        "target": "100%",
+        "calculation": "Registered agents divided by observed agents in runtime logs.",
+        "owner": "Governance Owner"
+    },
+    {
+        "kpi": "Agent-to-CI Mapping Coverage",
+        "target": "100% for high-risk actions",
+        "calculation": "AI actions with CI impact map divided by AI actions touching CI context.",
+        "owner": "CMDB / CI Owner"
+    },
+    {
+        "kpi": "Prompt Chain Capture Rate",
+        "target": ">= 98%",
+        "calculation": "AI outputs with prompt chain evidence divided by total AI outputs in scope.",
+        "owner": "AI Agent Owner"
+    },
+    {
+        "kpi": "GxP Route Coverage",
+        "target": "100%",
+        "calculation": "Regulated AI outputs with QA route divided by regulated AI outputs.",
+        "owner": "QA / Validation Owner"
+    },
+    {
+        "kpi": "Cyber Route Coverage",
+        "target": "100%",
+        "calculation": "Access-impacting AI outputs with cyber route divided by access-impacting AI outputs.",
+        "owner": "Cybersecurity / Access Owner"
+    },
+    {
+        "kpi": "Telemetry Correlation Rate",
+        "target": ">= 98%",
+        "calculation": "AI actions with unified correlation ID divided by AI actions in scope.",
+        "owner": "Observability Owner"
+    },
+    {
+        "kpi": "Change Integration Coverage",
+        "target": "100% for material CI actions",
+        "calculation": "Material AI actions with task/change/rollback/post-check divided by material AI actions.",
+        "owner": "Change Owner"
+    },
+    {
+        "kpi": "Exception Aging Compliance",
+        "target": "0 expired exceptions",
+        "calculation": "Expired open exceptions count.",
+        "owner": "Governance / Risk Owner"
+    }
+]
+
+
+CITRUST_AGENTIC_EXCEPTION_AGING_MONITOR = [
+    {
+        "aging_bucket": "0-7 days",
+        "status": "Active monitoring",
+        "required_action": "Owner must confirm remediation path and expiry.",
+        "risk_position": "Acceptable if evidence is complete."
+    },
+    {
+        "aging_bucket": "8-14 days",
+        "status": "Warning",
+        "required_action": "Escalate to governance owner and confirm compensating control.",
+        "risk_position": "Restricted AI reliance."
+    },
+    {
+        "aging_bucket": "15-30 days",
+        "status": "High risk",
+        "required_action": "Risk owner review, executive awareness, remediation deadline.",
+        "risk_position": "No high-risk AI action until remediated."
+    },
+    {
+        "aging_bucket": "Over 30 days",
+        "status": "Critical",
+        "required_action": "Block affected workflow unless formally reapproved.",
+        "risk_position": "Not audit-defensible without escalation."
+    },
+    {
+        "aging_bucket": "Expired",
+        "status": "Breach",
+        "required_action": "Close, extend with approval, or block workflow.",
+        "risk_position": "Uncontrolled exception."
+    }
+]
+
+
+CITRUST_AGENTIC_MONITORING_ESCALATION = [
+    {
+        "alert": "Critical drift signal",
+        "route_to": "Governance Owner + Domain Owner",
+        "response_time": "Same business day",
+        "evidence": "Alert record, owner route, containment decision."
+    },
+    {
+        "alert": "GxP alert",
+        "route_to": "QA / Validation Owner",
+        "response_time": "Before regulated reliance",
+        "evidence": "QA decision and validation evidence."
+    },
+    {
+        "alert": "Cyber / access alert",
+        "route_to": "Cybersecurity / Access Owner",
+        "response_time": "Before access reliance",
+        "evidence": "Cyber decision, MyAccess / CyberArk / PSM evidence."
+    },
+    {
+        "alert": "Change-control alert",
+        "route_to": "Change Owner / System Owner",
+        "response_time": "Before material execution or closure",
+        "evidence": "Change/task, rollback, post-check, closure."
+    },
+    {
+        "alert": "Telemetry alert",
+        "route_to": "Observability Owner / AI Agent Owner",
+        "response_time": "Before audit-defensible closure",
+        "evidence": "Correlation ID and runtime evidence."
+    },
+    {
+        "alert": "Expired exception",
+        "route_to": "Risk Owner / Executive Owner where material",
+        "response_time": "Immediate escalation",
+        "evidence": "Exception decision, extension/closure/block."
+    }
+]
+
+
+def citrust_monitoring_domain_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_MONITORING_DOMAINS:
+        rows += f"""
+        <tr>
+            <td><strong>{item["domain"]}</strong></td>
+            <td>{item["monitoring_question"]}</td>
+            <td>{item["signal"]}</td>
+            <td>{item["owner"]}</td>
+            <td><span class="badge orange">{item["alert_response"]}</span></td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_drift_signal_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_DRIFT_SIGNALS:
+        badge = "orange"
+        if item["severity"] == "Critical":
+            badge = "red"
+        elif item["severity"] == "High":
+            badge = "orange"
+        else:
+            badge = "yellow"
+
+        rows += f"""
+        <tr>
+            <td><strong>{item["signal_id"]}</strong></td>
+            <td>{item["drift_signal"]}</td>
+            <td><span class="badge red">{item["risk"]}</span></td>
+            <td><span class="badge {badge}">{item["severity"]}</span></td>
+            <td>{item["required_action"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_threshold_alert_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_THRESHOLD_ALERTS:
+        badge = "red" if item["alert_level"] == "Critical" else "orange"
+        rows += f"""
+        <tr>
+            <td><strong>{item["threshold"]}</strong></td>
+            <td><span class="badge {badge}">{item["alert_level"]}</span></td>
+            <td>{item["meaning"]}</td>
+            <td>{item["owner"]}</td>
+            <td>{item["response"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_runtime_kpi_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_RUNTIME_KPIS:
+        rows += f"""
+        <tr>
+            <td><strong>{item["kpi"]}</strong></td>
+            <td><span class="badge green">{item["target"]}</span></td>
+            <td>{item["calculation"]}</td>
+            <td>{item["owner"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_exception_aging_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_EXCEPTION_AGING_MONITOR:
+        badge = "green"
+        if item["status"] in ["Critical", "Breach"]:
+            badge = "red"
+        elif item["status"] in ["High risk", "Warning"]:
+            badge = "orange"
+        rows += f"""
+        <tr>
+            <td><strong>{item["aging_bucket"]}</strong></td>
+            <td><span class="badge {badge}">{item["status"]}</span></td>
+            <td>{item["required_action"]}</td>
+            <td>{item["risk_position"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_monitoring_escalation_rows():
+    rows = ""
+    for item in CITRUST_AGENTIC_MONITORING_ESCALATION:
+        rows += f"""
+        <tr>
+            <td><strong>{item["alert"]}</strong></td>
+            <td>{item["route_to"]}</td>
+            <td><span class="badge yellow">{item["response_time"]}</span></td>
+            <td>{item["evidence"]}</td>
+        </tr>
+        """
+    return rows
+
+
+def citrust_monitoring_decision(registry, ci, gxp, cyber, prompt, memory, telemetry, change, exceptions):
+    checks = [registry, ci, gxp, cyber, prompt, memory, telemetry, change, exceptions]
+    score = int((sum(1 for item in checks if item == "yes") / len(checks)) * 100)
+
+    if registry != "yes":
+        return score, "Block Unknown Agent", "red", "Agent inventory health is not trusted."
+    if ci != "yes":
+        return score, "Restrict AI Reliance", "red", "CI trust health is degraded."
+    if gxp != "yes":
+        return score, "QA Escalation Required", "red", "GxP or validation monitoring route is incomplete."
+    if cyber != "yes":
+        return score, "Cyber Escalation Required", "red", "Access, CyberArk, PSM, or privileged monitoring route is incomplete."
+    if telemetry != "yes":
+        return score, "Audit Replay Monitoring Gap", "red", "Observability health is not sufficient."
+    if change != "yes":
+        return score, "Change Monitoring Gap", "orange", "Material AI actions may not be routed to change evidence."
+    if prompt != "yes":
+        return score, "Prompt Chain Monitoring Gap", "orange", "Prompt chain capture is not continuously monitored."
+    if memory != "yes":
+        return score, "Memory Drift Monitoring Gap", "orange", "Stale memory or context drift may not be detected."
+    if exceptions != "yes":
+        return score, "Exception Aging Gap", "orange", "Exception aging and expiry are not controlled."
+    if score == 100:
+        return score, "Continuous Monitoring Trusted", "green", "Agentic monitoring is active across registry, CI, GxP, cyber, prompt, memory, telemetry, change, and exceptions."
+    return score, "Conditional Monitoring", "yellow", "Monitoring has gaps and requires remediation tracking."
+
+
+try:
+    AGENTTRUST_EXPECTED_ROUTES.extend([
+        "/citrust/agentic-continuous-monitoring-center",
+        "/citrust/agentic-control-health-dashboard",
+        "/citrust/agentic-drift-signal-register",
+        "/citrust/agentic-threshold-alert-catalog",
+        "/citrust/agentic-runtime-kpi-scorecard",
+        "/citrust/agentic-exception-aging-monitor",
+        "/citrust/agentic-monitoring-escalation-router",
+        "/citrust/agentic-monitoring-simulator",
+        "/citrust/agentic-monitoring-json"
+    ])
+except Exception:
+    pass
+
+
+@app.route("/citrust/agentic-continuous-monitoring-center")
+@app.route("/citrust/agentic-monitoring-center")
+@app.route("/citrust/ci-agentic-continuous-monitoring")
+def citrust_agentic_continuous_monitoring_center():
+    rows = citrust_monitoring_domain_rows()
+
+    body = f"""
+    <section class="kpis">
+        <div class="metric"><div class="label">Monitoring Center</div><div class="value" style="color:var(--green);">Active</div><div class="note">Post-go-live agentic assurance monitoring installed.</div></div>
+        <div class="metric"><div class="label">Monitoring Domains</div><div class="value" style="color:var(--blue);">9</div><div class="note">Registry, CI, GxP, cyber, prompt, memory, observability, change, exceptions.</div></div>
+        <div class="metric"><div class="label">Drift Sentinel</div><div class="value" style="color:var(--yellow);">Watching</div><div class="note">Detects scope, CI, memory, access, GxP, telemetry, and change drift.</div></div>
+        <div class="metric"><div class="label">Threshold Alerts</div><div class="value" style="color:var(--red);">Defined</div><div class="note">Critical thresholds escalate to owners.</div></div>
+        <div class="metric"><div class="label">Exception Aging</div><div class="value" style="color:var(--orange);">Controlled</div><div class="note">Expired exceptions trigger escalation.</div></div>
+        <div class="metric"><div class="label">Trust Status</div><div class="value" style="color:var(--purple);">Continuous</div><div class="note">Trust is monitored after launch, not only at release.</div></div>
+    </section>
+
+    <section class="section">
+        <h2>CITrust™ Agentic Continuous Monitoring Center</h2>
+        <div class="answer">
+            <strong>Purpose:</strong> continuously monitor whether AI-agent governance remains trusted after go-live.
+            CITrust™ watches for drift in agent inventory, CI ownership, GxP metadata, access routes, prompt chain evidence,
+            memory provenance, observability, change-control routing, and exception aging.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Monitoring Domain</th>
+                    <th>Monitoring Question</th>
+                    <th>Signal</th>
+                    <th>Owner</th>
+                    <th>Alert Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Monitoring Rule</h2>
+        <div class="answer">
+            AI governance cannot be a one-time release checklist. CITrust™ continuously monitors drift, threshold breaches,
+            expired exceptions, missing evidence, and degraded trust signals after AI workflows go live.
+        </div>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Continuous Monitoring Center",
+        "Continuous monitoring center for AI agentic ServiceNow / CMDB assurance across registry, CI trust, GxP, cyber, prompt chain, memory, observability, change, and exceptions.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-control-health-dashboard")
+@app.route("/citrust/agentic-health-dashboard")
+@app.route("/citrust/ci-agentic-control-health")
+def citrust_agentic_control_health_dashboard():
+    rows = citrust_monitoring_domain_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Control Health Dashboard</h2>
+        <p>
+            The control health dashboard shows which agentic governance domains must remain healthy after deployment.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>Question</th>
+                    <th>Runtime Signal</th>
+                    <th>Owner</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Control Health Dashboard",
+        "Control health dashboard for agent inventory, CI trust, GxP, cyber, prompt chain, memory, observability, change integration, and exception aging.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-drift-signal-register")
+@app.route("/citrust/agentic-drift-register")
+@app.route("/citrust/ci-agentic-drift-signals")
+def citrust_agentic_drift_signal_register():
+    rows = citrust_drift_signal_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Drift Signal Register</h2>
+        <p>
+            Drift signals indicate that an AI agent, CI context, access route, GxP state, memory, telemetry, or change-control state has moved away from approved governance.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Signal ID</th>
+                    <th>Drift Signal</th>
+                    <th>Risk</th>
+                    <th>Severity</th>
+                    <th>Required Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Drift Signal Register",
+        "Drift signal register for unknown agents, scope expansion, ownerless CIs, GxP changes, access route changes, prompt chain gaps, telemetry breaks, rejected outputs, expired exceptions, and missing rollback.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-threshold-alert-catalog")
+@app.route("/citrust/agentic-alert-thresholds")
+@app.route("/citrust/ci-agentic-threshold-alerts")
+def citrust_agentic_threshold_alert_catalog():
+    rows = citrust_threshold_alert_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Threshold Alert Catalog</h2>
+        <p>
+            Threshold alerts convert monitoring signals into escalation triggers.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Threshold</th>
+                    <th>Alert Level</th>
+                    <th>Meaning</th>
+                    <th>Owner</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Threshold Alert Catalog",
+        "Threshold alert catalog for agent registration coverage, CI ownership completeness, GxP route coverage, cyber route coverage, prompt chain capture, telemetry correlation, critical findings, and expired exceptions.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-runtime-kpi-scorecard")
+@app.route("/citrust/agentic-kpi-scorecard")
+@app.route("/citrust/ci-agentic-runtime-kpis")
+def citrust_agentic_runtime_kpi_scorecard():
+    rows = citrust_runtime_kpi_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Runtime KPI Scorecard</h2>
+        <p>
+            Runtime KPIs show whether AI-agent governance remains healthy while workflows operate.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>KPI</th>
+                    <th>Target</th>
+                    <th>Calculation</th>
+                    <th>Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Runtime KPI Scorecard",
+        "Runtime KPI scorecard for agent registration, agent-to-CI mapping, prompt chain capture, GxP route, cyber route, telemetry correlation, change integration, and exception aging.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-exception-aging-monitor")
+@app.route("/citrust/agentic-exception-aging")
+@app.route("/citrust/ci-agentic-exception-aging")
+def citrust_agentic_exception_aging_monitor():
+    rows = citrust_exception_aging_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Exception Aging Monitor</h2>
+        <p>
+            Exception aging ensures temporary AI governance gaps do not become permanent control weaknesses.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aging Bucket</th>
+                    <th>Status</th>
+                    <th>Required Action</th>
+                    <th>Risk Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Exception Aging Monitor",
+        "Exception aging monitor for agentic governance exceptions across active monitoring, warning, high risk, critical, and breach states.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-monitoring-escalation-router")
+@app.route("/citrust/agentic-monitoring-escalation")
+@app.route("/citrust/ci-agentic-monitoring-escalation")
+def citrust_agentic_monitoring_escalation_router():
+    rows = citrust_monitoring_escalation_rows()
+
+    body = f"""
+    <section class="section">
+        <h2>CITrust™ Agentic Monitoring Escalation Router</h2>
+        <p>
+            Monitoring alerts route to the accountable domain owner before unsafe AI reliance continues.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Alert</th>
+                    <th>Route To</th>
+                    <th>Response Time</th>
+                    <th>Evidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Monitoring Escalation Router",
+        "Monitoring escalation router for critical drift, GxP alerts, cyber alerts, change-control alerts, telemetry alerts, and expired exceptions.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-monitoring-simulator", methods=["GET", "POST"])
+@app.route("/citrust/agentic-continuous-monitoring-simulator", methods=["GET", "POST"])
+@app.route("/citrust/ci-agentic-monitoring-simulator", methods=["GET", "POST"])
+def citrust_agentic_monitoring_simulator():
+    from flask import request
+
+    registry = request.form.get("registry", "yes")
+    ci = request.form.get("ci", "yes")
+    gxp = request.form.get("gxp", "yes")
+    cyber = request.form.get("cyber", "yes")
+    prompt = request.form.get("prompt", "yes")
+    memory = request.form.get("memory", "yes")
+    telemetry = request.form.get("telemetry", "yes")
+    change = request.form.get("change", "yes")
+    exceptions = request.form.get("exceptions", "yes")
+
+    score, decision, badge, reason = citrust_monitoring_decision(
+        registry, ci, gxp, cyber, prompt, memory, telemetry, change, exceptions
+    )
+
+    def selected(value, expected):
+        return "selected" if value == expected else ""
+
+    body = f"""
+    <section class="kpis">
+        <div class="metric"><div class="label">Monitoring Trust Score</div><div class="value" style="color:var(--green);">{score}%</div><div class="note">Calculated from continuous monitoring domains.</div></div>
+        <div class="metric"><div class="label">Monitoring Decision</div><div class="value" style="color:var(--yellow);">{decision}</div><div class="note">{reason}</div></div>
+    </section>
+
+    <section class="section">
+        <h2>CITrust™ Agentic Monitoring Simulator</h2>
+        <p>
+            Simulate whether post-go-live monitoring is strong enough to maintain AI-agent trust across ServiceNow / CMDB / GxP / cyber / change workflows.
+        </p>
+
+        <form method="POST" action="/citrust/agentic-monitoring-simulator">
+            <table>
+                <tbody>
+                    <tr><td><strong>Agent Inventory Monitoring Healthy?</strong></td><td><select name="registry" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(registry, "yes")}>Yes</option><option value="no" {selected(registry, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>CI Trust Monitoring Healthy?</strong></td><td><select name="ci" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(ci, "yes")}>Yes</option><option value="no" {selected(ci, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>GxP / Validation Monitoring Healthy?</strong></td><td><select name="gxp" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(gxp, "yes")}>Yes</option><option value="no" {selected(gxp, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Cyber / Access Monitoring Healthy?</strong></td><td><select name="cyber" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(cyber, "yes")}>Yes</option><option value="no" {selected(cyber, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Prompt Chain Monitoring Healthy?</strong></td><td><select name="prompt" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(prompt, "yes")}>Yes</option><option value="no" {selected(prompt, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Memory / Context Drift Monitoring Healthy?</strong></td><td><select name="memory" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(memory, "yes")}>Yes</option><option value="no" {selected(memory, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Telemetry / Observability Monitoring Healthy?</strong></td><td><select name="telemetry" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(telemetry, "yes")}>Yes</option><option value="no" {selected(telemetry, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Change Integration Monitoring Healthy?</strong></td><td><select name="change" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(change, "yes")}>Yes</option><option value="no" {selected(change, "no")}>No</option></select></td></tr>
+                    <tr><td><strong>Exception Aging Monitoring Healthy?</strong></td><td><select name="exceptions" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#020617;color:#e5e7eb;"><option value="yes" {selected(exceptions, "yes")}>Yes</option><option value="no" {selected(exceptions, "no")}>No</option></select></td></tr>
+                </tbody>
+            </table>
+
+            <button type="submit" style="margin-top:16px;padding:12px 18px;border-radius:12px;border:0;background:#2563eb;color:white;font-weight:800;">Run Monitoring Trust Check</button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>Continuous Monitoring Decision</h2>
+        <div class="answer">
+            <strong>Score:</strong> {score}%<br>
+            <strong>Decision:</strong> <span class="badge {badge}">{decision}</span><br>
+            <strong>Reason:</strong> {reason}
+        </div>
+    </section>
+    """
+
+    return agenttrust_shell(
+        "CITrust™ Agentic Monitoring Simulator",
+        "Simulator for continuous monitoring readiness across agent inventory, CI trust, GxP, cyber, prompt chain, memory, telemetry, change integration, and exception aging.",
+        body
+    )
+
+
+@app.route("/citrust/agentic-monitoring-json")
+@app.route("/citrust/agentic-continuous-monitoring-json")
+@app.route("/citrust/ci-agentic-monitoring-json")
+def citrust_agentic_monitoring_json():
+    from flask import jsonify
+
+    return jsonify({
+        "module": "CITrust™",
+        "capability": "Agentic Continuous Monitoring Center + Drift Sentinel",
+        "primary_question": "Does CITrust™ continuously monitor whether AI-agent governance remains trusted after go-live?",
+        "monitoring_domains": CITRUST_AGENTIC_MONITORING_DOMAINS,
+        "drift_signals": CITRUST_AGENTIC_DRIFT_SIGNALS,
+        "threshold_alerts": CITRUST_AGENTIC_THRESHOLD_ALERTS,
+        "runtime_kpis": CITRUST_AGENTIC_RUNTIME_KPIS,
+        "exception_aging_monitor": CITRUST_AGENTIC_EXCEPTION_AGING_MONITOR,
+        "monitoring_escalation": CITRUST_AGENTIC_MONITORING_ESCALATION,
+        "minimum_conditions": [
+            "Agent inventory monitoring is active",
+            "CI trust monitoring is active",
+            "GxP / validation monitoring is active",
+            "Cyber / access monitoring is active",
+            "Prompt chain monitoring is active",
+            "Memory / context drift monitoring is active",
+            "Observability / telemetry monitoring is active",
+            "Change integration monitoring is active",
+            "Exception aging monitoring is active",
+            "Threshold alerts route to accountable owners"
+        ],
+        "default_decision": "Do not treat agentic governance as continuously trusted unless monitoring, drift detection, threshold alerts, exception aging, escalation, and remediation routes are active"
+    })
+
+# ============================================================
+# END CITRUST_AGENTIC_CONTINUOUS_MONITORING_DRIFT_SENTINEL_V1_ACTIVE
+# ============================================================
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
