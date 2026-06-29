@@ -1,0 +1,854 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain™ Platform A/B Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --graphite2:#171a20;
+            --panel:#151820;
+            --panel2:#1b1f28;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --soft:#c9d0da;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.24);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#8ebdff;
+        }
+
+        *{box-sizing:border-box}
+
+        html{scroll-behavior:smooth}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            background:
+                radial-gradient(circle at 10% 0%,rgba(255,138,31,.22),transparent 31%),
+                radial-gradient(circle at 84% 14%,rgba(255,177,92,.14),transparent 28%),
+                radial-gradient(circle at 50% 100%,rgba(120,140,170,.12),transparent 35%),
+                linear-gradient(135deg,#050609 0%,#101216 45%,#06070a 100%);
+            color:var(--mist);
+            min-height:100vh;
+        }
+
+        .page{
+            width:100%;
+            max-width:1760px;
+            margin:0 auto;
+            padding:30px;
+        }
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.32);
+            background:
+                linear-gradient(135deg,rgba(21,24,32,.98),rgba(11,12,16,.94)),
+                radial-gradient(circle at 68% 28%,rgba(255,138,31,.18),transparent 35%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.05) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.85),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-140px;
+            top:-180px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.24);
+            box-shadow:
+                0 0 0 70px rgba(255,138,31,.025),
+                0 0 0 145px rgba(255,138,31,.018),
+                0 0 0 230px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 55%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{
+            font-size:17px;
+            font-weight:950;
+            letter-spacing:.5px;
+        }
+
+        .brand-sub{
+            color:var(--steel);
+            font-size:12px;
+            margin-top:4px;
+            letter-spacing:.25px;
+        }
+
+        .system-state{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            letter-spacing:.25px;
+            white-space:nowrap;
+        }
+
+        .pill.grey{
+            border-color:rgba(255,255,255,.14);
+            background:rgba(255,255,255,.055);
+            color:#dce3ed;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1120px;
+            font-size:64px;
+            line-height:.98;
+            letter-spacing:-2.4px;
+            font-weight:980;
+        }
+
+        .subtitle{
+            max-width:1180px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-layout{
+            display:grid;
+            grid-template-columns:1.15fr .85fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .hero-statement{
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(255,138,31,.115),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.72;
+            min-height:190px;
+        }
+
+        .hero-statement strong{color:white}
+
+        .score-panel{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 10%,rgba(255,138,31,.16),transparent 34%),
+                linear-gradient(180deg,rgba(25,20,17,.95),rgba(12,13,18,.95));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:70px;
+            line-height:.9;
+            letter-spacing:-3px;
+            color:var(--orange);
+            font-weight:1000;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:83%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#58e096);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:24px;
+        }
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:
+                linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:
+                linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1040px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .tag.grey{
+            border-color:rgba(255,255,255,.14);
+            background:rgba(255,255,255,.055);
+            color:#d9e0ea;
+        }
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+        }
+
+        .platform-card{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.12);
+            background:
+                radial-gradient(circle at 88% 6%,rgba(255,138,31,.15),transparent 32%),
+                linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+            border-radius:26px;
+            padding:24px;
+            min-height:390px;
+        }
+
+        .platform-card.enterprise{
+            background:
+                radial-gradient(circle at 88% 6%,rgba(155,165,185,.16),transparent 32%),
+                linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+        }
+
+        .platform-card h3{
+            margin:14px 0 8px;
+            font-size:30px;
+            letter-spacing:-.8px;
+        }
+
+        .features{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:10px;
+            margin-top:18px;
+        }
+
+        .feature{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(5,6,9,.28);
+            border-radius:16px;
+            padding:13px;
+            color:#d9e0ea;
+            font-size:13px;
+            line-height:1.43;
+        }
+
+        .feature strong{
+            display:block;
+            color:#fff;
+            margin-bottom:5px;
+            font-size:13px;
+        }
+
+        .module-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:16px;
+        }
+
+        .module{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.115);
+            background:
+                linear-gradient(180deg,rgba(255,255,255,.062),rgba(255,255,255,.028));
+            border-radius:22px;
+            padding:19px;
+            min-height:190px;
+        }
+
+        .module:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--orange),var(--orange2),rgba(255,255,255,.45));
+        }
+
+        .module h3{
+            margin:0 0 8px;
+            font-size:18px;
+            font-weight:950;
+        }
+
+        .module p{
+            font-size:13px;
+            color:#b9c2ce;
+            line-height:1.55;
+            margin:0;
+        }
+
+        .module a{
+            display:inline-block;
+            margin-top:14px;
+            color:#ffd7a8;
+            text-decoration:none;
+            font-size:13px;
+            font-weight:950;
+            border-bottom:1px solid rgba(255,138,31,.55);
+        }
+
+        .architecture{
+            display:grid;
+            grid-template-columns:1.1fr .9fr;
+            gap:20px;
+        }
+
+        .stack{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:24px;
+            padding:22px;
+        }
+
+        .stack-row{
+            display:grid;
+            grid-template-columns:190px 1fr 138px;
+            gap:14px;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+
+        .stack-row:last-child{border-bottom:0}
+
+        .stack-row div:first-child{
+            font-weight:950;
+            color:#fff;
+        }
+
+        .stack-row div:nth-child(2){
+            color:#b9c2ce;
+            font-size:13px;
+            line-height:1.45;
+        }
+
+        .stage{
+            justify-self:end;
+            border:1px solid rgba(255,138,31,.34);
+            background:rgba(255,138,31,.08);
+            color:#ffe3bf;
+            border-radius:999px;
+            padding:7px 9px;
+            font-size:11px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        .vision{
+            border:1px solid rgba(255,138,31,.26);
+            background:
+                radial-gradient(circle at 72% 14%,rgba(255,138,31,.16),transparent 34%),
+                rgba(255,138,31,.055);
+            border-radius:24px;
+            padding:22px;
+        }
+
+        .vision h3{
+            margin:14px 0 8px;
+            font-size:26px;
+            letter-spacing:-.5px;
+        }
+
+        .glasses{
+            margin-top:18px;
+            height:245px;
+            border:1px solid rgba(255,138,31,.28);
+            border-radius:24px;
+            background:
+                radial-gradient(circle at 34% 40%,rgba(255,138,31,.22),transparent 29%),
+                linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+            position:relative;
+            overflow:hidden;
+        }
+
+        .lens{
+            position:absolute;
+            top:66px;
+            width:170px;
+            height:96px;
+            border:2px solid rgba(255,177,92,.82);
+            border-radius:44px;
+            background:rgba(5,6,9,.44);
+            box-shadow:inset 0 0 35px rgba(255,138,31,.18),0 0 25px rgba(255,138,31,.16);
+        }
+
+        .lens.left{left:72px}
+        .lens.right{right:72px}
+
+        .bridge{
+            position:absolute;
+            left:50%;
+            top:103px;
+            width:128px;
+            height:34px;
+            transform:translateX(-50%);
+            border-top:2px solid rgba(255,177,92,.82);
+            border-radius:50%;
+        }
+
+        .hud{
+            position:absolute;
+            left:26px;
+            right:26px;
+            bottom:22px;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:10px;
+        }
+
+        .hud div{
+            border:1px solid rgba(255,138,31,.28);
+            background:rgba(5,6,9,.48);
+            color:#ffe4c4;
+            border-radius:14px;
+            padding:10px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1320px){
+            .hero-layout,.two-col,.architecture{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .module-grid{grid-template-columns:repeat(2,1fr)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.module-grid{grid-template-columns:1fr}
+            .features{grid-template-columns:1fr}
+            .stack-row{grid-template-columns:1fr}
+            .stage{justify-self:start}
+            .hud{grid-template-columns:1fr}
+            .lens.left{left:24px}
+            .lens.right{right:24px}
+            .lens{width:128px}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain™ / Assurance Engineering™ Platform</div>
+                            <div class="brand-sub">Thread B command center • Architecture • Azure • Wearables • Code • MCP Server</div>
+                        </div>
+                    </div>
+                    <div class="system-state">
+                        <span class="pill">Official Theme: Orange + Graphite</span>
+                        <span class="pill grey">One Product • Two Evolution Stages</span>
+                    </div>
+                </div>
+
+                <div class="eyebrow">Unified Platform A/B Development Command Center</div>
+                <h1>One platform that proves, scales, and operationalizes trust.</h1>
+                <div class="subtitle">
+                    COBIT-Chain™ is one unified platform. Platform A is the present engineering proof. Platform B is the enterprise evolution. The same codebase, same website, same product identity, and same architecture mature from operational MVP into enterprise assurance intelligence.
+                </div>
+
+                <div class="hero-layout">
+                    <div class="hero-statement">
+                        <strong>Engineering rule:</strong> Do not build two platforms. Build one world-class platform that grows over time. Platform A demonstrates Governance Vision™, CITrust™, Evidence Vault, Operational Trust, AI ChangeControlTrust™, DigitalGMPTrust™, and smart-glasses workflows. Platform B scales those capabilities into autonomous assurance agents, digital twins, enterprise knowledge graphs, predictive assurance, and multi-site governance.
+                    </div>
+
+                    <div class="score-panel">
+                        <div class="score-label">Platform Readiness Confidence</div>
+                        <div class="score">83%</div>
+                        <div class="score-text">
+                            The platform direction is coherent and ready for execution. The remaining work is route discipline, reusable UI standardization, Azure service backing, MCP tool design, and wearable query integration.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Governed Build Mode — proceed with premium interface standard and safe single-block installation pattern.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform</a>
+                    <a href="/platform-ab">Platform A/B</a>
+                    <a href="/cobitchain-platform">COBIT-Chain Platform</a>
+                    <a href="/citrust">CITrust™</a>
+                    <a href="/servicenow-ci-readiness">ServiceNow CI Readiness</a>
+                    <a href="/citrust/myaccess-readiness">MyAccess Readiness</a>
+                    <a href="/citrust/ai-evidence-lineage-mapper">AI Evidence Lineage</a>
+                    <a href="/citrust/governance-operating-system">Governance OS</a>
+                    <a href="/citrust/trust-immune-system">Trust Immune System</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Product Model</div><div class="value" style="color:var(--orange);">One</div><div class="note">One platform, not two applications.</div></div>
+            <div class="metric"><div class="label">Platform A</div><div class="value" style="color:var(--good);">Now</div><div class="note">MVP, operational proof, regulated workflow dashboards.</div></div>
+            <div class="metric"><div class="label">Platform B</div><div class="value" style="color:var(--amber);">Next</div><div class="note">Enterprise evolution: agents, twins, graph, predictive governance.</div></div>
+            <div class="metric"><div class="label">Interface Grade</div><div class="value" style="color:var(--orange2);">UHD</div><div class="note">Wide, premium, executive-grade command center design.</div></div>
+            <div class="metric"><div class="label">Build Control</div><div class="value" style="color:var(--warn);">Safe</div><div class="note">Backup, marker, compile check, route verification.</div></div>
+            <div class="metric"><div class="label">North Star</div><div class="value" style="color:var(--mist);">Trust</div><div class="note">Operational understanding before consequential decisions.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Platform A and Platform B are one product lineage.</h2>
+                    <p>Platform A proves the engineering in real operational contexts. Platform B scales that same engineering into enterprise-grade assurance intelligence. This keeps branding, architecture, code, roadmap, and deployment coherent.</p>
+                </div>
+                <span class="tag">No duplicate app • No second repository • No rewrite</span>
+            </div>
+
+            <div class="two-col">
+                <div class="platform-card">
+                    <span class="tag">Platform A / Present Build</span>
+                    <h3>Operational Engineering Proof</h3>
+                    <p>Platform A is the current working product layer. It must stay practical, demo-ready, and grounded in regulated operations.</p>
+                    <div class="features">
+                        <div class="feature"><strong>CITrust™</strong>Can this CI be operationally trusted?</div>
+                        <div class="feature"><strong>Governance Vision™</strong>Point-of-work operational trust interface.</div>
+                        <div class="feature"><strong>Evidence Vault</strong>Evidence lineage, sufficiency, freshness, and replay.</div>
+                        <div class="feature"><strong>Operational Trust Engine</strong>Trust score, trust decay, recovery, and decision confidence.</div>
+                        <div class="feature"><strong>AI ChangeControlTrust™</strong>AI-supported change impact and rollback defensibility.</div>
+                        <div class="feature"><strong>DigitalGMPTrust™</strong>GMP operational condition and inspection posture.</div>
+                    </div>
+                </div>
+
+                <div class="platform-card enterprise">
+                    <span class="tag grey">Platform B / Enterprise Evolution</span>
+                    <h3>Enterprise Assurance Intelligence</h3>
+                    <p>Platform B is not a new app. It is the future version of the same platform after the MVP matures into enterprise services.</p>
+                    <div class="features">
+                        <div class="feature"><strong>Assurance Agents</strong>Human-governed autonomous assurance workflows.</div>
+                        <div class="feature"><strong>Operational Trust Twins</strong>Live digital representation of trust state.</div>
+                        <div class="feature"><strong>Enterprise Knowledge Graph</strong>Controls, evidence, ownership, dependencies, risk, and decisions.</div>
+                        <div class="feature"><strong>Predictive Assurance</strong>Trust decay, inspection readiness forecasts, and early warnings.</div>
+                        <div class="feature"><strong>AI Continuity Governance</strong>Model fallback, provider dependency, and policy-risk resilience.</div>
+                        <div class="feature"><strong>Multi-Site Governance</strong>Enterprise operating model across plants, assets, systems, and workflows.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Core Platform Modules</h2>
+                    <p>These modules should remain inside the same COBIT-Chain™ product shell. Each module must answer a clear operational trust question and produce evidence-backed decision support.</p>
+                </div>
+                <span class="tag">Unified module portfolio</span>
+            </div>
+
+            <div class="module-grid">
+                <div class="module"><h3>CITrust™</h3><p>CMDB, ServiceNow, ownership, lifecycle, support group, access, evidence, and CI operational readiness.</p><a href="/citrust">Open CITrust™</a></div>
+                <div class="module"><h3>Governance Vision™</h3><p>Smart-glasses and ambient interface for seeing operational trust at the point of work.</p><a href="/platform">Open platform shell</a></div>
+                <div class="module"><h3>Evidence Vault</h3><p>Evidence lineage, trust replay, sufficiency, freshness, inspection readiness, and decision defensibility.</p><a href="/citrust/ai-evidence-lineage-mapper">Open evidence lineage</a></div>
+                <div class="module"><h3>AccessTrust™</h3><p>MyAccess, entitlement logic, privileged access posture, role ownership, and access defensibility.</p><a href="/citrust/myaccess-readiness">Open MyAccess readiness</a></div>
+                <div class="module"><h3>AI ChangeControlTrust™</h3><p>AI-assisted change impact, rollback verification, validation implication, risk, and evidence closure.</p><a href="/citrust/ai-action-rollback-verifier">Open rollback verifier</a></div>
+                <div class="module"><h3>Operational Trust Engine</h3><p>Trust scoring, trust decay, trust recovery, decision confidence, and operational condition logic.</p><a href="/citrust/trust-score-model">Open trust model</a></div>
+                <div class="module"><h3>AgentTrust™</h3><p>Agent identity, authority, tool-call evidence, human oversight, release gates, and runtime governance.</p><a href="/agenttrust">Open AgentTrust™</a></div>
+                <div class="module"><h3>Platform Evolution</h3><p>Enterprise digital twins, assurance agents, knowledge graph, predictive readiness, and multi-site trust.</p><a href="/platform-ab">Open Platform A/B</a></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Azure, MCP, and Wearable Architecture Direction</h2>
+                    <p>The Flask product shell remains the visual command center. The platform can then mature into service-backed Azure APIs, identity-aware evidence storage, MCP governance tools, and smart-glasses query workflows.</p>
+                </div>
+                <span class="tag">Azure-ready architecture</span>
+            </div>
+
+            <div class="architecture">
+                <div class="stack">
+                    <div class="stack-row"><div>Web Experience</div><div>Flask command centers, module dashboards, readiness pages, trust passports, and executive operating views.</div><span class="stage">Now</span></div>
+                    <div class="stack-row"><div>API Layer</div><div>HTTP APIs for CI lookup, equipment lookup, evidence retrieval, trust scoring, and wearable responses.</div><span class="stage">Next</span></div>
+                    <div class="stack-row"><div>MCP Server</div><div>Controlled tool interface that lets AI retrieve evidence, query trust state, and support governed action.</div><span class="stage">Build</span></div>
+                    <div class="stack-row"><div>Storage</div><div>Blob Storage, Table Storage, Cosmos DB, or SQL for passports, observations, evidence, and decisions.</div><span class="stage">Azure</span></div>
+                    <div class="stack-row"><div>Identity</div><div>Microsoft Entra ID, managed identity, Key Vault, RBAC, and least-privilege operational access.</div><span class="stage">Secure</span></div>
+                    <div class="stack-row"><div>Observability</div><div>Application Insights, audit logs, decision replay, tool-call evidence, drift telemetry, and exception signals.</div><span class="stage">Control</span></div>
+                </div>
+
+                <div class="vision">
+                    <span class="tag">Governance Vision™ / Elsa’s Vision</span>
+                    <h3>Point-of-Work Trust Interface</h3>
+                    <p>An engineer looks at equipment, a CI, a dashboard, a batch area, or an AI workflow and receives a concise trust summary: validation state, cybersecurity posture, access posture, backup health, change-control status, evidence sufficiency, and recommended action.</p>
+                    <div class="glasses">
+                        <div class="lens left"></div>
+                        <div class="lens right"></div>
+                        <div class="bridge"></div>
+                        <div class="hud">
+                            <div>Trust: 83%</div>
+                            <div>Status: Conditional Ready</div>
+                            <div>Action: Verify Evidence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Build Roadmap</h2>
+                    <p>This roadmap keeps Thread B focused on engineering execution without mixing it with PhD research or AEBOK publishing work.</p>
+                </div>
+                <span class="tag grey">Thread B execution sequence</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Engineering Focus</th>
+                        <th>Primary Output</th>
+                        <th>Stage</th>
+                        <th>Decision Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>1</strong></td><td>Unified shell and navigation</td><td>Command center, module map, route discipline, premium UI standard</td><td>Platform A</td><td>Make the platform coherent before adding more features.</td></tr>
+                    <tr><td><strong>2</strong></td><td>Operational trust modules</td><td>CITrust™, AccessTrust™, Evidence Vault, ChangeControlTrust™, DigitalGMPTrust™</td><td>Platform A</td><td>Every module must answer an operational trust question.</td></tr>
+                    <tr><td><strong>3</strong></td><td>Azure service architecture</td><td>APIs, storage, identity, Key Vault, App Insights, deployment pattern</td><td>A to B</td><td>Move from static demo to service-backed architecture.</td></tr>
+                    <tr><td><strong>4</strong></td><td>MCP and AI tool interface</td><td>Governance evidence tools, trust query tools, controlled AI action support</td><td>Platform B</td><td>AI must retrieve evidence, not invent assurance claims.</td></tr>
+                    <tr><td><strong>5</strong></td><td>Wearables and spatial interface</td><td>Governance Vision™, smart glasses query, QR lookup, voice response, point-of-work HUD</td><td>Platform B</td><td>The user should understand operational condition before action.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain™ Platform A/B Command Center is the engineering coordination shell for the unified platform. It does not replace formal validation, QA, cybersecurity, ServiceNow governance, change control, or regulated decision approval. It organizes the product lineage and establishes the premium orange/graphite super-UHD interface standard for Thread B.
+        </div>
+    </div>
+</body>
+</html>

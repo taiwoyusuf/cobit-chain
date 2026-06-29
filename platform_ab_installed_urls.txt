@@ -1,0 +1,3 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform-ab
+http://127.0.0.1:5000/cobitchain-platform

@@ -263220,6 +263220,26 @@ toggleCab();
 
 
 
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AB_PREMIUM_ORANGE_COMMAND_CENTER_V2_ACTIVE
+# ============================================================
+
+@app.route("/platform")
+@app.route("/platform-ab")
+@app.route("/cobitchain-platform")
+def cobitchain_platform_ab_premium_orange_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ab_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AB_PREMIUM_ORANGE_COMMAND_CENTER_V2_ACTIVE
+# ============================================================
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
 
