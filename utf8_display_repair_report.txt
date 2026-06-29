@@ -1,0 +1,12 @@
+COBIT-Chain UTF8 Display Repair Report
+============================================================
+
+REPAIRED: app.py
+REPAIRED: platform_ab_command_center.html
+
+Changed files:
+  - app.py
+  - platform_ab_command_center.html
+
+This repair cleans display corruption in stored app.py and local html files.
+It does not remove the floating AgentTrust box.
