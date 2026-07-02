@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Platform Lifecycle Integration Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --text:#eef1f5;--muted:#aab3c2;--orange:#ff8a1f;--orange2:#ffb15c;
+            --amber:#ffd08a;--green:#58e096;--red:#ff5c70;--blue:#9bc7ff;
+            --line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),
+                radial-gradient(circle at 50% 100%,rgba(155,199,255,.08),transparent 40%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+        .page{max-width:1880px;margin:0 auto;padding:30px}
+        .hero,.section{
+            border:1px solid var(--oline);border-radius:34px;padding:30px;
+            background:linear-gradient(135deg,rgba(23,26,34,.96),rgba(8,9,13,.96));
+            box-shadow:0 28px 80px rgba(0,0,0,.45),0 0 36px rgba(255,138,31,.16);
+            margin-bottom:22px;
+        }
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}
+        .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill,.tag{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1500px;font-size:62px;line-height:.98;letter-spacing:-2.3px;font-weight:1000}
+        .subtitle{max-width:1420px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;margin-top:26px}
+        .statement,.score-panel,.panel,.result{
+            border:1px solid rgba(255,138,31,.28);background:rgba(255,255,255,.045);border-radius:24px;padding:22px;
+        }
+        .statement{color:#fff0df;line-height:1.7}
+        .score-label{color:var(--orange2);font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:950}
+        .score{margin-top:12px;font-size:70px;line-height:.9;color:var(--orange);font-weight:1000;letter-spacing:-3px}
+        .score-text{margin-top:16px;color:#d4dbe5;font-size:13px;line-height:1.62}
+        .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin:18px 0 14px;border:1px solid rgba(255,255,255,.08)}
+        .bar span{display:block;height:100%;width:74%;background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a)}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
+        .metric{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:22px;padding:17px;min-height:138px}
+        .metric .label{color:var(--muted);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:1px}
+        .metric .value{margin-top:10px;font-size:31px;font-weight:1000}
+        .metric .note{color:#b4bdca;font-size:12px;line-height:1.48;margin-top:8px}
+        .section-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+        .section h2{margin:0;font-size:30px;letter-spacing:-.8px;font-weight:1000}
+        .section p{margin:8px 0 0;color:#b9c2ce;max-width:1120px;line-height:1.62;font-size:14px}
+        .workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+        .stage{
+            border:1px solid rgba(255,138,31,.23);background:rgba(255,138,31,.065);
+            border-radius:18px;padding:15px;min-height:300px;position:relative;
+        }
+        .stage.active{border-color:rgba(88,224,150,.55);background:rgba(88,224,150,.065)}
+        .stage.missing{border-color:rgba(255,92,112,.42);background:rgba(255,92,112,.06)}
+        .stage strong{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+        .stage span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .status{display:inline-flex;margin:0 0 11px 0;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;border:1px solid rgba(255,255,255,.14)}
+        .status.active{color:#c9ffe0;background:rgba(88,224,150,.10);border-color:rgba(88,224,150,.38)}
+        .status.missing{color:#ffd4d8;background:rgba(255,92,112,.10);border-color:rgba(255,92,112,.38)}
+        .stage a{display:inline-flex;margin-top:12px;color:#ffe4c4;text-decoration:none;border:1px solid rgba(255,138,31,.25);border-radius:999px;padding:8px 10px;font-size:11px;font-weight:900}
+        .two-col{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+        .button-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+        button{cursor:pointer;border:1px solid rgba(255,138,31,.25);background:rgba(6,7,10,.72);color:#f3f6fa;border-radius:18px;padding:16px;min-height:88px;text-align:left}
+        button:hover{border-color:rgba(255,138,31,.60);background:rgba(255,138,31,.08)}
+        button strong{display:block;font-size:15px;margin-bottom:8px}
+        button span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .result{min-height:760px;background:radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),rgba(6,7,10,.68)}
+        .result-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.10);padding-bottom:14px;margin-bottom:14px}
+        .result-name{font-size:26px;font-weight:1000;letter-spacing:-.6px}
+        .badge{display:inline-flex;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);color:#ffe4c4;background:rgba(255,138,31,.09)}
+        .ring{width:154px;height:154px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid rgba(255,138,31,.42);background:radial-gradient(circle,#3b210f,#101216 72%);float:left;margin:2px 18px 10px 0}
+        .ring strong{font-size:43px;color:var(--orange);line-height:1}
+        .ring span{color:#d7dee8;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+        .line{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:14px;padding:11px 12px;color:#cbd2dc;font-size:13px;line-height:1.45;margin-top:9px}
+        .line strong{color:#fff;display:block;margin-bottom:4px}
+        .gap{color:#ffd4d8}
+        .ok{color:#bfffd8}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:12px 4px}
+        @media(max-width:1380px){.hero-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.workflow{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:760px){.page{padding:16px}.hero,.section{padding:22px;border-radius:24px}h1{font-size:38px}.metrics,.workflow{grid-template-columns:1fr}.ring{float:none;margin:0 0 14px 0}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="topbar">
+                <div class="brand">
+                    <div class="mark"></div>
+                    <div>
+                        <div class="brand-title">COBIT-Chain&trade; Platform Lifecycle Integration Engine</div>
+                        <div class="brand-sub">Implementation layer for executable lifecycle navigation, route status, evidence automation, and operational workflow integration</div>
+                    </div>
+                </div>
+                <span class="pill">Concept Complete -> Integration -> Execution</span>
+            </div>
+
+            <div class="eyebrow">Platform A / Implementation Layer / Lifecycle Integration / Evidence Automation</div>
+            <h1>Conceptual architecture is complete. Now the platform must execute the lifecycle.</h1>
+            <div class="subtitle">
+                This integration engine connects the existing assurance lifecycle into one operational view: discovery, visibility, governance operationalization, governance lifecycle, intake, team assurance, RACI, intelligence validation, output clearance, evidence, decision, release, monitoring, response, learning, and reuse.
+            </div>
+
+            <div class="hero-grid">
+                <div class="statement">
+                    <strong>Implementation rule:</strong> future development should prioritize implementation, integration, user experience, evidence automation, and operational workflows rather than adding new top-level assurance modules unless they extend the existing lifecycle.
+                </div>
+
+                <div class="score-panel">
+                    <div class="score-label">Sample Lifecycle Integration Score</div>
+                    <div class="score">74%</div>
+                    <div class="score-text">
+                        The lifecycle is conceptually complete, but execution now requires route integration, API-to-API linking, shared evidence object IDs, lifecycle progress indicators, and end-to-end assurance case generation.
+                    </div>
+                    <div class="bar"><span></span></div>
+                    <div class="score-text"><strong>Status:</strong> implementation hardening started.</div>
+                </div>
+            </div>
+
+            <div class="nav">
+                <a href="/platform">Platform</a>
+                <a href="/platform/routes">Routes</a>
+                <a href="/platform/lifecycle-integration">Lifecycle Integration</a>
+                <a href="/platform/ai-output-clearance">Output Clearance</a>
+                <a href="/platform/intelligence-validation">Intelligence Validation</a>
+                <a href="/platform/ai-assurance-evidence-contract">Evidence Contract</a>
+                <a href="/platform/evidence-packages">Evidence Vault</a>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Integration</div><div class="value" style="color:var(--orange);">74</div><div class="note">Sample lifecycle integration score.</div></div>
+            <div class="metric"><div class="label">Priority</div><div class="value" style="color:var(--amber);">Build</div><div class="note">Implementation over new concepts.</div></div>
+            <div class="metric"><div class="label">Routes</div><div class="value" style="color:var(--blue);" id="routeMetric">--</div><div class="note">Active lifecycle routes detected.</div></div>
+            <div class="metric"><div class="label">Evidence</div><div class="value" style="color:var(--green);">Auto</div><div class="note">Evidence automation targets defined.</div></div>
+            <div class="metric"><div class="label">Workflow</div><div class="value" style="color:var(--red);">E2E</div><div class="note">End-to-end workflow connection required.</div></div>
+            <div class="metric"><div class="label">UX</div><div class="value" style="color:var(--orange2);">Nav</div><div class="note">One-click lifecycle navigation.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Executable Lifecycle Route Status</h2>
+                    <p>Each lifecycle stage is checked against the current Flask route map. Active stages can be opened directly; missing stages become implementation backlog items.</p>
+                </div>
+                <span class="tag">Route-aware lifecycle</span>
+            </div>
+            <div class="workflow" id="workflowGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live Lifecycle Integration API</h2>
+                    <p>Use this to inspect the full integration model, stage route status, evidence outputs, and implementation priorities.</p>
+                </div>
+                <span class="tag">Live integration API</span>
+            </div>
+
+            <div class="two-col">
+                <div class="panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Integration Actions</h2>
+                    <div class="button-grid">
+                        <button onclick="loadAssessment()"><strong>Run lifecycle integration assessment</strong><span>Returns route coverage, implementation gaps, evidence automation targets, and UX hardening targets.</span></button>
+                        <button onclick="loadWorkflow()"><strong>Inspect executable workflow</strong><span>Checks which lifecycle routes are active and which stages need implementation.</span></button>
+                        <button onclick="loadStage('discovery_visibility')"><strong>Inspect discovery and visibility</strong><span>Shows expected objects and evidence for the lifecycle entry point.</span></button>
+                        <button onclick="loadStage('governance_operationalization')"><strong>Inspect governance operationalization</strong><span>Shows policy-to-control-to-evidence operational implementation expectations.</span></button>
+                        <button onclick="loadStage('intelligence_validation')"><strong>Inspect intelligence validation</strong><span>Shows continuous validation evidence and operational fitness obligations.</span></button>
+                        <button onclick="loadStage('output_clearance')"><strong>Inspect output clearance</strong><span>Shows output workflow-entry evidence and clearance obligations.</span></button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div id="result" class="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for lifecycle integration query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select an action.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="ring"><strong>--</strong><span>Flow</span></div>
+                        <div class="score-text">The lifecycle integration record will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            Platform Lifecycle Integration Engine. The next platform phase is implementation, integration, evidence automation, user experience, and operational workflow execution.
+        </div>
+    </div>
+
+    <script>
+        function listText(items){
+            if(!items || !items.length){ return "None listed."; }
+            return items.join("; ");
+        }
+
+        function statusClass(active){
+            return active ? "active" : "missing";
+        }
+
+        function statusText(active){
+            return active ? "ACTIVE ROUTE" : "IMPLEMENTATION GAP";
+        }
+
+        async function loadModel(){
+            const response = await fetch('/api/platform/lifecycle-integration/workflow/demo');
+            const data = await response.json();
+
+            const activeCount = (data.integration_flow || []).filter(function(item){ return item.route_active; }).length;
+            document.getElementById("routeMetric").innerText = activeCount + "/" + (data.integration_flow || []).length;
+
+            document.getElementById("workflowGrid").innerHTML = (data.integration_flow || []).map(function(item, index){
+                const cls = statusClass(item.route_active);
+                const href = item.route_active ? item.active_route : "/platform/lifecycle-integration";
+                return `<div class="stage ${cls}">
+                    <div class="status ${cls}">${statusText(item.route_active)}</div>
+                    <strong>${index + 1}. ${item.stage_name}</strong>
+                    <span>${item.stage_purpose}<br><br><b>Primary route:</b> ${item.primary_route}<br><b>Active route:</b> ${item.active_route || "None detected"}<br><b>Evidence outputs:</b> ${item.evidence_outputs.length}</span>
+                    <a href="${href}">${item.route_active ? "Open active stage" : "Review implementation gap"}</a>
+                </div>`;
+            }).join('');
+        }
+
+        async function loadWorkflow(){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling lifecycle workflow status API...</div>';
+
+            try{
+                const response = await fetch('/api/platform/lifecycle-integration/workflow/demo');
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                const active = (data.integration_flow || []).filter(function(item){ return item.route_active; }).length;
+                const missing = (data.integration_flow || []).filter(function(item){ return !item.route_active; }).map(function(item){ return item.stage_name; });
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">Executable Lifecycle Workflow</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${active}/${data.integration_flow.length} active</div>
+                    </div>
+                    <div class="ring"><strong>${active}</strong><span>Active</span></div>
+                    <div class="line"><strong>Capability</strong>${data.capability_name}</div>
+                    <div class="line"><strong>Platform Rule</strong>${data.platform_rule}</div>
+                    <div class="line"><strong>Active Route Count</strong><span class="ok">${active}</span></div>
+                    <div class="line"><strong>Implementation Gap Count</strong><span class="gap">${missing.length}</span></div>
+                    <div class="line"><strong>Implementation Gaps</strong><span class="gap">${listText(missing)}</span></div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Workflow API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        async function loadStage(stageId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling lifecycle stage integration API...</div>';
+
+            try{
+                const response = await fetch('/api/platform/lifecycle-integration/stage/demo?stage_id=' + encodeURIComponent(stageId));
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.stage_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.stage_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.route_active ? "ACTIVE ROUTE" : "IMPLEMENTATION GAP"}</div>
+                    </div>
+                    <div class="ring"><strong>${data.route_active ? "ON" : "GAP"}</strong><span>Route</span></div>
+                    <div class="line"><strong>Operational Question</strong>${data.operational_question}</div>
+                    <div class="line"><strong>Primary Route</strong>${data.primary_route}</div>
+                    <div class="line"><strong>Active Route</strong>${data.active_route || "None detected"}</div>
+                    <div class="line"><strong>Alternative Routes</strong>${listText(data.alternative_routes)}</div>
+                    <div class="line"><strong>Expected Objects</strong>${listText(data.expected_objects)}</div>
+                    <div class="line"><strong>Evidence Outputs</strong>${listText(data.evidence_outputs)}</div>
+                    <div class="line"><strong>Implementation State</strong><span class="${data.route_active ? "ok" : "gap"}">${data.implementation_state}</span></div>
+                    <div class="line"><strong>Next Integration Action</strong>${data.next_integration_action}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Stage API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        async function loadAssessment(){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling sample lifecycle integration assessment...</div>';
+
+            try{
+                const response = await fetch('/api/platform/lifecycle-integration/assessment/demo');
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.workflow_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.assessment_id} | ${data.workflow_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.integration_decision}</div>
+                    </div>
+                    <div class="ring"><strong>${data.integration_score}</strong><span>Score</span></div>
+                    <div class="line"><strong>Integration State</strong>${data.computed_integration_state}</div>
+                    <div class="line"><strong>Route Coverage</strong>${data.active_route_count}/${data.total_stage_count} active lifecycle routes</div>
+                    <div class="line"><strong>Implementation Gaps</strong><span class="gap">${listText(data.implementation_gaps)}</span></div>
+                    <div class="line"><strong>Implementation Priority</strong>${listText(data.implementation_priority)}</div>
+                    <div class="line"><strong>Evidence Automation Targets</strong>${listText(data.evidence_automation_targets)}</div>
+                    <div class="line"><strong>UX Targets</strong>${listText(data.ux_targets)}</div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Assessment API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadModel().then(function(){ loadAssessment(); });
+    </script>
+</body>
+</html>
