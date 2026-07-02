@@ -1,0 +1,2501 @@
+﻿[
+    {
+        "Url":  "http://127.0.0.1:5000/",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/action-assurance/check/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/action-assurance/check/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/action-assurance/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/action-assurance/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/action-assurance/stage/demo?stage_id=authority",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/action-assurance/stage/demo?stage_id=authority",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/action-assurance/workflow/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/action-assurance/workflow/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/agentic-action/check/demo?action_id=ACT-RBAC-CHANGE-001",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/agentic-action/check/demo?action_id=ACT-RBAC-CHANGE-001",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/agentic-action/flow/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/agentic-action/flow/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/agentic-action/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/agentic-action/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/agentic-action/stage/demo?stage_id=authority",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/agentic-action/stage/demo?stage_id=authority",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=decision_rights_accountability",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=decision_rights_accountability",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=evidence_contract_accountability",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=evidence_contract_accountability",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=autonomy_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=autonomy_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=evidence_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=evidence_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=knowledge_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=knowledge_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=tool_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=tool_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/workflow/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-assurance/workflow/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=autonomy_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=autonomy_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=evidence_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=evidence_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=knowledge_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=knowledge_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=tool_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=tool_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/evaluate/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/evaluate/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/policy/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/policy/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-architecture-gate/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/certificate/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/certificate/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=approval_decision",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=approval_decision",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=release_authorization",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=release_authorization",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_human_approval_evidence",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_human_approval_evidence",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_runtime_monitoring_signal",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_runtime_monitoring_signal",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/verification/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-closure/verification/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/contract/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/contract/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=human_approval_evidence",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=human_approval_evidence",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=tool_authorization_evidence",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=tool_authorization_evidence",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/learning/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/learning/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=lifecycle_change_learning_loop",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=lifecycle_change_learning_loop",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=organizational_intelligence_loop",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=organizational_intelligence_loop",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-learning/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/decision/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/decision/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_1_architecture_boundary_assessment",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_1_architecture_boundary_assessment",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_2_control_routing",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_2_control_routing",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_3_evidence_binding",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_3_evidence_binding",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/monitoring/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/monitoring/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=drift_detection_signal",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=drift_detection_signal",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=runtime_monitoring_signal",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=runtime_monitoring_signal",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=certificate_issued_gate",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=certificate_issued_gate",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=monitoring_activation_gate",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=monitoring_activation_gate",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/release/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-release/release/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_human_approval_evidence",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_human_approval_evidence",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_runtime_monitoring_signal",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_runtime_monitoring_signal",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/queue/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/queue/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-remediation/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/replay/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/replay/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=evidence_contract_replay",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=evidence_contract_replay",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=human_approval_replay",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=human_approval_replay",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/response/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/response/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=drift_threshold_breach_trigger",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=drift_threshold_breach_trigger",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=unsafe_tool_action_trigger",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=unsafe_tool_action_trigger",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_autonomy_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_autonomy_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_evidence_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_evidence_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_knowledge_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_knowledge_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_tool_assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_tool_assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/routing/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-router/routing/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=evidence_contract_state",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=evidence_contract_state",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=human_approval_state",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=human_approval_state",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/recalculate/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/recalculate/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/assurance-model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/assurance-model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/check/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/check/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/level/demo?level_id=level_4",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/level/demo?level_id=level_4",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-autonomy/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-autonomy/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/blueprint/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/blueprint/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/stage/demo?stage_id=infrastructure_as_code",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-infrastructure/stage/demo?stage_id=infrastructure_as_code",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_lifecycle_change_001",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_lifecycle_change_001",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_outcome_lesson_001",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_outcome_lesson_001",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/registry/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/registry/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/change/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/change/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/dimension/demo?dimension_id=approved_change_boundaries",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/dimension/demo?dimension_id=approved_change_boundaries",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-lifecycle-change/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/dimension/demo?dimension_id=workflow_redesign",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/dimension/demo?dimension_id=workflow_redesign",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/level/demo?level_id=level_3",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/level/demo?level_id=level_3",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-operational-readiness/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=evidence_completeness",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=evidence_completeness",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=prompt_model_lineage",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=prompt_model_lineage",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-output-clearance/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=context_of_use_match",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=context_of_use_match",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=tool_permission_match",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=tool_permission_match",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-reuse-applicability/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=evidence_ownership",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=evidence_ownership",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=role_ownership",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=role_ownership",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-team-assurance/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=autonomy_level_check",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=autonomy_level_check",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=context_of_use_check",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=context_of_use_check",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/intake/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/intake/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/ai-workflow-intake/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/assurance/object/demo?object_id=niagara-bms-supervisor",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/assurance/object/demo?object_id=niagara-bms-supervisor",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/assurance/state/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/assurance/state/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/blueprint/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/blueprint/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=mcp_servers",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=mcp_servers",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=model_abstraction",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=model_abstraction",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=prompt_governance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=prompt_governance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-binding/demo?stage_id=develop",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-binding/demo?stage_id=develop",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-bindings/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-bindings/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/evidence-readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/lifecycle/demo?stage_id=evaluate",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/lifecycle/demo?stage_id=evaluate",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/object/demo?object_id=azf-prompt-version",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/object/demo?object_id=azf-prompt-version",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/objects/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/objects/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/azure-foundry/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/azure-foundry/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/blueprints/agentic-enterprise/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/blueprints/agentic-enterprise/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/blueprints/ai-enabled-cmc/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/blueprints/ai-enabled-cmc/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/blueprints/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/blueprints/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/blueprints/validation/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/blueprints/validation/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/cloud-assurance/matrix/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/cloud-assurance/matrix/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/cloud-assurance/provider/demo?provider_id=azure",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/cloud-assurance/provider/demo?provider_id=azure",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/data-to-decision/check/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/data-to-decision/check/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/data-to-decision/lifecycle/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/data-to-decision/lifecycle/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/data-to-decision/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/data-to-decision/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/data-to-decision/stage/demo?stage_id=data_lineage",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/data-to-decision/stage/demo?stage_id=data_lineage",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/decision-context/flow/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/decision-context/flow/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/decision-context/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/decision-context/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/decision-context/stage/demo?stage_id=trusted_context",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/decision-context/stage/demo?stage_id=trusted_context",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/enterprise-execution-assurance/demo",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/enterprise-execution-assurance/demo",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/evidence/object/demo?object_id=niagara-bms-supervisor",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/evidence/object/demo?object_id=niagara-bms-supervisor",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/evidence/package/demo?package_id=EVP-NIAGARA-READINESS-001",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/evidence/package/demo?package_id=EVP-NIAGARA-READINESS-001",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/evidence/state/demo",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/evidence/state/demo",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/execution-assurance/demo",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/execution-assurance/demo",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/intelligence-validation/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/intelligence-validation/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=prompt_traceability",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=prompt_traceability",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=revalidation_triggers",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=revalidation_triggers",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/intelligence-validation/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/intelligence-validation/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/intelligence-validation/readiness/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/intelligence-validation/readiness/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/assessment/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/assessment/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/model/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/model/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/stage/demo?stage_id=intelligence_validation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/stage/demo?stage_id=intelligence_validation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/workflow/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/lifecycle-integration/workflow/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/mcp/tool-call/demo?tool_id=query_assurance_object\u0026object_id=niagara-bms-supervisor",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/mcp/tool-call/demo?tool_id=query_assurance_object\u0026object_id=niagara-bms-supervisor",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/mcp/tool-call-log/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/mcp/tool-call-log/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/mcp/tools/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/mcp/tools/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v10/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v10/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v11/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v11/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v12/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v12/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v13/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v13/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v14/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v14/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v15/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v15/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v16/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v16/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v17/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v17/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v4/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v4/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v5/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v5/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v6/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v6/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v7/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v7/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v8/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v8/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/spine-refresh/v9/demo",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/spine-refresh/v9/demo",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/trust-score/demo?object_id=niagara-bms-supervisor",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/trust-score/demo?object_id=niagara-bms-supervisor",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/trust-state/demo",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/trust-state/demo",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/twin/demo?object_id=niagara-bms-supervisor",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/twin/demo?object_id=niagara-bms-supervisor",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/twin-state/demo",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/twin-state/demo",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/vision/hud/demo?asset_id=SPEEDY-GLOVE-1803",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/vision/hud/demo?asset_id=SPEEDY-GLOVE-1803",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/api/platform/vision/lookup/demo?asset_id=NIAGARA-BMS-SUPERVISOR",
+        "Status":  500,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/api/platform/vision/lookup/demo?asset_id=NIAGARA-BMS-SUPERVISOR",
+        "Message":  "The remote server returned an error: (500) Internal Server Error."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-api-blueprint",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-api-blueprint",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-architecture",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-architecture",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-deployment",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-deployment",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-evidence-store",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-evidence-store",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-governance-vision",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-governance-vision",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-identity-access",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-identity-access",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-mcp-server",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-mcp-server",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-observability",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-observability",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/cobitchain-route-registry",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/cobitchain-route-registry",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/deployment-pipeline",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/deployment-pipeline",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/evidence-vault",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/evidence-vault",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/governance-vision",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/governance-vision",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/identity-access",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/identity-access",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/mcp-server",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/mcp-server",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/observability",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/observability",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/action-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/action-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/action-assurance-workflow",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/action-assurance-workflow",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/action-governance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/action-governance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/agent-action-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/agent-action-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/agentic-action-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/agentic-action-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-accountability-matrix",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-accountability-matrix",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-accountability-raci",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-accountability-raci",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-action-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-action-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-approval-certificate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-approval-certificate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-architecture-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-architecture-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-architecture-boundary-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-architecture-boundary-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-approval-certificate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-approval-certificate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-architecture",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-architecture",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-closure-verifier",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-closure-verifier",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-control-router",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-control-router",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-decision-orchestrator",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-decision-orchestrator",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-evidence-contract",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-evidence-contract",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-exception-drift-response",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-exception-drift-response",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-knowledge-reuse",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-knowledge-reuse",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-new-workflow-intake",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-new-workflow-intake",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-operational-release-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-operational-release-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-orchestrator",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-orchestrator",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-outcome-learning",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-outcome-learning",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-post-release-monitoring",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-post-release-monitoring",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-remediation-queue",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-remediation-queue",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-replay",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-replay",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-replay-console",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-replay-console",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-response-engine",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-response-engine",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-reuse-applicability",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-reuse-applicability",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-assurance-trust-recalculation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-assurance-trust-recalculation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-autonomy-assessment",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-autonomy-assessment",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-autonomy-assurance-model",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-autonomy-assurance-model",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-autonomy-model",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-autonomy-model",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-boundary-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-boundary-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-changecontroltrust",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-changecontroltrust",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-change-lifecycle-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-change-lifecycle-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-closure-verifier",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-closure-verifier",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-control-router",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-control-router",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-evidence-contract",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-evidence-contract",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-exception-drift-response",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-exception-drift-response",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-infra-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-infra-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-infrastructure-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-infrastructure-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-intelligence-validation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-intelligence-validation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-knowledge-reuse-registry",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-knowledge-reuse-registry",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-lifecycle-change-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-lifecycle-change-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-lifecycle-intelligence-validation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-lifecycle-intelligence-validation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-operational-readiness",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-operational-readiness",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-operational-release-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-operational-release-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-operational-team-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-operational-team-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-ops-readiness",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-ops-readiness",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-outcome-learning",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-outcome-learning",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-output-clearance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-output-clearance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-output-release-clearance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-output-release-clearance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-post-release-monitoring",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-post-release-monitoring",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-raci-matrix",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-raci-matrix",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-remediation-queue",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-remediation-queue",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-replay-console",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-replay-console",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-reuse-applicability-engine",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-reuse-applicability-engine",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-team-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-team-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-trust-recalculation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-trust-recalculation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/ai-workflow-intake",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/ai-workflow-intake",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/api",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/api",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/api-blueprint",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/api-blueprint",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/architecture",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/architecture",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/architecture-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/architecture-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/architecture-boundary-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/architecture-boundary-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/architecture-control-router",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/architecture-control-router",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-closure-verifier",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-closure-verifier",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-continuous-improvement",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-continuous-improvement",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-decision-orchestrator",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-decision-orchestrator",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-evidence-contract",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-evidence-contract",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-knowledge-registry",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-knowledge-registry",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-lifecycle-workflow",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-lifecycle-workflow",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-object",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-object",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-pattern-applicability",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-pattern-applicability",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-remediation-queue",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-remediation-queue",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/assurance-trust-recalculation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/assurance-trust-recalculation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/audit-replay",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/audit-replay",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/automation-agentic-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/automation-agentic-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/autonomy-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/autonomy-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/azure-foundry-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/azure-foundry-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/azure-foundry-blueprint",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/azure-foundry-blueprint",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/azure-foundry-evidence-binder",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/azure-foundry-evidence-binder",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/azure-foundry-lifecycle-evidence",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/azure-foundry-lifecycle-evidence",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/blueprints",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/blueprints",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/blueprints/agentic-enterprise",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/blueprints/agentic-enterprise",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/blueprints/ai-enabled-cmc",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/blueprints/ai-enabled-cmc",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/cloud-agentic-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/cloud-agentic-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/cloud-assurance-matrix",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/cloud-assurance-matrix",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/cloud-matrix",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/cloud-matrix",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/data-decision-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/data-decision-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/data-to-decision",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/data-to-decision",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/data-to-decision-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/data-to-decision-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/decision-confidence-flow",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/decision-confidence-flow",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/decision-context-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/decision-context-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/deployment",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/deployment",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/deployment-pipeline",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/deployment-pipeline",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/end-to-end-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/end-to-end-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/enterprise-execution-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/enterprise-execution-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/evidence-packages",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/evidence-packages",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/evidence-store",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/evidence-store",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/evidence-vault",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/evidence-vault",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/evidence-vault-live",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/evidence-vault-live",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/execution-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/execution-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/foundry-assurance-blueprint",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/foundry-assurance-blueprint",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/foundry-lifecycle-evidence",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/foundry-lifecycle-evidence",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/governance-vision",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/governance-vision",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/identity",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/identity",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/identity-access",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/identity-access",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/infrastructure-assurance-blueprint",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/infrastructure-assurance-blueprint",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/integration-layer",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/integration-layer",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/intelligence-validation",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/intelligence-validation",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/jurisdictional-ai-assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/jurisdictional-ai-assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/lifecycle-integration",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/lifecycle-integration",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/mcp",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/mcp",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/mcp-server",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/mcp-server",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/mcp-tools",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/mcp-tools",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/module-map",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/module-map",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/new-workflow-assurance-intake",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/new-workflow-assurance-intake",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/object-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/object-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/observability",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/observability",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/operational-ai-readiness",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/operational-ai-readiness",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/operational-release-gate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/operational-release-gate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/operational-trust-certificate",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/operational-trust-certificate",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/operational-trust-twin",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/operational-trust-twin",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/organizational-intelligence-assurance",
+        "Status":  404,
+        "Ok":  false,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/organizational-intelligence-assurance",
+        "Message":  "The remote server returned an error: (404) Not Found."
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/output-clearance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/output-clearance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/pccp-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/pccp-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/post-release-ai-monitoring",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/post-release-ai-monitoring",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/qr-lookup",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/qr-lookup",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/route-registry",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/route-registry",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/routes",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/routes",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/team-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/team-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/tool-call-evidence",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/tool-call-evidence",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/trusted-data-context-flow",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/trusted-data-context-flow",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/trust-score",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/trust-score",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/trust-score-service",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/trust-score-service",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/trust-twin",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/trust-twin",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/unified-assurance",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/unified-assurance",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/vision",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/vision",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform/vision-lookup",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform/vision-lookup",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform-api",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform-api",
+        "Message":  "OK"
+    },
+    {
+        "Url":  "http://127.0.0.1:5000/platform-architecture",
+        "Status":  200,
+        "Ok":  true,
+        "FinalUrl":  "http://127.0.0.1:5000/platform-architecture",
+        "Message":  "OK"
+    }
+]

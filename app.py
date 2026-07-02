@@ -271797,183 +271797,74 @@ def cobitchain_platform_blueprint_validation_demo_api():
 def platform_enterprise_execution_assurance():
     from pathlib import Path
     from flask import Response
+
     page = Path("platform_enterprise_execution_assurance.html")
     if page.exists():
-        return Response(page.read_text(encoding="utf-8"), mimetype="text/html")
-    return Response("<h1>Enterprise Execution Assurance</h1><p>Capability page not found.</p>", mimetype="text/html", status=404)
+        return Response(page.read_text(encoding="utf-8-sig"), mimetype="text/html")
+
+    fallback = """
+    <!doctype html>
+    <html>
+    <head><title>Enterprise Execution Assurance</title></head>
+    <body>
+        <h1>Enterprise Execution Assurance</h1>
+        <p>Capability page not found.</p>
+    </body>
+    </html>
+    """
+    return Response(fallback, mimetype="text/html", status=404)
+
 
 @app.route("/api/platform/enterprise-execution-assurance/demo")
 @app.route("/api/platform/execution-assurance/demo")
 def api_platform_enterprise_execution_assurance_demo():
+    from pathlib import Path
     from flask import jsonify
-    return jsonify({
+
+    summary = Path("enterprise_execution_assurance_capability_patch_v1_summary.json")
+
+    fallback = {
         "patch_marker": "COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE",
         "patch_type": "enterprise_execution_assurance_capability_layer",
-        "platform_redesign": false,
-        "new_capability_layer": true,
+        "platform_redesign": False,
+        "new_capability_layer": True,
         "capability_name": "Enterprise Execution Assurance",
-        "updated_lifecycle": [
-                "Discovery",
-                "Visibility",
-                "Governance",
-                "Operationalization",
-                "Enterprise Execution Assurance",
-                "Evidence",
-                "Continuous Assurance",
-                "Operational Trust"
-        ],
         "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
-        "enterprise_execution_assurance": {
-                "capability_name": "Enterprise Execution Assurance",
-                "capability_type": "First-class Platform B assurance capability",
-                "platform_position": "Between Operationalization and Evidence",
-                "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
-                "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
-                "positioning_statement": "Organizations are moving from AI that recommends to AI that acts. Enterprise Execution Assurance ensures those AI-driven actions are authorized, policy-enforced, traceable, reversible where required, monitored, evidenced, and reconstructable.",
-                "difference_from_evidence": "Enterprise Execution Assurance checks the execution itself. Evidence proves the execution can be reconstructed.",
-                "platform_redesign": false,
-                "lifecycle_evolution": true
-        },
+        "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+        "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+        "platform_position": "Between Operationalization and Evidence",
         "evaluation_areas": [
-                "Workflow authorization",
-                "Runtime policy enforcement",
-                "Enterprise system interaction",
-                "API invocation traceability",
-                "Human approval checkpoints",
-                "Rollback capability",
-                "Execution evidence",
-                "Outcome verification",
-                "Continuous monitoring",
-                "Audit reconstruction"
+            "Workflow authorization",
+            "Runtime policy enforcement",
+            "Enterprise system interaction",
+            "API invocation traceability",
+            "Human approval checkpoints",
+            "Rollback capability",
+            "Execution evidence",
+            "Outcome verification",
+            "Continuous monitoring",
+            "Audit reconstruction"
         ],
         "execution_assurance_modules": [
-                {
-                        "name": "AI Runtime Assurance",
-                        "question": "Can this AI runtime be operationally trusted?",
-                        "evaluates": [
-                                "Runtime identity",
-                                "Runtime security",
-                                "Runtime permissions",
-                                "Runtime isolation",
-                                "Runtime policy enforcement",
-                                "Runtime evidence",
-                                "Runtime audit logs"
-                        ]
-                },
-                {
-                        "name": "Workflow Assurance",
-                        "question": "Was this AI action executed through an approved workflow?",
-                        "evaluates": [
-                                "Workflow integrity",
-                                "Approval routing",
-                                "Workflow ownership",
-                                "Workflow evidence",
-                                "Workflow traceability",
-                                "Workflow versioning",
-                                "Workflow execution logs"
-                        ]
-                },
-                {
-                        "name": "Enterprise Action Assurance",
-                        "question": "Can every enterprise action be reconstructed?",
-                        "evaluates": [
-                                "API called",
-                                "File modified",
-                                "Database updated",
-                                "ServiceNow ticket created",
-                                "Robot instructed",
-                                "MES command",
-                                "ERP update",
-                                "LIMS action",
-                                "EHR action"
-                        ]
-                },
-                {
-                        "name": "Runtime Policy Assurance",
-                        "question": "Was policy enforced during execution?",
-                        "evaluates": [
-                                "Policies applied",
-                                "Blocked actions",
-                                "Exceptions",
-                                "Policy overrides",
-                                "Escalation",
-                                "Approval"
-                        ]
-                },
-                {
-                        "name": "AI Orchestration Assurance",
-                        "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
-                        "evaluates": [
-                                "Agent routing",
-                                "Agent sequencing",
-                                "Agent dependencies",
-                                "Agent handoffs",
-                                "Runtime coordination",
-                                "Failure handling",
-                                "Rollback",
-                                "Retry evidence"
-                        ]
-                },
-                {
-                        "name": "Agent Runtime Evidence",
-                        "question": "Can the agent runtime decision be reconstructed?",
-                        "evaluates": [
-                                "Prompt",
-                                "Context",
-                                "Model",
-                                "Runtime",
-                                "Workflow",
-                                "Tools",
-                                "APIs",
-                                "Human review",
-                                "Decision",
-                                "Outcome"
-                        ]
-                }
-        ],
-        "execution_control_questions": [
-                "Was the workflow authorized?",
-                "Was runtime policy enforced?",
-                "Which enterprise system was touched?",
-                "Which API was invoked?",
-                "Was human approval required and captured?",
-                "Was rollback available?",
-                "Was execution evidence produced?",
-                "Was the outcome verified?",
-                "Is the action continuously monitored?",
-                "Can the execution be reconstructed during audit or inspection?"
-        ],
-        "enterprise_action_types": [
-                "API call",
-                "File modification",
-                "Database update",
-                "ServiceNow ticket creation",
-                "Robot instruction",
-                "MES command",
-                "ERP update",
-                "LIMS action",
-                "EHR action"
-        ],
-        "execution_assurance_records": [
-                "Enterprise Execution Assurance Record",
-                "Workflow authorization record",
-                "Runtime policy enforcement record",
-                "Enterprise system interaction record",
-                "API invocation traceability record",
-                "Human approval checkpoint record",
-                "Rollback capability record",
-                "Execution evidence record",
-                "Outcome verification record",
-                "Continuous monitoring record",
-                "Audit reconstruction record",
-                "AI runtime assurance record",
-                "Workflow assurance record",
-                "Enterprise action assurance record",
-                "Runtime policy assurance record",
-                "AI orchestration assurance record",
-                "Agent runtime evidence record"
+            "AI Runtime Assurance",
+            "Workflow Assurance",
+            "Enterprise Action Assurance",
+            "Runtime Policy Assurance",
+            "AI Orchestration Assurance",
+            "Agent Runtime Evidence"
         ]
-})
+    }
+
+    if not summary.exists():
+        return jsonify(fallback)
+
+    try:
+        import json
+        data = json.loads(summary.read_text(encoding="utf-8-sig"))
+        return jsonify(data)
+    except Exception as exc:
+        fallback["summary_read_error"] = str(exc)
+        return jsonify(fallback)
 # COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_ROUTES_V1_END
 
 
