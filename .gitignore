@@ -11,3 +11,102 @@ __pycache__/
 .bash_history
 .bashrc
 .lesshst
+
+# ============================================================
+# COBIT-Chain local development ignores
+# Do not commit local backups, terminal dumps, secrets, caches,
+# virtual environments, or generated local audit clutter.
+# ============================================================
+
+# Python cache/build
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+venv*/
+.venv/
+env/
+env*/
+
+# Local environment / secrets
+.env
+.env.*
+*.env
+local.env
+secrets.*
+*.secret
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Flask/local runtime
+instance/
+.flaskenv
+*.sqlite
+*.sqlite3
+*.db
+
+# Local backups created by patch scripts
+*.backup
+*.bak
+*.orig
+*.tmp
+*.temp
+*.backup_before_*
+*.backup_fix_*
+app.py.backup*
+app.py.backup_*
+app.py.backup_before_*
+platform_*.html.backup*
+platform_*.json.backup*
+platform_*.txt.backup*
+*_backup_*
+*_before_*
+*_after_*
+
+# Local audit outputs
+url_audit_last_3_days_*.csv
+url_audit_last_3_days_*.json
+*_audit_*.csv
+*_audit_*.json
+
+# Terminal paste / copied logs
+Pasted text*.txt
+pasted_text*.txt
+terminal*.txt
+terminal*.log
+console*.txt
+console*.log
+powershell*.txt
+powershell*.log
+*.log
+
+# Local zip/package exports
+*.zip
+*.7z
+*.rar
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Accidental one-off scratch files
+45
+scratch*
+tmp*
+temp*
