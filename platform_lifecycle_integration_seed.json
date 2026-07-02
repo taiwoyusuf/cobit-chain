@@ -545,7 +545,12 @@
       "Assign adoption owner and adoption target before release.",
       "Assign platform, data, integration, security, and lifecycle owners.",
       "Create runbook and escalation path before operational handoff.",
-      "Monitor ownership gaps after go-live."
+      "Monitor ownership gaps after go-live.",
+      "Enrich Governance with Risk Classification, Approval Authority, Human Review, Escalation, Evidence, and Continuous Oversight.",
+      "Verify CAPA effectiveness after closure.",
+      "Monitor recurring deviations and systemic weakness recurrence.",
+      "Evaluate Quality Unit oversight effectiveness.",
+      "Demonstrate sustained compliance rather than one-time remediation."
     ],
     "evidence_automation_targets": [
       "Evidence package builder",
@@ -622,7 +627,17 @@
       "Ownership change history",
       "Business KPI ownership record",
       "Incident ownership record",
-      "Retirement ownership record"
+      "Retirement ownership record",
+      "Deviation correction evidence",
+      "Systemic weakness analysis",
+      "Governance strengthening record",
+      "Quality Unit oversight record",
+      "CAPA effectiveness evidence",
+      "Post-closure monitoring evidence",
+      "Sustained compliance evidence",
+      "Recurrence prevention evidence",
+      "Control effectiveness trend",
+      "Audit reconstruction package"
     ],
     "ux_targets": [
       "One-click lifecycle navigation",
@@ -1017,7 +1032,17 @@
       "Ownership changed without evidence",
       "KPI owner missing",
       "Incident owner missing",
-      "Retirement owner missing"
+      "Retirement owner missing",
+      "CAPA effectiveness after closure",
+      "Recurring deviation detection",
+      "Systemic weakness recurrence",
+      "Quality Unit oversight effectiveness",
+      "Control effectiveness over time",
+      "Governance process strengthening",
+      "Evidence completeness after remediation",
+      "Sustained compliance monitoring",
+      "One-time remediation risk",
+      "Audit readiness after closure"
     ],
     "production_ownership_continuity_state": "ACTIVE",
     "production_ownership_continuity_assurance": {
@@ -1134,6 +1159,129 @@
       ],
       "positioning_statement": "Platform B should not treat a demo owner as a production owner. It must prove that business, support, adoption, platform, data, integration, security, lifecycle, incident, KPI, and retirement ownership continue after the AI capability enters production.",
       "principle": "AI ownership is not proven by naming a sponsor for a pilot. It is proven by continuous accountability across business value, support, adoption, platform operation, incidents, changes, KPIs, and retirement."
+    },
+    "governance_sustained_compliance_state": "ACTIVE",
+    "new_module": false,
+    "new_approval_workflow": false,
+    "governance_sustained_compliance_enrichment": {
+      "patch_marker": "COBITCHAIN_PLATFORM_B_GOVERNANCE_SUSTAINED_COMPLIANCE_PATCH_V1_ACTIVE",
+      "architecture_change": false,
+      "new_module": false,
+      "new_approval_workflow": false,
+      "architecture_instruction": "Do not add a new module or approval workflow. Enrich existing Governance, Continuous Assurance, and Operational Trust stages only.",
+      "capability_name": "Governance Effectiveness and Sustained Compliance Enrichment",
+      "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "enriched_stages": [
+        "Governance",
+        "Continuous Assurance",
+        "Operational Trust"
+      ],
+      "existing_governance_controls": [
+        "Risk Classification",
+        "Approval Authority",
+        "Human Review",
+        "Escalation",
+        "Evidence",
+        "Continuous Oversight"
+      ],
+      "core_question": "Did the organization only correct the deviation, or did it strengthen the governance system enough to prevent recurrence and sustain trusted outcomes?",
+      "assurance_questions": [
+        "Was the deviation corrected?",
+        "What systemic weakness allowed it to occur?",
+        "Has the governance process been strengthened?",
+        "Is Quality Unit oversight effective?",
+        "Is there evidence that corrective actions remain effective over time?",
+        "Can the organization demonstrate sustained compliance rather than one-time remediation?"
+      ],
+      "governance_evaluation": [
+        {
+          "control": "Risk Classification",
+          "question": "Was the issue classified according to risk, impact, recurrence potential, and regulated process exposure?",
+          "evidence": [
+            "risk classification record",
+            "impact assessment",
+            "recurrence risk",
+            "GxP or quality impact"
+          ]
+        },
+        {
+          "control": "Approval Authority",
+          "question": "Was the correct authority responsible for accepting, escalating, approving, or closing the issue?",
+          "evidence": [
+            "approval authority record",
+            "delegation evidence",
+            "Quality Unit approval",
+            "decision accountability"
+          ]
+        },
+        {
+          "control": "Human Review",
+          "question": "Did qualified personnel review the deviation, CAPA, systemic weakness, and effectiveness evidence?",
+          "evidence": [
+            "human reviewer",
+            "review timestamp",
+            "review comments",
+            "qualification or role"
+          ]
+        },
+        {
+          "control": "Escalation",
+          "question": "Were systemic or recurring risks escalated to the right governance forum or Quality Unit authority?",
+          "evidence": [
+            "escalation trigger",
+            "escalation owner",
+            "escalation decision",
+            "governance forum record"
+          ]
+        },
+        {
+          "control": "Evidence",
+          "question": "Can the organization reconstruct the correction, root cause, governance decision, CAPA, and effectiveness evidence?",
+          "evidence": [
+            "deviation record",
+            "root cause evidence",
+            "CAPA record",
+            "effectiveness check",
+            "audit trail"
+          ]
+        },
+        {
+          "control": "Continuous Oversight",
+          "question": "Does oversight continue after CAPA closure to verify that controls remain effective?",
+          "evidence": [
+            "post-closure monitoring",
+            "trend review",
+            "recurrence check",
+            "control effectiveness evidence"
+          ]
+        }
+      ],
+      "continuous_assurance_targets": [
+        "CAPA effectiveness after closure",
+        "Recurring deviation detection",
+        "Systemic weakness recurrence",
+        "Quality Unit oversight effectiveness",
+        "Control effectiveness over time",
+        "Governance process strengthening",
+        "Evidence completeness after remediation",
+        "Sustained compliance monitoring",
+        "One-time remediation risk",
+        "Audit readiness after closure"
+      ],
+      "operational_trust_evidence": [
+        "Deviation correction evidence",
+        "Systemic weakness analysis",
+        "Governance strengthening record",
+        "Quality Unit oversight record",
+        "CAPA effectiveness evidence",
+        "Post-closure monitoring evidence",
+        "Sustained compliance evidence",
+        "Recurrence prevention evidence",
+        "Control effectiveness trend",
+        "Audit reconstruction package"
+      ],
+      "positioning_statement": "Platform B does not treat CAPA closure or deviation correction as the end of assurance. It continuously verifies whether governance, Quality Unit oversight, corrective actions, and controls remain effective after closure.",
+      "principle": "Sustained compliance is not proven by one-time remediation. It is proven by continuous evidence that systemic weaknesses were addressed, governance was strengthened, oversight remains effective, and recurrence is prevented over time."
     }
   },
   "enterprise_execution_assurance_capability_patch": {
@@ -1656,5 +1804,127 @@
     ],
     "positioning_statement": "Platform B should not treat a demo owner as a production owner. It must prove that business, support, adoption, platform, data, integration, security, lifecycle, incident, KPI, and retirement ownership continue after the AI capability enters production.",
     "principle": "AI ownership is not proven by naming a sponsor for a pilot. It is proven by continuous accountability across business value, support, adoption, platform operation, incidents, changes, KPIs, and retirement."
-  }
+  },
+  "platform_b_governance_sustained_compliance_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_GOVERNANCE_SUSTAINED_COMPLIANCE_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "new_approval_workflow": false,
+    "architecture_instruction": "Do not add a new module or approval workflow. Enrich existing Governance, Continuous Assurance, and Operational Trust stages only.",
+    "capability_name": "Governance Effectiveness and Sustained Compliance Enrichment",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "enriched_stages": [
+      "Governance",
+      "Continuous Assurance",
+      "Operational Trust"
+    ],
+    "existing_governance_controls": [
+      "Risk Classification",
+      "Approval Authority",
+      "Human Review",
+      "Escalation",
+      "Evidence",
+      "Continuous Oversight"
+    ],
+    "core_question": "Did the organization only correct the deviation, or did it strengthen the governance system enough to prevent recurrence and sustain trusted outcomes?",
+    "assurance_questions": [
+      "Was the deviation corrected?",
+      "What systemic weakness allowed it to occur?",
+      "Has the governance process been strengthened?",
+      "Is Quality Unit oversight effective?",
+      "Is there evidence that corrective actions remain effective over time?",
+      "Can the organization demonstrate sustained compliance rather than one-time remediation?"
+    ],
+    "governance_evaluation": [
+      {
+        "control": "Risk Classification",
+        "question": "Was the issue classified according to risk, impact, recurrence potential, and regulated process exposure?",
+        "evidence": [
+          "risk classification record",
+          "impact assessment",
+          "recurrence risk",
+          "GxP or quality impact"
+        ]
+      },
+      {
+        "control": "Approval Authority",
+        "question": "Was the correct authority responsible for accepting, escalating, approving, or closing the issue?",
+        "evidence": [
+          "approval authority record",
+          "delegation evidence",
+          "Quality Unit approval",
+          "decision accountability"
+        ]
+      },
+      {
+        "control": "Human Review",
+        "question": "Did qualified personnel review the deviation, CAPA, systemic weakness, and effectiveness evidence?",
+        "evidence": [
+          "human reviewer",
+          "review timestamp",
+          "review comments",
+          "qualification or role"
+        ]
+      },
+      {
+        "control": "Escalation",
+        "question": "Were systemic or recurring risks escalated to the right governance forum or Quality Unit authority?",
+        "evidence": [
+          "escalation trigger",
+          "escalation owner",
+          "escalation decision",
+          "governance forum record"
+        ]
+      },
+      {
+        "control": "Evidence",
+        "question": "Can the organization reconstruct the correction, root cause, governance decision, CAPA, and effectiveness evidence?",
+        "evidence": [
+          "deviation record",
+          "root cause evidence",
+          "CAPA record",
+          "effectiveness check",
+          "audit trail"
+        ]
+      },
+      {
+        "control": "Continuous Oversight",
+        "question": "Does oversight continue after CAPA closure to verify that controls remain effective?",
+        "evidence": [
+          "post-closure monitoring",
+          "trend review",
+          "recurrence check",
+          "control effectiveness evidence"
+        ]
+      }
+    ],
+    "continuous_assurance_targets": [
+      "CAPA effectiveness after closure",
+      "Recurring deviation detection",
+      "Systemic weakness recurrence",
+      "Quality Unit oversight effectiveness",
+      "Control effectiveness over time",
+      "Governance process strengthening",
+      "Evidence completeness after remediation",
+      "Sustained compliance monitoring",
+      "One-time remediation risk",
+      "Audit readiness after closure"
+    ],
+    "operational_trust_evidence": [
+      "Deviation correction evidence",
+      "Systemic weakness analysis",
+      "Governance strengthening record",
+      "Quality Unit oversight record",
+      "CAPA effectiveness evidence",
+      "Post-closure monitoring evidence",
+      "Sustained compliance evidence",
+      "Recurrence prevention evidence",
+      "Control effectiveness trend",
+      "Audit reconstruction package"
+    ],
+    "positioning_statement": "Platform B does not treat CAPA closure or deviation correction as the end of assurance. It continuously verifies whether governance, Quality Unit oversight, corrective actions, and controls remain effective after closure.",
+    "principle": "Sustained compliance is not proven by one-time remediation. It is proven by continuous evidence that systemic weaknesses were addressed, governance was strengthened, oversight remains effective, and recurrence is prevented over time."
+  },
+  "platform_b_new_module": false,
+  "platform_b_new_approval_workflow": false
 }
