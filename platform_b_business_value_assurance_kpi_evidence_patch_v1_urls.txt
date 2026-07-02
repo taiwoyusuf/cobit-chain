@@ -1,0 +1,12 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/blueprints
+http://127.0.0.1:5000/platform/blueprints/ai-enabled-cmc
+http://127.0.0.1:5000/platform/blueprints/agentic-enterprise
+http://127.0.0.1:5000/platform/lifecycle-integration
+http://127.0.0.1:5000/platform/enterprise-execution-assurance
+http://127.0.0.1:5000/platform/execution-assurance
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/api/platform/blueprints/model/demo
+http://127.0.0.1:5000/api/platform/lifecycle-integration/model/demo
+http://127.0.0.1:5000/api/platform/enterprise-execution-assurance/demo
+http://127.0.0.1:5000/api/platform/execution-assurance/demo

@@ -1,0 +1,132 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_BUSINESS_VALUE_KPI_EVIDENCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "architecture_instruction": "Do not change Platform B architecture. Deepen existing Evidence and Continuous Assurance capabilities only.",
+  "capability_name": "Business Value Assurance / KPI Evidence",
+  "capability_layer": [
+    "Evidence",
+    "Continuous Assurance"
+  ],
+  "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+  "core_question": "Did the AI capability produce measurable business value after production deployment?",
+  "evidence_question": "Can adoption, usage, KPI improvement, support effectiveness, ownership continuity, and production incidents be reconstructed?",
+  "continuous_assurance_question": "Is the business value of the AI capability sustained after go-live?",
+  "evidence_objects": [
+    "Baseline KPI before AI deployment",
+    "Target KPI after AI deployment",
+    "Actual KPI after deployment",
+    "Adoption rate",
+    "Usage metrics",
+    "Active user count",
+    "Workflow completion rate",
+    "Cycle-time reduction",
+    "Quality improvement",
+    "Error or deviation reduction",
+    "Operational efficiency gain",
+    "User acceptance evidence",
+    "Support tickets",
+    "Production incidents",
+    "Ownership continuity record",
+    "Business owner attestation",
+    "Support owner attestation",
+    "Adoption owner attestation",
+    "Platform owner attestation"
+  ],
+  "continuous_monitoring_signals": [
+    "Adoption decline",
+    "Usage decline",
+    "KPI degradation",
+    "Workflow failure increase",
+    "Support backlog increase",
+    "Production incident trend",
+    "Duplicate AI initiative detected",
+    "Ownership gap detected",
+    "User acceptance decline",
+    "Operational value no longer demonstrable"
+  ],
+  "business_value_metrics": [
+    {
+      "metric": "Adoption Rate",
+      "question": "Are intended users actually using the AI capability?",
+      "evidence": [
+        "Active users",
+        "Eligible users",
+        "Usage trend",
+        "Adoption owner"
+      ]
+    },
+    {
+      "metric": "Usage Metrics",
+      "question": "Is the AI capability being used in real workflows rather than only demo scenarios?",
+      "evidence": [
+        "Workflow usage count",
+        "Transaction count",
+        "Session count",
+        "Business process link"
+      ]
+    },
+    {
+      "metric": "Business KPI Improvement",
+      "question": "Did the AI capability improve the business metric it was created to improve?",
+      "evidence": [
+        "Baseline KPI",
+        "Target KPI",
+        "Actual KPI",
+        "Measurement period"
+      ]
+    },
+    {
+      "metric": "Operational Metrics",
+      "question": "Did the AI capability improve operational execution?",
+      "evidence": [
+        "Cycle time",
+        "Throughput",
+        "Error rate",
+        "Rework rate",
+        "SLA performance"
+      ]
+    },
+    {
+      "metric": "User Acceptance",
+      "question": "Do business users accept the AI capability as useful, usable, and reliable?",
+      "evidence": [
+        "Survey result",
+        "Feedback record",
+        "Acceptance decision",
+        "Adoption risk"
+      ]
+    },
+    {
+      "metric": "Production Incidents",
+      "question": "Is the AI capability creating operational risk after go-live?",
+      "evidence": [
+        "Incident count",
+        "Severity",
+        "Root cause",
+        "CAPA or remediation"
+      ]
+    },
+    {
+      "metric": "Support Effectiveness",
+      "question": "Can the organization support the AI capability after the demo team leaves?",
+      "evidence": [
+        "Support owner",
+        "Runbook",
+        "Ticket response time",
+        "Resolution SLA"
+      ]
+    },
+    {
+      "metric": "Ownership Continuity",
+      "question": "Is there clear ownership from pilot through production?",
+      "evidence": [
+        "Business owner",
+        "Support owner",
+        "Platform owner",
+        "Adoption owner"
+      ]
+    }
+  ],
+  "positioning_statement": "Platform B does not stop at AI deployment. It continuously assures whether the AI capability is adopted, used, supported, improving the intended business KPI, and still operationally trusted after production release.",
+  "principle": "AI value is not proven by a successful pilot. It is proven by sustained adoption, measurable KPI improvement, operational supportability, and reconstructable production evidence."
+}
