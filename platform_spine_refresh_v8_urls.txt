@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/ai-assurance-approval-certificate
+http://127.0.0.1:5000/platform/ai-assurance-operational-release-gate
+http://127.0.0.1:5000/platform/ai-assurance-trust-recalculation
+http://127.0.0.1:5000/platform/operational-trust-twin
+http://127.0.0.1:5000/api/platform/spine-refresh/v8/demo

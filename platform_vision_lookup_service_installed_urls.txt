@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/vision-lookup
+http://127.0.0.1:5000/platform/qr-lookup
+http://127.0.0.1:5000/api/platform/vision/lookup/demo?asset_id=NIAGARA-BMS-SUPERVISOR
+http://127.0.0.1:5000/api/platform/vision/hud/demo?asset_id=SPEEDY-GLOVE-1803

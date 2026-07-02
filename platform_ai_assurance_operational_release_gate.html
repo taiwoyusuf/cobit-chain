@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain AI Assurance Operational Release Gate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --text:#eef1f5;--muted:#aab3c2;--orange:#ff8a1f;--orange2:#ffb15c;
+            --amber:#ffd08a;--green:#58e096;--red:#ff5c70;--blue:#9bc7ff;
+            --line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+        .page{max-width:1840px;margin:0 auto;padding:30px}
+        .hero,.section{
+            border:1px solid var(--oline);border-radius:34px;padding:30px;
+            background:linear-gradient(135deg,rgba(23,26,34,.96),rgba(8,9,13,.96));
+            box-shadow:0 28px 80px rgba(0,0,0,.45),0 0 36px rgba(255,138,31,.16);
+            margin-bottom:22px;
+        }
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}
+        .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill,.tag{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1450px;font-size:62px;line-height:.98;letter-spacing:-2.3px;font-weight:1000}
+        .subtitle{max-width:1380px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;margin-top:26px}
+        .statement,.score-panel,.panel,.result{
+            border:1px solid rgba(255,138,31,.28);background:rgba(255,255,255,.045);border-radius:24px;padding:22px;
+        }
+        .statement{color:#fff0df;line-height:1.7}
+        .score-label{color:var(--orange2);font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:950}
+        .score{margin-top:12px;font-size:70px;line-height:.9;color:var(--orange);font-weight:1000;letter-spacing:-3px}
+        .score-text{margin-top:16px;color:#d4dbe5;font-size:13px;line-height:1.62}
+        .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin:18px 0 14px;border:1px solid rgba(255,255,255,.08)}
+        .bar span{display:block;height:100%;width:72%;background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a)}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
+        .metric{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:22px;padding:17px;min-height:138px}
+        .metric .label{color:var(--muted);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:1px}
+        .metric .value{margin-top:10px;font-size:31px;font-weight:1000}
+        .metric .note{color:#b4bdca;font-size:12px;line-height:1.48;margin-top:8px}
+        .section-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+        .section h2{margin:0;font-size:30px;letter-spacing:-.8px;font-weight:1000}
+        .section p{margin:8px 0 0;color:#b9c2ce;max-width:1120px;line-height:1.62;font-size:14px}
+        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+        .card{border:1px solid rgba(255,138,31,.23);background:rgba(255,138,31,.065);border-radius:18px;padding:14px;min-height:220px}
+        .card strong{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+        .card span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .two-col{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+        .button-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+        button{cursor:pointer;border:1px solid rgba(255,138,31,.25);background:rgba(6,7,10,.72);color:#f3f6fa;border-radius:18px;padding:16px;min-height:88px;text-align:left}
+        button:hover{border-color:rgba(255,138,31,.60);background:rgba(255,138,31,.08)}
+        button strong{display:block;font-size:15px;margin-bottom:8px}
+        button span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .result{min-height:760px;background:radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),rgba(6,7,10,.68)}
+        .result-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.10);padding-bottom:14px;margin-bottom:14px}
+        .result-name{font-size:26px;font-weight:1000;letter-spacing:-.6px}
+        .badge{display:inline-flex;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);color:#ffe4c4;background:rgba(255,138,31,.09)}
+        .ring{width:154px;height:154px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid rgba(255,138,31,.42);background:radial-gradient(circle,#3b210f,#101216 72%);float:left;margin:2px 18px 10px 0}
+        .ring strong{font-size:43px;color:var(--orange);line-height:1}
+        .ring span{color:#d7dee8;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+        .line{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:14px;padding:11px 12px;color:#cbd2dc;font-size:13px;line-height:1.45;margin-top:9px}
+        .line strong{color:#fff;display:block;margin-bottom:4px}
+        .gap{color:#ffd4d8}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:12px 4px}
+        @media(max-width:1380px){.hero-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:760px){.page{padding:16px}.hero,.section{padding:22px;border-radius:24px}h1{font-size:38px}.metrics,.grid-3{grid-template-columns:1fr}.ring{float:none;margin:0 0 14px 0}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="topbar">
+                <div class="brand">
+                    <div class="mark"></div>
+                    <div>
+                        <div class="brand-title">COBIT-Chain&trade; AI Assurance Operational Release Gate</div>
+                        <div class="brand-sub">Final release gate after approval certificate</div>
+                    </div>
+                </div>
+                <span class="pill">Certificate -> Release Gate -> Operational Use</span>
+            </div>
+
+            <div class="eyebrow">Platform A / Operational Release / Production Use Control</div>
+            <h1>Release is not approval; release is controlled operational activation.</h1>
+            <div class="subtitle">
+                The AI Assurance Operational Release Gate checks whether a certified AI-enabled workflow can be released into operational use under approved scope, active monitoring, rollback readiness, evidence control, and accountable release authorization.
+            </div>
+
+            <div class="hero-grid">
+                <div class="statement">
+                    <strong>Engineering principle:</strong> release is not the same as approval. Release is the controlled act of putting an approved AI-enabled workflow into operation under scope, monitoring, rollback, evidence, and accountable ownership.
+                </div>
+
+                <div class="score-panel">
+                    <div class="score-label">Sample Release Gate Score</div>
+                    <div class="score">72%</div>
+                    <div class="score-text">
+                        Release is blocked because the approval certificate is not issued and multiple operational release gates remain incomplete.
+                    </div>
+                    <div class="bar"><span></span></div>
+                    <div class="score-text"><strong>Status:</strong> not authorized for operational release.</div>
+                </div>
+            </div>
+
+            <div class="nav">
+                <a href="/platform">Platform</a>
+                <a href="/platform/ai-assurance-approval-certificate">Approval Certificate</a>
+                <a href="/platform/ai-assurance-trust-recalculation">Trust Recalculation</a>
+                <a href="/platform/operational-trust-twin">Operational Trust</a>
+                <a href="/platform/evidence-packages">Evidence Vault</a>
+                <a href="/platform/observability">Observability</a>
+                <a href="/platform/routes">Routes</a>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Release Score</div><div class="value" style="color:var(--orange);">72</div><div class="note">Sample operational release readiness.</div></div>
+            <div class="metric"><div class="label">Certificate</div><div class="value" style="color:var(--red);">Not Issued</div><div class="note">Certificate gate blocks release.</div></div>
+            <div class="metric"><div class="label">Blocking Gates</div><div class="value" style="color:var(--red);">8</div><div class="note">Eight gates block release.</div></div>
+            <div class="metric"><div class="label">Monitoring</div><div class="value" style="color:var(--amber);">Partial</div><div class="note">Runtime monitoring incomplete.</div></div>
+            <div class="metric"><div class="label">Release</div><div class="value" style="color:var(--red);">No</div><div class="note">Operational release not authorized.</div></div>
+            <div class="metric"><div class="label">Function</div><div class="value" style="color:var(--orange2);">Gate</div><div class="note">Final operational release control.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Operational Release Gates</h2>
+                    <p>Each gate must pass before an AI-enabled workflow can be released into operational use.</p>
+                </div>
+                <span class="tag">Release gate schema</span>
+            </div>
+            <div class="grid-3" id="gateGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live AI Assurance Operational Release Gate</h2>
+                    <p>Select a release gate or run the sample release decision.</p>
+                </div>
+                <span class="tag">Live release API</span>
+            </div>
+
+            <div class="two-col">
+                <div class="panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Release Gate Selector</h2>
+                    <div class="button-grid" id="gateButtons"></div>
+
+                    <h2 style="font-size:22px;margin:22px 0 6px;">Sample Release Decision</h2>
+                    <div class="button-grid">
+                        <button onclick="loadRelease()"><strong>Run operational release gate</strong><span>Returns final operational release authorization state.</span></button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div id="result" class="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for release gate query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select a gate or sample release decision.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="ring"><strong>--</strong><span>Release</span></div>
+                        <div class="score-text">The release gate record will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            AI Assurance Operational Release Gate. Release requires certificate, scope, monitoring, rollback, evidence, ownership, and post-release verification.
+        </div>
+    </div>
+
+    <script>
+        function listText(items){
+            if(!items || !items.length){ return "None listed."; }
+            return items.join("; ");
+        }
+
+        async function loadModel(){
+            const response = await fetch('/api/platform/ai-assurance-release/model/demo');
+            const data = await response.json();
+
+            document.getElementById("gateGrid").innerHTML = (data.release_gates || []).map(function(item){
+                return `<div class="card"><strong>${item.gate_name}</strong><span>${item.release_question}<br><br><b>State:</b> ${item.sample_state}<br><b>Score:</b> ${item.sample_score}<br><b>Blocks:</b> ${item.blocks_release}</span></div>`;
+            }).join('');
+
+            document.getElementById("gateButtons").innerHTML = (data.release_gates || []).map(function(item){
+                return `<button onclick="loadGate('${item.gate_id}')"><strong>${item.gate_name}</strong><span>${item.sample_state} | Score ${item.sample_score}</span></button>`;
+            }).join('');
+        }
+
+        async function loadGate(gateId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling AI Assurance Operational Release Gate service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-assurance-release/gate/demo?gate_id=' + encodeURIComponent(gateId));
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.gate_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.gate_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.sample_state}</div>
+                    </div>
+                    <div class="ring"><strong>${data.sample_score}</strong><span>Gate</span></div>
+                    <div class="line"><strong>Release Question</strong>${data.release_question}</div>
+                    <div class="line"><strong>Required State</strong>${data.required_state}</div>
+                    <div class="line"><strong>Source Module</strong>${data.source_module}</div>
+                    <div class="line"><strong>Gate Type</strong>${data.gate_type}</div>
+                    <div class="line"><strong>Required Evidence</strong>${listText(data.required_evidence)}</div>
+                    <div class="line"><strong>Blocks Release</strong>${data.blocks_release}</div>
+                    <div class="line"><strong>Computed Gate State</strong><span class="gap">${data.computed_gate_state}</span></div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Release gate API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        async function loadRelease(){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling sample operational release decision...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-assurance-release/release/demo');
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.workflow_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.release_id} | ${data.workflow_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.release_state}</div>
+                    </div>
+                    <div class="ring"><strong>${data.release_score}</strong><span>Release</span></div>
+                    <div class="line"><strong>Release Decision</strong>${data.release_decision}</div>
+                    <div class="line"><strong>Prior Approval State</strong>${data.prior_approval_state}</div>
+                    <div class="line"><strong>Certificate Status</strong>${data.certificate_status}</div>
+                    <div class="line"><strong>Blocking Gates</strong><span class="gap">${listText(data.blocking_gates)}</span></div>
+                    <div class="line"><strong>Release Conditions</strong>${listText(data.release_conditions)}</div>
+                    <div class="line"><strong>Next Required Actions</strong>${listText(data.next_required_actions)}</div>
+                    <div class="line"><strong>Release Authorized</strong>${data.release_authorized}</div>
+                    <div class="line"><strong>Computed Release State</strong>${data.computed_release_state}</div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Release API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadModel().then(function(){ loadRelease(); });
+    </script>
+</body>
+</html>

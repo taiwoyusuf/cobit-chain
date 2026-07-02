@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-new-workflow-intake
+http://127.0.0.1:5000/platform/ai-workflow-intake
+http://127.0.0.1:5000/platform/new-workflow-assurance-intake
+http://127.0.0.1:5000/api/platform/ai-workflow-intake/model/demo
+http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=context_of_use_check
+http://127.0.0.1:5000/api/platform/ai-workflow-intake/check/demo?check_id=autonomy_level_check
+http://127.0.0.1:5000/api/platform/ai-workflow-intake/intake/demo
+http://127.0.0.1:5000/api/platform/ai-workflow-intake/readiness/demo

@@ -1,0 +1,10 @@
+http://127.0.0.1:5000/platform/azure-foundry-assurance
+http://127.0.0.1:5000/platform/azure-foundry-blueprint
+http://127.0.0.1:5000/platform/foundry-assurance-blueprint
+http://127.0.0.1:5000/api/platform/azure-foundry/blueprint/demo
+http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=prompt_governance
+http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=model_abstraction
+http://127.0.0.1:5000/api/platform/azure-foundry/lifecycle/demo?stage_id=evaluate
+http://127.0.0.1:5000/api/platform/azure-foundry/object/demo?object_id=azf-prompt-version
+http://127.0.0.1:5000/api/platform/azure-foundry/objects/demo
+http://127.0.0.1:5000/api/platform/azure-foundry/readiness/demo

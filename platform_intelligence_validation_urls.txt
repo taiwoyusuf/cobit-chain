@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/intelligence-validation
+http://127.0.0.1:5000/platform/ai-intelligence-validation
+http://127.0.0.1:5000/platform/ai-lifecycle-intelligence-validation
+http://127.0.0.1:5000/api/platform/intelligence-validation/model/demo
+http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=prompt_traceability
+http://127.0.0.1:5000/api/platform/intelligence-validation/domain/demo?domain_id=revalidation_triggers
+http://127.0.0.1:5000/api/platform/intelligence-validation/assessment/demo
+http://127.0.0.1:5000/api/platform/intelligence-validation/readiness/demo

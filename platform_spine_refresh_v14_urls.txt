@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/ai-team-assurance
+http://127.0.0.1:5000/platform/ai-operational-readiness
+http://127.0.0.1:5000/platform/governance-vision
+http://127.0.0.1:5000/platform/organizational-intelligence-assurance
+http://127.0.0.1:5000/api/platform/spine-refresh/v14/demo

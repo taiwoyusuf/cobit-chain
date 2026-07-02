@@ -1,0 +1,10 @@
+http://127.0.0.1:5000/platform/ai-assurance-control-router
+http://127.0.0.1:5000/platform/ai-control-router
+http://127.0.0.1:5000/platform/architecture-control-router
+http://127.0.0.1:5000/api/platform/ai-assurance-router/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_knowledge_assurance
+http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_tool_assurance
+http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_autonomy_assurance
+http://127.0.0.1:5000/api/platform/ai-assurance-router/route/demo?route_id=route_evidence_assurance
+http://127.0.0.1:5000/api/platform/ai-assurance-router/routing/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-router/readiness/demo

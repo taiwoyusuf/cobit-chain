@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform/data-to-decision-assurance
+http://127.0.0.1:5000/platform/data-decision-assurance
+http://127.0.0.1:5000/platform/data-to-decision
+http://127.0.0.1:5000/api/platform/data-to-decision/lifecycle/demo
+http://127.0.0.1:5000/api/platform/data-to-decision/stage/demo?stage_id=data_lineage
+http://127.0.0.1:5000/api/platform/data-to-decision/check/demo
+http://127.0.0.1:5000/api/platform/data-to-decision/readiness/demo

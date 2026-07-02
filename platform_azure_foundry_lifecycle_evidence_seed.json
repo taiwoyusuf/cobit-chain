@@ -1,0 +1,255 @@
+﻿{
+  "binder_name": "Azure Foundry Lifecycle Evidence Binder",
+  "platform_rule": "Azure executes the AI lifecycle. COBIT-Chain binds each lifecycle stage to evidence required for operational trust.",
+  "positioning": "This strengthens Azure Foundry Assurance Blueprint v2 by connecting lifecycle stages and governed objects to Evidence Vault, Decision Confidence, MCP Tool Registry, Observability, Operational Trust Twin, and AI ChangeControlTrust.",
+  "lifecycle_evidence_bindings": [
+    {
+      "binding_id": "AZF-LC-DESIGN-001",
+      "stage_id": "design",
+      "stage_name": "Design",
+      "governed_object_ids": ["azf-context-of-use"],
+      "evidence_package_id": "EVP-AZF-DESIGN-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Context of use",
+        "Workflow boundary",
+        "Risk classification",
+        "Data source inventory",
+        "Expected outcome metric"
+      ],
+      "available_evidence": [
+        "Context of use",
+        "Risk classification",
+        "Expected outcome metric"
+      ],
+      "missing_evidence": [
+        "Workflow boundary",
+        "Data source inventory"
+      ],
+      "decision_gate": "Design basis review",
+      "human_review_required": true,
+      "mcp_trace_required": false,
+      "observability_required": false,
+      "trust_score": 76
+    },
+    {
+      "binding_id": "AZF-LC-DEVELOP-001",
+      "stage_id": "develop",
+      "stage_name": "Develop",
+      "governed_object_ids": ["azf-model-abstraction", "azf-prompt-version", "azf-agent-passport"],
+      "evidence_package_id": "EVP-AZF-DEVELOP-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Prompt version",
+        "Prompt owner",
+        "Model abstraction record",
+        "Agent passport",
+        "Tool schema",
+        "Retrieval configuration"
+      ],
+      "available_evidence": [
+        "Prompt version",
+        "Model abstraction record",
+        "Agent passport"
+      ],
+      "missing_evidence": [
+        "Prompt owner",
+        "Tool schema",
+        "Retrieval configuration"
+      ],
+      "decision_gate": "Development assurance review",
+      "human_review_required": true,
+      "mcp_trace_required": true,
+      "observability_required": false,
+      "trust_score": 73
+    },
+    {
+      "binding_id": "AZF-LC-EVALUATE-001",
+      "stage_id": "evaluate",
+      "stage_name": "Evaluate",
+      "governed_object_ids": ["azf-evaluation-result"],
+      "evidence_package_id": "EVP-AZF-EVALUATE-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Evaluation result",
+        "Grounding evidence",
+        "Failure cases",
+        "Known limitation record",
+        "Reviewer note"
+      ],
+      "available_evidence": [
+        "Evaluation result",
+        "Known limitation record"
+      ],
+      "missing_evidence": [
+        "Grounding evidence",
+        "Failure cases",
+        "Reviewer note"
+      ],
+      "decision_gate": "Evaluation acceptance gate",
+      "human_review_required": true,
+      "mcp_trace_required": true,
+      "observability_required": true,
+      "trust_score": 70
+    },
+    {
+      "binding_id": "AZF-LC-GOVERN-001",
+      "stage_id": "govern",
+      "stage_name": "Govern",
+      "governed_object_ids": ["azf-context-of-use", "azf-model-abstraction", "azf-prompt-version"],
+      "evidence_package_id": "EVP-AZF-GOVERN-001",
+      "evidence_state": "GOOD",
+      "required_evidence": [
+        "Policy control",
+        "Access rule",
+        "Change control record",
+        "Knowledge source approval",
+        "Governance rule mapping"
+      ],
+      "available_evidence": [
+        "Policy control",
+        "Access rule",
+        "Change control record",
+        "Governance rule mapping"
+      ],
+      "missing_evidence": [
+        "Knowledge source approval"
+      ],
+      "decision_gate": "Governance readiness gate",
+      "human_review_required": true,
+      "mcp_trace_required": false,
+      "observability_required": true,
+      "trust_score": 81
+    },
+    {
+      "binding_id": "AZF-LC-APPROVE-001",
+      "stage_id": "approve",
+      "stage_name": "Approve",
+      "governed_object_ids": ["azf-human-approval-gate"],
+      "evidence_package_id": "EVP-AZF-APPROVE-001",
+      "evidence_state": "STRONG",
+      "required_evidence": [
+        "Named reviewer",
+        "Approval decision",
+        "Review checklist",
+        "Exception rationale",
+        "Deployment authorization"
+      ],
+      "available_evidence": [
+        "Named reviewer",
+        "Approval decision",
+        "Review checklist",
+        "Deployment authorization"
+      ],
+      "missing_evidence": [
+        "Exception rationale"
+      ],
+      "decision_gate": "Human approval gate",
+      "human_review_required": true,
+      "mcp_trace_required": false,
+      "observability_required": false,
+      "trust_score": 86
+    },
+    {
+      "binding_id": "AZF-LC-DEPLOY-001",
+      "stage_id": "deploy",
+      "stage_name": "Deploy",
+      "governed_object_ids": ["azf-deployment-package"],
+      "evidence_package_id": "EVP-AZF-DEPLOY-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Deployment package",
+        "Release record",
+        "Rollback plan",
+        "Operational owner",
+        "Trust baseline"
+      ],
+      "available_evidence": [
+        "Deployment package",
+        "Release record",
+        "Trust baseline"
+      ],
+      "missing_evidence": [
+        "Rollback plan",
+        "Operational owner"
+      ],
+      "decision_gate": "Deployment readiness gate",
+      "human_review_required": true,
+      "mcp_trace_required": false,
+      "observability_required": true,
+      "trust_score": 78
+    },
+    {
+      "binding_id": "AZF-LC-MONITOR-001",
+      "stage_id": "monitor",
+      "stage_name": "Monitor",
+      "governed_object_ids": ["azf-continuous-assurance"],
+      "evidence_package_id": "EVP-AZF-MONITOR-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Runtime trace",
+        "Tool-call record",
+        "Quality metric",
+        "Usage metric",
+        "Incident signal"
+      ],
+      "available_evidence": [
+        "Runtime trace",
+        "Usage metric"
+      ],
+      "missing_evidence": [
+        "Tool-call record",
+        "Quality metric",
+        "Incident signal"
+      ],
+      "decision_gate": "Monitoring assurance gate",
+      "human_review_required": false,
+      "mcp_trace_required": true,
+      "observability_required": true,
+      "trust_score": 72
+    },
+    {
+      "binding_id": "AZF-LC-CONTINUOUS-001",
+      "stage_id": "continuously_assure",
+      "stage_name": "Continuously Assure",
+      "governed_object_ids": ["azf-continuous-assurance"],
+      "evidence_package_id": "EVP-AZF-CONTINUOUS-001",
+      "evidence_state": "PARTIAL",
+      "required_evidence": [
+        "Continuous assurance record",
+        "Trust score change",
+        "Prompt drift signal",
+        "Model change signal",
+        "Measured outcome",
+        "Audit replay"
+      ],
+      "available_evidence": [
+        "Continuous assurance record",
+        "Trust score change",
+        "Measured outcome"
+      ],
+      "missing_evidence": [
+        "Prompt drift signal",
+        "Model change signal",
+        "Audit replay"
+      ],
+      "decision_gate": "Continuous assurance review",
+      "human_review_required": true,
+      "mcp_trace_required": true,
+      "observability_required": true,
+      "trust_score": 79
+    }
+  ],
+  "evidence_controls": [
+    "Evidence Package Binding",
+    "Lifecycle Traceability",
+    "Governed Object Linkage",
+    "Prompt Version Evidence",
+    "Model Abstraction Evidence",
+    "Tool Call Evidence",
+    "Human Approval Evidence",
+    "Deployment Readiness Evidence",
+    "Monitoring Evidence",
+    "Continuous Assurance Evidence"
+  ]
+}

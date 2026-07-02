@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-accountability-raci
+http://127.0.0.1:5000/platform/ai-raci-matrix
+http://127.0.0.1:5000/platform/ai-accountability-matrix
+http://127.0.0.1:5000/api/platform/ai-accountability-raci/model/demo
+http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=evidence_contract_accountability
+http://127.0.0.1:5000/api/platform/ai-accountability-raci/stage/demo?stage_id=decision_rights_accountability
+http://127.0.0.1:5000/api/platform/ai-accountability-raci/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-accountability-raci/readiness/demo

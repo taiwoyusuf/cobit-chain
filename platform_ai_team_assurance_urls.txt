@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-team-assurance
+http://127.0.0.1:5000/platform/team-assurance
+http://127.0.0.1:5000/platform/ai-operational-team-assurance
+http://127.0.0.1:5000/api/platform/ai-team-assurance/model/demo
+http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=role_ownership
+http://127.0.0.1:5000/api/platform/ai-team-assurance/domain/demo?domain_id=evidence_ownership
+http://127.0.0.1:5000/api/platform/ai-team-assurance/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-team-assurance/readiness/demo

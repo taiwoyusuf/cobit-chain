@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/evidence-store
+http://127.0.0.1:5000/platform/evidence-vault
+http://127.0.0.1:5000/evidence-vault
+http://127.0.0.1:5000/cobitchain-evidence-store

@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-evidence-contract
+http://127.0.0.1:5000/platform/ai-evidence-contract
+http://127.0.0.1:5000/platform/assurance-evidence-contract
+http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=tool_authorization_evidence
+http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/object/demo?object_id=human_approval_evidence
+http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/contract/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-evidence-contract/readiness/demo

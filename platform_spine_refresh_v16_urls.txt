@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/intelligence-validation
+http://127.0.0.1:5000/platform/ai-lifecycle-change-assurance
+http://127.0.0.1:5000/platform/ai-operational-readiness
+http://127.0.0.1:5000/platform/ai-assurance-evidence-contract
+http://127.0.0.1:5000/api/platform/spine-refresh/v16/demo

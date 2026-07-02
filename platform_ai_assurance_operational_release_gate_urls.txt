@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-operational-release-gate
+http://127.0.0.1:5000/platform/ai-operational-release-gate
+http://127.0.0.1:5000/platform/operational-release-gate
+http://127.0.0.1:5000/api/platform/ai-assurance-release/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=certificate_issued_gate
+http://127.0.0.1:5000/api/platform/ai-assurance-release/gate/demo?gate_id=monitoring_activation_gate
+http://127.0.0.1:5000/api/platform/ai-assurance-release/release/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-release/readiness/demo

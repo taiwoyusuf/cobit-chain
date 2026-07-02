@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-outcome-learning
+http://127.0.0.1:5000/platform/ai-outcome-learning
+http://127.0.0.1:5000/platform/assurance-continuous-improvement
+http://127.0.0.1:5000/api/platform/ai-assurance-learning/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=organizational_intelligence_loop
+http://127.0.0.1:5000/api/platform/ai-assurance-learning/loop/demo?loop_id=lifecycle_change_learning_loop
+http://127.0.0.1:5000/api/platform/ai-assurance-learning/learning/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-learning/readiness/demo

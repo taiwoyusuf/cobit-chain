@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-approval-certificate
+http://127.0.0.1:5000/platform/ai-approval-certificate
+http://127.0.0.1:5000/platform/operational-trust-certificate
+http://127.0.0.1:5000/api/platform/ai-assurance-certificate/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=approval_decision
+http://127.0.0.1:5000/api/platform/ai-assurance-certificate/section/demo?section_id=release_authorization
+http://127.0.0.1:5000/api/platform/ai-assurance-certificate/certificate/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-certificate/readiness/demo

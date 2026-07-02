@@ -1,0 +1,139 @@
+﻿{
+  "capability_name": "AI Assurance Trust Recalculation Engine",
+  "platform_rule": "Operational trust can be recalculated only after blocking remediation actions are verified closed with evidence.",
+  "platform_position": "AI Assurance Trust Recalculation Engine sits after Closure Verifier and before final operational approval.",
+  "engineering_principle": "Trust is not restored by intent. Trust is restored only after verified closure, evidence update, replay readiness, monitoring readiness, and recalculated operational trust.",
+  "depends_on": [
+    "AI Assurance Closure Verifier",
+    "AI Assurance Remediation Queue",
+    "AI Assurance Evidence Contract",
+    "AI Assurance Replay Console",
+    "AI Assurance Decision Orchestrator",
+    "Operational Trust Twin",
+    "Evidence Vault"
+  ],
+  "trust_inputs": [
+    {
+      "input_id": "closure_verification_state",
+      "input_name": "Closure Verification State",
+      "trust_question": "Are all blocking remediation closures verified closed?",
+      "required_state": "All blocking closures verified closed",
+      "source_module": "AI Assurance Closure Verifier",
+      "sample_score": 71,
+      "sample_state": "BLOCKING_NOT_CLOSED",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "evidence_contract_state",
+      "input_name": "Evidence Contract State",
+      "trust_question": "Is the AI assurance evidence contract complete and defensible?",
+      "required_state": "Evidence contract complete",
+      "source_module": "AI Assurance Evidence Contract",
+      "sample_score": 72,
+      "sample_state": "INCOMPLETE",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "replay_readiness_state",
+      "input_name": "Replay Readiness State",
+      "trust_question": "Can the assurance decision be replayed from evidence?",
+      "required_state": "Replay audit-ready",
+      "source_module": "AI Assurance Replay Console",
+      "sample_score": 73,
+      "sample_state": "REPLAY_INCOMPLETE",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "runtime_monitoring_state",
+      "input_name": "Runtime Monitoring State",
+      "trust_question": "Are runtime monitoring, drift, exception, and incident signals active?",
+      "required_state": "Runtime monitoring active",
+      "source_module": "Operational Trust / Observability",
+      "sample_score": 74,
+      "sample_state": "PARTIAL",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "human_approval_state",
+      "input_name": "Human Approval State",
+      "trust_question": "Has a named accountable human approved the workflow where required?",
+      "required_state": "Human approval complete",
+      "source_module": "Decision Confidence",
+      "sample_score": 62,
+      "sample_state": "INCOMPLETE",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "rollback_stopuse_state",
+      "input_name": "Rollback and Stop-Use State",
+      "trust_question": "Can the workflow be stopped, rolled back, or contained if unsafe behavior occurs?",
+      "required_state": "Rollback and stop-use ready",
+      "source_module": "AI Lifecycle Change Assurance",
+      "sample_score": 72,
+      "sample_state": "PENDING_VERIFICATION",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "regulatory_readiness_state",
+      "input_name": "Regulatory Readiness State",
+      "trust_question": "Is the workflow defensible in the relevant jurisdictional or regulatory context?",
+      "required_state": "Regulatory readiness confirmed",
+      "source_module": "Jurisdictional AI Assurance",
+      "sample_score": 75,
+      "sample_state": "PENDING_VERIFICATION",
+      "blocks_approval": true
+    },
+    {
+      "input_id": "outcome_feedback_state",
+      "input_name": "Outcome Feedback State",
+      "trust_question": "Can outcomes be captured and fed back into organizational intelligence?",
+      "required_state": "Outcome feedback active or deferred with rationale",
+      "source_module": "Organizational Intelligence Assurance",
+      "sample_score": 65,
+      "sample_state": "DEFERRED",
+      "blocks_approval": false
+    }
+  ],
+  "sample_recalculation": {
+    "recalculation_id": "AATR-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "source_verification_id": "AACV-DEMO-001",
+    "source_queue_id": "AARQ-DEMO-001",
+    "source_contract_id": "AIEC-DEMO-001",
+    "source_replay_id": "AARC-DEMO-001",
+    "prior_trust_state": "OPERATIONAL_APPROVAL_BLOCKED",
+    "closure_verification_score": 71,
+    "evidence_contract_score": 72,
+    "replay_readiness_score": 73,
+    "runtime_monitoring_score": 74,
+    "human_approval_score": 62,
+    "rollback_stopuse_score": 72,
+    "regulatory_readiness_score": 75,
+    "outcome_feedback_score": 65,
+    "recalculated_operational_trust_score": 71,
+    "trust_recalculation_decision": "TRUST_RECALCULATION_BLOCKED",
+    "approval_state": "NOT_APPROVED_FOR_OPERATIONAL_USE",
+    "reason": "Blocking trust inputs remain incomplete or pending verification. Human approval, evidence contract, replay readiness, runtime monitoring, rollback, and regulatory readiness must be closed before approval.",
+    "blocking_inputs": [
+      "Closure Verification State",
+      "Evidence Contract State",
+      "Replay Readiness State",
+      "Runtime Monitoring State",
+      "Human Approval State",
+      "Rollback and Stop-Use State",
+      "Regulatory Readiness State"
+    ],
+    "required_next_steps": [
+      "Verify all blocking closure items.",
+      "Complete evidence contract objects.",
+      "Make replay console audit-ready.",
+      "Complete named human approval.",
+      "Activate runtime monitoring and drift signals.",
+      "Complete rollback and stop-use verification.",
+      "Record regulatory readiness and escalation decision.",
+      "Run trust recalculation again after closure."
+    ],
+    "approved_for_operational_use": false
+  }
+}

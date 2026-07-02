@@ -1,0 +1,6 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/cloud-assurance-matrix
+http://127.0.0.1:5000/platform/object-assurance
+http://127.0.0.1:5000/platform/mcp-tools
+http://127.0.0.1:5000/platform/evidence-packages

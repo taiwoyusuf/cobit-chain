@@ -1,0 +1,141 @@
+﻿{
+  "capability_name": "Data-to-Decision Assurance v2",
+  "platform_rule": "Use Data-to-Decision Assurance to strengthen existing Platform A modules without introducing additional standalone data governance products.",
+  "platform_position": "Azure provides enterprise data engineering capabilities. COBIT-Chain evaluates whether the complete enterprise data lifecycle is operationally trustworthy before AI-assisted decisions are made.",
+  "engineering_principle": "Trusted Data -> Trusted Context -> Trusted AI Recommendation -> Trusted Human Decision -> Trusted Evidence.",
+  "strengthens_modules": [
+    "Governance Vision",
+    "Operational Trust",
+    "Evidence Vault",
+    "Knowledge Integrity",
+    "Decision Confidence",
+    "AI Output Clearance"
+  ],
+  "lifecycle": [
+    {
+      "stage_id": "data_sources",
+      "stage_name": "Data Sources",
+      "engineering_question": "Are source systems trusted, owned, current, and appropriate for the AI-assisted decision?",
+      "assurance_role": "Validate source ownership, source classification, source trust, data freshness, regulated relevance, and permitted use.",
+      "mapped_modules": ["Knowledge Integrity", "Evidence Vault", "Operational Trust"],
+      "required_evidence": ["Source system", "Source owner", "Data classification", "Freshness timestamp", "Permitted-use rule", "Evidence package ID"],
+      "gaps_to_watch": ["Unknown source owner", "Unclassified source", "Stale data", "No permitted-use rule"],
+      "readiness_score": 80
+    },
+    {
+      "stage_id": "data_ingestion",
+      "stage_name": "Data Ingestion",
+      "engineering_question": "Can ingestion be trusted, monitored, and replayed?",
+      "assurance_role": "Evaluate ingestion ownership, source-to-target mapping, validation, error handling, run logs, and exception routing.",
+      "mapped_modules": ["Evidence Vault", "Operational Trust", "Knowledge Integrity"],
+      "required_evidence": ["Ingestion job ID", "Ingestion owner", "Source-to-target mapping", "Validation result", "Run log", "Exception handling rule"],
+      "gaps_to_watch": ["No ingestion owner", "No validation result", "No run log", "No exception rule"],
+      "readiness_score": 77
+    },
+    {
+      "stage_id": "streaming",
+      "stage_name": "Streaming",
+      "engineering_question": "Can streaming data be trusted at the time of decision?",
+      "assurance_role": "Validate event source, stream freshness, latency, ordering, loss detection, replay capability, and operational monitoring.",
+      "mapped_modules": ["Operational Trust", "Observability", "Evidence Vault"],
+      "required_evidence": ["Event source", "Stream freshness", "Latency metric", "Replay capability", "Loss detection rule", "Monitoring dashboard"],
+      "gaps_to_watch": ["No freshness check", "No loss detection", "No replay capability", "No monitoring dashboard"],
+      "readiness_score": 74
+    },
+    {
+      "stage_id": "storage",
+      "stage_name": "Storage",
+      "engineering_question": "Is stored data secure, governed, versioned, and retained within approved boundaries?",
+      "assurance_role": "Validate storage boundary, access policy, retention, encryption, backup, versioning, and evidence retention.",
+      "mapped_modules": ["Evidence Vault", "Operational Trust", "Cloud Assurance Matrix"],
+      "required_evidence": ["Storage account or database", "Access policy", "Encryption status", "Retention rule", "Backup evidence", "Data version"],
+      "gaps_to_watch": ["No access policy", "No retention rule", "No backup evidence", "No data version"],
+      "readiness_score": 79
+    },
+    {
+      "stage_id": "transformation",
+      "stage_name": "Transformation",
+      "engineering_question": "Can transformed data be traced to source data and transformation logic?",
+      "assurance_role": "Evaluate transformation ownership, transformation logic, code version, mapping rules, change control, and validation evidence.",
+      "mapped_modules": ["Knowledge Integrity", "Evidence Vault", "Decision Confidence", "AI ChangeControlTrust"],
+      "required_evidence": ["Transformation owner", "Transformation logic", "Code version", "Mapping rules", "Change record", "Validation result"],
+      "gaps_to_watch": ["No transformation owner", "No code version", "No change record", "No validation result"],
+      "readiness_score": 76
+    },
+    {
+      "stage_id": "data_quality",
+      "stage_name": "Data Quality",
+      "engineering_question": "Is data quality sufficient for the intended AI-assisted decision?",
+      "assurance_role": "Assess completeness, accuracy, consistency, timeliness, duplicates, outliers, quality thresholds, and exception handling.",
+      "mapped_modules": ["Knowledge Integrity", "Decision Confidence", "Operational Trust"],
+      "required_evidence": ["Quality rule", "Quality score", "Completeness check", "Accuracy check", "Exception log", "Quality owner"],
+      "gaps_to_watch": ["No quality owner", "No quality threshold", "No exception log", "No accuracy check"],
+      "readiness_score": 75
+    },
+    {
+      "stage_id": "data_lineage",
+      "stage_name": "Data Lineage",
+      "engineering_question": "Can decision data be traced from source to AI recommendation?",
+      "assurance_role": "Bind source, ingestion, storage, transformation, quality, serving, AI context, recommendation, and decision evidence into one lineage path.",
+      "mapped_modules": ["Evidence Vault", "Knowledge Integrity", "Decision Confidence", "Observability"],
+      "required_evidence": ["Lineage graph", "Source lineage", "Transformation lineage", "Serving lineage", "Trace ID", "Evidence package ID"],
+      "gaps_to_watch": ["No lineage graph", "No trace ID", "No source-to-decision chain", "No evidence package"],
+      "readiness_score": 73
+    },
+    {
+      "stage_id": "serving_layer",
+      "stage_name": "Serving Layer",
+      "engineering_question": "Can data served to the AI system be trusted at the point of use?",
+      "assurance_role": "Validate API, feature store, semantic layer, retrieval index, access boundary, freshness, and response traceability.",
+      "mapped_modules": ["Knowledge Integrity", "MCP Tool Registry", "Operational Trust", "Evidence Vault"],
+      "required_evidence": ["Serving endpoint", "Access boundary", "Freshness check", "Feature or retrieval version", "Response trace ID", "Serving owner"],
+      "gaps_to_watch": ["No serving owner", "No freshness check", "No response trace ID", "No retrieval version"],
+      "readiness_score": 78
+    },
+    {
+      "stage_id": "ai_context",
+      "stage_name": "AI Context",
+      "engineering_question": "Is the AI context grounded in trusted data and valid for the workflow?",
+      "assurance_role": "Validate context assembly, retrieval grounding, prompt context, source trust, workflow owner, and permitted use.",
+      "mapped_modules": ["Decision Confidence", "Knowledge Integrity", "AI Output Clearance", "Evidence Vault"],
+      "required_evidence": ["Context of use", "Retrieved sources", "Grounding evidence", "Prompt context", "Workflow owner", "Permitted-use rule"],
+      "gaps_to_watch": ["No context of use", "No grounding evidence", "No workflow owner", "No permitted-use rule"],
+      "readiness_score": 77
+    },
+    {
+      "stage_id": "human_review",
+      "stage_name": "Human Review",
+      "engineering_question": "Did a named human review the AI recommendation before the decision was made?",
+      "assurance_role": "Confirm reviewer identity, review checklist, approval decision, exception rationale, accountability, and decision boundary.",
+      "mapped_modules": ["Decision Confidence", "AI Output Clearance", "Operational Trust", "Evidence Vault"],
+      "required_evidence": ["Named reviewer", "Review checklist", "Approval decision", "Reviewer comment", "Exception rationale", "Accountability record"],
+      "gaps_to_watch": ["No named reviewer", "No checklist", "No approval decision", "No accountability record"],
+      "readiness_score": 82
+    },
+    {
+      "stage_id": "decision_evidence",
+      "stage_name": "Decision Evidence",
+      "engineering_question": "Can the human decision be replayed with trusted data, trusted context, AI recommendation, review, and evidence?",
+      "assurance_role": "Bind the full data-to-decision chain into an evidence package that supports operational trust and inspection readiness.",
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "Operational Trust", "Governance Vision"],
+      "required_evidence": ["Decision record", "AI recommendation rationale", "Reviewer approval", "Data lineage trace", "Evidence package", "Outcome metric"],
+      "gaps_to_watch": ["No decision record", "No data lineage trace", "No outcome metric", "No evidence package"],
+      "readiness_score": 80
+    }
+  ],
+  "sample_decision": {
+    "decision_id": "DTD-DEMO-002",
+    "decision_name": "AI-assisted operational readiness recommendation",
+    "source_systems": ["CMDB", "Evidence Vault", "Operational Trust Twin", "Knowledge Index"],
+    "data_owner": "Platform data owner",
+    "workflow_owner": "Operational readiness owner",
+    "ai_context_state": "PARTIAL_GROUNDING",
+    "data_quality_state": "GOOD_WITH_GAPS",
+    "lineage_state": "PARTIAL",
+    "human_review_state": "REQUIRED_NOT_COMPLETED",
+    "evidence_package_id": "EVP-DTD-READINESS-002",
+    "decision_confidence_score": 74,
+    "decision": "HOLD_FOR_HUMAN_REVIEW_AND_LINEAGE_COMPLETION",
+    "missing_evidence": ["Complete source-to-decision lineage", "Named reviewer approval", "Outcome metric", "Grounding evidence"]
+  }
+}

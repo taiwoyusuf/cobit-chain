@@ -1,0 +1,222 @@
+﻿{
+  "capability_name": "AI Assurance Closure Verifier",
+  "platform_rule": "AI remediation actions are not closed until closure evidence is verified and operational trust is recalculated.",
+  "platform_position": "AI Assurance Closure Verifier sits after Remediation Queue and before Operational Trust recalculation.",
+  "engineering_principle": "Closure is not a status label. Closure means the remediation is completed, evidence-bound, independently verified, and reflected in the final assurance decision.",
+  "depends_on": [
+    "AI Assurance Remediation Queue",
+    "AI Assurance Evidence Contract",
+    "AI Assurance Replay Console",
+    "AI Assurance Decision Orchestrator",
+    "Evidence Vault",
+    "Operational Trust"
+  ],
+  "closure_items": [
+    {
+      "closure_id": "close_api_permission_map",
+      "source_action_id": "rem_tool_api_permission_map",
+      "closure_name": "Verify API Permission Map Closure",
+      "closure_question": "Was the API permission map completed, least-privilege scoped, approved, and evidence-bound?",
+      "owner_role": "Tool Owner / Security Owner",
+      "verification_role": "Governance Verifier",
+      "required_closure_evidence": [
+        "Final API permission map",
+        "Least-privilege approval",
+        "Tool authorization record",
+        "Runtime permission scope",
+        "Evidence package update"
+      ],
+      "verification_checks": [
+        "API inventory complete",
+        "Permissions match approved workflow purpose",
+        "Unauthorized actions are excluded",
+        "Evidence object updated",
+        "Operational trust dependency resolved"
+      ],
+      "closure_status": "Pending Verification",
+      "blocks_trust_recalculation": true,
+      "sample_score": 78
+    },
+    {
+      "closure_id": "close_blocked_action_rule",
+      "source_action_id": "rem_blocked_action_rule",
+      "closure_name": "Verify Blocked-Action Rule Closure",
+      "closure_question": "Were prohibited tool actions blocked and tested at runtime?",
+      "owner_role": "Security Owner / Runtime Control Owner",
+      "verification_role": "Security Verifier",
+      "required_closure_evidence": [
+        "Blocked-action rule",
+        "Runtime control configuration",
+        "Tool-call test evidence",
+        "Exception routing rule",
+        "Security approval"
+      ],
+      "verification_checks": [
+        "Blocked actions documented",
+        "Runtime rule configured",
+        "Negative test evidence captured",
+        "Exception route approved",
+        "Tool-call evidence bound"
+      ],
+      "closure_status": "Open",
+      "blocks_trust_recalculation": true,
+      "sample_score": 66
+    },
+    {
+      "closure_id": "close_human_approval_evidence",
+      "source_action_id": "rem_human_approval_evidence",
+      "closure_name": "Verify Human Approval Evidence Closure",
+      "closure_question": "Was a named accountable human approval completed and bound to the decision evidence?",
+      "owner_role": "Workflow Owner / Human Approver",
+      "verification_role": "Decision Verifier",
+      "required_closure_evidence": [
+        "Named reviewer",
+        "Reviewer role",
+        "Approval decision",
+        "Approval timestamp",
+        "Review comment",
+        "Decision trace update"
+      ],
+      "verification_checks": [
+        "Reviewer identity present",
+        "Reviewer role valid",
+        "Approval decision recorded",
+        "Timestamp captured",
+        "Decision trace updated"
+      ],
+      "closure_status": "Open",
+      "blocks_trust_recalculation": true,
+      "sample_score": 62
+    },
+    {
+      "closure_id": "close_runtime_monitoring_signal",
+      "source_action_id": "rem_runtime_monitoring_signal",
+      "closure_name": "Verify Runtime Monitoring Signal Closure",
+      "closure_question": "Was runtime monitoring activated with threshold, drift, exception, and incident evidence?",
+      "owner_role": "Operational Trust Owner / Observability Owner",
+      "verification_role": "Operational Verifier",
+      "required_closure_evidence": [
+        "Monitoring plan",
+        "Runtime signal",
+        "Drift threshold",
+        "Exception rule",
+        "Incident route",
+        "Monitoring evidence package"
+      ],
+      "verification_checks": [
+        "Runtime signal active",
+        "Thresholds defined",
+        "Exception route approved",
+        "Monitoring evidence bound",
+        "Trust recalculation dependency updated"
+      ],
+      "closure_status": "Pending Verification",
+      "blocks_trust_recalculation": true,
+      "sample_score": 74
+    },
+    {
+      "closure_id": "close_rollback_stopuse",
+      "source_action_id": "rem_rollback_stopuse_procedure",
+      "closure_name": "Verify Rollback and Stop-Use Closure",
+      "closure_question": "Can the AI workflow be stopped, reversed, rolled back, or contained if it fails?",
+      "owner_role": "Change Owner / Operational Owner",
+      "verification_role": "Change Verifier",
+      "required_closure_evidence": [
+        "Rollback procedure",
+        "Stop-use condition",
+        "Rollback version",
+        "Remediation path",
+        "Communication plan",
+        "Change approval"
+      ],
+      "verification_checks": [
+        "Rollback path documented",
+        "Stop-use criteria approved",
+        "Communication plan ready",
+        "Change approval present",
+        "Evidence package updated"
+      ],
+      "closure_status": "Pending Verification",
+      "blocks_trust_recalculation": true,
+      "sample_score": 72
+    },
+    {
+      "closure_id": "close_regulatory_escalation",
+      "source_action_id": "rem_regulatory_escalation_decision",
+      "closure_name": "Verify Regulatory Escalation Closure",
+      "closure_question": "Was the regulatory or jurisdictional escalation decision completed and documented?",
+      "owner_role": "Governance Owner / Regulatory Owner",
+      "verification_role": "Regulatory Verifier",
+      "required_closure_evidence": [
+        "Jurisdiction mapping",
+        "Context of use",
+        "Regulatory pathway",
+        "Submission impact",
+        "Escalation decision",
+        "Governance approval"
+      ],
+      "verification_checks": [
+        "Jurisdiction mapped",
+        "Context of use approved",
+        "Submission impact assessed",
+        "Escalation decision recorded",
+        "Governance approval present"
+      ],
+      "closure_status": "Pending Verification",
+      "blocks_trust_recalculation": true,
+      "sample_score": 75
+    },
+    {
+      "closure_id": "close_outcome_feedback",
+      "source_action_id": "rem_outcome_feedback_loop",
+      "closure_name": "Verify Outcome Feedback Closure",
+      "closure_question": "Was the outcome captured and fed back into organizational intelligence?",
+      "owner_role": "Operational Owner / Knowledge Owner",
+      "verification_role": "Knowledge Verifier",
+      "required_closure_evidence": [
+        "Outcome record",
+        "Feedback record",
+        "Learning update",
+        "Knowledge update",
+        "Outcome measure"
+      ],
+      "verification_checks": [
+        "Outcome captured",
+        "Feedback recorded",
+        "Learning update created",
+        "Knowledge base updated",
+        "Evidence package updated"
+      ],
+      "closure_status": "Deferred",
+      "blocks_trust_recalculation": false,
+      "sample_score": 65
+    }
+  ],
+  "sample_verification": {
+    "verification_id": "AACV-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "source_queue_id": "AARQ-DEMO-001",
+    "source_contract_id": "AIEC-DEMO-001",
+    "source_replay_id": "AARC-DEMO-001",
+    "total_closure_items": 7,
+    "verified_closed_items": 0,
+    "pending_verification_items": 4,
+    "open_items": 2,
+    "deferred_items": 1,
+    "blocking_open_items": 6,
+    "closure_verification_score": 71,
+    "trust_recalculation_allowed": false,
+    "verification_decision": "CLOSURE_NOT_VERIFIED_TRUST_RECALCULATION_BLOCKED",
+    "reason": "Blocking remediation items remain open or pending verification. Operational trust cannot be recalculated yet.",
+    "required_next_steps": [
+      "Verify API permission map closure.",
+      "Close blocked-action runtime rule.",
+      "Complete human approval evidence.",
+      "Verify runtime monitoring evidence.",
+      "Verify rollback and stop-use evidence.",
+      "Record regulatory escalation closure."
+    ],
+    "approved_for_operational_use": false
+  }
+}

@@ -1,0 +1,110 @@
+﻿{
+  "assets": [
+    {
+      "asset_id": "NIAGARA-BMS-SUPERVISOR",
+      "object_id": "niagara-bms-supervisor",
+      "object_name": "Niagara BMS Supervisor",
+      "asset_type": "BMS / Equipment Application",
+      "scan_context": "QR code on BMS workstation or supervisor access point",
+      "trust_score": 71,
+      "status": "CAUTION",
+      "confidence": "MEDIUM",
+      "evidence_confidence": "PARTIAL",
+      "privacy_mode": "HUD_SAFE",
+      "evidence_summary": "CI ownership is known, but support group and access pathway require final confirmation.",
+      "next_action": "Confirm support group and remote access path before relying on readiness claim.",
+      "limitations": [
+        "Decision support only",
+        "Not QA approval",
+        "Not validation release",
+        "Evidence gap still present"
+      ],
+      "visible_fields": [
+        "status",
+        "trust_score",
+        "confidence",
+        "next_action",
+        "evidence_summary"
+      ]
+    },
+    {
+      "asset_id": "SPEEDY-GLOVE-1803",
+      "object_id": "speedy-glove-1803",
+      "object_name": "Speedy Glove 1803",
+      "asset_type": "Manufacturing Equipment",
+      "scan_context": "QR code on equipment record or operator station",
+      "trust_score": 92,
+      "status": "READY",
+      "confidence": "HIGH",
+      "evidence_confidence": "STRONG",
+      "privacy_mode": "HUD_SAFE",
+      "evidence_summary": "Ownership, support path, access model, and current operational evidence are aligned under current controls.",
+      "next_action": "Proceed under current controls and maintain evidence cadence.",
+      "limitations": [
+        "Decision support only",
+        "Continue routine audit cadence",
+        "Not a substitute for SOP"
+      ],
+      "visible_fields": [
+        "status",
+        "trust_score",
+        "confidence",
+        "next_action",
+        "evidence_summary"
+      ]
+    },
+    {
+      "asset_id": "PLATFORM-API-LAYER",
+      "object_id": "platform-api-layer",
+      "object_name": "COBIT-Chain Platform API Layer",
+      "asset_type": "Platform Service",
+      "scan_context": "Developer or architecture QR reference",
+      "trust_score": 68,
+      "status": "LIMITED",
+      "confidence": "MEDIUM",
+      "evidence_confidence": "DESIGN_STAGE",
+      "privacy_mode": "HUD_SAFE",
+      "evidence_summary": "Architecture exists, but evidence store integration, authentication model, and telemetry are still pending.",
+      "next_action": "Connect the API layer to Evidence Store, Identity, and Observability before enterprise use.",
+      "limitations": [
+        "Prototype service only",
+        "Not production API governance",
+        "No live enterprise data binding yet"
+      ],
+      "visible_fields": [
+        "status",
+        "trust_score",
+        "confidence",
+        "next_action",
+        "evidence_summary"
+      ]
+    },
+    {
+      "asset_id": "GOVERNANCE-VISION",
+      "object_id": "governance-vision",
+      "object_name": "Governance Vision Wearable Interface",
+      "asset_type": "Wearable Assurance Interface",
+      "scan_context": "Smart glasses / mobile wearable demo",
+      "trust_score": 62,
+      "status": "PROTOTYPE",
+      "confidence": "MEDIUM",
+      "evidence_confidence": "PARTIAL",
+      "privacy_mode": "HUD_SAFE",
+      "evidence_summary": "Wearable concept and HUD contract are defined, but live device integration and role filtering are not yet implemented.",
+      "next_action": "Keep the wearable mode read-only and connect it to Trust Score and Twin APIs.",
+      "limitations": [
+        "Read-only prototype",
+        "No sensitive data display",
+        "No autonomous action",
+        "No record modification"
+      ],
+      "visible_fields": [
+        "status",
+        "trust_score",
+        "confidence",
+        "next_action",
+        "evidence_summary"
+      ]
+    }
+  ]
+}

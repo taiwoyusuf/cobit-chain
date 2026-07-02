@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/platform/mcp-tools
+http://127.0.0.1:5000/platform/tool-call-evidence
+http://127.0.0.1:5000/api/platform/mcp/tools/demo
+http://127.0.0.1:5000/api/platform/mcp/tool-call/demo?tool_id=query_assurance_object&object_id=niagara-bms-supervisor
+http://127.0.0.1:5000/api/platform/mcp/tool-call-log/demo

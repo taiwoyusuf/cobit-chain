@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-exception-drift-response
+http://127.0.0.1:5000/platform/ai-exception-drift-response
+http://127.0.0.1:5000/platform/ai-assurance-response-engine
+http://127.0.0.1:5000/api/platform/ai-assurance-response/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=drift_threshold_breach_trigger
+http://127.0.0.1:5000/api/platform/ai-assurance-response/trigger/demo?trigger_id=unsafe_tool_action_trigger
+http://127.0.0.1:5000/api/platform/ai-assurance-response/response/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-response/readiness/demo

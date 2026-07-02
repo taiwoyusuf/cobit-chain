@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform/action-assurance-workflow
+http://127.0.0.1:5000/platform/action-assurance
+http://127.0.0.1:5000/platform/action-governance
+http://127.0.0.1:5000/api/platform/action-assurance/workflow/demo
+http://127.0.0.1:5000/api/platform/action-assurance/stage/demo?stage_id=authority
+http://127.0.0.1:5000/api/platform/action-assurance/check/demo
+http://127.0.0.1:5000/api/platform/action-assurance/readiness/demo

@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/route-registry
+http://127.0.0.1:5000/platform/module-map
+http://127.0.0.1:5000/cobitchain-route-registry

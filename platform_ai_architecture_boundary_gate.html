@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain AI Architecture Boundary Gate API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --bg:#050609;--text:#eef1f5;--muted:#aab3c2;
+            --orange:#ff8a1f;--orange2:#ffb15c;--amber:#ffd08a;--green:#58e096;--red:#ff5c70;--blue:#9bc7ff;
+            --line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+        .page{max-width:1840px;margin:0 auto;padding:30px}
+        .hero{
+            border:1px solid var(--oline);border-radius:34px;padding:34px;
+            background:linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+            radial-gradient(circle at 70% 20%,rgba(255,138,31,.17),transparent 35%);
+            box-shadow:0 30px 90px rgba(0,0,0,.56),0 0 42px rgba(255,138,31,.22);
+            position:relative;overflow:hidden;
+        }
+        .hero:before{
+            content:"";position:absolute;inset:0;
+            background:linear-gradient(90deg,rgba(255,138,31,.045) 0 1px,transparent 1px 90px),
+            linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 90px);
+            pointer-events:none;
+        }
+        .hero-inner{position:relative;z-index:2}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}
+        .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:10px 13px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1480px;font-size:62px;line-height:.98;letter-spacing:-2.3px;font-weight:1000}
+        .subtitle{max-width:1380px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;margin-top:28px}
+        .statement{border:1px solid rgba(255,138,31,.32);background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));border-radius:24px;padding:23px;color:#fff0df;line-height:1.7;min-height:210px}
+        .score-panel{border:1px solid rgba(255,138,31,.38);background:radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));border-radius:26px;padding:24px}
+        .score-label{color:var(--orange2);font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:950}
+        .score{margin-top:12px;font-size:70px;line-height:.9;color:var(--orange);font-weight:1000;letter-spacing:-3px}
+        .score-text{margin-top:16px;color:#d4dbe5;font-size:13px;line-height:1.62}
+        .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin:18px 0 14px;border:1px solid rgba(255,255,255,.08)}
+        .bar span{display:block;height:100%;width:75%;background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a)}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:15px;margin-top:22px}
+        .metric{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));border-radius:22px;padding:18px;min-height:146px}
+        .metric .label{color:var(--muted);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:1px}
+        .metric .value{margin-top:10px;font-size:31px;font-weight:1000}
+        .metric .note{color:#b4bdca;font-size:12px;line-height:1.48;margin-top:8px}
+        .section{margin-top:24px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));border-radius:30px;padding:26px;box-shadow:0 24px 75px rgba(0,0,0,.33)}
+        .section-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+        .section h2{margin:0;font-size:30px;letter-spacing:-.8px;font-weight:1000}
+        .section p{margin:8px 0 0;color:#b9c2ce;max-width:1120px;line-height:1.62;font-size:14px}
+        .tag{display:inline-flex;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);background:rgba(255,138,31,.09);color:#ffe4c4}
+        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+        .card{border:1px solid rgba(255,138,31,.24);background:rgba(255,138,31,.07);border-radius:18px;padding:14px;min-height:220px}
+        .card strong{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+        .card span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .two-col{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+        .panel{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:26px;padding:22px}
+        .button-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+        button{cursor:pointer;border:1px solid rgba(255,138,31,.25);background:rgba(6,7,10,.72);color:#f3f6fa;border-radius:18px;padding:16px;min-height:96px;text-align:left}
+        button:hover{border-color:rgba(255,138,31,.60);background:rgba(255,138,31,.08)}
+        button strong{display:block;font-size:15px;margin-bottom:8px}
+        button span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .result{border:1px solid rgba(255,138,31,.30);background:radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),rgba(6,7,10,.68);border-radius:24px;padding:20px;min-height:760px}
+        .result-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.10);padding-bottom:14px;margin-bottom:14px}
+        .result-name{font-size:26px;font-weight:1000;letter-spacing:-.6px}
+        .badge{display:inline-flex;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);color:#ffe4c4;background:rgba(255,138,31,.09)}
+        .ring{width:154px;height:154px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid rgba(255,138,31,.42);background:radial-gradient(circle,#3b210f,#101216 72%);float:left;margin:2px 18px 10px 0}
+        .ring strong{font-size:43px;color:var(--orange);line-height:1}
+        .ring span{color:#d7dee8;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+        .line{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:14px;padding:11px 12px;color:#cbd2dc;font-size:13px;line-height:1.45;margin-top:9px}
+        .line strong{color:#fff;display:block;margin-bottom:4px}
+        code{color:#ffd7a8;background:rgba(255,138,31,.09);border:1px solid rgba(255,138,31,.18);padding:3px 6px;border-radius:7px;font-size:12px}
+        .gap{color:#ffd4d8}
+        .ok{color:#c9ffe0}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:22px 4px 8px}
+        @media(max-width:1380px){.hero-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:760px){.page{padding:16px}.hero{padding:22px;border-radius:24px}h1{font-size:38px}.metrics,.grid-4{grid-template-columns:1fr}.ring{float:none;margin:0 0 14px 0}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; AI Architecture Boundary Gate API</div>
+                            <div class="brand-sub">Reusable pre-approval gate for all AI-enabled workflows</div>
+                        </div>
+                    </div>
+                    <span class="pill">Boundary Gate / API-ready</span>
+                </div>
+
+                <div class="eyebrow">Platform A / AI Architecture / Boundary Gate</div>
+                <h1>Gate AI workflows before operational trust is granted.</h1>
+                <div class="subtitle">
+                    The Boundary Gate API checks Knowledge Assurance, Tool Assurance, Autonomy Assurance, and Evidence Assurance before an AI-enabled workflow can be approved for operational use.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Engineering principle:</strong> modern AI systems combine knowledge, tools and autonomous decision making. Platform A must independently evaluate each assurance boundary before determining overall operational trust.
+                    </div>
+
+                    <div class="score-panel">
+                        <div class="score-label">Sample Gate Score</div>
+                        <div class="score">75%</div>
+                        <div class="score-text">
+                            Sample workflow is held for boundary remediation because Tool Assurance and Autonomy Assurance remain below approval threshold.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> hold for boundary remediation.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/platform">Platform</a>
+                    <a href="/platform/ai-architecture-assurance">AI Architecture Assurance</a>
+                    <a href="/platform/mcp-tools">MCP Tools</a>
+                    <a href="/platform/ai-autonomy-assurance-model">AI Autonomy</a>
+                    <a href="/platform/evidence-packages">Evidence Vault</a>
+                    <a href="/platform/operational-trust-twin">Operational Trust</a>
+                    <a href="/platform/routes">Routes</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Boundaries</div><div class="value" style="color:var(--orange);">4</div><div class="note">Knowledge, Tool, Autonomy, Evidence.</div></div>
+            <div class="metric"><div class="label">Approval Threshold</div><div class="value" style="color:var(--amber);">85</div><div class="note">Minimum overall score for approval.</div></div>
+            <div class="metric"><div class="label">Boundary Minimum</div><div class="value" style="color:var(--blue);">80</div><div class="note">Minimum score per boundary.</div></div>
+            <div class="metric"><div class="label">Hold Below</div><div class="value" style="color:var(--green);">75</div><div class="note">Any weak boundary triggers hold.</div></div>
+            <div class="metric"><div class="label">Block Below</div><div class="value" style="color:var(--red);">60</div><div class="note">Critical boundary weakness blocks use.</div></div>
+            <div class="metric"><div class="label">API</div><div class="value" style="color:var(--orange2);">Gate</div><div class="note">Reusable by all Platform A modules.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Boundary Gate Policy</h2>
+                    <p>All four boundaries must be independently evaluated before operational trust is calculated.</p>
+                </div>
+                <span class="tag">Gate policy</span>
+            </div>
+            <div class="grid-4" id="boundaryGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live Boundary Gate Explorer</h2>
+                    <p>Select a boundary or run the sample gate evaluation.</p>
+                </div>
+                <span class="tag">Live gate API</span>
+            </div>
+
+            <div class="two-col">
+                <div class="panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Boundary Selector</h2>
+                    <div class="button-grid" id="boundaryButtons"></div>
+
+                    <h2 style="font-size:22px;margin:22px 0 6px;">Sample Gate Evaluation</h2>
+                    <div class="button-grid">
+                        <button onclick="loadEvaluation()"><strong>Run AI workflow boundary gate</strong><span>Checks all four boundaries and returns approve, hold, or block decision.</span></button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div id="result" class="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for Boundary Gate query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select a boundary or sample gate.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="ring"><strong>--</strong><span>Gate</span></div>
+                        <div class="score-text">The boundary gate result will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            AI Architecture Boundary Gate API. Every AI-enabled workflow should pass Knowledge, Tool, Autonomy, and Evidence gates before operational approval.
+        </div>
+    </div>
+
+    <script>
+        function listText(items){
+            if(!items || !items.length){ return "None listed."; }
+            return items.join("; ");
+        }
+
+        async function loadModel(){
+            const response = await fetch('/api/platform/ai-architecture-gate/model/demo');
+            const data = await response.json();
+
+            document.getElementById("boundaryGrid").innerHTML = (data.boundary_gates || []).map(function(boundary){
+                return `<div class="card"><strong>${boundary.boundary_name}</strong><span>${boundary.gate_question}<br><br><b>Checks:</b> ${listText(boundary.required_checks)}<br><br><b>Sample:</b> ${boundary.sample_score} / ${boundary.sample_status}</span></div>`;
+            }).join('');
+
+            document.getElementById("boundaryButtons").innerHTML = (data.boundary_gates || []).map(function(boundary){
+                return `<button onclick="loadBoundary('${boundary.boundary_id}')"><strong>${boundary.boundary_name}</strong><span>${boundary.gate_question}</span></button>`;
+            }).join('');
+        }
+
+        async function loadBoundary(boundaryId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling AI Architecture Boundary Gate service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-architecture-gate/boundary/demo?boundary_id=' + encodeURIComponent(boundaryId));
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.boundary_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.boundary_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.computed_gate_status}</div>
+                    </div>
+                    <div class="ring"><strong>${data.sample_score}</strong><span>Score</span></div>
+                    <div class="line"><strong>Gate Question</strong>${data.gate_question}</div>
+                    <div class="line"><strong>Required Checks</strong>${listText(data.required_checks)}</div>
+                    <div class="line"><strong>Required Evidence</strong>${listText(data.required_evidence)}</div>
+                    <div class="line"><strong>Pass Rule</strong>${data.pass_rule}</div>
+                    <div class="line"><strong>Mapped Modules</strong>${listText(data.mapped_modules)}</div>
+                    <div class="line"><strong>Sample Gaps</strong><span class="gap">${listText(data.sample_gaps)}</span></div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Gate API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        async function loadEvaluation(){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling sample gate evaluation...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-architecture-gate/evaluate/demo');
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.workflow_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.gate_id} | ${data.workflow_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.gate_decision}</div>
+                    </div>
+                    <div class="ring"><strong>${data.overall_score}</strong><span>Gate</span></div>
+                    <div class="line"><strong>Description</strong>${data.workflow_description}</div>
+                    <div class="line"><strong>Knowledge Score</strong>${data.knowledge_score}</div>
+                    <div class="line"><strong>Tool Score</strong>${data.tool_score}</div>
+                    <div class="line"><strong>Autonomy Score</strong>${data.autonomy_score}</div>
+                    <div class="line"><strong>Evidence Score</strong>${data.evidence_score}</div>
+                    <div class="line"><strong>Decision Reason</strong>${data.decision_reason}</div>
+                    <div class="line"><strong>Approved for Operational Use</strong>${data.approved_for_operational_use}</div>
+                    <div class="line"><strong>Required Actions</strong><span class="gap">${listText(data.required_actions)}</span></div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Evaluation API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadModel().then(function(){ loadEvaluation(); });
+    </script>
+</body>
+</html>

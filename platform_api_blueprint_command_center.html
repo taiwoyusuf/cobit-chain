@@ -1,0 +1,757 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Platform API Blueprint</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --graphite2:#171a20;
+            --panel:#151820;
+            --panel2:#1b1f28;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --soft:#c9d0da;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+            --cyan:#8ff4ff;
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{
+            width:100%;
+            max-width:1780px;
+            margin:0 auto;
+            padding:30px;
+        }
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 68% 30%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-130px;
+            top:-170px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.22);
+            box-shadow:
+                0 0 0 72px rgba(255,138,31,.026),
+                0 0 0 148px rgba(255,138,31,.018),
+                0 0 0 234px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{
+            font-size:17px;
+            font-weight:950;
+            letter-spacing:.4px;
+        }
+
+        .brand-sub{
+            color:var(--steel);
+            font-size:12px;
+            margin-top:4px;
+        }
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1220px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.2px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1240px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .statement strong{color:white}
+
+        .api-score{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:68px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-2.8px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:64%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:24px;
+        }
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1060px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .api-map{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:14px;
+            margin-top:18px;
+        }
+
+        .api-domain{
+            position:relative;
+            border:1px solid rgba(255,255,255,.115);
+            background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+            border-radius:22px;
+            padding:18px;
+            min-height:250px;
+            overflow:hidden;
+        }
+
+        .api-domain:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--orange),var(--orange2),rgba(255,255,255,.45));
+        }
+
+        .domain-id{
+            color:var(--orange2);
+            font-size:12px;
+            font-weight:950;
+            letter-spacing:1.4px;
+            text-transform:uppercase;
+        }
+
+        .api-domain h3{
+            margin:12px 0 8px;
+            font-size:18px;
+            font-weight:950;
+        }
+
+        .api-domain p{
+            color:#b9c2ce;
+            font-size:13px;
+            line-height:1.55;
+            margin:0;
+        }
+
+        .api-domain ul{
+            margin:14px 0 0;
+            padding-left:18px;
+            color:#d7dee8;
+            font-size:12px;
+            line-height:1.7;
+        }
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1.04fr .96fr;
+            gap:20px;
+        }
+
+        .flow{
+            border:1px solid rgba(255,255,255,.11);
+            background:
+                radial-gradient(circle at 50% 50%,rgba(255,138,31,.13),transparent 28%),
+                rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:24px;
+            min-height:510px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .flow-title{
+            color:var(--orange2);
+            text-transform:uppercase;
+            letter-spacing:1.8px;
+            font-size:12px;
+            font-weight:950;
+            margin-bottom:18px;
+        }
+
+        .flow-grid{
+            display:grid;
+            grid-template-columns:1fr 44px 1fr 44px 1fr;
+            gap:12px;
+            align-items:center;
+        }
+
+        .flow-card{
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            border-radius:18px;
+            padding:16px;
+            min-height:142px;
+            box-shadow:0 18px 45px rgba(0,0,0,.28);
+        }
+
+        .flow-card strong{
+            display:block;
+            color:white;
+            margin-bottom:8px;
+            font-size:15px;
+        }
+
+        .flow-card span{
+            display:block;
+            color:#b9c2ce;
+            font-size:12px;
+            line-height:1.45;
+        }
+
+        .arrow{
+            text-align:center;
+            color:var(--orange2);
+            font-size:28px;
+            font-weight:1000;
+        }
+
+        .flow-bottom{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:14px;
+        }
+
+        .contract{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .contract-row{
+            display:grid;
+            grid-template-columns:180px 1fr 132px;
+            gap:14px;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+
+        .contract-row:last-child{border-bottom:0}
+
+        .contract-row div:first-child{
+            font-weight:950;
+            color:white;
+        }
+
+        .contract-row div:nth-child(2){
+            color:#b9c2ce;
+            font-size:13px;
+            line-height:1.45;
+        }
+
+        .method{
+            justify-self:end;
+            border:1px solid rgba(255,138,31,.34);
+            background:rgba(255,138,31,.08);
+            color:#ffe3bf;
+            border-radius:999px;
+            padding:7px 9px;
+            font-size:11px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .api-map{grid-template-columns:repeat(2,1fr)}
+            .flow-grid{grid-template-columns:1fr}
+            .arrow{transform:rotate(90deg)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.api-map{grid-template-columns:1fr}
+            .contract-row{grid-template-columns:1fr}
+            .method{justify-self:start}
+            .flow-bottom{grid-template-columns:1fr}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain API Blueprint</div>
+                            <div class="brand-sub">Service boundary for Azure, MCP, evidence retrieval, trust scoring, and Governance Vision</div>
+                        </div>
+                    </div>
+                    <span class="pill">Architecture Route: /platform/api-blueprint</span>
+                </div>
+
+                <div class="eyebrow">Thread B / API Design / Platform A to Platform B Service Layer</div>
+                <h1>The service boundary that turns dashboards into a real platform.</h1>
+                <div class="subtitle">
+                    The API Blueprint defines how COBIT-Chain moves from premium command-center pages into service-backed architecture: trust scoring endpoints, evidence retrieval, CI and equipment lookup, Governance Vision responses, MCP tool access, audit logging, and identity-aware control boundaries.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>API principle:</strong> Every API must return evidence-backed operational truth, not marketing language. The platform should expose controlled services for trust state, evidence lineage, CI passports, equipment readiness, AI-agent tool use, and wearable point-of-work decision support.
+                    </div>
+
+                    <div class="api-score">
+                        <div class="score-label">API Maturity Target</div>
+                        <div class="score">64%</div>
+                        <div class="score-text">
+                            Current platform pages are strong as a product shell. The next maturity step is designing callable services that can later be implemented with Azure Functions, API Management, managed identity, storage, and MCP tool contracts.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Blueprint ready for service implementation planning.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform Command Center</a>
+                    <a href="/platform/architecture">Architecture</a>
+                    <a href="/platform/api-blueprint">API Blueprint</a>
+                    <a href="/platform-api">API Alias</a>
+                    <a href="/citrust">CITrust</a>
+                    <a href="/citrust/ai-evidence-lineage-mapper">Evidence Lineage</a>
+                    <a href="/citrust/myaccess-readiness">MyAccess Readiness</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">API Domains</div><div class="value" style="color:var(--orange);">5</div><div class="note">Trust, evidence, CI/equipment, AI tools, and wearable query domains.</div></div>
+            <div class="metric"><div class="label">Cloud Pattern</div><div class="value" style="color:var(--orange2);">HTTP</div><div class="note">Azure Functions or Flask API endpoints behind a controlled boundary.</div></div>
+            <div class="metric"><div class="label">Primary Consumer</div><div class="value" style="color:var(--amber);">MCP</div><div class="note">AI tools should query evidence and trust state through governed contracts.</div></div>
+            <div class="metric"><div class="label">Wearable Layer</div><div class="value" style="color:var(--good);">HUD</div><div class="note">Governance Vision requires concise, safe, read-only responses first.</div></div>
+            <div class="metric"><div class="label">Evidence Rule</div><div class="value" style="color:var(--blue);">Trace</div><div class="note">Every result should identify evidence source, freshness, and confidence.</div></div>
+            <div class="metric"><div class="label">Action Mode</div><div class="value" style="color:var(--mist);">Guard</div><div class="note">No autonomous changes without authority, logging, and human control.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Five API Domains</h2>
+                    <p>These domains define the service layer that turns static pages into a callable platform. They can start as Flask routes and later move into Azure Functions or API Management.</p>
+                </div>
+                <span class="tag">Service blueprint</span>
+            </div>
+
+            <div class="api-map">
+                <div class="api-domain">
+                    <div class="domain-id">Domain 01</div>
+                    <h3>Trust State API</h3>
+                    <p>Returns trust score, confidence level, trust decay state, readiness interpretation, and recommended action.</p>
+                    <ul><li>/api/trust-score</li><li>/api/trust-state</li><li>/api/trust-decay</li><li>/api/decision-confidence</li></ul>
+                </div>
+                <div class="api-domain">
+                    <div class="domain-id">Domain 02</div>
+                    <h3>Evidence API</h3>
+                    <p>Retrieves evidence lineage, sufficiency, freshness, source records, attachments, and audit replay packages.</p>
+                    <ul><li>/api/evidence</li><li>/api/evidence-lineage</li><li>/api/evidence-pack</li><li>/api/replay</li></ul>
+                </div>
+                <div class="api-domain">
+                    <div class="domain-id">Domain 03</div>
+                    <h3>CI & Equipment API</h3>
+                    <p>Looks up CI, equipment, passport, owner, support group, lifecycle state, access state, and operational readiness.</p>
+                    <ul><li>/api/ci-passport</li><li>/api/equipment-passport</li><li>/api/owner-map</li><li>/api/readiness</li></ul>
+                </div>
+                <div class="api-domain">
+                    <div class="domain-id">Domain 04</div>
+                    <h3>MCP Tool API</h3>
+                    <p>Provides controlled AI tool contracts for evidence retrieval, trust queries, action checks, and decision support.</p>
+                    <ul><li>/api/mcp/tools</li><li>/api/mcp/query-trust</li><li>/api/mcp/get-evidence</li><li>/api/mcp/action-guard</li></ul>
+                </div>
+                <div class="api-domain">
+                    <div class="domain-id">Domain 05</div>
+                    <h3>Governance Vision API</h3>
+                    <p>Returns short, point-of-work trust summaries for smart glasses, QR scans, voice queries, and mobile views.</p>
+                    <ul><li>/api/vision/lookup</li><li>/api/vision/summary</li><li>/api/vision/action</li><li>/api/vision/hud</li></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>API Request-to-Trust Flow</h2>
+                    <p>The platform must never produce trust claims without evidence. Every request should pass through identity, evidence retrieval, trust logic, response shaping, and audit logging.</p>
+                </div>
+                <span class="tag">Evidence before claim</span>
+            </div>
+
+            <div class="two-col">
+                <div class="flow">
+                    <div class="flow-title">Service Flow</div>
+                    <div class="flow-grid">
+                        <div class="flow-card"><strong>1. Request</strong><span>User, wearable, dashboard, or MCP tool asks for trust state, evidence, passport, or action guidance.</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="flow-card"><strong>2. Identity Check</strong><span>Verify caller, role, session, source, and allowed operation before returning sensitive evidence.</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="flow-card"><strong>3. Evidence Retrieval</strong><span>Pull relevant records, source links, freshness state, ownership, lifecycle, and dependency data.</span></div>
+                    </div>
+                    <div class="flow-bottom">
+                        <div class="flow-card"><strong>4. Trust Computation</strong><span>Apply trust rules, decay, confidence weighting, missing evidence penalties, and claim limitations.</span></div>
+                        <div class="flow-card"><strong>5. Response + Replay</strong><span>Return concise decision support and log the query, evidence references, score basis, and limitations.</span></div>
+                    </div>
+                </div>
+
+                <div class="contract">
+                    <div class="contract-row"><div>Authentication</div><div>Local password gate today; future Microsoft Entra ID, managed identity, and RBAC.</div><span class="method">Security</span></div>
+                    <div class="contract-row"><div>Authorization</div><div>Viewer, engineer, owner, QA, admin, AI-tool, and wearable-read-only role boundaries.</div><span class="method">RBAC</span></div>
+                    <div class="contract-row"><div>Evidence Binding</div><div>Every response should include evidence IDs, source freshness, limitation language, and replay metadata.</div><span class="method">Trace</span></div>
+                    <div class="contract-row"><div>AI Guardrails</div><div>MCP tools may retrieve and reason over evidence, but must not invent evidence or bypass authority checks.</div><span class="method">MCP</span></div>
+                    <div class="contract-row"><div>Observability</div><div>Log request ID, caller, endpoint, trust object, evidence references, response class, and error state.</div><span class="method">Audit</span></div>
+                    <div class="contract-row"><div>Deployment</div><div>Start with Flask endpoints; mature into Azure Functions/API Management when data services are ready.</div><span class="method">Azure</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Endpoint Blueprint</h2>
+                    <p>These are not all active endpoints yet. This is the engineering contract for what the Platform A/B API layer should expose as the product matures.</p>
+                </div>
+                <span class="tag">Future implementation contract</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Purpose</th>
+                        <th>Primary Input</th>
+                        <th>Response</th>
+                        <th>Control Requirement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>GET /api/trust-state/{object_id}</code></td><td>Return live trust state for CI, equipment, AI agent, workflow, or operation.</td><td>Object ID, object type</td><td>Trust score, status, evidence gaps, recommended action</td><td>Role check, evidence references, response logging</td></tr>
+                    <tr><td><code>GET /api/ci-passport/{ci_id}</code></td><td>Return CI passport with ownership, support group, lifecycle, access, and readiness state.</td><td>CI ID or name</td><td>Passport JSON, readiness state, unresolved blockers</td><td>CMDB source reference and freshness timestamp</td></tr>
+                    <tr><td><code>GET /api/evidence-pack/{object_id}</code></td><td>Retrieve audit-ready evidence package for a regulated object.</td><td>Object ID, evidence scope</td><td>Evidence list, source links, sufficiency score, limitations</td><td>Evidence lineage and access control</td></tr>
+                    <tr><td><code>POST /api/trust-score</code></td><td>Calculate trust score from evidence, control state, freshness, and risk inputs.</td><td>Evidence/control payload</td><td>Score, explanation, confidence, missing evidence</td><td>Explainability and replay record</td></tr>
+                    <tr><td><code>POST /api/mcp/query-trust</code></td><td>Allow AI/MCP tool to query trust state through a governed contract.</td><td>Tool identity, object, question</td><td>Evidence-backed answer with limitations</td><td>Tool identity, rate limit, audit log</td></tr>
+                    <tr><td><code>GET /api/vision/lookup/{asset_id}</code></td><td>Return wearable-ready trust summary for equipment, QR scan, or CI lookup.</td><td>Asset ID, user role, location context</td><td>Short HUD response, status, action, evidence confidence</td><td>Read-only response and privacy boundary</td></tr>
+                    <tr><td><code>POST /api/action-guard</code></td><td>Check whether a proposed action is authorized and evidence-supported.</td><td>Actor, action, object, justification</td><td>Allow, block, escalate, missing controls</td><td>Human authority and change-control alignment</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain Platform API Blueprint is an engineering planning layer for the future service boundary. It does not activate production APIs, replace QA, bypass validation, or authorize automated changes. It defines how the platform should expose evidence-backed trust services as Platform A matures into Platform B.
+        </div>
+    </div>
+</body>
+</html>

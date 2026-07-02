@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/governance-vision
+http://127.0.0.1:5000/platform/vision
+http://127.0.0.1:5000/governance-vision
+http://127.0.0.1:5000/cobitchain-governance-vision

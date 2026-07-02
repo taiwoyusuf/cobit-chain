@@ -1,0 +1,6 @@
+http://127.0.0.1:5000/platform/ai-infrastructure-assurance
+http://127.0.0.1:5000/platform/ai-infra-assurance
+http://127.0.0.1:5000/platform/infrastructure-assurance-blueprint
+http://127.0.0.1:5000/api/platform/ai-infrastructure/blueprint/demo
+http://127.0.0.1:5000/api/platform/ai-infrastructure/stage/demo?stage_id=infrastructure_as_code
+http://127.0.0.1:5000/api/platform/ai-infrastructure/readiness/demo

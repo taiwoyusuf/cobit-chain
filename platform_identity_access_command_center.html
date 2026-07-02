@@ -1,0 +1,691 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Platform Identity and Access Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --panel:#151820;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{width:100%;max-width:1780px;margin:0 auto;padding:30px}
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 68% 30%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-130px;
+            top:-170px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.22);
+            box-shadow:
+                0 0 0 72px rgba(255,138,31,.026),
+                0 0 0 148px rgba(255,138,31,.018),
+                0 0 0 234px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{display:flex;align-items:center;gap:14px}
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{font-size:17px;font-weight:950;letter-spacing:.4px}
+        .brand-sub{color:var(--steel);font-size:12px;margin-top:4px}
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1240px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.2px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1240px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .statement strong{color:white}
+
+        .identity-score{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:68px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-2.8px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:57%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1060px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .identity-grid{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:14px;
+            margin-top:18px;
+        }
+
+        .identity-card{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.115);
+            background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+            border-radius:22px;
+            padding:18px;
+            min-height:250px;
+        }
+
+        .identity-card:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--orange),var(--orange2),rgba(255,255,255,.45));
+        }
+
+        .card-id{
+            color:var(--orange2);
+            font-size:12px;
+            font-weight:950;
+            letter-spacing:1.4px;
+            text-transform:uppercase;
+        }
+
+        .identity-card h3{margin:12px 0 8px;font-size:18px;font-weight:950}
+        .identity-card p{color:#b9c2ce;font-size:13px;line-height:1.55;margin:0}
+        .identity-card ul{margin:14px 0 0;padding-left:18px;color:#d7dee8;font-size:12px;line-height:1.7}
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1.04fr .96fr;
+            gap:20px;
+        }
+
+        .flow-panel{
+            border:1px solid rgba(255,255,255,.11);
+            background:
+                radial-gradient(circle at 50% 50%,rgba(255,138,31,.13),transparent 28%),
+                rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:24px;
+            min-height:520px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .flow-title{
+            color:var(--orange2);
+            text-transform:uppercase;
+            letter-spacing:1.8px;
+            font-size:12px;
+            font-weight:950;
+            margin-bottom:18px;
+        }
+
+        .flow-grid{
+            display:grid;
+            grid-template-columns:1fr 46px 1fr 46px 1fr;
+            gap:12px;
+            align-items:center;
+        }
+
+        .flow-card{
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            border-radius:18px;
+            padding:16px;
+            min-height:154px;
+            box-shadow:0 18px 45px rgba(0,0,0,.28);
+        }
+
+        .flow-card strong{display:block;color:white;margin-bottom:8px;font-size:15px}
+        .flow-card span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+
+        .arrow{text-align:center;color:var(--orange2);font-size:28px;font-weight:1000}
+
+        .flow-bottom{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:14px;
+        }
+
+        .control-panel{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .control-row{
+            display:grid;
+            grid-template-columns:185px 1fr 132px;
+            gap:14px;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+
+        .control-row:last-child{border-bottom:0}
+        .control-row div:first-child{font-weight:950;color:white}
+        .control-row div:nth-child(2){color:#b9c2ce;font-size:13px;line-height:1.45}
+
+        .method{
+            justify-self:end;
+            border:1px solid rgba(255,138,31,.34);
+            background:rgba(255,138,31,.08);
+            color:#ffe3bf;
+            border-radius:999px;
+            padding:7px 9px;
+            font-size:11px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .identity-grid{grid-template-columns:repeat(2,1fr)}
+            .flow-grid{grid-template-columns:1fr}
+            .arrow{transform:rotate(90deg)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.identity-grid{grid-template-columns:1fr}
+            .control-row{grid-template-columns:1fr}
+            .method{justify-self:start}
+            .flow-bottom{grid-template-columns:1fr}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; Platform Identity and Access Command Center</div>
+                            <div class="brand-sub">Password gate, Entra ID, RBAC, managed identity, Key Vault, MCP identity, and wearable access boundary</div>
+                        </div>
+                    </div>
+                    <span class="pill">Architecture Route: /platform/identity-access</span>
+                </div>
+
+                <div class="eyebrow">Thread B / Security Boundary / Identity and Access Model</div>
+                <h1>The control boundary that makes Platform A/B enterprise-ready.</h1>
+                <div class="subtitle">
+                    This page defines how COBIT-Chain moves from a local password-protected prototype into an enterprise identity model using Entra ID, RBAC, managed identity, Key Vault, role-specific APIs, MCP tool identity, wearable read-only access, and privileged action controls.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Identity principle:</strong> Trust data must never be exposed the same way to every user, AI tool, wearable device, or admin. Every request should have a caller, a role, an allowed scope, an evidence boundary, and an audit trail. Platform A can use a password gate; Platform B must use identity-aware access control.
+                    </div>
+
+                    <div class="identity-score">
+                        <div class="score-label">Identity Maturity Target</div>
+                        <div class="score">57%</div>
+                        <div class="score-text">
+                            The platform currently has local access gating and page-level protection. The next maturity step is role-based access, managed identity, protected secrets, tool identity, wearable read-only scopes, and privileged action boundaries.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Ready for RBAC and Azure identity design.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform Command Center</a>
+                    <a href="/platform/architecture">Architecture</a>
+                    <a href="/platform/api-blueprint">API Blueprint</a>
+                    <a href="/platform/mcp-server">MCP Server</a>
+                    <a href="/platform/evidence-store">Evidence Store</a>
+                    <a href="/platform/governance-vision">Governance Vision</a>
+                    <a href="/platform/identity-access">Identity and Access</a>
+                    <a href="/identity-access">Identity Alias</a>
+                    <a href="/citrust">CITrust</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Current Gate</div><div class="value" style="color:var(--orange);">Pass</div><div class="note">Local and Azure password gate protects prototype routes today.</div></div>
+            <div class="metric"><div class="label">Enterprise Target</div><div class="value" style="color:var(--orange2);">Entra</div><div class="note">Future authentication should use Microsoft Entra ID and RBAC.</div></div>
+            <div class="metric"><div class="label">Secrets Model</div><div class="value" style="color:var(--amber);">Vault</div><div class="note">Passwords, keys, and connection strings belong in Key Vault.</div></div>
+            <div class="metric"><div class="label">App Identity</div><div class="value" style="color:var(--blue);">MI</div><div class="note">Managed identity should access Azure services without hard-coded secrets.</div></div>
+            <div class="metric"><div class="label">AI Tool Access</div><div class="value" style="color:var(--good);">MCP</div><div class="note">Every AI tool call needs tool identity, scope, and replay logging.</div></div>
+            <div class="metric"><div class="label">Privileged Rule</div><div class="value" style="color:var(--bad);">Guard</div><div class="note">Controlled actions require authority, evidence, and human oversight.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Identity Control Layers</h2>
+                    <p>These layers define who or what can access platform services, what they can see, and what they are allowed to do.</p>
+                </div>
+                <span class="tag">Security architecture</span>
+            </div>
+
+            <div class="identity-grid">
+                <div class="identity-card">
+                    <div class="card-id">Layer 01</div>
+                    <h3>User Identity</h3>
+                    <p>Human users authenticate and receive access based on role, site, module, and allowed evidence depth.</p>
+                    <ul><li>Viewer</li><li>Engineer</li><li>Owner</li><li>QA/Admin</li></ul>
+                </div>
+                <div class="identity-card">
+                    <div class="card-id">Layer 02</div>
+                    <h3>Application Identity</h3>
+                    <p>The app should use managed identity to access storage, secrets, telemetry, and future Azure services.</p>
+                    <ul><li>Managed identity</li><li>Storage access</li><li>Key Vault access</li><li>No hard-coded secrets</li></ul>
+                </div>
+                <div class="identity-card">
+                    <div class="card-id">Layer 03</div>
+                    <h3>MCP Tool Identity</h3>
+                    <p>AI tools must identify themselves before retrieving evidence, querying trust state, or checking action authority.</p>
+                    <ul><li>Tool ID</li><li>Caller context</li><li>Allowed scope</li><li>Replay logging</li></ul>
+                </div>
+                <div class="identity-card">
+                    <div class="card-id">Layer 04</div>
+                    <h3>Wearable Identity</h3>
+                    <p>Governance Vision should operate as a read-only, role-filtered, privacy-safe point-of-work interface.</p>
+                    <ul><li>Read-only scope</li><li>HUD response</li><li>Privacy boundary</li><li>Escalation only</li></ul>
+                </div>
+                <div class="identity-card">
+                    <div class="card-id">Layer 05</div>
+                    <h3>Privileged Action Guard</h3>
+                    <p>Any future write or controlled action must pass role, authority, change-control, validation, and evidence checks.</p>
+                    <ul><li>Allow</li><li>Block</li><li>Escalate</li><li>Audit replay</li></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Access Decision Flow</h2>
+                    <p>The same access logic should protect dashboards, APIs, MCP tools, evidence retrieval, and wearable responses.</p>
+                </div>
+                <span class="tag">Identity before evidence</span>
+            </div>
+
+            <div class="two-col">
+                <div class="flow-panel">
+                    <div class="flow-title">Request to Access Flow</div>
+                    <div class="flow-grid">
+                        <div class="flow-card"><strong>1. Caller Arrives</strong><span>User, dashboard, wearable, API client, or MCP tool requests trust data or evidence.</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="flow-card"><strong>2. Authenticate</strong><span>Prototype uses password gate. Enterprise state uses Entra ID, managed identity, and token validation.</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="flow-card"><strong>3. Authorize</strong><span>Role, site, module, evidence depth, object sensitivity, and action type are checked.</span></div>
+                    </div>
+                    <div class="flow-bottom">
+                        <div class="flow-card"><strong>4. Retrieve Safely</strong><span>Evidence is filtered by role and response mode. Wearables receive short read-only summaries.</span></div>
+                        <div class="flow-card"><strong>5. Log and Replay</strong><span>Request, caller, role, object, response, evidence references, and limitations are logged.</span></div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-row"><div>Password Gate</div><div>Useful for Platform A prototype protection but not sufficient for enterprise scale.</div><span class="method">Current</span></div>
+                    <div class="control-row"><div>Entra ID</div><div>Future authentication layer for users, groups, conditional access, and enterprise SSO.</div><span class="method">Target</span></div>
+                    <div class="control-row"><div>RBAC</div><div>Controls whether a user sees dashboard-only, evidence summary, full evidence, or admin functions.</div><span class="method">Role</span></div>
+                    <div class="control-row"><div>Key Vault</div><div>Stores secrets, connection strings, API keys, signing secrets, and future MCP credentials.</div><span class="method">Secret</span></div>
+                    <div class="control-row"><div>Managed Identity</div><div>Allows the app or Azure Functions to access storage and Key Vault without embedded credentials.</div><span class="method">MI</span></div>
+                    <div class="control-row"><div>MCP Scope</div><div>Restricts AI tools to approved evidence retrieval and trust queries, with action guards.</div><span class="method">Tool</span></div>
+                    <div class="control-row"><div>Audit Replay</div><div>Every sensitive access should log caller, object, response class, evidence refs, and limitation.</div><span class="method">Replay</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Role and Permission Register</h2>
+                    <p>This is the first RBAC map for Platform B. It can later become a real authorization policy file or database table.</p>
+                </div>
+                <span class="tag">RBAC blueprint</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Can View</th>
+                        <th>Can Query</th>
+                        <th>Cannot Do</th>
+                        <th>Control Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>platform_viewer</code></td><td>Executive dashboards, summary trust state, public module pages.</td><td>High-level status only.</td><td>View detailed evidence, secrets, or admin controls.</td><td>Dashboard-only access.</td></tr>
+                    <tr><td><code>engineer</code></td><td>Operational readiness, CI passports, equipment state, evidence summaries.</td><td>Trust object lookup and readiness blockers.</td><td>Approve QA decisions or bypass change control.</td><td>Evidence summary with work-context limits.</td></tr>
+                    <tr><td><code>owner</code></td><td>Owned objects, blockers, evidence gaps, assigned actions.</td><td>Owner-specific readiness and escalation data.</td><td>Change global policies or approve validation alone.</td><td>Ownership-based access.</td></tr>
+                    <tr><td><code>qa_reviewer</code></td><td>Evidence packages, replay records, limitations, audit support views.</td><td>Evidence sufficiency and decision replay.</td><td>Execute system changes through AI.</td><td>QA evidence review boundary.</td></tr>
+                    <tr><td><code>mcp_tool</code></td><td>Approved evidence and trust state through tool contracts.</td><td>query_trust_state, get_evidence_pack, action_guard.</td><td>Invent evidence, bypass authority, or write records without approved workflow.</td><td>Tool identity and replay logging required.</td></tr>
+                    <tr><td><code>vision_user</code></td><td>Wearable-ready status, score, caution, and next action.</td><td>QR lookup and short controlled questions.</td><td>View sensitive records or perform controlled actions.</td><td>Read-only HUD access.</td></tr>
+                    <tr><td><code>platform_admin</code></td><td>Configuration, route registry, logs, service health, integration state.</td><td>Admin diagnostics and deployment readiness.</td><td>Bypass regulated approval processes.</td><td>Privileged access requires logging.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain Identity and Access Command Center defines the access control model for Platform A/B. It does not replace enterprise IAM, cybersecurity review, QA approval, validation, change control, or formal regulated authorization. Its purpose is to define how the platform should protect evidence, APIs, MCP tools, wearable responses, secrets, and privileged actions as it matures.
+        </div>
+    </div>
+</body>
+</html>

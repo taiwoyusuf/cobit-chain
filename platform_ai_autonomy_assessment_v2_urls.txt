@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-autonomy-assessment
+http://127.0.0.1:5000/platform/ai-autonomy-model
+http://127.0.0.1:5000/platform/automation-agentic-assurance
+http://127.0.0.1:5000/platform/autonomy-assurance
+http://127.0.0.1:5000/api/platform/ai-autonomy/model/demo
+http://127.0.0.1:5000/api/platform/ai-autonomy/level/demo?level_id=level_4
+http://127.0.0.1:5000/api/platform/ai-autonomy/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-autonomy/readiness/demo

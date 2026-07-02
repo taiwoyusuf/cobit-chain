@@ -1,0 +1,11 @@
+http://127.0.0.1:5000/platform/ai-architecture-boundary-gate
+http://127.0.0.1:5000/platform/ai-boundary-gate
+http://127.0.0.1:5000/platform/architecture-boundary-gate
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/model/demo
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/policy/demo
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=knowledge_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=tool_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=autonomy_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/boundary/demo?boundary_id=evidence_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/evaluate/demo
+http://127.0.0.1:5000/api/platform/ai-architecture-gate/readiness/demo

@@ -1,0 +1,162 @@
+﻿{
+  "capability_name": "AI Assurance Reuse Applicability Engine",
+  "platform_rule": "Reusable AI assurance knowledge may be applied to a new workflow only when context, boundary, evidence, autonomy, tool, regulatory, owner, and lifecycle conditions match.",
+  "platform_position": "AI Assurance Reuse Applicability Engine sits after Knowledge Reuse Registry and before new workflow assurance intake, architecture assurance, evidence contract generation, control routing, and approval planning.",
+  "engineering_principle": "Reuse is not copy-paste. Reuse is a governed applicability decision that determines whether prior operational learning safely applies to a new AI workflow.",
+  "depends_on": [
+    "AI Assurance Knowledge Reuse Registry",
+    "Organizational Intelligence Assurance",
+    "AI Assurance Control Router",
+    "AI Assurance Evidence Contract",
+    "AI Architecture Assurance",
+    "AI Autonomy Assurance Model",
+    "Jurisdictional AI Assurance",
+    "AI Lifecycle Change Assurance"
+  ],
+  "applicability_checks": [
+    {
+      "check_id": "context_of_use_match",
+      "check_name": "Context of Use Match",
+      "applicability_question": "Does the new workflow share the same or compatible context of use as the reusable knowledge object?",
+      "check_type": "Context boundary",
+      "source_module": "Jurisdictional AI Assurance",
+      "sample_state": "PARTIAL_MATCH",
+      "sample_score": 74,
+      "blocks_reuse": true,
+      "required_evidence": ["New context of use", "Source context of use", "Use-case comparison", "Excluded-use review"]
+    },
+    {
+      "check_id": "autonomy_level_match",
+      "check_name": "Autonomy Level Match",
+      "applicability_question": "Is the new workflow operating at the same or lower AI autonomy level than the source workflow?",
+      "check_type": "Autonomy boundary",
+      "source_module": "AI Autonomy Assurance Model",
+      "sample_state": "UNKNOWN",
+      "sample_score": 64,
+      "blocks_reuse": true,
+      "required_evidence": ["Source autonomy level", "Target autonomy level", "Human oversight rule", "Escalation model"]
+    },
+    {
+      "check_id": "evidence_compatibility",
+      "check_name": "Evidence Compatibility Check",
+      "applicability_question": "Do the evidence objects from the source lesson map to the new workflow evidence contract?",
+      "check_type": "Evidence boundary",
+      "source_module": "AI Assurance Evidence Contract",
+      "sample_state": "PARTIAL",
+      "sample_score": 72,
+      "blocks_reuse": true,
+      "required_evidence": ["Source evidence contract", "Target evidence contract", "Evidence mapping", "Replay requirement comparison"]
+    },
+    {
+      "check_id": "control_pattern_fit",
+      "check_name": "Control Pattern Fit",
+      "applicability_question": "Can the control pattern from prior learning be safely routed to the new workflow?",
+      "check_type": "Control routing",
+      "source_module": "AI Assurance Control Router",
+      "sample_state": "REVIEW_REQUIRED",
+      "sample_score": 75,
+      "blocks_reuse": false,
+      "required_evidence": ["Source control pattern", "Target control requirement", "Owner route", "Control effectiveness record"]
+    },
+    {
+      "check_id": "tool_permission_match",
+      "check_name": "Tool Permission Match",
+      "applicability_question": "Do tool, API, MCP, and authorization conditions match between the source lesson and the new workflow?",
+      "check_type": "Tool boundary",
+      "source_module": "MCP Tool Registry",
+      "sample_state": "MISMATCH",
+      "sample_score": 60,
+      "blocks_reuse": true,
+      "required_evidence": ["Source tool map", "Target tool map", "API permission record", "Blocked-action rule"]
+    },
+    {
+      "check_id": "regulatory_jurisdiction_fit",
+      "check_name": "Regulatory and Jurisdiction Fit",
+      "applicability_question": "Is the reusable lesson valid in the new workflow jurisdiction, regulated context, or quality system boundary?",
+      "check_type": "Regulatory boundary",
+      "source_module": "Jurisdictional AI Assurance",
+      "sample_state": "PENDING_REVIEW",
+      "sample_score": 70,
+      "blocks_reuse": true,
+      "required_evidence": ["Jurisdiction map", "Regulated context", "Quality impact", "Submission or inspection impact"]
+    },
+    {
+      "check_id": "approval_scope_fit",
+      "check_name": "Approval Scope Fit",
+      "applicability_question": "Does the approval scope, excluded use, validity condition, and monitoring obligation fit the new workflow?",
+      "check_type": "Approval boundary",
+      "source_module": "AI Assurance Approval Certificate",
+      "sample_state": "PARTIAL",
+      "sample_score": 73,
+      "blocks_reuse": true,
+      "required_evidence": ["Source approval certificate", "Target approval scope", "Excluded-use comparison", "Monitoring obligation map"]
+    },
+    {
+      "check_id": "owner_approval_fit",
+      "check_name": "Owner Approval Fit",
+      "applicability_question": "Has the accountable owner approved reuse of this knowledge object for the new workflow?",
+      "check_type": "Accountability control",
+      "source_module": "Knowledge Reuse Registry",
+      "sample_state": "NOT_APPROVED",
+      "sample_score": 58,
+      "blocks_reuse": true,
+      "required_evidence": ["Knowledge object owner", "Target workflow owner", "Reuse approval", "Approval timestamp"]
+    },
+    {
+      "check_id": "lifecycle_change_fit",
+      "check_name": "Lifecycle Change Fit",
+      "applicability_question": "Would applying the reusable lesson require model, prompt, data, tool, workflow, or validation change control?",
+      "check_type": "Lifecycle control",
+      "source_module": "AI Lifecycle Change Assurance",
+      "sample_state": "TRIGGERED",
+      "sample_score": 65,
+      "blocks_reuse": true,
+      "required_evidence": ["Change boundary", "Version impact", "Validation impact", "Rollback impact"]
+    }
+  ],
+  "sample_assessment": {
+    "assessment_id": "AARAE-DEMO-001",
+    "target_workflow_id": "WF-NEW-AI-OPS-002",
+    "target_workflow_name": "New AI-assisted operational exception triage workflow",
+    "source_registry_id": "AAKRR-DEMO-001",
+    "source_learning_id": "AAOL-DEMO-001",
+    "assessment_type": "AI assurance reuse applicability decision",
+    "reuse_applicability_score": 68,
+    "reuse_decision": "REUSE_BLOCKED_TARGET_WORKFLOW_REQUIRES_FULL_ASSURANCE",
+    "reuse_state": "NOT_READY_FOR_GOVERNED_REUSE",
+    "approved_for_reuse": false,
+    "full_assessment_required": true,
+    "evidence_contract_update_required": true,
+    "control_router_update_required": true,
+    "architecture_assurance_required": true,
+    "lifecycle_change_assurance_required": true,
+    "blocking_checks": [
+      "Context of Use Match",
+      "Autonomy Level Match",
+      "Evidence Compatibility Check",
+      "Tool Permission Match",
+      "Regulatory and Jurisdiction Fit",
+      "Approval Scope Fit",
+      "Owner Approval Fit",
+      "Lifecycle Change Fit"
+    ],
+    "reuse_recommendation": "Do not reuse prior assurance knowledge as an approved shortcut. Use it only as advisory intelligence while the target workflow goes through full architecture assurance, evidence contract creation, control routing, and approval planning.",
+    "required_next_actions": [
+      "Complete target workflow context-of-use definition.",
+      "Classify target AI autonomy level.",
+      "Create target evidence contract.",
+      "Run AI Architecture Assurance.",
+      "Run Boundary Gate and Control Router.",
+      "Map prior knowledge objects as advisory inputs only.",
+      "Obtain owner approval before any governed reuse.",
+      "Trigger Lifecycle Change Assurance if reuse modifies model, prompt, data, tool, workflow, or validation boundary."
+    ],
+    "approved_reusable_objects": [],
+    "advisory_only_objects": [
+      "Outcome Lesson Knowledge Object",
+      "Drift Threshold Pattern",
+      "Tool Action Control Pattern",
+      "Evidence Replay Improvement Pattern"
+    ]
+  }
+}

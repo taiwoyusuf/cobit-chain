@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/lifecycle-integration
+http://127.0.0.1:5000/platform/end-to-end-assurance
+http://127.0.0.1:5000/platform/assurance-lifecycle-workflow
+http://127.0.0.1:5000/platform/integration-layer
+http://127.0.0.1:5000/api/platform/lifecycle-integration/model/demo
+http://127.0.0.1:5000/api/platform/lifecycle-integration/workflow/demo
+http://127.0.0.1:5000/api/platform/lifecycle-integration/stage/demo?stage_id=intelligence_validation
+http://127.0.0.1:5000/api/platform/lifecycle-integration/assessment/demo

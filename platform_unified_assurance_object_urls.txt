@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/platform/object-assurance
+http://127.0.0.1:5000/platform/assurance-object
+http://127.0.0.1:5000/platform/unified-assurance
+http://127.0.0.1:5000/api/platform/assurance/object/demo?object_id=niagara-bms-supervisor
+http://127.0.0.1:5000/api/platform/assurance/state/demo

@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-replay-console
+http://127.0.0.1:5000/platform/ai-assurance-replay
+http://127.0.0.1:5000/platform/ai-replay-console
+http://127.0.0.1:5000/api/platform/ai-assurance-replay/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=evidence_contract_replay
+http://127.0.0.1:5000/api/platform/ai-assurance-replay/section/demo?section_id=human_approval_replay
+http://127.0.0.1:5000/api/platform/ai-assurance-replay/replay/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-replay/readiness/demo

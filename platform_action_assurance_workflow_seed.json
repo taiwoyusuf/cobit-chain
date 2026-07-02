@@ -1,0 +1,151 @@
+﻿{
+  "capability_name": "Action Assurance Workflow",
+  "platform_rule": "Use this reusable workflow across Platform A modules instead of creating separate governance products for Agentic AI.",
+  "engineering_principle": "A chatbot produces information. An AI agent performs actions. Platform A should govern operational actions, not only AI outputs.",
+  "platform_position": "Cloud platforms execute AI agents. COBIT-Chain evaluates whether AI-assisted actions are operationally trustworthy before they affect regulated systems.",
+  "workflow": [
+    {
+      "stage_id": "intent",
+      "stage_name": "Intent",
+      "engineering_question": "What operational action is being requested and why?",
+      "assurance_role": "Capture action objective, business purpose, requester, target object, expected result, and operational impact.",
+      "required_evidence": ["Action objective", "Business purpose", "Requester identity", "Target object", "Expected result", "Operational impact"],
+      "mapped_modules": ["AI Output Clearance", "Decision Confidence", "Evidence Vault"],
+      "gate_decision": "Proceed only if action intent is clear and evidence-linked.",
+      "readiness_score": 82
+    },
+    {
+      "stage_id": "authority",
+      "stage_name": "Authority",
+      "engineering_question": "Does the agent or user have authority to request or perform this action?",
+      "assurance_role": "Validate agent identity, delegated authority, role boundary, allowed actions, blocked actions, and accountability owner.",
+      "required_evidence": ["Agent Passport", "Delegated authority record", "Allowed action list", "Blocked action list", "Business accountability owner"],
+      "mapped_modules": ["Agent Passport", "Operational Trust", "Evidence Vault"],
+      "gate_decision": "Block or escalate if authority is unclear or not delegated.",
+      "readiness_score": 76
+    },
+    {
+      "stage_id": "context",
+      "stage_name": "Context",
+      "engineering_question": "Is the operational context valid for this action now?",
+      "assurance_role": "Validate context of use, workflow state, target system state, knowledge source, regulated impact, and timing.",
+      "required_evidence": ["Context of use", "Workflow state", "Target system state", "Knowledge source", "Regulated impact", "Timing constraint"],
+      "mapped_modules": ["Knowledge Integrity", "Decision Confidence", "Operational Trust"],
+      "gate_decision": "Proceed only if context is current, trusted, and permitted.",
+      "readiness_score": 78
+    },
+    {
+      "stage_id": "policy_risk_evaluation",
+      "stage_name": "Policy and Risk Evaluation",
+      "engineering_question": "Does policy and risk assessment permit the action?",
+      "assurance_role": "Evaluate policy compliance, risk class, change-control impact, safety impact, validation impact, and exception path.",
+      "required_evidence": ["Policy rule", "Risk class", "Change-control impact", "Safety or regulated impact", "Exception path"],
+      "mapped_modules": ["Operational Trust", "AI ChangeControlTrust", "Evidence Vault"],
+      "gate_decision": "Route high-risk actions to approval or block if policy fails.",
+      "readiness_score": 74
+    },
+    {
+      "stage_id": "human_approval",
+      "stage_name": "Human Approval",
+      "engineering_question": "Is a human approval gate required before execution?",
+      "assurance_role": "Determine whether named human approval is required, who approves, what evidence they review, and how accountability is recorded.",
+      "required_evidence": ["Approval requirement", "Named approver", "Approval decision", "Reviewer comment", "Escalation path", "Accountability record"],
+      "mapped_modules": ["Decision Confidence", "AI Output Clearance", "Operational Trust"],
+      "gate_decision": "Require approval for regulated, privileged, irreversible, or high-risk actions.",
+      "readiness_score": 81
+    },
+    {
+      "stage_id": "execution",
+      "stage_name": "Execution",
+      "engineering_question": "Was the action executed through a governed tool boundary?",
+      "assurance_role": "Require MCP governance, tool identity, tool schema, runtime controls, input-output record, and execution boundary.",
+      "required_evidence": ["MCP server", "Tool ID", "Tool schema", "Tool call ID", "Runtime control", "Input-output record"],
+      "mapped_modules": ["Tool Call Evidence Ledger", "Agent Passport", "Evidence Vault"],
+      "gate_decision": "Execution must be tool-governed, logged, and replayable.",
+      "readiness_score": 73
+    },
+    {
+      "stage_id": "state_verification",
+      "stage_name": "State Verification",
+      "engineering_question": "Did the regulated system reach the expected state after execution?",
+      "assurance_role": "Compare pre-action state, expected state, post-action state, verification result, and rollback or remediation path.",
+      "required_evidence": ["Pre-action state", "Expected state", "Post-action state", "Verification result", "Rollback or remediation path"],
+      "mapped_modules": ["Operational Trust", "Evidence Vault", "Observability"],
+      "gate_decision": "Action remains incomplete until state verification is recorded.",
+      "readiness_score": 75
+    },
+    {
+      "stage_id": "evidence_recording",
+      "stage_name": "Evidence Recording",
+      "engineering_question": "Can the action be replayed with evidence?",
+      "assurance_role": "Bind intent, authority, context, risk, approval, execution, tool call, and state verification into one evidence package.",
+      "required_evidence": ["Evidence package ID", "Trace ID", "Approval record", "Tool call record", "State verification record", "Decision rationale"],
+      "mapped_modules": ["Evidence Vault", "Tool Call Evidence Ledger", "Decision Confidence"],
+      "gate_decision": "No trust claim without replayable action evidence.",
+      "readiness_score": 79
+    },
+    {
+      "stage_id": "continuous_assurance",
+      "stage_name": "Continuous Assurance",
+      "engineering_question": "Does the action remain trustworthy after execution?",
+      "assurance_role": "Monitor downstream effects, incidents, exceptions, outcome metrics, trust-score changes, and accountability feedback.",
+      "required_evidence": ["Outcome metric", "Incident signal", "Exception signal", "Trust score change", "Accountability feedback"],
+      "mapped_modules": ["Operational Trust", "Observability", "Evidence Vault"],
+      "gate_decision": "Action stays under assurance until outcomes and downstream effects are understood.",
+      "readiness_score": 77
+    }
+  ],
+  "module_adoption_map": [
+    {
+      "module_name": "Agent Passport",
+      "primary_use": "Validates agent identity, delegated authority, action boundaries, and accountable ownership.",
+      "workflow_stages_used": ["Authority", "Execution", "Evidence Recording"]
+    },
+    {
+      "module_name": "Tool Call Evidence Ledger",
+      "primary_use": "Records MCP tool calls, inputs, outputs, execution trace, and replay evidence.",
+      "workflow_stages_used": ["Execution", "State Verification", "Evidence Recording"]
+    },
+    {
+      "module_name": "AI Output Clearance",
+      "primary_use": "Determines whether an AI recommendation is only informational or may lead to a controlled operational action.",
+      "workflow_stages_used": ["Intent", "Human Approval", "Evidence Recording"]
+    },
+    {
+      "module_name": "Operational Trust",
+      "primary_use": "Evaluates whether the action can be trusted within the actual workflow and system state.",
+      "workflow_stages_used": ["Context", "Policy and Risk Evaluation", "State Verification", "Continuous Assurance"]
+    },
+    {
+      "module_name": "Evidence Vault",
+      "primary_use": "Stores action evidence packages, lineage, approval proof, trace IDs, and replay records.",
+      "workflow_stages_used": ["Intent", "Policy and Risk Evaluation", "Evidence Recording", "Continuous Assurance"]
+    },
+    {
+      "module_name": "Decision Confidence",
+      "primary_use": "Links trusted data, trusted context, recommendation, human review, decision evidence, and outcome.",
+      "workflow_stages_used": ["Intent", "Context", "Human Approval", "Evidence Recording"]
+    },
+    {
+      "module_name": "Knowledge Integrity",
+      "primary_use": "Validates source trust and context reliability before action decisions are made.",
+      "workflow_stages_used": ["Context", "Policy and Risk Evaluation", "Continuous Assurance"]
+    }
+  ],
+  "sample_action": {
+    "action_id": "AAW-DEMO-001",
+    "action_name": "AI-assisted RBAC change request",
+    "agent_id": "agent-access-reviewer",
+    "target_system": "Azure RBAC",
+    "target_object": "Role assignment",
+    "action_type": "privileged_access_action",
+    "authority_state": "NOT_APPROVED",
+    "human_approval_required": true,
+    "tool_governance_required": true,
+    "state_verification_required": true,
+    "evidence_package_required": true,
+    "trust_score": 56,
+    "decision": "BLOCKED_PENDING_AUTHORITY_AND_APPROVAL",
+    "missing_evidence": ["Delegated authority record", "Named approver decision", "Least privilege review", "Rollback path", "Post-action state verification"]
+  }
+}

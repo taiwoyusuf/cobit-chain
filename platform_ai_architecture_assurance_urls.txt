@@ -1,0 +1,10 @@
+http://127.0.0.1:5000/platform/ai-architecture-assurance
+http://127.0.0.1:5000/platform/architecture-assurance
+http://127.0.0.1:5000/platform/ai-assurance-architecture
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/model/demo
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=knowledge_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=tool_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=autonomy_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/boundary/demo?boundary_id=evidence_assurance
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/workflow/demo
+http://127.0.0.1:5000/api/platform/ai-architecture-assurance/readiness/demo

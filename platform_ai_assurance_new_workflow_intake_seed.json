@@ -1,0 +1,177 @@
+﻿{
+  "capability_name": "AI Assurance New Workflow Intake Engine",
+  "platform_rule": "Every new AI-enabled workflow must enter a governed assurance intake before architecture assessment, evidence contract creation, control routing, approval planning, or operational release.",
+  "platform_position": "AI Assurance New Workflow Intake Engine sits after Reuse Applicability Engine and before Architecture Assurance, Boundary Gate, Evidence Contract, Control Router, Decision Orchestrator, Approval Certificate, and Release Gate.",
+  "engineering_principle": "A new AI workflow should not begin with tools, prompts, or deployment. It should begin with a governed intake record that defines context, autonomy, tools, data, evidence, owners, risk, reuse eligibility, and assurance path.",
+  "depends_on": [
+    "AI Assurance Reuse Applicability Engine",
+    "AI Assurance Knowledge Reuse Registry",
+    "AI Architecture Assurance",
+    "AI Autonomy Assurance Model",
+    "AI Assurance Evidence Contract",
+    "AI Assurance Control Router",
+    "Jurisdictional AI Assurance",
+    "AI Lifecycle Change Assurance"
+  ],
+  "intake_checks": [
+    {
+      "check_id": "workflow_identity_check",
+      "check_name": "Workflow Identity Check",
+      "intake_question": "Is the proposed AI workflow uniquely identified with name, purpose, owner, and operational boundary?",
+      "check_type": "Identity and scope",
+      "source_module": "Unified Assurance Object",
+      "sample_state": "PARTIAL",
+      "sample_score": 72,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Workflow ID", "Workflow name", "Workflow purpose", "Operational boundary", "Business owner"]
+    },
+    {
+      "check_id": "context_of_use_check",
+      "check_name": "Context of Use Check",
+      "intake_question": "Is the context of use clear enough to determine risk, evidence, approval, and monitoring needs?",
+      "check_type": "Context definition",
+      "source_module": "Jurisdictional AI Assurance",
+      "sample_state": "INCOMPLETE",
+      "sample_score": 62,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Context of use", "Intended use", "Excluded use", "User group", "Environment"]
+    },
+    {
+      "check_id": "regulated_context_check",
+      "check_name": "Regulated Context Check",
+      "intake_question": "Does the workflow touch regulated, GMP, GxP, quality, clinical, privacy, security, or submission-relevant activity?",
+      "check_type": "Regulatory and quality boundary",
+      "source_module": "Jurisdictional AI Assurance",
+      "sample_state": "REVIEW_REQUIRED",
+      "sample_score": 70,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Regulated context", "Quality impact", "Jurisdiction map", "Inspection impact", "Submission impact"]
+    },
+    {
+      "check_id": "ai_capability_profile_check",
+      "check_name": "AI Capability Profile Check",
+      "intake_question": "What AI capability is being introduced: recommendation, summarization, classification, generation, tool execution, agentic workflow, or autonomous operation?",
+      "check_type": "Capability classification",
+      "source_module": "AI Architecture Assurance",
+      "sample_state": "PARTIAL",
+      "sample_score": 74,
+      "blocks_intake_completion": true,
+      "required_evidence": ["AI capability type", "Model role", "Prompt role", "Decision role", "Operational action role"]
+    },
+    {
+      "check_id": "autonomy_level_check",
+      "check_name": "Autonomy Level Check",
+      "intake_question": "What autonomy level does the workflow require and what human oversight is mandatory?",
+      "check_type": "Autonomy classification",
+      "source_module": "AI Autonomy Assurance Model",
+      "sample_state": "UNKNOWN",
+      "sample_score": 60,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Autonomy level", "Human reviewer", "Approval rule", "Escalation trigger", "Stop-use rule"]
+    },
+    {
+      "check_id": "tool_data_access_check",
+      "check_name": "Tool and Data Access Check",
+      "intake_question": "What systems, tools, APIs, data sources, records, and permissions will the AI workflow access?",
+      "check_type": "Tool and data boundary",
+      "source_module": "MCP Tool Registry / Data Assurance",
+      "sample_state": "PARTIAL",
+      "sample_score": 68,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Tool list", "API permission map", "Data source list", "Sensitive data review", "Access owner"]
+    },
+    {
+      "check_id": "reuse_applicability_check",
+      "check_name": "Reuse Applicability Check",
+      "intake_question": "Can prior approved AI assurance knowledge safely apply to this workflow?",
+      "check_type": "Knowledge reuse",
+      "source_module": "AI Assurance Reuse Applicability Engine",
+      "sample_state": "REUSE_BLOCKED",
+      "sample_score": 68,
+      "blocks_intake_completion": false,
+      "required_evidence": ["Reuse applicability assessment", "Knowledge object mapping", "Advisory objects", "Owner approval state"]
+    },
+    {
+      "check_id": "evidence_contract_precheck",
+      "check_name": "Evidence Contract Precheck",
+      "intake_question": "Can the minimum evidence contract be generated from the intake data?",
+      "check_type": "Evidence planning",
+      "source_module": "AI Assurance Evidence Contract",
+      "sample_state": "INCOMPLETE",
+      "sample_score": 64,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Evidence categories", "Evidence owners", "Replay needs", "Approval proof", "Monitoring proof"]
+    },
+    {
+      "check_id": "owner_accountability_check",
+      "check_name": "Owner Accountability Check",
+      "intake_question": "Are accountable business, technical, quality, security, evidence, and release owners named?",
+      "check_type": "Accountability",
+      "source_module": "Decision Confidence / Operational Trust",
+      "sample_state": "PARTIAL",
+      "sample_score": 69,
+      "blocks_intake_completion": true,
+      "required_evidence": ["Business owner", "Technical owner", "Quality owner", "Security owner", "Evidence owner", "Release owner"]
+    },
+    {
+      "check_id": "assurance_path_routing_check",
+      "check_name": "Assurance Path Routing Check",
+      "intake_question": "Which assurance path must the workflow enter: full assurance, accelerated assurance, advisory reuse, change assurance, or blocked intake?",
+      "check_type": "Routing decision",
+      "source_module": "AI Assurance Control Router",
+      "sample_state": "FULL_ASSURANCE_REQUIRED",
+      "sample_score": 76,
+      "blocks_intake_completion": false,
+      "required_evidence": ["Risk tier", "Reuse decision", "Regulated context", "Autonomy level", "Evidence readiness", "Owner approval"]
+    }
+  ],
+  "sample_intake": {
+    "intake_id": "AANWI-DEMO-001",
+    "target_workflow_id": "WF-NEW-AI-OPS-002",
+    "target_workflow_name": "New AI-assisted operational exception triage workflow",
+    "source_reuse_assessment_id": "AARAE-DEMO-001",
+    "source_registry_id": "AAKRR-DEMO-001",
+    "intake_type": "New AI workflow assurance intake",
+    "intake_score": 68,
+    "reuse_decision": "REUSE_BLOCKED_TARGET_WORKFLOW_REQUIRES_FULL_ASSURANCE",
+    "intake_decision": "INTAKE_ACCEPTED_FULL_ASSURANCE_REQUIRED",
+    "intake_state": "ACCEPTED_WITH_BLOCKING_COMPLETION_GAPS",
+    "assurance_path": "FULL_AI_ASSURANCE_PATH",
+    "approved_for_fast_track": false,
+    "full_architecture_assurance_required": true,
+    "boundary_gate_required": true,
+    "evidence_contract_required": true,
+    "control_router_required": true,
+    "jurisdictional_review_required": true,
+    "autonomy_assessment_required": true,
+    "lifecycle_change_review_required": true,
+    "blocking_intake_checks": [
+      "Workflow Identity Check",
+      "Context of Use Check",
+      "Regulated Context Check",
+      "AI Capability Profile Check",
+      "Autonomy Level Check",
+      "Tool and Data Access Check",
+      "Evidence Contract Precheck",
+      "Owner Accountability Check"
+    ],
+    "advisory_reuse_inputs": [
+      "Outcome Lesson Knowledge Object",
+      "Drift Threshold Pattern",
+      "Tool Action Control Pattern",
+      "Evidence Replay Improvement Pattern"
+    ],
+    "required_next_actions": [
+      "Complete workflow identity and context-of-use definition.",
+      "Classify regulated and jurisdictional impact.",
+      "Classify AI capability and autonomy level.",
+      "Map all tools, APIs, systems, and data sources.",
+      "Name accountable owners across business, technical, quality, security, evidence, and release.",
+      "Generate initial AI Assurance Evidence Contract.",
+      "Run AI Architecture Assurance and Boundary Gate.",
+      "Route required controls through AI Assurance Control Router.",
+      "Use prior knowledge objects only as advisory inputs until applicability and owner approval pass."
+    ],
+    "approved_for_assurance_execution": true
+  }
+}

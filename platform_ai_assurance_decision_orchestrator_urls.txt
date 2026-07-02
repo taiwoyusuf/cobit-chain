@@ -1,0 +1,9 @@
+http://127.0.0.1:5000/platform/ai-assurance-decision-orchestrator
+http://127.0.0.1:5000/platform/ai-assurance-orchestrator
+http://127.0.0.1:5000/platform/assurance-decision-orchestrator
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_1_architecture_boundary_assessment
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_2_control_routing
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/stage/demo?stage_id=stage_3_evidence_binding
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/decision/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-orchestrator/readiness/demo

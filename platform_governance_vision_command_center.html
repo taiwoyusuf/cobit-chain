@@ -1,0 +1,783 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Governance Vision Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --panel:#151820;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+            --cyan:#8ff4ff;
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{width:100%;max-width:1780px;margin:0 auto;padding:30px}
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 68% 30%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-130px;
+            top:-170px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.22);
+            box-shadow:
+                0 0 0 72px rgba(255,138,31,.026),
+                0 0 0 148px rgba(255,138,31,.018),
+                0 0 0 234px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{display:flex;align-items:center;gap:14px}
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{font-size:17px;font-weight:950;letter-spacing:.4px}
+        .brand-sub{color:var(--steel);font-size:12px;margin-top:4px}
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1240px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.2px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1240px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .statement strong{color:white}
+
+        .vision-score{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:68px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-2.8px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:54%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1060px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .vision-grid{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:14px;
+            margin-top:18px;
+        }
+
+        .vision-card{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.115);
+            background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+            border-radius:22px;
+            padding:18px;
+            min-height:250px;
+        }
+
+        .vision-card:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--orange),var(--orange2),rgba(255,255,255,.45));
+        }
+
+        .card-id{
+            color:var(--orange2);
+            font-size:12px;
+            font-weight:950;
+            letter-spacing:1.4px;
+            text-transform:uppercase;
+        }
+
+        .vision-card h3{margin:12px 0 8px;font-size:18px;font-weight:950}
+        .vision-card p{color:#b9c2ce;font-size:13px;line-height:1.55;margin:0}
+        .vision-card ul{margin:14px 0 0;padding-left:18px;color:#d7dee8;font-size:12px;line-height:1.7}
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1.04fr .96fr;
+            gap:20px;
+        }
+
+        .hud{
+            border:1px solid rgba(255,255,255,.11);
+            background:
+                radial-gradient(circle at 50% 50%,rgba(255,138,31,.13),transparent 28%),
+                rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:24px;
+            min-height:520px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .hud-title{
+            color:var(--orange2);
+            text-transform:uppercase;
+            letter-spacing:1.8px;
+            font-size:12px;
+            font-weight:950;
+            margin-bottom:18px;
+        }
+
+        .glass-frame{
+            border:1px solid rgba(255,138,31,.30);
+            background:rgba(6,7,10,.74);
+            border-radius:28px;
+            padding:22px;
+            box-shadow:0 20px 55px rgba(0,0,0,.34);
+        }
+
+        .hud-top{
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            flex-wrap:wrap;
+            border-bottom:1px solid rgba(255,255,255,.10);
+            padding-bottom:16px;
+            margin-bottom:16px;
+        }
+
+        .hud-object{
+            font-size:24px;
+            font-weight:1000;
+            letter-spacing:-.7px;
+        }
+
+        .hud-status{
+            border:1px solid rgba(88,224,150,.45);
+            color:#c9ffe0;
+            background:rgba(88,224,150,.10);
+            border-radius:999px;
+            padding:8px 11px;
+            font-size:12px;
+            font-weight:950;
+        }
+
+        .hud-main{
+            display:grid;
+            grid-template-columns:160px 1fr;
+            gap:18px;
+            align-items:center;
+        }
+
+        .hud-score{
+            width:150px;
+            height:150px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            border:1px solid rgba(255,138,31,.42);
+            background:radial-gradient(circle,#3b210f,#101216 72%);
+            box-shadow:0 0 42px rgba(255,138,31,.24);
+        }
+
+        .hud-score strong{
+            font-size:42px;
+            color:var(--orange);
+            line-height:1;
+        }
+
+        .hud-score span{
+            color:#d7dee8;
+            font-size:11px;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-top:6px;
+        }
+
+        .hud-lines{
+            display:grid;
+            gap:10px;
+        }
+
+        .hud-line{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(255,255,255,.04);
+            border-radius:14px;
+            padding:12px;
+            color:#cbd2dc;
+            font-size:13px;
+            line-height:1.4;
+        }
+
+        .hud-line strong{color:white}
+
+        .flow-panel{
+            margin-top:14px;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+        }
+
+        .flow-card{
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            border-radius:18px;
+            padding:16px;
+            min-height:132px;
+            box-shadow:0 18px 45px rgba(0,0,0,.28);
+        }
+
+        .flow-card strong{display:block;color:white;margin-bottom:8px;font-size:15px}
+        .flow-card span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+
+        .control-panel{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .control-row{
+            display:grid;
+            grid-template-columns:185px 1fr 132px;
+            gap:14px;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+
+        .control-row:last-child{border-bottom:0}
+        .control-row div:first-child{font-weight:950;color:white}
+        .control-row div:nth-child(2){color:#b9c2ce;font-size:13px;line-height:1.45}
+
+        .method{
+            justify-self:end;
+            border:1px solid rgba(255,138,31,.34);
+            background:rgba(255,138,31,.08);
+            color:#ffe3bf;
+            border-radius:999px;
+            padding:7px 9px;
+            font-size:11px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .vision-grid{grid-template-columns:repeat(2,1fr)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.vision-grid{grid-template-columns:1fr}
+            .control-row{grid-template-columns:1fr}
+            .method{justify-self:start}
+            .flow-panel{grid-template-columns:1fr}
+            .hud-main{grid-template-columns:1fr}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain Governance Vision Command Center</div>
+                            <div class="brand-sub">Wearable assurance interface, QR lookup, voice query, trust HUD, and read-only operational intelligence</div>
+                        </div>
+                    </div>
+                    <span class="pill">Architecture Route: /platform/governance-vision</span>
+                </div>
+
+                <div class="eyebrow">Thread B / Wearables / Point-of-Work Governance Interface</div>
+                <h1>Operational trust at the point of work.</h1>
+                <div class="subtitle">
+                    Governance Vision is the wearable and smart-glasses interface for COBIT-Chain. It lets a user scan equipment, ask a controlled question, view trust status, see evidence confidence, and receive safe next-step guidance without leaving the operational floor.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Vision principle:</strong> The first wearable version must be read-only. It should not approve work, change records, bypass SOPs, or replace QA. It should retrieve evidence-backed status, show confidence and limitations, and escalate when evidence is missing or the action requires human authority.
+                    </div>
+
+                    <div class="vision-score">
+                        <div class="score-label">Governance Vision Readiness</div>
+                        <div class="score">54%</div>
+                        <div class="score-text">
+                            The platform has architecture, API blueprint, MCP server design, and evidence store direction. Governance Vision now becomes the point-of-work interface that consumes those services through safe, read-only lookup flows.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Ready for prototype flow design.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform Command Center</a>
+                    <a href="/platform/architecture">Architecture</a>
+                    <a href="/platform/api-blueprint">API Blueprint</a>
+                    <a href="/platform/mcp-server">MCP Server</a>
+                    <a href="/platform/evidence-store">Evidence Store</a>
+                    <a href="/platform/governance-vision">Governance Vision</a>
+                    <a href="/governance-vision">Vision Alias</a>
+                    <a href="/citrust">CITrust</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Interface</div><div class="value" style="color:var(--orange);">HUD</div><div class="note">Short trust status, confidence, and next action at point of work.</div></div>
+            <div class="metric"><div class="label">Input Modes</div><div class="value" style="color:var(--orange2);">3</div><div class="note">QR scan, voice query, and manual asset lookup.</div></div>
+            <div class="metric"><div class="label">First Mode</div><div class="value" style="color:var(--good);">Read</div><div class="note">Read-only response first; no autonomous record changes.</div></div>
+            <div class="metric"><div class="label">Evidence Rule</div><div class="value" style="color:var(--blue);">Trace</div><div class="note">Every response should show evidence confidence and limitation.</div></div>
+            <div class="metric"><div class="label">Safety Rule</div><div class="value" style="color:var(--warn);">Escalate</div><div class="note">If evidence is missing, stale, or controlled, escalate to human owner.</div></div>
+            <div class="metric"><div class="label">Risk Block</div><div class="value" style="color:var(--bad);">No Write</div><div class="note">Wearable cannot approve, release, validate, or close records.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Governance Vision Operating Model</h2>
+                    <p>This defines what the wearable layer can safely do in Platform A and how it evolves into Platform B.</p>
+                </div>
+                <span class="tag">Wearable assurance model</span>
+            </div>
+
+            <div class="vision-grid">
+                <div class="vision-card">
+                    <div class="card-id">Mode 01</div>
+                    <h3>QR Equipment Lookup</h3>
+                    <p>User scans a QR code or equipment label and receives trust status, owner, readiness state, and evidence confidence.</p>
+                    <ul><li>Asset ID</li><li>CI passport</li><li>Trust score</li><li>Open blockers</li></ul>
+                </div>
+                <div class="vision-card">
+                    <div class="card-id">Mode 02</div>
+                    <h3>Voice Trust Query</h3>
+                    <p>User asks a controlled question such as whether an asset is ready, whether evidence is current, or who owns the next action.</p>
+                    <ul><li>Voice prompt</li><li>Intent classification</li><li>Evidence lookup</li><li>Short answer</li></ul>
+                </div>
+                <div class="vision-card">
+                    <div class="card-id">Mode 03</div>
+                    <h3>Trust HUD</h3>
+                    <p>Wearable display shows concise status: ready, caution, blocked, unknown, or escalate.</p>
+                    <ul><li>Status</li><li>Confidence</li><li>Limitation</li><li>Next action</li></ul>
+                </div>
+                <div class="vision-card">
+                    <div class="card-id">Mode 04</div>
+                    <h3>Evidence Peek</h3>
+                    <p>User can view a short evidence basis, not full sensitive records, unless authorized.</p>
+                    <ul><li>Evidence source</li><li>Freshness</li><li>Sufficiency</li><li>Access boundary</li></ul>
+                </div>
+                <div class="vision-card">
+                    <div class="card-id">Mode 05</div>
+                    <h3>Escalation Prompt</h3>
+                    <p>If trust cannot be established, the wearable returns owner, support group, QA path, or change-control path.</p>
+                    <ul><li>Owner</li><li>Support group</li><li>Escalation</li><li>Reason</li></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Wearable HUD Prototype</h2>
+                    <p>This is the practical experience target: fast, small, evidence-backed responses that do not overload the operator.</p>
+                </div>
+                <span class="tag">Point-of-work interface</span>
+            </div>
+
+            <div class="two-col">
+                <div class="hud">
+                    <div class="hud-title">Example Smart-Glasses Response</div>
+                    <div class="glass-frame">
+                        <div class="hud-top">
+                            <div>
+                                <div class="hud-object">Niagara BMS Supervisor</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Asset lookup: equipment / CI / readiness state</div>
+                            </div>
+                            <div class="hud-status">CAUTION - EVIDENCE GAP</div>
+                        </div>
+
+                        <div class="hud-main">
+                            <div class="hud-score">
+                                <strong>71</strong>
+                                <span>Trust Score</span>
+                            </div>
+                            <div class="hud-lines">
+                                <div class="hud-line"><strong>Status:</strong> Operationally usable with caution.</div>
+                                <div class="hud-line"><strong>Evidence:</strong> CI ownership found; access path still requires confirmation.</div>
+                                <div class="hud-line"><strong>Action:</strong> Verify support group and remote-access path before relying on readiness claim.</div>
+                                <div class="hud-line"><strong>Limit:</strong> This is decision support only, not QA approval or validation release.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-panel">
+                        <div class="flow-card"><strong>Input</strong><span>QR scan, voice query, or manual asset ID from wearable/mobile interface.</span></div>
+                        <div class="flow-card"><strong>Output</strong><span>Short status, trust score, evidence confidence, limitation, and next action.</span></div>
+                        <div class="flow-card"><strong>Evidence</strong><span>Pulls from Evidence Store, CI passport, API layer, and MCP retrieval tool.</span></div>
+                        <div class="flow-card"><strong>Control</strong><span>Read-only first. Escalates controlled actions to human authority.</span></div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-row"><div>Read-Only First</div><div>The wearable can retrieve evidence-backed status but cannot approve, close, release, or modify records.</div><span class="method">Safe MVP</span></div>
+                    <div class="control-row"><div>Evidence Binding</div><div>Every response should include confidence, source freshness, and limitation language.</div><span class="method">Trace</span></div>
+                    <div class="control-row"><div>Privacy Boundary</div><div>Do not expose sensitive records, patient data, employee data, or confidential details in HUD mode.</div><span class="method">Protect</span></div>
+                    <div class="control-row"><div>Role Boundary</div><div>Operator, engineer, QA, owner, and admin roles receive different response depth.</div><span class="method">RBAC</span></div>
+                    <div class="control-row"><div>Action Guard</div><div>Controlled actions should return escalate, not execute, unless a future validated workflow permits it.</div><span class="method">Guard</span></div>
+                    <div class="control-row"><div>Audit Replay</div><div>Store lookup request, response, evidence references, user role, and limitation text.</div><span class="method">Replay</span></div>
+                    <div class="control-row"><div>MCP Integration</div><div>Governance Vision should call MCP tools for trust state, evidence pack, CI passport, and action checks.</div><span class="method">MCP</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Governance Vision API Contract</h2>
+                    <p>These endpoints define how the wearable layer should connect to Platform A/B services.</p>
+                </div>
+                <span class="tag">Future implementation blueprint</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Purpose</th>
+                        <th>Input</th>
+                        <th>Response</th>
+                        <th>Control Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>GET /api/vision/lookup/{asset_id}</code></td><td>Lookup equipment, CI, or asset trust state.</td><td>Asset ID, user role</td><td>Trust status, score, owner, evidence confidence</td><td>Read-only and role-filtered.</td></tr>
+                    <tr><td><code>POST /api/vision/query</code></td><td>Answer a controlled voice or text question.</td><td>Question, object ID, user role</td><td>Short answer, evidence basis, limitation</td><td>No free-form unsupported claims.</td></tr>
+                    <tr><td><code>GET /api/vision/hud/{object_id}</code></td><td>Return compact HUD-ready response.</td><td>Object ID, context</td><td>Status, confidence, action, caution flags</td><td>No sensitive details in HUD mode.</td></tr>
+                    <tr><td><code>POST /api/vision/action-check</code></td><td>Check whether a requested action is allowed.</td><td>Actor, action, object, reason</td><td>Allow, block, escalate, missing evidence</td><td>Human authority required for controlled actions.</td></tr>
+                    <tr><td><code>POST /api/vision/replay</code></td><td>Store wearable lookup replay record.</td><td>Request, response, evidence refs</td><td>Replay ID and timestamp</td><td>Every lookup should be auditable.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain Governance Vision Command Center defines the wearable and point-of-work assurance interface for Platform A/B. It does not authorize autonomous action, replace QA, bypass SOPs, replace validation, or expose sensitive records. Its first implementation should be read-only, evidence-backed, role-filtered, and replayable.
+        </div>
+    </div>
+</body>
+</html>

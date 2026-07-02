@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-remediation-queue
+http://127.0.0.1:5000/platform/ai-remediation-queue
+http://127.0.0.1:5000/platform/assurance-remediation-queue
+http://127.0.0.1:5000/api/platform/ai-assurance-remediation/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_human_approval_evidence
+http://127.0.0.1:5000/api/platform/ai-assurance-remediation/action/demo?action_id=rem_runtime_monitoring_signal
+http://127.0.0.1:5000/api/platform/ai-assurance-remediation/queue/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-remediation/readiness/demo

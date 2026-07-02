@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/trust-score-service
+http://127.0.0.1:5000/platform/trust-score
+http://127.0.0.1:5000/api/platform/trust-score/demo?object_id=niagara-bms-supervisor
+http://127.0.0.1:5000/api/platform/trust-state/demo

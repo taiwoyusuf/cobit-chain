@@ -1,0 +1,86 @@
+﻿{
+  "flow_name": "Decision Context Assurance Flow",
+  "platform_rule": "Models generate recommendations. Platform A demonstrates whether those recommendations are operationally trustworthy.",
+  "positioning": "This strengthens Decision Confidence, Evidence Vault, Operational Trust, Governance Vision, Knowledge Integrity, CITrust, and AI ChangeControlTrust. It does not introduce a new foundational concept.",
+  "stages": [
+    {
+      "stage_id": "trusted_data",
+      "stage_name": "Trusted Data",
+      "engineering_question": "Can the source data used by the AI recommendation be trusted?",
+      "platform_assurance_role": "Verify source ownership, source system, freshness, completeness, data quality, access boundary, and evidence lineage.",
+      "mapped_modules": ["Evidence Vault", "Knowledge Integrity", "CITrust", "Operational Trust"],
+      "required_evidence": ["Data source owner", "Source system", "Data freshness", "Data quality check", "Access boundary", "Evidence package ID"],
+      "gaps_to_watch": ["Unknown source owner", "Stale source data", "No quality check", "No evidence package binding"],
+      "readiness_score": 80
+    },
+    {
+      "stage_id": "trusted_context",
+      "stage_name": "Trusted Context",
+      "engineering_question": "Is the operational context valid for this AI-assisted workflow?",
+      "platform_assurance_role": "Validate context of use, workflow boundary, role, operational condition, regulated impact, and permitted use.",
+      "mapped_modules": ["Operational Trust", "Decision Confidence", "Governance Vision", "AI ChangeControlTrust"],
+      "required_evidence": ["Context of use", "Workflow owner", "Role boundary", "Operational condition", "Regulated impact statement", "Permitted-use rule"],
+      "gaps_to_watch": ["No context of use", "Workflow owner unclear", "Role boundary missing", "Regulated impact not assessed"],
+      "readiness_score": 78
+    },
+    {
+      "stage_id": "ai_recommendation",
+      "stage_name": "AI Recommendation",
+      "engineering_question": "Can the AI recommendation be traced to data, context, model, prompt, and tool evidence?",
+      "platform_assurance_role": "Capture model or agent identity, prompt version, tool calls, knowledge grounding, recommendation basis, and limitations.",
+      "mapped_modules": ["Decision Confidence", "MCP Tool Registry", "Evidence Vault", "Knowledge Integrity"],
+      "required_evidence": ["Model or agent ID", "Prompt version", "Tool call record", "Knowledge source grounding", "Recommendation rationale", "Known limitations"],
+      "gaps_to_watch": ["No prompt traceability", "No tool-call evidence", "No grounding evidence", "Unsupported recommendation"],
+      "readiness_score": 76
+    },
+    {
+      "stage_id": "human_review",
+      "stage_name": "Human Review",
+      "engineering_question": "Did a named accountable human review the AI recommendation before operational use?",
+      "platform_assurance_role": "Confirm reviewer identity, review role, approval trigger, review decision, exception handling, and accountability.",
+      "mapped_modules": ["Decision Confidence", "AI ChangeControlTrust", "Operational Trust", "AccessTrust"],
+      "required_evidence": ["Named reviewer", "Reviewer role", "Review checklist", "Approval decision", "Reviewer comment", "Exception route"],
+      "gaps_to_watch": ["No named reviewer", "No review checklist", "No approval evidence", "No exception rationale"],
+      "readiness_score": 83
+    },
+    {
+      "stage_id": "decision_evidence",
+      "stage_name": "Decision Evidence",
+      "engineering_question": "Can the final decision be replayed with evidence, rationale, reviewer, limitations, and outcome expectation?",
+      "platform_assurance_role": "Bind recommendation, review, evidence package, decision rationale, risk statement, and trace ID into one decision record.",
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "Observability", "Operational Trust"],
+      "required_evidence": ["Decision record", "Evidence package", "Trace ID", "Risk statement", "Approval record", "Limitation statement"],
+      "gaps_to_watch": ["No decision record", "No trace ID", "No evidence package", "No limitation statement"],
+      "readiness_score": 79
+    },
+    {
+      "stage_id": "operational_trust",
+      "stage_name": "Operational Trust",
+      "engineering_question": "Can the AI-assisted decision be trusted in the actual operational workflow?",
+      "platform_assurance_role": "Evaluate operational readiness, ownership, supportability, control status, open gaps, and deployment or usage constraints.",
+      "mapped_modules": ["Operational Trust", "Operational Trust Twin", "Governance Vision", "CITrust"],
+      "required_evidence": ["Operational owner", "Support group", "Trust score", "Open gap list", "Readiness status", "Usage constraint"],
+      "gaps_to_watch": ["No operational owner", "No support group", "Open critical gaps", "No usage constraints"],
+      "readiness_score": 81
+    },
+    {
+      "stage_id": "measured_outcome",
+      "stage_name": "Measured Outcome",
+      "engineering_question": "Did the AI-assisted workflow produce a measurable operational outcome?",
+      "platform_assurance_role": "Track outcome metric, expected benefit, observed result, deviation signal, feedback loop, and continuous improvement action.",
+      "mapped_modules": ["Operational Trust", "Observability", "Decision Confidence", "AI ChangeControlTrust"],
+      "required_evidence": ["Outcome metric", "Expected benefit", "Observed result", "Deviation signal", "Feedback record", "Improvement action"],
+      "gaps_to_watch": ["No outcome metric", "No feedback loop", "No deviation signal", "No improvement action"],
+      "readiness_score": 74
+    }
+  ],
+  "assurance_chain": [
+    "Trusted Data",
+    "Trusted Context",
+    "AI Recommendation",
+    "Human Review",
+    "Decision Evidence",
+    "Operational Trust",
+    "Measured Outcome"
+  ]
+}

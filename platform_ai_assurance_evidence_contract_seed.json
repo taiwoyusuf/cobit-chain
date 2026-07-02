@@ -1,0 +1,180 @@
+﻿{
+  "capability_name": "AI Assurance Evidence Contract",
+  "platform_rule": "Every AI assurance decision must be supported by a standard evidence contract before operational trust can be claimed.",
+  "platform_position": "AI Assurance Evidence Contract standardizes the evidence required by AI Architecture Assurance, Boundary Gate, Control Router, Decision Orchestrator, Evidence Vault, and Operational Trust.",
+  "engineering_principle": "An AI assurance decision is only defensible when its architecture boundary findings, controls, approvals, tool use, monitoring, outcomes, and regulatory context are bound into a replayable evidence contract.",
+  "depends_on": [
+    "AI Architecture Assurance",
+    "AI Architecture Boundary Gate API",
+    "AI Assurance Control Router",
+    "AI Assurance Decision Orchestrator",
+    "Evidence Vault",
+    "Operational Trust"
+  ],
+  "evidence_objects": [
+    {
+      "object_id": "architecture_boundary_evidence",
+      "object_name": "Architecture Boundary Evidence",
+      "evidence_question": "Were Knowledge, Tool, Autonomy, and Evidence boundaries independently evaluated?",
+      "required_fields": ["boundary_scores", "boundary_gaps", "boundary_decision", "boundary_timestamp", "boundary_owner"],
+      "source_modules": ["AI Architecture Assurance", "AI Architecture Boundary Gate API"],
+      "required_for_approval": true,
+      "sample_state": "PARTIAL",
+      "sample_score": 74,
+      "missing_fields": ["boundary_owner"]
+    },
+    {
+      "object_id": "knowledge_evidence",
+      "object_name": "Knowledge Evidence",
+      "evidence_question": "Can the knowledge used by the workflow be trusted, versioned, and traced?",
+      "required_fields": ["trusted_source_register", "context_quality_score", "data_lineage_trace", "knowledge_version", "permitted_use_rule"],
+      "source_modules": ["Knowledge Integrity", "Data-to-Decision Assurance", "Evidence Vault"],
+      "required_for_approval": true,
+      "sample_state": "PARTIAL",
+      "sample_score": 78,
+      "missing_fields": ["knowledge_version"]
+    },
+    {
+      "object_id": "tool_authorization_evidence",
+      "object_name": "Tool Authorization Evidence",
+      "evidence_question": "Were MCP tools, APIs, and runtime permissions authorized and controlled?",
+      "required_fields": ["mcp_server_record", "tool_authorization_record", "api_permission_map", "runtime_control_rule", "blocked_action_rule", "tool_call_trace"],
+      "source_modules": ["MCP Governance", "Tool Call Evidence Ledger", "Agent Passport"],
+      "required_for_approval": true,
+      "sample_state": "INCOMPLETE",
+      "sample_score": 68,
+      "missing_fields": ["api_permission_map", "blocked_action_rule"]
+    },
+    {
+      "object_id": "autonomy_authority_evidence",
+      "object_name": "Autonomy Authority Evidence",
+      "evidence_question": "Was the workflow autonomy level mapped to decision authority, human approval, action boundaries, and monitoring?",
+      "required_fields": ["autonomy_level", "decision_authority_map", "human_approval_rule", "action_boundary_record", "runtime_monitoring_signal"],
+      "source_modules": ["AI Autonomy Assurance Model", "Action Assurance Workflow", "Operational Trust"],
+      "required_for_approval": true,
+      "sample_state": "INCOMPLETE",
+      "sample_score": 70,
+      "missing_fields": ["human_approval_rule", "runtime_monitoring_signal"]
+    },
+    {
+      "object_id": "control_routing_evidence",
+      "object_name": "Control Routing Evidence",
+      "evidence_question": "Were boundary gaps routed to enforceable controls, owners, and approval gates?",
+      "required_fields": ["activated_controls", "owner_assignments", "approval_gates", "required_evidence_list", "routing_decision"],
+      "source_modules": ["AI Assurance Control Router", "Governance Vision", "Operational Trust"],
+      "required_for_approval": true,
+      "sample_state": "COMPLETE",
+      "sample_score": 82,
+      "missing_fields": []
+    },
+    {
+      "object_id": "human_approval_evidence",
+      "object_name": "Human Approval Evidence",
+      "evidence_question": "Did a named accountable human approve or reject the AI-assisted workflow decision?",
+      "required_fields": ["named_reviewer", "reviewer_role", "approval_decision", "approval_timestamp", "review_comment", "exception_rationale"],
+      "source_modules": ["Decision Confidence", "AI Output Clearance", "Action Assurance Workflow"],
+      "required_for_approval": true,
+      "sample_state": "INCOMPLETE",
+      "sample_score": 62,
+      "missing_fields": ["named_reviewer", "approval_decision", "approval_timestamp"]
+    },
+    {
+      "object_id": "lifecycle_change_evidence",
+      "object_name": "Lifecycle Change Evidence",
+      "evidence_question": "If the AI workflow changed, was the change within approved boundaries or escalated?",
+      "required_fields": ["change_record", "approved_boundary_assessment", "model_version_trace", "dataset_change_assessment", "validation_methodology", "revalidation_trigger"],
+      "source_modules": ["AI Lifecycle Change Assurance", "AI ChangeControlTrust", "Evidence Vault"],
+      "required_for_approval": false,
+      "sample_state": "PARTIAL",
+      "sample_score": 71,
+      "missing_fields": ["validation_methodology", "revalidation_trigger"]
+    },
+    {
+      "object_id": "runtime_monitoring_evidence",
+      "object_name": "Runtime Monitoring Evidence",
+      "evidence_question": "Can the workflow be monitored after deployment for drift, exceptions, failures, and unsafe behavior?",
+      "required_fields": ["monitoring_plan", "performance_threshold", "drift_signal", "exception_rule", "incident_route", "outcome_review"],
+      "source_modules": ["Operational Trust", "Observability", "AI ChangeControlTrust"],
+      "required_for_approval": true,
+      "sample_state": "PARTIAL",
+      "sample_score": 72,
+      "missing_fields": ["drift_signal", "outcome_review"]
+    },
+    {
+      "object_id": "decision_trace_evidence",
+      "object_name": "Decision Trace Evidence",
+      "evidence_question": "Can the AI-assisted decision be replayed from data and context to recommendation, review, approval, and action?",
+      "required_fields": ["decision_trace_id", "input_context", "ai_recommendation", "human_review", "decision_state", "action_record"],
+      "source_modules": ["Decision Confidence", "Data-to-Decision Assurance", "Evidence Vault"],
+      "required_for_approval": true,
+      "sample_state": "PARTIAL",
+      "sample_score": 76,
+      "missing_fields": ["action_record"]
+    },
+    {
+      "object_id": "outcome_evidence",
+      "object_name": "Outcome Evidence",
+      "evidence_question": "Can the outcome of the AI-assisted workflow be measured and tied back to the original decision?",
+      "required_fields": ["outcome_record", "outcome_measure", "exception_result", "feedback_record", "learning_update"],
+      "source_modules": ["Operational Trust", "Organizational Intelligence Assurance", "Evidence Vault"],
+      "required_for_approval": false,
+      "sample_state": "PENDING",
+      "sample_score": 65,
+      "missing_fields": ["outcome_record", "feedback_record", "learning_update"]
+    },
+    {
+      "object_id": "regulatory_readiness_evidence",
+      "object_name": "Regulatory Readiness Evidence",
+      "evidence_question": "Is the workflow evidence package ready for the relevant jurisdictional or regulatory context?",
+      "required_fields": ["jurisdiction_mapping", "context_of_use", "regulatory_pathway", "submission_impact", "documentation_state", "escalation_decision"],
+      "source_modules": ["Jurisdictional AI Assurance", "Evidence Vault", "Governance Vision"],
+      "required_for_approval": true,
+      "sample_state": "PARTIAL",
+      "sample_score": 73,
+      "missing_fields": ["submission_impact", "escalation_decision"]
+    },
+    {
+      "object_id": "rollback_stopuse_evidence",
+      "object_name": "Rollback and Stop-Use Evidence",
+      "evidence_question": "Can the workflow be stopped, reversed, rolled back, or contained if it fails?",
+      "required_fields": ["rollback_version", "rollback_procedure", "stop_use_condition", "remediation_path", "communication_plan"],
+      "source_modules": ["AI Lifecycle Change Assurance", "Operational Trust", "Evidence Vault"],
+      "required_for_approval": true,
+      "sample_state": "INCOMPLETE",
+      "sample_score": 69,
+      "missing_fields": ["rollback_procedure", "communication_plan"]
+    }
+  ],
+  "sample_contract": {
+    "contract_id": "AIEC-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "contract_type": "AI assurance operational approval evidence contract",
+    "required_object_count": 10,
+    "complete_object_count": 1,
+    "partial_object_count": 6,
+    "incomplete_object_count": 4,
+    "pending_object_count": 1,
+    "overall_evidence_score": 72,
+    "evidence_decision": "EVIDENCE_CONTRACT_INCOMPLETE_HOLD_APPROVAL",
+    "approval_state": "NOT_READY_FOR_OPERATIONAL_TRUST",
+    "missing_critical_evidence": [
+      "API permission map",
+      "Blocked-action rule",
+      "Human approval rule",
+      "Runtime monitoring signal",
+      "Named reviewer",
+      "Approval decision",
+      "Rollback procedure",
+      "Regulatory escalation decision"
+    ],
+    "required_actions": [
+      "Complete tool authorization and API permission evidence.",
+      "Complete autonomy authority and human approval evidence.",
+      "Bind runtime monitoring signals and drift thresholds.",
+      "Complete rollback and stop-use evidence.",
+      "Complete regulatory readiness evidence before operational trust approval."
+    ],
+    "approved_for_operational_use": false
+  }
+}

@@ -1,0 +1,4 @@
+http://127.0.0.1:5000/platform/identity-access
+http://127.0.0.1:5000/platform/identity
+http://127.0.0.1:5000/identity-access
+http://127.0.0.1:5000/cobitchain-identity-access

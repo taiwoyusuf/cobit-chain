@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain AI Lifecycle Change Assurance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --bg:#050609;--text:#eef1f5;--muted:#aab3c2;
+            --orange:#ff8a1f;--orange2:#ffb15c;--amber:#ffd08a;--green:#58e096;--red:#ff5c70;--blue:#9bc7ff;
+            --line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+        .page{max-width:1840px;margin:0 auto;padding:30px}
+        .hero{
+            border:1px solid var(--oline);border-radius:34px;padding:34px;
+            background:linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+            radial-gradient(circle at 70% 20%,rgba(255,138,31,.17),transparent 35%);
+            box-shadow:0 30px 90px rgba(0,0,0,.56),0 0 42px rgba(255,138,31,.22);
+            position:relative;overflow:hidden;
+        }
+        .hero:before{
+            content:"";position:absolute;inset:0;
+            background:linear-gradient(90deg,rgba(255,138,31,.045) 0 1px,transparent 1px 90px),
+            linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 90px);
+            pointer-events:none;
+        }
+        .hero-inner{position:relative;z-index:2}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}
+        .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:10px 13px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1460px;font-size:62px;line-height:.98;letter-spacing:-2.3px;font-weight:1000}
+        .subtitle{max-width:1380px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;margin-top:28px}
+        .statement{border:1px solid rgba(255,138,31,.32);background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));border-radius:24px;padding:23px;color:#fff0df;line-height:1.7;min-height:210px}
+        .score-panel{border:1px solid rgba(255,138,31,.38);background:radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));border-radius:26px;padding:24px}
+        .score-label{color:var(--orange2);font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:950}
+        .score{margin-top:12px;font-size:70px;line-height:.9;color:var(--orange);font-weight:1000;letter-spacing:-3px}
+        .score-text{margin-top:16px;color:#d4dbe5;font-size:13px;line-height:1.62}
+        .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin:18px 0 14px;border:1px solid rgba(255,255,255,.08)}
+        .bar span{display:block;height:100%;width:71%;background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a)}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:15px;margin-top:22px}
+        .metric{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));border-radius:22px;padding:18px;min-height:146px}
+        .metric .label{color:var(--muted);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:1px}
+        .metric .value{margin-top:10px;font-size:31px;font-weight:1000}
+        .metric .note{color:#b4bdca;font-size:12px;line-height:1.48;margin-top:8px}
+        .section{margin-top:24px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));border-radius:30px;padding:26px;box-shadow:0 24px 75px rgba(0,0,0,.33)}
+        .section-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+        .section h2{margin:0;font-size:30px;letter-spacing:-.8px;font-weight:1000}
+        .section p{margin:8px 0 0;color:#b9c2ce;max-width:1120px;line-height:1.62;font-size:14px}
+        .tag{display:inline-flex;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);background:rgba(255,138,31,.09);color:#ffe4c4}
+        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+        .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+        .card{border:1px solid rgba(255,138,31,.24);background:rgba(255,138,31,.07);border-radius:18px;padding:14px;min-height:175px}
+        .card strong{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+        .card span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .two-col{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+        .panel{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:26px;padding:22px}
+        .button-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+        button{cursor:pointer;border:1px solid rgba(255,138,31,.25);background:rgba(6,7,10,.72);color:#f3f6fa;border-radius:18px;padding:16px;min-height:96px;text-align:left}
+        button:hover{border-color:rgba(255,138,31,.60);background:rgba(255,138,31,.08)}
+        button strong{display:block;font-size:15px;margin-bottom:8px}
+        button span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .result{border:1px solid rgba(255,138,31,.30);background:radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),rgba(6,7,10,.68);border-radius:24px;padding:20px;min-height:780px}
+        .result-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.10);padding-bottom:14px;margin-bottom:14px}
+        .result-name{font-size:26px;font-weight:1000;letter-spacing:-.6px}
+        .badge{display:inline-flex;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;border:1px solid rgba(255,138,31,.36);color:#ffe4c4;background:rgba(255,138,31,.09)}
+        .ring{width:154px;height:154px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid rgba(255,138,31,.42);background:radial-gradient(circle,#3b210f,#101216 72%);float:left;margin:2px 18px 10px 0}
+        .ring strong{font-size:43px;color:var(--orange);line-height:1}
+        .ring span{color:#d7dee8;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+        .line{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:14px;padding:11px 12px;color:#cbd2dc;font-size:13px;line-height:1.45;margin-top:9px}
+        .line strong{color:#fff;display:block;margin-bottom:4px}
+        code{color:#ffd7a8;background:rgba(255,138,31,.09);border:1px solid rgba(255,138,31,.18);padding:3px 6px;border-radius:7px;font-size:12px}
+        .gap{color:#ffd4d8}
+        .ok{color:#c9ffe0}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:22px 4px 8px}
+        @media(max-width:1380px){.hero-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.grid-5,.grid-3{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:760px){.page{padding:16px}.hero{padding:22px;border-radius:24px}h1{font-size:38px}.metrics,.grid-5,.grid-3{grid-template-columns:1fr}.ring{float:none;margin:0 0 14px 0}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; AI Lifecycle Change Assurance</div>
+                            <div class="brand-sub">AI ChangeControlTrust, PCCP example, model evolution, revalidation, rollback, and evidence</div>
+                        </div>
+                    </div>
+                    <span class="pill">Strengthens AI ChangeControlTrust</span>
+                </div>
+
+                <div class="eyebrow">Platform A / AI Lifecycle Change / Regulatory Change Assurance</div>
+                <h1>Every AI change is a governance event.</h1>
+                <div class="subtitle">
+                    AI Lifecycle Change Assurance determines whether a proposed AI modification remains within approved operational and regulatory boundaries or requires escalation, revalidation, additional review, monitoring, rollback readiness, or evidence completion.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Engineering principle:</strong> every AI change must be evaluated as a lifecycle governance event. FDA PCCP is used as a practical implementation example while Platform A remains multi-jurisdictional.
+                    </div>
+
+                    <div class="score-panel">
+                        <div class="score-label">Sample Change Readiness Score</div>
+                        <div class="score">71%</div>
+                        <div class="score-text">
+                            Demo change is held for validation boundary review, dataset representativeness review, named human approval, monitoring thresholds, and rollback procedure completion.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> conditional hold.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/platform">Platform</a>
+                    <a href="/platform/evidence-packages">Evidence Vault</a>
+                    <a href="/platform/decision-context-assurance">Decision Confidence</a>
+                    <a href="/platform/operational-trust-twin">Operational Trust</a>
+                    <a href="/platform/jurisdictional-ai-assurance">Jurisdictional AI</a>
+                    <a href="/platform/data-to-decision-assurance">Data-to-Decision</a>
+                    <a href="/platform/routes">Routes</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Dimensions</div><div class="value" style="color:var(--orange);">12</div><div class="note">Boundary, version, dataset, validation, monitoring, rollback, evidence.</div></div>
+            <div class="metric"><div class="label">Decision States</div><div class="value" style="color:var(--amber);">5</div><div class="note">Proceed, conditional, revalidate, regulatory escalation, blocked.</div></div>
+            <div class="metric"><div class="label">PCCP Role</div><div class="value" style="color:var(--blue);">Ex</div><div class="note">FDA PCCP is an implementation example.</div></div>
+            <div class="metric"><div class="label">Scope</div><div class="value" style="color:var(--green);">Multi</div><div class="note">Designed for multiple regulatory jurisdictions.</div></div>
+            <div class="metric"><div class="label">Change</div><div class="value" style="color:var(--orange2);">Gov</div><div class="note">Every AI modification is a governance event.</div></div>
+            <div class="metric"><div class="label">Rule</div><div class="value" style="color:var(--red);">Hold</div><div class="note">Boundary or evidence gaps block deployment.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>AI Lifecycle Change Decision States</h2>
+                    <p>The platform classifies proposed AI modifications before operational or regulatory impact.</p>
+                </div>
+                <span class="tag">Change decision taxonomy</span>
+            </div>
+            <div class="grid-5" id="stateGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Lifecycle Change Assurance Dimensions</h2>
+                    <p>Each dimension evaluates a different part of the AI modification evidence chain.</p>
+                </div>
+                <span class="tag">AI change evidence chain</span>
+            </div>
+            <div class="grid-3" id="dimensionGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live AI Lifecycle Change Assurance Explorer</h2>
+                    <p>Select a dimension or run the sample AI change assessment.</p>
+                </div>
+                <span class="tag">Live API</span>
+            </div>
+
+            <div class="two-col">
+                <div class="panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Dimension Selector</h2>
+                    <div class="button-grid" id="dimensionButtons"></div>
+
+                    <h2 style="font-size:22px;margin:22px 0 6px;">Sample AI Change</h2>
+                    <div class="button-grid">
+                        <button onclick="loadChange()"><strong>AI model update using expanded operational dataset</strong><span>Conditional hold for validation, boundary review, human approval, monitoring, and rollback readiness.</span></button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div id="result" class="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for AI Lifecycle Change query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select a dimension or sample change.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="ring"><strong>--</strong><span>Ready</span></div>
+                        <div class="score-text">The AI lifecycle change assurance record will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            AI Lifecycle Change Assurance strengthens AI ChangeControlTrust. Every AI change is a governance event.
+        </div>
+    </div>
+
+    <script>
+        function listText(items){
+            if(!items || !items.length){ return "None listed."; }
+            return items.join("; ");
+        }
+
+        async function loadModel(){
+            const response = await fetch('/api/platform/ai-lifecycle-change/model/demo');
+            const data = await response.json();
+
+            document.getElementById("stateGrid").innerHTML = (data.change_decision_states || []).map(function(state){
+                return `<div class="card"><strong>${state.state_name}</strong><span>${state.meaning}<br><br><b>Action:</b> ${state.required_action}</span></div>`;
+            }).join('');
+
+            document.getElementById("dimensionGrid").innerHTML = (data.assessment_dimensions || []).map(function(dim){
+                return `<div class="card"><strong>${dim.dimension_name}</strong><span>${dim.engineering_question}<br><br><b>Score:</b> ${dim.readiness_score}</span></div>`;
+            }).join('');
+
+            document.getElementById("dimensionButtons").innerHTML = (data.assessment_dimensions || []).map(function(dim){
+                return `<button onclick="loadDimension('${dim.dimension_id}')"><strong>${dim.dimension_name}</strong><span>${dim.engineering_question}</span></button>`;
+            }).join('');
+        }
+
+        async function loadDimension(dimensionId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling AI Lifecycle Change Assurance service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-lifecycle-change/dimension/demo?dimension_id=' + encodeURIComponent(dimensionId));
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.dimension_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.dimension_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.readiness_band}</div>
+                    </div>
+                    <div class="ring"><strong>${data.readiness_score}</strong><span>Ready</span></div>
+                    <div class="line"><strong>Engineering Question</strong>${data.engineering_question}</div>
+                    <div class="line"><strong>Assurance Role</strong>${data.assurance_role}</div>
+                    <div class="line"><strong>Required Evidence</strong>${listText(data.required_evidence)}</div>
+                    <div class="line"><strong>Gaps to Watch</strong><span class="gap">${listText(data.gaps_to_watch)}</span></div>
+                    <div class="line"><strong>Mapped Modules</strong>${listText(data.mapped_modules)}</div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Lifecycle Change API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        async function loadChange(){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling sample AI lifecycle change assessment...</div>';
+
+            try{
+                const response = await fetch('/api/platform/ai-lifecycle-change/change/demo');
+                const data = await response.json();
+                if(!response.ok){ throw new Error(data.error || 'Request failed'); }
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.change_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.change_id} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.decision}</div>
+                    </div>
+                    <div class="ring"><strong>${data.change_readiness_score}</strong><span>Ready</span></div>
+                    <div class="line"><strong>Target System</strong>${data.target_system}</div>
+                    <div class="line"><strong>Jurisdictional Context</strong>${data.jurisdictional_context}</div>
+                    <div class="line"><strong>Approved Boundary State</strong>${data.approved_boundary_state}</div>
+                    <div class="line"><strong>Dataset Change State</strong>${data.dataset_change_state}</div>
+                    <div class="line"><strong>Validation State</strong>${data.validation_state}</div>
+                    <div class="line"><strong>Human Review State</strong>${data.human_review_state}</div>
+                    <div class="line"><strong>Regulatory Readiness State</strong>${data.regulatory_readiness_state}</div>
+                    <div class="line"><strong>Monitoring State</strong>${data.post_deployment_monitoring_state}</div>
+                    <div class="line"><strong>Rollback State</strong>${data.rollback_state}</div>
+                    <div class="line"><strong>Evidence Package</strong>${data.evidence_package_id}</div>
+                    <div class="line"><strong>Missing Evidence</strong><span class="gap">${listText(data.missing_evidence)}</span></div>
+                    <div class="line"><strong>Engineering Principle</strong>${data.engineering_principle}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Change API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadModel().then(function(){ loadDimension('approved_change_boundaries'); });
+    </script>
+</body>
+</html>

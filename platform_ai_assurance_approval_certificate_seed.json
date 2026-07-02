@@ -1,0 +1,133 @@
+﻿{
+  "capability_name": "AI Assurance Approval Certificate",
+  "platform_rule": "No AI-enabled workflow should be operationally approved without a certificate that states scope, trust state, evidence basis, conditions, monitoring obligations, and validity.",
+  "platform_position": "AI Assurance Approval Certificate sits after Trust Recalculation Engine and before operational release.",
+  "engineering_principle": "Approval is not a verbal decision. Approval is a bounded, evidence-backed, time-limited operational trust state with named conditions, owners, monitoring obligations, and replayable proof.",
+  "depends_on": [
+    "AI Assurance Trust Recalculation Engine",
+    "AI Assurance Closure Verifier",
+    "AI Assurance Evidence Contract",
+    "AI Assurance Replay Console",
+    "Operational Trust Twin",
+    "Evidence Vault",
+    "Decision Confidence"
+  ],
+  "certificate_sections": [
+    {
+      "section_id": "certificate_identity",
+      "section_name": "Certificate Identity",
+      "certificate_question": "Which workflow, decision, evidence package, and trust object does this certificate govern?",
+      "required_fields": ["certificate_id", "workflow_id", "decision_id", "evidence_package_id", "trust_object_id", "certificate_version"],
+      "source_module": "Unified Assurance Object",
+      "sample_state": "COMPLETE",
+      "sample_score": 92
+    },
+    {
+      "section_id": "approval_scope",
+      "section_name": "Approval Scope",
+      "certificate_question": "What exact use, context, boundary, system, user group, and operational environment are approved?",
+      "required_fields": ["context_of_use", "approved_use", "excluded_use", "system_boundary", "user_group", "environment"],
+      "source_module": "Jurisdictional AI Assurance / Operational Trust",
+      "sample_state": "PARTIAL",
+      "sample_score": 76
+    },
+    {
+      "section_id": "trust_basis",
+      "section_name": "Trust Basis",
+      "certificate_question": "Which assurance scores and evidence objects support the approval decision?",
+      "required_fields": ["architecture_score", "evidence_score", "replay_score", "closure_score", "trust_score", "decision_basis"],
+      "source_module": "Trust Recalculation Engine",
+      "sample_state": "INCOMPLETE",
+      "sample_score": 71
+    },
+    {
+      "section_id": "approval_decision",
+      "section_name": "Approval Decision",
+      "certificate_question": "Is the workflow approved, conditionally approved, held, escalated, or blocked?",
+      "required_fields": ["approval_state", "approval_decision", "decision_reason", "approval_timestamp", "approver_identity"],
+      "source_module": "Decision Confidence",
+      "sample_state": "BLOCKED",
+      "sample_score": 62
+    },
+    {
+      "section_id": "conditions_obligations",
+      "section_name": "Conditions and Obligations",
+      "certificate_question": "What conditions must remain true for approval to stay valid?",
+      "required_fields": ["conditions", "monitoring_obligations", "review_frequency", "exception_route", "stop_use_triggers"],
+      "source_module": "Operational Trust Twin",
+      "sample_state": "PARTIAL",
+      "sample_score": 74
+    },
+    {
+      "section_id": "validity_expiration",
+      "section_name": "Validity and Expiration",
+      "certificate_question": "When does trust expire or require reassessment?",
+      "required_fields": ["effective_date", "expiration_date", "reassessment_trigger", "change_trigger", "renewal_condition"],
+      "source_module": "AI Lifecycle Change Assurance",
+      "sample_state": "PARTIAL",
+      "sample_score": 72
+    },
+    {
+      "section_id": "replay_audit_basis",
+      "section_name": "Replay and Audit Basis",
+      "certificate_question": "Can the certificate decision be replayed and defended?",
+      "required_fields": ["replay_id", "replay_state", "audit_readiness_state", "evidence_contract_id", "replay_gaps"],
+      "source_module": "AI Assurance Replay Console",
+      "sample_state": "INCOMPLETE",
+      "sample_score": 73
+    },
+    {
+      "section_id": "release_authorization",
+      "section_name": "Release Authorization",
+      "certificate_question": "Is the workflow authorized for operational release?",
+      "required_fields": ["release_state", "release_owner", "release_conditions", "release_timestamp", "post_release_monitoring"],
+      "source_module": "Operational Trust Twin",
+      "sample_state": "NOT_AUTHORIZED",
+      "sample_score": 68
+    }
+  ],
+  "sample_certificate": {
+    "certificate_id": "AIAC-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "decision_id": "DEC-AI-OPS-001",
+    "trust_recalculation_id": "AATR-DEMO-001",
+    "evidence_contract_id": "AIEC-DEMO-001",
+    "replay_id": "AARC-DEMO-001",
+    "trust_object_id": "OT-AI-WF-001",
+    "certificate_type": "AI operational trust approval certificate",
+    "certificate_status": "NOT_ISSUED",
+    "approval_state": "NOT_APPROVED_FOR_OPERATIONAL_USE",
+    "certificate_score": 72,
+    "trust_score": 71,
+    "decision": "CERTIFICATE_NOT_ISSUED_TRUST_RECALCULATION_BLOCKED",
+    "decision_reason": "Operational trust remains blocked because human approval, evidence contract, replay readiness, runtime monitoring, rollback, and regulatory readiness are incomplete or pending verification.",
+    "approved_scope": "No approved operational use until blocking trust inputs are closed and trust recalculation passes.",
+    "excluded_scope": [
+      "Production use",
+      "Autonomous tool execution",
+      "Regulated action execution",
+      "Use without named human approval",
+      "Use without monitoring and rollback readiness"
+    ],
+    "conditions_required_before_certificate": [
+      "All blocking closure items verified closed.",
+      "Evidence contract completed.",
+      "Replay console audit-ready.",
+      "Named human approval completed.",
+      "Runtime monitoring active.",
+      "Rollback and stop-use path verified.",
+      "Regulatory readiness confirmed.",
+      "Trust recalculation score meets approval threshold."
+    ],
+    "monitoring_obligations": [
+      "Runtime monitoring must remain active.",
+      "Drift and exception triggers must be reviewed.",
+      "Tool-call evidence must remain logged.",
+      "Outcome feedback must be captured.",
+      "Lifecycle changes must trigger change assurance review."
+    ],
+    "certificate_validity": "No validity period because certificate is not issued.",
+    "release_authorized": false
+  }
+}

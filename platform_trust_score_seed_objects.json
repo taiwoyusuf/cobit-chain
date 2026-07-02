@@ -1,0 +1,49 @@
+﻿{
+  "objects": [
+    {
+      "object_id": "niagara-bms-supervisor",
+      "object_name": "Niagara BMS Supervisor",
+      "object_type": "equipment_application",
+      "owner_confirmed": true,
+      "support_group_confirmed": false,
+      "access_model_confirmed": false,
+      "evidence_lineage": true,
+      "evidence_freshness_days": 18,
+      "validation_state": "qualified_not_validated",
+      "open_critical_gaps": 0,
+      "open_major_gaps": 2,
+      "mcp_replay_ready": false,
+      "observability_ready": false
+    },
+    {
+      "object_id": "speedy-glove-1803",
+      "object_name": "Speedy Glove 1803",
+      "object_type": "equipment",
+      "owner_confirmed": true,
+      "support_group_confirmed": true,
+      "access_model_confirmed": true,
+      "evidence_lineage": true,
+      "evidence_freshness_days": 9,
+      "validation_state": "operational_under_current_controls",
+      "open_critical_gaps": 0,
+      "open_major_gaps": 0,
+      "mcp_replay_ready": true,
+      "observability_ready": false
+    },
+    {
+      "object_id": "platform-api-layer",
+      "object_name": "COBIT-Chain Platform API Layer",
+      "object_type": "platform_service",
+      "owner_confirmed": true,
+      "support_group_confirmed": true,
+      "access_model_confirmed": true,
+      "evidence_lineage": false,
+      "evidence_freshness_days": 0,
+      "validation_state": "design_blueprint",
+      "open_critical_gaps": 0,
+      "open_major_gaps": 1,
+      "mcp_replay_ready": false,
+      "observability_ready": false
+    }
+  ]
+}

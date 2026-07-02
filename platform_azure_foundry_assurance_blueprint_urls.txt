@@ -1,0 +1,6 @@
+http://127.0.0.1:5000/platform/azure-foundry-assurance
+http://127.0.0.1:5000/platform/azure-foundry-blueprint
+http://127.0.0.1:5000/platform/foundry-assurance-blueprint
+http://127.0.0.1:5000/api/platform/azure-foundry/blueprint/demo
+http://127.0.0.1:5000/api/platform/azure-foundry/component/demo?component_id=mcp_servers
+http://127.0.0.1:5000/api/platform/azure-foundry/readiness/demo

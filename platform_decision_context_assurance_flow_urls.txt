@@ -1,0 +1,6 @@
+http://127.0.0.1:5000/platform/decision-context-assurance
+http://127.0.0.1:5000/platform/decision-confidence-flow
+http://127.0.0.1:5000/platform/trusted-data-context-flow
+http://127.0.0.1:5000/api/platform/decision-context/flow/demo
+http://127.0.0.1:5000/api/platform/decision-context/stage/demo?stage_id=trusted_context
+http://127.0.0.1:5000/api/platform/decision-context/readiness/demo

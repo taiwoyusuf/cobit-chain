@@ -1,0 +1,189 @@
+﻿{
+  "capability_name": "AI Operational Readiness",
+  "platform_rule": "AI Operational Readiness strengthens existing Platform A modules rather than introducing a separate governance framework.",
+  "platform_position": "Platform A should evaluate organizational readiness for AI-enabled operations, not only the technical behavior of AI systems.",
+  "engineering_principle": "Technology adoption alone does not constitute transformation. Transformation occurs when AI becomes an accountable operational capability supported by governance, evidence, and human oversight.",
+  "strengthens_modules": [
+    "Governance Vision",
+    "Operational Trust",
+    "Decision Confidence",
+    "AI Output Clearance",
+    "Evidence Vault",
+    "Action Assurance Workflow",
+    "AI Autonomy Assurance Model",
+    "Knowledge Integrity",
+    "Cloud Assurance Matrix"
+  ],
+  "assessment_dimensions": [
+    {
+      "dimension_id": "workflow_redesign",
+      "dimension_name": "Workflow Redesign",
+      "engineering_question": "Have workflows been redesigned for AI-enabled operations rather than simply adding AI on top of old processes?",
+      "assurance_role": "Evaluate whether process steps, controls, handoffs, decision points, and operating procedures have been redesigned for AI-assisted work.",
+      "required_evidence": ["Redesigned workflow map", "AI-enabled process step list", "Control point map", "Human handoff map", "Operational procedure update"],
+      "gaps_to_watch": ["AI added to old workflow", "No redesigned decision path", "No control point map", "No operating procedure update"],
+      "mapped_modules": ["Governance Vision", "Operational Trust", "Action Assurance Workflow"],
+      "readiness_score": 72
+    },
+    {
+      "dimension_id": "decision_ownership",
+      "dimension_name": "Decision Ownership",
+      "engineering_question": "Who owns decisions when AI contributes to the workflow?",
+      "assurance_role": "Define accountable decision owners, reviewer roles, approver roles, escalation owners, and responsibility boundaries.",
+      "required_evidence": ["Decision owner", "Reviewer role", "Approver role", "Accountability matrix", "Decision boundary"],
+      "gaps_to_watch": ["No decision owner", "No accountability matrix", "Reviewer role unclear", "Decision boundary missing"],
+      "mapped_modules": ["Decision Confidence", "AI Output Clearance", "Operational Trust"],
+      "readiness_score": 76
+    },
+    {
+      "dimension_id": "human_ai_responsibilities",
+      "dimension_name": "Human-AI Responsibilities",
+      "engineering_question": "Are human and AI responsibilities clearly separated?",
+      "assurance_role": "Map what AI may recommend, prepare, summarize, execute, or block, and what humans must review, approve, own, or escalate.",
+      "required_evidence": ["Human-AI responsibility matrix", "Allowed AI actions", "Blocked AI actions", "Human review rules", "Escalation criteria"],
+      "gaps_to_watch": ["No responsibility matrix", "Allowed AI actions unclear", "Blocked AI actions missing", "Escalation criteria missing"],
+      "mapped_modules": ["Agent Passport", "Action Assurance Workflow", "AI Autonomy Assurance Model"],
+      "readiness_score": 74
+    },
+    {
+      "dimension_id": "governance_cadence",
+      "dimension_name": "Governance Cadence",
+      "engineering_question": "Is there a recurring governance rhythm for AI-enabled operations?",
+      "assurance_role": "Evaluate review cadence, risk review, control review, incident review, outcome review, evidence review, and change review.",
+      "required_evidence": ["Governance calendar", "Review cadence", "Risk review record", "Control review record", "Outcome review record"],
+      "gaps_to_watch": ["No governance calendar", "No recurring review", "No outcome review", "No control review"],
+      "mapped_modules": ["Governance Vision", "Evidence Vault", "Operational Trust"],
+      "readiness_score": 70
+    },
+    {
+      "dimension_id": "approval_pathways",
+      "dimension_name": "Approval Pathways",
+      "engineering_question": "Are approval pathways defined for AI-assisted decisions and actions?",
+      "assurance_role": "Determine when human approval is required, who approves, what evidence must be reviewed, and what approval state blocks execution.",
+      "required_evidence": ["Approval matrix", "Approval trigger", "Named approver role", "Evidence review checklist", "Approval record"],
+      "gaps_to_watch": ["No approval trigger", "No named approver role", "No approval checklist", "No blocking rule"],
+      "mapped_modules": ["AI Output Clearance", "Decision Confidence", "Action Assurance Workflow"],
+      "readiness_score": 73
+    },
+    {
+      "dimension_id": "escalation_paths",
+      "dimension_name": "Escalation Paths",
+      "engineering_question": "Can uncertain, high-risk, failed, or disputed AI-assisted outcomes be escalated?",
+      "assurance_role": "Define escalation rules, issue owners, exception paths, risk acceptance, remediation, and stop-use conditions.",
+      "required_evidence": ["Escalation rule", "Exception owner", "Risk acceptance path", "Stop-use criteria", "Remediation path"],
+      "gaps_to_watch": ["No escalation rule", "No exception owner", "No stop-use criteria", "No remediation path"],
+      "mapped_modules": ["Operational Trust", "Governance Vision", "AI ChangeControlTrust"],
+      "readiness_score": 71
+    },
+    {
+      "dimension_id": "operational_controls",
+      "dimension_name": "Operational Controls",
+      "engineering_question": "Are controls in place to govern AI-enabled operations at runtime?",
+      "assurance_role": "Evaluate runtime controls, access boundaries, tool governance, monitoring, blocked actions, policy checks, and control evidence.",
+      "required_evidence": ["Runtime control map", "Access boundary", "Tool governance record", "Policy check", "Blocked-action rule", "Monitoring signal"],
+      "gaps_to_watch": ["No runtime control map", "Tool governance missing", "Blocked-action rule missing", "No monitoring signal"],
+      "mapped_modules": ["Operational Trust", "Tool Call Evidence Ledger", "AI Autonomy Assurance Model"],
+      "readiness_score": 69
+    },
+    {
+      "dimension_id": "evidence_collection",
+      "dimension_name": "Evidence Collection",
+      "engineering_question": "Can AI-enabled operations be replayed with evidence?",
+      "assurance_role": "Bind workflow intent, context, AI recommendation, human review, approval, action, state verification, and outcome into evidence packages.",
+      "required_evidence": ["Evidence package ID", "Trace ID", "AI recommendation record", "Human review record", "Approval record", "Outcome record"],
+      "gaps_to_watch": ["No evidence package", "No trace ID", "No approval evidence", "No outcome record"],
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "Action Assurance Workflow"],
+      "readiness_score": 75
+    },
+    {
+      "dimension_id": "outcome_measurement",
+      "dimension_name": "Outcome Measurement",
+      "engineering_question": "Is the organization measuring whether AI-enabled operations improve outcomes safely and effectively?",
+      "assurance_role": "Evaluate operational outcomes, risk outcomes, quality outcomes, exception trends, user feedback, control effectiveness, and improvement actions.",
+      "required_evidence": ["Outcome metric", "Quality metric", "Risk metric", "Exception trend", "User feedback", "Improvement action"],
+      "gaps_to_watch": ["No outcome metric", "No quality metric", "No exception trend", "No improvement action"],
+      "mapped_modules": ["Operational Trust", "Governance Vision", "Evidence Vault"],
+      "readiness_score": 68
+    }
+  ],
+  "maturity_model": [
+    {
+      "level_id": "level_0",
+      "level_number": 0,
+      "level_name": "No AI",
+      "description": "No meaningful AI use in operational workflows.",
+      "operating_model_state": "Manual or traditional digital operations.",
+      "minimum_expectation": "Document current process baseline and identify where AI use is not yet approved.",
+      "required_capabilities": ["Process baseline", "AI use boundary"],
+      "readiness_band": "NO_AI"
+    },
+    {
+      "level_id": "level_1",
+      "level_number": 1,
+      "level_name": "AI Experimentation",
+      "description": "AI is being explored informally or in controlled experiments.",
+      "operating_model_state": "Experimentation without operational dependency.",
+      "minimum_expectation": "Define experiment boundaries, data-use limits, human review, and non-operational-use rules.",
+      "required_capabilities": ["Experiment boundary", "Human review", "Data-use limit", "Evidence notes"],
+      "readiness_band": "EXPERIMENTAL"
+    },
+    {
+      "level_id": "level_2",
+      "level_number": 2,
+      "level_name": "AI Pilots",
+      "description": "AI pilots are running in limited workflows with defined scope.",
+      "operating_model_state": "Pilot workflows with limited operational exposure.",
+      "minimum_expectation": "Define pilot owner, success criteria, risk controls, approval rules, and evidence collection.",
+      "required_capabilities": ["Pilot owner", "Success criteria", "Risk controls", "Approval rule", "Evidence collection"],
+      "readiness_band": "PILOT"
+    },
+    {
+      "level_id": "level_3",
+      "level_number": 3,
+      "level_name": "AI Deployed",
+      "description": "AI is deployed in operational workflows, but the operating model may not be fully redesigned.",
+      "operating_model_state": "AI-enabled tools in production use.",
+      "minimum_expectation": "Define decision ownership, workflow controls, monitoring, escalation paths, and evidence packages.",
+      "required_capabilities": ["Decision ownership", "Operational controls", "Monitoring", "Escalation path", "Evidence package"],
+      "readiness_band": "DEPLOYED_WITH_GAPS"
+    },
+    {
+      "level_id": "level_4",
+      "level_number": 4,
+      "level_name": "AI Integrated into Operational Workflows",
+      "description": "AI is embedded into redesigned workflows with defined approvals, controls, roles, and evidence.",
+      "operating_model_state": "Operational workflows redesigned around AI-assisted work.",
+      "minimum_expectation": "Establish governance cadence, approval pathways, responsibility maps, runtime controls, and outcome measurement.",
+      "required_capabilities": ["Governance cadence", "Approval pathway", "Responsibility map", "Runtime controls", "Outcome measurement"],
+      "readiness_band": "INTEGRATED"
+    },
+    {
+      "level_id": "level_5",
+      "level_number": 5,
+      "level_name": "AI-enabled Operating Model with Assurance Engineering Controls",
+      "description": "AI operates as an accountable capability supported by governance, evidence, human oversight, operational controls, and continuous assurance.",
+      "operating_model_state": "AI-enabled operating model with Assurance Engineering.",
+      "minimum_expectation": "Maintain continuous operational assurance, evidence replay, outcome review, human oversight, and improvement cadence.",
+      "required_capabilities": ["Continuous assurance", "Evidence replay", "Outcome review", "Human oversight", "Improvement cadence"],
+      "readiness_band": "ASSURANCE_ENGINEERED"
+    }
+  ],
+  "sample_readiness_assessment": {
+    "assessment_id": "AIOR-DEMO-001",
+    "organization_name": "Platform A demo organization",
+    "current_maturity_level": "level_3",
+    "target_maturity_level": "level_5",
+    "readiness_score": 72,
+    "decision": "NOT_FULLY_TRANSFORMED_YET",
+    "summary": "AI has been deployed, but workflow redesign, governance cadence, escalation paths, runtime controls, and outcome measurement are incomplete.",
+    "strengths": ["Evidence collection started", "Decision ownership partially defined", "Human review exists for selected workflows"],
+    "gaps": ["Workflow redesign incomplete", "Governance cadence informal", "Escalation paths incomplete", "Runtime controls incomplete", "Outcome measurement incomplete"],
+    "required_actions": [
+      "Redesign workflows around accountable AI-enabled operations.",
+      "Define decision ownership and human-AI responsibility matrix.",
+      "Formalize governance cadence and approval pathways.",
+      "Implement runtime controls, escalation paths, and evidence packages.",
+      "Measure operational outcomes and control effectiveness."
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/ai-assurance-knowledge-reuse
+http://127.0.0.1:5000/platform/ai-assurance-outcome-learning
+http://127.0.0.1:5000/platform/organizational-intelligence-assurance
+http://127.0.0.1:5000/platform/ai-assurance-control-router
+http://127.0.0.1:5000/api/platform/spine-refresh/v11/demo

@@ -1,0 +1,137 @@
+﻿{
+  "tools": [
+    {
+      "tool_id": "query_assurance_object",
+      "tool_name": "Query Unified Assurance Object",
+      "tool_type": "read_only_assurance_query",
+      "purpose": "Return the integrated assurance state of one governed object.",
+      "input_schema": {
+        "object_id": "string"
+      },
+      "output_contract": [
+        "integrated_state",
+        "integrated_confidence",
+        "trust_score",
+        "evidence_package",
+        "operational_twin",
+        "vision_lookup",
+        "limitations"
+      ],
+      "allowed_actions": [
+        "read_assurance_state",
+        "summarize_evidence",
+        "return_limitations"
+      ],
+      "blocked_actions": [
+        "approve_work",
+        "modify_record",
+        "bypass_sop",
+        "change_access",
+        "release_equipment"
+      ],
+      "evidence_required": true,
+      "replay_required": true,
+      "human_review_required": false,
+      "risk_level": "medium"
+    },
+    {
+      "tool_id": "get_evidence_package",
+      "tool_name": "Get Evidence Package",
+      "tool_type": "read_only_evidence_query",
+      "purpose": "Return the evidence package behind a trust claim.",
+      "input_schema": {
+        "package_id": "string"
+      },
+      "output_contract": [
+        "package_id",
+        "object_id",
+        "evidence_state",
+        "package_quality_score",
+        "source_systems",
+        "evidence_records",
+        "open_gaps",
+        "limitations"
+      ],
+      "allowed_actions": [
+        "read_evidence_package",
+        "summarize_evidence",
+        "return_gaps"
+      ],
+      "blocked_actions": [
+        "create_evidence",
+        "delete_evidence",
+        "approve_evidence",
+        "alter_audit_record"
+      ],
+      "evidence_required": true,
+      "replay_required": true,
+      "human_review_required": false,
+      "risk_level": "medium"
+    },
+    {
+      "tool_id": "vision_hud_lookup",
+      "tool_name": "Governance Vision HUD Lookup",
+      "tool_type": "read_only_wearable_query",
+      "purpose": "Return a privacy-safe HUD response for a scanned asset.",
+      "input_schema": {
+        "asset_id": "string"
+      },
+      "output_contract": [
+        "status",
+        "trust_score",
+        "confidence",
+        "evidence_summary",
+        "next_action",
+        "limitations",
+        "privacy_mode"
+      ],
+      "allowed_actions": [
+        "read_hud_state",
+        "return_next_action",
+        "display_limitations"
+      ],
+      "blocked_actions": [
+        "show_sensitive_record",
+        "modify_equipment",
+        "approve_operation",
+        "grant_access"
+      ],
+      "evidence_required": true,
+      "replay_required": true,
+      "human_review_required": false,
+      "risk_level": "medium"
+    },
+    {
+      "tool_id": "action_guard_check",
+      "tool_name": "Action Guard Check",
+      "tool_type": "controlled_decision_support",
+      "purpose": "Check whether a requested action is allowed, blocked, or requires human review.",
+      "input_schema": {
+        "object_id": "string",
+        "requested_action": "string"
+      },
+      "output_contract": [
+        "action_allowed",
+        "decision",
+        "reason",
+        "required_review",
+        "limitations"
+      ],
+      "allowed_actions": [
+        "check_action",
+        "block_action",
+        "require_review"
+      ],
+      "blocked_actions": [
+        "perform_action",
+        "approve_action",
+        "execute_change",
+        "override_control"
+      ],
+      "evidence_required": true,
+      "replay_required": true,
+      "human_review_required": true,
+      "risk_level": "high"
+    }
+  ]
+}

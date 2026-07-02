@@ -1,0 +1,186 @@
+﻿{
+  "capability_name": "AI Assurance Control Router",
+  "platform_rule": "Boundary failures must activate the correct Platform A assurance controls before operational approval.",
+  "platform_position": "AI Architecture Boundary Gate identifies the boundary state. AI Assurance Control Router determines which Platform A modules, controls, evidence objects, and approval gates must activate.",
+  "engineering_principle": "Architecture assurance is not complete until boundary findings are routed to enforceable controls, evidence requirements, and accountable owners.",
+  "depends_on": [
+    "AI Architecture Assurance",
+    "AI Architecture Boundary Gate API"
+  ],
+  "routes_to_modules": [
+    "Knowledge Integrity",
+    "Data-to-Decision Assurance",
+    "MCP Governance",
+    "Tool Call Evidence Ledger",
+    "Agent Passport",
+    "AI Autonomy Assurance Model",
+    "Action Assurance Workflow",
+    "Evidence Vault",
+    "Decision Confidence",
+    "Operational Trust",
+    "Jurisdictional AI Assurance",
+    "Governance Vision"
+  ],
+  "control_routes": [
+    {
+      "route_id": "route_knowledge_assurance",
+      "boundary_id": "knowledge_assurance",
+      "boundary_name": "Knowledge Assurance",
+      "trigger_condition": "Trusted source, context quality, data lineage, or version control gap is detected.",
+      "activated_controls": [
+        "Source Trust Check",
+        "Context Quality Review",
+        "Data Lineage Verification",
+        "Knowledge Version Control",
+        "Permitted Use Review"
+      ],
+      "routed_modules": [
+        "Knowledge Integrity",
+        "Data-to-Decision Assurance",
+        "Evidence Vault",
+        "Decision Confidence"
+      ],
+      "required_evidence": [
+        "Trusted source register",
+        "Context quality score",
+        "Data lineage trace",
+        "Knowledge version record",
+        "Permitted-use rule"
+      ],
+      "approval_gate": "Knowledge owner review required before operational approval.",
+      "owner_role": "Knowledge Owner",
+      "sample_status": "HOLD",
+      "sample_priority": "High",
+      "readiness_score": 76
+    },
+    {
+      "route_id": "route_tool_assurance",
+      "boundary_id": "tool_assurance",
+      "boundary_name": "Tool Assurance",
+      "trigger_condition": "MCP governance, tool authorization, API permission, or runtime control gap is detected.",
+      "activated_controls": [
+        "MCP Server Governance",
+        "Tool Authorization Review",
+        "API Permission Mapping",
+        "Runtime Control Rule",
+        "Blocked Action Rule",
+        "Tool Call Evidence Logging"
+      ],
+      "routed_modules": [
+        "MCP Governance",
+        "Tool Call Evidence Ledger",
+        "Agent Passport",
+        "Operational Trust"
+      ],
+      "required_evidence": [
+        "MCP server record",
+        "Tool authorization record",
+        "API permission map",
+        "Runtime control rule",
+        "Blocked-action rule",
+        "Tool-call trace"
+      ],
+      "approval_gate": "Tool owner and security approval required before tool-mediated execution.",
+      "owner_role": "Tool Owner / Security Owner",
+      "sample_status": "HOLD",
+      "sample_priority": "Critical",
+      "readiness_score": 70
+    },
+    {
+      "route_id": "route_autonomy_assurance",
+      "boundary_id": "autonomy_assurance",
+      "boundary_name": "Autonomy Assurance",
+      "trigger_condition": "Decision authority, human approval, action boundary, or runtime monitoring gap is detected.",
+      "activated_controls": [
+        "AI Autonomy Level Assessment",
+        "Decision Authority Mapping",
+        "Human Approval Gate",
+        "Action Boundary Control",
+        "Agent Identity Verification",
+        "Runtime Monitoring Signal"
+      ],
+      "routed_modules": [
+        "AI Autonomy Assurance Model",
+        "Agent Passport",
+        "Action Assurance Workflow",
+        "Operational Trust"
+      ],
+      "required_evidence": [
+        "AI autonomy level",
+        "Decision authority map",
+        "Human approval gate",
+        "Action boundary record",
+        "Agent identity record",
+        "Runtime monitoring signal"
+      ],
+      "approval_gate": "Accountable human approval required before regulated or high-impact action.",
+      "owner_role": "Workflow Owner / Human Approver",
+      "sample_status": "HOLD",
+      "sample_priority": "Critical",
+      "readiness_score": 72
+    },
+    {
+      "route_id": "route_evidence_assurance",
+      "boundary_id": "evidence_assurance",
+      "boundary_name": "Evidence Assurance",
+      "trigger_condition": "Evidence lineage, decision traceability, operational trust, or regulatory readiness gap is detected.",
+      "activated_controls": [
+        "Evidence Package Binding",
+        "Decision Traceability Check",
+        "Operational Trust Evaluation",
+        "Regulatory Readiness Mapping",
+        "Human Review Evidence",
+        "Outcome Evidence Capture"
+      ],
+      "routed_modules": [
+        "Evidence Vault",
+        "Decision Confidence",
+        "Operational Trust",
+        "Jurisdictional AI Assurance"
+      ],
+      "required_evidence": [
+        "Evidence package ID",
+        "Decision trace ID",
+        "Operational trust score",
+        "Regulatory readiness mapping",
+        "Human review record",
+        "Outcome record"
+      ],
+      "approval_gate": "Evidence package approval required before operational trust is claimed.",
+      "owner_role": "Evidence Owner / Governance Owner",
+      "sample_status": "PASS_WITH_GAPS",
+      "sample_priority": "Medium",
+      "readiness_score": 82
+    }
+  ],
+  "sample_routing_decision": {
+    "routing_id": "AACR-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "boundary_gate_decision": "HOLD_FOR_BOUNDARY_REMEDIATION",
+    "overall_routing_score": 75,
+    "highest_priority": "Critical",
+    "activated_route_count": 4,
+    "critical_routes": [
+      "Tool Assurance",
+      "Autonomy Assurance"
+    ],
+    "hold_routes": [
+      "Knowledge Assurance",
+      "Tool Assurance",
+      "Autonomy Assurance"
+    ],
+    "pass_with_gap_routes": [
+      "Evidence Assurance"
+    ],
+    "required_module_actions": [
+      "Knowledge Integrity must complete source version and context quality review.",
+      "MCP Governance must complete tool authorization and API permission mapping.",
+      "AI Autonomy Assurance Model must confirm autonomy level and approval requirement.",
+      "Action Assurance Workflow must enforce action boundaries and approval gates.",
+      "Evidence Vault must bind decision trace, approval record, and outcome evidence."
+    ],
+    "final_decision": "ROUTE_TO_CONTROLS_AND_HOLD_OPERATIONAL_APPROVAL",
+    "approved_for_operational_use": false
+  }
+}

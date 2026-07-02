@@ -1,0 +1,84 @@
+﻿{
+  "capability_name": "AI Architecture Boundary Gate API",
+  "platform_rule": "Every AI-enabled workflow should pass Knowledge, Tool, Autonomy, and Evidence boundary checks before operational approval.",
+  "platform_position": "AI Architecture Boundary Gate API makes AI Architecture Assurance callable by every Platform A module.",
+  "engineering_principle": "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust.",
+  "gate_policy": {
+    "minimum_overall_score_for_approval": 85,
+    "minimum_boundary_score_for_approval": 80,
+    "automatic_hold_if_any_boundary_below": 75,
+    "automatic_block_if_any_boundary_below": 60,
+    "required_boundaries": ["Knowledge Assurance", "Tool Assurance", "Autonomy Assurance", "Evidence Assurance"]
+  },
+  "boundary_gates": [
+    {
+      "boundary_id": "knowledge_assurance",
+      "boundary_name": "Knowledge Assurance",
+      "gate_question": "Is the AI workflow grounded in trusted, versioned, traceable knowledge?",
+      "required_checks": ["Trusted sources", "Context quality", "Data lineage", "Version control"],
+      "required_evidence": ["Trusted source register", "Context quality score", "Data lineage trace", "Knowledge version record"],
+      "pass_rule": "All knowledge sources must be trusted, current, versioned, and traceable.",
+      "mapped_modules": ["Knowledge Integrity", "Data-to-Decision Assurance", "Evidence Vault", "Decision Confidence"],
+      "sample_score": 78,
+      "sample_status": "HOLD",
+      "sample_gaps": ["One source version missing", "Context quality review incomplete"]
+    },
+    {
+      "boundary_id": "tool_assurance",
+      "boundary_name": "Tool Assurance",
+      "gate_question": "Are all tools, APIs, permissions, and runtime controls authorized and governed?",
+      "required_checks": ["MCP governance", "Tool authorization", "API permissions", "Runtime controls"],
+      "required_evidence": ["MCP server record", "Tool authorization record", "API permission map", "Runtime control rule"],
+      "pass_rule": "All tools must be registered, authorized, permission-scoped, monitored, and blocked from unauthorized actions.",
+      "mapped_modules": ["MCP Governance", "Tool Call Evidence Ledger", "Agent Passport", "Operational Trust"],
+      "sample_score": 70,
+      "sample_status": "HOLD",
+      "sample_gaps": ["API permission map incomplete", "Runtime blocked-action rule missing"]
+    },
+    {
+      "boundary_id": "autonomy_assurance",
+      "boundary_name": "Autonomy Assurance",
+      "gate_question": "Is the workflow autonomy level bounded by authority, approval, and monitoring?",
+      "required_checks": ["Decision authority", "Human approval", "Action boundaries", "Runtime monitoring"],
+      "required_evidence": ["Autonomy level assessment", "Decision authority map", "Human approval gate", "Action boundary record", "Runtime monitoring signal"],
+      "pass_rule": "Autonomy level must be classified and bounded with human approval gates where required.",
+      "mapped_modules": ["AI Autonomy Assurance Model", "Agent Passport", "Action Assurance Workflow", "Operational Trust"],
+      "sample_score": 72,
+      "sample_status": "HOLD",
+      "sample_gaps": ["Human approval gate not named", "Runtime monitoring signal incomplete"]
+    },
+    {
+      "boundary_id": "evidence_assurance",
+      "boundary_name": "Evidence Assurance",
+      "gate_question": "Can the workflow decision, tool use, approval, action, and outcome be replayed with evidence?",
+      "required_checks": ["Evidence lineage", "Decision traceability", "Operational trust", "Regulatory readiness"],
+      "required_evidence": ["Evidence package ID", "Decision trace ID", "Operational trust score", "Regulatory readiness mapping", "Outcome record"],
+      "pass_rule": "Evidence must support replay, traceability, operational trust, and regulatory readiness.",
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "Operational Trust", "Jurisdictional AI Assurance"],
+      "sample_score": 82,
+      "sample_status": "PASS_WITH_GAPS",
+      "sample_gaps": ["Outcome record pending"]
+    }
+  ],
+  "sample_gate_evaluation": {
+    "gate_id": "AABG-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "workflow_description": "AI workflow uses governed knowledge, MCP tools, bounded autonomy, human approval, and evidence recording before operational use.",
+    "knowledge_score": 78,
+    "tool_score": 70,
+    "autonomy_score": 72,
+    "evidence_score": 82,
+    "overall_score": 75,
+    "gate_decision": "HOLD_FOR_BOUNDARY_REMEDIATION",
+    "decision_reason": "The workflow has acceptable evidence direction, but Tool Assurance and Autonomy Assurance remain below approval threshold.",
+    "required_actions": [
+      "Complete source version control and context quality review.",
+      "Complete MCP tool authorization and API permission map.",
+      "Define human approval gate and action boundary.",
+      "Confirm runtime monitoring signal.",
+      "Bind decision trace and outcome evidence to Evidence Vault."
+    ],
+    "approved_for_operational_use": false
+  }
+}

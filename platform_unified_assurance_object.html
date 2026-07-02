@@ -1,0 +1,699 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Unified Assurance Object View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --panel:#151820;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --good:#58e096;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{width:100%;max-width:1780px;margin:0 auto;padding:30px}
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 70% 24%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{display:flex;align-items:center;gap:14px}
+
+        .brand-mark{
+            width:56px;
+            height:56px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{font-size:18px;font-weight:1000;letter-spacing:.3px}
+        .brand-sub{color:var(--steel);font-size:12px;margin-top:4px}
+
+        .pill{
+            display:inline-flex;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1280px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.3px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1260px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .score-panel{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:70px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-3px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:81%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:30px;
+            letter-spacing:-.8px;
+            font-weight:1000;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1080px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .two-col{
+            display:grid;
+            grid-template-columns:.9fr 1.1fr;
+            gap:20px;
+        }
+
+        .selector,.viewer{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .object-grid{
+            display:grid;
+            grid-template-columns:1fr;
+            gap:12px;
+            margin-top:16px;
+        }
+
+        button{
+            cursor:pointer;
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            color:#f3f6fa;
+            border-radius:18px;
+            padding:16px;
+            min-height:112px;
+            text-align:left;
+            box-shadow:0 18px 45px rgba(0,0,0,.24);
+        }
+
+        button:hover{
+            border-color:rgba(255,138,31,.60);
+            background:rgba(255,138,31,.08);
+        }
+
+        button strong{display:block;font-size:15px;margin-bottom:8px}
+        button span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+
+        .result{
+            border:1px solid rgba(255,138,31,.30);
+            background:
+                radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),
+                rgba(6,7,10,.68);
+            border-radius:24px;
+            padding:20px;
+            min-height:620px;
+        }
+
+        .result-top{
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            flex-wrap:wrap;
+            align-items:flex-start;
+            border-bottom:1px solid rgba(255,255,255,.10);
+            padding-bottom:14px;
+            margin-bottom:14px;
+        }
+
+        .result-name{font-size:26px;font-weight:1000;letter-spacing:-.6px}
+
+        .badge{
+            display:inline-flex;
+            border-radius:999px;
+            padding:8px 11px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            color:#ffe4c4;
+            background:rgba(255,138,31,.09);
+        }
+
+        .score-ring{
+            width:154px;
+            height:154px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            border:1px solid rgba(255,138,31,.42);
+            background:radial-gradient(circle,#3b210f,#101216 72%);
+            box-shadow:0 0 42px rgba(255,138,31,.24);
+            float:left;
+            margin:2px 18px 10px 0;
+        }
+
+        .score-ring strong{
+            font-size:43px;
+            color:var(--orange);
+            line-height:1;
+        }
+
+        .score-ring span{
+            color:#d7dee8;
+            font-size:11px;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-top:6px;
+        }
+
+        .mini-grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:10px;
+            margin-top:14px;
+        }
+
+        .mini,.line{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(255,255,255,.04);
+            border-radius:14px;
+            padding:11px 12px;
+            color:#cbd2dc;
+            font-size:13px;
+            line-height:1.45;
+        }
+
+        .mini strong,.line strong{color:#fff;display:block;margin-bottom:4px}
+
+        .line{margin-top:9px}
+
+        .module-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:14px;
+            margin-top:18px;
+        }
+
+        .module{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,255,255,.115);
+            background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+            border-radius:20px;
+            padding:16px;
+            min-height:180px;
+        }
+
+        .module:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            height:3px;
+            background:linear-gradient(90deg,var(--orange),var(--orange2),rgba(255,255,255,.45));
+        }
+
+        .module-id{
+            color:var(--orange2);
+            font-size:11px;
+            font-weight:950;
+            letter-spacing:1.2px;
+            text-transform:uppercase;
+        }
+
+        .module h3{margin:10px 0 8px;font-size:16px;font-weight:950}
+        .module p{color:#b9c2ce;font-size:12px;line-height:1.48;margin:0}
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .module-grid{grid-template-columns:repeat(2,1fr)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.mini-grid,.module-grid{grid-template-columns:1fr}
+            .score-ring{float:none;margin:0 0 14px 0}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; Unified Assurance Object View</div>
+                            <div class="brand-sub">Trust Score + Operational Twin + Evidence Package + Governance Vision Lookup in one object view</div>
+                        </div>
+                    </div>
+                    <span class="pill">Integration Upgrade / No New Concept</span>
+                </div>
+
+                <div class="eyebrow">Platform A/B / Existing Architecture First / Object Assurance</div>
+                <h1>One governed object. One complete assurance view.</h1>
+                <div class="subtitle">
+                    This view integrates existing Platform A/B modules into a single object-level assurance response. It answers whether a governed object can be trusted, what evidence supports it, what gaps remain, what the twin state says, and what a wearable HUD should safely return.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Integration rule:</strong> do not create new theory when existing modules can be connected. This page strengthens Trust Score, Operational Trust Twin, Evidence Vault, and Governance Vision by showing their combined output for the same object.
+                    </div>
+
+                    <div class="score-panel">
+                        <div class="score-label">Object Assurance Integration</div>
+                        <div class="score">81%</div>
+                        <div class="score-text">
+                            The platform now has object-level aggregation across score, twin, evidence, and HUD lookup. The next step is to bind these demo objects to persistent Azure data services.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Integrated API-backed object view.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/platform">Platform</a>
+                    <a href="/platform/routes">Route Registry</a>
+                    <a href="/platform/trust-score-service">Trust Score</a>
+                    <a href="/platform/operational-trust-twin">Operational Twin</a>
+                    <a href="/platform/evidence-packages">Evidence Packages</a>
+                    <a href="/platform/vision-lookup">Vision Lookup</a>
+                    <a href="/platform/evidence-store">Evidence Store</a>
+                    <a href="/platform/mcp-server">MCP</a>
+                    <a href="/platform/observability">Observability</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Integrated Modules</div><div class="value" style="color:var(--orange);">4</div><div class="note">Trust Score, Twin, Evidence, and Vision Lookup.</div></div>
+            <div class="metric"><div class="label">Object View</div><div class="value" style="color:var(--orange2);">One</div><div class="note">One governed object shown across all assurance layers.</div></div>
+            <div class="metric"><div class="label">API Mode</div><div class="value" style="color:var(--amber);">Live</div><div class="note">The page calls an aggregate JSON API.</div></div>
+            <div class="metric"><div class="label">Evidence Rule</div><div class="value" style="color:var(--blue);">Bind</div><div class="note">Object confidence is linked to evidence package quality.</div></div>
+            <div class="metric"><div class="label">Vision Rule</div><div class="value" style="color:var(--good);">Safe</div><div class="note">HUD response remains read-only and limitation-aware.</div></div>
+            <div class="metric"><div class="label">Build Rule</div><div class="value" style="color:var(--bad);">No Bloat</div><div class="note">Integration over concept expansion.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live Unified Object Demo</h2>
+                    <p>Select an object. This calls <code>/api/platform/assurance/object/demo</code> and aggregates data from existing seed models.</p>
+                </div>
+                <span class="tag">Live integrated endpoint</span>
+            </div>
+
+            <div class="two-col">
+                <div class="selector">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Governed Object Selector</h2>
+                    <p>Each button shows the same object across Trust Score, Twin, Evidence, and Vision Lookup.</p>
+
+                    <div class="object-grid">
+                        <button onclick="loadObject('niagara-bms-supervisor')">
+                            <strong>Niagara BMS Supervisor</strong>
+                            <span>Equipment application object with caution state, readiness evidence, access/support gaps, and HUD limitations.</span>
+                        </button>
+                        <button onclick="loadObject('speedy-glove-1803')">
+                            <strong>Speedy Glove 1803</strong>
+                            <span>Manufacturing equipment object with strong operational evidence and current-control readiness.</span>
+                        </button>
+                        <button onclick="loadObject('platform-api-layer')">
+                            <strong>COBIT-Chain Platform API Layer</strong>
+                            <span>Platform service object in design-stage maturity with API, identity, and observability dependencies.</span>
+                        </button>
+                        <button onclick="loadObject('governance-vision')">
+                            <strong>Governance Vision Wearable Interface</strong>
+                            <span>Wearable assurance interface object with HUD contract, privacy boundary, and prototype limitations.</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="viewer">
+                    <div id="result" class="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for object query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select a governed object on the left.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="score-ring">
+                            <strong>--</strong>
+                            <span>Trust</span>
+                        </div>
+                        <div class="score-text">The integrated assurance object response will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Module Contribution Map</h2>
+                    <p>The unified object view does not replace these modules. It shows how they work together.</p>
+                </div>
+                <span class="tag">Existing modules strengthened</span>
+            </div>
+
+            <div class="module-grid">
+                <div class="module"><div class="module-id">Trust Score</div><h3>Can it be trusted?</h3><p>Provides score, decision, confidence, and recommended action.</p></div>
+                <div class="module"><div class="module-id">Operational Twin</div><h3>What is its live state?</h3><p>Provides operational state, owner, support group, gaps, and dependencies.</p></div>
+                <div class="module"><div class="module-id">Evidence Vault</div><h3>What proves it?</h3><p>Provides package quality, source systems, records, gaps, and limitations.</p></div>
+                <div class="module"><div class="module-id">Governance Vision</div><h3>What can the user see?</h3><p>Provides HUD-safe status, evidence summary, privacy boundary, and next action.</p></div>
+            </div>
+        </section>
+
+        <div class="footer">
+            Unified Assurance Object View strengthens existing Platform A/B architecture. It does not create a new foundational concept. Its purpose is to integrate existing modules into one object-level assurance response.
+        </div>
+    </div>
+
+    <script>
+        function safe(value){
+            if(value === undefined || value === null || value === ""){
+                return "Not available";
+            }
+            return value;
+        }
+
+        function listText(items){
+            if(!items || !items.length){
+                return "None reported.";
+            }
+            return items.join("; ");
+        }
+
+        async function loadObject(objectId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling unified assurance object service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/assurance/object/demo?object_id=' + encodeURIComponent(objectId));
+                const data = await response.json();
+
+                if(!response.ok){
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                const trust = data.trust_score || {};
+                const twin = data.operational_twin || {};
+                const evidence = data.evidence_package || {};
+                const vision = data.vision_lookup || {};
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${safe(data.object_name)}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${safe(data.object_id)} | request_id: ${safe(data.request_id)}</div>
+                        </div>
+                        <div class="badge">${safe(data.integrated_state)} | ${safe(data.integrated_confidence)}</div>
+                    </div>
+
+                    <div class="score-ring">
+                        <strong>${safe(trust.trust_score)}</strong>
+                        <span>Trust</span>
+                    </div>
+
+                    <div class="line"><strong>Integrated Recommended Action</strong>${safe(data.integrated_recommended_action)}</div>
+                    <div class="line"><strong>Decision Basis</strong>${safe(data.decision_basis)}</div>
+                    <div class="line"><strong>Evidence Package</strong>${safe(evidence.package_id)} | Quality: ${safe(evidence.package_quality_score)} | Confidence: ${safe(evidence.package_confidence)}</div>
+                    <div class="line"><strong>Twin State</strong>${safe(twin.operational_state)} | Health: ${safe(twin.twin_health)}</div>
+                    <div class="line"><strong>Vision HUD Status</strong>${safe(vision.status)} | Privacy Mode: ${safe(vision.privacy_mode)}</div>
+
+                    <div style="clear:both"></div>
+
+                    <div class="mini-grid">
+                        <div class="mini"><strong>Trust Decision</strong>${safe(trust.decision)} / ${safe(trust.confidence)}</div>
+                        <div class="mini"><strong>Object Type</strong>${safe(data.object_type)}</div>
+                        <div class="mini"><strong>Open Gaps</strong>${listText(data.open_gaps)}</div>
+                        <div class="mini"><strong>Limitations</strong>${listText(data.limitations)}</div>
+                    </div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Unified API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadObject('niagara-bms-supervisor');
+    </script>
+</body>
+</html>

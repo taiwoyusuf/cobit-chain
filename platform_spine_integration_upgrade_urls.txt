@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/platform
+http://127.0.0.1:5000/platform/routes
+http://127.0.0.1:5000/platform/trust-score-service
+http://127.0.0.1:5000/platform/operational-trust-twin
+http://127.0.0.1:5000/platform/vision-lookup

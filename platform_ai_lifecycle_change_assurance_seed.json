@@ -1,0 +1,198 @@
+﻿{
+  "capability_name": "AI Lifecycle Change Assurance",
+  "platform_rule": "AI Lifecycle Change Assurance strengthens AI ChangeControlTrust rather than creating a separate governance framework.",
+  "platform_position": "Every AI change is a governance event. Platform A determines whether a proposed AI modification remains within approved operational and regulatory boundaries or requires escalation, revalidation, or additional review.",
+  "implementation_example": "FDA PCCP is used as a practical implementation example. The capability is designed to support multiple regulatory jurisdictions.",
+  "engineering_principle": "Every AI change is a governance event.",
+  "strengthens_modules": [
+    "AI ChangeControlTrust",
+    "Evidence Vault",
+    "Decision Confidence",
+    "Operational Trust",
+    "AI Output Clearance",
+    "Jurisdictional AI Assurance",
+    "Data-to-Decision Assurance",
+    "Governance Vision"
+  ],
+  "assessment_dimensions": [
+    {
+      "dimension_id": "approved_change_boundaries",
+      "dimension_name": "Approved Change Boundaries",
+      "engineering_question": "Does the proposed AI change remain inside previously approved operational and regulatory boundaries?",
+      "assurance_role": "Evaluate authorized change scope, approved use, model boundary, workflow boundary, jurisdictional boundary, and prohibited modifications.",
+      "required_evidence": ["Approved change boundary", "Permitted modification type", "Prohibited modification list", "Context-of-use boundary", "Jurisdictional boundary", "Approval record"],
+      "gaps_to_watch": ["No approved boundary", "Modification type unclear", "Context of use not mapped", "Jurisdictional boundary missing"],
+      "mapped_modules": ["AI ChangeControlTrust", "Jurisdictional AI Assurance", "Evidence Vault"],
+      "readiness_score": 76
+    },
+    {
+      "dimension_id": "planned_modifications",
+      "dimension_name": "Planned Modifications",
+      "engineering_question": "Are the planned AI modifications defined, bounded, justified, and traceable?",
+      "assurance_role": "Capture modification objective, change type, expected benefit, affected component, expected performance impact, and implementation plan.",
+      "required_evidence": ["Modification objective", "Change type", "Affected component", "Expected benefit", "Implementation plan", "Change owner"],
+      "gaps_to_watch": ["Modification objective unclear", "Affected component not identified", "No implementation plan", "No change owner"],
+      "mapped_modules": ["AI ChangeControlTrust", "Governance Vision", "Decision Confidence"],
+      "readiness_score": 78
+    },
+    {
+      "dimension_id": "model_version_traceability",
+      "dimension_name": "Model Version Traceability",
+      "engineering_question": "Can every model version be traced from baseline to proposed change?",
+      "assurance_role": "Evaluate model version ID, baseline model, candidate model, deployment package, configuration, release state, and rollback reference.",
+      "required_evidence": ["Baseline model ID", "Candidate model ID", "Model version history", "Configuration record", "Deployment package ID", "Rollback version"],
+      "gaps_to_watch": ["No baseline model ID", "No candidate model ID", "Version history incomplete", "Rollback version missing"],
+      "mapped_modules": ["Evidence Vault", "AI ChangeControlTrust", "Operational Trust"],
+      "readiness_score": 74
+    },
+    {
+      "dimension_id": "dataset_changes",
+      "dimension_name": "Dataset Changes",
+      "engineering_question": "Have dataset changes been assessed for quality, representativeness, lineage, and regulated impact?",
+      "assurance_role": "Evaluate dataset source, data lineage, inclusion criteria, exclusion criteria, representativeness, data quality, bias risk, and permitted use.",
+      "required_evidence": ["Dataset source", "Dataset lineage", "Data quality result", "Representativeness assessment", "Bias risk review", "Permitted-use rule"],
+      "gaps_to_watch": ["Dataset lineage incomplete", "No representativeness review", "No bias risk review", "No permitted-use rule"],
+      "mapped_modules": ["Data-to-Decision Assurance", "Knowledge Integrity", "Evidence Vault"],
+      "readiness_score": 72
+    },
+    {
+      "dimension_id": "validation_methodology",
+      "dimension_name": "Validation Methodology",
+      "engineering_question": "Is the validation methodology appropriate for the proposed AI change?",
+      "assurance_role": "Evaluate validation design, acceptance criteria, test data, performance metrics, failure cases, statistical method, and reviewer signoff.",
+      "required_evidence": ["Validation plan", "Acceptance criteria", "Test dataset", "Performance metric", "Failure-case evidence", "Reviewer signoff"],
+      "gaps_to_watch": ["No validation plan", "Acceptance criteria missing", "Failure cases not tested", "Reviewer signoff missing"],
+      "mapped_modules": ["AI ChangeControlTrust", "Evidence Vault", "Decision Confidence"],
+      "readiness_score": 70
+    },
+    {
+      "dimension_id": "impact_assessment",
+      "dimension_name": "Impact Assessment",
+      "engineering_question": "What operational, regulatory, safety, quality, and workflow impacts could result from the AI modification?",
+      "assurance_role": "Assess impact on intended use, context of use, performance, users, workflow, documentation, validation state, downstream systems, and risk controls.",
+      "required_evidence": ["Impact assessment", "Risk classification", "Affected workflow", "Affected user group", "Affected documentation", "Risk control update"],
+      "gaps_to_watch": ["No impact assessment", "Risk classification missing", "Affected workflow unclear", "Documentation impact not assessed"],
+      "mapped_modules": ["Operational Trust", "Jurisdictional AI Assurance", "Governance Vision"],
+      "readiness_score": 73
+    },
+    {
+      "dimension_id": "human_review",
+      "dimension_name": "Human Review",
+      "engineering_question": "Has a named accountable human reviewed the proposed AI modification and evidence package?",
+      "assurance_role": "Confirm reviewer identity, reviewer qualification, review checklist, review decision, exception rationale, and accountability record.",
+      "required_evidence": ["Named reviewer", "Reviewer qualification", "Review checklist", "Review decision", "Reviewer comment", "Accountability record"],
+      "gaps_to_watch": ["No named reviewer", "Reviewer qualification missing", "Review checklist missing", "Review decision not recorded"],
+      "mapped_modules": ["Decision Confidence", "AI Output Clearance", "Evidence Vault"],
+      "readiness_score": 82
+    },
+    {
+      "dimension_id": "regulatory_readiness",
+      "dimension_name": "Regulatory Readiness",
+      "engineering_question": "Does the change remain within the expected regulatory pathway or require escalation?",
+      "assurance_role": "Evaluate jurisdiction, regulatory pathway, approved boundary, submission impact, documentation impact, and escalation trigger.",
+      "required_evidence": ["Jurisdiction mapping", "Regulatory pathway", "Boundary assessment", "Submission impact", "Documentation update", "Escalation decision"],
+      "gaps_to_watch": ["Jurisdiction not mapped", "Submission impact unclear", "Escalation trigger missing", "Documentation update missing"],
+      "mapped_modules": ["Jurisdictional AI Assurance", "AI ChangeControlTrust", "Evidence Vault"],
+      "readiness_score": 75
+    },
+    {
+      "dimension_id": "post_deployment_monitoring",
+      "dimension_name": "Post-Deployment Monitoring",
+      "engineering_question": "How will the changed AI system be monitored after deployment?",
+      "assurance_role": "Evaluate monitoring signals, performance thresholds, drift indicators, exception detection, incident routing, user feedback, and outcome review.",
+      "required_evidence": ["Monitoring plan", "Performance threshold", "Drift signal", "Exception rule", "Incident route", "Outcome review"],
+      "gaps_to_watch": ["No monitoring plan", "No drift signal", "No exception rule", "No outcome review"],
+      "mapped_modules": ["Operational Trust", "Observability", "AI ChangeControlTrust"],
+      "readiness_score": 69
+    },
+    {
+      "dimension_id": "revalidation_triggers",
+      "dimension_name": "Revalidation Triggers",
+      "engineering_question": "What conditions trigger revalidation, escalation, or additional review?",
+      "assurance_role": "Define triggers for performance degradation, dataset shift, workflow change, context expansion, regulatory pathway change, or unexpected outcome.",
+      "required_evidence": ["Revalidation trigger", "Performance threshold", "Dataset shift trigger", "Context expansion trigger", "Escalation rule", "Review owner"],
+      "gaps_to_watch": ["No revalidation trigger", "No performance threshold", "No dataset shift rule", "No review owner"],
+      "mapped_modules": ["AI ChangeControlTrust", "Operational Trust", "Evidence Vault"],
+      "readiness_score": 68
+    },
+    {
+      "dimension_id": "rollback_readiness",
+      "dimension_name": "Rollback Readiness",
+      "engineering_question": "Can the AI change be reversed or contained if it fails after deployment?",
+      "assurance_role": "Evaluate rollback version, rollback procedure, stop-use condition, remediation path, release control, and communication plan.",
+      "required_evidence": ["Rollback version", "Rollback procedure", "Stop-use criteria", "Remediation path", "Release control", "Communication plan"],
+      "gaps_to_watch": ["Rollback version missing", "Rollback procedure missing", "Stop-use criteria missing", "Communication plan missing"],
+      "mapped_modules": ["Operational Trust", "AI ChangeControlTrust", "Evidence Vault"],
+      "readiness_score": 71
+    },
+    {
+      "dimension_id": "evidence_collection",
+      "dimension_name": "Evidence Collection",
+      "engineering_question": "Can the AI lifecycle change decision be replayed with complete evidence?",
+      "assurance_role": "Bind approved boundary, planned modification, model version, dataset change, validation, impact assessment, human review, monitoring, revalidation triggers, rollback, and final decision into an evidence package.",
+      "required_evidence": ["Evidence package ID", "Trace ID", "Change record", "Validation evidence", "Review evidence", "Monitoring evidence", "Rollback evidence"],
+      "gaps_to_watch": ["No evidence package", "No trace ID", "Validation evidence incomplete", "Rollback evidence missing"],
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "AI ChangeControlTrust"],
+      "readiness_score": 77
+    }
+  ],
+  "change_decision_states": [
+    {
+      "state_id": "within_approved_boundary",
+      "state_name": "Within Approved Boundary",
+      "meaning": "The change appears to remain inside approved operational and regulatory boundaries.",
+      "required_action": "Proceed through normal approved change workflow with evidence recording and monitoring."
+    },
+    {
+      "state_id": "conditional_with_additional_review",
+      "state_name": "Conditional With Additional Review",
+      "meaning": "The change may remain within boundary, but evidence gaps or risk uncertainty require additional review.",
+      "required_action": "Hold for human review, evidence completion, or targeted validation."
+    },
+    {
+      "state_id": "requires_revalidation",
+      "state_name": "Requires Revalidation",
+      "meaning": "The change affects performance, data, context, workflow, or risk controls enough to require revalidation.",
+      "required_action": "Escalate to validation workflow and block deployment until revalidation is complete."
+    },
+    {
+      "state_id": "requires_regulatory_escalation",
+      "state_name": "Requires Regulatory Escalation",
+      "meaning": "The change may exceed approved boundaries or affect regulatory pathway expectations.",
+      "required_action": "Escalate for jurisdictional review, documentation update, and regulatory pathway decision."
+    },
+    {
+      "state_id": "blocked",
+      "state_name": "Blocked",
+      "meaning": "The change lacks required evidence, violates boundary, or introduces unacceptable operational risk.",
+      "required_action": "Block deployment and require remediation, rollback plan, or governance decision."
+    }
+  ],
+  "sample_change": {
+    "change_id": "AILCA-DEMO-001",
+    "change_name": "AI model update using expanded operational dataset",
+    "target_system": "AI-assisted operational readiness classifier",
+    "jurisdictional_context": "Multi-jurisdictional demo with FDA PCCP implementation example",
+    "approved_boundary_state": "PARTIAL_MATCH",
+    "planned_modification_state": "DEFINED",
+    "model_version_state": "TRACEABLE",
+    "dataset_change_state": "NEEDS_REPRESENTATIVENESS_REVIEW",
+    "validation_state": "PLAN_DEFINED_ACCEPTANCE_CRITERIA_INCOMPLETE",
+    "impact_assessment_state": "PARTIAL",
+    "human_review_state": "REQUIRED_NOT_COMPLETED",
+    "regulatory_readiness_state": "NEEDS_BOUNDARY_ASSESSMENT",
+    "post_deployment_monitoring_state": "MONITORING_PLAN_INCOMPLETE",
+    "rollback_state": "ROLLBACK_VERSION_IDENTIFIED_PROCEDURE_INCOMPLETE",
+    "evidence_package_id": "EVP-AILCA-MODELUPDATE-001",
+    "change_readiness_score": 71,
+    "decision": "CONDITIONAL_HOLD_FOR_VALIDATION_BOUNDARY_REVIEW_AND_HUMAN_APPROVAL",
+    "missing_evidence": [
+      "Complete approved-boundary assessment",
+      "Dataset representativeness review",
+      "Validation acceptance criteria",
+      "Named human approval",
+      "Post-deployment monitoring thresholds",
+      "Rollback procedure"
+    ]
+  }
+}

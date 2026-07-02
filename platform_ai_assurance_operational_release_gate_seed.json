@@ -1,0 +1,168 @@
+﻿{
+  "capability_name": "AI Assurance Operational Release Gate",
+  "platform_rule": "An AI-enabled workflow cannot be released into operational use unless its approval certificate, release scope, monitoring, rollback, ownership, evidence, and post-release verification gates are satisfied.",
+  "platform_position": "AI Assurance Operational Release Gate sits after AI Assurance Approval Certificate and before production or operational release.",
+  "engineering_principle": "Release is not the same as approval. Release is the controlled act of putting an approved AI-enabled workflow into operation under scope, monitoring, rollback, evidence, and accountable ownership.",
+  "depends_on": [
+    "AI Assurance Approval Certificate",
+    "AI Assurance Trust Recalculation Engine",
+    "AI Assurance Closure Verifier",
+    "Operational Trust Twin",
+    "Evidence Vault",
+    "Observability",
+    "AI Lifecycle Change Assurance"
+  ],
+  "release_gates": [
+    {
+      "gate_id": "certificate_issued_gate",
+      "gate_name": "Approval Certificate Issued Gate",
+      "release_question": "Has the AI Assurance Approval Certificate been issued for the workflow?",
+      "required_state": "Certificate issued or conditional certificate active",
+      "source_module": "AI Assurance Approval Certificate",
+      "gate_type": "Approval basis",
+      "sample_state": "NOT_ISSUED",
+      "sample_score": 72,
+      "blocks_release": true,
+      "required_evidence": ["Approval certificate", "Certificate score", "Approval state", "Certificate validity", "Release authorization flag"]
+    },
+    {
+      "gate_id": "approved_scope_gate",
+      "gate_name": "Approved Scope Gate",
+      "release_question": "Is the release limited to the approved context of use, system boundary, user group, and environment?",
+      "required_state": "Release scope matches certificate scope",
+      "source_module": "Jurisdictional AI Assurance / Operational Trust",
+      "gate_type": "Scope control",
+      "sample_state": "BLOCKED_NO_APPROVED_SCOPE",
+      "sample_score": 76,
+      "blocks_release": true,
+      "required_evidence": ["Context of use", "Approved use", "Excluded use", "System boundary", "Environment record"]
+    },
+    {
+      "gate_id": "deployment_readiness_gate",
+      "gate_name": "Deployment Readiness Gate",
+      "release_question": "Is the AI-enabled workflow technically and operationally ready for controlled deployment?",
+      "required_state": "Deployment readiness confirmed",
+      "source_module": "Deployment and Release Pipeline",
+      "gate_type": "Deployment control",
+      "sample_state": "PARTIAL",
+      "sample_score": 74,
+      "blocks_release": true,
+      "required_evidence": ["Release plan", "Deployment record", "Configuration baseline", "Environment readiness", "Release owner"]
+    },
+    {
+      "gate_id": "monitoring_activation_gate",
+      "gate_name": "Monitoring Activation Gate",
+      "release_question": "Are runtime monitoring, drift detection, exception routing, incident routing, and tool-call evidence active?",
+      "required_state": "Monitoring active before release",
+      "source_module": "Operational Trust / Observability",
+      "gate_type": "Runtime control",
+      "sample_state": "PARTIAL",
+      "sample_score": 74,
+      "blocks_release": true,
+      "required_evidence": ["Runtime monitoring signal", "Drift threshold", "Exception rule", "Incident route", "Tool-call logging evidence"]
+    },
+    {
+      "gate_id": "rollback_stopuse_gate",
+      "gate_name": "Rollback and Stop-Use Gate",
+      "release_question": "Can the workflow be stopped, rolled back, disabled, or contained if unsafe behavior occurs?",
+      "required_state": "Rollback and stop-use ready",
+      "source_module": "AI Lifecycle Change Assurance",
+      "gate_type": "Containment control",
+      "sample_state": "PENDING_VERIFICATION",
+      "sample_score": 72,
+      "blocks_release": true,
+      "required_evidence": ["Rollback procedure", "Stop-use trigger", "Rollback version", "Disablement path", "Communication plan"]
+    },
+    {
+      "gate_id": "human_release_authorization_gate",
+      "gate_name": "Human Release Authorization Gate",
+      "release_question": "Has a named accountable release owner authorized operational release?",
+      "required_state": "Named release authorization complete",
+      "source_module": "Decision Confidence / Operational Trust",
+      "gate_type": "Accountability control",
+      "sample_state": "INCOMPLETE",
+      "sample_score": 64,
+      "blocks_release": true,
+      "required_evidence": ["Release owner", "Authorization decision", "Authorization timestamp", "Release comment", "Exception rationale"]
+    },
+    {
+      "gate_id": "regulatory_release_gate",
+      "gate_name": "Regulatory Release Gate",
+      "release_question": "Is the release defensible in the relevant jurisdictional, regulated, or quality context?",
+      "required_state": "Regulatory release readiness confirmed",
+      "source_module": "Jurisdictional AI Assurance",
+      "gate_type": "Regulatory readiness",
+      "sample_state": "PENDING_VERIFICATION",
+      "sample_score": 75,
+      "blocks_release": true,
+      "required_evidence": ["Jurisdiction mapping", "Context of use", "Submission impact", "Escalation decision", "Governance approval"]
+    },
+    {
+      "gate_id": "evidence_vault_binding_gate",
+      "gate_name": "Evidence Vault Binding Gate",
+      "release_question": "Is the release decision bound to a complete evidence package for audit replay?",
+      "required_state": "Release evidence bound",
+      "source_module": "Evidence Vault",
+      "gate_type": "Evidence control",
+      "sample_state": "PARTIAL",
+      "sample_score": 73,
+      "blocks_release": true,
+      "required_evidence": ["Release evidence package", "Certificate evidence", "Replay record", "Decision trace", "Operational trust object"]
+    },
+    {
+      "gate_id": "post_release_verification_gate",
+      "gate_name": "Post-Release Verification Gate",
+      "release_question": "Is there a defined post-release verification and outcome review plan?",
+      "required_state": "Post-release verification planned",
+      "source_module": "Operational Trust / Organizational Intelligence",
+      "gate_type": "Post-release assurance",
+      "sample_state": "DEFERRED",
+      "sample_score": 67,
+      "blocks_release": false,
+      "required_evidence": ["Post-release verification plan", "Outcome measure", "Feedback loop", "Review cadence", "Learning update route"]
+    }
+  ],
+  "sample_release": {
+    "release_id": "AIORG-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "certificate_id": "AIAC-DEMO-001",
+    "trust_recalculation_id": "AATR-DEMO-001",
+    "release_type": "AI operational release gate decision",
+    "prior_approval_state": "NOT_APPROVED_FOR_OPERATIONAL_USE",
+    "certificate_status": "NOT_ISSUED",
+    "release_score": 72,
+    "release_decision": "RELEASE_BLOCKED_CERTIFICATE_NOT_ISSUED",
+    "release_state": "NOT_AUTHORIZED_FOR_OPERATIONAL_RELEASE",
+    "release_authorized": false,
+    "blocking_gates": [
+      "Approval Certificate Issued Gate",
+      "Approved Scope Gate",
+      "Deployment Readiness Gate",
+      "Monitoring Activation Gate",
+      "Rollback and Stop-Use Gate",
+      "Human Release Authorization Gate",
+      "Regulatory Release Gate",
+      "Evidence Vault Binding Gate"
+    ],
+    "release_conditions": [
+      "Approval certificate must be issued.",
+      "Release scope must match approved certificate scope.",
+      "Runtime monitoring must be active.",
+      "Rollback and stop-use path must be verified.",
+      "Named human release authorization must be completed.",
+      "Regulatory release readiness must be confirmed.",
+      "Release evidence package must be bound to Evidence Vault."
+    ],
+    "next_required_actions": [
+      "Resolve certificate issuance blockers.",
+      "Complete release scope definition.",
+      "Activate runtime monitoring and exception routing.",
+      "Verify rollback and stop-use controls.",
+      "Complete named release authorization.",
+      "Bind release evidence package.",
+      "Run release gate again after all blocking gates pass."
+    ],
+    "approved_for_operational_release": false
+  }
+}

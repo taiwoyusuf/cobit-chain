@@ -1,0 +1,6 @@
+http://127.0.0.1:5000/platform/azure-foundry-evidence-binder
+http://127.0.0.1:5000/platform/foundry-lifecycle-evidence
+http://127.0.0.1:5000/platform/azure-foundry-lifecycle-evidence
+http://127.0.0.1:5000/api/platform/azure-foundry/evidence-bindings/demo
+http://127.0.0.1:5000/api/platform/azure-foundry/evidence-binding/demo?stage_id=develop
+http://127.0.0.1:5000/api/platform/azure-foundry/evidence-readiness/demo

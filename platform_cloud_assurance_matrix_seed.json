@@ -1,0 +1,123 @@
+﻿{
+  "providers": [
+    {
+      "provider_id": "azure",
+      "provider_name": "Microsoft Azure",
+      "platform_position": "Platform A preferred execution stack",
+      "agent_runtime": "Azure AI Foundry agents, orchestration patterns, Azure OpenAI, app-hosted agent runtime",
+      "tool_execution": "Azure Functions, Azure Container Apps, Azure App Service, API Management, managed identities",
+      "memory_state_data": "Azure AI Search, Cosmos DB, Blob Storage, Table Storage, vector indexes, enterprise data connectors",
+      "security_governance_observability": "Microsoft Entra ID, Key Vault, Azure Monitor, Application Insights, Defender, Purview alignment",
+      "cobitchain_overlay_focus": [
+        "Agent identity",
+        "Context of use",
+        "Tool call evidence",
+        "Evidence lineage",
+        "Decision integrity",
+        "Operational trust",
+        "Regulatory readiness"
+      ],
+      "assurance_position": "Azure executes the preferred Platform A runtime. COBIT-Chain proves whether the resulting AI-enabled operation is trustworthy."
+    },
+    {
+      "provider_id": "aws",
+      "provider_name": "Amazon Web Services",
+      "platform_position": "Platform B cloud-neutral assurance target",
+      "agent_runtime": "AWS enterprise agent runtime and orchestration services",
+      "tool_execution": "AWS Lambda, containers, APIs, managed execution and enterprise integration services",
+      "memory_state_data": "AWS data, storage, search, vector, knowledge, and state services",
+      "security_governance_observability": "AWS identity, secrets, logging, monitoring, audit, and governance services",
+      "cobitchain_overlay_focus": [
+        "Agent identity",
+        "Human approval",
+        "Tool call evidence",
+        "Knowledge source grounding",
+        "Model and prompt traceability",
+        "Operational trust",
+        "Regulatory readiness"
+      ],
+      "assurance_position": "AWS executes enterprise AI capabilities. COBIT-Chain can provide the same assurance overlay without becoming a separate AWS product."
+    },
+    {
+      "provider_id": "gcp",
+      "provider_name": "Google Cloud",
+      "platform_position": "Platform B cloud-neutral assurance target",
+      "agent_runtime": "Google Cloud enterprise agent runtime, orchestration, and AI application services",
+      "tool_execution": "Cloud Functions, Cloud Run, APIs, managed execution and integration services",
+      "memory_state_data": "Google Cloud storage, search, vector, knowledge, and state services",
+      "security_governance_observability": "Google Cloud IAM, secrets, logging, monitoring, audit, and governance services",
+      "cobitchain_overlay_focus": [
+        "Agent identity",
+        "Context of use",
+        "Knowledge source grounding",
+        "Evidence lineage",
+        "Decision integrity",
+        "Operational trust",
+        "Regulatory readiness"
+      ],
+      "assurance_position": "Google Cloud executes enterprise AI capabilities. COBIT-Chain evaluates operational trustworthiness using the same assurance architecture."
+    }
+  ],
+  "assurance_controls": [
+    {
+      "control_id": "agent_identity",
+      "control_name": "Agent Identity",
+      "engineering_question": "Can the agent, service, tool, or runtime be uniquely identified?",
+      "regulated_value": "Prevents anonymous AI action and supports accountability."
+    },
+    {
+      "control_id": "context_of_use",
+      "control_name": "Context of Use",
+      "engineering_question": "Is the operational boundary of the AI system clearly defined?",
+      "regulated_value": "Prevents uncontrolled reuse of AI output outside its intended context."
+    },
+    {
+      "control_id": "human_approval",
+      "control_name": "Human Approval",
+      "engineering_question": "Which actions require human review before execution?",
+      "regulated_value": "Protects regulated workflows from unauthorized autonomous action."
+    },
+    {
+      "control_id": "tool_call_evidence",
+      "control_name": "Tool Call Evidence",
+      "engineering_question": "Can every tool call be replayed with input, output, evidence, and decision basis?",
+      "regulated_value": "Supports auditability and AI action traceability."
+    },
+    {
+      "control_id": "knowledge_source_grounding",
+      "control_name": "Knowledge Source Grounding",
+      "engineering_question": "What controlled source supports the AI answer?",
+      "regulated_value": "Reduces hallucination risk and supports controlled knowledge integrity."
+    },
+    {
+      "control_id": "model_prompt_version",
+      "control_name": "Model and Prompt Version Traceability",
+      "engineering_question": "Which model, prompt, tool schema, and rule version produced the output?",
+      "regulated_value": "Supports change control, reproducibility, and impact assessment."
+    },
+    {
+      "control_id": "evidence_lineage",
+      "control_name": "Evidence Lineage",
+      "engineering_question": "Can the output be traced back to evidence records and source systems?",
+      "regulated_value": "Connects AI decisions to auditable evidence."
+    },
+    {
+      "control_id": "decision_integrity",
+      "control_name": "Decision Integrity",
+      "engineering_question": "Was the decision based on permitted data, allowed tools, and approved constraints?",
+      "regulated_value": "Prevents unsupported, uncontrolled, or policy-violating AI decisions."
+    },
+    {
+      "control_id": "operational_trust",
+      "control_name": "Operational Trust",
+      "engineering_question": "Can the AI-enabled operation be trusted in its operational environment?",
+      "regulated_value": "Connects AI governance to real operational readiness."
+    },
+    {
+      "control_id": "regulatory_readiness",
+      "control_name": "Regulatory Readiness",
+      "engineering_question": "Can the organization explain, evidence, and defend the AI-enabled workflow?",
+      "regulated_value": "Supports inspection, audit, QMS, and regulated environment readiness."
+    }
+  ]
+}

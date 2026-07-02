@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform/agentic-action-assurance
+http://127.0.0.1:5000/platform/agent-action-assurance
+http://127.0.0.1:5000/platform/ai-action-assurance
+http://127.0.0.1:5000/api/platform/agentic-action/flow/demo
+http://127.0.0.1:5000/api/platform/agentic-action/stage/demo?stage_id=authority
+http://127.0.0.1:5000/api/platform/agentic-action/check/demo?action_id=ACT-RBAC-CHANGE-001
+http://127.0.0.1:5000/api/platform/agentic-action/readiness/demo

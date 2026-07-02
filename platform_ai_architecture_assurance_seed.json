@@ -1,0 +1,95 @@
+﻿{
+  "capability_name": "AI Architecture Assurance",
+  "platform_rule": "Platform A should independently evaluate knowledge, tools, autonomy, and evidence before determining overall operational trust.",
+  "platform_position": "Modern AI systems combine knowledge, tools, and autonomous decision making. AI Architecture Assurance evaluates each assurance boundary before AI-enabled workflows are approved for operational use.",
+  "engineering_principle": "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust.",
+  "reusable_across_modules": [
+    "Governance Vision",
+    "Operational Trust",
+    "Decision Confidence",
+    "Evidence Vault",
+    "Knowledge Integrity",
+    "MCP Governance",
+    "Tool Call Evidence Ledger",
+    "Agent Passport",
+    "AI Autonomy Assurance Model",
+    "Action Assurance Workflow",
+    "AI ChangeControlTrust",
+    "AI Operational Readiness",
+    "Jurisdictional AI Assurance",
+    "Data-to-Decision Assurance",
+    "Cloud Assurance Matrix"
+  ],
+  "assurance_boundaries": [
+    {
+      "boundary_id": "knowledge_assurance",
+      "boundary_name": "Knowledge Assurance",
+      "engineering_question": "Can the knowledge used by the AI workflow be trusted?",
+      "assurance_scope": ["Trusted sources", "Context quality", "Data lineage", "Version control"],
+      "assurance_role": "Evaluate whether AI context is grounded in trusted, current, governed, versioned, and traceable knowledge.",
+      "required_evidence": ["Trusted source list", "Context quality check", "Data lineage trace", "Knowledge version", "Source owner", "Permitted-use rule"],
+      "gaps_to_watch": ["Untrusted source", "Poor context quality", "Missing lineage", "No version control", "No source owner"],
+      "mapped_modules": ["Knowledge Integrity", "Data-to-Decision Assurance", "Evidence Vault", "Decision Confidence"],
+      "readiness_score": 76
+    },
+    {
+      "boundary_id": "tool_assurance",
+      "boundary_name": "Tool Assurance",
+      "engineering_question": "Can the tools and APIs used by the AI workflow be trusted and controlled?",
+      "assurance_scope": ["MCP governance", "Tool authorization", "API permissions", "Runtime controls"],
+      "assurance_role": "Evaluate tool identity, authorization, API permissions, runtime constraints, blocked actions, tool-call evidence, and execution boundary.",
+      "required_evidence": ["MCP server record", "Tool authorization record", "API permission map", "Runtime control", "Blocked-action rule", "Tool-call trace"],
+      "gaps_to_watch": ["No MCP governance", "Tool authorization missing", "API permissions unclear", "No runtime controls", "No tool-call trace"],
+      "mapped_modules": ["MCP Governance", "Tool Call Evidence Ledger", "Agent Passport", "Operational Trust"],
+      "readiness_score": 72
+    },
+    {
+      "boundary_id": "autonomy_assurance",
+      "boundary_name": "Autonomy Assurance",
+      "engineering_question": "Is the AI workflow's decision and action autonomy appropriately bounded?",
+      "assurance_scope": ["Decision authority", "Human approval", "Action boundaries", "Runtime monitoring"],
+      "assurance_role": "Evaluate autonomy level, decision authority, human approval requirements, action boundaries, agent identity, runtime monitoring, and escalation.",
+      "required_evidence": ["AI autonomy level", "Decision authority map", "Human approval rule", "Action boundary", "Agent identity", "Runtime monitoring signal"],
+      "gaps_to_watch": ["Autonomy level not assessed", "Decision authority unclear", "No human approval gate", "Action boundary missing", "No runtime monitoring"],
+      "mapped_modules": ["AI Autonomy Assurance Model", "Agent Passport", "Action Assurance Workflow", "Operational Trust"],
+      "readiness_score": 70
+    },
+    {
+      "boundary_id": "evidence_assurance",
+      "boundary_name": "Evidence Assurance",
+      "engineering_question": "Can the AI workflow be replayed with evidence that supports operational trust and regulatory readiness?",
+      "assurance_scope": ["Evidence lineage", "Decision traceability", "Operational trust", "Regulatory readiness"],
+      "assurance_role": "Evaluate whether data, context, tool calls, decisions, approvals, actions, outcomes, and regulatory evidence are bound into a replayable evidence chain.",
+      "required_evidence": ["Evidence package ID", "Decision trace ID", "Operational trust score", "Regulatory readiness mapping", "Human review record", "Outcome record"],
+      "gaps_to_watch": ["No evidence package", "No decision trace", "Operational trust not assessed", "Regulatory readiness missing", "No outcome record"],
+      "mapped_modules": ["Evidence Vault", "Decision Confidence", "Operational Trust", "Jurisdictional AI Assurance"],
+      "readiness_score": 78
+    }
+  ],
+  "sample_workflow": {
+    "workflow_id": "AIA-DEMO-001",
+    "workflow_name": "AI-assisted regulated workflow architecture",
+    "workflow_description": "AI workflow uses governed knowledge, MCP tools, bounded autonomy, human approval, and evidence recording before operational use.",
+    "knowledge_assurance_state": "GOOD_WITH_SOURCE_VERSION_GAPS",
+    "tool_assurance_state": "PARTIAL_MCP_AND_API_PERMISSION_GAPS",
+    "autonomy_assurance_state": "LEVEL_4_REQUIRES_APPROVAL_AND_RUNTIME_MONITORING",
+    "evidence_assurance_state": "GOOD_WITH_DECISION_TRACE_GAPS",
+    "overall_operational_trust_score": 74,
+    "decision": "HOLD_FOR_TOOL_AUTHORIZATION_AUTONOMY_BOUNDARY_AND_EVIDENCE_TRACE",
+    "missing_evidence": [
+      "Complete source version control",
+      "MCP tool authorization record",
+      "API permission map",
+      "Human approval gate",
+      "Runtime monitoring signal",
+      "Decision trace ID"
+    ],
+    "required_actions": [
+      "Validate trusted knowledge sources and versions.",
+      "Confirm MCP governance, tool authorization, and API permissions.",
+      "Assess autonomy level and enforce human approval gates.",
+      "Bind tool calls, decisions, approvals, and outcomes into Evidence Vault.",
+      "Recalculate operational trust after evidence gaps are closed."
+    ]
+  }
+}

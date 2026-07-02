@@ -1,0 +1,117 @@
+﻿{
+  "capability_name": "AI Assurance Decision Orchestrator",
+  "platform_rule": "AI-enabled workflows must pass through architecture boundary assessment, control routing, evidence binding, and operational trust evaluation before approval.",
+  "platform_position": "The AI Assurance Decision Orchestrator connects AI Architecture Assurance, Boundary Gate, Control Router, Evidence Vault, Decision Confidence, and Operational Trust into one decision flow.",
+  "engineering_principle": "Assurance is not a dashboard view; assurance is an executable decision pathway that converts boundary findings into controls, evidence, approvals, and operational trust decisions.",
+  "orchestration_stages": [
+    {
+      "stage_id": "stage_1_architecture_boundary_assessment",
+      "stage_name": "Architecture Boundary Assessment",
+      "stage_question": "Have Knowledge, Tool, Autonomy, and Evidence boundaries been independently evaluated?",
+      "input_objects": ["AI workflow", "Knowledge sources", "Tool list", "Autonomy level", "Evidence package"],
+      "output_objects": ["Boundary scores", "Boundary gaps", "Boundary risk state"],
+      "required_modules": ["AI Architecture Assurance", "AI Architecture Boundary Gate API"],
+      "stage_decision": "HOLD_IF_ANY_BOUNDARY_FAILS",
+      "sample_score": 74,
+      "sample_status": "HOLD"
+    },
+    {
+      "stage_id": "stage_2_control_routing",
+      "stage_name": "Control Routing",
+      "stage_question": "Have boundary gaps been routed to enforceable controls and accountable owners?",
+      "input_objects": ["Boundary findings", "Boundary gaps", "Control library", "Owner map"],
+      "output_objects": ["Activated controls", "Owner assignments", "Approval gates", "Required evidence"],
+      "required_modules": ["AI Assurance Control Router", "Governance Vision", "Operational Trust"],
+      "stage_decision": "ROUTE_TO_CONTROLS_AND_ASSIGN_OWNERS",
+      "sample_score": 75,
+      "sample_status": "ROUTED"
+    },
+    {
+      "stage_id": "stage_3_evidence_binding",
+      "stage_name": "Evidence Binding",
+      "stage_question": "Can the assurance decision be replayed with complete evidence?",
+      "input_objects": ["Control routing result", "Review records", "Approval records", "Tool-call traces", "Outcome records"],
+      "output_objects": ["Evidence package", "Decision trace", "Audit replay record"],
+      "required_modules": ["Evidence Vault", "Decision Confidence", "Tool Call Evidence Ledger"],
+      "stage_decision": "HOLD_IF_EVIDENCE_CHAIN_INCOMPLETE",
+      "sample_score": 79,
+      "sample_status": "PARTIAL"
+    },
+    {
+      "stage_id": "stage_4_human_approval",
+      "stage_name": "Human Approval",
+      "stage_question": "Has a named accountable human approved the AI-assisted workflow decision?",
+      "input_objects": ["Decision package", "Risk state", "Evidence package", "Approval gate"],
+      "output_objects": ["Approval decision", "Reviewer identity", "Approval timestamp", "Exception rationale"],
+      "required_modules": ["Decision Confidence", "AI Output Clearance", "Action Assurance Workflow"],
+      "stage_decision": "REQUIRE_APPROVAL_FOR_REGULATED_OR_HIGH_IMPACT_USE",
+      "sample_score": 68,
+      "sample_status": "REQUIRED_NOT_COMPLETED"
+    },
+    {
+      "stage_id": "stage_5_operational_trust_decision",
+      "stage_name": "Operational Trust Decision",
+      "stage_question": "Can the workflow be approved, held, escalated, or blocked for operational use?",
+      "input_objects": ["Boundary score", "Control routing score", "Evidence score", "Human approval state", "Operational risk state"],
+      "output_objects": ["Final assurance decision", "Operational trust score", "Required remediation", "Approval state"],
+      "required_modules": ["Operational Trust", "Evidence Vault", "Governance Vision"],
+      "stage_decision": "APPROVE_HOLD_ESCALATE_OR_BLOCK",
+      "sample_score": 73,
+      "sample_status": "HOLD"
+    }
+  ],
+  "decision_policy": {
+    "approval_requires": [
+      "All four architecture boundaries evaluated",
+      "No critical boundary failure",
+      "Required controls routed and owned",
+      "Evidence package complete",
+      "Human approval completed where required",
+      "Operational trust score at or above approval threshold"
+    ],
+    "hold_conditions": [
+      "Boundary score below required threshold",
+      "Control owner missing",
+      "Evidence chain incomplete",
+      "Human approval required but not completed",
+      "Runtime monitoring incomplete"
+    ],
+    "escalation_conditions": [
+      "Regulatory readiness uncertain",
+      "Autonomy level 4 or 5 with incomplete approval gates",
+      "Tool authorization gap affects privileged or regulated action",
+      "AI lifecycle change exceeds approved boundary"
+    ],
+    "block_conditions": [
+      "Untrusted knowledge source",
+      "Unauthorized tool or API permission",
+      "Unbounded autonomous action",
+      "No evidence traceability",
+      "No rollback or stop-use path for high-impact action"
+    ]
+  },
+  "sample_orchestration": {
+    "orchestration_id": "AADO-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "workflow_type": "AI-enabled operational workflow",
+    "architecture_boundary_score": 74,
+    "control_routing_score": 75,
+    "evidence_binding_score": 79,
+    "human_approval_score": 68,
+    "operational_trust_score": 73,
+    "overall_assurance_score": 74,
+    "decision": "HOLD_FOR_APPROVAL_EVIDENCE_AND_RUNTIME_CONTROL_COMPLETION",
+    "approval_state": "NOT_APPROVED_FOR_OPERATIONAL_USE",
+    "escalation_required": true,
+    "escalation_reason": "Autonomy and tool assurance gaps remain open, human approval is incomplete, and runtime monitoring evidence is missing.",
+    "required_actions": [
+      "Complete API permission map and runtime blocked-action rule.",
+      "Name accountable human approver and complete approval gate.",
+      "Bind decision trace, tool-call trace, approval record, and outcome record to Evidence Vault.",
+      "Confirm runtime monitoring signal before operational use.",
+      "Recalculate operational trust after remediation."
+    ],
+    "approved_for_operational_use": false
+  }
+}

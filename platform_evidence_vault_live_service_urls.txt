@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/platform/evidence-packages
+http://127.0.0.1:5000/platform/evidence-vault-live
+http://127.0.0.1:5000/api/platform/evidence/package/demo?package_id=EVP-NIAGARA-READINESS-001
+http://127.0.0.1:5000/api/platform/evidence/object/demo?object_id=niagara-bms-supervisor
+http://127.0.0.1:5000/api/platform/evidence/state/demo

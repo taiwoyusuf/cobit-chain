@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-closure-verifier
+http://127.0.0.1:5000/platform/ai-closure-verifier
+http://127.0.0.1:5000/platform/assurance-closure-verifier
+http://127.0.0.1:5000/api/platform/ai-assurance-closure/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_human_approval_evidence
+http://127.0.0.1:5000/api/platform/ai-assurance-closure/item/demo?closure_id=close_runtime_monitoring_signal
+http://127.0.0.1:5000/api/platform/ai-assurance-closure/verification/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-closure/readiness/demo

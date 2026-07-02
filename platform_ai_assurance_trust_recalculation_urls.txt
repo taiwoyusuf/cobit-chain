@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-trust-recalculation
+http://127.0.0.1:5000/platform/ai-trust-recalculation
+http://127.0.0.1:5000/platform/assurance-trust-recalculation
+http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=human_approval_state
+http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/input/demo?input_id=evidence_contract_state
+http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/recalculate/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-trust-recalculation/readiness/demo

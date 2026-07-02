@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-operational-readiness
+http://127.0.0.1:5000/platform/operational-ai-readiness
+http://127.0.0.1:5000/platform/ai-ops-readiness
+http://127.0.0.1:5000/api/platform/ai-operational-readiness/model/demo
+http://127.0.0.1:5000/api/platform/ai-operational-readiness/dimension/demo?dimension_id=workflow_redesign
+http://127.0.0.1:5000/api/platform/ai-operational-readiness/level/demo?level_id=level_3
+http://127.0.0.1:5000/api/platform/ai-operational-readiness/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-operational-readiness/readiness/demo

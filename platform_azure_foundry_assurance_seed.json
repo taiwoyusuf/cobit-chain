@@ -1,0 +1,276 @@
+﻿{
+  "blueprint_name": "Azure Foundry Assurance Blueprint v2",
+  "platform_rule": "Azure provides the execution platform. COBIT-Chain provides the assurance overlay.",
+  "positioning": "Platform A remains Azure-first. Platform B remains cloud-neutral. This enhancement treats prompt governance, model abstraction, and the full AI lifecycle as governed objects within the existing Platform A architecture.",
+  "lifecycle": [
+    {
+      "stage_id": "design",
+      "stage_name": "Design",
+      "foundry_activity": "Define AI use case, context of use, user workflow, risk class, agent boundary, data sources, and expected outcome.",
+      "cobitchain_assurance_role": "Establish governed intent, context validation, workflow ownership, evidence requirements, and inspection-ready design basis.",
+      "governed_objects": ["context_of_use", "workflow_owner", "risk_classification", "knowledge_source", "expected_outcome"],
+      "required_evidence": ["Context of use", "Workflow owner", "Risk classification", "Data source inventory", "Expected outcome metric"],
+      "readiness_score": 82
+    },
+    {
+      "stage_id": "develop",
+      "stage_name": "Develop",
+      "foundry_activity": "Configure prompts, agents, model abstraction, tools, retrieval layer, MCP connections, and application workflow.",
+      "cobitchain_assurance_role": "Apply prompt governance, model abstraction governance, tool-call boundary, evidence lineage, and agent identity controls.",
+      "governed_objects": ["prompt_version", "model_abstraction", "agent_identity", "tool_registry", "retrieval_configuration"],
+      "required_evidence": ["Prompt version", "Model abstraction record", "Agent passport", "Tool schema", "Retrieval configuration"],
+      "readiness_score": 78
+    },
+    {
+      "stage_id": "evaluate",
+      "stage_name": "Evaluate",
+      "foundry_activity": "Evaluate output quality, groundedness, safety, hallucination risk, workflow fit, and operational decision usefulness.",
+      "cobitchain_assurance_role": "Convert evaluation outputs into Decision Confidence, evidence package quality, model trust, prompt trust, and limitation records.",
+      "governed_objects": ["evaluation_result", "grounding_score", "model_trust_record", "prompt_trust_record", "known_limitation"],
+      "required_evidence": ["Evaluation result", "Grounding evidence", "Failure cases", "Known limitation record", "Reviewer note"],
+      "readiness_score": 76
+    },
+    {
+      "stage_id": "govern",
+      "stage_name": "Govern",
+      "foundry_activity": "Apply governance policies, access controls, change control, audit settings, knowledge controls, and operational guardrails.",
+      "cobitchain_assurance_role": "Validate policy compliance, access boundary, change impact, knowledge source trust, approval requirement, and inspection readiness.",
+      "governed_objects": ["policy_control", "access_boundary", "change_control_record", "knowledge_source_trust", "governance_rule"],
+      "required_evidence": ["Policy control", "Access rule", "Change control record", "Knowledge source approval", "Governance rule mapping"],
+      "readiness_score": 80
+    },
+    {
+      "stage_id": "approve",
+      "stage_name": "Approve",
+      "foundry_activity": "Route AI capability, prompt changes, model selection, tool use, and deployment package through human approval gates.",
+      "cobitchain_assurance_role": "Require named accountable review, approval rationale, exception handling, decision integrity, and deployment authorization.",
+      "governed_objects": ["human_approval_gate", "approval_decision", "reviewer_identity", "exception_record", "deployment_authorization"],
+      "required_evidence": ["Named reviewer", "Approval decision", "Review checklist", "Exception rationale", "Deployment authorization"],
+      "readiness_score": 84
+    },
+    {
+      "stage_id": "deploy",
+      "stage_name": "Deploy",
+      "foundry_activity": "Deploy the AI application, agent workflow, model endpoint, prompt configuration, tools, monitoring, and access controls.",
+      "cobitchain_assurance_role": "Confirm deployment readiness, change control, rollback readiness, release evidence, operational ownership, and trust-state baseline.",
+      "governed_objects": ["deployment_package", "release_record", "rollback_plan", "operational_owner", "trust_baseline"],
+      "required_evidence": ["Deployment package", "Release record", "Rollback plan", "Operational owner", "Trust baseline"],
+      "readiness_score": 79
+    },
+    {
+      "stage_id": "monitor",
+      "stage_name": "Monitor",
+      "foundry_activity": "Monitor runtime behavior, traces, performance, quality, safety, usage, drift, tool calls, and operational incidents.",
+      "cobitchain_assurance_role": "Bind telemetry to Observability, Evidence Vault, tool-call evidence, trust score changes, and operational readiness signals.",
+      "governed_objects": ["runtime_trace", "tool_call_record", "usage_signal", "quality_signal", "incident_signal"],
+      "required_evidence": ["Runtime trace", "Tool-call record", "Quality metric", "Usage metric", "Incident signal"],
+      "readiness_score": 77
+    },
+    {
+      "stage_id": "continuously_assure",
+      "stage_name": "Continuously Assure",
+      "foundry_activity": "Continuously evaluate trust, update evidence, detect changes, manage prompt/model drift, review outcomes, and improve governance.",
+      "cobitchain_assurance_role": "Maintain continuous assurance through Evidence Vault, Decision Confidence, Operational Trust Twin, AI ChangeControlTrust, and audit replay.",
+      "governed_objects": ["continuous_assurance_record", "trust_score_change", "prompt_drift_signal", "model_change_signal", "measured_outcome"],
+      "required_evidence": ["Continuous assurance record", "Trust score change", "Drift signal", "Model or prompt change record", "Measured outcome"],
+      "readiness_score": 81
+    }
+  ],
+  "components": [
+    {
+      "component_id": "foundry_workspace",
+      "component_name": "Azure AI Foundry Workspace",
+      "azure_execution_role": "Central workspace for enterprise AI development, deployment, evaluation, monitoring, and lifecycle management.",
+      "cobitchain_assurance_role": "Defines the governed AI system boundary, ownership model, operational context, evidence scope, and inspection-ready assurance record.",
+      "mapped_controls": ["Agent Identity", "Context of Use", "Operational Trust", "Inspection Readiness"],
+      "governed_object_type": "workspace_boundary",
+      "required_evidence": ["Workspace owner", "Application purpose", "Context of use", "Environment classification", "Risk classification", "Evidence package ID"],
+      "gaps_to_watch": ["Unclear owner", "Missing context of use", "No regulated workflow boundary", "No evidence package binding"],
+      "readiness_score": 82
+    },
+    {
+      "component_id": "model_abstraction",
+      "component_name": "Model Abstraction",
+      "azure_execution_role": "Abstracts model selection, model endpoint access, approved models, fallback options, and model-provider implementation details.",
+      "cobitchain_assurance_role": "Tracks model trust, approved-use boundary, model version, model selection rationale, fallback risk, and regulated workflow limitations.",
+      "mapped_controls": ["Model Trust", "Context of Use", "Decision Integrity", "Inspection Readiness"],
+      "governed_object_type": "model_abstraction_record",
+      "required_evidence": ["Model name", "Model version", "Approved use", "Model selection rationale", "Fallback rule", "Known limitations"],
+      "gaps_to_watch": ["Unapproved model use", "No model version traceability", "No model selection rationale", "No fallback-risk review"],
+      "readiness_score": 78
+    },
+    {
+      "component_id": "prompt_governance",
+      "component_name": "Prompt Governance",
+      "azure_execution_role": "Manages system instructions, agent prompts, prompt templates, prompt versions, prompt evaluation, and prompt lifecycle changes.",
+      "cobitchain_assurance_role": "Controls prompt identity, prompt versioning, prompt approval, prompt change impact, rollback, evaluation evidence, and inspection readiness.",
+      "mapped_controls": ["Prompt Governance", "Decision Integrity", "Human Approval Gates", "Inspection Readiness"],
+      "governed_object_type": "prompt_version_record",
+      "required_evidence": ["Prompt ID", "Prompt version", "Prompt owner", "Evaluation result", "Approval status", "Rollback plan"],
+      "gaps_to_watch": ["Prompt changed without review", "No prompt owner", "No evaluation evidence", "No rollback plan"],
+      "readiness_score": 77
+    },
+    {
+      "component_id": "agent_management",
+      "component_name": "Agent Management",
+      "azure_execution_role": "Manages agent instructions, role, task boundaries, orchestration behavior, tool use, and operational workflow participation.",
+      "cobitchain_assurance_role": "Applies agent passport requirements, agent identity, action boundaries, human approval gates, and decision traceability.",
+      "mapped_controls": ["Agent Identity", "Context of Use", "Tool Call Evidence", "Decision Integrity"],
+      "governed_object_type": "agent_passport",
+      "required_evidence": ["Agent ID", "Agent passport", "Task boundary", "Allowed actions", "Blocked actions", "Human escalation rule"],
+      "gaps_to_watch": ["No agent passport", "No allowed-action boundary", "No blocked-action rule", "No escalation path"],
+      "readiness_score": 76
+    },
+    {
+      "component_id": "knowledge_layer",
+      "component_name": "Knowledge Layer",
+      "azure_execution_role": "Connects AI agents to enterprise knowledge sources, search indexes, retrieval pipelines, documents, and data stores.",
+      "cobitchain_assurance_role": "Evaluates knowledge source trust, grounding quality, freshness, controlled-source status, source ownership, and evidence lineage.",
+      "mapped_controls": ["Knowledge Source Trust", "Context of Use", "Evidence Lineage", "Decision Integrity"],
+      "governed_object_type": "knowledge_source_record",
+      "required_evidence": ["Knowledge source owner", "Source system", "Data freshness", "Retrieval configuration", "Grounding evidence", "Source approval status"],
+      "gaps_to_watch": ["Uncontrolled knowledge source", "Stale source data", "No grounding evidence", "No source owner"],
+      "readiness_score": 79
+    },
+    {
+      "component_id": "mcp_servers",
+      "component_name": "MCP Servers",
+      "azure_execution_role": "Provides controlled tool access for AI agents through governed external tools, APIs, and data services.",
+      "cobitchain_assurance_role": "Requires tool-call evidence, tool identity, allowed-action boundary, blocked-action logic, replay readiness, and evidence binding.",
+      "mapped_controls": ["Tool Call Evidence", "Agent Identity", "Human Approval Gates", "Decision Integrity"],
+      "governed_object_type": "tool_registry_record",
+      "required_evidence": ["Tool registry", "Tool schema", "Tool call ID", "Input and output record", "Blocked-action rule", "Replay record"],
+      "gaps_to_watch": ["Tool calls not logged", "No blocked-action boundary", "No replay record", "No evidence binding"],
+      "readiness_score": 78
+    },
+    {
+      "component_id": "human_review",
+      "component_name": "Human Review",
+      "azure_execution_role": "Supports human-in-the-loop review, approval, escalation, and oversight in AI-enabled workflows.",
+      "cobitchain_assurance_role": "Defines approval gates, named accountable reviewer, review evidence, exception handling, and regulated decision boundaries.",
+      "mapped_controls": ["Human Approval Gates", "Context of Use", "Decision Integrity", "Inspection Readiness"],
+      "governed_object_type": "approval_gate_record",
+      "required_evidence": ["Reviewer role", "Approval trigger", "Review record", "Decision rationale", "Exception record", "Escalation path"],
+      "gaps_to_watch": ["No named reviewer", "No approval trigger", "No signoff evidence", "No exception handling"],
+      "readiness_score": 84
+    },
+    {
+      "component_id": "monitoring",
+      "component_name": "Monitoring",
+      "azure_execution_role": "Captures runtime telemetry, evaluations, metrics, drift signals, traces, and operational health indicators.",
+      "cobitchain_assurance_role": "Maps monitoring to observability, audit replay, trust-score changes, evidence quality, operational readiness, and continuous assurance.",
+      "mapped_controls": ["Operational Trust", "Decision Integrity", "Evidence Lineage", "Inspection Readiness"],
+      "governed_object_type": "monitoring_trace_record",
+      "required_evidence": ["Telemetry source", "Trace ID", "Evaluation record", "Trust-state change", "Alert threshold", "Replay package"],
+      "gaps_to_watch": ["Telemetry not bound to decisions", "No trace ID", "No alert threshold", "No replay package"],
+      "readiness_score": 77
+    },
+    {
+      "component_id": "security_governance",
+      "component_name": "Security and Governance",
+      "azure_execution_role": "Provides identity, access control, secrets, policy, monitoring, logging, and governance controls for enterprise AI systems.",
+      "cobitchain_assurance_role": "Evaluates agent identity, access boundary, privileged action risk, governance control evidence, and inspection readiness.",
+      "mapped_controls": ["Agent Identity", "Human Approval Gates", "Operational Trust", "Inspection Readiness"],
+      "governed_object_type": "security_governance_record",
+      "required_evidence": ["Identity model", "Access policy", "Secret handling", "Governance control", "Audit log", "Exception process"],
+      "gaps_to_watch": ["Unclear agent identity", "Excessive privilege", "Secrets not governed", "No audit evidence"],
+      "readiness_score": 80
+    }
+  ],
+  "governed_objects": [
+    {
+      "object_id": "azf-context-of-use",
+      "object_name": "Context of Use",
+      "object_type": "lifecycle_governance_object",
+      "lifecycle_stage": "Design",
+      "assurance_question": "Is the AI capability being used inside a defined and approved operational context?",
+      "linked_modules": ["Operational Trust", "Decision Confidence", "Evidence Vault"],
+      "required_evidence": ["Context statement", "Workflow boundary", "Risk classification", "Permitted-use rule"],
+      "trust_state": "GOOD_WITH_EVIDENCE_GAPS"
+    },
+    {
+      "object_id": "azf-model-abstraction",
+      "object_name": "Model Abstraction Record",
+      "object_type": "model_governance_object",
+      "lifecycle_stage": "Develop",
+      "assurance_question": "Can model selection, model version, model purpose, and limitations be traced and justified?",
+      "linked_modules": ["Decision Confidence", "Evidence Vault", "AI ChangeControlTrust"],
+      "required_evidence": ["Model version", "Selection rationale", "Evaluation result", "Known limitations"],
+      "trust_state": "GOOD_WITH_REVIEW_GAPS"
+    },
+    {
+      "object_id": "azf-prompt-version",
+      "object_name": "Prompt Version Record",
+      "object_type": "prompt_governance_object",
+      "lifecycle_stage": "Develop",
+      "assurance_question": "Can prompt content, version, owner, evaluation, approval, and rollback be evidenced?",
+      "linked_modules": ["AI ChangeControlTrust", "Evidence Vault", "Decision Confidence"],
+      "required_evidence": ["Prompt ID", "Prompt version", "Prompt owner", "Evaluation result", "Approval status"],
+      "trust_state": "GOOD_WITH_REVIEW_GAPS"
+    },
+    {
+      "object_id": "azf-agent-passport",
+      "object_name": "Agent Passport",
+      "object_type": "agent_governance_object",
+      "lifecycle_stage": "Develop",
+      "assurance_question": "Can the agent identity, authority, allowed actions, blocked actions, and escalation rules be verified?",
+      "linked_modules": ["Operational Trust", "MCP Tool Registry", "AccessTrust"],
+      "required_evidence": ["Agent ID", "Allowed action list", "Blocked action list", "Tool registry", "Escalation rule"],
+      "trust_state": "GOOD_WITH_EVIDENCE_GAPS"
+    },
+    {
+      "object_id": "azf-evaluation-result",
+      "object_name": "Evaluation Result",
+      "object_type": "evaluation_governance_object",
+      "lifecycle_stage": "Evaluate",
+      "assurance_question": "Does evaluation evidence support the intended operational use?",
+      "linked_modules": ["Decision Confidence", "Evidence Vault", "Operational Trust"],
+      "required_evidence": ["Evaluation result", "Failure cases", "Grounding score", "Known limitations"],
+      "trust_state": "CAUTION"
+    },
+    {
+      "object_id": "azf-human-approval-gate",
+      "object_name": "Human Approval Gate",
+      "object_type": "approval_governance_object",
+      "lifecycle_stage": "Approve",
+      "assurance_question": "Was a named accountable human required to approve operational use or deployment?",
+      "linked_modules": ["AI ChangeControlTrust", "Decision Confidence", "Operational Trust"],
+      "required_evidence": ["Reviewer identity", "Approval decision", "Review checklist", "Exception rationale"],
+      "trust_state": "STRONG"
+    },
+    {
+      "object_id": "azf-deployment-package",
+      "object_name": "Deployment Package",
+      "object_type": "deployment_governance_object",
+      "lifecycle_stage": "Deploy",
+      "assurance_question": "Can deployment be justified, replayed, rolled back, and tied to approved evidence?",
+      "linked_modules": ["Deployment Pipeline", "Evidence Vault", "Operational Trust"],
+      "required_evidence": ["Deployment record", "Approval gate", "Rollback plan", "Post-deployment verification"],
+      "trust_state": "GOOD_WITH_EVIDENCE_GAPS"
+    },
+    {
+      "object_id": "azf-continuous-assurance",
+      "object_name": "Continuous Assurance Record",
+      "object_type": "continuous_assurance_object",
+      "lifecycle_stage": "Continuously Assure",
+      "assurance_question": "Can trust state, drift, outcomes, and changes be continuously monitored and evidenced?",
+      "linked_modules": ["Operational Trust Twin", "Observability", "Evidence Vault", "AI ChangeControlTrust"],
+      "required_evidence": ["Trust score change", "Drift signal", "Outcome metric", "Change record", "Audit replay"],
+      "trust_state": "GOOD_WITH_EVIDENCE_GAPS"
+    }
+  ],
+  "assurance_controls": [
+    "Agent Identity",
+    "Context of Use",
+    "Prompt Governance",
+    "Model Trust",
+    "Model Abstraction",
+    "Tool Call Evidence",
+    "Knowledge Source Trust",
+    "Human Approval Gates",
+    "Decision Integrity",
+    "Operational Trust",
+    "Inspection Readiness",
+    "Continuous Assurance"
+  ]
+}

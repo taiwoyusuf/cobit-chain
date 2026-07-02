@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-knowledge-reuse
+http://127.0.0.1:5000/platform/ai-knowledge-reuse-registry
+http://127.0.0.1:5000/platform/assurance-knowledge-registry
+http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/model/demo
+http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_outcome_lesson_001
+http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/object/demo?object_id=ko_lifecycle_change_001
+http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/registry/demo
+http://127.0.0.1:5000/api/platform/ai-knowledge-reuse/readiness/demo

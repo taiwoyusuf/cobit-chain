@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/platform/cloud-assurance-matrix
+http://127.0.0.1:5000/platform/cloud-matrix
+http://127.0.0.1:5000/platform/cloud-agentic-assurance
+http://127.0.0.1:5000/api/platform/cloud-assurance/matrix/demo
+http://127.0.0.1:5000/api/platform/cloud-assurance/provider/demo?provider_id=azure

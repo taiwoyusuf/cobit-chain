@@ -1,0 +1,7 @@
+http://127.0.0.1:5000/platform/blueprints
+http://127.0.0.1:5000/platform/blueprints/ai-enabled-cmc
+http://127.0.0.1:5000/platform/blueprints/agentic-enterprise
+http://127.0.0.1:5000/api/platform/blueprints/model/demo
+http://127.0.0.1:5000/api/platform/blueprints/ai-enabled-cmc/demo
+http://127.0.0.1:5000/api/platform/blueprints/agentic-enterprise/demo
+http://127.0.0.1:5000/api/platform/blueprints/validation/demo

@@ -1,0 +1,137 @@
+﻿{
+  "capability_name": "AI Assurance Replay Console",
+  "platform_rule": "Every AI assurance decision must be replayable from evidence, controls, approvals, runtime signals, and operational trust state.",
+  "platform_position": "AI Assurance Replay Console converts AI Assurance Evidence Contract into an audit-ready reconstruction of the AI assurance decision.",
+  "engineering_principle": "A trusted AI decision is not only approved; it must be replayable, explainable, evidence-linked, and defensible after the fact.",
+  "depends_on": [
+    "AI Assurance Evidence Contract",
+    "AI Assurance Decision Orchestrator",
+    "AI Architecture Boundary Gate API",
+    "AI Assurance Control Router",
+    "Evidence Vault",
+    "Operational Trust",
+    "Decision Confidence"
+  ],
+  "replay_sections": [
+    {
+      "section_id": "replay_identity",
+      "section_name": "Replay Identity",
+      "replay_question": "Which AI workflow, decision, evidence contract, and trust object are being replayed?",
+      "required_evidence": ["workflow_id", "decision_id", "contract_id", "evidence_package_id", "trust_object_id", "replay_timestamp"],
+      "source_modules": ["Evidence Vault", "Operational Trust", "Unified Assurance Object"],
+      "sample_state": "COMPLETE",
+      "sample_score": 90,
+      "missing_evidence": []
+    },
+    {
+      "section_id": "boundary_replay",
+      "section_name": "Architecture Boundary Replay",
+      "replay_question": "What were the Knowledge, Tool, Autonomy, and Evidence boundary scores at decision time?",
+      "required_evidence": ["knowledge_score", "tool_score", "autonomy_score", "evidence_score", "boundary_gaps", "gate_decision"],
+      "source_modules": ["AI Architecture Assurance", "AI Architecture Boundary Gate API"],
+      "sample_state": "PARTIAL",
+      "sample_score": 76,
+      "missing_evidence": ["boundary_owner"]
+    },
+    {
+      "section_id": "control_replay",
+      "section_name": "Control Routing Replay",
+      "replay_question": "Which controls were activated, who owned them, and what was the routing outcome?",
+      "required_evidence": ["activated_controls", "owner_assignments", "approval_gates", "control_status", "routing_decision"],
+      "source_modules": ["AI Assurance Control Router", "Governance Vision", "Operational Trust"],
+      "sample_state": "PARTIAL",
+      "sample_score": 78,
+      "missing_evidence": ["owner_assignment_for_tool_control"]
+    },
+    {
+      "section_id": "evidence_contract_replay",
+      "section_name": "Evidence Contract Replay",
+      "replay_question": "Was the required AI assurance evidence contract complete before decision approval?",
+      "required_evidence": ["required_objects", "complete_objects", "missing_critical_evidence", "contract_decision", "contract_state"],
+      "source_modules": ["AI Assurance Evidence Contract", "Evidence Vault"],
+      "sample_state": "INCOMPLETE",
+      "sample_score": 72,
+      "missing_evidence": ["human_approval_evidence", "rollback_procedure", "runtime_monitoring_signal"]
+    },
+    {
+      "section_id": "human_approval_replay",
+      "section_name": "Human Approval Replay",
+      "replay_question": "Who approved, rejected, or escalated the AI-assisted workflow decision?",
+      "required_evidence": ["named_reviewer", "reviewer_role", "approval_decision", "approval_timestamp", "review_comment", "exception_rationale"],
+      "source_modules": ["Decision Confidence", "AI Output Clearance", "Action Assurance Workflow"],
+      "sample_state": "INCOMPLETE",
+      "sample_score": 62,
+      "missing_evidence": ["named_reviewer", "approval_decision", "approval_timestamp"]
+    },
+    {
+      "section_id": "runtime_replay",
+      "section_name": "Runtime Monitoring Replay",
+      "replay_question": "What runtime signals, drift indicators, exceptions, or incidents were monitored after decision execution?",
+      "required_evidence": ["monitoring_plan", "runtime_signal", "drift_indicator", "exception_rule", "incident_route", "outcome_review"],
+      "source_modules": ["Operational Trust", "Observability", "AI ChangeControlTrust"],
+      "sample_state": "PARTIAL",
+      "sample_score": 70,
+      "missing_evidence": ["drift_indicator", "outcome_review"]
+    },
+    {
+      "section_id": "change_replay",
+      "section_name": "Lifecycle Change Replay",
+      "replay_question": "Did the AI system change before, during, or after the assurance decision?",
+      "required_evidence": ["change_record", "model_version_trace", "dataset_change_record", "validation_record", "revalidation_trigger", "rollback_state"],
+      "source_modules": ["AI Lifecycle Change Assurance", "AI ChangeControlTrust", "Evidence Vault"],
+      "sample_state": "PARTIAL",
+      "sample_score": 71,
+      "missing_evidence": ["validation_record", "revalidation_trigger"]
+    },
+    {
+      "section_id": "regulatory_replay",
+      "section_name": "Regulatory Readiness Replay",
+      "replay_question": "Was the decision defensible for the relevant jurisdictional or regulatory context?",
+      "required_evidence": ["jurisdiction_mapping", "context_of_use", "regulatory_pathway", "documentation_state", "submission_impact", "escalation_decision"],
+      "source_modules": ["Jurisdictional AI Assurance", "Evidence Vault", "Governance Vision"],
+      "sample_state": "PARTIAL",
+      "sample_score": 73,
+      "missing_evidence": ["submission_impact", "escalation_decision"]
+    },
+    {
+      "section_id": "outcome_replay",
+      "section_name": "Outcome Replay",
+      "replay_question": "Can the operational outcome be tied back to the original AI-assisted decision?",
+      "required_evidence": ["outcome_record", "outcome_measure", "exception_result", "feedback_record", "learning_update"],
+      "source_modules": ["Operational Trust", "Organizational Intelligence Assurance", "Evidence Vault"],
+      "sample_state": "PENDING",
+      "sample_score": 65,
+      "missing_evidence": ["outcome_record", "feedback_record", "learning_update"]
+    }
+  ],
+  "sample_replay": {
+    "replay_id": "AARC-DEMO-001",
+    "workflow_id": "WF-REG-AI-OPS-001",
+    "workflow_name": "AI-assisted regulated workflow approval",
+    "decision_id": "DEC-AI-OPS-001",
+    "contract_id": "AIEC-DEMO-001",
+    "evidence_package_id": "EVP-AI-OPS-001",
+    "trust_object_id": "OT-AI-WF-001",
+    "replay_type": "AI assurance decision replay",
+    "replay_readiness_score": 73,
+    "replay_decision": "REPLAY_INCOMPLETE_NOT_AUDIT_READY",
+    "audit_readiness_state": "NOT_READY",
+    "decision_reconstruction_state": "PARTIAL",
+    "defensibility_state": "WEAK_UNTIL_APPROVAL_RUNTIME_AND_REGULATORY_EVIDENCE_ARE_COMPLETE",
+    "critical_replay_gaps": [
+      "Human approval evidence missing",
+      "Runtime monitoring signal incomplete",
+      "Rollback procedure missing",
+      "Regulatory escalation decision missing",
+      "Outcome feedback loop pending"
+    ],
+    "required_actions": [
+      "Complete human approval evidence.",
+      "Bind runtime monitoring and drift evidence.",
+      "Complete rollback and stop-use evidence.",
+      "Complete regulatory readiness and escalation evidence.",
+      "Capture outcome record and organizational learning update."
+    ],
+    "replayable_for_audit": false
+  }
+}

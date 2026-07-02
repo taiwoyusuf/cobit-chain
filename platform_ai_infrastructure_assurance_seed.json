@@ -1,0 +1,260 @@
+﻿{
+  "blueprint_name": "AI Infrastructure Assurance Blueprint",
+  "platform_rule": "Azure generates. COBIT-Chain evaluates. Azure deploys. COBIT-Chain provides evidence for trust.",
+  "positioning": "This is not a separate cloud architecture product. It strengthens Platform A by evaluating AI-generated infrastructure before deployment.",
+  "stages": [
+    {
+      "stage_id": "business_intent",
+      "stage_name": "Business Intent",
+      "ai_generated_output": "Business requirements, workload purpose, environment target, user groups, operational goals, and compliance assumptions.",
+      "cobitchain_assurance_role": "Evaluate whether the generated infrastructure intent is clear, bounded, owned, and aligned to regulated operational context.",
+      "mapped_controls": [
+        "Operational Trust",
+        "Decision Integrity",
+        "Operational Readiness",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Business owner",
+        "Technical owner",
+        "Context of use",
+        "Workload classification",
+        "Regulated workflow impact",
+        "Criticality classification"
+      ],
+      "gaps_to_watch": [
+        "Unclear business owner",
+        "Unclear regulated context",
+        "No workload classification",
+        "No operational risk statement"
+      ],
+      "readiness_score": 78
+    },
+    {
+      "stage_id": "ai_architecture_recommendation",
+      "stage_name": "AI Architecture Recommendation",
+      "ai_generated_output": "Recommended cloud architecture pattern, services, networking approach, security posture, monitoring model, and deployment sequence.",
+      "cobitchain_assurance_role": "Evaluate whether the recommendation is traceable to intent, explains assumptions, avoids unsupported design claims, and identifies limitations.",
+      "mapped_controls": [
+        "Decision Integrity",
+        "Evidence Lineage",
+        "Operational Trust",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Architecture rationale",
+        "Assumption log",
+        "Decision record",
+        "Alternative options",
+        "Risk notes",
+        "Architecture review package"
+      ],
+      "gaps_to_watch": [
+        "No rationale",
+        "No assumption log",
+        "No decision trace",
+        "No rejected-option evidence"
+      ],
+      "readiness_score": 75
+    },
+    {
+      "stage_id": "landing_zone_design",
+      "stage_name": "Landing Zone Design",
+      "ai_generated_output": "Subscription layout, management groups, identity model, network segmentation, resource organization, governance baseline, and environment structure.",
+      "cobitchain_assurance_role": "Evaluate whether the landing zone supports secure, governed, observable, and operationally maintainable deployment.",
+      "mapped_controls": [
+        "Operational Trust",
+        "Policy Compliance",
+        "Operational Readiness",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Landing zone diagram",
+        "Network design",
+        "Identity boundary",
+        "Management group design",
+        "Environment classification",
+        "Governance baseline"
+      ],
+      "gaps_to_watch": [
+        "No network boundary",
+        "No identity boundary",
+        "No management group rationale",
+        "No governance baseline"
+      ],
+      "readiness_score": 80
+    },
+    {
+      "stage_id": "infrastructure_as_code",
+      "stage_name": "Infrastructure-as-Code",
+      "ai_generated_output": "Bicep, Terraform, ARM, pipeline templates, parameter files, deployment modules, resource definitions, and configuration code.",
+      "cobitchain_assurance_role": "Evaluate whether generated IaC is traceable, reviewed, versioned, testable, policy-aligned, and safe for controlled deployment.",
+      "mapped_controls": [
+        "Evidence Lineage",
+        "Change Control",
+        "Policy Compliance",
+        "Decision Integrity"
+      ],
+      "required_evidence": [
+        "IaC repository",
+        "Commit ID",
+        "Module version",
+        "Parameter file",
+        "Static validation result",
+        "Peer review record"
+      ],
+      "gaps_to_watch": [
+        "Unreviewed generated code",
+        "No version traceability",
+        "No parameter review",
+        "No rollback plan"
+      ],
+      "readiness_score": 72
+    },
+    {
+      "stage_id": "policy_validation",
+      "stage_name": "Policy Validation",
+      "ai_generated_output": "Policy assignments, guardrails, compliance rules, tagging policies, allowed locations, resource constraints, and deployment controls.",
+      "cobitchain_assurance_role": "Evaluate whether generated policies are appropriate, enforceable, tested, aligned to the workload, and evidenced before deployment.",
+      "mapped_controls": [
+        "Policy Compliance",
+        "Decision Integrity",
+        "Operational Trust",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Policy assignment list",
+        "Compliance test result",
+        "Exception log",
+        "Policy owner",
+        "Scope definition",
+        "Remediation plan"
+      ],
+      "gaps_to_watch": [
+        "Policy scope unclear",
+        "No exception process",
+        "No compliance test",
+        "No remediation owner"
+      ],
+      "readiness_score": 77
+    },
+    {
+      "stage_id": "security_validation",
+      "stage_name": "Security Validation",
+      "ai_generated_output": "Identity controls, secrets design, firewall rules, network controls, encryption settings, privileged access model, and threat assumptions.",
+      "cobitchain_assurance_role": "Evaluate whether generated security controls support least privilege, traceability, secrets protection, network control, and risk-based approval.",
+      "mapped_controls": [
+        "Operational Trust",
+        "Policy Compliance",
+        "Human Approval",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Identity model",
+        "Secret handling design",
+        "Firewall rule evidence",
+        "Encryption setting",
+        "Privileged access review",
+        "Security exception record"
+      ],
+      "gaps_to_watch": [
+        "Excessive privilege",
+        "No secret-handling evidence",
+        "Unreviewed firewall rule",
+        "No security exception route"
+      ],
+      "readiness_score": 74
+    },
+    {
+      "stage_id": "human_architect_review",
+      "stage_name": "Human Architect Review",
+      "ai_generated_output": "Architecture documentation, generated design package, IaC summary, policy package, security notes, and deployment recommendation.",
+      "cobitchain_assurance_role": "Ensure a named accountable human reviews, challenges, approves, rejects, or requests revision before deployment.",
+      "mapped_controls": [
+        "Human Approval",
+        "Decision Integrity",
+        "Change Control",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Named reviewer",
+        "Review checklist",
+        "Approval decision",
+        "Reviewer comments",
+        "Exception decision",
+        "Deployment approval record"
+      ],
+      "gaps_to_watch": [
+        "No named reviewer",
+        "No review checklist",
+        "No approval evidence",
+        "No exception rationale"
+      ],
+      "readiness_score": 83
+    },
+    {
+      "stage_id": "deployment",
+      "stage_name": "Deployment",
+      "ai_generated_output": "Deployment pipeline, release workflow, environment promotion, approval gates, rollback mechanism, and deployment logs.",
+      "cobitchain_assurance_role": "Evaluate whether deployment is controlled, authorized, traceable, monitored, reversible, and aligned to change control.",
+      "mapped_controls": [
+        "Change Control",
+        "Operational Readiness",
+        "Evidence Lineage",
+        "Operational Trust"
+      ],
+      "required_evidence": [
+        "Pipeline run ID",
+        "Change record",
+        "Approval gate",
+        "Deployment log",
+        "Rollback plan",
+        "Post-deployment verification"
+      ],
+      "gaps_to_watch": [
+        "No change record",
+        "No rollback plan",
+        "No approval gate",
+        "No post-deployment verification"
+      ],
+      "readiness_score": 79
+    },
+    {
+      "stage_id": "operational_monitoring",
+      "stage_name": "Operational Monitoring",
+      "ai_generated_output": "Monitoring dashboards, alerts, diagnostics, logs, health metrics, compliance signals, and operations documentation.",
+      "cobitchain_assurance_role": "Evaluate whether the deployed infrastructure remains observable, supportable, auditable, and operationally trustworthy over time.",
+      "mapped_controls": [
+        "Operational Trust",
+        "Operational Readiness",
+        "Evidence Lineage",
+        "Inspection Readiness"
+      ],
+      "required_evidence": [
+        "Monitoring dashboard",
+        "Alert rule",
+        "Log source",
+        "Owner response plan",
+        "Operational runbook",
+        "Evidence replay package"
+      ],
+      "gaps_to_watch": [
+        "No dashboard",
+        "No alert owner",
+        "No runbook",
+        "No evidence replay package"
+      ],
+      "readiness_score": 76
+    }
+  ],
+  "assurance_controls": [
+    "Operational Trust",
+    "Evidence Lineage",
+    "Decision Integrity",
+    "Human Approval",
+    "Policy Compliance",
+    "Change Control",
+    "Operational Readiness",
+    "Inspection Readiness"
+  ]
+}

@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-post-release-monitoring
+http://127.0.0.1:5000/platform/ai-post-release-monitoring
+http://127.0.0.1:5000/platform/post-release-ai-monitoring
+http://127.0.0.1:5000/api/platform/ai-assurance-post-release/model/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=runtime_monitoring_signal
+http://127.0.0.1:5000/api/platform/ai-assurance-post-release/signal/demo?signal_id=drift_detection_signal
+http://127.0.0.1:5000/api/platform/ai-assurance-post-release/monitoring/demo
+http://127.0.0.1:5000/api/platform/ai-assurance-post-release/readiness/demo

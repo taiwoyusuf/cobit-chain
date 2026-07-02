@@ -1,0 +1,177 @@
+﻿{
+  "packages": [
+    {
+      "package_id": "EVP-NIAGARA-READINESS-001",
+      "object_id": "niagara-bms-supervisor",
+      "object_name": "Niagara BMS Supervisor",
+      "object_type": "equipment_application",
+      "package_type": "operational_readiness",
+      "evidence_state": "partial",
+      "freshness_days": 18,
+      "source_systems": ["ServiceNow", "BMS Readiness Tracker", "Access Planning Notes"],
+      "evidence_records": [
+        {
+          "record_id": "REC-NIAGARA-001",
+          "record_type": "ownership_signal",
+          "record_title": "BMS owner identified",
+          "status": "available",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-NIAGARA-002",
+          "record_type": "support_group_gap",
+          "record_title": "Support group pending final confirmation",
+          "status": "gap",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-NIAGARA-003",
+          "record_type": "access_pathway",
+          "record_title": "Remote access pathway requires confirmation",
+          "status": "gap",
+          "confidence": "medium"
+        }
+      ],
+      "open_gaps": [
+        "Support group not fully confirmed",
+        "Remote access pathway requires final confirmation",
+        "MCP replay not enabled"
+      ],
+      "limitations": [
+        "Evidence supports caution state only",
+        "Not QA approval",
+        "Not validation release"
+      ],
+      "recommended_action": "Close support group and access-path gaps before using this as a strong readiness claim."
+    },
+    {
+      "package_id": "EVP-SG1803-AUDIT-001",
+      "object_id": "speedy-glove-1803",
+      "object_name": "Speedy Glove 1803",
+      "object_type": "equipment",
+      "package_type": "quarterly_audit_review",
+      "evidence_state": "strong",
+      "freshness_days": 9,
+      "source_systems": ["Quarterly Audit Review", "Equipment Record", "Password Control Evidence"],
+      "evidence_records": [
+        {
+          "record_id": "REC-SG1803-001",
+          "record_type": "ownership_signal",
+          "record_title": "Equipment owner and operational context known",
+          "status": "available",
+          "confidence": "high"
+        },
+        {
+          "record_id": "REC-SG1803-002",
+          "record_type": "audit_review",
+          "record_title": "Quarterly audit review evidence available",
+          "status": "available",
+          "confidence": "high"
+        },
+        {
+          "record_id": "REC-SG1803-003",
+          "record_type": "access_control",
+          "record_title": "Password and user-review controls documented",
+          "status": "available",
+          "confidence": "high"
+        }
+      ],
+      "open_gaps": [
+        "Telemetry replay not fully enabled"
+      ],
+      "limitations": [
+        "Continue normal evidence cadence",
+        "Not a substitute for SOP"
+      ],
+      "recommended_action": "Proceed under current controls and maintain audit evidence cadence."
+    },
+    {
+      "package_id": "EVP-PLATFORM-API-001",
+      "object_id": "platform-api-layer",
+      "object_name": "COBIT-Chain Platform API Layer",
+      "object_type": "platform_service",
+      "package_type": "architecture_evidence",
+      "evidence_state": "design_stage",
+      "freshness_days": 0,
+      "source_systems": ["Platform API Blueprint", "Route Registry", "Trust Score Service"],
+      "evidence_records": [
+        {
+          "record_id": "REC-API-001",
+          "record_type": "architecture_blueprint",
+          "record_title": "API blueprint exists",
+          "status": "available",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-API-002",
+          "record_type": "service_gap",
+          "record_title": "Production authentication and APIM integration pending",
+          "status": "gap",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-API-003",
+          "record_type": "observability_gap",
+          "record_title": "Route telemetry and App Insights integration pending",
+          "status": "gap",
+          "confidence": "medium"
+        }
+      ],
+      "open_gaps": [
+        "API authentication model pending",
+        "Azure API Management integration pending",
+        "App Insights telemetry pending"
+      ],
+      "limitations": [
+        "Prototype API only",
+        "Not enterprise production service",
+        "No live enterprise data binding yet"
+      ],
+      "recommended_action": "Connect API layer to Identity, Evidence Vault, Observability, and Azure API Management."
+    },
+    {
+      "package_id": "EVP-GOVVISION-LOOKUP-001",
+      "object_id": "governance-vision",
+      "object_name": "Governance Vision Wearable Interface",
+      "object_type": "wearable_interface",
+      "package_type": "hud_lookup_evidence",
+      "evidence_state": "prototype",
+      "freshness_days": 0,
+      "source_systems": ["Governance Vision Page", "Vision Lookup Service", "Operational Trust Twin"],
+      "evidence_records": [
+        {
+          "record_id": "REC-GV-001",
+          "record_type": "hud_contract",
+          "record_title": "HUD-safe response contract defined",
+          "status": "available",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-GV-002",
+          "record_type": "privacy_boundary",
+          "record_title": "Read-only privacy boundary defined",
+          "status": "available",
+          "confidence": "medium"
+        },
+        {
+          "record_id": "REC-GV-003",
+          "record_type": "device_integration_gap",
+          "record_title": "Wearable device integration pending",
+          "status": "gap",
+          "confidence": "medium"
+        }
+      ],
+      "open_gaps": [
+        "Live wearable device integration pending",
+        "Role-based field filtering pending",
+        "Evidence Store binding pending"
+      ],
+      "limitations": [
+        "Read-only prototype",
+        "No record modification",
+        "No autonomous action"
+      ],
+      "recommended_action": "Bind HUD lookup to Evidence Vault, Trust Score Service, and Identity role filtering."
+    }
+  ]
+}

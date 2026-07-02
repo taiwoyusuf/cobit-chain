@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-output-clearance
+http://127.0.0.1:5000/platform/output-clearance
+http://127.0.0.1:5000/platform/ai-output-release-clearance
+http://127.0.0.1:5000/api/platform/ai-output-clearance/model/demo
+http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=prompt_model_lineage
+http://127.0.0.1:5000/api/platform/ai-output-clearance/domain/demo?domain_id=evidence_completeness
+http://127.0.0.1:5000/api/platform/ai-output-clearance/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-output-clearance/readiness/demo

@@ -1,0 +1,105 @@
+﻿{
+  "twins": [
+    {
+      "twin_id": "twin-niagara-bms-supervisor",
+      "object_id": "niagara-bms-supervisor",
+      "object_name": "Niagara BMS Supervisor",
+      "twin_type": "equipment_application_twin",
+      "operational_state": "usable_with_caution",
+      "criticality": "high",
+      "owner": "Facilities / BMS Owner",
+      "support_group": "Pending confirmation",
+      "evidence_package": "EVP-NIAGARA-READINESS-001",
+      "trust_score": 71,
+      "confidence": "medium",
+      "active_gaps": [
+        "Support group not fully confirmed",
+        "Access pathway requires final confirmation",
+        "MCP replay not yet enabled"
+      ],
+      "dependencies": [
+        "ServiceNow CI",
+        "Access model",
+        "Vendor remote access path",
+        "Evidence Store",
+        "Observability"
+      ],
+      "next_action": "Confirm support group and remote access path before relying on readiness claim."
+    },
+    {
+      "twin_id": "twin-speedy-glove-1803",
+      "object_id": "speedy-glove-1803",
+      "object_name": "Speedy Glove 1803",
+      "twin_type": "equipment_twin",
+      "operational_state": "ready_under_current_controls",
+      "criticality": "medium",
+      "owner": "Manufacturing / Equipment Owner",
+      "support_group": "Confirmed",
+      "evidence_package": "EVP-SG1803-AUDIT-001",
+      "trust_score": 92,
+      "confidence": "high",
+      "active_gaps": [
+        "Observability telemetry not fully enabled"
+      ],
+      "dependencies": [
+        "Quarterly audit review",
+        "Password control",
+        "Equipment record",
+        "Current SOP controls"
+      ],
+      "next_action": "Maintain evidence cadence and add telemetry/replay record."
+    },
+    {
+      "twin_id": "twin-platform-api-layer",
+      "object_id": "platform-api-layer",
+      "object_name": "COBIT-Chain Platform API Layer",
+      "twin_type": "platform_service_twin",
+      "operational_state": "design_blueprint",
+      "criticality": "high",
+      "owner": "Platform Engineering",
+      "support_group": "Platform Development",
+      "evidence_package": "EVP-PLATFORM-API-001",
+      "trust_score": 68,
+      "confidence": "medium",
+      "active_gaps": [
+        "Evidence Store integration pending",
+        "API authentication model pending",
+        "Telemetry not yet implemented"
+      ],
+      "dependencies": [
+        "Trust Score Service",
+        "Evidence Store",
+        "Identity and Access",
+        "MCP Server",
+        "Observability"
+      ],
+      "next_action": "Connect API layer to evidence objects and route health telemetry."
+    },
+    {
+      "twin_id": "twin-governance-vision",
+      "object_id": "governance-vision",
+      "object_name": "Governance Vision Wearable Interface",
+      "twin_type": "wearable_interface_twin",
+      "operational_state": "prototype_ready",
+      "criticality": "medium",
+      "owner": "Platform Engineering",
+      "support_group": "Platform Development",
+      "evidence_package": "EVP-GOVVISION-001",
+      "trust_score": 62,
+      "confidence": "medium",
+      "active_gaps": [
+        "QR lookup not connected to live data",
+        "Read-only privacy boundary pending implementation",
+        "Wearable device integration not yet active"
+      ],
+      "dependencies": [
+        "Vision API",
+        "Trust Score Service",
+        "Evidence Store",
+        "MCP tools",
+        "Identity role filter"
+      ],
+      "next_action": "Build QR/asset lookup demo connected to Trust Score Service."
+    }
+  ]
+}

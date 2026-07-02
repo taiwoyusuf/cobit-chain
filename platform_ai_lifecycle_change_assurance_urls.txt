@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-lifecycle-change-assurance
+http://127.0.0.1:5000/platform/ai-change-lifecycle-assurance
+http://127.0.0.1:5000/platform/pccp-assurance
+http://127.0.0.1:5000/platform/ai-changecontroltrust
+http://127.0.0.1:5000/api/platform/ai-lifecycle-change/model/demo
+http://127.0.0.1:5000/api/platform/ai-lifecycle-change/dimension/demo?dimension_id=approved_change_boundaries
+http://127.0.0.1:5000/api/platform/ai-lifecycle-change/change/demo
+http://127.0.0.1:5000/api/platform/ai-lifecycle-change/readiness/demo

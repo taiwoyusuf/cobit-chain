@@ -1,0 +1,8 @@
+http://127.0.0.1:5000/platform/ai-assurance-reuse-applicability
+http://127.0.0.1:5000/platform/ai-reuse-applicability-engine
+http://127.0.0.1:5000/platform/assurance-pattern-applicability
+http://127.0.0.1:5000/api/platform/ai-reuse-applicability/model/demo
+http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=context_of_use_match
+http://127.0.0.1:5000/api/platform/ai-reuse-applicability/check/demo?check_id=tool_permission_match
+http://127.0.0.1:5000/api/platform/ai-reuse-applicability/assessment/demo
+http://127.0.0.1:5000/api/platform/ai-reuse-applicability/readiness/demo

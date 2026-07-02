@@ -1,0 +1,740 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Platform Trust Score Service</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --panel:#151820;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{width:100%;max-width:1780px;margin:0 auto;padding:30px}
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 68% 30%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-130px;
+            top:-170px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.22);
+            box-shadow:
+                0 0 0 72px rgba(255,138,31,.026),
+                0 0 0 148px rgba(255,138,31,.018),
+                0 0 0 234px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{display:flex;align-items:center;gap:14px}
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{font-size:17px;font-weight:950;letter-spacing:.4px}
+        .brand-sub{color:var(--steel);font-size:12px;margin-top:4px}
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1260px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.2px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1260px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .statement strong{color:white}
+
+        .live-score{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:68px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-2.8px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:74%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1060px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1.02fr .98fr;
+            gap:20px;
+        }
+
+        .demo-panel,.control-panel{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .object-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:12px;
+            margin-top:16px;
+        }
+
+        .object-btn{
+            cursor:pointer;
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            color:#f3f6fa;
+            border-radius:18px;
+            padding:16px;
+            min-height:126px;
+            text-align:left;
+            box-shadow:0 18px 45px rgba(0,0,0,.24);
+        }
+
+        .object-btn:hover{
+            border-color:rgba(255,138,31,.60);
+            background:rgba(255,138,31,.08);
+        }
+
+        .object-btn strong{
+            display:block;
+            font-size:15px;
+            margin-bottom:8px;
+        }
+
+        .object-btn span{
+            color:#b9c2ce;
+            font-size:12px;
+            line-height:1.45;
+        }
+
+        .result-card{
+            margin-top:16px;
+            border:1px solid rgba(255,138,31,.30);
+            background:
+                radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),
+                rgba(6,7,10,.68);
+            border-radius:22px;
+            padding:18px;
+        }
+
+        .result-top{
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            flex-wrap:wrap;
+            align-items:flex-start;
+            border-bottom:1px solid rgba(255,255,255,.10);
+            padding-bottom:14px;
+            margin-bottom:14px;
+        }
+
+        .result-name{
+            font-size:23px;
+            font-weight:1000;
+            letter-spacing:-.6px;
+        }
+
+        .badge{
+            display:inline-flex;
+            border-radius:999px;
+            padding:8px 11px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            color:#ffe4c4;
+            background:rgba(255,138,31,.09);
+        }
+
+        .score-ring{
+            width:146px;
+            height:146px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            border:1px solid rgba(255,138,31,.42);
+            background:radial-gradient(circle,#3b210f,#101216 72%);
+            box-shadow:0 0 42px rgba(255,138,31,.24);
+            float:left;
+            margin:2px 18px 10px 0;
+        }
+
+        .score-ring strong{
+            font-size:43px;
+            color:var(--orange);
+            line-height:1;
+        }
+
+        .score-ring span{
+            color:#d7dee8;
+            font-size:11px;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-top:6px;
+        }
+
+        .explain-list{
+            display:grid;
+            gap:8px;
+            margin-top:12px;
+        }
+
+        .explain-item{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(255,255,255,.04);
+            border-radius:14px;
+            padding:10px 12px;
+            color:#cbd2dc;
+            font-size:13px;
+            line-height:1.42;
+        }
+
+        .control-row{
+            display:grid;
+            grid-template-columns:190px 1fr 132px;
+            gap:14px;
+            align-items:center;
+            padding:14px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+
+        .control-row:last-child{border-bottom:0}
+        .control-row div:first-child{font-weight:950;color:white}
+        .control-row div:nth-child(2){color:#b9c2ce;font-size:13px;line-height:1.45}
+
+        .method{
+            justify-self:end;
+            border:1px solid rgba(255,138,31,.34);
+            background:rgba(255,138,31,.08);
+            color:#ffe3bf;
+            border-radius:999px;
+            padding:7px 9px;
+            font-size:11px;
+            font-weight:950;
+            white-space:nowrap;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+            .object-grid{grid-template-columns:1fr}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics{grid-template-columns:1fr}
+            .control-row{grid-template-columns:1fr}
+            .method{justify-self:start}
+            .score-ring{float:none;margin:0 0 14px 0}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; Trust Score Service</div>
+                            <div class="brand-sub">Callable trust logic, evidence weighting, confidence classification, and demo API endpoints</div>
+                        </div>
+                    </div>
+                    <span class="pill">Service Route: /platform/trust-score-service</span>
+                </div>
+
+                <div class="eyebrow">Thread B / Service Layer / First Callable Trust Engine</div>
+                <h1>The first real service behind the Platform A/B architecture.</h1>
+                <div class="subtitle">
+                    The Trust Score Service converts static dashboard claims into a callable scoring model. It accepts evidence signals, ownership state, support group state, access readiness, validation context, open gaps, MCP replay status, and observability readiness, then returns a score, decision class, confidence, explanation, and recommended action.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Trust-score principle:</strong> A score is not a decoration. It must be explainable, evidence-weighted, replayable, and conservative when data is missing. This service is the starting point for Platform B: APIs, MCP tools, Governance Vision, Evidence Store, and Operational Trust Twins can all call the same trust logic.
+                    </div>
+
+                    <div class="live-score">
+                        <div class="score-label">Service Maturity</div>
+                        <div class="score">74%</div>
+                        <div class="score-text">
+                            This module introduces live JSON endpoints and seed trust objects. The next step is to connect the service to the Evidence Store and make the scoring model versioned, replayable, and data-backed.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Demo API installed with seed objects.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform</a>
+                    <a href="/platform/routes">Route Registry</a>
+                    <a href="/platform/architecture">Architecture</a>
+                    <a href="/platform/api-blueprint">API Blueprint</a>
+                    <a href="/platform/mcp-server">MCP Server</a>
+                    <a href="/platform/evidence-store">Evidence Store</a>
+                    <a href="/platform/governance-vision">Governance Vision</a>
+                    <a href="/platform/identity-access">Identity</a>
+                    <a href="/platform/observability">Observability</a>
+                    <a href="/platform/deployment-pipeline">Deployment</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Service Type</div><div class="value" style="color:var(--orange);">JSON</div><div class="note">Returns structured trust-score responses.</div></div>
+            <div class="metric"><div class="label">Decision Classes</div><div class="value" style="color:var(--orange2);">4</div><div class="note">Ready, caution, blocked, or unknown.</div></div>
+            <div class="metric"><div class="label">Seed Objects</div><div class="value" style="color:var(--amber);">3</div><div class="note">Niagara, Speedy Glove 1803, and platform API layer.</div></div>
+            <div class="metric"><div class="label">Evidence Rule</div><div class="value" style="color:var(--blue);">Weight</div><div class="note">Missing evidence lowers confidence and score.</div></div>
+            <div class="metric"><div class="label">MCP Ready</div><div class="value" style="color:var(--good);">Next</div><div class="note">MCP tools can call this endpoint later.</div></div>
+            <div class="metric"><div class="label">Risk Rule</div><div class="value" style="color:var(--bad);">Conservative</div><div class="note">Critical gaps block readiness claims.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live Demo Trust Score API</h2>
+                    <p>Click a seed object below. The page calls the local Flask JSON API and renders the returned trust score, explanation, confidence, and action.</p>
+                </div>
+                <span class="tag">Live endpoint demo</span>
+            </div>
+
+            <div class="two-col">
+                <div class="demo-panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Seed Object Lookup</h2>
+                    <p>Select one of the demo trust objects. This calls <code>/api/platform/trust-score/demo</code>.</p>
+
+                    <div class="object-grid">
+                        <button class="object-btn" onclick="loadTrust('niagara-bms-supervisor')">
+                            <strong>Niagara BMS Supervisor</strong>
+                            <span>Qualified-not-validated context, open readiness gaps, access path not fully confirmed.</span>
+                        </button>
+                        <button class="object-btn" onclick="loadTrust('speedy-glove-1803')">
+                            <strong>Speedy Glove 1803</strong>
+                            <span>Operational equipment with stronger ownership, support, and evidence state.</span>
+                        </button>
+                        <button class="object-btn" onclick="loadTrust('platform-api-layer')">
+                            <strong>Platform API Layer</strong>
+                            <span>Design-stage platform service with architecture readiness but incomplete evidence lineage.</span>
+                        </button>
+                    </div>
+
+                    <div class="result-card" id="result">
+                        <div class="result-top">
+                            <div>
+                                <div class="result-name">Waiting for trust query</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Select a seed object above.</div>
+                            </div>
+                            <div class="badge">No request yet</div>
+                        </div>
+                        <div class="score-ring">
+                            <strong>--</strong>
+                            <span>Score</span>
+                        </div>
+                        <div class="score-text">
+                            The live API response will appear here after a request is made.
+                        </div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-row"><div>Score Input</div><div>Owner, support group, access model, evidence lineage, freshness, validation state, gaps, MCP replay, and observability.</div><span class="method">Signals</span></div>
+                    <div class="control-row"><div>Score Output</div><div>Numeric trust score, decision class, confidence, explanation, and recommended action.</div><span class="method">Response</span></div>
+                    <div class="control-row"><div>Conservative Rule</div><div>Critical gaps force a blocked state even when other evidence looks strong.</div><span class="method">Guard</span></div>
+                    <div class="control-row"><div>Evidence Decay</div><div>Stale evidence reduces trust and increases caution language.</div><span class="method">Decay</span></div>
+                    <div class="control-row"><div>Replay Target</div><div>Future version should store request, inputs, rule version, and output in the Evidence Store.</div><span class="method">Replay</span></div>
+                    <div class="control-row"><div>MCP Target</div><div>MCP tools should call this service instead of generating unsupported readiness claims.</div><span class="method">AI Tool</span></div>
+                    <div class="control-row"><div>Vision Target</div><div>Governance Vision should consume this service for short wearable trust status.</div><span class="method">HUD</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Trust Score Contract</h2>
+                    <p>This is the first service contract for the trust engine.</p>
+                </div>
+                <span class="tag">Service contract</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>/api/platform/trust-score/demo</code></td><td>GET</td><td>Score one seed object.</td><td><code>?object_id=niagara-bms-supervisor</code></td><td>Score, decision, confidence, explanation, action.</td></tr>
+                    <tr><td><code>/api/platform/trust-score/demo</code></td><td>POST</td><td>Score a custom JSON object.</td><td>Evidence and readiness signals.</td><td>Computed trust response.</td></tr>
+                    <tr><td><code>/api/platform/trust-state/demo</code></td><td>GET</td><td>Return all seed object trust states.</td><td>No required input.</td><td>Array of scored trust objects.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain Trust Score Service is a demo service layer for Platform A/B. It does not replace QA approval, validation, cybersecurity review, ServiceNow governance, change control, or regulated decision-making. Its purpose is to make trust scoring explainable, callable, replayable, and ready for future evidence-backed implementation.
+        </div>
+    </div>
+
+    <script>
+        async function loadTrust(objectId){
+            const result = document.getElementById("result");
+            result.innerHTML = '<div class="score-text">Calling trust-score service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/trust-score/demo?object_id=' + encodeURIComponent(objectId));
+                const data = await response.json();
+
+                if(!response.ok){
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                const explain = (data.explanation || []).map(item => {
+                    return '<div class="explain-item">' + item + '</div>';
+                }).join('');
+
+                result.innerHTML = `
+                    <div class="result-top">
+                        <div>
+                            <div class="result-name">${data.object_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.object_type} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.decision} | ${data.confidence}</div>
+                    </div>
+                    <div class="score-ring">
+                        <strong>${data.trust_score}</strong>
+                        <span>Score</span>
+                    </div>
+                    <div class="score-text"><strong>Recommended action:</strong> ${data.recommended_action}</div>
+                    <div class="explain-list">${explain}</div>
+                    <div style="clear:both"></div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>API error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        loadTrust('niagara-bms-supervisor');
+    </script>
+</body>
+</html>

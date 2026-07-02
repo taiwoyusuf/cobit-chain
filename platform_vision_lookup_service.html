@@ -1,0 +1,803 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Governance Vision Lookup Service</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --black:#050609;
+            --graphite:#101216;
+            --panel:#151820;
+            --steel:#9fa7b3;
+            --mist:#eef1f5;
+            --orange:#ff8a1f;
+            --orange2:#ffb15c;
+            --amber:#ffd08a;
+            --line:rgba(255,255,255,.115);
+            --line2:rgba(255,138,31,.38);
+            --shadow:0 30px 90px rgba(0,0,0,.56);
+            --glow:0 0 42px rgba(255,138,31,.22);
+            --good:#58e096;
+            --warn:#ffd166;
+            --bad:#ff5c70;
+            --blue:#9bc7ff;
+        }
+
+        *{box-sizing:border-box}
+
+        body{
+            margin:0;
+            font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--mist);
+            min-height:100vh;
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.23),transparent 31%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 30%),
+                radial-gradient(circle at 50% 100%,rgba(150,160,180,.11),transparent 36%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+
+        .page{
+            width:100%;
+            max-width:1780px;
+            margin:0 auto;
+            padding:30px;
+        }
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border:1px solid rgba(255,138,31,.34);
+            background:
+                linear-gradient(135deg,rgba(23,26,34,.98),rgba(8,9,13,.96)),
+                radial-gradient(circle at 68% 30%,rgba(255,138,31,.16),transparent 36%);
+            border-radius:34px;
+            padding:34px;
+            box-shadow:var(--shadow),var(--glow);
+        }
+
+        .hero:before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:
+                linear-gradient(90deg,rgba(255,138,31,.052) 0 1px,transparent 1px 92px),
+                linear-gradient(0deg,rgba(255,255,255,.032) 0 1px,transparent 1px 92px);
+            mask-image:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.18));
+            pointer-events:none;
+        }
+
+        .hero:after{
+            content:"";
+            position:absolute;
+            right:-130px;
+            top:-170px;
+            width:620px;
+            height:620px;
+            border-radius:50%;
+            border:1px solid rgba(255,138,31,.22);
+            box-shadow:
+                0 0 0 72px rgba(255,138,31,.026),
+                0 0 0 148px rgba(255,138,31,.018),
+                0 0 0 234px rgba(255,138,31,.012);
+            pointer-events:none;
+        }
+
+        .hero-inner{position:relative;z-index:2}
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-bottom:28px;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .brand-mark{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            background:
+                radial-gradient(circle at 28% 24%,#fff4dd,transparent 18%),
+                linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);
+            box-shadow:0 0 44px rgba(255,138,31,.42);
+        }
+
+        .brand-title{
+            font-size:17px;
+            font-weight:950;
+            letter-spacing:.4px;
+        }
+
+        .brand-sub{
+            color:var(--steel);
+            font-size:12px;
+            margin-top:4px;
+        }
+
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            border:1px solid var(--line2);
+            background:rgba(255,138,31,.08);
+            color:#ffe4c4;
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+
+        .eyebrow{
+            color:var(--orange2);
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:2.6px;
+            font-weight:950;
+            margin-bottom:12px;
+        }
+
+        h1{
+            margin:0;
+            max-width:1260px;
+            font-size:62px;
+            line-height:.98;
+            letter-spacing:-2.2px;
+            font-weight:1000;
+        }
+
+        .subtitle{
+            max-width:1260px;
+            margin-top:18px;
+            color:#cbd2dc;
+            font-size:17px;
+            line-height:1.7;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:1.18fr .82fr;
+            gap:24px;
+            margin-top:28px;
+        }
+
+        .statement{
+            border:1px solid rgba(255,138,31,.33);
+            background:linear-gradient(135deg,rgba(255,138,31,.11),rgba(255,255,255,.035));
+            border-radius:24px;
+            padding:23px;
+            color:#fff0df;
+            line-height:1.7;
+            min-height:190px;
+        }
+
+        .statement strong{color:white}
+
+        .vision-score{
+            border:1px solid rgba(255,138,31,.38);
+            background:
+                radial-gradient(circle at 80% 12%,rgba(255,138,31,.17),transparent 36%),
+                linear-gradient(180deg,rgba(25,20,17,.96),rgba(12,13,18,.96));
+            border-radius:26px;
+            padding:24px;
+            box-shadow:0 24px 70px rgba(0,0,0,.42);
+        }
+
+        .score-label{
+            color:var(--orange2);
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-weight:950;
+        }
+
+        .score{
+            margin-top:12px;
+            font-size:68px;
+            line-height:.9;
+            color:var(--orange);
+            font-weight:1000;
+            letter-spacing:-2.8px;
+            text-shadow:0 0 34px rgba(255,138,31,.28);
+        }
+
+        .score-text{
+            margin-top:16px;
+            color:#d4dbe5;
+            font-size:13px;
+            line-height:1.62;
+        }
+
+        .bar{
+            height:9px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            overflow:hidden;
+            margin:18px 0 14px;
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .bar span{
+            display:block;
+            height:100%;
+            width:66%;
+            background:linear-gradient(90deg,#ff8a1f,#ffb15c,#ffd08a);
+            border-radius:999px;
+            box-shadow:0 0 26px rgba(255,138,31,.35);
+        }
+
+        .nav{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:24px;
+        }
+
+        .nav a{
+            color:#f3f6fa;
+            text-decoration:none;
+            border:1px solid rgba(255,255,255,.13);
+            background:rgba(255,255,255,.052);
+            padding:10px 13px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:850;
+        }
+
+        .nav a:hover{
+            border-color:rgba(255,138,31,.52);
+            background:rgba(255,138,31,.10);
+            color:#fff4e8;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:15px;
+            margin-top:22px;
+        }
+
+        .metric{
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.032));
+            border-radius:22px;
+            padding:18px;
+            min-height:146px;
+            box-shadow:0 20px 55px rgba(0,0,0,.28);
+        }
+
+        .metric .label{
+            color:var(--steel);
+            font-size:11px;
+            font-weight:950;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        .metric .value{
+            margin-top:10px;
+            font-size:31px;
+            font-weight:1000;
+            letter-spacing:-.8px;
+        }
+
+        .metric .note{
+            color:#b4bdca;
+            font-size:12px;
+            line-height:1.48;
+            margin-top:8px;
+        }
+
+        .section{
+            margin-top:24px;
+            border:1px solid rgba(255,255,255,.11);
+            background:linear-gradient(180deg,rgba(23,26,34,.92),rgba(13,15,20,.92));
+            border-radius:30px;
+            padding:26px;
+            box-shadow:0 24px 75px rgba(0,0,0,.33);
+        }
+
+        .section-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .section h2{
+            margin:0;
+            font-size:29px;
+            letter-spacing:-.7px;
+            font-weight:950;
+        }
+
+        .section p{
+            margin:8px 0 0;
+            color:#b9c2ce;
+            max-width:1060px;
+            line-height:1.62;
+            font-size:14px;
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            background:rgba(255,138,31,.09);
+            color:#ffe4c4;
+        }
+
+        .two-col{
+            display:grid;
+            grid-template-columns:1.02fr .98fr;
+            gap:20px;
+        }
+
+        .scanner-panel,.hud-panel{
+            border:1px solid rgba(255,255,255,.11);
+            background:rgba(255,255,255,.04);
+            border-radius:26px;
+            padding:22px;
+        }
+
+        .scan-box{
+            margin-top:16px;
+            border:1px solid rgba(255,138,31,.25);
+            background:rgba(6,7,10,.72);
+            border-radius:22px;
+            padding:18px;
+        }
+
+        .input-row{
+            display:grid;
+            grid-template-columns:1fr 160px;
+            gap:12px;
+            margin-top:12px;
+        }
+
+        input{
+            width:100%;
+            border:1px solid rgba(255,255,255,.14);
+            background:rgba(255,255,255,.06);
+            color:#fff;
+            border-radius:14px;
+            padding:13px 14px;
+            font-size:14px;
+            outline:none;
+        }
+
+        input:focus{
+            border-color:rgba(255,138,31,.60);
+            box-shadow:0 0 0 3px rgba(255,138,31,.10);
+        }
+
+        button{
+            cursor:pointer;
+            border:1px solid rgba(255,138,31,.36);
+            background:linear-gradient(135deg,rgba(255,138,31,.25),rgba(255,177,92,.12));
+            color:#fff4e8;
+            border-radius:14px;
+            padding:13px 14px;
+            font-weight:950;
+            font-size:13px;
+        }
+
+        button:hover{
+            border-color:rgba(255,138,31,.70);
+            background:linear-gradient(135deg,rgba(255,138,31,.34),rgba(255,177,92,.18));
+        }
+
+        .quick-grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:12px;
+            margin-top:16px;
+        }
+
+        .quick{
+            min-height:118px;
+            text-align:left;
+            background:rgba(6,7,10,.72);
+            border:1px solid rgba(255,138,31,.25);
+        }
+
+        .quick strong{
+            display:block;
+            margin-bottom:7px;
+            font-size:14px;
+        }
+
+        .quick span{
+            display:block;
+            color:#b9c2ce;
+            font-size:12px;
+            line-height:1.45;
+        }
+
+        .hud-card{
+            border:1px solid rgba(255,138,31,.30);
+            background:
+                radial-gradient(circle at 80% 10%,rgba(255,138,31,.14),transparent 35%),
+                rgba(6,7,10,.68);
+            border-radius:24px;
+            padding:20px;
+            min-height:520px;
+        }
+
+        .hud-top{
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            flex-wrap:wrap;
+            align-items:flex-start;
+            border-bottom:1px solid rgba(255,255,255,.10);
+            padding-bottom:14px;
+            margin-bottom:14px;
+        }
+
+        .hud-name{
+            font-size:25px;
+            font-weight:1000;
+            letter-spacing:-.6px;
+        }
+
+        .badge{
+            display:inline-flex;
+            border-radius:999px;
+            padding:8px 11px;
+            font-size:12px;
+            font-weight:950;
+            white-space:nowrap;
+            border:1px solid rgba(255,138,31,.36);
+            color:#ffe4c4;
+            background:rgba(255,138,31,.09);
+        }
+
+        .score-ring{
+            width:150px;
+            height:150px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            border:1px solid rgba(255,138,31,.42);
+            background:radial-gradient(circle,#3b210f,#101216 72%);
+            box-shadow:0 0 42px rgba(255,138,31,.24);
+            float:left;
+            margin:2px 18px 10px 0;
+        }
+
+        .score-ring strong{
+            font-size:43px;
+            color:var(--orange);
+            line-height:1;
+        }
+
+        .score-ring span{
+            color:#d7dee8;
+            font-size:11px;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-top:6px;
+        }
+
+        .hud-line{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(255,255,255,.04);
+            border-radius:14px;
+            padding:11px 12px;
+            color:#cbd2dc;
+            font-size:13px;
+            line-height:1.45;
+            margin-top:9px;
+        }
+
+        .hud-line strong{
+            color:#fff;
+        }
+
+        .list{
+            display:grid;
+            gap:8px;
+            margin-top:12px;
+        }
+
+        .list-item{
+            border:1px solid rgba(255,255,255,.10);
+            background:rgba(255,255,255,.04);
+            border-radius:14px;
+            padding:10px 12px;
+            color:#cbd2dc;
+            font-size:13px;
+            line-height:1.42;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            overflow:hidden;
+            border-radius:18px;
+            margin-top:14px;
+        }
+
+        th{
+            text-align:left;
+            background:rgba(255,138,31,.10);
+            color:#ffe1ba;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.9px;
+            padding:14px 12px;
+            border-bottom:1px solid rgba(255,138,31,.18);
+        }
+
+        td{
+            padding:14px 12px;
+            color:#eef1f5;
+            font-size:14px;
+            vertical-align:top;
+            border-bottom:1px solid rgba(255,255,255,.075);
+            line-height:1.45;
+        }
+
+        code{
+            color:#ffd7a8;
+            background:rgba(255,138,31,.09);
+            border:1px solid rgba(255,138,31,.18);
+            padding:3px 6px;
+            border-radius:7px;
+            font-size:12px;
+        }
+
+        tr:hover td{background:rgba(255,138,31,.045)}
+
+        .footer{
+            color:#9fa7b3;
+            font-size:12px;
+            line-height:1.6;
+            padding:22px 4px 8px;
+        }
+
+        @media(max-width:1380px){
+            .hero-grid,.two-col{grid-template-columns:1fr}
+            .metrics{grid-template-columns:repeat(3,1fr)}
+        }
+
+        @media(max-width:760px){
+            .page{padding:16px}
+            .hero{padding:22px;border-radius:24px}
+            h1{font-size:38px}
+            .metrics,.quick-grid,.input-row{grid-template-columns:1fr}
+            .score-ring{float:none;margin:0 0 14px 0}
+            table{display:block;overflow-x:auto;white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="brand-mark"></div>
+                        <div>
+                            <div class="brand-title">COBIT-Chain&trade; Governance Vision Lookup Service</div>
+                            <div class="brand-sub">QR scan, asset lookup, wearable HUD, evidence confidence, privacy filter, and next action</div>
+                        </div>
+                    </div>
+                    <span class="pill">Vision Route: /platform/vision-lookup</span>
+                </div>
+
+                <div class="eyebrow">Thread B / Wearable Service / QR and Asset Lookup</div>
+                <h1>The first live lookup flow for Governance Vision.</h1>
+                <div class="subtitle">
+                    This service turns the wearable idea into a working Platform A/B flow. A user can scan or type an asset ID, retrieve a privacy-safe HUD response, view trust score and evidence confidence, and receive a controlled next action without exposing sensitive records.
+                </div>
+
+                <div class="hero-grid">
+                    <div class="statement">
+                        <strong>Lookup principle:</strong> The first wearable interface must be read-only, privacy-filtered, and evidence-backed. It should return status, confidence, limitations, and next action. It must not approve work, modify records, bypass SOPs, or expose sensitive evidence in HUD mode.
+                    </div>
+
+                    <div class="vision-score">
+                        <div class="score-label">Vision Lookup Readiness</div>
+                        <div class="score">66%</div>
+                        <div class="score-text">
+                            This module adds the first working lookup API for Governance Vision. The next maturity step is connecting the lookup response to Trust Score Service, Operational Trust Twin, Evidence Store, and role-based identity.
+                        </div>
+                        <div class="bar"><span></span></div>
+                        <div class="score-text"><strong>Status:</strong> Demo QR and HUD lookup API installed.</div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">Home</a>
+                    <a href="/platform">Platform</a>
+                    <a href="/platform/routes">Route Registry</a>
+                    <a href="/platform/governance-vision">Governance Vision</a>
+                    <a href="/platform/trust-score-service">Trust Score</a>
+                    <a href="/platform/operational-trust-twin">Operational Twin</a>
+                    <a href="/platform/evidence-store">Evidence Store</a>
+                    <a href="/platform/mcp-server">MCP Server</a>
+                    <a href="/platform/identity-access">Identity</a>
+                    <a href="/platform/observability">Observability</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Input Modes</div><div class="value" style="color:var(--orange);">2</div><div class="note">Manual asset ID and simulated QR scan.</div></div>
+            <div class="metric"><div class="label">Demo Assets</div><div class="value" style="color:var(--orange2);">4</div><div class="note">Niagara, Speedy Glove, Platform API, Governance Vision.</div></div>
+            <div class="metric"><div class="label">HUD Mode</div><div class="value" style="color:var(--amber);">Safe</div><div class="note">Only privacy-filtered fields are displayed.</div></div>
+            <div class="metric"><div class="label">Action Mode</div><div class="value" style="color:var(--good);">Read</div><div class="note">No record changes, approval, or release action.</div></div>
+            <div class="metric"><div class="label">Evidence Mode</div><div class="value" style="color:var(--blue);">Summary</div><div class="note">Evidence confidence is shown without exposing full records.</div></div>
+            <div class="metric"><div class="label">Risk Rule</div><div class="value" style="color:var(--bad);">Escalate</div><div class="note">Unknown or weak trust returns caution and escalation.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Live QR / Asset Lookup Demo</h2>
+                    <p>Type or click an asset ID. This calls the live demo endpoint <code>/api/platform/vision/lookup/demo</code>.</p>
+                </div>
+                <span class="tag">Wearable lookup demo</span>
+            </div>
+
+            <div class="two-col">
+                <div class="scanner-panel">
+                    <h2 style="font-size:22px;margin-bottom:6px;">Asset Scanner</h2>
+                    <p>Use this as the simulated QR scanner for smart glasses or mobile lookup.</p>
+
+                    <div class="scan-box">
+                        <div style="color:#ffb15c;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:1.6px;">Simulated QR / Asset ID</div>
+                        <div class="input-row">
+                            <input id="assetInput" value="NIAGARA-BMS-SUPERVISOR" />
+                            <button onclick="lookupAsset()">Lookup Asset</button>
+                        </div>
+                    </div>
+
+                    <div class="quick-grid">
+                        <button class="quick" onclick="lookupQuick('NIAGARA-BMS-SUPERVISOR')"><strong>NIAGARA-BMS-SUPERVISOR</strong><span>BMS supervisor readiness and access-path caution.</span></button>
+                        <button class="quick" onclick="lookupQuick('SPEEDY-GLOVE-1803')"><strong>SPEEDY-GLOVE-1803</strong><span>Manufacturing equipment with strong control state.</span></button>
+                        <button class="quick" onclick="lookupQuick('PLATFORM-API-LAYER')"><strong>PLATFORM-API-LAYER</strong><span>Platform service in design-stage trust state.</span></button>
+                        <button class="quick" onclick="lookupQuick('GOVERNANCE-VISION')"><strong>GOVERNANCE-VISION</strong><span>Wearable interface prototype and privacy boundary.</span></button>
+                    </div>
+                </div>
+
+                <div class="hud-panel">
+                    <div id="hudResult" class="hud-card">
+                        <div class="hud-top">
+                            <div>
+                                <div class="hud-name">Waiting for scan</div>
+                                <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">Enter or select an asset ID.</div>
+                            </div>
+                            <div class="badge">No lookup yet</div>
+                        </div>
+                        <div class="score-ring">
+                            <strong>--</strong>
+                            <span>Trust</span>
+                        </div>
+                        <div class="score-text">The HUD-safe response will appear here.</div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Governance Vision Lookup Contract</h2>
+                    <p>This contract defines how smart glasses, mobile QR scan, or voice lookup can safely query the platform.</p>
+                </div>
+                <span class="tag">Vision service contract</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                        <th>Input</th>
+                        <th>Control Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>/api/platform/vision/lookup/demo</code></td><td>GET</td><td>Lookup asset or QR code and return full demo response.</td><td><code>?asset_id=NIAGARA-BMS-SUPERVISOR</code></td><td>Read-only and evidence summarized.</td></tr>
+                    <tr><td><code>/api/platform/vision/hud/demo</code></td><td>GET</td><td>Return HUD-safe filtered fields only.</td><td><code>?asset_id=SPEEDY-GLOVE-1803</code></td><td>No sensitive evidence exposure.</td></tr>
+                    <tr><td><code>/platform/vision-lookup</code></td><td>GET</td><td>Render the lookup command center.</td><td>Browser route.</td><td>Password-gated platform page.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer">
+            COBIT-Chain Governance Vision Lookup Service is a demo wearable lookup layer for Platform A/B. It does not replace QA approval, SOPs, validation, cybersecurity review, ServiceNow governance, change control, or regulated decision-making. Its purpose is to prove a privacy-safe, evidence-backed, read-only point-of-work lookup flow.
+        </div>
+    </div>
+
+    <script>
+        function listHtml(items){
+            if(!items || !items.length){
+                return '<div class="list-item">None reported.</div>';
+            }
+            return items.map(function(item){
+                return '<div class="list-item">' + item + '</div>';
+            }).join('');
+        }
+
+        function lookupQuick(assetId){
+            document.getElementById("assetInput").value = assetId;
+            lookupAsset();
+        }
+
+        async function lookupAsset(){
+            const assetId = document.getElementById("assetInput").value.trim();
+            const result = document.getElementById("hudResult");
+
+            if(!assetId){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;">Enter an asset ID.</div>';
+                return;
+            }
+
+            result.innerHTML = '<div class="score-text">Calling Governance Vision lookup service...</div>';
+
+            try{
+                const response = await fetch('/api/platform/vision/lookup/demo?asset_id=' + encodeURIComponent(assetId));
+                const data = await response.json();
+
+                if(!response.ok){
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                result.innerHTML = `
+                    <div class="hud-top">
+                        <div>
+                            <div class="hud-name">${data.object_name}</div>
+                            <div style="color:#9fa7b3;font-size:12px;margin-top:4px;">${data.asset_type} | request_id: ${data.request_id}</div>
+                        </div>
+                        <div class="badge">${data.status} | ${data.confidence}</div>
+                    </div>
+
+                    <div class="score-ring">
+                        <strong>${data.trust_score}</strong>
+                        <span>Trust</span>
+                    </div>
+
+                    <div class="hud-line"><strong>Asset ID:</strong> ${data.asset_id}</div>
+                    <div class="hud-line"><strong>Evidence Confidence:</strong> ${data.evidence_confidence}</div>
+                    <div class="hud-line"><strong>Evidence Summary:</strong> ${data.evidence_summary}</div>
+                    <div class="hud-line"><strong>Next Action:</strong> ${data.next_action}</div>
+                    <div class="hud-line"><strong>Privacy Mode:</strong> ${data.privacy_mode}</div>
+
+                    <div style="clear:both"></div>
+
+                    <h3 style="margin:18px 0 8px;font-size:17px;">HUD Limitations</h3>
+                    <div class="list">${listHtml(data.limitations)}</div>
+                `;
+            }catch(error){
+                result.innerHTML = '<div class="score-text" style="color:#ffb6bf;"><strong>Lookup error:</strong> ' + error.message + '</div>';
+            }
+        }
+
+        lookupAsset();
+    </script>
+</body>
+</html>
