@@ -1,0 +1,1055 @@
+{
+  "capability_name": "Platform Blueprint Library",
+  "capability_type": "blueprint_layer_not_new_module",
+  "platform_rule": "No new foundational assurance module or architecture is created. Blueprints reuse the existing Platform A lifecycle and apply it to industry or enterprise contexts.",
+  "engineering_principle": "A blueprint does not add architecture; it demonstrates how the existing assurance lifecycle applies to a specific operational domain.",
+  "blueprints": [
+    {
+      "blueprint_id": "ai_enabled_cmc",
+      "blueprint_name": "AI-enabled CMC Blueprint",
+      "blueprint_type": "Industry Blueprint",
+      "route": "/platform/blueprints/ai-enabled-cmc",
+      "domain": "Pharmaceutical CMC, formulation, process development, manufacturing, regulatory content, change control, and continuous assurance",
+      "core_question": "Can AI-enabled CMC activity be discovered, governed, monitored, evidenced, and continuously assured across formulation, process development, manufacturing, and regulatory content workflows?",
+      "no_new_architecture": true,
+      "uses_existing_lifecycle": true,
+      "lifecycle": [
+        {
+          "stage_name": "Discovery",
+          "stage_question": "Which AI systems, models, prompts, agents, tools, or workflows are being used in CMC?",
+          "operational_focus": "Identify AI used in formulation, process development, manufacturing decision support, regulatory content generation, and CMC workflow support.",
+          "evidence_outputs": [
+            "AI discovery record",
+            "CMC AI inventory record",
+            "AI use-case record",
+            "System owner record"
+          ]
+        },
+        {
+          "stage_name": "Visibility",
+          "stage_question": "Which AI supports formulation, process development, regulatory content, or manufacturing decisions?",
+          "operational_focus": "Make AI usage visible across CMC workflows and connect each AI activity to owner, context of use, business purpose, and evidence state.",
+          "evidence_outputs": [
+            "AI visibility assessment",
+            "Owner assignment",
+            "Context of use",
+            "Business purpose",
+            "Evidence availability status"
+          ]
+        },
+        {
+          "stage_name": "Governance",
+          "stage_question": "Is the AI governed according to its CMC risk, intended use, human oversight, and regulatory impact?",
+          "operational_focus": "Classify risk, define governance obligations, verify human accountability, and connect the AI activity to CMC quality expectations.",
+          "evidence_outputs": [
+            "Risk classification",
+            "Governance readiness record",
+            "Human oversight requirement",
+            "Intended-use record"
+          ]
+        },
+        {
+          "stage_name": "Operationalization",
+          "stage_question": "Are AI governance controls implemented in actual CMC workflows?",
+          "operational_focus": "Connect governance to formulation review, CPP/CQA optimization, batch/manufacturing support, content generation, review, and approval workflows.",
+          "evidence_outputs": [
+            "Policy-to-control map",
+            "Control execution record",
+            "Workflow execution record",
+            "Human review record"
+          ]
+        },
+        {
+          "stage_name": "Enterprise Execution Assurance",
+          "stage_order": 5,
+          "stage_type": "Execution-control assurance layer",
+          "stage_rule": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+          "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+          "evaluation_areas": [
+            "Workflow authorization",
+            "Runtime policy enforcement",
+            "Enterprise system interaction",
+            "API invocation traceability",
+            "Human approval checkpoints",
+            "Rollback capability",
+            "Execution evidence",
+            "Outcome verification",
+            "Continuous monitoring",
+            "Audit reconstruction"
+          ],
+          "execution_control_questions": [
+            "Was the workflow authorized?",
+            "Was runtime policy enforced?",
+            "Which enterprise system was touched?",
+            "Which API was invoked?",
+            "Was human approval required and captured?",
+            "Was rollback available?",
+            "Was execution evidence produced?",
+            "Was the outcome verified?",
+            "Is the action continuously monitored?",
+            "Can the execution be reconstructed during audit or inspection?"
+          ],
+          "execution_assurance_modules": [
+            {
+              "name": "AI Runtime Assurance",
+              "question": "Can this AI runtime be operationally trusted?",
+              "evaluates": [
+                "Runtime identity",
+                "Runtime security",
+                "Runtime permissions",
+                "Runtime isolation",
+                "Runtime policy enforcement",
+                "Runtime evidence",
+                "Runtime audit logs"
+              ]
+            },
+            {
+              "name": "Workflow Assurance",
+              "question": "Was this AI action executed through an approved workflow?",
+              "evaluates": [
+                "Workflow integrity",
+                "Approval routing",
+                "Workflow ownership",
+                "Workflow evidence",
+                "Workflow traceability",
+                "Workflow versioning",
+                "Workflow execution logs"
+              ]
+            },
+            {
+              "name": "Enterprise Action Assurance",
+              "question": "Can every enterprise action be reconstructed?",
+              "evaluates": [
+                "API called",
+                "File modified",
+                "Database updated",
+                "ServiceNow ticket created",
+                "Robot instructed",
+                "MES command",
+                "ERP update",
+                "LIMS action",
+                "EHR action"
+              ]
+            },
+            {
+              "name": "Runtime Policy Assurance",
+              "question": "Was policy enforced during execution?",
+              "evaluates": [
+                "Policies applied",
+                "Blocked actions",
+                "Exceptions",
+                "Policy overrides",
+                "Escalation",
+                "Approval"
+              ]
+            },
+            {
+              "name": "AI Orchestration Assurance",
+              "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+              "evaluates": [
+                "Agent routing",
+                "Agent sequencing",
+                "Agent dependencies",
+                "Agent handoffs",
+                "Runtime coordination",
+                "Failure handling",
+                "Rollback",
+                "Retry evidence"
+              ]
+            },
+            {
+              "name": "Agent Runtime Evidence",
+              "question": "Can the agent runtime decision be reconstructed?",
+              "evaluates": [
+                "Prompt",
+                "Context",
+                "Model",
+                "Runtime",
+                "Workflow",
+                "Tools",
+                "APIs",
+                "Human review",
+                "Decision",
+                "Outcome"
+              ]
+            }
+          ],
+          "enterprise_action_types": [
+            "API call",
+            "File modification",
+            "Database update",
+            "ServiceNow ticket creation",
+            "Robot instruction",
+            "MES command",
+            "ERP update",
+            "LIMS action",
+            "EHR action"
+          ],
+          "evidence_outputs": [
+            "Enterprise Execution Assurance Record",
+            "Workflow authorization record",
+            "Runtime policy enforcement record",
+            "Enterprise system interaction record",
+            "API invocation traceability record",
+            "Human approval checkpoint record",
+            "Rollback capability record",
+            "Execution evidence record",
+            "Outcome verification record",
+            "Continuous monitoring record",
+            "Audit reconstruction record",
+            "AI runtime assurance record",
+            "Workflow assurance record",
+            "Enterprise action assurance record",
+            "Runtime policy assurance record",
+            "AI orchestration assurance record",
+            "Agent runtime evidence record"
+          ],
+          "operational_focus": "Execution Assurance checks the execution itself before Evidence proves it can be reconstructed."
+        },
+        {
+          "stage_name": "Manufacturing Monitoring",
+          "stage_question": "Did AI influence manufacturing decisions, process parameters, quality attributes, deviations, or monitoring actions?",
+          "operational_focus": "Monitor AI influence across manufacturing decisions, CPPs, CQAs, deviations, change events, and process monitoring.",
+          "evidence_outputs": [
+            "Manufacturing monitoring record",
+            "CPP/CQA influence record",
+            "AI recommendation log",
+            "Decision impact record"
+          ]
+        },
+        {
+          "stage_name": "Evidence",
+          "stage_question": "What evidence supports every AI-assisted CMC decision?",
+          "operational_focus": "Bind formulation, process development, manufacturing, regulatory content, review, approval, change control, and monitoring evidence.",
+          "evidence_outputs": [
+            "CMC evidence package",
+            "AI output clearance record",
+            "Human approval evidence",
+            "Change control evidence",
+            "Audit replay package"
+          ]
+        },
+        {
+          "stage_name": "Continuous Assurance",
+          "stage_question": "Are CMC AI controls, evidence, monitoring, and intended use continuously refreshed?",
+          "operational_focus": "Track lifecycle changes, intended-use changes, model updates, prompt changes, process changes, and evidence freshness.",
+          "evidence_outputs": [
+            "Evidence freshness record",
+            "Lifecycle synchronization record",
+            "Revalidation trigger",
+            "Continuous assurance record"
+          ]
+        },
+        {
+          "stage_name": "Operational Trust",
+          "stage_question": "Can the AI-enabled CMC workflow be operationally trusted?",
+          "operational_focus": "Summarize whether the AI-enabled CMC workflow is visible, governed, operationalized, monitored, evidenced, synchronized, and continuously assured.",
+          "evidence_outputs": [
+            "Operational trust score",
+            "Readiness decision",
+            "Trust rationale",
+            "Open gap register"
+          ]
+        }
+      ],
+      "questions_answered": [
+        "Which AI supports formulation?",
+        "Which AI supports process development?",
+        "Which AI generated regulatory content?",
+        "Which AI influenced manufacturing decisions?",
+        "What evidence exists?",
+        "Were humans involved?",
+        "Is change control synchronized?",
+        "Has intended use changed?",
+        "Was the workflow authorized?",
+        "Was runtime policy enforced?",
+        "Which enterprise system was touched?",
+        "Which API was invoked?",
+        "Was human approval required and captured?",
+        "Was rollback available?",
+        "Was execution evidence produced?",
+        "Was the outcome verified?",
+        "Is the action continuously monitored?",
+        "Can the execution be reconstructed during audit or inspection?",
+        "Can this AI runtime be operationally trusted?",
+        "Was this AI action executed through an approved workflow?",
+        "Can every enterprise action be reconstructed?",
+        "Was policy enforced during execution?",
+        "Was the AI recommendation executed safely?"
+      ],
+      "sample_blueprint_assessment": {
+        "assessment_id": "AICMC-BP-DEMO-001",
+        "workflow_name": "AI-assisted CMC formulation and manufacturing support workflow",
+        "blueprint_score": 78,
+        "blueprint_decision": "CMC_BLUEPRINT_APPLIED_EXISTING_LIFECYCLE_EVIDENCE_GAPS_OPEN",
+        "open_gaps": [
+          "Manufacturing decision influence evidence needs stronger linkage.",
+          "Change control synchronization must be confirmed after model or prompt changes.",
+          "Human review evidence must be bound to each AI-generated regulatory content item.",
+          "Intended-use change detection should be connected to lifecycle assurance."
+        ],
+        "enterprise_execution_assurance_state": "FIRST_CLASS_EXECUTION_ASSURANCE_CAPABILITY_ADDED",
+        "platform_redesign": false,
+        "new_capability_layer": true,
+        "capability_name": "Enterprise Execution Assurance",
+        "platform_position": "Between Operationalization and Evidence",
+        "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+        "execution_assurance_module_count": 6,
+        "evaluation_area_count": 10
+      },
+      "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "enterprise_execution_assurance": {
+        "capability_name": "Enterprise Execution Assurance",
+        "capability_type": "First-class Platform B assurance capability",
+        "platform_position": "Between Operationalization and Evidence",
+        "platform_redesign": false,
+        "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+        "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+        "evaluation_areas": [
+          "Workflow authorization",
+          "Runtime policy enforcement",
+          "Enterprise system interaction",
+          "API invocation traceability",
+          "Human approval checkpoints",
+          "Rollback capability",
+          "Execution evidence",
+          "Outcome verification",
+          "Continuous monitoring",
+          "Audit reconstruction"
+        ],
+        "execution_control_questions": [
+          "Was the workflow authorized?",
+          "Was runtime policy enforced?",
+          "Which enterprise system was touched?",
+          "Which API was invoked?",
+          "Was human approval required and captured?",
+          "Was rollback available?",
+          "Was execution evidence produced?",
+          "Was the outcome verified?",
+          "Is the action continuously monitored?",
+          "Can the execution be reconstructed during audit or inspection?"
+        ],
+        "execution_assurance_modules": [
+          {
+            "name": "AI Runtime Assurance",
+            "question": "Can this AI runtime be operationally trusted?",
+            "evaluates": [
+              "Runtime identity",
+              "Runtime security",
+              "Runtime permissions",
+              "Runtime isolation",
+              "Runtime policy enforcement",
+              "Runtime evidence",
+              "Runtime audit logs"
+            ]
+          },
+          {
+            "name": "Workflow Assurance",
+            "question": "Was this AI action executed through an approved workflow?",
+            "evaluates": [
+              "Workflow integrity",
+              "Approval routing",
+              "Workflow ownership",
+              "Workflow evidence",
+              "Workflow traceability",
+              "Workflow versioning",
+              "Workflow execution logs"
+            ]
+          },
+          {
+            "name": "Enterprise Action Assurance",
+            "question": "Can every enterprise action be reconstructed?",
+            "evaluates": [
+              "API called",
+              "File modified",
+              "Database updated",
+              "ServiceNow ticket created",
+              "Robot instructed",
+              "MES command",
+              "ERP update",
+              "LIMS action",
+              "EHR action"
+            ]
+          },
+          {
+            "name": "Runtime Policy Assurance",
+            "question": "Was policy enforced during execution?",
+            "evaluates": [
+              "Policies applied",
+              "Blocked actions",
+              "Exceptions",
+              "Policy overrides",
+              "Escalation",
+              "Approval"
+            ]
+          },
+          {
+            "name": "AI Orchestration Assurance",
+            "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+            "evaluates": [
+              "Agent routing",
+              "Agent sequencing",
+              "Agent dependencies",
+              "Agent handoffs",
+              "Runtime coordination",
+              "Failure handling",
+              "Rollback",
+              "Retry evidence"
+            ]
+          },
+          {
+            "name": "Agent Runtime Evidence",
+            "question": "Can the agent runtime decision be reconstructed?",
+            "evaluates": [
+              "Prompt",
+              "Context",
+              "Model",
+              "Runtime",
+              "Workflow",
+              "Tools",
+              "APIs",
+              "Human review",
+              "Decision",
+              "Outcome"
+            ]
+          }
+        ],
+        "enterprise_action_types": [
+          "API call",
+          "File modification",
+          "Database update",
+          "ServiceNow ticket creation",
+          "Robot instruction",
+          "MES command",
+          "ERP update",
+          "LIMS action",
+          "EHR action"
+        ]
+      }
+    },
+    {
+      "blueprint_id": "agentic_enterprise",
+      "blueprint_name": "Agentic Enterprise Blueprint",
+      "blueprint_type": "Enterprise Blueprint",
+      "route": "/platform/blueprints/agentic-enterprise",
+      "domain": "Enterprise operating model, agentic workflows, autonomous decisions, human approvals, control execution, workflow change, evidence generation, and operational trust",
+      "core_question": "Can the enterprise operating model remain trustworthy when AI agents are embedded into business processes, autonomous decisions, workflow execution, control activity, evidence generation, and governance boundaries?",
+      "no_new_architecture": true,
+      "uses_existing_lifecycle": true,
+      "lifecycle": [
+        {
+          "stage_name": "AI Discovery",
+          "stage_question": "Which agents exist and which business processes do they support?",
+          "operational_focus": "Identify agents, owners, tools, data access, workflows, business processes, autonomy level, and intended use.",
+          "evidence_outputs": [
+            "Agent inventory record",
+            "Business process map",
+            "Tool access record",
+            "Owner assignment",
+            "Autonomy profile"
+          ]
+        },
+        {
+          "stage_name": "Visibility",
+          "stage_question": "Which agent acted, why did it act, and which data influenced the action?",
+          "operational_focus": "Make agent activity, data influence, tool calls, prompts, decision path, and workflow impact visible.",
+          "evidence_outputs": [
+            "Agent action log",
+            "Data influence record",
+            "Tool-call evidence",
+            "Prompt traceability",
+            "Workflow impact record"
+          ]
+        },
+        {
+          "stage_name": "Governance",
+          "stage_question": "Which agent actions crossed governance boundaries or required human approval?",
+          "operational_focus": "Classify governance boundaries, decision rights, escalation rules, human approval rules, and risk controls.",
+          "evidence_outputs": [
+            "Governance boundary event",
+            "Human approval rule",
+            "Decision rights record",
+            "Risk classification",
+            "Escalation rule"
+          ]
+        },
+        {
+          "stage_name": "Operating Model",
+          "stage_question": "Is the enterprise operating model still trustworthy after agentic workflow changes?",
+          "operational_focus": "Evaluate business process ownership, human accountability, workflow redesign, control ownership, and operating model resilience.",
+          "evidence_outputs": [
+            "Operating model map",
+            "Workflow change record",
+            "Control owner record",
+            "Accountability map",
+            "RACI evidence"
+          ]
+        },
+        {
+          "stage_name": "Operationalization",
+          "stage_question": "Which workflows changed and which controls executed?",
+          "operational_focus": "Verify that agentic workflows execute with defined controls, approvals, exception handling, and evidence generation.",
+          "evidence_outputs": [
+            "Workflow execution record",
+            "Control execution record",
+            "Exception record",
+            "Approval record",
+            "Operational status"
+          ]
+        },
+        {
+          "stage_name": "Enterprise Execution Assurance",
+          "stage_order": 5,
+          "stage_type": "Execution-control assurance layer",
+          "stage_rule": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+          "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+          "evaluation_areas": [
+            "Workflow authorization",
+            "Runtime policy enforcement",
+            "Enterprise system interaction",
+            "API invocation traceability",
+            "Human approval checkpoints",
+            "Rollback capability",
+            "Execution evidence",
+            "Outcome verification",
+            "Continuous monitoring",
+            "Audit reconstruction"
+          ],
+          "execution_control_questions": [
+            "Was the workflow authorized?",
+            "Was runtime policy enforced?",
+            "Which enterprise system was touched?",
+            "Which API was invoked?",
+            "Was human approval required and captured?",
+            "Was rollback available?",
+            "Was execution evidence produced?",
+            "Was the outcome verified?",
+            "Is the action continuously monitored?",
+            "Can the execution be reconstructed during audit or inspection?"
+          ],
+          "execution_assurance_modules": [
+            {
+              "name": "AI Runtime Assurance",
+              "question": "Can this AI runtime be operationally trusted?",
+              "evaluates": [
+                "Runtime identity",
+                "Runtime security",
+                "Runtime permissions",
+                "Runtime isolation",
+                "Runtime policy enforcement",
+                "Runtime evidence",
+                "Runtime audit logs"
+              ]
+            },
+            {
+              "name": "Workflow Assurance",
+              "question": "Was this AI action executed through an approved workflow?",
+              "evaluates": [
+                "Workflow integrity",
+                "Approval routing",
+                "Workflow ownership",
+                "Workflow evidence",
+                "Workflow traceability",
+                "Workflow versioning",
+                "Workflow execution logs"
+              ]
+            },
+            {
+              "name": "Enterprise Action Assurance",
+              "question": "Can every enterprise action be reconstructed?",
+              "evaluates": [
+                "API called",
+                "File modified",
+                "Database updated",
+                "ServiceNow ticket created",
+                "Robot instructed",
+                "MES command",
+                "ERP update",
+                "LIMS action",
+                "EHR action"
+              ]
+            },
+            {
+              "name": "Runtime Policy Assurance",
+              "question": "Was policy enforced during execution?",
+              "evaluates": [
+                "Policies applied",
+                "Blocked actions",
+                "Exceptions",
+                "Policy overrides",
+                "Escalation",
+                "Approval"
+              ]
+            },
+            {
+              "name": "AI Orchestration Assurance",
+              "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+              "evaluates": [
+                "Agent routing",
+                "Agent sequencing",
+                "Agent dependencies",
+                "Agent handoffs",
+                "Runtime coordination",
+                "Failure handling",
+                "Rollback",
+                "Retry evidence"
+              ]
+            },
+            {
+              "name": "Agent Runtime Evidence",
+              "question": "Can the agent runtime decision be reconstructed?",
+              "evaluates": [
+                "Prompt",
+                "Context",
+                "Model",
+                "Runtime",
+                "Workflow",
+                "Tools",
+                "APIs",
+                "Human review",
+                "Decision",
+                "Outcome"
+              ]
+            }
+          ],
+          "enterprise_action_types": [
+            "API call",
+            "File modification",
+            "Database update",
+            "ServiceNow ticket creation",
+            "Robot instruction",
+            "MES command",
+            "ERP update",
+            "LIMS action",
+            "EHR action"
+          ],
+          "evidence_outputs": [
+            "Enterprise Execution Assurance Record",
+            "Workflow authorization record",
+            "Runtime policy enforcement record",
+            "Enterprise system interaction record",
+            "API invocation traceability record",
+            "Human approval checkpoint record",
+            "Rollback capability record",
+            "Execution evidence record",
+            "Outcome verification record",
+            "Continuous monitoring record",
+            "Audit reconstruction record",
+            "AI runtime assurance record",
+            "Workflow assurance record",
+            "Enterprise action assurance record",
+            "Runtime policy assurance record",
+            "AI orchestration assurance record",
+            "Agent runtime evidence record"
+          ],
+          "operational_focus": "Execution Assurance checks the execution itself before Evidence proves it can be reconstructed."
+        },
+        {
+          "stage_name": "Evidence",
+          "stage_question": "What evidence was generated and can the action be reconstructed?",
+          "operational_focus": "Bind action evidence, decision evidence, tool-call evidence, human approval evidence, workflow evidence, and replay evidence.",
+          "evidence_outputs": [
+            "Agent evidence package",
+            "Replay package",
+            "Tool-call evidence",
+            "Decision record",
+            "Human approval evidence"
+          ]
+        },
+        {
+          "stage_name": "Continuous Assurance",
+          "stage_question": "Is the agent still operating within intended use and governance boundaries?",
+          "operational_focus": "Monitor drift, behavior changes, tool-use changes, workflow changes, boundary crossings, and evidence freshness.",
+          "evidence_outputs": [
+            "Continuous assurance record",
+            "Drift signal",
+            "Boundary monitoring record",
+            "Evidence freshness record",
+            "Revalidation trigger"
+          ]
+        },
+        {
+          "stage_name": "Operational Trust",
+          "stage_question": "Is the agentic operating model still trustworthy?",
+          "operational_focus": "Summarize whether agents are visible, governed, evidenced, reconstructable, continuously assured, and operating within intended use.",
+          "evidence_outputs": [
+            "Operational trust score",
+            "Agent trust record",
+            "Operating model trust status",
+            "Open risk register"
+          ]
+        }
+      ],
+      "questions_answered": [
+        "Which agents support each business process?",
+        "Which decisions are autonomous?",
+        "Where are human approvals required?",
+        "What evidence was generated?",
+        "Which workflows changed?",
+        "Which controls executed?",
+        "Which agent actions crossed governance boundaries?",
+        "Is the operating model still trustworthy?",
+        "Which AI agent acted?",
+        "Why did it act?",
+        "Which data influenced the action?",
+        "Can the action be reconstructed?",
+        "Is the agent still operating within its intended use?",
+        "Was the workflow authorized?",
+        "Was runtime policy enforced?",
+        "Which enterprise system was touched?",
+        "Which API was invoked?",
+        "Was human approval required and captured?",
+        "Was rollback available?",
+        "Was execution evidence produced?",
+        "Was the outcome verified?",
+        "Is the action continuously monitored?",
+        "Can the execution be reconstructed during audit or inspection?",
+        "Can this AI runtime be operationally trusted?",
+        "Was this AI action executed through an approved workflow?",
+        "Can every enterprise action be reconstructed?",
+        "Was policy enforced during execution?",
+        "Was the AI recommendation executed safely?"
+      ],
+      "sample_blueprint_assessment": {
+        "assessment_id": "AEBP-DEMO-001",
+        "workflow_name": "Agent-supported enterprise operating model workflow",
+        "blueprint_score": 81,
+        "blueprint_decision": "AGENTIC_ENTERPRISE_BLUEPRINT_APPLIED_EXISTING_LIFECYCLE_MONITORING_GAPS_OPEN",
+        "open_gaps": [
+          "Agent action reconstruction evidence should be standardized.",
+          "Governance boundary crossing events require stronger automated capture.",
+          "Workflow change evidence must be linked to operating model accountability.",
+          "Human approval rules need stage-by-stage evidence binding."
+        ],
+        "enterprise_execution_assurance_state": "FIRST_CLASS_EXECUTION_ASSURANCE_CAPABILITY_ADDED",
+        "platform_redesign": false,
+        "new_capability_layer": true,
+        "capability_name": "Enterprise Execution Assurance",
+        "platform_position": "Between Operationalization and Evidence",
+        "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+        "execution_assurance_module_count": 6,
+        "evaluation_area_count": 10
+      },
+      "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "enterprise_execution_assurance": {
+        "capability_name": "Enterprise Execution Assurance",
+        "capability_type": "First-class Platform B assurance capability",
+        "platform_position": "Between Operationalization and Evidence",
+        "platform_redesign": false,
+        "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+        "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+        "evaluation_areas": [
+          "Workflow authorization",
+          "Runtime policy enforcement",
+          "Enterprise system interaction",
+          "API invocation traceability",
+          "Human approval checkpoints",
+          "Rollback capability",
+          "Execution evidence",
+          "Outcome verification",
+          "Continuous monitoring",
+          "Audit reconstruction"
+        ],
+        "execution_control_questions": [
+          "Was the workflow authorized?",
+          "Was runtime policy enforced?",
+          "Which enterprise system was touched?",
+          "Which API was invoked?",
+          "Was human approval required and captured?",
+          "Was rollback available?",
+          "Was execution evidence produced?",
+          "Was the outcome verified?",
+          "Is the action continuously monitored?",
+          "Can the execution be reconstructed during audit or inspection?"
+        ],
+        "execution_assurance_modules": [
+          {
+            "name": "AI Runtime Assurance",
+            "question": "Can this AI runtime be operationally trusted?",
+            "evaluates": [
+              "Runtime identity",
+              "Runtime security",
+              "Runtime permissions",
+              "Runtime isolation",
+              "Runtime policy enforcement",
+              "Runtime evidence",
+              "Runtime audit logs"
+            ]
+          },
+          {
+            "name": "Workflow Assurance",
+            "question": "Was this AI action executed through an approved workflow?",
+            "evaluates": [
+              "Workflow integrity",
+              "Approval routing",
+              "Workflow ownership",
+              "Workflow evidence",
+              "Workflow traceability",
+              "Workflow versioning",
+              "Workflow execution logs"
+            ]
+          },
+          {
+            "name": "Enterprise Action Assurance",
+            "question": "Can every enterprise action be reconstructed?",
+            "evaluates": [
+              "API called",
+              "File modified",
+              "Database updated",
+              "ServiceNow ticket created",
+              "Robot instructed",
+              "MES command",
+              "ERP update",
+              "LIMS action",
+              "EHR action"
+            ]
+          },
+          {
+            "name": "Runtime Policy Assurance",
+            "question": "Was policy enforced during execution?",
+            "evaluates": [
+              "Policies applied",
+              "Blocked actions",
+              "Exceptions",
+              "Policy overrides",
+              "Escalation",
+              "Approval"
+            ]
+          },
+          {
+            "name": "AI Orchestration Assurance",
+            "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+            "evaluates": [
+              "Agent routing",
+              "Agent sequencing",
+              "Agent dependencies",
+              "Agent handoffs",
+              "Runtime coordination",
+              "Failure handling",
+              "Rollback",
+              "Retry evidence"
+            ]
+          },
+          {
+            "name": "Agent Runtime Evidence",
+            "question": "Can the agent runtime decision be reconstructed?",
+            "evaluates": [
+              "Prompt",
+              "Context",
+              "Model",
+              "Runtime",
+              "Workflow",
+              "Tools",
+              "APIs",
+              "Human review",
+              "Decision",
+              "Outcome"
+            ]
+          }
+        ],
+        "enterprise_action_types": [
+          "API call",
+          "File modification",
+          "Database update",
+          "ServiceNow ticket creation",
+          "Robot instruction",
+          "MES command",
+          "ERP update",
+          "LIMS action",
+          "EHR action"
+        ]
+      }
+    }
+  ],
+  "enterprise_execution_assurance_capability_patch": {
+    "patch_marker": "COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE",
+    "patch_type": "enterprise_execution_assurance_capability_layer",
+    "platform_redesign": false,
+    "new_capability_layer": true,
+    "capability_name": "Enterprise Execution Assurance",
+    "updated_lifecycle": [
+      "Discovery",
+      "Visibility",
+      "Governance",
+      "Operationalization",
+      "Enterprise Execution Assurance",
+      "Evidence",
+      "Continuous Assurance",
+      "Operational Trust"
+    ],
+    "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "enterprise_execution_assurance": {
+      "capability_name": "Enterprise Execution Assurance",
+      "capability_type": "First-class Platform B assurance capability",
+      "platform_position": "Between Operationalization and Evidence",
+      "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+      "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+      "positioning_statement": "Organizations are moving from AI that recommends to AI that acts. Enterprise Execution Assurance ensures those AI-driven actions are authorized, policy-enforced, traceable, reversible where required, monitored, evidenced, and reconstructable.",
+      "difference_from_evidence": "Enterprise Execution Assurance checks the execution itself. Evidence proves the execution can be reconstructed.",
+      "platform_redesign": false,
+      "lifecycle_evolution": true
+    },
+    "evaluation_areas": [
+      "Workflow authorization",
+      "Runtime policy enforcement",
+      "Enterprise system interaction",
+      "API invocation traceability",
+      "Human approval checkpoints",
+      "Rollback capability",
+      "Execution evidence",
+      "Outcome verification",
+      "Continuous monitoring",
+      "Audit reconstruction"
+    ],
+    "execution_assurance_modules": [
+      {
+        "name": "AI Runtime Assurance",
+        "question": "Can this AI runtime be operationally trusted?",
+        "evaluates": [
+          "Runtime identity",
+          "Runtime security",
+          "Runtime permissions",
+          "Runtime isolation",
+          "Runtime policy enforcement",
+          "Runtime evidence",
+          "Runtime audit logs"
+        ]
+      },
+      {
+        "name": "Workflow Assurance",
+        "question": "Was this AI action executed through an approved workflow?",
+        "evaluates": [
+          "Workflow integrity",
+          "Approval routing",
+          "Workflow ownership",
+          "Workflow evidence",
+          "Workflow traceability",
+          "Workflow versioning",
+          "Workflow execution logs"
+        ]
+      },
+      {
+        "name": "Enterprise Action Assurance",
+        "question": "Can every enterprise action be reconstructed?",
+        "evaluates": [
+          "API called",
+          "File modified",
+          "Database updated",
+          "ServiceNow ticket created",
+          "Robot instructed",
+          "MES command",
+          "ERP update",
+          "LIMS action",
+          "EHR action"
+        ]
+      },
+      {
+        "name": "Runtime Policy Assurance",
+        "question": "Was policy enforced during execution?",
+        "evaluates": [
+          "Policies applied",
+          "Blocked actions",
+          "Exceptions",
+          "Policy overrides",
+          "Escalation",
+          "Approval"
+        ]
+      },
+      {
+        "name": "AI Orchestration Assurance",
+        "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+        "evaluates": [
+          "Agent routing",
+          "Agent sequencing",
+          "Agent dependencies",
+          "Agent handoffs",
+          "Runtime coordination",
+          "Failure handling",
+          "Rollback",
+          "Retry evidence"
+        ]
+      },
+      {
+        "name": "Agent Runtime Evidence",
+        "question": "Can the agent runtime decision be reconstructed?",
+        "evaluates": [
+          "Prompt",
+          "Context",
+          "Model",
+          "Runtime",
+          "Workflow",
+          "Tools",
+          "APIs",
+          "Human review",
+          "Decision",
+          "Outcome"
+        ]
+      }
+    ],
+    "execution_control_questions": [
+      "Was the workflow authorized?",
+      "Was runtime policy enforced?",
+      "Which enterprise system was touched?",
+      "Which API was invoked?",
+      "Was human approval required and captured?",
+      "Was rollback available?",
+      "Was execution evidence produced?",
+      "Was the outcome verified?",
+      "Is the action continuously monitored?",
+      "Can the execution be reconstructed during audit or inspection?"
+    ],
+    "enterprise_action_types": [
+      "API call",
+      "File modification",
+      "Database update",
+      "ServiceNow ticket creation",
+      "Robot instruction",
+      "MES command",
+      "ERP update",
+      "LIMS action",
+      "EHR action"
+    ],
+    "execution_assurance_records": [
+      "Enterprise Execution Assurance Record",
+      "Workflow authorization record",
+      "Runtime policy enforcement record",
+      "Enterprise system interaction record",
+      "API invocation traceability record",
+      "Human approval checkpoint record",
+      "Rollback capability record",
+      "Execution evidence record",
+      "Outcome verification record",
+      "Continuous monitoring record",
+      "Audit reconstruction record",
+      "AI runtime assurance record",
+      "Workflow assurance record",
+      "Enterprise action assurance record",
+      "Runtime policy assurance record",
+      "AI orchestration assurance record",
+      "Agent runtime evidence record"
+    ]
+  },
+  "platform_b_updated_lifecycle": [
+    "Discovery",
+    "Visibility",
+    "Governance",
+    "Operationalization",
+    "Enterprise Execution Assurance",
+    "Evidence",
+    "Continuous Assurance",
+    "Operational Trust"
+  ],
+  "platform_b_execution_assurance_capability": {
+    "capability_name": "Enterprise Execution Assurance",
+    "capability_type": "First-class Platform B assurance capability",
+    "platform_position": "Between Operationalization and Evidence",
+    "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+    "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+    "positioning_statement": "Organizations are moving from AI that recommends to AI that acts. Enterprise Execution Assurance ensures those AI-driven actions are authorized, policy-enforced, traceable, reversible where required, monitored, evidenced, and reconstructable.",
+    "difference_from_evidence": "Enterprise Execution Assurance checks the execution itself. Evidence proves the execution can be reconstructed.",
+    "platform_redesign": false,
+    "lifecycle_evolution": true
+  }
+}

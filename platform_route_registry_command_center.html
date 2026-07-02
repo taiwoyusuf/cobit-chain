@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Platform Route Registry</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{
+            --text:#eef1f5;--muted:#aab3c2;--orange:#ff8a1f;--orange2:#ffb15c;--line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),
+                radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),
+                linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);
+        }
+        .page{max-width:1880px;margin:0 auto;padding:30px}
+        .hero,.section{
+            border:1px solid var(--oline);border-radius:34px;padding:30px;
+            background:linear-gradient(135deg,rgba(23,26,34,.96),rgba(8,9,13,.96));
+            box-shadow:0 28px 80px rgba(0,0,0,.45),0 0 36px rgba(255,138,31,.16);
+            margin-bottom:22px;
+        }
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}
+        .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill,.tag{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1450px;font-size:58px;line-height:1;letter-spacing:-2.1px;font-weight:1000}
+        .subtitle{max-width:1380px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .section-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+        .section h2{margin:0;font-size:30px;letter-spacing:-.8px;font-weight:1000}
+        .section p{margin:8px 0 0;color:#b9c2ce;max-width:1120px;line-height:1.62;font-size:14px}
+        .route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+        .route{
+            border:1px solid rgba(255,138,31,.24);
+            background:rgba(255,138,31,.07);
+            border-radius:18px;
+            padding:15px;
+            min-height:175px;
+            text-decoration:none;
+            color:var(--text);
+            display:block;
+        }
+        .route:hover{border-color:rgba(255,138,31,.62);background:rgba(255,138,31,.11)}
+        .route strong{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+        .route span{display:block;color:#b9c2ce;font-size:12px;line-height:1.45}
+        .route code{display:inline-block;margin-top:12px;color:#ffd7a8;background:rgba(255,138,31,.09);border:1px solid rgba(255,138,31,.18);padding:5px 7px;border-radius:7px;font-size:11px}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:12px 4px}
+        @media(max-width:1380px){.route-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:760px){.page{padding:16px}.hero,.section{padding:22px;border-radius:24px}h1{font-size:38px}.route-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="topbar">
+                <div class="brand">
+                    <div class="mark"></div>
+                    <div>
+                        <div class="brand-title">COBIT-Chain&trade; Platform Route Registry</div>
+                        <div class="brand-sub">Module map and verified local routes - spine refresh v17</div>
+                    </div>
+                </div>
+                <span class="pill">Platform A/B Route Registry</span>
+            </div>
+
+            <div class="eyebrow">Route Registry / AI Output Clearance / Workflow Entry Control</div>
+            <h1>Platform A route map for governed AI output clearance.</h1>
+            <div class="subtitle">
+                This registry exposes AI Output Clearance as a reusable assurance capability that determines whether AI-generated outputs are cleared, conditionally cleared, blocked, corrected, escalated, or routed for revalidation before workflow entry.
+            </div>
+
+            <div class="nav">
+                <a href="/platform">Back to Platform</a>
+                <a href="/platform/ai-output-clearance">AI Output Clearance</a>
+                <a href="/platform/intelligence-validation">Intelligence Validation</a>
+                <a href="/platform/ai-operational-readiness">Operational Readiness</a>
+                <a href="/api/platform/spine-refresh/v17/demo">Spine API</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>AI Output Clearance Layer</h2>
+                    <p>Newest layer that prevents unverified AI-generated outputs from entering consequential workflows.</p>
+                </div>
+                <span class="tag">Output clearance</span>
+            </div>
+            <div class="route-grid">
+                <a class="route" href="/platform/ai-output-clearance"><strong>AI Output Clearance Console</strong><span>Evaluates intended use alignment, risk profile alignment, source traceability, prompt and model lineage, explainability, confidence threshold, human review, regulated workflow fit, evidence completeness, downstream impact, escalation, and clearance decision record.</span><code>/platform/ai-output-clearance</code></a>
+                <a class="route" href="/platform/intelligence-validation"><strong>Intelligence Validation Console</strong><span>Validates whether the AI-enabled system remains operationally fit for intended use throughout its lifecycle.</span><code>/platform/intelligence-validation</code></a>
+                <a class="route" href="/platform/ai-lifecycle-change-assurance"><strong>AI Lifecycle Change Assurance</strong><span>Controls revalidation triggers, model changes, prompt changes, data changes, workflow changes, and monitoring changes.</span><code>/platform/ai-lifecycle-change-assurance</code></a>
+                <a class="route" href="/platform/ai-assurance-decision-orchestrator"><strong>AI Assurance Decision Orchestrator</strong><span>Uses clearance state, validation evidence, risk profile, output lineage, and human approval to approve, hold, escalate, or block.</span><code>/platform/ai-assurance-decision-orchestrator</code></a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Evidence, Replay, and Decision Confidence Layer</h2>
+                    <p>Output clearance strengthens evidence defense and decision traceability.</p>
+                </div>
+                <span class="tag">Clearance evidence</span>
+            </div>
+            <div class="route-grid">
+                <a class="route" href="/platform/evidence-packages"><strong>Evidence Vault Live Packages</strong><span>Binds output clearance record, intended use alignment, risk profile alignment, source traceability, prompt/model lineage, explainability, confidence threshold, human approval, regulated workflow fit, downstream impact, and final clearance decision.</span><code>/platform/evidence-packages</code></a>
+                <a class="route" href="/platform/ai-assurance-evidence-contract"><strong>AI Assurance Evidence Contract</strong><span>Defines clearance proof obligations, lineage evidence, approval evidence, risk evidence, and decision evidence.</span><code>/platform/ai-assurance-evidence-contract</code></a>
+                <a class="route" href="/platform/ai-assurance-replay-console"><strong>AI Assurance Replay Console</strong><span>Reconstructs why an output was cleared, blocked, corrected, escalated, or routed for revalidation.</span><code>/platform/ai-assurance-replay-console</code></a>
+                <a class="route" href="/platform/ai-assurance-trust-recalculation"><strong>AI Assurance Trust Recalculation Engine</strong><span>Recalculates operational trust after clearance remediation, correction, revalidation, or evidence completion.</span><code>/platform/ai-assurance-trust-recalculation</code></a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <h2>Workflow Entry, Monitoring, Response, and Learning Layer</h2>
+                    <p>Output clearance connects to release readiness, post-release monitoring, exception response, and learning reuse.</p>
+                </div>
+                <span class="tag">Operational use control</span>
+            </div>
+            <div class="route-grid">
+                <a class="route" href="/platform/ai-operational-readiness"><strong>AI Operational Readiness</strong><span>Uses output clearance readiness to determine whether AI-generated outputs can support controlled operation.</span><code>/platform/ai-operational-readiness</code></a>
+                <a class="route" href="/platform/ai-assurance-operational-release-gate"><strong>AI Assurance Operational Release Gate</strong><span>Blocks release when output clearance, evidence, validation, monitoring, or revalidation conditions are not satisfied.</span><code>/platform/ai-assurance-operational-release-gate</code></a>
+                <a class="route" href="/platform/ai-assurance-exception-drift-response"><strong>AI Assurance Exception and Drift Response Engine</strong><span>Routes unsafe, unclear, unapproved, or evidence-deficient outputs into escalation, correction, stop-use, rollback, or revalidation.</span><code>/platform/ai-assurance-exception-drift-response</code></a>
+                <a class="route" href="/platform/ai-assurance-outcome-learning"><strong>AI Assurance Outcome Learning Engine</strong><span>Converts clearance findings, blocked outputs, reviewer decisions, corrections, and escalation lessons into governed learning.</span><code>/platform/ai-assurance-outcome-learning</code></a>
+            </div>
+        </section>
+
+        
+<!-- COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE -->
+
+<section class="section">
+    <div class="section-head">
+        <div>
+            <h2>Enterprise Execution Assurance Routes</h2>
+            <p>Enterprise Execution Assurance is available as a first-class Platform B capability page and API endpoint.</p>
+        </div>
+        <span class="tag">Capability layer</span>
+    </div>
+    <div class="route-grid">
+        <a class="route" href="/platform/enterprise-execution-assurance"><strong>Enterprise Execution Assurance</strong><span>First-class capability page for execution assurance.</span><code>/platform/enterprise-execution-assurance</code></a>
+        <a class="route" href="/platform/execution-assurance"><strong>Execution Assurance Alias</strong><span>Short alias for the same capability.</span><code>/platform/execution-assurance</code></a>
+        <a class="route" href="/api/platform/enterprise-execution-assurance/demo"><strong>Enterprise Execution Assurance API</strong><span>Returns execution assurance capability model.</span><code>/api/platform/enterprise-execution-assurance/demo</code></a>
+        <a class="route" href="/platform/lifecycle-integration"><strong>Lifecycle Integration</strong><span>Shows Enterprise Execution Assurance between Operationalization and Evidence.</span><code>/platform/lifecycle-integration</code></a>
+    </div>
+</section>
+
+<!-- END COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE -->
+
+<div class="footer">
+            COBIT-Chain Platform Route Registry Refresh v17. Azure executes. COBIT-Chain proves.
+        </div>
+    </div>
+</body>
+</html>

@@ -263240,6 +263240,8743 @@ def cobitchain_platform_ab_premium_orange_command_center():
 
 
 
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_ARCHITECTURE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/architecture")
+@app.route("/platform-architecture")
+@app.route("/cobitchain-architecture")
+def cobitchain_platform_architecture_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_architecture_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_ARCHITECTURE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_API_BLUEPRINT_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/api-blueprint")
+@app.route("/platform-api")
+@app.route("/platform/api")
+@app.route("/cobitchain-api-blueprint")
+def cobitchain_platform_api_blueprint_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_api_blueprint_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_API_BLUEPRINT_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_MCP_SERVER_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/mcp-server")
+@app.route("/platform/mcp")
+@app.route("/mcp-server")
+@app.route("/cobitchain-mcp-server")
+def cobitchain_platform_mcp_server_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_mcp_server_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_MCP_SERVER_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_EVIDENCE_STORE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/evidence-store")
+@app.route("/platform/evidence-vault")
+@app.route("/evidence-vault")
+@app.route("/cobitchain-evidence-store")
+def cobitchain_platform_evidence_store_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_evidence_store_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_EVIDENCE_STORE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_GOVERNANCE_VISION_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/governance-vision")
+@app.route("/platform/vision")
+@app.route("/governance-vision")
+@app.route("/cobitchain-governance-vision")
+def cobitchain_platform_governance_vision_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_governance_vision_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_GOVERNANCE_VISION_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_IDENTITY_ACCESS_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/identity-access")
+@app.route("/platform/identity")
+@app.route("/identity-access")
+@app.route("/cobitchain-identity-access")
+def cobitchain_platform_identity_access_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_identity_access_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_IDENTITY_ACCESS_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_OBSERVABILITY_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/observability")
+@app.route("/platform/audit-replay")
+@app.route("/observability")
+@app.route("/cobitchain-observability")
+def cobitchain_platform_observability_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_observability_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_OBSERVABILITY_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_DEPLOYMENT_RELEASE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/deployment-pipeline")
+@app.route("/platform/deployment")
+@app.route("/deployment-pipeline")
+@app.route("/cobitchain-deployment")
+def cobitchain_platform_deployment_release_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_deployment_release_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_DEPLOYMENT_RELEASE_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_ROUTE_REGISTRY_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/routes")
+@app.route("/platform/route-registry")
+@app.route("/platform/module-map")
+@app.route("/cobitchain-route-registry")
+def cobitchain_platform_route_registry_command_center():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_route_registry_command_center.html")
+    return html_path.read_text(encoding="utf-8")
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_ROUTE_REGISTRY_COMMAND_CENTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_TRUST_SCORE_SERVICE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/trust-score-service")
+@app.route("/platform/trust-score")
+@app.route("/trust-score-service")
+@app.route("/cobitchain-trust-score-service")
+def cobitchain_platform_trust_score_service():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_trust_score_service.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_compute_demo_trust_score(payload):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(payload or {})
+    score = 100
+    explanation = []
+
+    def bool_value(name, default=False):
+        return bool(data.get(name, default))
+
+    owner_confirmed = bool_value("owner_confirmed")
+    support_group_confirmed = bool_value("support_group_confirmed")
+    access_model_confirmed = bool_value("access_model_confirmed")
+    evidence_lineage = bool_value("evidence_lineage")
+    mcp_replay_ready = bool_value("mcp_replay_ready")
+    observability_ready = bool_value("observability_ready")
+
+    try:
+        evidence_freshness_days = int(data.get("evidence_freshness_days", 999))
+    except Exception:
+        evidence_freshness_days = 999
+
+    try:
+        open_critical_gaps = int(data.get("open_critical_gaps", 0))
+    except Exception:
+        open_critical_gaps = 0
+
+    try:
+        open_major_gaps = int(data.get("open_major_gaps", 0))
+    except Exception:
+        open_major_gaps = 0
+
+    validation_state = str(data.get("validation_state", "unknown")).strip().lower()
+
+    if owner_confirmed:
+        explanation.append("Owner confirmed: no ownership penalty.")
+    else:
+        score -= 14
+        explanation.append("Owner not confirmed: -14 trust points.")
+
+    if support_group_confirmed:
+        explanation.append("Support group confirmed: operational support is traceable.")
+    else:
+        score -= 12
+        explanation.append("Support group not confirmed: -12 trust points.")
+
+    if access_model_confirmed:
+        explanation.append("Access model confirmed: access pathway is understood.")
+    else:
+        score -= 10
+        explanation.append("Access model not confirmed: -10 trust points.")
+
+    if evidence_lineage:
+        explanation.append("Evidence lineage available: source basis is traceable.")
+    else:
+        score -= 14
+        explanation.append("Evidence lineage missing: -14 trust points.")
+
+    if evidence_freshness_days <= 30:
+        explanation.append("Evidence is fresh within 30 days.")
+    elif evidence_freshness_days <= 90:
+        score -= 8
+        explanation.append("Evidence is aging beyond 30 days: -8 trust points.")
+    else:
+        score -= 18
+        explanation.append("Evidence is stale or missing beyond 90 days: -18 trust points.")
+
+    if validation_state in ["validated", "operational_under_current_controls"]:
+        explanation.append("Validation/control state supports operational use.")
+    elif validation_state in ["qualified_not_validated", "qualified"]:
+        score -= 8
+        explanation.append("Qualified but not fully validated: -8 trust points.")
+    elif validation_state in ["design_blueprint", "prototype"]:
+        score -= 12
+        explanation.append("Design/prototype state: -12 trust points.")
+    else:
+        score -= 16
+        explanation.append("Unknown validation/control state: -16 trust points.")
+
+    if open_critical_gaps > 0:
+        penalty = min(45, open_critical_gaps * 25)
+        score -= penalty
+        explanation.append(f"Critical open gaps present: -{penalty} trust points.")
+    else:
+        explanation.append("No critical open gaps reported.")
+
+    if open_major_gaps > 0:
+        penalty = min(30, open_major_gaps * 8)
+        score -= penalty
+        explanation.append(f"Major open gaps present: -{penalty} trust points.")
+    else:
+        explanation.append("No major open gaps reported.")
+
+    if mcp_replay_ready:
+        explanation.append("MCP replay readiness present: AI tool outputs can be traced.")
+    else:
+        score -= 5
+        explanation.append("MCP replay not ready: -5 trust points.")
+
+    if observability_ready:
+        explanation.append("Observability readiness present: telemetry can support replay.")
+    else:
+        score -= 5
+        explanation.append("Observability not ready: -5 trust points.")
+
+    score = max(0, min(100, score))
+
+    if open_critical_gaps > 0:
+        decision = "BLOCKED"
+        recommended_action = "Resolve critical gaps before relying on this object for operational trust."
+    elif score >= 85:
+        decision = "READY"
+        recommended_action = "Proceed with normal controls and preserve evidence replay."
+    elif score >= 65:
+        decision = "CAUTION"
+        recommended_action = "Proceed only with documented limitations and close evidence gaps."
+    elif score >= 40:
+        decision = "LIMITED"
+        recommended_action = "Use only for controlled demonstration or limited operational context."
+    else:
+        decision = "BLOCKED"
+        recommended_action = "Do not rely on this object until ownership, evidence, and control gaps are resolved."
+
+    if score >= 85 and evidence_lineage and evidence_freshness_days <= 30:
+        confidence = "HIGH"
+    elif score >= 65:
+        confidence = "MEDIUM"
+    elif score >= 40:
+        confidence = "LOW"
+    else:
+        confidence = "VERY LOW"
+
+    return {
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "object_id": data.get("object_id", "custom-object"),
+        "object_name": data.get("object_name", data.get("object_id", "Custom Object")),
+        "object_type": data.get("object_type", "trust_object"),
+        "trust_score": score,
+        "decision": decision,
+        "confidence": confidence,
+        "recommended_action": recommended_action,
+        "explanation": explanation,
+        "input_snapshot": data,
+        "service_note": "Demo trust scoring logic. Future version should bind to Evidence Store, rule versioning, and audit replay."
+    }
+
+
+def _cobitchain_load_demo_trust_objects():
+    import json
+    from pathlib import Path
+
+    seed_path = Path(__file__).with_name("platform_trust_score_seed_objects.json")
+    if not seed_path.exists():
+        return []
+
+    data = json.loads(seed_path.read_text(encoding="utf-8"))
+    return data.get("objects", [])
+
+
+@app.route("/api/platform/trust-score/demo", methods=["GET", "POST"])
+def cobitchain_platform_trust_score_demo_api():
+    from flask import jsonify, request
+
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or {}
+        return jsonify(_cobitchain_compute_demo_trust_score(payload))
+
+    object_id = request.args.get("object_id", "niagara-bms-supervisor")
+    objects = _cobitchain_load_demo_trust_objects()
+
+    for item in objects:
+        if item.get("object_id") == object_id:
+            return jsonify(_cobitchain_compute_demo_trust_score(item))
+
+    return jsonify({
+        "error": "object_not_found",
+        "message": f"No demo trust object found for object_id={object_id}",
+        "available_object_ids": [item.get("object_id") for item in objects]
+    }), 404
+
+
+@app.route("/api/platform/trust-state/demo", methods=["GET"])
+def cobitchain_platform_trust_state_demo_api():
+    from flask import jsonify
+
+    objects = _cobitchain_load_demo_trust_objects()
+    scored = [_cobitchain_compute_demo_trust_score(item) for item in objects]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Trust State Demo",
+        "count": len(scored),
+        "objects": scored
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_TRUST_SCORE_SERVICE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_OPERATIONAL_TRUST_TWIN_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/operational-trust-twin")
+@app.route("/platform/trust-twin")
+@app.route("/operational-trust-twin")
+@app.route("/cobitchain-operational-trust-twin")
+def cobitchain_platform_operational_trust_twin():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_operational_trust_twin.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_demo_twins():
+    import json
+    from pathlib import Path
+
+    seed_path = Path(__file__).with_name("platform_operational_trust_twin_seed.json")
+    if not seed_path.exists():
+        return []
+
+    data = json.loads(seed_path.read_text(encoding="utf-8"))
+    return data.get("twins", [])
+
+
+def _cobitchain_enrich_demo_twin(payload):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(payload or {})
+    score = int(data.get("trust_score", 0))
+    gaps = data.get("active_gaps", []) or []
+    dependencies = data.get("dependencies", []) or []
+
+    if score >= 85 and len(gaps) == 0:
+        twin_health = "strong"
+    elif score >= 70:
+        twin_health = "usable_with_caution"
+    elif score >= 50:
+        twin_health = "limited"
+    else:
+        twin_health = "weak_or_blocked"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["twin_health"] = twin_health
+    data["gap_count"] = len(gaps)
+    data["dependency_count"] = len(dependencies)
+    data["service_note"] = "Demo operational trust twin. Future version should bind to Evidence Store, Trust Score Service, Observability, and MCP replay."
+    return data
+
+
+@app.route("/api/platform/twin/demo", methods=["GET"])
+def cobitchain_platform_twin_demo_api():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "niagara-bms-supervisor")
+    twins = _cobitchain_load_demo_twins()
+
+    for item in twins:
+        if item.get("object_id") == object_id:
+            return jsonify(_cobitchain_enrich_demo_twin(item))
+
+    return jsonify({
+        "error": "twin_not_found",
+        "message": f"No demo operational trust twin found for object_id={object_id}",
+        "available_object_ids": [item.get("object_id") for item in twins]
+    }), 404
+
+
+@app.route("/api/platform/twin-state/demo", methods=["GET"])
+def cobitchain_platform_twin_state_demo_api():
+    from flask import jsonify
+
+    twins = _cobitchain_load_demo_twins()
+    enriched = [_cobitchain_enrich_demo_twin(item) for item in twins]
+
+    return jsonify({
+        "service": "COBIT-Chain Operational Trust Twin Demo",
+        "count": len(enriched),
+        "twins": enriched
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_OPERATIONAL_TRUST_TWIN_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_GOVERNANCE_VISION_LOOKUP_SERVICE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/vision-lookup")
+@app.route("/platform/qr-lookup")
+@app.route("/governance-vision-lookup")
+@app.route("/cobitchain-vision-lookup")
+def cobitchain_platform_governance_vision_lookup_service():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_vision_lookup_service.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_demo_vision_assets():
+    import json
+    from pathlib import Path
+
+    seed_path = Path(__file__).with_name("platform_vision_lookup_seed.json")
+    if not seed_path.exists():
+        return []
+
+    data = json.loads(seed_path.read_text(encoding="utf-8"))
+    return data.get("assets", [])
+
+
+def _cobitchain_enrich_vision_asset(payload):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(payload or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["action_mode"] = "READ_ONLY"
+    data["record_modification_allowed"] = False
+    data["approval_allowed"] = False
+    data["hud_rule"] = "Show only status, trust score, confidence, evidence summary, limitations, and next action."
+    data["service_note"] = "Demo Governance Vision lookup. Future version should bind to Trust Score Service, Operational Trust Twin, Evidence Store, Identity, and Observability."
+    return data
+
+
+def _cobitchain_find_vision_asset(asset_id):
+    normalized = str(asset_id or "").strip().upper()
+    assets = _cobitchain_load_demo_vision_assets()
+
+    for item in assets:
+        if str(item.get("asset_id", "")).strip().upper() == normalized:
+            return item
+
+    for item in assets:
+        if str(item.get("object_id", "")).strip().upper() == normalized:
+            return item
+
+    return None
+
+
+@app.route("/api/platform/vision/lookup/demo", methods=["GET"])
+def cobitchain_platform_vision_lookup_demo_api():
+    from flask import jsonify, request
+
+    asset_id = request.args.get("asset_id", "NIAGARA-BMS-SUPERVISOR")
+    item = _cobitchain_find_vision_asset(asset_id)
+
+    if item:
+        return jsonify(_cobitchain_enrich_vision_asset(item))
+
+    assets = _cobitchain_load_demo_vision_assets()
+    return jsonify({
+        "error": "asset_not_found",
+        "message": f"No demo Governance Vision asset found for asset_id={asset_id}",
+        "available_asset_ids": [item.get("asset_id") for item in assets]
+    }), 404
+
+
+@app.route("/api/platform/vision/hud/demo", methods=["GET"])
+def cobitchain_platform_vision_hud_demo_api():
+    from flask import jsonify, request
+
+    asset_id = request.args.get("asset_id", "NIAGARA-BMS-SUPERVISOR")
+    item = _cobitchain_find_vision_asset(asset_id)
+
+    if not item:
+        assets = _cobitchain_load_demo_vision_assets()
+        return jsonify({
+            "error": "asset_not_found",
+            "message": f"No demo Governance Vision asset found for asset_id={asset_id}",
+            "available_asset_ids": [item.get("asset_id") for item in assets]
+        }), 404
+
+    enriched = _cobitchain_enrich_vision_asset(item)
+
+    hud = {
+        "request_id": enriched.get("request_id"),
+        "generated_at_utc": enriched.get("generated_at_utc"),
+        "asset_id": enriched.get("asset_id"),
+        "object_name": enriched.get("object_name"),
+        "status": enriched.get("status"),
+        "trust_score": enriched.get("trust_score"),
+        "confidence": enriched.get("confidence"),
+        "evidence_confidence": enriched.get("evidence_confidence"),
+        "evidence_summary": enriched.get("evidence_summary"),
+        "next_action": enriched.get("next_action"),
+        "limitations": enriched.get("limitations"),
+        "privacy_mode": enriched.get("privacy_mode"),
+        "action_mode": "READ_ONLY",
+        "record_modification_allowed": False,
+        "approval_allowed": False
+    }
+
+    return jsonify(hud)
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_GOVERNANCE_VISION_LOOKUP_SERVICE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_EVIDENCE_VAULT_LIVE_SERVICE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/evidence-packages")
+@app.route("/platform/evidence-vault-live")
+@app.route("/evidence-packages")
+@app.route("/cobitchain-evidence-packages")
+def cobitchain_platform_evidence_vault_live_service():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_evidence_vault_live_service.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_demo_evidence_packages():
+    import json
+    from pathlib import Path
+
+    seed_path = Path(__file__).with_name("platform_evidence_vault_seed_packages.json")
+    if not seed_path.exists():
+        return []
+
+    data = json.loads(seed_path.read_text(encoding="utf-8"))
+    return data.get("packages", [])
+
+
+def _cobitchain_enrich_evidence_package(payload):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(payload or {})
+    records = data.get("evidence_records", []) or []
+    gaps = data.get("open_gaps", []) or []
+
+    available_records = 0
+    gap_records = 0
+
+    for record in records:
+        status = str(record.get("status", "")).lower()
+        if status == "available":
+            available_records += 1
+        if status == "gap":
+            gap_records += 1
+
+    total_records = max(1, len(records))
+    base_quality = int((available_records / total_records) * 100)
+
+    try:
+        freshness_days = int(data.get("freshness_days", 999))
+    except Exception:
+        freshness_days = 999
+
+    freshness_penalty = 0
+    if freshness_days > 90:
+        freshness_penalty = 20
+    elif freshness_days > 30:
+        freshness_penalty = 10
+
+    gap_penalty = min(35, len(gaps) * 7)
+    record_gap_penalty = min(25, gap_records * 8)
+
+    package_quality_score = max(0, min(100, base_quality - freshness_penalty - gap_penalty - record_gap_penalty + 20))
+
+    if package_quality_score >= 85:
+        package_confidence = "HIGH"
+    elif package_quality_score >= 65:
+        package_confidence = "MEDIUM"
+    elif package_quality_score >= 40:
+        package_confidence = "LOW"
+    else:
+        package_confidence = "VERY LOW"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["record_count"] = len(records)
+    data["available_record_count"] = available_records
+    data["gap_record_count"] = gap_records
+    data["open_gap_count"] = len(gaps)
+    data["package_quality_score"] = package_quality_score
+    data["package_confidence"] = package_confidence
+    data["replay_ready"] = package_quality_score >= 65 and available_records > 0
+    data["service_note"] = "Demo evidence package service. Future version should bind to Blob Storage, Cosmos DB, Azure AI Search, Trust Score, Operational Twin, MCP, and audit replay."
+    return data
+
+
+@app.route("/api/platform/evidence/package/demo", methods=["GET"])
+def cobitchain_platform_evidence_package_demo_api():
+    from flask import jsonify, request
+
+    package_id = request.args.get("package_id", "EVP-NIAGARA-READINESS-001")
+    packages = _cobitchain_load_demo_evidence_packages()
+
+    for item in packages:
+        if item.get("package_id") == package_id:
+            return jsonify(_cobitchain_enrich_evidence_package(item))
+
+    return jsonify({
+        "error": "package_not_found",
+        "message": f"No demo evidence package found for package_id={package_id}",
+        "available_package_ids": [item.get("package_id") for item in packages]
+    }), 404
+
+
+@app.route("/api/platform/evidence/object/demo", methods=["GET"])
+def cobitchain_platform_evidence_object_demo_api():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "niagara-bms-supervisor")
+    packages = _cobitchain_load_demo_evidence_packages()
+
+    matched = [
+        _cobitchain_enrich_evidence_package(item)
+        for item in packages
+        if item.get("object_id") == object_id
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Evidence Vault Object Evidence Demo",
+        "object_id": object_id,
+        "count": len(matched),
+        "packages": matched
+    })
+
+
+@app.route("/api/platform/evidence/state/demo", methods=["GET"])
+def cobitchain_platform_evidence_state_demo_api():
+    from flask import jsonify
+
+    packages = _cobitchain_load_demo_evidence_packages()
+    enriched = [_cobitchain_enrich_evidence_package(item) for item in packages]
+
+    return jsonify({
+        "service": "COBIT-Chain Evidence Vault Live Package Demo",
+        "count": len(enriched),
+        "packages": enriched
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_EVIDENCE_VAULT_LIVE_SERVICE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_UNIFIED_ASSURANCE_OBJECT_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/object-assurance")
+@app.route("/platform/assurance-object")
+@app.route("/platform/unified-assurance")
+def cobitchain_platform_unified_assurance_object():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_unified_assurance_object.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_unified_load_json(filename, root_key):
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name(filename)
+    if not path.exists():
+        return []
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data.get(root_key, [])
+    except Exception:
+        return []
+
+
+def _cobitchain_unified_find_by_object(items, object_id):
+    wanted = str(object_id or "").strip().lower()
+    for item in items:
+        if str(item.get("object_id", "")).strip().lower() == wanted:
+            return item
+    return None
+
+
+def _cobitchain_unified_compute_trust_score(data):
+    import uuid
+    from datetime import datetime, timezone
+
+    item = dict(data or {})
+    score = 100
+    explanation = []
+
+    def b(name):
+        return bool(item.get(name, False))
+
+    if not b("owner_confirmed"):
+        score -= 14
+        explanation.append("Owner not confirmed.")
+    if not b("support_group_confirmed"):
+        score -= 12
+        explanation.append("Support group not confirmed.")
+    if not b("access_model_confirmed"):
+        score -= 10
+        explanation.append("Access model not confirmed.")
+    if not b("evidence_lineage"):
+        score -= 14
+        explanation.append("Evidence lineage missing.")
+
+    try:
+        freshness = int(item.get("evidence_freshness_days", 999))
+    except Exception:
+        freshness = 999
+
+    if freshness > 90:
+        score -= 18
+        explanation.append("Evidence stale beyond 90 days.")
+    elif freshness > 30:
+        score -= 8
+        explanation.append("Evidence aging beyond 30 days.")
+
+    validation_state = str(item.get("validation_state", "unknown")).lower()
+    if validation_state in ["qualified_not_validated", "qualified"]:
+        score -= 8
+        explanation.append("Qualified but not fully validated.")
+    elif validation_state in ["design_blueprint", "prototype"]:
+        score -= 12
+        explanation.append("Design or prototype state.")
+    elif validation_state not in ["validated", "operational_under_current_controls"]:
+        score -= 16
+        explanation.append("Unknown validation or control state.")
+
+    try:
+        critical = int(item.get("open_critical_gaps", 0))
+    except Exception:
+        critical = 0
+
+    try:
+        major = int(item.get("open_major_gaps", 0))
+    except Exception:
+        major = 0
+
+    if critical > 0:
+        score -= min(45, critical * 25)
+        explanation.append("Critical gaps present.")
+
+    if major > 0:
+        score -= min(30, major * 8)
+        explanation.append("Major gaps present.")
+
+    if not b("mcp_replay_ready"):
+        score -= 5
+        explanation.append("MCP replay not ready.")
+    if not b("observability_ready"):
+        score -= 5
+        explanation.append("Observability not ready.")
+
+    score = max(0, min(100, score))
+
+    if critical > 0 or score < 40:
+        decision = "BLOCKED"
+    elif score >= 85:
+        decision = "READY"
+    elif score >= 65:
+        decision = "CAUTION"
+    else:
+        decision = "LIMITED"
+
+    if score >= 85:
+        confidence = "HIGH"
+    elif score >= 65:
+        confidence = "MEDIUM"
+    elif score >= 40:
+        confidence = "LOW"
+    else:
+        confidence = "VERY LOW"
+
+    if not explanation:
+        explanation.append("No major trust-score issues identified from seed data.")
+
+    return {
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "object_id": item.get("object_id"),
+        "object_name": item.get("object_name"),
+        "object_type": item.get("object_type"),
+        "trust_score": score,
+        "decision": decision,
+        "confidence": confidence,
+        "explanation": explanation
+    }
+
+
+def _cobitchain_unified_enrich_twin(data):
+    item = dict(data or {})
+    score = int(item.get("trust_score", 0) or 0)
+    gaps = item.get("active_gaps", []) or []
+
+    if score >= 85 and not gaps:
+        health = "strong"
+    elif score >= 70:
+        health = "usable_with_caution"
+    elif score >= 50:
+        health = "limited"
+    else:
+        health = "weak_or_blocked"
+
+    item["twin_health"] = health
+    item["gap_count"] = len(gaps)
+    return item
+
+
+def _cobitchain_unified_enrich_evidence(data):
+    item = dict(data or {})
+    records = item.get("evidence_records", []) or []
+    gaps = item.get("open_gaps", []) or []
+
+    available = 0
+    record_gaps = 0
+    for record in records:
+        status = str(record.get("status", "")).lower()
+        if status == "available":
+            available += 1
+        if status == "gap":
+            record_gaps += 1
+
+    total = max(1, len(records))
+    base = int((available / total) * 100)
+
+    try:
+        freshness = int(item.get("freshness_days", 999))
+    except Exception:
+        freshness = 999
+
+    freshness_penalty = 20 if freshness > 90 else 10 if freshness > 30 else 0
+    gap_penalty = min(35, len(gaps) * 7)
+    record_gap_penalty = min(25, record_gaps * 8)
+
+    quality = max(0, min(100, base - freshness_penalty - gap_penalty - record_gap_penalty + 20))
+
+    if quality >= 85:
+        confidence = "HIGH"
+    elif quality >= 65:
+        confidence = "MEDIUM"
+    elif quality >= 40:
+        confidence = "LOW"
+    else:
+        confidence = "VERY LOW"
+
+    item["package_quality_score"] = quality
+    item["package_confidence"] = confidence
+    item["record_count"] = len(records)
+    item["open_gap_count"] = len(gaps)
+    return item
+
+
+def _cobitchain_unified_find_vision_by_object(assets, object_id):
+    wanted = str(object_id or "").strip().lower()
+    for item in assets:
+        if str(item.get("object_id", "")).strip().lower() == wanted:
+            return item
+    return None
+
+
+def _cobitchain_build_unified_assurance_object(object_id):
+    import uuid
+    from datetime import datetime, timezone
+
+    trust_objects = _cobitchain_unified_load_json("platform_trust_score_seed_objects.json", "objects")
+    twins = _cobitchain_unified_load_json("platform_operational_trust_twin_seed.json", "twins")
+    packages = _cobitchain_unified_load_json("platform_evidence_vault_seed_packages.json", "packages")
+    vision_assets = _cobitchain_unified_load_json("platform_vision_lookup_seed.json", "assets")
+
+    trust_seed = _cobitchain_unified_find_by_object(trust_objects, object_id)
+    twin_seed = _cobitchain_unified_find_by_object(twins, object_id)
+    evidence_seed = _cobitchain_unified_find_by_object(packages, object_id)
+    vision_seed = _cobitchain_unified_find_vision_by_object(vision_assets, object_id)
+
+    if not trust_seed and not twin_seed and not evidence_seed and not vision_seed:
+        return None
+
+    trust = _cobitchain_unified_compute_trust_score(trust_seed or {
+        "object_id": object_id,
+        "object_name": object_id,
+        "object_type": "unknown",
+        "owner_confirmed": False,
+        "support_group_confirmed": False,
+        "access_model_confirmed": False,
+        "evidence_lineage": False,
+        "evidence_freshness_days": 999,
+        "validation_state": "unknown",
+        "open_critical_gaps": 0,
+        "open_major_gaps": 1,
+        "mcp_replay_ready": False,
+        "observability_ready": False
+    })
+
+    twin = _cobitchain_unified_enrich_twin(twin_seed or {})
+    evidence = _cobitchain_unified_enrich_evidence(evidence_seed or {})
+    vision = dict(vision_seed or {})
+
+    object_name = (
+        trust.get("object_name")
+        or twin.get("object_name")
+        or evidence.get("object_name")
+        or vision.get("object_name")
+        or object_id
+    )
+
+    object_type = (
+        trust.get("object_type")
+        or twin.get("twin_type")
+        or evidence.get("object_type")
+        or vision.get("asset_type")
+        or "governed_object"
+    )
+
+    open_gaps = []
+    for source in [
+        twin.get("active_gaps", []),
+        evidence.get("open_gaps", []),
+        vision.get("limitations", [])
+    ]:
+        for item in source or []:
+            if item not in open_gaps:
+                open_gaps.append(item)
+
+    limitations = []
+    for source in [
+        evidence.get("limitations", []),
+        vision.get("limitations", [])
+    ]:
+        for item in source or []:
+            if item not in limitations:
+                limitations.append(item)
+
+    score = int(trust.get("trust_score", 0) or 0)
+    evidence_quality = int(evidence.get("package_quality_score", 0) or 0)
+
+    if trust.get("decision") == "BLOCKED" or score < 40:
+        integrated_state = "BLOCKED"
+    elif score >= 85 and evidence_quality >= 75:
+        integrated_state = "READY"
+    elif score >= 65:
+        integrated_state = "CAUTION"
+    else:
+        integrated_state = "LIMITED"
+
+    if evidence_quality >= 85 and trust.get("confidence") == "HIGH":
+        integrated_confidence = "HIGH"
+    elif evidence_quality >= 65 and trust.get("confidence") in ["HIGH", "MEDIUM"]:
+        integrated_confidence = "MEDIUM"
+    elif evidence_quality >= 40:
+        integrated_confidence = "LOW"
+    else:
+        integrated_confidence = "VERY LOW"
+
+    if integrated_state == "READY":
+        action = "Proceed under current controls and preserve evidence replay."
+    elif integrated_state == "CAUTION":
+        action = "Proceed only with documented limitations and close open evidence or operational gaps."
+    elif integrated_state == "LIMITED":
+        action = "Use only in controlled context until trust, evidence, and operational gaps are improved."
+    else:
+        action = "Do not rely on this object until blocking trust or evidence gaps are resolved."
+
+    decision_basis = "Integrated from Trust Score, Operational Trust Twin, Evidence Vault package, and Governance Vision lookup seed data."
+
+    return {
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "object_id": object_id,
+        "object_name": object_name,
+        "object_type": object_type,
+        "integrated_state": integrated_state,
+        "integrated_confidence": integrated_confidence,
+        "integrated_recommended_action": action,
+        "decision_basis": decision_basis,
+        "open_gaps": open_gaps,
+        "limitations": limitations,
+        "trust_score": trust,
+        "operational_twin": twin,
+        "evidence_package": evidence,
+        "vision_lookup": vision,
+        "service_note": "Unified assurance object view strengthens existing Platform A/B modules. It does not create a new foundational concept."
+    }
+
+
+@app.route("/api/platform/assurance/object/demo", methods=["GET"])
+def cobitchain_platform_assurance_object_demo_api():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "niagara-bms-supervisor")
+    result = _cobitchain_build_unified_assurance_object(object_id)
+
+    if result:
+        return jsonify(result)
+
+    known = []
+    for filename, key in [
+        ("platform_trust_score_seed_objects.json", "objects"),
+        ("platform_operational_trust_twin_seed.json", "twins"),
+        ("platform_evidence_vault_seed_packages.json", "packages"),
+        ("platform_vision_lookup_seed.json", "assets")
+    ]:
+        for item in _cobitchain_unified_load_json(filename, key):
+            oid = item.get("object_id")
+            if oid and oid not in known:
+                known.append(oid)
+
+    return jsonify({
+        "error": "object_not_found",
+        "message": f"No unified assurance object found for object_id={object_id}",
+        "available_object_ids": known
+    }), 404
+
+
+@app.route("/api/platform/assurance/state/demo", methods=["GET"])
+def cobitchain_platform_assurance_state_demo_api():
+    from flask import jsonify
+
+    known = []
+    for filename, key in [
+        ("platform_trust_score_seed_objects.json", "objects"),
+        ("platform_operational_trust_twin_seed.json", "twins"),
+        ("platform_evidence_vault_seed_packages.json", "packages"),
+        ("platform_vision_lookup_seed.json", "assets")
+    ]:
+        for item in _cobitchain_unified_load_json(filename, key):
+            oid = item.get("object_id")
+            if oid and oid not in known:
+                known.append(oid)
+
+    objects = []
+    for object_id in known:
+        result = _cobitchain_build_unified_assurance_object(object_id)
+        if result:
+            objects.append(result)
+
+    return jsonify({
+        "service": "COBIT-Chain Unified Assurance Object Demo",
+        "count": len(objects),
+        "objects": objects
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_UNIFIED_ASSURANCE_OBJECT_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_MCP_TOOL_REGISTRY_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/mcp-tools")
+@app.route("/platform/tool-call-evidence")
+@app.route("/mcp-tools")
+@app.route("/cobitchain-mcp-tools")
+def cobitchain_platform_mcp_tool_registry():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_mcp_tool_registry.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_mcp_load_tools():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_mcp_tool_registry_seed.json")
+    if not path.exists():
+        return []
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data.get("tools", [])
+    except Exception:
+        return []
+
+
+def _cobitchain_mcp_find_tool(tool_id):
+    wanted = str(tool_id or "").strip()
+    for tool in _cobitchain_mcp_load_tools():
+        if tool.get("tool_id") == wanted:
+            return tool
+    return None
+
+
+def _cobitchain_mcp_append_log(record):
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_mcp_tool_call_log_demo.json")
+
+    existing = []
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8")).get("tool_calls", [])
+        except Exception:
+            existing = []
+
+    existing.append(record)
+    existing = existing[-50:]
+
+    path.write_text(
+        json.dumps({"tool_calls": existing}, indent=2),
+        encoding="utf-8"
+    )
+
+
+def _cobitchain_mcp_get_output(tool_id, object_id, package_id, asset_id, requested_action):
+    output = {}
+    evidence_binding = "No evidence binding available."
+    decision_reason = "Tool executed in demo mode."
+
+    if tool_id == "query_assurance_object":
+        fn = globals().get("_cobitchain_build_unified_assurance_object")
+        if fn:
+            output = fn(object_id) or {}
+            evidence_binding = "Bound to Unified Assurance Object demo response."
+            decision_reason = "Read-only assurance object query completed."
+        else:
+            output = {"dependency_missing": "Unified Assurance Object service is not installed."}
+            decision_reason = "Dependency missing."
+
+    elif tool_id == "get_evidence_package":
+        fn = globals().get("_cobitchain_load_demo_evidence_packages")
+        enrich = globals().get("_cobitchain_enrich_evidence_package")
+        if fn and enrich:
+            packages = fn()
+            found = None
+            for item in packages:
+                if item.get("package_id") == package_id:
+                    found = item
+                    break
+            output = enrich(found) if found else {"package_not_found": package_id}
+            evidence_binding = "Bound to Evidence Vault Live Package demo response."
+            decision_reason = "Read-only evidence package query completed."
+        else:
+            output = {"dependency_missing": "Evidence Vault Live Package service is not installed."}
+            decision_reason = "Dependency missing."
+
+    elif tool_id == "vision_hud_lookup":
+        find_asset = globals().get("_cobitchain_find_vision_asset")
+        enrich_asset = globals().get("_cobitchain_enrich_vision_asset")
+        if find_asset and enrich_asset:
+            found = find_asset(asset_id)
+            output = enrich_asset(found) if found else {"asset_not_found": asset_id}
+            evidence_binding = "Bound to Governance Vision Lookup demo response."
+            decision_reason = "Read-only HUD lookup completed."
+        else:
+            output = {"dependency_missing": "Governance Vision Lookup service is not installed."}
+            decision_reason = "Dependency missing."
+
+    elif tool_id == "action_guard_check":
+        blocked_actions = [
+            "approve_work",
+            "modify_record",
+            "bypass_sop",
+            "change_access",
+            "release_equipment",
+            "approve_operation",
+            "grant_access",
+            "execute_change",
+            "override_control"
+        ]
+        normalized_action = str(requested_action or "").strip().lower()
+        action_blocked = normalized_action in blocked_actions
+        output = {
+            "object_id": object_id,
+            "requested_action": requested_action,
+            "action_allowed": not action_blocked,
+            "decision": "BLOCKED" if action_blocked else "REVIEW_OR_READ_ONLY",
+            "required_review": True,
+            "limitations": [
+                "Demo action guard only",
+                "Does not execute the requested action",
+                "High-risk actions require human review and formal workflow"
+            ]
+        }
+        evidence_binding = "Bound to action guard rules and object identifier."
+        decision_reason = "Requested action is blocked." if action_blocked else "Requested action is not directly blocked, but review is still required."
+
+    else:
+        output = {"error": "unknown_tool"}
+        decision_reason = "Unknown tool."
+
+    return output, evidence_binding, decision_reason
+
+
+@app.route("/api/platform/mcp/tools/demo", methods=["GET"])
+def cobitchain_platform_mcp_tools_demo_api():
+    from flask import jsonify
+
+    tools = _cobitchain_mcp_load_tools()
+    return jsonify({
+        "service": "COBIT-Chain MCP Tool Registry Demo",
+        "count": len(tools),
+        "tools": tools
+    })
+
+
+@app.route("/api/platform/mcp/tool-call/demo", methods=["GET"])
+def cobitchain_platform_mcp_tool_call_demo_api():
+    from flask import jsonify, request
+    import uuid
+    from datetime import datetime, timezone
+
+    tool_id = request.args.get("tool_id", "query_assurance_object")
+    object_id = request.args.get("object_id", "niagara-bms-supervisor")
+    package_id = request.args.get("package_id", "EVP-NIAGARA-READINESS-001")
+    asset_id = request.args.get("asset_id", "NIAGARA-BMS-SUPERVISOR")
+    requested_action = request.args.get("requested_action", "read_assurance_state")
+
+    tool = _cobitchain_mcp_find_tool(tool_id)
+    if not tool:
+        return jsonify({
+            "error": "tool_not_found",
+            "message": f"No MCP demo tool found for tool_id={tool_id}",
+            "available_tool_ids": [item.get("tool_id") for item in _cobitchain_mcp_load_tools()]
+        }), 404
+
+    output, evidence_binding, decision_reason = _cobitchain_mcp_get_output(
+        tool_id, object_id, package_id, asset_id, requested_action
+    )
+
+    blocked_actions = tool.get("blocked_actions", []) or []
+    allowed_actions = tool.get("allowed_actions", []) or []
+
+    normalized_action = str(requested_action or "").strip()
+    action_blocked = normalized_action in blocked_actions
+    action_allowed = normalized_action in allowed_actions and not action_blocked
+
+    if action_blocked:
+        decision = "BLOCKED"
+    elif action_allowed:
+        decision = "ALLOWED_READ_ONLY"
+    elif tool.get("human_review_required"):
+        decision = "REVIEW_REQUIRED"
+    else:
+        decision = "ALLOWED_WITH_LIMITATIONS"
+
+    record = {
+        "tool_call_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "tool_id": tool.get("tool_id"),
+        "tool_name": tool.get("tool_name"),
+        "tool_type": tool.get("tool_type"),
+        "target_id": object_id or package_id or asset_id,
+        "object_id": object_id,
+        "package_id": package_id,
+        "asset_id": asset_id,
+        "requested_action": requested_action,
+        "action_allowed": action_allowed,
+        "decision": decision,
+        "decision_reason": decision_reason,
+        "evidence_binding": evidence_binding,
+        "replay_ready": bool(tool.get("replay_required")) and bool(evidence_binding),
+        "evidence_required": bool(tool.get("evidence_required")),
+        "human_review_required": bool(tool.get("human_review_required")) or decision == "REVIEW_REQUIRED" or decision == "BLOCKED",
+        "risk_level": tool.get("risk_level"),
+        "allowed_actions": allowed_actions,
+        "blocked_actions": blocked_actions,
+        "output_summary": output,
+        "service_note": "Demo MCP tool-call evidence. Future version should bind to Azure AI Foundry, Azure OpenAI, Azure AI Search, Azure API Management, Entra ID, and Application Insights."
+    }
+
+    _cobitchain_mcp_append_log(record)
+    return jsonify(record)
+
+
+@app.route("/api/platform/mcp/tool-call-log/demo", methods=["GET"])
+def cobitchain_platform_mcp_tool_call_log_demo_api():
+    from flask import jsonify
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_mcp_tool_call_log_demo.json")
+    if not path.exists():
+        return jsonify({
+            "service": "COBIT-Chain MCP Tool Call Log Demo",
+            "count": 0,
+            "tool_calls": []
+        })
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        calls = data.get("tool_calls", [])
+    except Exception:
+        calls = []
+
+    return jsonify({
+        "service": "COBIT-Chain MCP Tool Call Log Demo",
+        "count": len(calls),
+        "tool_calls": calls
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_MCP_TOOL_REGISTRY_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_CLOUD_ASSURANCE_MATRIX_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/cloud-assurance-matrix")
+@app.route("/platform/cloud-matrix")
+@app.route("/platform/cloud-agentic-assurance")
+@app.route("/cloud-assurance-matrix")
+def cobitchain_platform_cloud_assurance_matrix():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_cloud_assurance_matrix.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_cloud_assurance_matrix():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_cloud_assurance_matrix_seed.json")
+    if not path.exists():
+        return {"providers": [], "assurance_controls": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"providers": [], "assurance_controls": []}
+
+
+def _cobitchain_enrich_cloud_provider(provider):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(provider or {})
+    focus = data.get("cobitchain_overlay_focus", []) or []
+
+    base = 60
+    base += min(25, len(focus) * 3)
+
+    if data.get("provider_id") == "azure":
+        base += 8
+
+    score = max(0, min(100, base))
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["assurance_fit_score"] = score
+    data["cloud_role"] = "Execution stack"
+    data["cobitchain_role"] = "Assurance Engineering overlay"
+    data["platform_rule"] = "Cloud providers execute. COBIT-Chain helps prove operational trustworthiness."
+    data["architecture_decision"] = "Do not build separate cloud products. Use one Azure-first platform with cloud-neutral assurance architecture."
+    data["service_note"] = "Cloud Assurance Matrix strengthens existing Platform A/B architecture. It does not introduce a new foundational concept."
+    return data
+
+
+@app.route("/api/platform/cloud-assurance/matrix/demo", methods=["GET"])
+def cobitchain_platform_cloud_assurance_matrix_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    matrix = _cobitchain_load_cloud_assurance_matrix()
+    providers = [_cobitchain_enrich_cloud_provider(item) for item in matrix.get("providers", [])]
+    controls = matrix.get("assurance_controls", []) or []
+
+    return jsonify({
+        "service": "COBIT-Chain Cloud Assurance Matrix Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "cloud_layers": [
+            "Agent Runtime and Orchestration",
+            "Compute and Tool Execution",
+            "Memory, State and Data",
+            "Security, Governance and Observability"
+        ],
+        "platform_positioning": "Platform A is Azure-first. Platform B is cloud-neutral assurance evolution. Cloud providers execute. COBIT-Chain proves.",
+        "provider_count": len(providers),
+        "control_count": len(controls),
+        "providers": providers,
+        "assurance_controls": controls
+    })
+
+
+@app.route("/api/platform/cloud-assurance/provider/demo", methods=["GET"])
+def cobitchain_platform_cloud_assurance_provider_demo_api():
+    from flask import jsonify, request
+
+    provider_id = request.args.get("provider_id", "azure")
+    matrix = _cobitchain_load_cloud_assurance_matrix()
+    providers = matrix.get("providers", []) or []
+
+    for item in providers:
+        if item.get("provider_id") == provider_id:
+            return jsonify(_cobitchain_enrich_cloud_provider(item))
+
+    return jsonify({
+        "error": "provider_not_found",
+        "message": f"No cloud provider found for provider_id={provider_id}",
+        "available_provider_ids": [item.get("provider_id") for item in providers]
+    }), 404
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_CLOUD_ASSURANCE_MATRIX_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V2_VERIFICATION_ACTIVE
+# ============================================================
+
+# Platform Spine Refresh v2:
+# - Existing Architecture First
+# - Industry Convergence Rule
+# - Cloud Assurance Matrix integrated into platform spine
+# - Unified Object Assurance, MCP Tools, and Evidence Packages added to route map
+# No new foundational concept and no product fork.
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V2_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_INFRASTRUCTURE_ASSURANCE_BLUEPRINT_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-infrastructure-assurance")
+@app.route("/platform/ai-infra-assurance")
+@app.route("/platform/infrastructure-assurance-blueprint")
+@app.route("/ai-infrastructure-assurance-blueprint")
+def cobitchain_platform_ai_infrastructure_assurance_blueprint():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_infrastructure_assurance_blueprint.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_infrastructure_assurance_blueprint():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_infrastructure_assurance_seed.json")
+    if not path.exists():
+        return {"stages": [], "assurance_controls": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"stages": [], "assurance_controls": []}
+
+
+def _cobitchain_enrich_ai_infrastructure_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+
+    if score >= 85:
+        band = "STRONG"
+    elif score >= 75:
+        band = "GOOD_WITH_REVIEW_GAPS"
+    elif score >= 65:
+        band = "CAUTION"
+    else:
+        band = "LIMITED"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = band
+    data["azure_role"] = "Generate and deploy enterprise cloud architecture."
+    data["cobitchain_role"] = "Evaluate operational trustworthiness before deployment."
+    data["engineering_position"] = "Azure generates. COBIT-Chain evaluates. Azure deploys. COBIT-Chain provides evidence for trust."
+    data["platform_rule"] = "Do not create a separate cloud architecture product. Strengthen existing Platform A modules."
+    data["service_note"] = "AI Infrastructure Assurance Blueprint strengthens Platform A by applying existing Assurance Engineering controls to AI-generated infrastructure."
+    return data
+
+
+@app.route("/api/platform/ai-infrastructure/blueprint/demo", methods=["GET"])
+def cobitchain_platform_ai_infrastructure_blueprint_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    blueprint = _cobitchain_load_ai_infrastructure_assurance_blueprint()
+    stages = [_cobitchain_enrich_ai_infrastructure_stage(item) for item in blueprint.get("stages", [])]
+    controls = blueprint.get("assurance_controls", []) or []
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Infrastructure Assurance Blueprint Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "blueprint_name": blueprint.get("blueprint_name"),
+        "platform_rule": blueprint.get("platform_rule"),
+        "positioning": blueprint.get("positioning"),
+        "stage_count": len(stages),
+        "control_count": len(controls),
+        "average_readiness_score": average,
+        "stages": stages,
+        "assurance_controls": controls
+    })
+
+
+@app.route("/api/platform/ai-infrastructure/stage/demo", methods=["GET"])
+def cobitchain_platform_ai_infrastructure_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "business_intent")
+    blueprint = _cobitchain_load_ai_infrastructure_assurance_blueprint()
+    stages = blueprint.get("stages", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_ai_infrastructure_stage(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No AI infrastructure stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/ai-infrastructure/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_infrastructure_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    blueprint = _cobitchain_load_ai_infrastructure_assurance_blueprint()
+    stages = [_cobitchain_enrich_ai_infrastructure_stage(item) for item in blueprint.get("stages", [])]
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in stages
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:3]
+
+    required_actions = [
+        "Bind AI-generated architecture recommendations to Evidence Vault packages.",
+        "Require human architect review before deployment.",
+        "Connect IaC outputs to Change Control and Deployment Pipeline evidence.",
+        "Map policy and security validation to Operational Trust and Inspection Readiness.",
+        "Connect operational monitoring to Observability and Audit Replay."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Infrastructure Assurance Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_readiness_score": average,
+        "stage_count": len(stages),
+        "weakest_stages": weakest,
+        "required_actions": required_actions,
+        "platform_rule": "Azure generates. COBIT-Chain evaluates. Azure deploys. COBIT-Chain provides evidence for trust."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_INFRASTRUCTURE_ASSURANCE_BLUEPRINT_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_DECISION_CONTEXT_ASSURANCE_FLOW_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/decision-context-assurance")
+@app.route("/platform/decision-confidence-flow")
+@app.route("/platform/trusted-data-context-flow")
+@app.route("/decision-context-assurance")
+def cobitchain_platform_decision_context_assurance_flow():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_decision_context_assurance_flow.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_decision_context_assurance_flow():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_decision_context_assurance_seed.json")
+    if not path.exists():
+        return {"stages": [], "assurance_chain": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"stages": [], "assurance_chain": []}
+
+
+def _cobitchain_enrich_decision_context_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+
+    if score >= 85:
+        band = "STRONG"
+    elif score >= 75:
+        band = "GOOD_WITH_EVIDENCE_GAPS"
+    elif score >= 65:
+        band = "CAUTION"
+    else:
+        band = "LIMITED"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = band
+    data["engineering_principle"] = "Models generate recommendations. Platform A demonstrates whether those recommendations are operationally trustworthy."
+    data["platform_rule"] = "Strengthen existing Platform A capabilities. Do not introduce new foundational modules solely because industry terminology changes."
+    data["service_note"] = "Decision Context Assurance Flow strengthens Decision Confidence, Evidence Vault, Operational Trust, Governance Vision, Knowledge Integrity, CITrust, and AI ChangeControlTrust."
+    return data
+
+
+@app.route("/api/platform/decision-context/flow/demo", methods=["GET"])
+def cobitchain_platform_decision_context_flow_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    flow = _cobitchain_load_decision_context_assurance_flow()
+    stages = [_cobitchain_enrich_decision_context_stage(item) for item in flow.get("stages", [])]
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Decision Context Assurance Flow Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "flow_name": flow.get("flow_name"),
+        "platform_rule": flow.get("platform_rule"),
+        "positioning": flow.get("positioning"),
+        "stage_count": len(stages),
+        "average_readiness_score": average,
+        "assurance_chain": flow.get("assurance_chain", []),
+        "stages": stages
+    })
+
+
+@app.route("/api/platform/decision-context/stage/demo", methods=["GET"])
+def cobitchain_platform_decision_context_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "trusted_data")
+    flow = _cobitchain_load_decision_context_assurance_flow()
+    stages = flow.get("stages", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_decision_context_stage(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No decision context stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/decision-context/readiness/demo", methods=["GET"])
+def cobitchain_platform_decision_context_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    flow = _cobitchain_load_decision_context_assurance_flow()
+    stages = [_cobitchain_enrich_decision_context_stage(item) for item in flow.get("stages", [])]
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in stages
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:3]
+
+    required_actions = [
+        "Bind data source traceability to Evidence Vault packages.",
+        "Validate workflow context and ownership before AI recommendation use.",
+        "Capture prompt, model, tool-call, and knowledge-source evidence.",
+        "Require named human review before operational decision use.",
+        "Measure operational outcomes and feed results back into Decision Confidence."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Decision Context Assurance Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_readiness_score": average,
+        "stage_count": len(stages),
+        "weakest_stages": weakest,
+        "required_actions": required_actions,
+        "engineering_principle": "Models generate recommendations. Platform A demonstrates whether those recommendations are operationally trustworthy."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_DECISION_CONTEXT_ASSURANCE_FLOW_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V3_VERIFICATION_ACTIVE
+# ============================================================
+
+# Platform Spine Refresh v3:
+# - Azure Foundry Assurance Blueprint integrated into platform spine
+# - AI Infrastructure Assurance Blueprint integrated into platform spine
+# - Decision Context Assurance Flow integrated into platform spine
+# - Cloud Assurance Matrix, MCP Tools, Object Assurance, and Evidence Packages retained
+# - No new routes added
+# - No new foundational concept
+# - One Azure-first, cloud-neutral Assurance Engineering platform
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V3_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AZURE_FOUNDRY_ASSURANCE_BLUEPRINT_V2_ACTIVE
+# ============================================================
+
+@app.route("/platform/azure-foundry-assurance")
+@app.route("/platform/azure-foundry-blueprint")
+@app.route("/platform/foundry-assurance-blueprint")
+@app.route("/azure-foundry-assurance-blueprint")
+def cobitchain_platform_azure_foundry_assurance_blueprint_v2():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_azure_foundry_assurance_blueprint.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_azure_foundry_assurance_blueprint_v2():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_azure_foundry_assurance_seed.json")
+    if not path.exists():
+        return {"components": [], "lifecycle": [], "governed_objects": [], "assurance_controls": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"components": [], "lifecycle": [], "governed_objects": [], "assurance_controls": []}
+
+
+def _cobitchain_readiness_band_v2(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "STRONG"
+    if score >= 75:
+        return "GOOD_WITH_EVIDENCE_GAPS"
+    if score >= 65:
+        return "CAUTION"
+    return "LIMITED"
+
+
+def _cobitchain_enrich_azure_foundry_component_v2(component):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(component or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_readiness_band_v2(score)
+    data["azure_role"] = "Execution platform"
+    data["cobitchain_role"] = "Assurance Engineering overlay"
+    data["implementation_position"] = "Do not redesign COBIT-Chain around Azure. Treat Azure AI Foundry lifecycle elements as governed objects inside the existing Platform A architecture."
+    data["platform_rule"] = "Azure provides the execution platform. COBIT-Chain provides the assurance overlay."
+    data["service_note"] = "Azure Foundry Assurance Blueprint v2 strengthens Platform A by adding Prompt Governance, Model Abstraction, and lifecycle-governed objects."
+    return data
+
+
+def _cobitchain_enrich_azure_foundry_lifecycle_stage_v2(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_readiness_band_v2(score)
+    data["platform_rule"] = "Design -> Develop -> Evaluate -> Govern -> Approve -> Deploy -> Monitor -> Continuously Assure must be governed inside Platform A."
+    data["service_note"] = "Lifecycle stage is treated as a governed assurance boundary, not as a separate product module."
+    return data
+
+
+def _cobitchain_enrich_azure_foundry_governed_object_v2(obj):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(obj or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "Governed objects bind Azure Foundry execution to COBIT-Chain evidence, trust, review, and operational readiness."
+    data["service_note"] = "This governed object can later connect to Evidence Vault, Operational Trust Twin, MCP Tool Registry, Observability, and Governance Vision."
+    return data
+
+
+@app.route("/api/platform/azure-foundry/blueprint/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_blueprint_demo_api_v2():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    components = [_cobitchain_enrich_azure_foundry_component_v2(item) for item in blueprint.get("components", [])]
+    lifecycle = [_cobitchain_enrich_azure_foundry_lifecycle_stage_v2(item) for item in blueprint.get("lifecycle", [])]
+    governed_objects = [_cobitchain_enrich_azure_foundry_governed_object_v2(item) for item in blueprint.get("governed_objects", [])]
+    controls = blueprint.get("assurance_controls", []) or []
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in components + lifecycle]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Assurance Blueprint v2 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "blueprint_name": blueprint.get("blueprint_name"),
+        "platform_rule": blueprint.get("platform_rule"),
+        "positioning": blueprint.get("positioning"),
+        "component_count": len(components),
+        "lifecycle_stage_count": len(lifecycle),
+        "governed_object_count": len(governed_objects),
+        "control_count": len(controls),
+        "average_readiness_score": average,
+        "components": components,
+        "lifecycle": lifecycle,
+        "governed_objects": governed_objects,
+        "assurance_controls": controls
+    })
+
+
+@app.route("/api/platform/azure-foundry/component/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_component_demo_api_v2():
+    from flask import jsonify, request
+
+    component_id = request.args.get("component_id", "prompt_governance")
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    components = blueprint.get("components", []) or []
+
+    for item in components:
+        if item.get("component_id") == component_id:
+            return jsonify(_cobitchain_enrich_azure_foundry_component_v2(item))
+
+    return jsonify({
+        "error": "component_not_found",
+        "message": f"No Azure Foundry component found for component_id={component_id}",
+        "available_component_ids": [item.get("component_id") for item in components]
+    }), 404
+
+
+@app.route("/api/platform/azure-foundry/lifecycle/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_lifecycle_demo_api_v2():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "")
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    lifecycle = blueprint.get("lifecycle", []) or []
+
+    if stage_id:
+        for item in lifecycle:
+            if item.get("stage_id") == stage_id:
+                return jsonify(_cobitchain_enrich_azure_foundry_lifecycle_stage_v2(item))
+        return jsonify({
+            "error": "lifecycle_stage_not_found",
+            "message": f"No Azure Foundry lifecycle stage found for stage_id={stage_id}",
+            "available_stage_ids": [item.get("stage_id") for item in lifecycle]
+        }), 404
+
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Lifecycle Demo",
+        "count": len(lifecycle),
+        "lifecycle": [_cobitchain_enrich_azure_foundry_lifecycle_stage_v2(item) for item in lifecycle]
+    })
+
+
+@app.route("/api/platform/azure-foundry/object/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_object_demo_api_v2():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "azf-prompt-version")
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    objects = blueprint.get("governed_objects", []) or []
+
+    for item in objects:
+        if item.get("object_id") == object_id:
+            return jsonify(_cobitchain_enrich_azure_foundry_governed_object_v2(item))
+
+    return jsonify({
+        "error": "governed_object_not_found",
+        "message": f"No Azure Foundry governed object found for object_id={object_id}",
+        "available_object_ids": [item.get("object_id") for item in objects]
+    }), 404
+
+
+@app.route("/api/platform/azure-foundry/objects/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_objects_demo_api_v2():
+    from flask import jsonify
+
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    objects = blueprint.get("governed_objects", []) or []
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Governed Objects Demo",
+        "count": len(objects),
+        "governed_objects": [_cobitchain_enrich_azure_foundry_governed_object_v2(item) for item in objects]
+    })
+
+
+@app.route("/api/platform/azure-foundry/readiness/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_readiness_demo_api_v2():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    blueprint = _cobitchain_load_azure_foundry_assurance_blueprint_v2()
+    components = [_cobitchain_enrich_azure_foundry_component_v2(item) for item in blueprint.get("components", [])]
+    lifecycle = [_cobitchain_enrich_azure_foundry_lifecycle_stage_v2(item) for item in blueprint.get("lifecycle", [])]
+
+    all_scored = components + lifecycle
+    scores = [int(item.get("readiness_score", 0) or 0) for item in all_scored]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "id": item.get("component_id") or item.get("stage_id"),
+                "name": item.get("component_name") or item.get("stage_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in all_scored
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:5]
+
+    required_actions = [
+        "Treat Prompt Governance as a governed versioned object with owner, evaluation, approval, and rollback evidence.",
+        "Treat Model Abstraction as a governed object with model version, selection rationale, approved use, fallback rule, and limitation evidence.",
+        "Bind lifecycle stages to Evidence Vault packages.",
+        "Connect MCP tool calls to Tool Call Evidence and Observability traces.",
+        "Use Continuous Assurance to monitor trust score change, prompt drift, model change, outcome metrics, and audit replay."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Assurance Readiness v2 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_readiness_score": average,
+        "component_count": len(components),
+        "lifecycle_stage_count": len(lifecycle),
+        "weakest_items": weakest,
+        "required_actions": required_actions,
+        "platform_rule": "Azure provides the execution platform. COBIT-Chain provides the assurance overlay."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AZURE_FOUNDRY_ASSURANCE_BLUEPRINT_V2_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AZURE_FOUNDRY_LIFECYCLE_EVIDENCE_BINDER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/azure-foundry-evidence-binder")
+@app.route("/platform/foundry-lifecycle-evidence")
+@app.route("/platform/azure-foundry-lifecycle-evidence")
+@app.route("/azure-foundry-evidence-binder")
+def cobitchain_platform_azure_foundry_lifecycle_evidence_binder():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_azure_foundry_lifecycle_evidence_binder.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_azure_foundry_lifecycle_evidence_binder():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_azure_foundry_lifecycle_evidence_seed.json")
+    if not path.exists():
+        return {"lifecycle_evidence_bindings": [], "evidence_controls": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"lifecycle_evidence_bindings": [], "evidence_controls": []}
+
+
+def _cobitchain_enrich_azure_foundry_evidence_binding(binding):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(binding or {})
+    required = data.get("required_evidence", []) or []
+    available = data.get("available_evidence", []) or []
+    missing = data.get("missing_evidence", []) or []
+    score = int(data.get("trust_score", 0) or 0)
+
+    if score >= 85 and not missing:
+        readiness = "READY"
+    elif score >= 80:
+        readiness = "GOOD_WITH_MINOR_GAPS"
+    elif score >= 70:
+        readiness = "CAUTION_EVIDENCE_GAPS"
+    else:
+        readiness = "LIMITED"
+
+    coverage = round((len(available) / len(required)) * 100, 1) if required else 0
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["evidence_coverage_percent"] = coverage
+    data["missing_evidence_count"] = len(missing)
+    data["readiness_state"] = readiness
+    data["platform_rule"] = "Azure executes the AI lifecycle. COBIT-Chain binds each lifecycle stage to evidence required for operational trust."
+    data["service_note"] = "This is an Azure Foundry Assurance Blueprint v2 enhancement, not a new foundational module."
+    return data
+
+
+@app.route("/api/platform/azure-foundry/evidence-bindings/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_evidence_bindings_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    binder = _cobitchain_load_azure_foundry_lifecycle_evidence_binder()
+    bindings = [_cobitchain_enrich_azure_foundry_evidence_binding(item) for item in binder.get("lifecycle_evidence_bindings", [])]
+    scores = [int(item.get("trust_score", 0) or 0) for item in bindings]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Lifecycle Evidence Binder Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "binder_name": binder.get("binder_name"),
+        "platform_rule": binder.get("platform_rule"),
+        "positioning": binder.get("positioning"),
+        "binding_count": len(bindings),
+        "average_trust_score": average,
+        "evidence_controls": binder.get("evidence_controls", []),
+        "lifecycle_evidence_bindings": bindings
+    })
+
+
+@app.route("/api/platform/azure-foundry/evidence-binding/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_evidence_binding_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "develop")
+    binder = _cobitchain_load_azure_foundry_lifecycle_evidence_binder()
+    bindings = binder.get("lifecycle_evidence_bindings", []) or []
+
+    for item in bindings:
+        if item.get("stage_id") == stage_id or item.get("binding_id") == stage_id:
+            return jsonify(_cobitchain_enrich_azure_foundry_evidence_binding(item))
+
+    return jsonify({
+        "error": "evidence_binding_not_found",
+        "message": f"No Azure Foundry lifecycle evidence binding found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in bindings]
+    }), 404
+
+
+@app.route("/api/platform/azure-foundry/evidence-readiness/demo", methods=["GET"])
+def cobitchain_platform_azure_foundry_evidence_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    binder = _cobitchain_load_azure_foundry_lifecycle_evidence_binder()
+    bindings = [_cobitchain_enrich_azure_foundry_evidence_binding(item) for item in binder.get("lifecycle_evidence_bindings", [])]
+
+    scores = [int(item.get("trust_score", 0) or 0) for item in bindings]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "trust_score": item.get("trust_score"),
+                "missing_evidence": item.get("missing_evidence", []),
+                "evidence_coverage_percent": item.get("evidence_coverage_percent")
+            }
+            for item in bindings
+        ],
+        key=lambda x: int(x.get("trust_score", 0) or 0)
+    )[:4]
+
+    required_actions = [
+        "Bind Design stage to workflow boundary and data source inventory evidence.",
+        "Bind Develop stage to prompt owner, tool schema, and retrieval configuration evidence.",
+        "Bind Evaluate stage to grounding evidence, failure cases, and reviewer notes.",
+        "Bind Monitor stage to tool-call records, quality metrics, and incident signals.",
+        "Bind Continuously Assure stage to prompt drift, model change, and audit replay evidence."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Azure Foundry Lifecycle Evidence Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_trust_score": average,
+        "binding_count": len(bindings),
+        "weakest_bindings": weakest,
+        "required_actions": required_actions,
+        "platform_rule": "Azure executes the AI lifecycle. COBIT-Chain binds each lifecycle stage to evidence required for operational trust."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AZURE_FOUNDRY_LIFECYCLE_EVIDENCE_BINDER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AGENTIC_ACTION_ASSURANCE_FLOW_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/agentic-action-assurance")
+@app.route("/platform/agent-action-assurance")
+@app.route("/platform/ai-action-assurance")
+@app.route("/agentic-action-assurance")
+def cobitchain_platform_agentic_action_assurance_flow():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_agentic_action_assurance_flow.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_agentic_action_assurance_flow():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_agentic_action_assurance_seed.json")
+    if not path.exists():
+        return {"workflow": [], "sample_actions": [], "assurance_controls": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"workflow": [], "sample_actions": [], "assurance_controls": []}
+
+
+def _cobitchain_agentic_readiness_band(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "STRONG"
+    if score >= 75:
+        return "GOOD_WITH_CONTROL_GAPS"
+    if score >= 65:
+        return "CAUTION"
+    return "LIMITED"
+
+
+def _cobitchain_enrich_agentic_action_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_agentic_readiness_band(score)
+    data["platform_rule"] = "Do not create a separate governance product for Agentic AI. Strengthen existing Platform A modules using action assurance patterns."
+    data["service_note"] = "Agentic Action Assurance Flow evaluates AI-assisted operational actions before and after they affect regulated systems."
+    return data
+
+
+def _cobitchain_enrich_agentic_action_check(action):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(action or {})
+    score = int(data.get("trust_score", 0) or 0)
+    decision = data.get("decision", "")
+
+    if decision == "BLOCKED" or score < 60:
+        readiness_state = "BLOCKED"
+    elif score < 75:
+        readiness_state = "HOLD_OR_CAUTION"
+    elif data.get("state_verification_status") == "PENDING":
+        readiness_state = "READY_WITH_VERIFICATION_REQUIRED"
+    else:
+        readiness_state = "READY"
+
+    required_gates = [
+        "Intent captured",
+        "Authority verified",
+        "Context validated",
+        "Policy and risk evaluated",
+        "Human approval checked",
+        "MCP tool boundary checked",
+        "State verification required",
+        "Evidence package recorded",
+        "Continuous assurance enabled"
+    ]
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_state"] = readiness_state
+    data["required_gates"] = required_gates
+    data["platform_rule"] = "Cloud platforms execute AI agents. COBIT-Chain evaluates whether AI-assisted actions are operationally trustworthy before they affect regulated systems."
+    data["service_note"] = "This action check strengthens Agent Passport, Tool Call Evidence Ledger, AI Output Clearance, Operational Trust, Evidence Vault, Knowledge Integrity, and Decision Confidence."
+    return data
+
+
+@app.route("/api/platform/agentic-action/flow/demo", methods=["GET"])
+def cobitchain_platform_agentic_action_flow_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    flow = _cobitchain_load_agentic_action_assurance_flow()
+    workflow = [_cobitchain_enrich_agentic_action_stage(item) for item in flow.get("workflow", [])]
+    sample_actions = [_cobitchain_enrich_agentic_action_check(item) for item in flow.get("sample_actions", [])]
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in workflow]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Agentic Action Assurance Flow Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "flow_name": flow.get("flow_name"),
+        "platform_rule": flow.get("platform_rule"),
+        "positioning": flow.get("positioning"),
+        "workflow_stage_count": len(workflow),
+        "sample_action_count": len(sample_actions),
+        "average_stage_readiness": average,
+        "workflow": workflow,
+        "sample_actions": sample_actions,
+        "assurance_controls": flow.get("assurance_controls", [])
+    })
+
+
+@app.route("/api/platform/agentic-action/stage/demo", methods=["GET"])
+def cobitchain_platform_agentic_action_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "authority")
+    flow = _cobitchain_load_agentic_action_assurance_flow()
+    stages = flow.get("workflow", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_agentic_action_stage(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No agentic action workflow stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/agentic-action/check/demo", methods=["GET"])
+def cobitchain_platform_agentic_action_check_demo_api():
+    from flask import jsonify, request
+
+    action_id = request.args.get("action_id", "ACT-RBAC-CHANGE-001")
+    flow = _cobitchain_load_agentic_action_assurance_flow()
+    actions = flow.get("sample_actions", []) or []
+
+    for item in actions:
+        if item.get("action_id") == action_id:
+            return jsonify(_cobitchain_enrich_agentic_action_check(item))
+
+    return jsonify({
+        "error": "action_not_found",
+        "message": f"No sample agentic action found for action_id={action_id}",
+        "available_action_ids": [item.get("action_id") for item in actions]
+    }), 404
+
+
+@app.route("/api/platform/agentic-action/readiness/demo", methods=["GET"])
+def cobitchain_platform_agentic_action_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    flow = _cobitchain_load_agentic_action_assurance_flow()
+    actions = [_cobitchain_enrich_agentic_action_check(item) for item in flow.get("sample_actions", [])]
+
+    scores = [int(item.get("trust_score", 0) or 0) for item in actions]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    blocked = [item for item in actions if item.get("decision") == "BLOCKED" or item.get("readiness_state") == "BLOCKED"]
+    hold = [item for item in actions if "HOLD" in (item.get("decision", "") + item.get("readiness_state", ""))]
+
+    required_actions = [
+        "Require Agent Passport before any operational action.",
+        "Require delegated authority check before execution.",
+        "Route high-risk actions through human approval gates.",
+        "Force MCP-governed tool execution for agentic actions.",
+        "Bind tool-call evidence, state verification, and evidence package records.",
+        "Continuously monitor downstream effects and accountability feedback."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Agentic Action Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_action_trust_score": average,
+        "action_count": len(actions),
+        "blocked_action_count": len(blocked),
+        "hold_action_count": len(hold),
+        "blocked_actions": blocked,
+        "hold_actions": hold,
+        "required_actions": required_actions,
+        "platform_rule": "Cloud platforms execute AI agents. COBIT-Chain evaluates whether AI-assisted actions are operationally trustworthy before they affect regulated systems."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AGENTIC_ACTION_ASSURANCE_FLOW_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_ACTION_ASSURANCE_WORKFLOW_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/action-assurance-workflow")
+@app.route("/platform/action-assurance")
+@app.route("/platform/action-governance")
+@app.route("/action-assurance-workflow")
+def cobitchain_platform_action_assurance_workflow():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_action_assurance_workflow.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_action_assurance_workflow():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_action_assurance_workflow_seed.json")
+    if not path.exists():
+        return {"workflow": [], "module_adoption_map": [], "sample_action": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"workflow": [], "module_adoption_map": [], "sample_action": {}}
+
+
+def _cobitchain_action_assurance_band(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "STRONG"
+    if score >= 75:
+        return "GOOD_WITH_CONTROL_GAPS"
+    if score >= 65:
+        return "CAUTION"
+    return "LIMITED"
+
+
+def _cobitchain_enrich_action_assurance_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_action_assurance_band(score)
+    data["platform_rule"] = "Use Action Assurance Workflow across Platform A modules rather than creating separate governance products for Agentic AI."
+    data["engineering_principle"] = "A chatbot produces information. An AI agent performs actions. Platform A should govern operational actions, not only AI outputs."
+    return data
+
+
+def _cobitchain_enrich_action_assurance_check(action):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(action or {})
+    score = int(data.get("trust_score", 0) or 0)
+
+    if score < 60:
+        readiness_state = "BLOCKED"
+    elif score < 75:
+        readiness_state = "HOLD_OR_CAUTION"
+    elif data.get("state_verification_required"):
+        readiness_state = "READY_WITH_VERIFICATION_REQUIRED"
+    else:
+        readiness_state = "READY"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_state"] = readiness_state
+    data["platform_rule"] = "Cloud platforms execute AI agents. COBIT-Chain evaluates whether AI-assisted actions are operationally trustworthy before they affect regulated systems."
+    data["engineering_principle"] = "A chatbot produces information. An AI agent performs actions. Platform A should govern operational actions, not only AI outputs."
+    return data
+
+
+@app.route("/api/platform/action-assurance/workflow/demo", methods=["GET"])
+def cobitchain_platform_action_assurance_workflow_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    workflow = _cobitchain_load_action_assurance_workflow()
+    stages = [_cobitchain_enrich_action_assurance_stage(item) for item in workflow.get("workflow", [])]
+    sample_action = _cobitchain_enrich_action_assurance_check(workflow.get("sample_action", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Action Assurance Workflow Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": workflow.get("capability_name"),
+        "platform_rule": workflow.get("platform_rule"),
+        "engineering_principle": workflow.get("engineering_principle"),
+        "platform_position": workflow.get("platform_position"),
+        "workflow_stage_count": len(stages),
+        "average_stage_readiness": average,
+        "workflow": stages,
+        "module_adoption_map": workflow.get("module_adoption_map", []),
+        "sample_action": sample_action
+    })
+
+
+@app.route("/api/platform/action-assurance/stage/demo", methods=["GET"])
+def cobitchain_platform_action_assurance_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "authority")
+    workflow = _cobitchain_load_action_assurance_workflow()
+    stages = workflow.get("workflow", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_action_assurance_stage(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No Action Assurance Workflow stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/action-assurance/check/demo", methods=["GET"])
+def cobitchain_platform_action_assurance_check_demo_api():
+    from flask import jsonify
+
+    workflow = _cobitchain_load_action_assurance_workflow()
+    return jsonify(_cobitchain_enrich_action_assurance_check(workflow.get("sample_action", {})))
+
+
+@app.route("/api/platform/action-assurance/readiness/demo", methods=["GET"])
+def cobitchain_platform_action_assurance_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    workflow = _cobitchain_load_action_assurance_workflow()
+    stages = [_cobitchain_enrich_action_assurance_stage(item) for item in workflow.get("workflow", [])]
+    sample_action = _cobitchain_enrich_action_assurance_check(workflow.get("sample_action", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gate_decision": item.get("gate_decision")
+            }
+            for item in stages
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:4]
+
+    required_actions = [
+        "Use Action Assurance Workflow as the reusable action gate across Platform A modules.",
+        "Bind Agent Passport to authority and execution gates.",
+        "Bind Tool Call Evidence Ledger to execution and evidence recording gates.",
+        "Bind Evidence Vault to action replay and inspection readiness.",
+        "Bind Operational Trust to context, state verification, and continuous assurance.",
+        "Require human approval for regulated, privileged, irreversible, or high-risk actions."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Action Assurance Workflow Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_stage_readiness": average,
+        "weakest_stages": weakest,
+        "sample_action": sample_action,
+        "required_actions": required_actions,
+        "engineering_principle": "A chatbot produces information. An AI agent performs actions. Platform A should govern operational actions, not only AI outputs."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_ACTION_ASSURANCE_WORKFLOW_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_DATA_TO_DECISION_ASSURANCE_V2_ACTIVE
+# ============================================================
+
+@app.route("/platform/data-to-decision-assurance")
+@app.route("/platform/data-decision-assurance")
+@app.route("/platform/data-to-decision")
+@app.route("/data-to-decision-assurance")
+def cobitchain_platform_data_to_decision_assurance_v2():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_data_to_decision_assurance.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_data_to_decision_assurance_v2():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_data_to_decision_assurance_seed.json")
+    if not path.exists():
+        return {"lifecycle": [], "sample_decision": {}, "strengthens_modules": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"lifecycle": [], "sample_decision": {}, "strengthens_modules": []}
+
+
+def _cobitchain_data_to_decision_band_v2(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "STRONG"
+    if score >= 75:
+        return "GOOD_WITH_EVIDENCE_GAPS"
+    if score >= 65:
+        return "CAUTION"
+    return "LIMITED"
+
+
+def _cobitchain_enrich_data_to_decision_stage_v2(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_data_to_decision_band_v2(score)
+    data["platform_rule"] = "Use Data-to-Decision Assurance to strengthen existing Platform A modules without introducing additional standalone data governance products."
+    data["engineering_principle"] = "Trusted Data -> Trusted Context -> Trusted AI Recommendation -> Trusted Human Decision -> Trusted Evidence."
+    return data
+
+
+def _cobitchain_enrich_data_to_decision_check_v2(decision):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(decision or {})
+    score = int(data.get("decision_confidence_score", 0) or 0)
+
+    if score < 60:
+        readiness_state = "BLOCKED"
+    elif score < 75:
+        readiness_state = "HOLD_FOR_HUMAN_REVIEW_AND_LINEAGE_COMPLETION"
+    elif data.get("human_review_state") != "COMPLETED":
+        readiness_state = "READY_AFTER_HUMAN_REVIEW"
+    else:
+        readiness_state = "READY"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_state"] = readiness_state
+    data["platform_rule"] = "Azure provides enterprise data engineering capabilities. COBIT-Chain evaluates the complete data lifecycle before AI-assisted decisions are made."
+    data["engineering_principle"] = "Trusted Data -> Trusted Context -> Trusted AI Recommendation -> Trusted Human Decision -> Trusted Evidence."
+    return data
+
+
+@app.route("/api/platform/data-to-decision/lifecycle/demo", methods=["GET"])
+def cobitchain_platform_data_to_decision_lifecycle_demo_api_v2():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_data_to_decision_assurance_v2()
+    lifecycle = [_cobitchain_enrich_data_to_decision_stage_v2(item) for item in payload.get("lifecycle", [])]
+    sample_decision = _cobitchain_enrich_data_to_decision_check_v2(payload.get("sample_decision", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in lifecycle]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Data-to-Decision Assurance v2 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "strengthens_modules": payload.get("strengthens_modules", []),
+        "lifecycle_stage_count": len(lifecycle),
+        "average_stage_readiness": average,
+        "lifecycle": lifecycle,
+        "sample_decision": sample_decision
+    })
+
+
+@app.route("/api/platform/data-to-decision/stage/demo", methods=["GET"])
+def cobitchain_platform_data_to_decision_stage_demo_api_v2():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "data_lineage")
+    payload = _cobitchain_load_data_to_decision_assurance_v2()
+    stages = payload.get("lifecycle", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_data_to_decision_stage_v2(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No Data-to-Decision lifecycle stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/data-to-decision/check/demo", methods=["GET"])
+def cobitchain_platform_data_to_decision_check_demo_api_v2():
+    from flask import jsonify
+
+    payload = _cobitchain_load_data_to_decision_assurance_v2()
+    return jsonify(_cobitchain_enrich_data_to_decision_check_v2(payload.get("sample_decision", {})))
+
+
+@app.route("/api/platform/data-to-decision/readiness/demo", methods=["GET"])
+def cobitchain_platform_data_to_decision_readiness_demo_api_v2():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_data_to_decision_assurance_v2()
+    lifecycle = [_cobitchain_enrich_data_to_decision_stage_v2(item) for item in payload.get("lifecycle", [])]
+    sample_decision = _cobitchain_enrich_data_to_decision_check_v2(payload.get("sample_decision", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in lifecycle]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in lifecycle
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:4]
+
+    required_actions = [
+        "Bind data source ownership and permitted-use rules to Evidence Vault.",
+        "Create traceable ingestion, transformation, quality, and lineage evidence.",
+        "Validate serving-layer freshness and AI context grounding before AI recommendations are used.",
+        "Require named human review before regulated or operationally significant decisions.",
+        "Bind trusted human decision evidence to outcome metrics and continuous assurance."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Data-to-Decision Readiness v2 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "average_stage_readiness": average,
+        "weakest_stages": weakest,
+        "sample_decision": sample_decision,
+        "required_actions": required_actions,
+        "engineering_principle": "Trusted Data -> Trusted Context -> Trusted AI Recommendation -> Trusted Human Decision -> Trusted Evidence."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_DATA_TO_DECISION_ASSURANCE_V2_ACTIVE
+# ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_AUTONOMY_ASSURANCE_MODEL_V3_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-autonomy-assurance-model")
+@app.route("/platform/ai-autonomy-assessment")
+@app.route("/platform/ai-autonomy-model")
+@app.route("/platform/automation-agentic-assurance")
+@app.route("/platform/autonomy-assurance")
+@app.route("/ai-autonomy-model")
+def cobitchain_platform_ai_autonomy_assurance_model_v3():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_autonomy_model.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_autonomy_assurance_model_v3():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_autonomy_model_seed.json")
+    if not path.exists():
+        return {"autonomy_levels": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"autonomy_levels": [], "sample_assessment": {}}
+
+
+def _cobitchain_ai_autonomy_band_v3(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "STRONG"
+    if score >= 75:
+        return "GOOD_WITH_CONTROL_GAPS"
+    if score >= 65:
+        return "CAUTION"
+    return "FULL_ASSURANCE_REQUIRED"
+
+
+def _cobitchain_enrich_ai_autonomy_level_v3(level):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(level or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_ai_autonomy_band_v3(score)
+    data["platform_rule"] = "Every Platform A module should automatically determine minimum Assurance Engineering controls based on AI autonomy level."
+    data["engineering_principle"] = "As AI autonomy increases, Assurance Engineering requirements increase proportionally."
+    return data
+
+
+def _cobitchain_enrich_ai_autonomy_assessment_v3(assessment, levels):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    detected = data.get("detected_autonomy_level", "level_1")
+    level_map = {item.get("level_id"): item for item in levels}
+    level = level_map.get(detected, {})
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["detected_level_number"] = level.get("level_number")
+    data["detected_level_name"] = level.get("level_name") or data.get("detected_level_name")
+    data["classification"] = level.get("classification")
+    data["minimum_controls"] = level.get("minimum_controls", {})
+    data["mapped_modules"] = level.get("mapped_modules", [])
+    data["platform_rule"] = "Workflow Automation follows predefined paths. Agentic AI dynamically evaluates context, selects actions, coordinates tools or agents, evaluates results, and determines subsequent actions."
+    data["engineering_principle"] = "As AI autonomy increases, Assurance Engineering requirements increase proportionally."
+    return data
+
+
+@app.route("/api/platform/ai-autonomy/model/demo", methods=["GET"])
+@app.route("/api/platform/ai-autonomy/assurance-model/demo", methods=["GET"])
+def cobitchain_platform_ai_autonomy_model_demo_api_v3():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_autonomy_assurance_model_v3()
+    raw_levels = payload.get("autonomy_levels", []) or []
+    levels = [_cobitchain_enrich_ai_autonomy_level_v3(item) for item in raw_levels]
+    assessment = _cobitchain_enrich_ai_autonomy_assessment_v3(payload.get("sample_assessment", {}), raw_levels)
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in levels]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Autonomy Assurance Model v3 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "reusable_across_modules": payload.get("reusable_across_modules", []),
+        "autonomy_level_count": len(levels),
+        "average_level_readiness": average,
+        "autonomy_levels": levels,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-autonomy/level/demo", methods=["GET"])
+def cobitchain_platform_ai_autonomy_level_demo_api_v3():
+    from flask import jsonify, request
+
+    level_id = request.args.get("level_id", "level_4")
+    payload = _cobitchain_load_ai_autonomy_assurance_model_v3()
+    levels = payload.get("autonomy_levels", []) or []
+
+    for item in levels:
+        if item.get("level_id") == level_id:
+            return jsonify(_cobitchain_enrich_ai_autonomy_level_v3(item))
+
+    return jsonify({
+        "error": "level_not_found",
+        "message": f"No AI Autonomy Assurance level found for level_id={level_id}",
+        "available_level_ids": [item.get("level_id") for item in levels]
+    }), 404
+
+
+@app.route("/api/platform/ai-autonomy/assessment/demo", methods=["GET"])
+@app.route("/api/platform/ai-autonomy/check/demo", methods=["GET"])
+def cobitchain_platform_ai_autonomy_assessment_demo_api_v3():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_autonomy_assurance_model_v3()
+    return jsonify(_cobitchain_enrich_ai_autonomy_assessment_v3(payload.get("sample_assessment", {}), payload.get("autonomy_levels", [])))
+
+
+@app.route("/api/platform/ai-autonomy/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_autonomy_readiness_demo_api_v3():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_autonomy_assurance_model_v3()
+    raw_levels = payload.get("autonomy_levels", []) or []
+    levels = [_cobitchain_enrich_ai_autonomy_level_v3(item) for item in raw_levels]
+    assessment = _cobitchain_enrich_ai_autonomy_assessment_v3(payload.get("sample_assessment", {}), raw_levels)
+
+    weakest = sorted(
+        [
+            {
+                "level_id": item.get("level_id"),
+                "level_number": item.get("level_number"),
+                "level_name": item.get("level_name"),
+                "classification": item.get("classification"),
+                "readiness_score": item.get("readiness_score"),
+                "required_assurance": item.get("required_assurance", [])
+            }
+            for item in levels
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:3]
+
+    required_actions = [
+        "Run AI Autonomy Assurance Model assessment for every AI-assisted workflow.",
+        "Automatically scale required controls by autonomy level.",
+        "Require Decision Assurance and Human Approval from Level 2 upward when controlled actions are involved.",
+        "Require Tool Governance, Runtime Monitoring, and Evidence Recording from Level 3 upward.",
+        "Require Agent Identity, Authority Assurance, Human Approval Gates, Operational Trust, and Continuous Monitoring at Level 4.",
+        "Require Full Assurance Engineering, Runtime Governance, Continuous Operational Assurance, Human Escalation, Decision Integrity, and Complete Evidence Chain at Level 5."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Autonomy Assurance Model Readiness v3 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "weakest_levels": weakest,
+        "sample_assessment": assessment,
+        "required_actions": required_actions,
+        "engineering_principle": "As AI autonomy increases, Assurance Engineering requirements increase proportionally."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_AUTONOMY_ASSURANCE_MODEL_V3_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_OPERATIONAL_READINESS_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-operational-readiness")
+@app.route("/platform/operational-ai-readiness")
+@app.route("/platform/ai-ops-readiness")
+@app.route("/ai-operational-readiness")
+def cobitchain_platform_ai_operational_readiness():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_operational_readiness.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_operational_readiness():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_operational_readiness_seed.json")
+    if not path.exists():
+        return {"assessment_dimensions": [], "maturity_model": [], "sample_readiness_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"assessment_dimensions": [], "maturity_model": [], "sample_readiness_assessment": {}}
+
+
+def _cobitchain_ai_operational_readiness_band(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "TRANSFORMATION_READY"
+    if score >= 75:
+        return "GOOD_WITH_OPERATING_MODEL_GAPS"
+    if score >= 65:
+        return "PARTIAL_READINESS"
+    return "NOT_READY"
+
+
+def _cobitchain_enrich_ai_operational_dimension(dimension):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(dimension or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_ai_operational_readiness_band(score)
+    data["platform_rule"] = "AI Operational Readiness strengthens existing Platform A modules rather than introducing a separate governance framework."
+    data["engineering_principle"] = "Technology adoption alone does not constitute transformation. Transformation occurs when AI becomes an accountable operational capability supported by governance, evidence, and human oversight."
+    return data
+
+
+def _cobitchain_enrich_ai_operational_level(level):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(level or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "Evaluate operating model maturity before claiming AI transformation."
+    data["engineering_principle"] = "Transformation occurs when AI becomes an accountable operational capability."
+    return data
+
+
+def _cobitchain_enrich_ai_operational_assessment(assessment, maturity_model):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    level_map = {item.get("level_id"): item for item in maturity_model}
+    current = level_map.get(data.get("current_maturity_level"), {})
+    target = level_map.get(data.get("target_maturity_level"), {})
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["current_maturity_name"] = current.get("level_name")
+    data["target_maturity_name"] = target.get("level_name")
+    data["readiness_band"] = _cobitchain_ai_operational_readiness_band(data.get("readiness_score", 0))
+    data["platform_rule"] = "AI Operational Readiness evaluates organizational readiness for AI-enabled operations."
+    data["engineering_principle"] = "Technology adoption alone does not constitute transformation. Transformation occurs when AI becomes an accountable operational capability supported by governance, evidence, and human oversight."
+    return data
+
+
+@app.route("/api/platform/ai-operational-readiness/model/demo", methods=["GET"])
+def cobitchain_platform_ai_operational_readiness_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_operational_readiness()
+    dimensions = [_cobitchain_enrich_ai_operational_dimension(item) for item in payload.get("assessment_dimensions", [])]
+    maturity = [_cobitchain_enrich_ai_operational_level(item) for item in payload.get("maturity_model", [])]
+    assessment = _cobitchain_enrich_ai_operational_assessment(payload.get("sample_readiness_assessment", {}), payload.get("maturity_model", []))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in dimensions]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Operational Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "strengthens_modules": payload.get("strengthens_modules", []),
+        "dimension_count": len(dimensions),
+        "maturity_level_count": len(maturity),
+        "average_dimension_readiness": average,
+        "assessment_dimensions": dimensions,
+        "maturity_model": maturity,
+        "sample_readiness_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-operational-readiness/dimension/demo", methods=["GET"])
+def cobitchain_platform_ai_operational_readiness_dimension_demo_api():
+    from flask import jsonify, request
+
+    dimension_id = request.args.get("dimension_id", "workflow_redesign")
+    payload = _cobitchain_load_ai_operational_readiness()
+    dimensions = payload.get("assessment_dimensions", []) or []
+
+    for item in dimensions:
+        if item.get("dimension_id") == dimension_id:
+            return jsonify(_cobitchain_enrich_ai_operational_dimension(item))
+
+    return jsonify({
+        "error": "dimension_not_found",
+        "message": f"No AI Operational Readiness dimension found for dimension_id={dimension_id}",
+        "available_dimension_ids": [item.get("dimension_id") for item in dimensions]
+    }), 404
+
+
+@app.route("/api/platform/ai-operational-readiness/level/demo", methods=["GET"])
+def cobitchain_platform_ai_operational_readiness_level_demo_api():
+    from flask import jsonify, request
+
+    level_id = request.args.get("level_id", "level_3")
+    payload = _cobitchain_load_ai_operational_readiness()
+    levels = payload.get("maturity_model", []) or []
+
+    for item in levels:
+        if item.get("level_id") == level_id:
+            return jsonify(_cobitchain_enrich_ai_operational_level(item))
+
+    return jsonify({
+        "error": "level_not_found",
+        "message": f"No AI Operational Readiness maturity level found for level_id={level_id}",
+        "available_level_ids": [item.get("level_id") for item in levels]
+    }), 404
+
+
+@app.route("/api/platform/ai-operational-readiness/assessment/demo", methods=["GET"])
+def cobitchain_platform_ai_operational_readiness_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_operational_readiness()
+    return jsonify(_cobitchain_enrich_ai_operational_assessment(payload.get("sample_readiness_assessment", {}), payload.get("maturity_model", [])))
+
+
+@app.route("/api/platform/ai-operational-readiness/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_operational_readiness_summary_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_operational_readiness()
+    dimensions = [_cobitchain_enrich_ai_operational_dimension(item) for item in payload.get("assessment_dimensions", [])]
+    assessment = _cobitchain_enrich_ai_operational_assessment(payload.get("sample_readiness_assessment", {}), payload.get("maturity_model", []))
+
+    weakest = sorted(
+        [
+            {
+                "dimension_id": item.get("dimension_id"),
+                "dimension_name": item.get("dimension_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in dimensions
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:5]
+
+    required_actions = [
+        "Redesign workflows around AI-enabled operations rather than layering AI onto old processes.",
+        "Define decision ownership and human-AI responsibility boundaries.",
+        "Formalize governance cadence, approval pathways, and escalation paths.",
+        "Implement operational controls, runtime monitoring, and evidence packages.",
+        "Measure outcomes, control effectiveness, exception trends, and improvement actions."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Operational Readiness Summary Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "weakest_dimensions": weakest,
+        "required_actions": required_actions,
+        "engineering_principle": "Technology adoption alone does not constitute transformation. Transformation occurs when AI becomes an accountable operational capability supported by governance, evidence, and human oversight."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_OPERATIONAL_READINESS_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_LIFECYCLE_CHANGE_ASSURANCE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-lifecycle-change-assurance")
+@app.route("/platform/ai-change-lifecycle-assurance")
+@app.route("/platform/pccp-assurance")
+@app.route("/platform/ai-changecontroltrust")
+@app.route("/ai-lifecycle-change-assurance")
+def cobitchain_platform_ai_lifecycle_change_assurance():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_lifecycle_change_assurance.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_lifecycle_change_assurance():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_lifecycle_change_assurance_seed.json")
+    if not path.exists():
+        return {"assessment_dimensions": [], "change_decision_states": [], "sample_change": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"assessment_dimensions": [], "change_decision_states": [], "sample_change": {}}
+
+
+def _cobitchain_ai_lifecycle_change_band(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "READY_WITHIN_APPROVED_BOUNDARY"
+    if score >= 75:
+        return "GOOD_WITH_EVIDENCE_GAPS"
+    if score >= 65:
+        return "CONDITIONAL_REVIEW_REQUIRED"
+    return "BLOCK_OR_REVALIDATE"
+
+
+def _cobitchain_enrich_ai_lifecycle_change_dimension(dimension):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(dimension or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_ai_lifecycle_change_band(score)
+    data["platform_rule"] = "AI Lifecycle Change Assurance strengthens AI ChangeControlTrust rather than creating a separate governance framework."
+    data["engineering_principle"] = "Every AI change is a governance event."
+    return data
+
+
+def _cobitchain_enrich_ai_lifecycle_change_record(change):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(change or {})
+    score = int(data.get("change_readiness_score", 0) or 0)
+
+    if score < 65:
+        readiness_state = "BLOCK_OR_REVALIDATE"
+    elif score < 75:
+        readiness_state = "CONDITIONAL_HOLD"
+    elif data.get("human_review_state") != "COMPLETED":
+        readiness_state = "READY_AFTER_HUMAN_REVIEW"
+    else:
+        readiness_state = "READY"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_state"] = readiness_state
+    data["platform_rule"] = "Platform A determines whether a proposed AI modification remains within approved operational and regulatory boundaries or requires escalation, revalidation, or additional review."
+    data["engineering_principle"] = "Every AI change is a governance event."
+    return data
+
+
+@app.route("/api/platform/ai-lifecycle-change/model/demo", methods=["GET"])
+def cobitchain_platform_ai_lifecycle_change_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_lifecycle_change_assurance()
+    dimensions = [_cobitchain_enrich_ai_lifecycle_change_dimension(item) for item in payload.get("assessment_dimensions", [])]
+    change = _cobitchain_enrich_ai_lifecycle_change_record(payload.get("sample_change", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in dimensions]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Lifecycle Change Assurance Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "implementation_example": payload.get("implementation_example"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "strengthens_modules": payload.get("strengthens_modules", []),
+        "dimension_count": len(dimensions),
+        "average_dimension_readiness": average,
+        "assessment_dimensions": dimensions,
+        "change_decision_states": payload.get("change_decision_states", []),
+        "sample_change": change
+    })
+
+
+@app.route("/api/platform/ai-lifecycle-change/dimension/demo", methods=["GET"])
+def cobitchain_platform_ai_lifecycle_change_dimension_demo_api():
+    from flask import jsonify, request
+
+    dimension_id = request.args.get("dimension_id", "approved_change_boundaries")
+    payload = _cobitchain_load_ai_lifecycle_change_assurance()
+    dimensions = payload.get("assessment_dimensions", []) or []
+
+    for item in dimensions:
+        if item.get("dimension_id") == dimension_id:
+            return jsonify(_cobitchain_enrich_ai_lifecycle_change_dimension(item))
+
+    return jsonify({
+        "error": "dimension_not_found",
+        "message": f"No AI Lifecycle Change Assurance dimension found for dimension_id={dimension_id}",
+        "available_dimension_ids": [item.get("dimension_id") for item in dimensions]
+    }), 404
+
+
+@app.route("/api/platform/ai-lifecycle-change/change/demo", methods=["GET"])
+def cobitchain_platform_ai_lifecycle_change_record_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_lifecycle_change_assurance()
+    return jsonify(_cobitchain_enrich_ai_lifecycle_change_record(payload.get("sample_change", {})))
+
+
+@app.route("/api/platform/ai-lifecycle-change/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_lifecycle_change_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_lifecycle_change_assurance()
+    dimensions = [_cobitchain_enrich_ai_lifecycle_change_dimension(item) for item in payload.get("assessment_dimensions", [])]
+    change = _cobitchain_enrich_ai_lifecycle_change_record(payload.get("sample_change", {}))
+
+    weakest = sorted(
+        [
+            {
+                "dimension_id": item.get("dimension_id"),
+                "dimension_name": item.get("dimension_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in dimensions
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:5]
+
+    required_actions = [
+        "Confirm whether the proposed AI change remains within approved change boundaries.",
+        "Complete dataset representativeness and lineage review.",
+        "Complete validation methodology and acceptance criteria.",
+        "Require named human review and decision evidence.",
+        "Define post-deployment monitoring thresholds and revalidation triggers.",
+        "Complete rollback procedure and bind all evidence to Evidence Vault."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Lifecycle Change Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_change": change,
+        "weakest_dimensions": weakest,
+        "required_actions": required_actions,
+        "engineering_principle": "Every AI change is a governance event."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_LIFECYCLE_CHANGE_ASSURANCE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ARCHITECTURE_ASSURANCE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-architecture-assurance")
+@app.route("/platform/architecture-assurance")
+@app.route("/platform/ai-assurance-architecture")
+@app.route("/ai-architecture-assurance")
+def cobitchain_platform_ai_architecture_assurance():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_architecture_assurance.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_architecture_assurance():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_architecture_assurance_seed.json")
+    if not path.exists():
+        return {"assurance_boundaries": [], "sample_workflow": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"assurance_boundaries": [], "sample_workflow": {}}
+
+
+def _cobitchain_ai_architecture_band(score):
+    score = int(score or 0)
+    if score >= 85:
+        return "ARCHITECTURE_TRUST_READY"
+    if score >= 75:
+        return "GOOD_WITH_BOUNDARY_GAPS"
+    if score >= 65:
+        return "CONDITIONAL_ARCHITECTURE_REVIEW"
+    return "ARCHITECTURE_NOT_READY"
+
+
+def _cobitchain_enrich_ai_architecture_boundary(boundary):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(boundary or {})
+    score = int(data.get("readiness_score", 0) or 0)
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_band"] = _cobitchain_ai_architecture_band(score)
+    data["platform_rule"] = "Platform A should independently evaluate knowledge, tools, autonomy, and evidence before determining overall operational trust."
+    data["engineering_principle"] = "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust."
+    return data
+
+
+def _cobitchain_enrich_ai_architecture_workflow(workflow):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(workflow or {})
+    score = int(data.get("overall_operational_trust_score", 0) or 0)
+
+    if score < 65:
+        readiness_state = "ARCHITECTURE_NOT_READY"
+    elif score < 75:
+        readiness_state = "CONDITIONAL_ARCHITECTURE_REVIEW"
+    elif score < 85:
+        readiness_state = "GOOD_WITH_BOUNDARY_GAPS"
+    else:
+        readiness_state = "ARCHITECTURE_TRUST_READY"
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["readiness_state"] = readiness_state
+    data["platform_rule"] = "Overall operational trust must be derived from independent boundary assurance results."
+    data["engineering_principle"] = "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust."
+    return data
+
+
+@app.route("/api/platform/ai-architecture-assurance/model/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_assurance_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_architecture_assurance()
+    boundaries = [_cobitchain_enrich_ai_architecture_boundary(item) for item in payload.get("assurance_boundaries", [])]
+    workflow = _cobitchain_enrich_ai_architecture_workflow(payload.get("sample_workflow", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in boundaries]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Architecture Assurance Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "reusable_across_modules": payload.get("reusable_across_modules", []),
+        "boundary_count": len(boundaries),
+        "average_boundary_readiness": average,
+        "assurance_boundaries": boundaries,
+        "sample_workflow": workflow
+    })
+
+
+@app.route("/api/platform/ai-architecture-assurance/boundary/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_assurance_boundary_demo_api():
+    from flask import jsonify, request
+
+    boundary_id = request.args.get("boundary_id", "knowledge_assurance")
+    payload = _cobitchain_load_ai_architecture_assurance()
+    boundaries = payload.get("assurance_boundaries", []) or []
+
+    for item in boundaries:
+        if item.get("boundary_id") == boundary_id:
+            return jsonify(_cobitchain_enrich_ai_architecture_boundary(item))
+
+    return jsonify({
+        "error": "boundary_not_found",
+        "message": f"No AI Architecture Assurance boundary found for boundary_id={boundary_id}",
+        "available_boundary_ids": [item.get("boundary_id") for item in boundaries]
+    }), 404
+
+
+@app.route("/api/platform/ai-architecture-assurance/workflow/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_assurance_workflow_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_architecture_assurance()
+    return jsonify(_cobitchain_enrich_ai_architecture_workflow(payload.get("sample_workflow", {})))
+
+
+@app.route("/api/platform/ai-architecture-assurance/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_assurance_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_architecture_assurance()
+    boundaries = [_cobitchain_enrich_ai_architecture_boundary(item) for item in payload.get("assurance_boundaries", [])]
+    workflow = _cobitchain_enrich_ai_architecture_workflow(payload.get("sample_workflow", {}))
+
+    weakest = sorted(
+        [
+            {
+                "boundary_id": item.get("boundary_id"),
+                "boundary_name": item.get("boundary_name"),
+                "readiness_score": item.get("readiness_score"),
+                "gaps_to_watch": item.get("gaps_to_watch", [])
+            }
+            for item in boundaries
+        ],
+        key=lambda x: int(x.get("readiness_score", 0) or 0)
+    )[:4]
+
+    required_actions = [
+        "Confirm trusted knowledge sources, context quality, data lineage, and version control.",
+        "Confirm MCP governance, tool authorization, API permissions, and runtime controls.",
+        "Assess autonomy level, decision authority, human approval gates, action boundaries, and monitoring.",
+        "Bind evidence lineage, decision traceability, operational trust, and regulatory readiness to Evidence Vault.",
+        "Calculate overall operational trust only after all four assurance boundaries are evaluated."
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Architecture Assurance Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_workflow": workflow,
+        "weakest_boundaries": weakest,
+        "required_actions": required_actions,
+        "engineering_principle": "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ARCHITECTURE_ASSURANCE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V4_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v4/demo", methods=["GET"])
+@app.route("/api/platform/spine/v4/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v4_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    newest_modules = [
+        {"name": "AI Architecture Assurance", "route": "/platform/ai-architecture-assurance"},
+        {"name": "AI Lifecycle Change Assurance", "route": "/platform/ai-lifecycle-change-assurance"},
+        {"name": "AI Operational Readiness", "route": "/platform/ai-operational-readiness"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"},
+        {"name": "AI Autonomy Assurance Model", "route": "/platform/ai-autonomy-assurance-model"},
+        {"name": "Data-to-Decision Assurance", "route": "/platform/data-to-decision-assurance"},
+        {"name": "Jurisdictional AI Assurance", "route": "/platform/jurisdictional-ai-assurance"},
+        {"name": "Action Assurance Workflow", "route": "/platform/action-assurance-workflow"}
+    ]
+
+    core_modules = [
+        {"name": "Azure Foundry Assurance Blueprint", "route": "/platform/azure-foundry-assurance"},
+        {"name": "Azure Foundry Lifecycle Evidence Binder", "route": "/platform/azure-foundry-evidence-binder"},
+        {"name": "AI Infrastructure Assurance Blueprint", "route": "/platform/ai-infrastructure-assurance"},
+        {"name": "Cloud Assurance Matrix", "route": "/platform/cloud-assurance-matrix"},
+        {"name": "MCP Tool Registry", "route": "/platform/mcp-tools"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"},
+        {"name": "Unified Assurance Object", "route": "/platform/object-assurance"},
+        {"name": "Operational Trust Twin", "route": "/platform/operational-trust-twin"}
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v4 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v4",
+        "newest_modules": newest_modules,
+        "core_modules": core_modules,
+        "trust_chain": [
+            "Trusted Architecture",
+            "Trusted Data and Context",
+            "Trusted Action",
+            "Trusted Change",
+            "Trusted Evidence"
+        ],
+        "status": "PLATFORM_SPINE_REFRESHED"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V4_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ARCHITECTURE_BOUNDARY_GATE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-architecture-boundary-gate")
+@app.route("/platform/ai-boundary-gate")
+@app.route("/platform/architecture-boundary-gate")
+@app.route("/ai-architecture-boundary-gate")
+def cobitchain_platform_ai_architecture_boundary_gate():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_architecture_boundary_gate.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_architecture_boundary_gate():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_architecture_boundary_gate_seed.json")
+    if not path.exists():
+        return {"boundary_gates": [], "gate_policy": {}, "sample_gate_evaluation": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"boundary_gates": [], "gate_policy": {}, "sample_gate_evaluation": {}}
+
+
+def _cobitchain_boundary_gate_status(score, policy):
+    score = int(score or 0)
+    block_below = int(policy.get("automatic_block_if_any_boundary_below", 60))
+    hold_below = int(policy.get("automatic_hold_if_any_boundary_below", 75))
+    pass_min = int(policy.get("minimum_boundary_score_for_approval", 80))
+
+    if score < block_below:
+        return "BLOCK"
+    if score < hold_below:
+        return "HOLD"
+    if score < pass_min:
+        return "PASS_WITH_GAPS"
+    return "PASS"
+
+
+def _cobitchain_enrich_boundary_gate(boundary, policy):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(boundary or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["computed_gate_status"] = _cobitchain_boundary_gate_status(data.get("sample_score", 0), policy)
+    data["platform_rule"] = "Every AI-enabled workflow should pass Knowledge, Tool, Autonomy, and Evidence boundary checks before operational approval."
+    data["engineering_principle"] = "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust."
+    return data
+
+
+def _cobitchain_evaluate_architecture_gate(evaluation, policy):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(evaluation or {})
+
+    scores = [
+        int(data.get("knowledge_score", 0) or 0),
+        int(data.get("tool_score", 0) or 0),
+        int(data.get("autonomy_score", 0) or 0),
+        int(data.get("evidence_score", 0) or 0)
+    ]
+
+    overall = int(round(sum(scores) / len(scores), 0)) if scores else 0
+    data["overall_score"] = overall
+
+    min_overall = int(policy.get("minimum_overall_score_for_approval", 85))
+    min_boundary = int(policy.get("minimum_boundary_score_for_approval", 80))
+    hold_below = int(policy.get("automatic_hold_if_any_boundary_below", 75))
+    block_below = int(policy.get("automatic_block_if_any_boundary_below", 60))
+
+    if any(score < block_below for score in scores):
+        gate_decision = "BLOCK_FOR_CRITICAL_BOUNDARY_FAILURE"
+        approved = False
+    elif any(score < hold_below for score in scores):
+        gate_decision = "HOLD_FOR_BOUNDARY_REMEDIATION"
+        approved = False
+    elif overall < min_overall or any(score < min_boundary for score in scores):
+        gate_decision = "PASS_WITH_GAPS_REQUIRES_REVIEW"
+        approved = False
+    else:
+        gate_decision = "APPROVED_FOR_OPERATIONAL_USE"
+        approved = True
+
+    data["gate_decision"] = gate_decision
+    data["approved_for_operational_use"] = approved
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["gate_policy"] = policy
+    data["platform_rule"] = "Overall operational trust must be derived from independent Knowledge, Tool, Autonomy, and Evidence boundary gate results."
+    data["engineering_principle"] = "Modern AI systems combine knowledge, tools and autonomous decision making. Platform A should independently evaluate each assurance boundary before determining overall operational trust."
+    return data
+
+
+@app.route("/api/platform/ai-architecture-gate/model/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_gate_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_architecture_boundary_gate()
+    policy = payload.get("gate_policy", {}) or {}
+    boundaries = [_cobitchain_enrich_boundary_gate(item, policy) for item in payload.get("boundary_gates", [])]
+    evaluation = _cobitchain_evaluate_architecture_gate(payload.get("sample_gate_evaluation", {}), policy)
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in boundaries]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Architecture Boundary Gate Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "gate_policy": policy,
+        "boundary_count": len(boundaries),
+        "average_boundary_score": average,
+        "boundary_gates": boundaries,
+        "sample_gate_evaluation": evaluation
+    })
+
+
+@app.route("/api/platform/ai-architecture-gate/policy/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_gate_policy_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_architecture_boundary_gate()
+
+    return jsonify({
+        "service": "COBIT-Chain AI Architecture Boundary Gate Policy Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "gate_policy": payload.get("gate_policy", {}),
+        "engineering_principle": payload.get("engineering_principle")
+    })
+
+
+@app.route("/api/platform/ai-architecture-gate/boundary/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_gate_boundary_demo_api():
+    from flask import jsonify, request
+
+    boundary_id = request.args.get("boundary_id", "knowledge_assurance")
+    payload = _cobitchain_load_ai_architecture_boundary_gate()
+    policy = payload.get("gate_policy", {}) or {}
+    boundaries = payload.get("boundary_gates", []) or []
+
+    for item in boundaries:
+        if item.get("boundary_id") == boundary_id:
+            return jsonify(_cobitchain_enrich_boundary_gate(item, policy))
+
+    return jsonify({
+        "error": "boundary_not_found",
+        "message": f"No AI Architecture Boundary Gate found for boundary_id={boundary_id}",
+        "available_boundary_ids": [item.get("boundary_id") for item in boundaries]
+    }), 404
+
+
+@app.route("/api/platform/ai-architecture-gate/evaluate/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_gate_evaluate_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_architecture_boundary_gate()
+    return jsonify(_cobitchain_evaluate_architecture_gate(payload.get("sample_gate_evaluation", {}), payload.get("gate_policy", {}) or {}))
+
+
+@app.route("/api/platform/ai-architecture-gate/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_architecture_gate_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_architecture_boundary_gate()
+    policy = payload.get("gate_policy", {}) or {}
+    boundaries = [_cobitchain_enrich_boundary_gate(item, policy) for item in payload.get("boundary_gates", [])]
+    evaluation = _cobitchain_evaluate_architecture_gate(payload.get("sample_gate_evaluation", {}), policy)
+
+    weakest = sorted(
+        [
+            {
+                "boundary_id": item.get("boundary_id"),
+                "boundary_name": item.get("boundary_name"),
+                "score": item.get("sample_score"),
+                "status": item.get("computed_gate_status"),
+                "sample_gaps": item.get("sample_gaps", [])
+            }
+            for item in boundaries
+        ],
+        key=lambda x: int(x.get("score", 0) or 0)
+    )
+
+    return jsonify({
+        "service": "COBIT-Chain AI Architecture Boundary Gate Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_gate_evaluation": evaluation,
+        "weakest_boundaries": weakest,
+        "required_actions": evaluation.get("required_actions", []),
+        "engineering_principle": payload.get("engineering_principle")
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ARCHITECTURE_BOUNDARY_GATE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_CONTROL_ROUTER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-control-router")
+@app.route("/platform/ai-control-router")
+@app.route("/platform/architecture-control-router")
+@app.route("/ai-assurance-control-router")
+def cobitchain_platform_ai_assurance_control_router():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_control_router.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_control_router():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_control_router_seed.json")
+    if not path.exists():
+        return {"control_routes": [], "sample_routing_decision": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"control_routes": [], "sample_routing_decision": {}}
+
+
+def _cobitchain_enrich_ai_assurance_control_route(route):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(route or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "Boundary failures must activate the correct Platform A assurance controls before operational approval."
+    data["engineering_principle"] = "Architecture assurance is not complete until boundary findings are routed to enforceable controls, evidence requirements, and accountable owners."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_routing_decision(decision):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(decision or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "AI Architecture Boundary Gate identifies the boundary state. AI Assurance Control Router determines which modules, controls, evidence objects, and approval gates must activate."
+    data["engineering_principle"] = "Architecture assurance is not complete until boundary findings are routed to enforceable controls, evidence requirements, and accountable owners."
+
+    if data.get("approved_for_operational_use") is True:
+        data["routing_state"] = "APPROVED_AFTER_CONTROL_ROUTING"
+    elif data.get("highest_priority") == "Critical":
+        data["routing_state"] = "CRITICAL_CONTROL_ROUTING_REQUIRED"
+    else:
+        data["routing_state"] = "CONTROL_ROUTING_REQUIRED"
+
+    return data
+
+
+@app.route("/api/platform/ai-assurance-router/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_router_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_control_router()
+    routes = [_cobitchain_enrich_ai_assurance_control_route(item) for item in payload.get("control_routes", [])]
+    decision = _cobitchain_enrich_ai_assurance_routing_decision(payload.get("sample_routing_decision", {}))
+
+    scores = [int(item.get("readiness_score", 0) or 0) for item in routes]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Control Router Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "routes_to_modules": payload.get("routes_to_modules", []),
+        "control_route_count": len(routes),
+        "average_route_readiness": average,
+        "control_routes": routes,
+        "sample_routing_decision": decision
+    })
+
+
+@app.route("/api/platform/ai-assurance-router/route/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_router_route_demo_api():
+    from flask import jsonify, request
+
+    route_id = request.args.get("route_id", "route_tool_assurance")
+    payload = _cobitchain_load_ai_assurance_control_router()
+    routes = payload.get("control_routes", []) or []
+
+    for item in routes:
+        if item.get("route_id") == route_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_control_route(item))
+
+    return jsonify({
+        "error": "route_not_found",
+        "message": f"No AI Assurance Control Router route found for route_id={route_id}",
+        "available_route_ids": [item.get("route_id") for item in routes]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-router/routing/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_router_routing_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_control_router()
+    return jsonify(_cobitchain_enrich_ai_assurance_routing_decision(payload.get("sample_routing_decision", {})))
+
+
+@app.route("/api/platform/ai-assurance-router/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_router_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_control_router()
+    routes = [_cobitchain_enrich_ai_assurance_control_route(item) for item in payload.get("control_routes", [])]
+    decision = _cobitchain_enrich_ai_assurance_routing_decision(payload.get("sample_routing_decision", {}))
+
+    critical = [
+        {
+            "route_id": item.get("route_id"),
+            "boundary_name": item.get("boundary_name"),
+            "priority": item.get("sample_priority"),
+            "status": item.get("sample_status"),
+            "owner_role": item.get("owner_role"),
+            "activated_controls": item.get("activated_controls", [])
+        }
+        for item in routes
+        if item.get("sample_priority") == "Critical"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Control Router Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_routing_decision": decision,
+        "critical_routes": critical,
+        "required_module_actions": decision.get("required_module_actions", []),
+        "engineering_principle": "Architecture assurance is not complete until boundary findings are routed to enforceable controls, evidence requirements, and accountable owners."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_CONTROL_ROUTER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_DECISION_ORCHESTRATOR_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-decision-orchestrator")
+@app.route("/platform/ai-assurance-orchestrator")
+@app.route("/platform/assurance-decision-orchestrator")
+@app.route("/ai-assurance-decision-orchestrator")
+def cobitchain_platform_ai_assurance_decision_orchestrator():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_decision_orchestrator.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_decision_orchestrator():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_decision_orchestrator_seed.json")
+    if not path.exists():
+        return {"orchestration_stages": [], "sample_orchestration": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"orchestration_stages": [], "sample_orchestration": {}}
+
+
+def _cobitchain_enrich_ai_assurance_orchestrator_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "AI-enabled workflows must pass through architecture boundary assessment, control routing, evidence binding, and operational trust evaluation before approval."
+    data["engineering_principle"] = "Assurance is not a dashboard view; assurance is an executable decision pathway that converts boundary findings into controls, evidence, approvals, and operational trust decisions."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_orchestrator_decision(decision):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(decision or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("overall_assurance_score", 0) or 0)
+    approved = bool(data.get("approved_for_operational_use", False))
+
+    if approved and score >= 85:
+        data["orchestration_state"] = "APPROVED"
+    elif data.get("escalation_required") is True:
+        data["orchestration_state"] = "HOLD_WITH_ESCALATION"
+    elif score < 65:
+        data["orchestration_state"] = "BLOCK"
+    else:
+        data["orchestration_state"] = "HOLD"
+
+    data["platform_rule"] = "Boundary assessment becomes operational trust only after control routing, evidence binding, human approval, and final decision."
+    data["engineering_principle"] = "Assurance is not a dashboard view; assurance is an executable decision pathway that converts boundary findings into controls, evidence, approvals, and operational trust decisions."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-orchestrator/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_orchestrator_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_decision_orchestrator()
+    stages = [_cobitchain_enrich_ai_assurance_orchestrator_stage(item) for item in payload.get("orchestration_stages", [])]
+    decision = _cobitchain_enrich_ai_assurance_orchestrator_decision(payload.get("sample_orchestration", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Decision Orchestrator Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "stage_count": len(stages),
+        "average_stage_score": average,
+        "orchestration_stages": stages,
+        "decision_policy": payload.get("decision_policy", {}),
+        "sample_orchestration": decision
+    })
+
+
+@app.route("/api/platform/ai-assurance-orchestrator/stage/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_orchestrator_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "stage_1_architecture_boundary_assessment")
+    payload = _cobitchain_load_ai_assurance_decision_orchestrator()
+    stages = payload.get("orchestration_stages", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_orchestrator_stage(item))
+
+    return jsonify({
+        "error": "stage_not_found",
+        "message": f"No AI Assurance Decision Orchestrator stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-orchestrator/decision/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_orchestrator_decision_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_decision_orchestrator()
+    return jsonify(_cobitchain_enrich_ai_assurance_orchestrator_decision(payload.get("sample_orchestration", {})))
+
+
+@app.route("/api/platform/ai-assurance-orchestrator/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_orchestrator_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_decision_orchestrator()
+    stages = [_cobitchain_enrich_ai_assurance_orchestrator_stage(item) for item in payload.get("orchestration_stages", [])]
+    decision = _cobitchain_enrich_ai_assurance_orchestrator_decision(payload.get("sample_orchestration", {}))
+
+    weakest = sorted(
+        [
+            {
+                "stage_id": item.get("stage_id"),
+                "stage_name": item.get("stage_name"),
+                "sample_score": item.get("sample_score"),
+                "sample_status": item.get("sample_status"),
+                "stage_decision": item.get("stage_decision")
+            }
+            for item in stages
+        ],
+        key=lambda x: int(x.get("sample_score", 0) or 0)
+    )
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Decision Orchestrator Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_orchestration": decision,
+        "weakest_stages": weakest,
+        "required_actions": decision.get("required_actions", []),
+        "engineering_principle": "Assurance is not a dashboard view; assurance is an executable decision pathway that converts boundary findings into controls, evidence, approvals, and operational trust decisions."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_DECISION_ORCHESTRATOR_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V5_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v5/demo", methods=["GET"])
+@app.route("/api/platform/spine/v5/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v5_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    execution_layer = [
+        {"name": "AI Architecture Assurance", "route": "/platform/ai-architecture-assurance"},
+        {"name": "AI Architecture Boundary Gate API", "route": "/platform/ai-architecture-boundary-gate"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"},
+        {"name": "AI Assurance Decision Orchestrator", "route": "/platform/ai-assurance-decision-orchestrator"}
+    ]
+
+    strategic_modules = [
+        {"name": "AI Lifecycle Change Assurance", "route": "/platform/ai-lifecycle-change-assurance"},
+        {"name": "AI Operational Readiness", "route": "/platform/ai-operational-readiness"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"},
+        {"name": "AI Autonomy Assurance Model", "route": "/platform/ai-autonomy-assurance-model"},
+        {"name": "Data-to-Decision Assurance", "route": "/platform/data-to-decision-assurance"},
+        {"name": "Jurisdictional AI Assurance", "route": "/platform/jurisdictional-ai-assurance"},
+        {"name": "Action Assurance Workflow", "route": "/platform/action-assurance-workflow"},
+        {"name": "Cloud Assurance Matrix", "route": "/platform/cloud-assurance-matrix"}
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v5 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v5",
+        "execution_layer": execution_layer,
+        "strategic_modules": strategic_modules,
+        "execution_to_evidence_trust_chain": [
+            "AI Architecture Assurance",
+            "AI Architecture Boundary Gate",
+            "AI Assurance Control Router",
+            "Evidence Binding",
+            "Human Approval",
+            "Operational Trust Decision"
+        ],
+        "status": "PLATFORM_SPINE_REFRESHED_V5"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V5_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_EVIDENCE_CONTRACT_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-evidence-contract")
+@app.route("/platform/ai-evidence-contract")
+@app.route("/platform/assurance-evidence-contract")
+@app.route("/ai-assurance-evidence-contract")
+def cobitchain_platform_ai_assurance_evidence_contract():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_evidence_contract.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_evidence_contract():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_evidence_contract_seed.json")
+    if not path.exists():
+        return {"evidence_objects": [], "sample_contract": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"evidence_objects": [], "sample_contract": {}}
+
+
+def _cobitchain_enrich_ai_assurance_evidence_object(obj):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(obj or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "Every AI assurance decision must be supported by a standard evidence contract before operational trust can be claimed."
+    data["engineering_principle"] = "An AI assurance decision is only defensible when its architecture boundary findings, controls, approvals, tool use, monitoring, outcomes, and regulatory context are bound into a replayable evidence contract."
+
+    score = int(data.get("sample_score", 0) or 0)
+    if score >= 85 and not data.get("missing_fields"):
+        data["object_readiness"] = "COMPLETE"
+    elif score >= 70:
+        data["object_readiness"] = "PARTIAL"
+    else:
+        data["object_readiness"] = "INCOMPLETE"
+
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_contract(contract):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(contract or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("overall_evidence_score", 0) or 0)
+    approved = bool(data.get("approved_for_operational_use", False))
+
+    if approved and score >= 85:
+        data["contract_state"] = "EVIDENCE_READY_FOR_OPERATIONAL_TRUST"
+    elif score < 65:
+        data["contract_state"] = "EVIDENCE_BLOCK"
+    else:
+        data["contract_state"] = "EVIDENCE_HOLD"
+
+    data["platform_rule"] = "Operational trust requires replayable evidence, not just a dashboard score."
+    data["engineering_principle"] = "An AI assurance decision is only defensible when its architecture boundary findings, controls, approvals, tool use, monitoring, outcomes, and regulatory context are bound into a replayable evidence contract."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-evidence-contract/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_evidence_contract_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_evidence_contract()
+    objects = [_cobitchain_enrich_ai_assurance_evidence_object(item) for item in payload.get("evidence_objects", [])]
+    contract = _cobitchain_enrich_ai_assurance_contract(payload.get("sample_contract", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in objects]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Evidence Contract Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "evidence_object_count": len(objects),
+        "average_object_score": average,
+        "evidence_objects": objects,
+        "sample_contract": contract
+    })
+
+
+@app.route("/api/platform/ai-assurance-evidence-contract/object/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_evidence_contract_object_demo_api():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "tool_authorization_evidence")
+    payload = _cobitchain_load_ai_assurance_evidence_contract()
+    objects = payload.get("evidence_objects", []) or []
+
+    for item in objects:
+        if item.get("object_id") == object_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_evidence_object(item))
+
+    return jsonify({
+        "error": "object_not_found",
+        "message": f"No AI Assurance Evidence Contract object found for object_id={object_id}",
+        "available_object_ids": [item.get("object_id") for item in objects]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-evidence-contract/contract/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_evidence_contract_contract_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_evidence_contract()
+    return jsonify(_cobitchain_enrich_ai_assurance_contract(payload.get("sample_contract", {})))
+
+
+@app.route("/api/platform/ai-assurance-evidence-contract/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_evidence_contract_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_evidence_contract()
+    objects = [_cobitchain_enrich_ai_assurance_evidence_object(item) for item in payload.get("evidence_objects", [])]
+    contract = _cobitchain_enrich_ai_assurance_contract(payload.get("sample_contract", {}))
+
+    weakest = sorted(
+        [
+            {
+                "object_id": item.get("object_id"),
+                "object_name": item.get("object_name"),
+                "sample_state": item.get("sample_state"),
+                "sample_score": item.get("sample_score"),
+                "missing_fields": item.get("missing_fields", [])
+            }
+            for item in objects
+        ],
+        key=lambda x: int(x.get("sample_score", 0) or 0)
+    )[:6]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Evidence Contract Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_contract": contract,
+        "weakest_evidence_objects": weakest,
+        "required_actions": contract.get("required_actions", []),
+        "engineering_principle": "An AI assurance decision is only defensible when its architecture boundary findings, controls, approvals, tool use, monitoring, outcomes, and regulatory context are bound into a replayable evidence contract."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_EVIDENCE_CONTRACT_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_REPLAY_CONSOLE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-replay-console")
+@app.route("/platform/ai-assurance-replay")
+@app.route("/platform/ai-replay-console")
+@app.route("/ai-assurance-replay-console")
+def cobitchain_platform_ai_assurance_replay_console():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_replay_console.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_replay_console():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_replay_console_seed.json")
+    if not path.exists():
+        return {"replay_sections": [], "sample_replay": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"replay_sections": [], "sample_replay": {}}
+
+
+def _cobitchain_enrich_ai_assurance_replay_section(section):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(section or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "Every AI assurance decision must be replayable from evidence, controls, approvals, runtime signals, and operational trust state."
+    data["engineering_principle"] = "A trusted AI decision is not only approved; it must be replayable, explainable, evidence-linked, and defensible after the fact."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_replay(replay):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(replay or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("replay_readiness_score", 0) or 0)
+    replayable = bool(data.get("replayable_for_audit", False))
+
+    if replayable and score >= 85:
+        data["replay_state"] = "AUDIT_READY"
+    elif score < 65:
+        data["replay_state"] = "REPLAY_BLOCKED"
+    else:
+        data["replay_state"] = "REPLAY_INCOMPLETE"
+
+    data["platform_rule"] = "AI assurance replay converts evidence contract records into audit-ready decision reconstruction."
+    data["engineering_principle"] = "A trusted AI decision is not only approved; it must be replayable, explainable, evidence-linked, and defensible after the fact."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-replay/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_replay_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_replay_console()
+    sections = [_cobitchain_enrich_ai_assurance_replay_section(item) for item in payload.get("replay_sections", [])]
+    replay = _cobitchain_enrich_ai_assurance_replay(payload.get("sample_replay", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in sections]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Replay Console Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "replay_section_count": len(sections),
+        "average_replay_section_score": average,
+        "replay_sections": sections,
+        "sample_replay": replay
+    })
+
+
+@app.route("/api/platform/ai-assurance-replay/section/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_replay_section_demo_api():
+    from flask import jsonify, request
+
+    section_id = request.args.get("section_id", "evidence_contract_replay")
+    payload = _cobitchain_load_ai_assurance_replay_console()
+    sections = payload.get("replay_sections", []) or []
+
+    for item in sections:
+        if item.get("section_id") == section_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_replay_section(item))
+
+    return jsonify({
+        "error": "section_not_found",
+        "message": f"No AI Assurance Replay section found for section_id={section_id}",
+        "available_section_ids": [item.get("section_id") for item in sections]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-replay/replay/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_replay_replay_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_replay_console()
+    return jsonify(_cobitchain_enrich_ai_assurance_replay(payload.get("sample_replay", {})))
+
+
+@app.route("/api/platform/ai-assurance-replay/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_replay_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_replay_console()
+    sections = [_cobitchain_enrich_ai_assurance_replay_section(item) for item in payload.get("replay_sections", [])]
+    replay = _cobitchain_enrich_ai_assurance_replay(payload.get("sample_replay", {}))
+
+    weakest = sorted(
+        [
+            {
+                "section_id": item.get("section_id"),
+                "section_name": item.get("section_name"),
+                "sample_state": item.get("sample_state"),
+                "sample_score": item.get("sample_score"),
+                "missing_evidence": item.get("missing_evidence", [])
+            }
+            for item in sections
+        ],
+        key=lambda x: int(x.get("sample_score", 0) or 0)
+    )[:5]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Replay Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_replay": replay,
+        "weakest_replay_sections": weakest,
+        "required_actions": replay.get("required_actions", []),
+        "engineering_principle": "A trusted AI decision is not only approved; it must be replayable, explainable, evidence-linked, and defensible after the fact."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_REPLAY_CONSOLE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V6_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v6/demo", methods=["GET"])
+@app.route("/api/platform/spine/v6/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v6_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    execution_evidence_layer = [
+        {"name": "AI Architecture Assurance", "route": "/platform/ai-architecture-assurance"},
+        {"name": "AI Architecture Boundary Gate API", "route": "/platform/ai-architecture-boundary-gate"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"},
+        {"name": "AI Assurance Decision Orchestrator", "route": "/platform/ai-assurance-decision-orchestrator"},
+        {"name": "AI Assurance Evidence Contract", "route": "/platform/ai-assurance-evidence-contract"},
+        {"name": "AI Assurance Replay Console", "route": "/platform/ai-assurance-replay-console"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"},
+        {"name": "Operational Trust Twin", "route": "/platform/operational-trust-twin"}
+    ]
+
+    trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "Operational Trust"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v6 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v6",
+        "execution_evidence_layer": execution_evidence_layer,
+        "assurance_to_replay_trust_chain": trust_chain,
+        "engineering_principle": "A trusted AI decision must be boundary-assessed, control-routed, evidence-bound, human-reviewed, operationally trusted, and replayable after the fact.",
+        "status": "PLATFORM_SPINE_REFRESHED_V6"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V6_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_REMEDIATION_QUEUE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-remediation-queue")
+@app.route("/platform/ai-remediation-queue")
+@app.route("/platform/assurance-remediation-queue")
+@app.route("/ai-assurance-remediation-queue")
+def cobitchain_platform_ai_assurance_remediation_queue():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_remediation_queue.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_remediation_queue():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_remediation_queue_seed.json")
+    if not path.exists():
+        return {"remediation_actions": [], "sample_queue": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"remediation_actions": [], "sample_queue": {}}
+
+
+def _cobitchain_enrich_ai_assurance_remediation_action(action):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(action or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "AI assurance gaps must be converted into owner-assigned remediation actions before operational trust can be approved."
+    data["engineering_principle"] = "An assurance gap is not closed because it is known. It is closed only when it is assigned, remediated, verified, evidence-bound, and reflected in the operational trust decision."
+
+    if data.get("blocks_operational_approval") is True and data.get("status") != "Closed":
+        data["remediation_state"] = "BLOCKING_OPEN"
+    elif data.get("status") == "Closed":
+        data["remediation_state"] = "CLOSED_PENDING_TRUST_RECALCULATION"
+    else:
+        data["remediation_state"] = "NON_BLOCKING"
+
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_remediation_queue(queue):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(queue or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    blocking = int(data.get("blocking_actions", 0) or 0)
+    closed = int(data.get("closed_actions", 0) or 0)
+    total = int(data.get("total_actions", 0) or 0)
+
+    if blocking > 0:
+        data["queue_state"] = "OPERATIONAL_APPROVAL_BLOCKED"
+    elif closed == total and total > 0:
+        data["queue_state"] = "READY_FOR_TRUST_RECALCULATION"
+    else:
+        data["queue_state"] = "REMEDIATION_IN_PROGRESS"
+
+    data["platform_rule"] = "Operational approval can resume only when blocking remediation actions are closed with verified evidence."
+    data["engineering_principle"] = "An assurance gap is not closed because it is known. It is closed only when it is assigned, remediated, verified, evidence-bound, and reflected in the operational trust decision."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-remediation/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_remediation_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_remediation_queue()
+    actions = [_cobitchain_enrich_ai_assurance_remediation_action(item) for item in payload.get("remediation_actions", [])]
+    queue = _cobitchain_enrich_ai_assurance_remediation_queue(payload.get("sample_queue", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in actions]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Remediation Queue Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "remediation_action_count": len(actions),
+        "average_action_score": average,
+        "remediation_actions": actions,
+        "sample_queue": queue
+    })
+
+
+@app.route("/api/platform/ai-assurance-remediation/action/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_remediation_action_demo_api():
+    from flask import jsonify, request
+
+    action_id = request.args.get("action_id", "rem_human_approval_evidence")
+    payload = _cobitchain_load_ai_assurance_remediation_queue()
+    actions = payload.get("remediation_actions", []) or []
+
+    for item in actions:
+        if item.get("action_id") == action_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_remediation_action(item))
+
+    return jsonify({
+        "error": "action_not_found",
+        "message": f"No AI Assurance Remediation action found for action_id={action_id}",
+        "available_action_ids": [item.get("action_id") for item in actions]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-remediation/queue/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_remediation_queue_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_remediation_queue()
+    return jsonify(_cobitchain_enrich_ai_assurance_remediation_queue(payload.get("sample_queue", {})))
+
+
+@app.route("/api/platform/ai-assurance-remediation/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_remediation_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_remediation_queue()
+    actions = [_cobitchain_enrich_ai_assurance_remediation_action(item) for item in payload.get("remediation_actions", [])]
+    queue = _cobitchain_enrich_ai_assurance_remediation_queue(payload.get("sample_queue", {}))
+
+    blocking = [
+        {
+            "action_id": item.get("action_id"),
+            "action_name": item.get("action_name"),
+            "priority": item.get("priority"),
+            "owner_role": item.get("owner_role"),
+            "required_evidence": item.get("required_evidence", []),
+            "closure_criteria": item.get("closure_criteria", [])
+        }
+        for item in actions
+        if item.get("blocks_operational_approval") is True and item.get("status") != "Closed"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Remediation Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_queue": queue,
+        "blocking_actions": blocking,
+        "next_required_actions": queue.get("next_required_actions", []),
+        "engineering_principle": "An assurance gap is not closed because it is known. It is closed only when it is assigned, remediated, verified, evidence-bound, and reflected in the operational trust decision."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_REMEDIATION_QUEUE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_CLOSURE_VERIFIER_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-closure-verifier")
+@app.route("/platform/ai-closure-verifier")
+@app.route("/platform/assurance-closure-verifier")
+@app.route("/ai-assurance-closure-verifier")
+def cobitchain_platform_ai_assurance_closure_verifier():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_closure_verifier.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_closure_verifier():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_closure_verifier_seed.json")
+    if not path.exists():
+        return {"closure_items": [], "sample_verification": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"closure_items": [], "sample_verification": {}}
+
+
+def _cobitchain_enrich_ai_assurance_closure_item(item):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(item or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["platform_rule"] = "AI remediation actions are not closed until closure evidence is verified and operational trust is recalculated."
+    data["engineering_principle"] = "Closure is not a status label. Closure means the remediation is completed, evidence-bound, independently verified, and reflected in the final assurance decision."
+
+    status = data.get("closure_status", "")
+    blocks = bool(data.get("blocks_trust_recalculation", False))
+
+    if status == "Verified Closed":
+        data["closure_state"] = "VERIFIED_CLOSED"
+    elif blocks and status in ["Open", "Pending Verification"]:
+        data["closure_state"] = "BLOCKING_NOT_CLOSED"
+    elif status == "Deferred":
+        data["closure_state"] = "DEFERRED_NON_BLOCKING"
+    else:
+        data["closure_state"] = "IN_PROGRESS"
+
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_closure_verification(verification):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(verification or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    allowed = bool(data.get("trust_recalculation_allowed", False))
+    blocking = int(data.get("blocking_open_items", 0) or 0)
+
+    if allowed and blocking == 0:
+        data["verification_state"] = "READY_FOR_TRUST_RECALCULATION"
+    elif blocking > 0:
+        data["verification_state"] = "TRUST_RECALCULATION_BLOCKED"
+    else:
+        data["verification_state"] = "CLOSURE_VERIFICATION_IN_PROGRESS"
+
+    data["platform_rule"] = "Trust recalculation can occur only after blocking closure items are verified closed."
+    data["engineering_principle"] = "Closure is not a status label. Closure means the remediation is completed, evidence-bound, independently verified, and reflected in the final assurance decision."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-closure/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_closure_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_closure_verifier()
+    items = [_cobitchain_enrich_ai_assurance_closure_item(item) for item in payload.get("closure_items", [])]
+    verification = _cobitchain_enrich_ai_assurance_closure_verification(payload.get("sample_verification", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in items]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Closure Verifier Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "closure_item_count": len(items),
+        "average_closure_item_score": average,
+        "closure_items": items,
+        "sample_verification": verification
+    })
+
+
+@app.route("/api/platform/ai-assurance-closure/item/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_closure_item_demo_api():
+    from flask import jsonify, request
+
+    closure_id = request.args.get("closure_id", "close_human_approval_evidence")
+    payload = _cobitchain_load_ai_assurance_closure_verifier()
+    items = payload.get("closure_items", []) or []
+
+    for item in items:
+        if item.get("closure_id") == closure_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_closure_item(item))
+
+    return jsonify({
+        "error": "closure_item_not_found",
+        "message": f"No AI Assurance Closure item found for closure_id={closure_id}",
+        "available_closure_ids": [item.get("closure_id") for item in items]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-closure/verification/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_closure_verification_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_closure_verifier()
+    return jsonify(_cobitchain_enrich_ai_assurance_closure_verification(payload.get("sample_verification", {})))
+
+
+@app.route("/api/platform/ai-assurance-closure/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_closure_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_closure_verifier()
+    items = [_cobitchain_enrich_ai_assurance_closure_item(item) for item in payload.get("closure_items", [])]
+    verification = _cobitchain_enrich_ai_assurance_closure_verification(payload.get("sample_verification", {}))
+
+    blocking = [
+        {
+            "closure_id": item.get("closure_id"),
+            "closure_name": item.get("closure_name"),
+            "closure_status": item.get("closure_status"),
+            "owner_role": item.get("owner_role"),
+            "verification_role": item.get("verification_role"),
+            "required_closure_evidence": item.get("required_closure_evidence", [])
+        }
+        for item in items
+        if item.get("blocks_trust_recalculation") is True and item.get("closure_status") != "Verified Closed"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Closure Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_verification": verification,
+        "blocking_closure_items": blocking,
+        "required_next_steps": verification.get("required_next_steps", []),
+        "engineering_principle": "Closure is not a status label. Closure means the remediation is completed, evidence-bound, independently verified, and reflected in the final assurance decision."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_CLOSURE_VERIFIER_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_TRUST_RECALCULATION_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-trust-recalculation")
+@app.route("/platform/ai-trust-recalculation")
+@app.route("/platform/assurance-trust-recalculation")
+@app.route("/ai-assurance-trust-recalculation")
+def cobitchain_platform_ai_assurance_trust_recalculation():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_trust_recalculation.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_trust_recalculation():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_trust_recalculation_seed.json")
+    if not path.exists():
+        return {"trust_inputs": [], "sample_recalculation": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"trust_inputs": [], "sample_recalculation": {}}
+
+
+def _cobitchain_enrich_ai_assurance_trust_input(item):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(item or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_approval", False))
+
+    if blocks and score < 85:
+        data["computed_input_state"] = "BLOCKING_TRUST_INPUT_NOT_READY"
+    elif score >= 85:
+        data["computed_input_state"] = "TRUST_INPUT_READY"
+    else:
+        data["computed_input_state"] = "NON_BLOCKING_INPUT_REVIEW"
+
+    data["platform_rule"] = "Operational trust can be recalculated only after blocking remediation actions are verified closed with evidence."
+    data["engineering_principle"] = "Trust is not restored by intent. Trust is restored only after verified closure, evidence update, replay readiness, monitoring readiness, and recalculated operational trust."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_trust_recalculation(calc):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(calc or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("recalculated_operational_trust_score", 0) or 0)
+    approved = bool(data.get("approved_for_operational_use", False))
+    blocking = data.get("blocking_inputs", []) or []
+
+    if approved and score >= 85 and len(blocking) == 0:
+        data["computed_trust_state"] = "APPROVED_OPERATIONAL_TRUST_RESTORED"
+    elif len(blocking) > 0:
+        data["computed_trust_state"] = "TRUST_RECALCULATION_BLOCKED_BY_INPUTS"
+    elif score >= 80:
+        data["computed_trust_state"] = "PASS_WITH_GAPS_REQUIRES_REVIEW"
+    else:
+        data["computed_trust_state"] = "NOT_READY_FOR_OPERATIONAL_APPROVAL"
+
+    data["platform_rule"] = "Operational approval can be restored only after verified closure and recalculated operational trust."
+    data["engineering_principle"] = "Trust is not restored by intent. Trust is restored only after verified closure, evidence update, replay readiness, monitoring readiness, and recalculated operational trust."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-trust-recalculation/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_trust_recalculation_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_trust_recalculation()
+    inputs = [_cobitchain_enrich_ai_assurance_trust_input(item) for item in payload.get("trust_inputs", [])]
+    calc = _cobitchain_enrich_ai_assurance_trust_recalculation(payload.get("sample_recalculation", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in inputs]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Trust Recalculation Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "trust_input_count": len(inputs),
+        "average_trust_input_score": average,
+        "trust_inputs": inputs,
+        "sample_recalculation": calc
+    })
+
+
+@app.route("/api/platform/ai-assurance-trust-recalculation/input/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_trust_recalculation_input_demo_api():
+    from flask import jsonify, request
+
+    input_id = request.args.get("input_id", "human_approval_state")
+    payload = _cobitchain_load_ai_assurance_trust_recalculation()
+    items = payload.get("trust_inputs", []) or []
+
+    for item in items:
+        if item.get("input_id") == input_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_trust_input(item))
+
+    return jsonify({
+        "error": "trust_input_not_found",
+        "message": f"No AI Assurance Trust Recalculation input found for input_id={input_id}",
+        "available_input_ids": [item.get("input_id") for item in items]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-trust-recalculation/recalculate/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_trust_recalculation_recalculate_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_trust_recalculation()
+    return jsonify(_cobitchain_enrich_ai_assurance_trust_recalculation(payload.get("sample_recalculation", {})))
+
+
+@app.route("/api/platform/ai-assurance-trust-recalculation/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_trust_recalculation_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_trust_recalculation()
+    inputs = [_cobitchain_enrich_ai_assurance_trust_input(item) for item in payload.get("trust_inputs", [])]
+    calc = _cobitchain_enrich_ai_assurance_trust_recalculation(payload.get("sample_recalculation", {}))
+
+    blockers = [
+        {
+            "input_id": item.get("input_id"),
+            "input_name": item.get("input_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "required_state": item.get("required_state")
+        }
+        for item in inputs
+        if item.get("blocks_approval") is True and int(item.get("sample_score", 0) or 0) < 85
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Trust Recalculation Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_recalculation": calc,
+        "blocking_trust_inputs": blockers,
+        "required_next_steps": calc.get("required_next_steps", []),
+        "engineering_principle": "Trust is not restored by intent. Trust is restored only after verified closure, evidence update, replay readiness, monitoring readiness, and recalculated operational trust."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_TRUST_RECALCULATION_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V7_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v7/demo", methods=["GET"])
+@app.route("/api/platform/spine/v7/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v7_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    recovery_layer = [
+        {"name": "AI Assurance Remediation Queue", "route": "/platform/ai-assurance-remediation-queue"},
+        {"name": "AI Assurance Closure Verifier", "route": "/platform/ai-assurance-closure-verifier"},
+        {"name": "AI Assurance Trust Recalculation Engine", "route": "/platform/ai-assurance-trust-recalculation"},
+        {"name": "Operational Trust Twin", "route": "/platform/operational-trust-twin"}
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "Operational Trust"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v7 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v7",
+        "recovery_layer": recovery_layer,
+        "full_assurance_to_recalculation_trust_chain": full_trust_chain,
+        "engineering_principle": "Operational trust is restored only after remediation is owned, closed, verified, evidence-bound, replay-ready, and recalculated.",
+        "status": "PLATFORM_SPINE_REFRESHED_V7"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V7_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_APPROVAL_CERTIFICATE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-approval-certificate")
+@app.route("/platform/ai-approval-certificate")
+@app.route("/platform/operational-trust-certificate")
+@app.route("/ai-assurance-approval-certificate")
+def cobitchain_platform_ai_assurance_approval_certificate():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_approval_certificate.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_approval_certificate():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_approval_certificate_seed.json")
+    if not path.exists():
+        return {"certificate_sections": [], "sample_certificate": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"certificate_sections": [], "sample_certificate": {}}
+
+
+def _cobitchain_enrich_ai_assurance_certificate_section(section):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(section or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    state = data.get("sample_state", "")
+
+    if state in ["BLOCKED", "NOT_AUTHORIZED"] or score < 70:
+        data["computed_section_state"] = "SECTION_BLOCKS_CERTIFICATE"
+    elif score < 85:
+        data["computed_section_state"] = "SECTION_REQUIRES_REVIEW"
+    else:
+        data["computed_section_state"] = "SECTION_READY"
+
+    data["platform_rule"] = "No AI-enabled workflow should be operationally approved without a bounded evidence-backed approval certificate."
+    data["engineering_principle"] = "Approval is not a verbal decision. Approval is a bounded, evidence-backed, time-limited operational trust state with named conditions, owners, monitoring obligations, and replayable proof."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_certificate(cert):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(cert or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("certificate_score", 0) or 0)
+    release = bool(data.get("release_authorized", False))
+    status = data.get("certificate_status", "")
+
+    if release and score >= 85 and status == "ISSUED":
+        data["computed_certificate_state"] = "CERTIFICATE_ISSUED_OPERATIONAL_RELEASE_AUTHORIZED"
+    elif status == "CONDITIONAL":
+        data["computed_certificate_state"] = "CONDITIONAL_CERTIFICATE_REQUIRES_ACTIVE_MONITORING"
+    elif status == "NOT_ISSUED":
+        data["computed_certificate_state"] = "CERTIFICATE_NOT_ISSUED"
+    else:
+        data["computed_certificate_state"] = "CERTIFICATE_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Final operational approval must be recorded as a certificate with scope, evidence basis, conditions, validity, and release authorization."
+    data["engineering_principle"] = "Approval is not a verbal decision. Approval is a bounded, evidence-backed, time-limited operational trust state with named conditions, owners, monitoring obligations, and replayable proof."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-certificate/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_certificate_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_approval_certificate()
+    sections = [_cobitchain_enrich_ai_assurance_certificate_section(item) for item in payload.get("certificate_sections", [])]
+    certificate = _cobitchain_enrich_ai_assurance_certificate(payload.get("sample_certificate", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in sections]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Approval Certificate Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "certificate_section_count": len(sections),
+        "average_section_score": average,
+        "certificate_sections": sections,
+        "sample_certificate": certificate
+    })
+
+
+@app.route("/api/platform/ai-assurance-certificate/section/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_certificate_section_demo_api():
+    from flask import jsonify, request
+
+    section_id = request.args.get("section_id", "approval_decision")
+    payload = _cobitchain_load_ai_assurance_approval_certificate()
+    sections = payload.get("certificate_sections", []) or []
+
+    for item in sections:
+        if item.get("section_id") == section_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_certificate_section(item))
+
+    return jsonify({
+        "error": "certificate_section_not_found",
+        "message": f"No AI Assurance Approval Certificate section found for section_id={section_id}",
+        "available_section_ids": [item.get("section_id") for item in sections]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-certificate/certificate/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_certificate_certificate_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_approval_certificate()
+    return jsonify(_cobitchain_enrich_ai_assurance_certificate(payload.get("sample_certificate", {})))
+
+
+@app.route("/api/platform/ai-assurance-certificate/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_certificate_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_approval_certificate()
+    sections = [_cobitchain_enrich_ai_assurance_certificate_section(item) for item in payload.get("certificate_sections", [])]
+    certificate = _cobitchain_enrich_ai_assurance_certificate(payload.get("sample_certificate", {}))
+
+    blocking_sections = [
+        {
+            "section_id": item.get("section_id"),
+            "section_name": item.get("section_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "computed_section_state": item.get("computed_section_state")
+        }
+        for item in sections
+        if item.get("computed_section_state") == "SECTION_BLOCKS_CERTIFICATE"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Approval Certificate Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_certificate": certificate,
+        "blocking_certificate_sections": blocking_sections,
+        "conditions_required_before_certificate": certificate.get("conditions_required_before_certificate", []),
+        "engineering_principle": "Approval is not a verbal decision. Approval is a bounded, evidence-backed, time-limited operational trust state with named conditions, owners, monitoring obligations, and replayable proof."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_APPROVAL_CERTIFICATE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_OPERATIONAL_RELEASE_GATE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-operational-release-gate")
+@app.route("/platform/ai-operational-release-gate")
+@app.route("/platform/operational-release-gate")
+@app.route("/ai-assurance-operational-release-gate")
+def cobitchain_platform_ai_assurance_operational_release_gate():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_operational_release_gate.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_operational_release_gate():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_operational_release_gate_seed.json")
+    if not path.exists():
+        return {"release_gates": [], "sample_release": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"release_gates": [], "sample_release": {}}
+
+
+def _cobitchain_enrich_ai_assurance_release_gate(gate):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(gate or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_release", False))
+    state = data.get("sample_state", "")
+
+    if blocks and (score < 85 or state not in ["PASS", "READY", "ACTIVE", "ISSUED"]):
+        data["computed_gate_state"] = "BLOCKING_RELEASE_GATE_NOT_READY"
+    elif score >= 85:
+        data["computed_gate_state"] = "RELEASE_GATE_READY"
+    else:
+        data["computed_gate_state"] = "NON_BLOCKING_RELEASE_REVIEW"
+
+    data["platform_rule"] = "An AI-enabled workflow cannot be released into operational use unless all blocking release gates are satisfied."
+    data["engineering_principle"] = "Release is not the same as approval. Release is the controlled act of putting an approved AI-enabled workflow into operation under scope, monitoring, rollback, evidence, and accountable ownership."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_release(release):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(release or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("release_score", 0) or 0)
+    authorized = bool(data.get("release_authorized", False))
+    blockers = data.get("blocking_gates", []) or []
+
+    if authorized and score >= 85 and len(blockers) == 0:
+        data["computed_release_state"] = "AUTHORIZED_FOR_OPERATIONAL_RELEASE"
+    elif len(blockers) > 0:
+        data["computed_release_state"] = "OPERATIONAL_RELEASE_BLOCKED_BY_GATES"
+    elif score >= 80:
+        data["computed_release_state"] = "CONDITIONAL_RELEASE_REVIEW_REQUIRED"
+    else:
+        data["computed_release_state"] = "NOT_READY_FOR_OPERATIONAL_RELEASE"
+
+    data["platform_rule"] = "Final release requires certificate, approved scope, monitoring, rollback, evidence, accountable owner, and post-release verification."
+    data["engineering_principle"] = "Release is not the same as approval. Release is the controlled act of putting an approved AI-enabled workflow into operation under scope, monitoring, rollback, evidence, and accountable ownership."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-release/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_release_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_operational_release_gate()
+    gates = [_cobitchain_enrich_ai_assurance_release_gate(item) for item in payload.get("release_gates", [])]
+    release = _cobitchain_enrich_ai_assurance_release(payload.get("sample_release", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in gates]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Operational Release Gate Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "release_gate_count": len(gates),
+        "average_gate_score": average,
+        "release_gates": gates,
+        "sample_release": release
+    })
+
+
+@app.route("/api/platform/ai-assurance-release/gate/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_release_gate_demo_api():
+    from flask import jsonify, request
+
+    gate_id = request.args.get("gate_id", "certificate_issued_gate")
+    payload = _cobitchain_load_ai_assurance_operational_release_gate()
+    gates = payload.get("release_gates", []) or []
+
+    for item in gates:
+        if item.get("gate_id") == gate_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_release_gate(item))
+
+    return jsonify({
+        "error": "release_gate_not_found",
+        "message": f"No AI Assurance Operational Release Gate found for gate_id={gate_id}",
+        "available_gate_ids": [item.get("gate_id") for item in gates]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-release/release/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_release_release_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_operational_release_gate()
+    return jsonify(_cobitchain_enrich_ai_assurance_release(payload.get("sample_release", {})))
+
+
+@app.route("/api/platform/ai-assurance-release/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_release_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_operational_release_gate()
+    gates = [_cobitchain_enrich_ai_assurance_release_gate(item) for item in payload.get("release_gates", [])]
+    release = _cobitchain_enrich_ai_assurance_release(payload.get("sample_release", {}))
+
+    blocking_gates = [
+        {
+            "gate_id": item.get("gate_id"),
+            "gate_name": item.get("gate_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "required_state": item.get("required_state")
+        }
+        for item in gates
+        if item.get("computed_gate_state") == "BLOCKING_RELEASE_GATE_NOT_READY"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Operational Release Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_release": release,
+        "blocking_release_gates": blocking_gates,
+        "next_required_actions": release.get("next_required_actions", []),
+        "engineering_principle": "Release is not the same as approval. Release is the controlled act of putting an approved AI-enabled workflow into operation under scope, monitoring, rollback, evidence, and accountable ownership."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_OPERATIONAL_RELEASE_GATE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V8_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v8/demo", methods=["GET"])
+@app.route("/api/platform/spine/v8/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v8_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    approval_release_layer = [
+        {"name": "AI Assurance Approval Certificate", "route": "/platform/ai-assurance-approval-certificate"},
+        {"name": "AI Assurance Operational Release Gate", "route": "/platform/ai-assurance-operational-release-gate"},
+        {"name": "Operational Trust Twin", "route": "/platform/operational-trust-twin"},
+        {"name": "Observability and Audit Replay", "route": "/platform/observability"}
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "Operational Trust Monitoring"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v8 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v8",
+        "approval_release_layer": approval_release_layer,
+        "full_ai_assurance_to_operational_release_trust_chain": full_trust_chain,
+        "engineering_principle": "AI operational trust is complete only when approval is certified, release is gated, monitoring is active, rollback is ready, and evidence is bound.",
+        "status": "PLATFORM_SPINE_REFRESHED_V8"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V8_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_POST_RELEASE_MONITORING_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-post-release-monitoring")
+@app.route("/platform/ai-post-release-monitoring")
+@app.route("/platform/post-release-ai-monitoring")
+@app.route("/ai-assurance-post-release-monitoring")
+def cobitchain_platform_ai_assurance_post_release_monitoring():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_post_release_monitoring.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_post_release_monitoring():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_post_release_monitoring_seed.json")
+    if not path.exists():
+        return {"monitoring_signals": [], "sample_monitoring": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"monitoring_signals": [], "sample_monitoring": {}}
+
+
+def _cobitchain_enrich_ai_assurance_post_release_signal(signal):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(signal or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_continued_operation", False))
+    state = data.get("sample_state", "")
+
+    if blocks and (score < 85 or state not in ["ACTIVE", "READY", "VALID", "PASS"]):
+        data["computed_signal_state"] = "BLOCKING_MONITORING_SIGNAL_NOT_READY"
+    elif score >= 85:
+        data["computed_signal_state"] = "MONITORING_SIGNAL_READY"
+    else:
+        data["computed_signal_state"] = "NON_BLOCKING_SIGNAL_REVIEW"
+
+    data["platform_rule"] = "Operational trust must be monitored after release against scope, certificate, runtime, evidence, rollback, and change boundaries."
+    data["engineering_principle"] = "Release does not end assurance. Release starts continuous assurance. A released AI workflow remains trusted only while monitoring proves it stays within approved boundaries."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_post_release_monitoring(monitoring):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(monitoring or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("monitoring_score", 0) or 0)
+    active = bool(data.get("active_monitoring", False))
+    blockers = data.get("blocking_signals", []) or []
+    released = data.get("operational_state") == "RELEASED"
+
+    if released and active and score >= 85 and len(blockers) == 0:
+        data["computed_monitoring_state"] = "CONTINUED_OPERATION_APPROVED"
+    elif not released:
+        data["computed_monitoring_state"] = "MONITORING_NOT_ACTIVE_RELEASE_NOT_AUTHORIZED"
+    elif len(blockers) > 0:
+        data["computed_monitoring_state"] = "CONTINUED_OPERATION_AT_RISK_BLOCKING_SIGNALS"
+    else:
+        data["computed_monitoring_state"] = "MONITORING_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Post-release monitoring is the continuous evidence layer for operational trust."
+    data["engineering_principle"] = "Release does not end assurance. Release starts continuous assurance. A released AI workflow remains trusted only while monitoring proves it stays within approved boundaries."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-post-release/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_post_release_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_post_release_monitoring()
+    signals = [_cobitchain_enrich_ai_assurance_post_release_signal(item) for item in payload.get("monitoring_signals", [])]
+    monitoring = _cobitchain_enrich_ai_assurance_post_release_monitoring(payload.get("sample_monitoring", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in signals]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Post-Release Monitoring Console Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "monitoring_signal_count": len(signals),
+        "average_signal_score": average,
+        "monitoring_signals": signals,
+        "sample_monitoring": monitoring
+    })
+
+
+@app.route("/api/platform/ai-assurance-post-release/signal/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_post_release_signal_demo_api():
+    from flask import jsonify, request
+
+    signal_id = request.args.get("signal_id", "runtime_monitoring_signal")
+    payload = _cobitchain_load_ai_assurance_post_release_monitoring()
+    signals = payload.get("monitoring_signals", []) or []
+
+    for item in signals:
+        if item.get("signal_id") == signal_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_post_release_signal(item))
+
+    return jsonify({
+        "error": "monitoring_signal_not_found",
+        "message": f"No AI Assurance Post-Release Monitoring signal found for signal_id={signal_id}",
+        "available_signal_ids": [item.get("signal_id") for item in signals]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-post-release/monitoring/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_post_release_monitoring_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_post_release_monitoring()
+    return jsonify(_cobitchain_enrich_ai_assurance_post_release_monitoring(payload.get("sample_monitoring", {})))
+
+
+@app.route("/api/platform/ai-assurance-post-release/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_post_release_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_post_release_monitoring()
+    signals = [_cobitchain_enrich_ai_assurance_post_release_signal(item) for item in payload.get("monitoring_signals", [])]
+    monitoring = _cobitchain_enrich_ai_assurance_post_release_monitoring(payload.get("sample_monitoring", {}))
+
+    blocking = [
+        {
+            "signal_id": item.get("signal_id"),
+            "signal_name": item.get("signal_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "required_state": item.get("required_state")
+        }
+        for item in signals
+        if item.get("computed_signal_state") == "BLOCKING_MONITORING_SIGNAL_NOT_READY"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Post-Release Monitoring Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_monitoring": monitoring,
+        "blocking_monitoring_signals": blocking,
+        "monitoring_obligations": monitoring.get("monitoring_obligations", []),
+        "next_required_actions": monitoring.get("next_required_actions", []),
+        "engineering_principle": "Release does not end assurance. Release starts continuous assurance. A released AI workflow remains trusted only while monitoring proves it stays within approved boundaries."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_POST_RELEASE_MONITORING_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_EXCEPTION_DRIFT_RESPONSE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-exception-drift-response")
+@app.route("/platform/ai-exception-drift-response")
+@app.route("/platform/ai-assurance-response-engine")
+@app.route("/ai-assurance-exception-drift-response")
+def cobitchain_platform_ai_assurance_exception_drift_response():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_exception_drift_response.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_exception_drift_response():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_exception_drift_response_seed.json")
+    if not path.exists():
+        return {"response_triggers": [], "sample_response": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"response_triggers": [], "sample_response": {}}
+
+
+def _cobitchain_enrich_ai_assurance_response_trigger(trigger):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(trigger or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_continued_operation", False))
+    stop_use = bool(data.get("requires_stop_use", False))
+    severity = data.get("severity", "")
+    state = data.get("sample_state", "")
+
+    if stop_use or (severity == "Critical" and blocks):
+        data["computed_trigger_state"] = "STOP_USE_OR_ESCALATION_REQUIRED"
+    elif blocks and (score < 85 or state in ["TRIGGERED", "FAILED", "BREACH", "EXPIRED", "PARTIAL"]):
+        data["computed_trigger_state"] = "CONTROLLED_RESPONSE_REQUIRED"
+    elif score >= 85:
+        data["computed_trigger_state"] = "SIGNAL_ACCEPTABLE"
+    else:
+        data["computed_trigger_state"] = "REVIEW_REQUIRED"
+
+    data["platform_rule"] = "AI monitoring exceptions, drift, unsafe tool behavior, evidence lapses, and lifecycle changes must trigger controlled operational response."
+    data["engineering_principle"] = "Continuous assurance is only useful if monitoring signals trigger governed action. A detected AI exception must become a controlled response, not just an alert."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_response(response):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(response or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("response_score", 0) or 0)
+    stop_use = bool(data.get("stop_use_required", False))
+    rollback = bool(data.get("rollback_required", False))
+    change = bool(data.get("change_assurance_required", False))
+    continued = bool(data.get("continued_operation_allowed", False))
+
+    if stop_use or rollback or change:
+        data["computed_response_state"] = "CONTROLLED_STOP_USE_ROLLBACK_OR_CHANGE_ASSURANCE_REQUIRED"
+    elif continued and score >= 85:
+        data["computed_response_state"] = "CONTINUED_OPERATION_ALLOWED_WITH_MONITORING"
+    elif score >= 75:
+        data["computed_response_state"] = "CONDITIONAL_OPERATION_WITH_ESCALATION"
+    else:
+        data["computed_response_state"] = "CONTINUED_OPERATION_NOT_ALLOWED"
+
+    data["platform_rule"] = "Exception and drift response determines whether operation continues, is contained, is downgraded, or enters change assurance."
+    data["engineering_principle"] = "Continuous assurance is only useful if monitoring signals trigger governed action. A detected AI exception must become a controlled response, not just an alert."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-response/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_response_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_exception_drift_response()
+    triggers = [_cobitchain_enrich_ai_assurance_response_trigger(item) for item in payload.get("response_triggers", [])]
+    response = _cobitchain_enrich_ai_assurance_response(payload.get("sample_response", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in triggers]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Exception and Drift Response Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "response_trigger_count": len(triggers),
+        "average_trigger_score": average,
+        "response_triggers": triggers,
+        "sample_response": response
+    })
+
+
+@app.route("/api/platform/ai-assurance-response/trigger/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_response_trigger_demo_api():
+    from flask import jsonify, request
+
+    trigger_id = request.args.get("trigger_id", "drift_threshold_breach_trigger")
+    payload = _cobitchain_load_ai_assurance_exception_drift_response()
+    triggers = payload.get("response_triggers", []) or []
+
+    for item in triggers:
+        if item.get("trigger_id") == trigger_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_response_trigger(item))
+
+    return jsonify({
+        "error": "response_trigger_not_found",
+        "message": f"No AI Assurance Response trigger found for trigger_id={trigger_id}",
+        "available_trigger_ids": [item.get("trigger_id") for item in triggers]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-response/response/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_response_response_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_exception_drift_response()
+    return jsonify(_cobitchain_enrich_ai_assurance_response(payload.get("sample_response", {})))
+
+
+@app.route("/api/platform/ai-assurance-response/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_response_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_exception_drift_response()
+    triggers = [_cobitchain_enrich_ai_assurance_response_trigger(item) for item in payload.get("response_triggers", [])]
+    response = _cobitchain_enrich_ai_assurance_response(payload.get("sample_response", {}))
+
+    stop_use_triggers = [
+        {
+            "trigger_id": item.get("trigger_id"),
+            "trigger_name": item.get("trigger_name"),
+            "severity": item.get("severity"),
+            "sample_state": item.get("sample_state"),
+            "source_signal": item.get("source_signal"),
+            "required_response": item.get("required_response", [])
+        }
+        for item in triggers
+        if item.get("requires_stop_use") is True
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Exception and Drift Response Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_response": response,
+        "stop_use_triggers": stop_use_triggers,
+        "required_response_actions": response.get("required_response_actions", []),
+        "evidence_to_bind": response.get("evidence_to_bind", []),
+        "engineering_principle": "Continuous assurance is only useful if monitoring signals trigger governed action. A detected AI exception must become a controlled response, not just an alert."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_EXCEPTION_DRIFT_RESPONSE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V9_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v9/demo", methods=["GET"])
+@app.route("/api/platform/spine/v9/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v9_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    continuous_operation_layer = [
+        {"name": "AI Assurance Post-Release Monitoring Console", "route": "/platform/ai-assurance-post-release-monitoring"},
+        {"name": "AI Assurance Exception and Drift Response Engine", "route": "/platform/ai-assurance-exception-drift-response"},
+        {"name": "Operational Trust Twin", "route": "/platform/operational-trust-twin"},
+        {"name": "Observability and Audit Replay", "route": "/platform/observability"}
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "Operational Trust Continuous Improvement"
+    ]
+
+    response_controls = [
+        "continued operation",
+        "trust downgrade",
+        "incident escalation",
+        "stop-use",
+        "rollback",
+        "lifecycle change assurance",
+        "evidence vault binding",
+        "trust recalculation"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v9 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v9",
+        "continuous_operation_layer": continuous_operation_layer,
+        "full_ai_assurance_continuous_trust_chain": full_trust_chain,
+        "response_controls": response_controls,
+        "engineering_principle": "Release does not end assurance. A released AI-enabled workflow remains trusted only while monitoring proves it stays inside approved trust boundaries, and breaches trigger governed response.",
+        "status": "PLATFORM_SPINE_REFRESHED_V9"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V9_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_OUTCOME_LEARNING_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-outcome-learning")
+@app.route("/platform/ai-outcome-learning")
+@app.route("/platform/assurance-continuous-improvement")
+@app.route("/ai-assurance-outcome-learning")
+def cobitchain_platform_ai_assurance_outcome_learning():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_outcome_learning.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_outcome_learning():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_outcome_learning_seed.json")
+    if not path.exists():
+        return {"learning_loops": [], "sample_learning": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"learning_loops": [], "sample_learning": {}}
+
+
+def _cobitchain_enrich_ai_assurance_learning_loop(loop):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(loop or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_continuous_improvement", False))
+    state = data.get("sample_state", "")
+
+    if blocks and (score < 85 or state in ["OPEN", "PARTIAL", "INCOMPLETE", "TRIGGERED"]):
+        data["computed_learning_state"] = "BLOCKING_LEARNING_LOOP_NOT_READY"
+    elif score >= 85:
+        data["computed_learning_state"] = "LEARNING_LOOP_READY_FOR_REUSE"
+    else:
+        data["computed_learning_state"] = "LEARNING_LOOP_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "AI operational outcomes, exceptions, drift events, incidents, and response evidence must feed governed learning and continuous improvement."
+    data["engineering_principle"] = "Continuous assurance is not complete until operational outcomes improve the system of control. Learning must be evidence-bound, governed, reusable, and traceable."
+    return data
+
+
+def _cobitchain_enrich_ai_assurance_outcome_learning(learning):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(learning or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("learning_score", 0) or 0)
+    ready = bool(data.get("learning_ready_for_reuse", False))
+    blockers = data.get("blocking_learning_loops", []) or []
+
+    if ready and score >= 85 and len(blockers) == 0:
+        data["computed_outcome_learning_state"] = "LEARNING_READY_FOR_REUSE_AND_CONTINUOUS_IMPROVEMENT"
+    elif len(blockers) > 0:
+        data["computed_outcome_learning_state"] = "CONTINUOUS_IMPROVEMENT_BLOCKED_BY_LEARNING_GAPS"
+    elif score >= 75:
+        data["computed_outcome_learning_state"] = "LEARNING_REVIEW_REQUIRED"
+    else:
+        data["computed_outcome_learning_state"] = "LEARNING_NOT_READY"
+
+    data["platform_rule"] = "Learning becomes valuable only when it updates evidence, controls, scope, monitoring, and organizational intelligence."
+    data["engineering_principle"] = "Continuous assurance is not complete until operational outcomes improve the system of control. Learning must be evidence-bound, governed, reusable, and traceable."
+    return data
+
+
+@app.route("/api/platform/ai-assurance-learning/model/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_learning_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_outcome_learning()
+    loops = [_cobitchain_enrich_ai_assurance_learning_loop(item) for item in payload.get("learning_loops", [])]
+    learning = _cobitchain_enrich_ai_assurance_outcome_learning(payload.get("sample_learning", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in loops]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Outcome Learning Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "learning_loop_count": len(loops),
+        "average_loop_score": average,
+        "learning_loops": loops,
+        "sample_learning": learning
+    })
+
+
+@app.route("/api/platform/ai-assurance-learning/loop/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_learning_loop_demo_api():
+    from flask import jsonify, request
+
+    loop_id = request.args.get("loop_id", "organizational_intelligence_loop")
+    payload = _cobitchain_load_ai_assurance_outcome_learning()
+    loops = payload.get("learning_loops", []) or []
+
+    for item in loops:
+        if item.get("loop_id") == loop_id:
+            return jsonify(_cobitchain_enrich_ai_assurance_learning_loop(item))
+
+    return jsonify({
+        "error": "learning_loop_not_found",
+        "message": f"No AI Assurance Outcome Learning loop found for loop_id={loop_id}",
+        "available_loop_ids": [item.get("loop_id") for item in loops]
+    }), 404
+
+
+@app.route("/api/platform/ai-assurance-learning/learning/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_learning_learning_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_outcome_learning()
+    return jsonify(_cobitchain_enrich_ai_assurance_outcome_learning(payload.get("sample_learning", {})))
+
+
+@app.route("/api/platform/ai-assurance-learning/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_assurance_learning_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_outcome_learning()
+    loops = [_cobitchain_enrich_ai_assurance_learning_loop(item) for item in payload.get("learning_loops", [])]
+    learning = _cobitchain_enrich_ai_assurance_outcome_learning(payload.get("sample_learning", {}))
+
+    blocking = [
+        {
+            "loop_id": item.get("loop_id"),
+            "loop_name": item.get("loop_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "improvement_outputs": item.get("improvement_outputs", [])
+        }
+        for item in loops
+        if item.get("computed_learning_state") == "BLOCKING_LEARNING_LOOP_NOT_READY"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Outcome Learning Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_learning": learning,
+        "blocking_learning_loops": blocking,
+        "required_learning_actions": learning.get("required_learning_actions", []),
+        "evidence_to_bind": learning.get("evidence_to_bind", []),
+        "engineering_principle": "Continuous assurance is not complete until operational outcomes improve the system of control. Learning must be evidence-bound, governed, reusable, and traceable."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_OUTCOME_LEARNING_ENGINE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V10_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v10/demo", methods=["GET"])
+@app.route("/api/platform/spine/v10/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v10_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    outcome_learning_layer = [
+        {"name": "AI Assurance Outcome Learning Engine", "route": "/platform/ai-assurance-outcome-learning"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"},
+        {"name": "AI Lifecycle Change Assurance", "route": "/platform/ai-lifecycle-change-assurance"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"}
+    ]
+
+    learning_outputs = [
+        "outcome evidence package",
+        "incident lesson record",
+        "drift threshold update",
+        "tool authorization update",
+        "human oversight feedback",
+        "evidence contract update",
+        "control routing update",
+        "approval scope refinement",
+        "lifecycle change assurance record",
+        "organizational intelligence object"
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "Organizational Intelligence Continuous Improvement"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v10 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v10",
+        "outcome_learning_layer": outcome_learning_layer,
+        "learning_outputs": learning_outputs,
+        "full_ai_assurance_continuous_learning_trust_chain": full_trust_chain,
+        "engineering_principle": "Continuous assurance is not complete until operational outcomes improve the system of control. Learning must be evidence-bound, governed, reusable, and traceable.",
+        "status": "PLATFORM_SPINE_REFRESHED_V10"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V10_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_KNOWLEDGE_REUSE_REGISTRY_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-knowledge-reuse")
+@app.route("/platform/ai-knowledge-reuse-registry")
+@app.route("/platform/assurance-knowledge-registry")
+@app.route("/ai-assurance-knowledge-reuse")
+def cobitchain_platform_ai_assurance_knowledge_reuse_registry():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_knowledge_reuse_registry.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_knowledge_reuse_registry():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_knowledge_reuse_registry_seed.json")
+    if not path.exists():
+        return {"knowledge_objects": [], "sample_registry": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"knowledge_objects": [], "sample_registry": {}}
+
+
+def _cobitchain_enrich_ai_knowledge_object(obj):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(obj or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    approval = data.get("approval_state", "")
+
+    if approval == "Approved" and score >= 85:
+        data["computed_reuse_state"] = "APPROVED_FOR_GOVERNED_REUSE"
+    elif approval in ["Open", "Incomplete", "Triggered"] or score < 70:
+        data["computed_reuse_state"] = "REUSE_BLOCKED_PENDING_REMEDIATION"
+    elif approval in ["Pending Approval", "Pending Review", "Review Required"]:
+        data["computed_reuse_state"] = "REUSE_REQUIRES_APPROVAL"
+    else:
+        data["computed_reuse_state"] = "REUSE_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Outcome learning can be reused only when converted into governed, versioned, evidence-linked, owner-approved knowledge objects."
+    data["engineering_principle"] = "Organizational intelligence is not memory alone. It is reusable operational knowledge with owner, evidence, context, boundary, version, approval state, and traceable reuse conditions."
+    return data
+
+
+def _cobitchain_enrich_ai_knowledge_registry(registry):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(registry or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("registry_score", 0) or 0)
+    approved = bool(data.get("approved_for_reuse", False))
+    approved_objects = int(data.get("approved_objects", 0) or 0)
+    object_count = int(data.get("knowledge_object_count", 0) or 0)
+
+    if approved and score >= 85 and approved_objects == object_count and object_count > 0:
+        data["computed_registry_state"] = "REGISTRY_APPROVED_FOR_ORGANIZATIONAL_REUSE"
+    elif score < 75 or approved_objects < object_count:
+        data["computed_registry_state"] = "REGISTRY_NOT_READY_FOR_REUSE"
+    else:
+        data["computed_registry_state"] = "REGISTRY_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Reusable knowledge must be owner-approved, evidence-bound, context-limited, and traceable."
+    data["engineering_principle"] = "Organizational intelligence is not memory alone. It is reusable operational knowledge with owner, evidence, context, boundary, version, approval state, and traceable reuse conditions."
+    return data
+
+
+@app.route("/api/platform/ai-knowledge-reuse/model/demo", methods=["GET"])
+def cobitchain_platform_ai_knowledge_reuse_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_knowledge_reuse_registry()
+    objects = [_cobitchain_enrich_ai_knowledge_object(item) for item in payload.get("knowledge_objects", [])]
+    registry = _cobitchain_enrich_ai_knowledge_registry(payload.get("sample_registry", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in objects]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Knowledge Reuse Registry Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "knowledge_object_count": len(objects),
+        "average_object_score": average,
+        "knowledge_objects": objects,
+        "sample_registry": registry
+    })
+
+
+@app.route("/api/platform/ai-knowledge-reuse/object/demo", methods=["GET"])
+def cobitchain_platform_ai_knowledge_reuse_object_demo_api():
+    from flask import jsonify, request
+
+    object_id = request.args.get("object_id", "ko_outcome_lesson_001")
+    payload = _cobitchain_load_ai_assurance_knowledge_reuse_registry()
+    objects = payload.get("knowledge_objects", []) or []
+
+    for item in objects:
+        if item.get("object_id") == object_id:
+            return jsonify(_cobitchain_enrich_ai_knowledge_object(item))
+
+    return jsonify({
+        "error": "knowledge_object_not_found",
+        "message": f"No AI Assurance Knowledge object found for object_id={object_id}",
+        "available_object_ids": [item.get("object_id") for item in objects]
+    }), 404
+
+
+@app.route("/api/platform/ai-knowledge-reuse/registry/demo", methods=["GET"])
+def cobitchain_platform_ai_knowledge_reuse_registry_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_knowledge_reuse_registry()
+    return jsonify(_cobitchain_enrich_ai_knowledge_registry(payload.get("sample_registry", {})))
+
+
+@app.route("/api/platform/ai-knowledge-reuse/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_knowledge_reuse_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_knowledge_reuse_registry()
+    objects = [_cobitchain_enrich_ai_knowledge_object(item) for item in payload.get("knowledge_objects", [])]
+    registry = _cobitchain_enrich_ai_knowledge_registry(payload.get("sample_registry", {}))
+
+    blocked_objects = [
+        {
+            "object_id": item.get("object_id"),
+            "object_name": item.get("object_name"),
+            "approval_state": item.get("approval_state"),
+            "sample_score": item.get("sample_score"),
+            "computed_reuse_state": item.get("computed_reuse_state"),
+            "owner_role": item.get("owner_role")
+        }
+        for item in objects
+        if item.get("computed_reuse_state") != "APPROVED_FOR_GOVERNED_REUSE"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Knowledge Reuse Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_registry": registry,
+        "blocked_knowledge_objects": blocked_objects,
+        "required_next_actions": registry.get("required_next_actions", []),
+        "engineering_principle": "Organizational intelligence is not memory alone. It is reusable operational knowledge with owner, evidence, context, boundary, version, approval state, and traceable reuse conditions."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_KNOWLEDGE_REUSE_REGISTRY_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V11_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v11/demo", methods=["GET"])
+@app.route("/api/platform/spine/v11/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v11_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    knowledge_reuse_layer = [
+        {"name": "AI Assurance Knowledge Reuse Registry", "route": "/platform/ai-assurance-knowledge-reuse"},
+        {"name": "AI Assurance Outcome Learning Engine", "route": "/platform/ai-assurance-outcome-learning"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"}
+    ]
+
+    reusable_knowledge_objects = [
+        "outcome lesson knowledge object",
+        "incident response pattern",
+        "drift threshold pattern",
+        "tool action control pattern",
+        "human oversight guidance pattern",
+        "evidence replay improvement pattern",
+        "certificate scope refinement pattern",
+        "lifecycle change learning pattern"
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Organizational Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v11 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v11",
+        "knowledge_reuse_layer": knowledge_reuse_layer,
+        "reusable_knowledge_objects": reusable_knowledge_objects,
+        "full_ai_assurance_learning_to_reuse_trust_chain": full_trust_chain,
+        "engineering_principle": "Organizational intelligence is not memory alone. It is reusable operational knowledge with owner, evidence, context, boundary, version, approval state, and traceable reuse conditions.",
+        "status": "PLATFORM_SPINE_REFRESHED_V11"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V11_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_REUSE_APPLICABILITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-reuse-applicability")
+@app.route("/platform/ai-reuse-applicability-engine")
+@app.route("/platform/assurance-pattern-applicability")
+@app.route("/ai-assurance-reuse-applicability")
+def cobitchain_platform_ai_assurance_reuse_applicability():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_reuse_applicability.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_reuse_applicability():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_reuse_applicability_seed.json")
+    if not path.exists():
+        return {"applicability_checks": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"applicability_checks": [], "sample_assessment": {}}
+
+
+def _cobitchain_enrich_ai_reuse_check(check):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(check or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_reuse", False))
+    state = data.get("sample_state", "")
+
+    if blocks and (score < 85 or state not in ["MATCH", "APPROVED", "PASS", "COMPLETE"]):
+        data["computed_applicability_state"] = "BLOCKING_REUSE_CHECK_NOT_SATISFIED"
+    elif score >= 85:
+        data["computed_applicability_state"] = "REUSE_CHECK_SATISFIED"
+    else:
+        data["computed_applicability_state"] = "REUSE_CHECK_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Reusable AI assurance knowledge may be applied only when context, boundary, evidence, autonomy, tool, regulatory, owner, and lifecycle conditions match."
+    data["engineering_principle"] = "Reuse is not copy-paste. Reuse is a governed applicability decision that determines whether prior operational learning safely applies to a new AI workflow."
+    return data
+
+
+def _cobitchain_enrich_ai_reuse_assessment(assessment):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("reuse_applicability_score", 0) or 0)
+    approved = bool(data.get("approved_for_reuse", False))
+    full_assessment = bool(data.get("full_assessment_required", False))
+    blockers = data.get("blocking_checks", []) or []
+
+    if approved and score >= 85 and len(blockers) == 0:
+        data["computed_reuse_decision_state"] = "APPROVED_FOR_GOVERNED_REUSE"
+    elif full_assessment or len(blockers) > 0:
+        data["computed_reuse_decision_state"] = "REUSE_BLOCKED_FULL_ASSURANCE_REQUIRED"
+    elif score >= 75:
+        data["computed_reuse_decision_state"] = "REUSE_REVIEW_REQUIRED"
+    else:
+        data["computed_reuse_decision_state"] = "REUSE_NOT_READY"
+
+    data["platform_rule"] = "Prior learning may advise future assurance, but governed reuse requires evidence, boundary match, owner approval, and lifecycle control."
+    data["engineering_principle"] = "Reuse is not copy-paste. Reuse is a governed applicability decision that determines whether prior operational learning safely applies to a new AI workflow."
+    return data
+
+
+@app.route("/api/platform/ai-reuse-applicability/model/demo", methods=["GET"])
+def cobitchain_platform_ai_reuse_applicability_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_reuse_applicability()
+    checks = [_cobitchain_enrich_ai_reuse_check(item) for item in payload.get("applicability_checks", [])]
+    assessment = _cobitchain_enrich_ai_reuse_assessment(payload.get("sample_assessment", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in checks]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Reuse Applicability Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "applicability_check_count": len(checks),
+        "average_check_score": average,
+        "applicability_checks": checks,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-reuse-applicability/check/demo", methods=["GET"])
+def cobitchain_platform_ai_reuse_applicability_check_demo_api():
+    from flask import jsonify, request
+
+    check_id = request.args.get("check_id", "context_of_use_match")
+    payload = _cobitchain_load_ai_assurance_reuse_applicability()
+    checks = payload.get("applicability_checks", []) or []
+
+    for item in checks:
+        if item.get("check_id") == check_id:
+            return jsonify(_cobitchain_enrich_ai_reuse_check(item))
+
+    return jsonify({
+        "error": "applicability_check_not_found",
+        "message": f"No AI Assurance Reuse Applicability check found for check_id={check_id}",
+        "available_check_ids": [item.get("check_id") for item in checks]
+    }), 404
+
+
+@app.route("/api/platform/ai-reuse-applicability/assessment/demo", methods=["GET"])
+def cobitchain_platform_ai_reuse_applicability_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_reuse_applicability()
+    return jsonify(_cobitchain_enrich_ai_reuse_assessment(payload.get("sample_assessment", {})))
+
+
+@app.route("/api/platform/ai-reuse-applicability/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_reuse_applicability_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_reuse_applicability()
+    checks = [_cobitchain_enrich_ai_reuse_check(item) for item in payload.get("applicability_checks", [])]
+    assessment = _cobitchain_enrich_ai_reuse_assessment(payload.get("sample_assessment", {}))
+
+    blocking = [
+        {
+            "check_id": item.get("check_id"),
+            "check_name": item.get("check_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "required_evidence": item.get("required_evidence", [])
+        }
+        for item in checks
+        if item.get("computed_applicability_state") == "BLOCKING_REUSE_CHECK_NOT_SATISFIED"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance Reuse Applicability Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "blocking_reuse_checks": blocking,
+        "required_next_actions": assessment.get("required_next_actions", []),
+        "engineering_principle": "Reuse is not copy-paste. Reuse is a governed applicability decision that determines whether prior operational learning safely applies to a new AI workflow."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_REUSE_APPLICABILITY_ENGINE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V12_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v12/demo", methods=["GET"])
+@app.route("/api/platform/spine/v12/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v12_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    reuse_applicability_layer = [
+        {"name": "AI Assurance Reuse Applicability Engine", "route": "/platform/ai-assurance-reuse-applicability"},
+        {"name": "AI Assurance Knowledge Reuse Registry", "route": "/platform/ai-assurance-knowledge-reuse"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"}
+    ]
+
+    applicability_checks = [
+        "context of use match",
+        "autonomy level match",
+        "evidence compatibility",
+        "control pattern fit",
+        "tool permission match",
+        "regulatory and jurisdiction fit",
+        "approval scope fit",
+        "owner approval fit",
+        "lifecycle change fit"
+    ]
+
+    full_trust_chain = [
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "AI Assurance Reuse Applicability Engine",
+        "New Workflow Assurance Intake"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v12 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v12",
+        "reuse_applicability_layer": reuse_applicability_layer,
+        "applicability_checks": applicability_checks,
+        "full_ai_assurance_reuse_to_new_workflow_trust_chain": full_trust_chain,
+        "engineering_principle": "Reuse is not copy-paste. Reuse is a governed applicability decision that determines whether prior operational learning safely applies to a new AI workflow.",
+        "status": "PLATFORM_SPINE_REFRESHED_V12"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V12_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ASSURANCE_NEW_WORKFLOW_INTAKE_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-assurance-new-workflow-intake")
+@app.route("/platform/ai-workflow-intake")
+@app.route("/platform/new-workflow-assurance-intake")
+@app.route("/ai-assurance-new-workflow-intake")
+def cobitchain_platform_ai_assurance_new_workflow_intake():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_assurance_new_workflow_intake.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_assurance_new_workflow_intake():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_assurance_new_workflow_intake_seed.json")
+    if not path.exists():
+        return {"intake_checks": [], "sample_intake": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"intake_checks": [], "sample_intake": {}}
+
+
+def _cobitchain_enrich_ai_workflow_intake_check(check):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(check or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_intake_completion", False))
+    state = data.get("sample_state", "")
+
+    if blocks and (score < 85 or state not in ["COMPLETE", "READY", "APPROVED", "PASS"]):
+        data["computed_intake_check_state"] = "BLOCKING_INTAKE_CHECK_NOT_COMPLETE"
+    elif score >= 85:
+        data["computed_intake_check_state"] = "INTAKE_CHECK_READY"
+    else:
+        data["computed_intake_check_state"] = "INTAKE_CHECK_REVIEW_REQUIRED"
+
+    data["platform_rule"] = "Every new AI-enabled workflow must enter governed assurance intake before architecture, evidence, control, approval, or release activity."
+    data["engineering_principle"] = "A new AI workflow should not begin with tools, prompts, or deployment. It should begin with a governed intake record that defines context, autonomy, tools, data, evidence, owners, risk, reuse eligibility, and assurance path."
+    return data
+
+
+def _cobitchain_enrich_ai_workflow_intake(intake):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(intake or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("intake_score", 0) or 0)
+    approved_execution = bool(data.get("approved_for_assurance_execution", False))
+    blockers = data.get("blocking_intake_checks", []) or []
+    full_required = bool(data.get("full_architecture_assurance_required", False))
+
+    if approved_execution and full_required:
+        data["computed_intake_state"] = "ACCEPTED_INTO_FULL_ASSURANCE_PATH"
+    elif approved_execution and score >= 85 and len(blockers) == 0:
+        data["computed_intake_state"] = "INTAKE_COMPLETE_READY_FOR_ASSURANCE_EXECUTION"
+    elif len(blockers) > 0:
+        data["computed_intake_state"] = "INTAKE_ACCEPTED_WITH_BLOCKING_COMPLETION_GAPS"
+    else:
+        data["computed_intake_state"] = "INTAKE_NOT_READY"
+
+    data["platform_rule"] = "New AI workflow intake determines the minimum assurance path before trust can be claimed."
+    data["engineering_principle"] = "A new AI workflow should not begin with tools, prompts, or deployment. It should begin with a governed intake record that defines context, autonomy, tools, data, evidence, owners, risk, reuse eligibility, and assurance path."
+    return data
+
+
+@app.route("/api/platform/ai-workflow-intake/model/demo", methods=["GET"])
+def cobitchain_platform_ai_workflow_intake_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_new_workflow_intake()
+    checks = [_cobitchain_enrich_ai_workflow_intake_check(item) for item in payload.get("intake_checks", [])]
+    intake = _cobitchain_enrich_ai_workflow_intake(payload.get("sample_intake", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in checks]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance New Workflow Intake Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "intake_check_count": len(checks),
+        "average_check_score": average,
+        "intake_checks": checks,
+        "sample_intake": intake
+    })
+
+
+@app.route("/api/platform/ai-workflow-intake/check/demo", methods=["GET"])
+def cobitchain_platform_ai_workflow_intake_check_demo_api():
+    from flask import jsonify, request
+
+    check_id = request.args.get("check_id", "context_of_use_check")
+    payload = _cobitchain_load_ai_assurance_new_workflow_intake()
+    checks = payload.get("intake_checks", []) or []
+
+    for item in checks:
+        if item.get("check_id") == check_id:
+            return jsonify(_cobitchain_enrich_ai_workflow_intake_check(item))
+
+    return jsonify({
+        "error": "intake_check_not_found",
+        "message": f"No AI Assurance New Workflow Intake check found for check_id={check_id}",
+        "available_check_ids": [item.get("check_id") for item in checks]
+    }), 404
+
+
+@app.route("/api/platform/ai-workflow-intake/intake/demo", methods=["GET"])
+def cobitchain_platform_ai_workflow_intake_intake_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_assurance_new_workflow_intake()
+    return jsonify(_cobitchain_enrich_ai_workflow_intake(payload.get("sample_intake", {})))
+
+
+@app.route("/api/platform/ai-workflow-intake/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_workflow_intake_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_assurance_new_workflow_intake()
+    checks = [_cobitchain_enrich_ai_workflow_intake_check(item) for item in payload.get("intake_checks", [])]
+    intake = _cobitchain_enrich_ai_workflow_intake(payload.get("sample_intake", {}))
+
+    blocking = [
+        {
+            "check_id": item.get("check_id"),
+            "check_name": item.get("check_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "source_module": item.get("source_module"),
+            "required_evidence": item.get("required_evidence", [])
+        }
+        for item in checks
+        if item.get("computed_intake_check_state") == "BLOCKING_INTAKE_CHECK_NOT_COMPLETE"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Assurance New Workflow Intake Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_intake": intake,
+        "blocking_intake_checks": blocking,
+        "required_next_actions": intake.get("required_next_actions", []),
+        "engineering_principle": "A new AI workflow should not begin with tools, prompts, or deployment. It should begin with a governed intake record that defines context, autonomy, tools, data, evidence, owners, risk, reuse eligibility, and assurance path."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ASSURANCE_NEW_WORKFLOW_INTAKE_ENGINE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V13_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v13/demo", methods=["GET"])
+@app.route("/api/platform/spine/v13/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v13_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    new_workflow_intake_layer = [
+        {"name": "AI Assurance New Workflow Intake Engine", "route": "/platform/ai-assurance-new-workflow-intake"},
+        {"name": "AI Assurance Reuse Applicability Engine", "route": "/platform/ai-assurance-reuse-applicability"},
+        {"name": "AI Architecture Assurance", "route": "/platform/ai-architecture-assurance"},
+        {"name": "AI Assurance Evidence Contract", "route": "/platform/ai-assurance-evidence-contract"},
+        {"name": "AI Assurance Control Router", "route": "/platform/ai-assurance-control-router"}
+    ]
+
+    intake_checks = [
+        "workflow identity",
+        "context of use",
+        "regulated context",
+        "AI capability profile",
+        "autonomy level",
+        "tool and data access",
+        "reuse applicability",
+        "evidence contract precheck",
+        "owner accountability",
+        "assurance path routing"
+    ]
+
+    assurance_paths = [
+        "full AI assurance path",
+        "accelerated assurance path",
+        "advisory reuse path",
+        "lifecycle change assurance path",
+        "blocked intake path"
+    ]
+
+    full_trust_chain = [
+        "AI Assurance New Workflow Intake Engine",
+        "AI Assurance Reuse Applicability Engine",
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Next Workflow Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v13 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v13",
+        "new_workflow_intake_layer": new_workflow_intake_layer,
+        "intake_checks": intake_checks,
+        "assurance_paths": assurance_paths,
+        "full_ai_assurance_closed_loop_trust_chain": full_trust_chain,
+        "engineering_principle": "A new AI workflow should not begin with tools, prompts, or deployment. It should begin with a governed intake record that defines context, autonomy, tools, data, evidence, owners, risk, reuse eligibility, and assurance path.",
+        "status": "PLATFORM_SPINE_REFRESHED_V13"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V13_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_TEAM_ASSURANCE_CONSOLE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-team-assurance")
+@app.route("/platform/team-assurance")
+@app.route("/platform/ai-operational-team-assurance")
+@app.route("/ai-team-assurance")
+def cobitchain_platform_ai_team_assurance():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_team_assurance.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_team_assurance():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_team_assurance_seed.json")
+    if not path.exists():
+        return {"team_assurance_domains": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"team_assurance_domains": [], "sample_assessment": {}}
+
+
+def _cobitchain_enrich_ai_team_domain(domain):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(domain or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_team_readiness", False))
+    state = data.get("sample_state", "")
+
+    ready_states = ["READY", "COMPLETE", "DEFINED", "APPROVED", "MATURE"]
+    if blocks and (score < 85 or state not in ready_states):
+        data["computed_team_domain_state"] = "BLOCKING_TEAM_ACCOUNTABILITY_GAP"
+    elif score >= 85:
+        data["computed_team_domain_state"] = "TEAM_DOMAIN_READY"
+    elif score >= 75:
+        data["computed_team_domain_state"] = "TEAM_DOMAIN_REVIEW_REQUIRED"
+    else:
+        data["computed_team_domain_state"] = "TEAM_DOMAIN_NOT_READY"
+
+    data["platform_rule"] = "Enterprise AI trust requires defined ownership, decision rights, accountability, evidence ownership, approvals, escalation, and collaboration maturity."
+    data["engineering_principle"] = "Enterprise AI scales through coordinated governance rather than isolated technical expertise."
+    return data
+
+
+def _cobitchain_enrich_ai_team_assessment(assessment):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("team_assurance_score", 0) or 0)
+    op_ready = bool(data.get("approved_for_operational_readiness", False))
+    release_ready = bool(data.get("approved_for_release_decision", False))
+    blockers = data.get("blocking_domains", []) or []
+
+    if op_ready and release_ready and score >= 85 and len(blockers) == 0:
+        data["computed_team_assurance_state"] = "TEAM_ASSURANCE_READY_FOR_OPERATIONAL_TRUST"
+    elif len(blockers) > 0:
+        data["computed_team_assurance_state"] = "TEAM_ASSURANCE_BLOCKED_BY_ACCOUNTABILITY_GAPS"
+    elif score >= 75:
+        data["computed_team_assurance_state"] = "TEAM_ASSURANCE_REVIEW_REQUIRED"
+    else:
+        data["computed_team_assurance_state"] = "TEAM_ASSURANCE_NOT_READY"
+
+    data["platform_rule"] = "AI operational readiness must include team accountability, not only technical readiness."
+    data["engineering_principle"] = "Enterprise AI scales through coordinated governance rather than isolated technical expertise."
+    return data
+
+
+@app.route("/api/platform/ai-team-assurance/model/demo", methods=["GET"])
+def cobitchain_platform_ai_team_assurance_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_team_assurance()
+    domains = [_cobitchain_enrich_ai_team_domain(item) for item in payload.get("team_assurance_domains", [])]
+    assessment = _cobitchain_enrich_ai_team_assessment(payload.get("sample_assessment", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in domains]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Team Assurance Console Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "assurance_question": payload.get("assurance_question"),
+        "depends_on": payload.get("depends_on", []),
+        "team_assurance_domain_count": len(domains),
+        "average_domain_score": average,
+        "team_assurance_domains": domains,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-team-assurance/domain/demo", methods=["GET"])
+def cobitchain_platform_ai_team_assurance_domain_demo_api():
+    from flask import jsonify, request
+
+    domain_id = request.args.get("domain_id", "role_ownership")
+    payload = _cobitchain_load_ai_team_assurance()
+    domains = payload.get("team_assurance_domains", []) or []
+
+    for item in domains:
+        if item.get("domain_id") == domain_id:
+            return jsonify(_cobitchain_enrich_ai_team_domain(item))
+
+    return jsonify({
+        "error": "team_assurance_domain_not_found",
+        "message": f"No AI Team Assurance domain found for domain_id={domain_id}",
+        "available_domain_ids": [item.get("domain_id") for item in domains]
+    }), 404
+
+
+@app.route("/api/platform/ai-team-assurance/assessment/demo", methods=["GET"])
+def cobitchain_platform_ai_team_assurance_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_team_assurance()
+    return jsonify(_cobitchain_enrich_ai_team_assessment(payload.get("sample_assessment", {})))
+
+
+@app.route("/api/platform/ai-team-assurance/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_team_assurance_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_team_assurance()
+    domains = [_cobitchain_enrich_ai_team_domain(item) for item in payload.get("team_assurance_domains", [])]
+    assessment = _cobitchain_enrich_ai_team_assessment(payload.get("sample_assessment", {}))
+
+    blocking = [
+        {
+            "domain_id": item.get("domain_id"),
+            "domain_name": item.get("domain_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "computed_team_domain_state": item.get("computed_team_domain_state"),
+            "required_evidence": item.get("required_evidence", []),
+            "required_actions": item.get("required_actions", [])
+        }
+        for item in domains
+        if item.get("computed_team_domain_state") == "BLOCKING_TEAM_ACCOUNTABILITY_GAP"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Team Assurance Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "blocking_team_domains": blocking,
+        "required_next_actions": assessment.get("required_next_actions", []),
+        "evidence_to_bind": assessment.get("evidence_to_bind", []),
+        "engineering_principle": "Enterprise AI scales through coordinated governance rather than isolated technical expertise."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_TEAM_ASSURANCE_CONSOLE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V14_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v14/demo", methods=["GET"])
+@app.route("/api/platform/spine/v14/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v14_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    ai_team_assurance_layer = [
+        {"name": "AI Team Assurance Console", "route": "/platform/ai-team-assurance"},
+        {"name": "AI Operational Readiness", "route": "/platform/ai-operational-readiness"},
+        {"name": "Governance Vision", "route": "/platform/governance-vision"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"},
+        {"name": "Organizational Intelligence Assurance", "route": "/platform/organizational-intelligence-assurance"}
+    ]
+
+    team_assurance_domains = [
+        "role ownership",
+        "decision rights",
+        "responsibility assignments",
+        "human accountability",
+        "governance ownership",
+        "evidence ownership",
+        "cross-functional approvals",
+        "escalation responsibilities",
+        "collaboration maturity"
+    ]
+
+    strengthened_modules = [
+        "AI Operational Readiness",
+        "Governance Vision",
+        "Decision Confidence",
+        "Evidence Vault",
+        "Organizational Intelligence Assurance",
+        "AI Assurance New Workflow Intake",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring",
+        "AI Assurance Exception and Drift Response"
+    ]
+
+    full_trust_chain = [
+        "AI Assurance New Workflow Intake Engine",
+        "AI Team Assurance Console",
+        "AI Assurance Reuse Applicability Engine",
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Next Workflow Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v14 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v14",
+        "ai_team_assurance_layer": ai_team_assurance_layer,
+        "team_assurance_domains": team_assurance_domains,
+        "strengthened_modules": strengthened_modules,
+        "full_ai_assurance_team_enabled_trust_chain": full_trust_chain,
+        "engineering_principle": "Enterprise AI scales through coordinated governance rather than isolated technical expertise.",
+        "status": "PLATFORM_SPINE_REFRESHED_V14"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V14_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_ACCOUNTABILITY_RACI_MATRIX_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-accountability-raci")
+@app.route("/platform/ai-raci-matrix")
+@app.route("/platform/ai-accountability-matrix")
+@app.route("/ai-accountability-raci")
+def cobitchain_platform_ai_accountability_raci():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_accountability_raci.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_accountability_raci():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_accountability_raci_seed.json")
+    if not path.exists():
+        return {"lifecycle_raci_stages": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"lifecycle_raci_stages": [], "sample_assessment": {}}
+
+
+def _cobitchain_enrich_ai_raci_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_raci_readiness", False))
+    state = data.get("sample_state", "")
+
+    ready_states = ["READY", "COMPLETE", "DEFINED", "APPROVED", "MATURE"]
+    if blocks and (score < 85 or state not in ready_states):
+        data["computed_raci_stage_state"] = "BLOCKING_RACI_ACCOUNTABILITY_GAP"
+    elif score >= 85:
+        data["computed_raci_stage_state"] = "RACI_STAGE_READY"
+    elif score >= 75:
+        data["computed_raci_stage_state"] = "RACI_STAGE_REVIEW_REQUIRED"
+    else:
+        data["computed_raci_stage_state"] = "RACI_STAGE_NOT_READY"
+
+    data["platform_rule"] = "Every AI assurance activity must have clear Responsible, Accountable, Consulted, and Informed roles before trust can be claimed."
+    data["engineering_principle"] = "AI accountability becomes operational only when responsibility assignments are explicit across the lifecycle, tied to evidence, and enforceable at decision gates."
+    return data
+
+
+def _cobitchain_enrich_ai_raci_assessment(assessment):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("raci_score", 0) or 0)
+    release_ready = bool(data.get("approved_for_release_decision", False))
+    op_ready = bool(data.get("approved_for_operational_readiness", False))
+    blockers = data.get("blocking_stages", []) or []
+
+    if op_ready and release_ready and score >= 85 and len(blockers) == 0:
+        data["computed_raci_assessment_state"] = "RACI_READY_FOR_OPERATIONAL_TRUST_AND_RELEASE"
+    elif len(blockers) > 0:
+        data["computed_raci_assessment_state"] = "RACI_BLOCKED_BY_LIFECYCLE_ACCOUNTABILITY_GAPS"
+    elif score >= 75:
+        data["computed_raci_assessment_state"] = "RACI_REVIEW_REQUIRED"
+    else:
+        data["computed_raci_assessment_state"] = "RACI_NOT_READY"
+
+    data["platform_rule"] = "Lifecycle accountability must be explicit, evidence-bound, and enforceable across AI assurance gates."
+    data["engineering_principle"] = "AI accountability becomes operational only when responsibility assignments are explicit across the lifecycle, tied to evidence, and enforceable at decision gates."
+    return data
+
+
+@app.route("/api/platform/ai-accountability-raci/model/demo", methods=["GET"])
+def cobitchain_platform_ai_accountability_raci_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_accountability_raci()
+    stages = [_cobitchain_enrich_ai_raci_stage(item) for item in payload.get("lifecycle_raci_stages", [])]
+    assessment = _cobitchain_enrich_ai_raci_assessment(payload.get("sample_assessment", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in stages]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Accountability RACI Matrix Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "depends_on": payload.get("depends_on", []),
+        "lifecycle_raci_stage_count": len(stages),
+        "average_stage_score": average,
+        "lifecycle_raci_stages": stages,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-accountability-raci/stage/demo", methods=["GET"])
+def cobitchain_platform_ai_accountability_raci_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "evidence_contract_accountability")
+    payload = _cobitchain_load_ai_accountability_raci()
+    stages = payload.get("lifecycle_raci_stages", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_ai_raci_stage(item))
+
+    return jsonify({
+        "error": "raci_stage_not_found",
+        "message": f"No AI Accountability RACI stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/ai-accountability-raci/assessment/demo", methods=["GET"])
+def cobitchain_platform_ai_accountability_raci_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_accountability_raci()
+    return jsonify(_cobitchain_enrich_ai_raci_assessment(payload.get("sample_assessment", {})))
+
+
+@app.route("/api/platform/ai-accountability-raci/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_accountability_raci_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_accountability_raci()
+    stages = [_cobitchain_enrich_ai_raci_stage(item) for item in payload.get("lifecycle_raci_stages", [])]
+    assessment = _cobitchain_enrich_ai_raci_assessment(payload.get("sample_assessment", {}))
+
+    blocking = [
+        {
+            "stage_id": item.get("stage_id"),
+            "stage_name": item.get("stage_name"),
+            "lifecycle_phase": item.get("lifecycle_phase"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "accountable": item.get("accountable"),
+            "computed_raci_stage_state": item.get("computed_raci_stage_state"),
+            "required_evidence": item.get("required_evidence", [])
+        }
+        for item in stages
+        if item.get("computed_raci_stage_state") == "BLOCKING_RACI_ACCOUNTABILITY_GAP"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Accountability RACI Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "blocking_raci_stages": blocking,
+        "required_next_actions": assessment.get("required_next_actions", []),
+        "evidence_to_bind": assessment.get("evidence_to_bind", []),
+        "engineering_principle": "AI accountability becomes operational only when responsibility assignments are explicit across the lifecycle, tied to evidence, and enforceable at decision gates."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_ACCOUNTABILITY_RACI_MATRIX_ENGINE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V15_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v15/demo", methods=["GET"])
+@app.route("/api/platform/spine/v15/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v15_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    raci_accountability_layer = [
+        {"name": "AI Accountability RACI Matrix Engine", "route": "/platform/ai-accountability-raci"},
+        {"name": "AI Team Assurance Console", "route": "/platform/ai-team-assurance"},
+        {"name": "AI Operational Readiness", "route": "/platform/ai-operational-readiness"},
+        {"name": "AI Assurance Evidence Contract", "route": "/platform/ai-assurance-evidence-contract"},
+        {"name": "AI Assurance Operational Release Gate", "route": "/platform/ai-assurance-operational-release-gate"}
+    ]
+
+    raci_lifecycle_stages = [
+        "new workflow intake accountability",
+        "architecture assessment accountability",
+        "evidence contract accountability",
+        "decision rights accountability",
+        "approval certificate accountability",
+        "operational release accountability",
+        "post-release monitoring accountability",
+        "exception and drift response accountability",
+        "outcome learning accountability",
+        "knowledge reuse accountability"
+    ]
+
+    accountability_records = [
+        "AI lifecycle RACI matrix",
+        "decision rights matrix",
+        "evidence owner assignment map",
+        "release accountability map",
+        "monitoring accountability map",
+        "exception response accountability map",
+        "learning and reuse accountability map"
+    ]
+
+    full_trust_chain = [
+        "AI Assurance New Workflow Intake Engine",
+        "AI Team Assurance Console",
+        "AI Accountability RACI Matrix Engine",
+        "AI Assurance Reuse Applicability Engine",
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Next Workflow Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v15 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v15",
+        "raci_accountability_layer": raci_accountability_layer,
+        "raci_lifecycle_stages": raci_lifecycle_stages,
+        "accountability_records_to_bind": accountability_records,
+        "full_ai_assurance_raci_enabled_trust_chain": full_trust_chain,
+        "engineering_principle": "AI accountability becomes operational only when responsibility assignments are explicit across the lifecycle, tied to evidence, and enforceable at decision gates.",
+        "status": "PLATFORM_SPINE_REFRESHED_V15"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V15_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_INTELLIGENCE_VALIDATION_CONSOLE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/intelligence-validation")
+@app.route("/platform/ai-intelligence-validation")
+@app.route("/platform/ai-lifecycle-intelligence-validation")
+@app.route("/intelligence-validation")
+def cobitchain_platform_intelligence_validation():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_intelligence_validation.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_intelligence_validation():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_intelligence_validation_seed.json")
+    if not path.exists():
+        return {"validation_domains": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"validation_domains": [], "sample_assessment": {}}
+
+
+def _cobitchain_enrich_intelligence_validation_domain(domain):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(domain or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_validation_readiness", False))
+    state = data.get("sample_state", "")
+
+    ready_states = ["READY", "COMPLETE", "VALIDATED", "APPROVED", "MONITORED"]
+    if blocks and (score < 85 or state not in ready_states):
+        data["computed_validation_domain_state"] = "BLOCKING_INTELLIGENCE_VALIDATION_GAP"
+    elif score >= 85:
+        data["computed_validation_domain_state"] = "INTELLIGENCE_VALIDATION_DOMAIN_READY"
+    elif score >= 75:
+        data["computed_validation_domain_state"] = "INTELLIGENCE_VALIDATION_REVIEW_REQUIRED"
+    else:
+        data["computed_validation_domain_state"] = "INTELLIGENCE_VALIDATION_NOT_READY"
+
+    data["platform_rule"] = "AI-enabled systems must remain operationally fit for intended use through continuous validation of behavior, traceability, evidence, drift, human approval, and lifecycle change triggers."
+    data["engineering_principle"] = "Operational trust depends upon continuous validation of intelligence rather than one-time validation of software."
+    return data
+
+
+def _cobitchain_enrich_intelligence_validation_assessment(assessment):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("intelligence_validation_score", 0) or 0)
+    fit = bool(data.get("operationally_fit_for_intended_use", False))
+    output_clearance = bool(data.get("approved_for_output_clearance", False))
+    op_ready = bool(data.get("approved_for_operational_readiness", False))
+    blockers = data.get("blocking_domains", []) or []
+    revalidation_required = bool(data.get("revalidation_required", False))
+
+    if fit and output_clearance and op_ready and score >= 85 and len(blockers) == 0:
+        data["computed_intelligence_validation_state"] = "INTELLIGENCE_VALIDATED_FOR_OPERATIONAL_TRUST"
+    elif revalidation_required or len(blockers) > 0:
+        data["computed_intelligence_validation_state"] = "INTELLIGENCE_VALIDATION_BLOCKED_REVALIDATION_REQUIRED"
+    elif score >= 75:
+        data["computed_intelligence_validation_state"] = "INTELLIGENCE_VALIDATION_REVIEW_REQUIRED"
+    else:
+        data["computed_intelligence_validation_state"] = "INTELLIGENCE_VALIDATION_NOT_READY"
+
+    data["platform_rule"] = "Operational AI trust requires continuous validation of intended use, behavior, lineage, approval, drift, monitoring, and evidence."
+    data["engineering_principle"] = "Operational trust depends upon continuous validation of intelligence rather than one-time validation of software."
+    return data
+
+
+@app.route("/api/platform/intelligence-validation/model/demo", methods=["GET"])
+def cobitchain_platform_intelligence_validation_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_intelligence_validation()
+    domains = [_cobitchain_enrich_intelligence_validation_domain(item) for item in payload.get("validation_domains", [])]
+    assessment = _cobitchain_enrich_intelligence_validation_assessment(payload.get("sample_assessment", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in domains]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain Intelligence Validation Console Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "assurance_question": payload.get("assurance_question"),
+        "depends_on": payload.get("depends_on", []),
+        "validation_domain_count": len(domains),
+        "average_domain_score": average,
+        "validation_domains": domains,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/intelligence-validation/domain/demo", methods=["GET"])
+def cobitchain_platform_intelligence_validation_domain_demo_api():
+    from flask import jsonify, request
+
+    domain_id = request.args.get("domain_id", "prompt_traceability")
+    payload = _cobitchain_load_intelligence_validation()
+    domains = payload.get("validation_domains", []) or []
+
+    for item in domains:
+        if item.get("domain_id") == domain_id:
+            return jsonify(_cobitchain_enrich_intelligence_validation_domain(item))
+
+    return jsonify({
+        "error": "intelligence_validation_domain_not_found",
+        "message": f"No Intelligence Validation domain found for domain_id={domain_id}",
+        "available_domain_ids": [item.get("domain_id") for item in domains]
+    }), 404
+
+
+@app.route("/api/platform/intelligence-validation/assessment/demo", methods=["GET"])
+def cobitchain_platform_intelligence_validation_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_intelligence_validation()
+    return jsonify(_cobitchain_enrich_intelligence_validation_assessment(payload.get("sample_assessment", {})))
+
+
+@app.route("/api/platform/intelligence-validation/readiness/demo", methods=["GET"])
+def cobitchain_platform_intelligence_validation_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_intelligence_validation()
+    domains = [_cobitchain_enrich_intelligence_validation_domain(item) for item in payload.get("validation_domains", [])]
+    assessment = _cobitchain_enrich_intelligence_validation_assessment(payload.get("sample_assessment", {}))
+
+    blocking = [
+        {
+            "domain_id": item.get("domain_id"),
+            "domain_name": item.get("domain_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "computed_validation_domain_state": item.get("computed_validation_domain_state"),
+            "required_evidence": item.get("required_evidence", []),
+            "required_actions": item.get("required_actions", [])
+        }
+        for item in domains
+        if item.get("computed_validation_domain_state") == "BLOCKING_INTELLIGENCE_VALIDATION_GAP"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Intelligence Validation Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "blocking_validation_domains": blocking,
+        "required_next_actions": assessment.get("required_next_actions", []),
+        "evidence_to_bind": assessment.get("evidence_to_bind", []),
+        "engineering_principle": "Operational trust depends upon continuous validation of intelligence rather than one-time validation of software."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_INTELLIGENCE_VALIDATION_CONSOLE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V16_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v16/demo", methods=["GET"])
+@app.route("/api/platform/spine/v16/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v16_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    intelligence_validation_layer = [
+        {"name": "Intelligence Validation Console", "route": "/platform/intelligence-validation"},
+        {"name": "AI Lifecycle Change Assurance", "route": "/platform/ai-lifecycle-change-assurance"},
+        {"name": "AI Operational Readiness", "route": "/platform/ai-operational-readiness"},
+        {"name": "AI Assurance Evidence Contract", "route": "/platform/ai-assurance-evidence-contract"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"}
+    ]
+
+    validation_domains = [
+        "intended use definition",
+        "risk profile",
+        "functional validation",
+        "operational performance",
+        "explainability",
+        "prompt traceability",
+        "model version traceability",
+        "data lineage",
+        "human approval",
+        "drift monitoring",
+        "revalidation triggers",
+        "continuous monitoring",
+        "evidence completeness"
+    ]
+
+    evidence_records = [
+        "intended use record",
+        "AI risk profile",
+        "functional validation summary",
+        "operational performance record",
+        "explainability record",
+        "prompt traceability record",
+        "model version traceability record",
+        "data lineage record",
+        "human approval record",
+        "drift monitoring record",
+        "revalidation trigger catalog",
+        "continuous monitoring plan",
+        "validation evidence package"
+    ]
+
+    strengthened_modules = [
+        "AI Lifecycle Change Assurance",
+        "Decision Confidence",
+        "AI Output Clearance",
+        "Evidence Vault",
+        "AI Operational Readiness",
+        "Post-Release Monitoring",
+        "Exception and Drift Response",
+        "Approval Certificate",
+        "Operational Release Gate"
+    ]
+
+    full_trust_chain = [
+        "AI Assurance New Workflow Intake Engine",
+        "AI Team Assurance Console",
+        "AI Accountability RACI Matrix Engine",
+        "AI Assurance Reuse Applicability Engine",
+        "Intelligence Validation Console",
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Next Workflow Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v16 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v16",
+        "intelligence_validation_layer": intelligence_validation_layer,
+        "validation_domains": validation_domains,
+        "validation_evidence_records_to_bind": evidence_records,
+        "strengthened_modules": strengthened_modules,
+        "full_ai_assurance_intelligence_validated_trust_chain": full_trust_chain,
+        "engineering_principle": "Operational trust depends upon continuous validation of intelligence rather than one-time validation of software.",
+        "status": "PLATFORM_SPINE_REFRESHED_V16"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V16_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_AI_OUTPUT_CLEARANCE_CONSOLE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/ai-output-clearance")
+@app.route("/platform/output-clearance")
+@app.route("/platform/ai-output-release-clearance")
+@app.route("/ai-output-clearance")
+def cobitchain_platform_ai_output_clearance():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_output_clearance.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_ai_output_clearance():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_ai_output_clearance_seed.json")
+    if not path.exists():
+        return {"clearance_domains": [], "sample_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"clearance_domains": [], "sample_assessment": {}}
+
+
+def _cobitchain_enrich_output_clearance_domain(domain):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(domain or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("sample_score", 0) or 0)
+    blocks = bool(data.get("blocks_output_clearance", False))
+    state = data.get("sample_state", "")
+
+    ready_states = ["READY", "COMPLETE", "CLEARED", "APPROVED", "PASS"]
+    if blocks and (score < 85 or state not in ready_states):
+        data["computed_clearance_domain_state"] = "BLOCKING_OUTPUT_CLEARANCE_GAP"
+    elif score >= 85:
+        data["computed_clearance_domain_state"] = "OUTPUT_CLEARANCE_DOMAIN_READY"
+    elif score >= 75:
+        data["computed_clearance_domain_state"] = "OUTPUT_CLEARANCE_REVIEW_REQUIRED"
+    else:
+        data["computed_clearance_domain_state"] = "OUTPUT_CLEARANCE_NOT_READY"
+
+    data["platform_rule"] = "AI outputs must be cleared before they enter operational, regulated, quality, clinical, business, or decision-support workflows."
+    data["engineering_principle"] = "An AI output is not operationally trusted because it was generated. It becomes trusted only when context, lineage, risk, evidence, human approval, and clearance conditions are satisfied."
+    return data
+
+
+def _cobitchain_enrich_output_clearance_assessment(assessment):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(assessment or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    score = int(data.get("output_clearance_score", 0) or 0)
+    workflow_clear = bool(data.get("cleared_for_workflow_use", False))
+    decision_clear = bool(data.get("cleared_for_decision_support", False))
+    release_clear = bool(data.get("cleared_for_release_decision", False))
+    blockers = data.get("blocking_domains", []) or []
+    review_required = bool(data.get("human_review_required", False))
+    revalidation_required = bool(data.get("revalidation_required", False))
+
+    if workflow_clear and decision_clear and release_clear and score >= 85 and len(blockers) == 0:
+        data["computed_output_clearance_state"] = "OUTPUT_CLEARED_FOR_CONTROLLED_WORKFLOW_USE"
+    elif review_required or revalidation_required or len(blockers) > 0:
+        data["computed_output_clearance_state"] = "OUTPUT_CLEARANCE_BLOCKED_REVIEW_OR_REVALIDATION_REQUIRED"
+    elif score >= 75:
+        data["computed_output_clearance_state"] = "OUTPUT_CLEARANCE_REVIEW_REQUIRED"
+    else:
+        data["computed_output_clearance_state"] = "OUTPUT_CLEARANCE_NOT_READY"
+
+    data["platform_rule"] = "No AI output enters a consequential workflow without clearance evidence, lineage, risk alignment, and accountability."
+    data["engineering_principle"] = "An AI output is not operationally trusted because it was generated. It becomes trusted only when context, lineage, risk, evidence, human approval, and clearance conditions are satisfied."
+    return data
+
+
+@app.route("/api/platform/ai-output-clearance/model/demo", methods=["GET"])
+def cobitchain_platform_ai_output_clearance_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_output_clearance()
+    domains = [_cobitchain_enrich_output_clearance_domain(item) for item in payload.get("clearance_domains", [])]
+    assessment = _cobitchain_enrich_output_clearance_assessment(payload.get("sample_assessment", {}))
+
+    scores = [int(item.get("sample_score", 0) or 0) for item in domains]
+    average = round(sum(scores) / len(scores), 1) if scores else 0
+
+    return jsonify({
+        "service": "COBIT-Chain AI Output Clearance Console Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "platform_rule": payload.get("platform_rule"),
+        "platform_position": payload.get("platform_position"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "assurance_question": payload.get("assurance_question"),
+        "depends_on": payload.get("depends_on", []),
+        "clearance_domain_count": len(domains),
+        "average_domain_score": average,
+        "clearance_domains": domains,
+        "sample_assessment": assessment
+    })
+
+
+@app.route("/api/platform/ai-output-clearance/domain/demo", methods=["GET"])
+def cobitchain_platform_ai_output_clearance_domain_demo_api():
+    from flask import jsonify, request
+
+    domain_id = request.args.get("domain_id", "prompt_model_lineage")
+    payload = _cobitchain_load_ai_output_clearance()
+    domains = payload.get("clearance_domains", []) or []
+
+    for item in domains:
+        if item.get("domain_id") == domain_id:
+            return jsonify(_cobitchain_enrich_output_clearance_domain(item))
+
+    return jsonify({
+        "error": "output_clearance_domain_not_found",
+        "message": f"No AI Output Clearance domain found for domain_id={domain_id}",
+        "available_domain_ids": [item.get("domain_id") for item in domains]
+    }), 404
+
+
+@app.route("/api/platform/ai-output-clearance/assessment/demo", methods=["GET"])
+def cobitchain_platform_ai_output_clearance_assessment_demo_api():
+    from flask import jsonify
+
+    payload = _cobitchain_load_ai_output_clearance()
+    return jsonify(_cobitchain_enrich_output_clearance_assessment(payload.get("sample_assessment", {})))
+
+
+@app.route("/api/platform/ai-output-clearance/readiness/demo", methods=["GET"])
+def cobitchain_platform_ai_output_clearance_readiness_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_ai_output_clearance()
+    domains = [_cobitchain_enrich_output_clearance_domain(item) for item in payload.get("clearance_domains", [])]
+    assessment = _cobitchain_enrich_output_clearance_assessment(payload.get("sample_assessment", {}))
+
+    blocking = [
+        {
+            "domain_id": item.get("domain_id"),
+            "domain_name": item.get("domain_name"),
+            "sample_state": item.get("sample_state"),
+            "sample_score": item.get("sample_score"),
+            "computed_clearance_domain_state": item.get("computed_clearance_domain_state"),
+            "required_evidence": item.get("required_evidence", []),
+            "required_actions": item.get("required_actions", [])
+        }
+        for item in domains
+        if item.get("computed_clearance_domain_state") == "BLOCKING_OUTPUT_CLEARANCE_GAP"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain AI Output Clearance Readiness Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "sample_assessment": assessment,
+        "blocking_clearance_domains": blocking,
+        "required_next_actions": assessment.get("required_next_actions", []),
+        "evidence_to_bind": assessment.get("evidence_to_bind", []),
+        "engineering_principle": "An AI output is not operationally trusted because it was generated. It becomes trusted only when context, lineage, risk, evidence, human approval, and clearance conditions are satisfied."
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_AI_OUTPUT_CLEARANCE_CONSOLE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_SPINE_REFRESH_V17_VERIFICATION_ACTIVE
+# ============================================================
+
+
+@app.route("/api/platform/spine-refresh/v17/demo", methods=["GET"])
+@app.route("/api/platform/spine/v17/demo", methods=["GET"])
+def cobitchain_platform_spine_refresh_v17_demo_api():
+    from flask import jsonify
+    from datetime import datetime, timezone
+    import uuid
+
+    output_clearance_layer = [
+        {"name": "AI Output Clearance Console", "route": "/platform/ai-output-clearance"},
+        {"name": "Intelligence Validation Console", "route": "/platform/intelligence-validation"},
+        {"name": "AI Assurance Decision Orchestrator", "route": "/platform/ai-assurance-decision-orchestrator"},
+        {"name": "Evidence Vault Live Packages", "route": "/platform/evidence-packages"},
+        {"name": "AI Assurance Replay Console", "route": "/platform/ai-assurance-replay-console"}
+    ]
+
+    clearance_domains = [
+        "intended use alignment",
+        "risk profile alignment",
+        "source traceability",
+        "prompt and model lineage",
+        "explainability clearance",
+        "confidence threshold",
+        "human review and approval",
+        "regulated workflow fit",
+        "evidence completeness",
+        "downstream impact",
+        "exception and escalation",
+        "clearance decision record"
+    ]
+
+    clearance_decisions = [
+        "cleared for workflow use",
+        "cleared with conditions",
+        "human review required",
+        "corrected output required",
+        "blocked from workflow entry",
+        "escalated to accountable owner",
+        "revalidation required"
+    ]
+
+    evidence_records = [
+        "output clearance record",
+        "intended use alignment record",
+        "risk profile alignment record",
+        "source traceability record",
+        "prompt and model lineage record",
+        "explainability record",
+        "confidence threshold record",
+        "human approval record",
+        "regulated workflow fit record",
+        "downstream impact record",
+        "exception and escalation record",
+        "final clearance decision record"
+    ]
+
+    strengthened_modules = [
+        "Intelligence Validation",
+        "AI Lifecycle Change Assurance",
+        "Decision Confidence",
+        "Evidence Vault",
+        "AI Operational Readiness",
+        "AI Assurance Replay Console",
+        "AI Assurance Decision Orchestrator",
+        "Operational Release Gate",
+        "Exception and Drift Response"
+    ]
+
+    full_trust_chain = [
+        "AI Assurance New Workflow Intake Engine",
+        "AI Team Assurance Console",
+        "AI Accountability RACI Matrix Engine",
+        "AI Assurance Reuse Applicability Engine",
+        "Intelligence Validation Console",
+        "AI Output Clearance Console",
+        "AI Architecture Assurance",
+        "AI Architecture Boundary Gate",
+        "AI Assurance Control Router",
+        "AI Assurance Decision Orchestrator",
+        "AI Assurance Evidence Contract",
+        "AI Assurance Replay Console",
+        "AI Assurance Remediation Queue",
+        "AI Assurance Closure Verifier",
+        "AI Assurance Trust Recalculation Engine",
+        "AI Assurance Approval Certificate",
+        "AI Assurance Operational Release Gate",
+        "AI Assurance Post-Release Monitoring Console",
+        "AI Assurance Exception and Drift Response Engine",
+        "AI Assurance Outcome Learning Engine",
+        "AI Assurance Knowledge Reuse Registry",
+        "Next Workflow Intelligence Reuse"
+    ]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Spine Refresh v17 Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "platform_rule": "Azure executes. COBIT-Chain proves.",
+        "refresh": "v17",
+        "output_clearance_layer": output_clearance_layer,
+        "clearance_domains": clearance_domains,
+        "clearance_decisions": clearance_decisions,
+        "clearance_evidence_records_to_bind": evidence_records,
+        "strengthened_modules": strengthened_modules,
+        "full_ai_assurance_output_cleared_trust_chain": full_trust_chain,
+        "engineering_principle": "An AI output is not operationally trusted because it was generated. It becomes trusted only when context, lineage, risk, evidence, human approval, and clearance conditions are satisfied.",
+        "status": "PLATFORM_SPINE_REFRESHED_V17"
+    })
+
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_SPINE_REFRESH_V17_VERIFICATION_ACTIVE
+# ============================================================
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_LIFECYCLE_INTEGRATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/lifecycle-integration")
+@app.route("/platform/end-to-end-assurance")
+@app.route("/platform/assurance-lifecycle-workflow")
+@app.route("/platform/integration-layer")
+def cobitchain_platform_lifecycle_integration():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_lifecycle_integration.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_lifecycle_integration():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_lifecycle_integration_seed.json")
+    if not path.exists():
+        return {"integration_flow": [], "sample_integration_assessment": {}}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"integration_flow": [], "sample_integration_assessment": {}}
+
+
+def _cobitchain_current_route_rules():
+    try:
+        return set(str(rule.rule) for rule in app.url_map.iter_rules())
+    except Exception:
+        return set()
+
+
+def _cobitchain_enrich_lifecycle_stage(stage):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(stage or {})
+    rules = _cobitchain_current_route_rules()
+    candidates = [data.get("primary_route")] + list(data.get("alternative_routes", []) or [])
+    candidates = [item for item in candidates if item]
+
+    active_route = None
+    for route in candidates:
+        if route in rules:
+            active_route = route
+            break
+
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["route_active"] = active_route is not None
+    data["active_route"] = active_route
+    data["candidate_routes_checked"] = candidates
+
+    if data["route_active"]:
+        data["implementation_state"] = "LIFECYCLE_STAGE_ROUTE_ACTIVE"
+        data["next_integration_action"] = "Connect this stage to shared evidence IDs, upstream/downstream API calls, and lifecycle progress state."
+    else:
+        data["implementation_state"] = "LIFECYCLE_STAGE_IMPLEMENTATION_GAP"
+        data["next_integration_action"] = "Create executable page and APIs only if this stage extends the existing lifecycle and is needed for implementation."
+
+    return data
+
+
+def _cobitchain_lifecycle_workflow_payload():
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_lifecycle_integration()
+    stages = [_cobitchain_enrich_lifecycle_stage(item) for item in payload.get("integration_flow", [])]
+    active = [item for item in stages if item.get("route_active")]
+    missing = [item for item in stages if not item.get("route_active")]
+
+    return {
+        "service": "COBIT-Chain Platform Lifecycle Integration Engine Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "capability_type": payload.get("capability_type"),
+        "platform_rule": payload.get("platform_rule"),
+        "engineering_question": payload.get("engineering_question"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "total_stage_count": len(stages),
+        "active_route_count": len(active),
+        "implementation_gap_count": len(missing),
+        "implementation_gaps": [item.get("stage_name") for item in missing],
+        "integration_flow": stages
+    }
+
+
+@app.route("/api/platform/lifecycle-integration/model/demo", methods=["GET"])
+def cobitchain_platform_lifecycle_integration_model_demo_api():
+    from flask import jsonify
+
+    workflow = _cobitchain_lifecycle_workflow_payload()
+    payload = _cobitchain_load_lifecycle_integration()
+    workflow["sample_integration_assessment"] = payload.get("sample_integration_assessment", {})
+    return jsonify(workflow)
+
+
+@app.route("/api/platform/lifecycle-integration/workflow/demo", methods=["GET"])
+def cobitchain_platform_lifecycle_integration_workflow_demo_api():
+    from flask import jsonify
+
+    return jsonify(_cobitchain_lifecycle_workflow_payload())
+
+
+@app.route("/api/platform/lifecycle-integration/stage/demo", methods=["GET"])
+def cobitchain_platform_lifecycle_integration_stage_demo_api():
+    from flask import jsonify, request
+
+    stage_id = request.args.get("stage_id", "workflow_intake")
+    payload = _cobitchain_load_lifecycle_integration()
+    stages = payload.get("integration_flow", []) or []
+
+    for item in stages:
+        if item.get("stage_id") == stage_id:
+            return jsonify(_cobitchain_enrich_lifecycle_stage(item))
+
+    return jsonify({
+        "error": "lifecycle_stage_not_found",
+        "message": f"No lifecycle integration stage found for stage_id={stage_id}",
+        "available_stage_ids": [item.get("stage_id") for item in stages]
+    }), 404
+
+
+@app.route("/api/platform/lifecycle-integration/assessment/demo", methods=["GET"])
+def cobitchain_platform_lifecycle_integration_assessment_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    workflow = _cobitchain_lifecycle_workflow_payload()
+    payload = _cobitchain_load_lifecycle_integration()
+    assessment = dict(payload.get("sample_integration_assessment", {}) or {})
+
+    total = int(workflow.get("total_stage_count", 0) or 0)
+    active = int(workflow.get("active_route_count", 0) or 0)
+    coverage = round((active / total) * 100, 1) if total else 0
+
+    score = int(assessment.get("integration_score", 0) or 0)
+    if coverage >= 90 and score >= 85:
+        computed_state = "LIFECYCLE_INTEGRATED_AND_EXECUTION_READY"
+    elif coverage >= 60:
+        computed_state = "LIFECYCLE_PARTIALLY_INTEGRATED_IMPLEMENTATION_GAPS_OPEN"
+    else:
+        computed_state = "LIFECYCLE_INTEGRATION_FOUNDATION_READY_BUT_EXECUTION_GAPS_HIGH"
+
+    assessment["request_id"] = str(uuid.uuid4())
+    assessment["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    assessment["total_stage_count"] = total
+    assessment["active_route_count"] = active
+    assessment["route_coverage_percent"] = coverage
+    assessment["implementation_gaps"] = workflow.get("implementation_gaps", [])
+    assessment["computed_integration_state"] = computed_state
+    assessment["platform_rule"] = payload.get("platform_rule")
+    assessment["engineering_principle"] = payload.get("engineering_principle")
+    return jsonify(assessment)
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_LIFECYCLE_INTEGRATION_ENGINE_V1_ACTIVE
+# ============================================================
+
+
+
+
+
+# ============================================================
+# COBITCHAIN_PLATFORM_BLUEPRINT_LIBRARY_V1_ACTIVE
+# ============================================================
+
+@app.route("/platform/blueprints")
+@app.route("/blueprints")
+def cobitchain_platform_blueprint_library():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_blueprint_library.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+@app.route("/platform/blueprints/ai-enabled-cmc")
+@app.route("/blueprints/ai-enabled-cmc")
+def cobitchain_platform_ai_enabled_cmc_blueprint():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_ai_enabled_cmc_blueprint.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+@app.route("/platform/blueprints/agentic-enterprise")
+@app.route("/blueprints/agentic-enterprise")
+def cobitchain_platform_agentic_enterprise_blueprint():
+    from pathlib import Path
+    html_path = Path(__file__).with_name("platform_agentic_enterprise_blueprint.html")
+    return html_path.read_text(encoding="utf-8")
+
+
+def _cobitchain_load_blueprint_library():
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).with_name("platform_blueprint_library_seed.json")
+    if not path.exists():
+        return {"blueprints": []}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"blueprints": []}
+
+
+def _cobitchain_find_blueprint(blueprint_id):
+    payload = _cobitchain_load_blueprint_library()
+    for item in payload.get("blueprints", []) or []:
+        if item.get("blueprint_id") == blueprint_id:
+            return item
+    return None
+
+
+def _cobitchain_enrich_blueprint(blueprint):
+    import uuid
+    from datetime import datetime, timezone
+
+    data = dict(blueprint or {})
+    data["request_id"] = str(uuid.uuid4())
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    data["architecture_change"] = False
+    data["new_platform_capability"] = False
+    data["blueprint_layer_only"] = True
+    data["implementation_rule"] = "Blueprint uses the existing lifecycle. No new foundational assurance module or architecture is created."
+    data["lifecycle_stage_count"] = len(data.get("lifecycle", []) or [])
+    data["question_count"] = len(data.get("questions_answered", []) or [])
+    data["evidence_output_count"] = sum(len(stage.get("evidence_outputs", []) or []) for stage in data.get("lifecycle", []) or [])
+
+    assessment = data.get("sample_blueprint_assessment", {}) or {}
+    score = int(assessment.get("blueprint_score", 0) or 0)
+    if score >= 85:
+        data["computed_blueprint_state"] = "BLUEPRINT_APPLIED_EXISTING_LIFECYCLE_OPERATIONALLY_STRONG"
+    elif score >= 70:
+        data["computed_blueprint_state"] = "BLUEPRINT_APPLIED_EXISTING_LIFECYCLE_WITH_OPEN_EVIDENCE_GAPS"
+    else:
+        data["computed_blueprint_state"] = "BLUEPRINT_APPLICATION_REQUIRES_IMPLEMENTATION_HARDENING"
+
+    return data
+
+
+@app.route("/api/platform/blueprints/model/demo", methods=["GET"])
+def cobitchain_platform_blueprint_model_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_blueprint_library()
+    blueprints = [_cobitchain_enrich_blueprint(item) for item in payload.get("blueprints", []) or []]
+
+    return jsonify({
+        "service": "COBIT-Chain Platform Blueprint Library Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "capability_name": payload.get("capability_name"),
+        "capability_type": payload.get("capability_type"),
+        "platform_rule": payload.get("platform_rule"),
+        "engineering_principle": payload.get("engineering_principle"),
+        "blueprint_count": len(blueprints),
+        "architecture_change": False,
+        "new_platform_capability": False,
+        "blueprints": blueprints
+    })
+
+
+@app.route("/api/platform/blueprints/ai-enabled-cmc/demo", methods=["GET"])
+def cobitchain_platform_ai_enabled_cmc_blueprint_demo_api():
+    from flask import jsonify
+
+    blueprint = _cobitchain_find_blueprint("ai_enabled_cmc")
+    if not blueprint:
+        return jsonify({"error": "ai_enabled_cmc_blueprint_not_found"}), 404
+
+    return jsonify(_cobitchain_enrich_blueprint(blueprint))
+
+
+@app.route("/api/platform/blueprints/agentic-enterprise/demo", methods=["GET"])
+def cobitchain_platform_agentic_enterprise_blueprint_demo_api():
+    from flask import jsonify
+
+    blueprint = _cobitchain_find_blueprint("agentic_enterprise")
+    if not blueprint:
+        return jsonify({"error": "agentic_enterprise_blueprint_not_found"}), 404
+
+    return jsonify(_cobitchain_enrich_blueprint(blueprint))
+
+
+@app.route("/api/platform/blueprints/validation/demo", methods=["GET"])
+def cobitchain_platform_blueprint_validation_demo_api():
+    from flask import jsonify
+    import uuid
+    from datetime import datetime, timezone
+
+    payload = _cobitchain_load_blueprint_library()
+    blueprints = [_cobitchain_enrich_blueprint(item) for item in payload.get("blueprints", []) or []]
+
+    return jsonify({
+        "service": "COBIT-Chain Blueprint Validation Demo",
+        "request_id": str(uuid.uuid4()),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "validation_rule": "Blueprints validate and demonstrate the existing lifecycle. They do not create new architecture.",
+        "architecture_change": False,
+        "new_platform_capability": False,
+        "blueprint_count": len(blueprints),
+        "validated_blueprints": [
+            {
+                "blueprint_id": item.get("blueprint_id"),
+                "blueprint_name": item.get("blueprint_name"),
+                "blueprint_type": item.get("blueprint_type"),
+                "uses_existing_lifecycle": item.get("uses_existing_lifecycle"),
+                "no_new_architecture": item.get("no_new_architecture"),
+                "computed_blueprint_state": item.get("computed_blueprint_state"),
+                "route": item.get("route")
+            }
+            for item in blueprints
+        ]
+    })
+
+# ============================================================
+# END COBITCHAIN_PLATFORM_BLUEPRINT_LIBRARY_V1_ACTIVE
+# ============================================================
+
+
+
+
+# COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_ROUTES_V1_START
+@app.route("/platform/enterprise-execution-assurance")
+@app.route("/platform/execution-assurance")
+def platform_enterprise_execution_assurance():
+    from pathlib import Path
+    from flask import Response
+    page = Path("platform_enterprise_execution_assurance.html")
+    if page.exists():
+        return Response(page.read_text(encoding="utf-8"), mimetype="text/html")
+    return Response("<h1>Enterprise Execution Assurance</h1><p>Capability page not found.</p>", mimetype="text/html", status=404)
+
+@app.route("/api/platform/enterprise-execution-assurance/demo")
+@app.route("/api/platform/execution-assurance/demo")
+def api_platform_enterprise_execution_assurance_demo():
+    from flask import jsonify
+    return jsonify({
+        "patch_marker": "COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE",
+        "patch_type": "enterprise_execution_assurance_capability_layer",
+        "platform_redesign": false,
+        "new_capability_layer": true,
+        "capability_name": "Enterprise Execution Assurance",
+        "updated_lifecycle": [
+                "Discovery",
+                "Visibility",
+                "Governance",
+                "Operationalization",
+                "Enterprise Execution Assurance",
+                "Evidence",
+                "Continuous Assurance",
+                "Operational Trust"
+        ],
+        "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "enterprise_execution_assurance": {
+                "capability_name": "Enterprise Execution Assurance",
+                "capability_type": "First-class Platform B assurance capability",
+                "platform_position": "Between Operationalization and Evidence",
+                "purpose": "Evaluate whether AI-generated recommendations were translated into enterprise actions safely, correctly, under policy, and with complete evidence.",
+                "core_question": "Was the AI recommendation executed safely, correctly, under policy, and with complete evidence?",
+                "positioning_statement": "Organizations are moving from AI that recommends to AI that acts. Enterprise Execution Assurance ensures those AI-driven actions are authorized, policy-enforced, traceable, reversible where required, monitored, evidenced, and reconstructable.",
+                "difference_from_evidence": "Enterprise Execution Assurance checks the execution itself. Evidence proves the execution can be reconstructed.",
+                "platform_redesign": false,
+                "lifecycle_evolution": true
+        },
+        "evaluation_areas": [
+                "Workflow authorization",
+                "Runtime policy enforcement",
+                "Enterprise system interaction",
+                "API invocation traceability",
+                "Human approval checkpoints",
+                "Rollback capability",
+                "Execution evidence",
+                "Outcome verification",
+                "Continuous monitoring",
+                "Audit reconstruction"
+        ],
+        "execution_assurance_modules": [
+                {
+                        "name": "AI Runtime Assurance",
+                        "question": "Can this AI runtime be operationally trusted?",
+                        "evaluates": [
+                                "Runtime identity",
+                                "Runtime security",
+                                "Runtime permissions",
+                                "Runtime isolation",
+                                "Runtime policy enforcement",
+                                "Runtime evidence",
+                                "Runtime audit logs"
+                        ]
+                },
+                {
+                        "name": "Workflow Assurance",
+                        "question": "Was this AI action executed through an approved workflow?",
+                        "evaluates": [
+                                "Workflow integrity",
+                                "Approval routing",
+                                "Workflow ownership",
+                                "Workflow evidence",
+                                "Workflow traceability",
+                                "Workflow versioning",
+                                "Workflow execution logs"
+                        ]
+                },
+                {
+                        "name": "Enterprise Action Assurance",
+                        "question": "Can every enterprise action be reconstructed?",
+                        "evaluates": [
+                                "API called",
+                                "File modified",
+                                "Database updated",
+                                "ServiceNow ticket created",
+                                "Robot instructed",
+                                "MES command",
+                                "ERP update",
+                                "LIMS action",
+                                "EHR action"
+                        ]
+                },
+                {
+                        "name": "Runtime Policy Assurance",
+                        "question": "Was policy enforced during execution?",
+                        "evaluates": [
+                                "Policies applied",
+                                "Blocked actions",
+                                "Exceptions",
+                                "Policy overrides",
+                                "Escalation",
+                                "Approval"
+                        ]
+                },
+                {
+                        "name": "AI Orchestration Assurance",
+                        "question": "Was AI orchestration executed safely, correctly, and with recoverable evidence?",
+                        "evaluates": [
+                                "Agent routing",
+                                "Agent sequencing",
+                                "Agent dependencies",
+                                "Agent handoffs",
+                                "Runtime coordination",
+                                "Failure handling",
+                                "Rollback",
+                                "Retry evidence"
+                        ]
+                },
+                {
+                        "name": "Agent Runtime Evidence",
+                        "question": "Can the agent runtime decision be reconstructed?",
+                        "evaluates": [
+                                "Prompt",
+                                "Context",
+                                "Model",
+                                "Runtime",
+                                "Workflow",
+                                "Tools",
+                                "APIs",
+                                "Human review",
+                                "Decision",
+                                "Outcome"
+                        ]
+                }
+        ],
+        "execution_control_questions": [
+                "Was the workflow authorized?",
+                "Was runtime policy enforced?",
+                "Which enterprise system was touched?",
+                "Which API was invoked?",
+                "Was human approval required and captured?",
+                "Was rollback available?",
+                "Was execution evidence produced?",
+                "Was the outcome verified?",
+                "Is the action continuously monitored?",
+                "Can the execution be reconstructed during audit or inspection?"
+        ],
+        "enterprise_action_types": [
+                "API call",
+                "File modification",
+                "Database update",
+                "ServiceNow ticket creation",
+                "Robot instruction",
+                "MES command",
+                "ERP update",
+                "LIMS action",
+                "EHR action"
+        ],
+        "execution_assurance_records": [
+                "Enterprise Execution Assurance Record",
+                "Workflow authorization record",
+                "Runtime policy enforcement record",
+                "Enterprise system interaction record",
+                "API invocation traceability record",
+                "Human approval checkpoint record",
+                "Rollback capability record",
+                "Execution evidence record",
+                "Outcome verification record",
+                "Continuous monitoring record",
+                "Audit reconstruction record",
+                "AI runtime assurance record",
+                "Workflow assurance record",
+                "Enterprise action assurance record",
+                "Runtime policy assurance record",
+                "AI orchestration assurance record",
+                "Agent runtime evidence record"
+        ]
+})
+# COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_ROUTES_V1_END
+
+
 if __name__ == "__main__":
     app.run(debug=True)
 

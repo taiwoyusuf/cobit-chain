@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBIT-Chain Blueprint Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{--text:#eef1f5;--muted:#aab3c2;--orange:#ff8a1f;--orange2:#ffb15c;--green:#58e096;--blue:#9bc7ff;--line:rgba(255,255,255,.12);--oline:rgba(255,138,31,.38);}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 8% 0%,rgba(255,138,31,.24),transparent 30%),radial-gradient(circle at 88% 8%,rgba(255,177,92,.12),transparent 34%),linear-gradient(135deg,#050609 0%,#11141b 45%,#050609 100%);}
+        .page{max-width:1780px;margin:0 auto;padding:30px}
+        .hero,.section{border:1px solid var(--oline);border-radius:34px;padding:30px;background:linear-gradient(135deg,rgba(23,26,34,.96),rgba(8,9,13,.96));box-shadow:0 28px 80px rgba(0,0,0,.45),0 0 36px rgba(255,138,31,.16);margin-bottom:22px}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+        .brand{display:flex;align-items:center;gap:14px}
+        .mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#ff8a1f,#ffb15c 56%,#7a3d08);box-shadow:0 0 44px rgba(255,138,31,.42)}
+        .brand-title{font-size:18px;font-weight:1000}.brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+        .pill,.tag{border:1px solid var(--oline);background:rgba(255,138,31,.08);color:#ffe4c4;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950}
+        .eyebrow{color:var(--orange2);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950;margin-bottom:12px}
+        h1{margin:0;max-width:1420px;font-size:62px;line-height:.98;letter-spacing:-2.3px;font-weight:1000}
+        .subtitle{max-width:1360px;margin-top:18px;color:#cbd2dc;font-size:17px;line-height:1.7}
+        .nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .nav a{color:#f3f6fa;text-decoration:none;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.052);padding:10px 13px;border-radius:999px;font-size:12px;font-weight:850}
+        .rule{margin-top:24px;border:1px solid rgba(255,138,31,.28);background:rgba(255,255,255,.045);border-radius:24px;padding:22px;color:#fff0df;line-height:1.7}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+        .card{border:1px solid rgba(255,138,31,.25);background:rgba(255,138,31,.07);border-radius:22px;padding:22px;text-decoration:none;color:var(--text);display:block;min-height:360px}
+        .card:hover{border-color:rgba(255,138,31,.62);background:rgba(255,138,31,.11)}
+        .card strong{display:block;font-size:28px;letter-spacing:-.8px;margin-bottom:12px}
+        .card span{display:block;color:#cbd2dc;line-height:1.6;font-size:14px}
+        .card code{display:inline-flex;margin-top:16px;color:#ffe4c4;border:1px solid rgba(255,138,31,.28);background:rgba(255,138,31,.08);border-radius:999px;padding:8px 10px;font-size:12px;font-weight:900}
+        .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+        .metric{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:20px;padding:17px;min-height:120px}
+        .metric .label{color:var(--muted);font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:1px}
+        .metric .value{margin-top:10px;font-size:30px;font-weight:1000}
+        .metric .note{color:#b4bdca;font-size:12px;line-height:1.45;margin-top:8px}
+        .footer{color:#9fa7b3;font-size:12px;line-height:1.6;padding:12px 4px}
+        @media(max-width:1000px){.grid,.metrics{grid-template-columns:1fr}h1{font-size:40px}.page{padding:16px}.hero,.section{padding:22px;border-radius:24px}}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="topbar">
+                <div class="brand">
+                    <div class="mark"></div>
+                    <div>
+                        <div class="brand-title">COBIT-Chain&trade; Platform Blueprint Library</div>
+                        <div class="brand-sub">Industry and enterprise blueprints that reuse the existing assurance lifecycle</div>
+                    </div>
+                </div>
+                <span class="pill">No New Module / No New Architecture</span>
+            </div>
+            <div class="eyebrow">Blueprint Layer / Lifecycle Application / Implementation Demonstration</div>
+            <h1>Blueprints apply the existing lifecycle to real operating domains.</h1>
+            <div class="subtitle">
+                The foundational platform architecture is complete. These blueprints do not add new architecture. They demonstrate how the existing lifecycle applies to AI-enabled CMC and agentic enterprise operations.
+            </div>
+            <div class="rule">
+                <strong>Blueprint rule:</strong> a blueprint does not add architecture; it demonstrates how the existing assurance lifecycle applies to a specific operational domain.
+            </div>
+            <div class="nav">
+                <a href="/platform">Platform</a>
+                <a href="/platform/routes">Routes</a>
+                <a href="/platform/lifecycle-integration">Lifecycle Integration</a>
+                <a href="/platform/blueprints/ai-enabled-cmc">AI-enabled CMC Blueprint</a>
+                <a href="/platform/blueprints/agentic-enterprise">Agentic Enterprise Blueprint</a>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <div class="metric"><div class="label">Architecture</div><div class="value" style="color:var(--orange);">Reuse</div><div class="note">Blueprints use the existing lifecycle.</div></div>
+            <div class="metric"><div class="label">Blueprints</div><div class="value" style="color:var(--green);" id="bpCount">2</div><div class="note">Industry and enterprise blueprints.</div></div>
+            <div class="metric"><div class="label">Capability</div><div class="value" style="color:var(--blue);">None</div><div class="note">No new platform capability is added.</div></div>
+            <div class="metric"><div class="label">Purpose</div><div class="value" style="color:var(--orange2);">Apply</div><div class="note">Apply lifecycle to real domains.</div></div>
+        </section>
+
+        <section class="section">
+            <div class="topbar">
+                <div>
+                    <h2 style="margin:0;font-size:30px;">Available Blueprints</h2>
+                    <div style="margin-top:8px;color:#b9c2ce;">Open a blueprint to see lifecycle mapping, questions answered, evidence outputs, and sample assessment.</div>
+                </div>
+                <span class="tag">Blueprint pages</span>
+            </div>
+            <div class="grid" id="blueprintGrid"></div>
+        </section>
+
+        
+<!-- COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE -->
+
+<section class="section">
+    <div class="topbar">
+        <div>
+            <h2 style="margin:0;font-size:30px;">Enterprise Execution Assurance&trade;</h2>
+            <div style="margin-top:8px;color:#b9c2ce;line-height:1.6;">
+                Platform B now assures AI execution, not only AI recommendations. Enterprise Execution Assurance sits between Operationalization and Evidence.
+            </div>
+        </div>
+        <span class="tag">Execution assurance</span>
+    </div>
+</section>
+
+<!-- END COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE -->
+
+<div class="footer">COBIT-Chain Platform Blueprint Library. Azure executes. COBIT-Chain proves.</div>
+    </div>
+
+    <script>
+        async function loadBlueprints(){
+            const response = await fetch('/api/platform/blueprints/model/demo');
+            const data = await response.json();
+            document.getElementById("bpCount").innerText = data.blueprint_count;
+            document.getElementById("blueprintGrid").innerHTML = (data.blueprints || []).map(function(bp){
+                return `<a class="card" href="${bp.route}">
+                    <strong>${bp.blueprint_name}</strong>
+                    <span><b>Type:</b> ${bp.blueprint_type}<br><br>${bp.core_question}<br><br><b>Rule:</b> No new module. No new architecture. Uses existing lifecycle.</span>
+                    <code>${bp.route}</code>
+                </a>`;
+            }).join('');
+        }
+        loadBlueprints();
+    </script>
+</body>
+</html>
