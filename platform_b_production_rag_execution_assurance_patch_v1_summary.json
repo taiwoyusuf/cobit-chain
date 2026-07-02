@@ -1,0 +1,102 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_PRODUCTION_RAG_EXECUTION_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_lifecycle": false,
+  "new_module": false,
+  "architecture_instruction": "Do not create a new lifecycle or new module. Strengthen existing Operationalization, Execution Assurance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+  "capability_name": "Production RAG Execution Assurance Enrichment",
+  "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+  "enriched_stages": [
+    "Operationalization",
+    "Execution Assurance",
+    "Evidence",
+    "Continuous Assurance",
+    "Operational Trust"
+  ],
+  "operating_system_principle": "Enterprise AI architectures should be evaluated as complete operational systems. Assurance Engineering continuously demonstrates that orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure operate together in a trustworthy manner.",
+  "core_question": "Can this production RAG workflow be operationally trusted across orchestration, retrieval, runtime execution, evidence generation, and continuous monitoring?",
+  "operationalization_support": [
+    "Semantic Kernel orchestration",
+    "AI agent orchestration",
+    "Plug-in execution",
+    "Vector database integration",
+    "Azure OpenAI integration",
+    "Enterprise knowledge connectors",
+    "Managed identities",
+    "Secure runtime execution"
+  ],
+  "execution_assurance_domains": [
+    {
+      "domain": "Orchestration Assurance",
+      "controls": [
+        "Semantic Kernel workflow integrity",
+        "Agent coordination",
+        "Plug-in invocation",
+        "Execution sequencing",
+        "Failure recovery"
+      ],
+      "question": "Was the production RAG workflow orchestrated correctly from request to retrieval to response?"
+    },
+    {
+      "domain": "Retrieval Assurance",
+      "controls": [
+        "Vector index freshness",
+        "Change-feed synchronization",
+        "Embedding integrity",
+        "Retrieval accuracy",
+        "Context relevance",
+        "Source provenance"
+      ],
+      "question": "Was the retrieved knowledge current, relevant, traceable, and supported by trustworthy vector and source evidence?"
+    },
+    {
+      "domain": "Runtime Assurance",
+      "controls": [
+        "Managed identity authentication",
+        "Secretless execution",
+        "Runtime authorization",
+        "Infrastructure resilience",
+        "Container health",
+        "API reliability"
+      ],
+      "question": "Did runtime infrastructure, identity, authorization, APIs, containers, and services operate securely and reliably?"
+    }
+  ],
+  "rag_execution_evidence_questions": [
+    "Which documents were retrieved?",
+    "Which vector index was used?",
+    "Was the index current?",
+    "Which embeddings supported retrieval?",
+    "Which orchestrator executed the workflow?",
+    "Which plug-ins were invoked?",
+    "Which AI model generated the response?",
+    "Which enterprise systems were accessed?",
+    "What evidence supports the final answer?"
+  ],
+  "continuous_assurance_monitors": [
+    "Index freshness",
+    "Retrieval quality",
+    "Embedding drift",
+    "Knowledge synchronization",
+    "Runtime health",
+    "Security posture",
+    "Operational trust"
+  ],
+  "operational_trust_evidence": [
+    "RAG execution trace",
+    "Retrieved document list",
+    "Vector index identifier",
+    "Index freshness evidence",
+    "Embedding lineage",
+    "Orchestrator execution trace",
+    "Plug-in invocation trace",
+    "Model invocation record",
+    "Enterprise system access record",
+    "Source provenance package",
+    "Runtime identity evidence",
+    "Infrastructure health evidence",
+    "Final answer evidence package"
+  ],
+  "positioning_statement": "Platform B does not evaluate production RAG as a model-only risk. It evaluates the complete operational system: orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure.",
+  "principle": "Production RAG trust is achieved only when orchestration, retrieval, runtime security, execution evidence, and infrastructure health operate together reliably, securely, traceably, and continuously under governance."
+}

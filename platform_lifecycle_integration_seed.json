@@ -550,7 +550,11 @@
       "Verify CAPA effectiveness after closure.",
       "Monitor recurring deviations and systemic weakness recurrence.",
       "Evaluate Quality Unit oversight effectiveness.",
-      "Demonstrate sustained compliance rather than one-time remediation."
+      "Demonstrate sustained compliance rather than one-time remediation.",
+      "Support production RAG operationalization through orchestration, plug-ins, vector databases, Azure OpenAI, enterprise connectors, managed identities, and secure runtime execution.",
+      "Evaluate orchestration assurance, retrieval assurance, and runtime assurance inside Execution Assurance.",
+      "Generate RAG execution evidence for retrieved documents, vector index, embeddings, orchestrator, plug-ins, AI model, enterprise systems, and final answer support.",
+      "Continuously monitor index freshness, retrieval quality, embedding drift, knowledge synchronization, runtime health, security posture, and operational trust."
     ],
     "evidence_automation_targets": [
       "Evidence package builder",
@@ -637,7 +641,20 @@
       "Sustained compliance evidence",
       "Recurrence prevention evidence",
       "Control effectiveness trend",
-      "Audit reconstruction package"
+      "Audit reconstruction package",
+      "RAG execution trace",
+      "Retrieved document list",
+      "Vector index identifier",
+      "Index freshness evidence",
+      "Embedding lineage",
+      "Orchestrator execution trace",
+      "Plug-in invocation trace",
+      "Model invocation record",
+      "Enterprise system access record",
+      "Source provenance package",
+      "Runtime identity evidence",
+      "Infrastructure health evidence",
+      "Final answer evidence package"
     ],
     "ux_targets": [
       "One-click lifecycle navigation",
@@ -1042,7 +1059,14 @@
       "Evidence completeness after remediation",
       "Sustained compliance monitoring",
       "One-time remediation risk",
-      "Audit readiness after closure"
+      "Audit readiness after closure",
+      "Index freshness",
+      "Retrieval quality",
+      "Embedding drift",
+      "Knowledge synchronization",
+      "Runtime health",
+      "Security posture",
+      "Operational trust"
     ],
     "production_ownership_continuity_state": "ACTIVE",
     "production_ownership_continuity_assurance": {
@@ -1282,6 +1306,110 @@
       ],
       "positioning_statement": "Platform B does not treat CAPA closure or deviation correction as the end of assurance. It continuously verifies whether governance, Quality Unit oversight, corrective actions, and controls remain effective after closure.",
       "principle": "Sustained compliance is not proven by one-time remediation. It is proven by continuous evidence that systemic weaknesses were addressed, governance was strengthened, oversight remains effective, and recurrence is prevented over time."
+    },
+    "production_rag_execution_assurance_state": "ACTIVE",
+    "new_lifecycle": false,
+    "production_rag_execution_assurance": {
+      "patch_marker": "COBITCHAIN_PLATFORM_B_PRODUCTION_RAG_EXECUTION_ASSURANCE_PATCH_V1_ACTIVE",
+      "architecture_change": false,
+      "new_lifecycle": false,
+      "new_module": false,
+      "architecture_instruction": "Do not create a new lifecycle or new module. Strengthen existing Operationalization, Execution Assurance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+      "capability_name": "Production RAG Execution Assurance Enrichment",
+      "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "enriched_stages": [
+        "Operationalization",
+        "Execution Assurance",
+        "Evidence",
+        "Continuous Assurance",
+        "Operational Trust"
+      ],
+      "operating_system_principle": "Enterprise AI architectures should be evaluated as complete operational systems. Assurance Engineering continuously demonstrates that orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure operate together in a trustworthy manner.",
+      "core_question": "Can this production RAG workflow be operationally trusted across orchestration, retrieval, runtime execution, evidence generation, and continuous monitoring?",
+      "operationalization_support": [
+        "Semantic Kernel orchestration",
+        "AI agent orchestration",
+        "Plug-in execution",
+        "Vector database integration",
+        "Azure OpenAI integration",
+        "Enterprise knowledge connectors",
+        "Managed identities",
+        "Secure runtime execution"
+      ],
+      "execution_assurance_domains": [
+        {
+          "domain": "Orchestration Assurance",
+          "controls": [
+            "Semantic Kernel workflow integrity",
+            "Agent coordination",
+            "Plug-in invocation",
+            "Execution sequencing",
+            "Failure recovery"
+          ],
+          "question": "Was the production RAG workflow orchestrated correctly from request to retrieval to response?"
+        },
+        {
+          "domain": "Retrieval Assurance",
+          "controls": [
+            "Vector index freshness",
+            "Change-feed synchronization",
+            "Embedding integrity",
+            "Retrieval accuracy",
+            "Context relevance",
+            "Source provenance"
+          ],
+          "question": "Was the retrieved knowledge current, relevant, traceable, and supported by trustworthy vector and source evidence?"
+        },
+        {
+          "domain": "Runtime Assurance",
+          "controls": [
+            "Managed identity authentication",
+            "Secretless execution",
+            "Runtime authorization",
+            "Infrastructure resilience",
+            "Container health",
+            "API reliability"
+          ],
+          "question": "Did runtime infrastructure, identity, authorization, APIs, containers, and services operate securely and reliably?"
+        }
+      ],
+      "rag_execution_evidence_questions": [
+        "Which documents were retrieved?",
+        "Which vector index was used?",
+        "Was the index current?",
+        "Which embeddings supported retrieval?",
+        "Which orchestrator executed the workflow?",
+        "Which plug-ins were invoked?",
+        "Which AI model generated the response?",
+        "Which enterprise systems were accessed?",
+        "What evidence supports the final answer?"
+      ],
+      "continuous_assurance_monitors": [
+        "Index freshness",
+        "Retrieval quality",
+        "Embedding drift",
+        "Knowledge synchronization",
+        "Runtime health",
+        "Security posture",
+        "Operational trust"
+      ],
+      "operational_trust_evidence": [
+        "RAG execution trace",
+        "Retrieved document list",
+        "Vector index identifier",
+        "Index freshness evidence",
+        "Embedding lineage",
+        "Orchestrator execution trace",
+        "Plug-in invocation trace",
+        "Model invocation record",
+        "Enterprise system access record",
+        "Source provenance package",
+        "Runtime identity evidence",
+        "Infrastructure health evidence",
+        "Final answer evidence package"
+      ],
+      "positioning_statement": "Platform B does not evaluate production RAG as a model-only risk. It evaluates the complete operational system: orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure.",
+      "principle": "Production RAG trust is achieved only when orchestration, retrieval, runtime security, execution evidence, and infrastructure health operate together reliably, securely, traceably, and continuously under governance."
     }
   },
   "enterprise_execution_assurance_capability_patch": {
@@ -1926,5 +2054,108 @@
     "principle": "Sustained compliance is not proven by one-time remediation. It is proven by continuous evidence that systemic weaknesses were addressed, governance was strengthened, oversight remains effective, and recurrence is prevented over time."
   },
   "platform_b_new_module": false,
-  "platform_b_new_approval_workflow": false
+  "platform_b_new_approval_workflow": false,
+  "platform_b_production_rag_execution_assurance_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_PRODUCTION_RAG_EXECUTION_ASSURANCE_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_lifecycle": false,
+    "new_module": false,
+    "architecture_instruction": "Do not create a new lifecycle or new module. Strengthen existing Operationalization, Execution Assurance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+    "capability_name": "Production RAG Execution Assurance Enrichment",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "enriched_stages": [
+      "Operationalization",
+      "Execution Assurance",
+      "Evidence",
+      "Continuous Assurance",
+      "Operational Trust"
+    ],
+    "operating_system_principle": "Enterprise AI architectures should be evaluated as complete operational systems. Assurance Engineering continuously demonstrates that orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure operate together in a trustworthy manner.",
+    "core_question": "Can this production RAG workflow be operationally trusted across orchestration, retrieval, runtime execution, evidence generation, and continuous monitoring?",
+    "operationalization_support": [
+      "Semantic Kernel orchestration",
+      "AI agent orchestration",
+      "Plug-in execution",
+      "Vector database integration",
+      "Azure OpenAI integration",
+      "Enterprise knowledge connectors",
+      "Managed identities",
+      "Secure runtime execution"
+    ],
+    "execution_assurance_domains": [
+      {
+        "domain": "Orchestration Assurance",
+        "controls": [
+          "Semantic Kernel workflow integrity",
+          "Agent coordination",
+          "Plug-in invocation",
+          "Execution sequencing",
+          "Failure recovery"
+        ],
+        "question": "Was the production RAG workflow orchestrated correctly from request to retrieval to response?"
+      },
+      {
+        "domain": "Retrieval Assurance",
+        "controls": [
+          "Vector index freshness",
+          "Change-feed synchronization",
+          "Embedding integrity",
+          "Retrieval accuracy",
+          "Context relevance",
+          "Source provenance"
+        ],
+        "question": "Was the retrieved knowledge current, relevant, traceable, and supported by trustworthy vector and source evidence?"
+      },
+      {
+        "domain": "Runtime Assurance",
+        "controls": [
+          "Managed identity authentication",
+          "Secretless execution",
+          "Runtime authorization",
+          "Infrastructure resilience",
+          "Container health",
+          "API reliability"
+        ],
+        "question": "Did runtime infrastructure, identity, authorization, APIs, containers, and services operate securely and reliably?"
+      }
+    ],
+    "rag_execution_evidence_questions": [
+      "Which documents were retrieved?",
+      "Which vector index was used?",
+      "Was the index current?",
+      "Which embeddings supported retrieval?",
+      "Which orchestrator executed the workflow?",
+      "Which plug-ins were invoked?",
+      "Which AI model generated the response?",
+      "Which enterprise systems were accessed?",
+      "What evidence supports the final answer?"
+    ],
+    "continuous_assurance_monitors": [
+      "Index freshness",
+      "Retrieval quality",
+      "Embedding drift",
+      "Knowledge synchronization",
+      "Runtime health",
+      "Security posture",
+      "Operational trust"
+    ],
+    "operational_trust_evidence": [
+      "RAG execution trace",
+      "Retrieved document list",
+      "Vector index identifier",
+      "Index freshness evidence",
+      "Embedding lineage",
+      "Orchestrator execution trace",
+      "Plug-in invocation trace",
+      "Model invocation record",
+      "Enterprise system access record",
+      "Source provenance package",
+      "Runtime identity evidence",
+      "Infrastructure health evidence",
+      "Final answer evidence package"
+    ],
+    "positioning_statement": "Platform B does not evaluate production RAG as a model-only risk. It evaluates the complete operational system: orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure.",
+    "principle": "Production RAG trust is achieved only when orchestration, retrieval, runtime security, execution evidence, and infrastructure health operate together reliably, securely, traceably, and continuously under governance."
+  },
+  "platform_b_new_lifecycle": false
 }
