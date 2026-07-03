@@ -170,6 +170,250 @@
 
 
 
+
+<!-- COBITCHAIN_PLATFORM_B_AI_CAPABILITY_ASSURANCE_LIBRARY_PATCH_V1_ACTIVE -->
+
+<style>
+.platform-b-ai-capability-library-wrap {
+    margin: 28px 0;
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: linear-gradient(135deg, rgba(99,102,241,.10), rgba(14,165,233,.08));
+}
+.platform-b-ai-capability-library-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+.platform-b-ai-capability-library-head h2 {
+    margin: 0;
+    font-size: 28px;
+}
+.platform-b-ai-capability-library-head p {
+    color: #cbd5e1;
+    line-height: 1.65;
+    max-width: 980px;
+}
+.platform-b-ai-capability-library-tag {
+    border: 1px solid rgba(165,180,252,.45);
+    color: #c7d2fe;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+    background: rgba(99,102,241,.10);
+}
+.platform-b-ai-capability-library-warning {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(248,113,113,.08);
+    border: 1px solid rgba(248,113,113,.18);
+    color: #fecaca;
+    line-height: 1.55;
+}
+.platform-b-ai-capability-library-principle {
+    margin: 18px 0;
+    padding: 18px;
+    border-left: 4px solid #a5b4fc;
+    color: #e0e7ff;
+    background: rgba(255,255,255,.055);
+    border-radius: 16px;
+    line-height: 1.65;
+    font-size: 17px;
+    font-weight: 800;
+}
+.platform-b-ai-capability-library-question {
+    margin: 18px 0;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(14,165,233,.10);
+    border: 1px solid rgba(125,211,252,.22);
+    color: #e0f2fe;
+    font-weight: 800;
+    font-size: 18px;
+}
+.platform-b-ai-capability-library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+.ai-capability-library-card {
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.045);
+    border-radius: 18px;
+    padding: 18px;
+}
+.ai-capability-library-card ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+.ai-capability-library-domain {
+    color: #c7d2fe;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+.platform-b-ai-capability-library-pills {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+.platform-b-ai-capability-library-pill {
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.045);
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #d8dee9;
+    font-size: 13px;
+}
+</style>
+
+<section class="platform-b-ai-capability-library-wrap">
+    <div class="platform-b-ai-capability-library-head">
+        <div>
+            <h2>AI Capability Assurance Library</h2>
+            <p>
+                No new lifecycle. No new module. Platform B profiles AI capabilities inside the existing lifecycle
+                and assures capability context, handoffs, evidence lineage, compound risk, ownership, controls,
+                monitoring, and operational trust.
+            </p>
+        </div>
+        <span class="platform-b-ai-capability-library-tag">Capability Profiles</span>
+    </div>
+
+    <div class="platform-b-ai-capability-library-warning">
+        Classification, similarity, clustering, prediction, retrieval, discovery, reasoning, and execution are not lifecycle stages.
+        They are capability profiles inside the existing Platform B Assurance Lifecycle.
+    </div>
+
+    <div class="platform-b-ai-capability-library-question">
+        Operational Trust asks: Can this AI capability, and its interaction with other AI capabilities, be operationally trusted right now?
+    </div>
+
+    <div class="platform-b-ai-capability-library-principle">
+        Capabilities do not become lifecycle stages. Platform B profiles AI capabilities inside the existing lifecycle and assures their handoffs, evidence lineage, compound risk, controls, monitoring, and operational trust.
+    </div>
+
+    <div class="platform-b-ai-capability-library-grid">
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Discovery</div>
+        <ul><li>AI capability type</li><li>Capability purpose</li><li>Capability interaction map</li><li>Input sources</li><li>Output consumers</li><li>Model/tool dependencies</li><li>Capability ownership</li><li>Compound risk profile</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Visibility</div>
+        <ul><li>Capability inventory</li><li>Capability interaction view</li><li>Evidence lineage map</li><li>Capability risk status</li><li>Handoff health</li><li>Control coverage</li><li>Monitoring coverage</li><li>Operational Trust Score</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Governance</div>
+        <ul><li>Capability use boundaries</li><li>Capability ownership rules</li><li>Capability handoff rules</li><li>Human review rules</li><li>Evidence requirements</li><li>Control inheritance rules</li><li>Risk escalation rules</li><li>Approval requirements</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Operationalization</div>
+        <ul><li>Capability profile selection</li><li>Input validation</li><li>Permission validation</li><li>Capability handoff checks</li><li>Reviewer checkpoints</li><li>Runtime control enforcement</li><li>Exception handling</li><li>Post-output verification</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Execution Assurance</div>
+        <ul><li>Execution authorization</li><li>Tool/action boundary validation</li><li>Reasoning-to-action verification</li><li>Human approval gate</li><li>Runtime traceability</li><li>Rollback verification</li><li>Post-execution confirmation</li><li>Execution evidence generation</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Evidence</div>
+        <ul><li>Capability profiled</li><li>Input validated</li><li>Source authority verified</li><li>Permission verified</li><li>Handoff verified</li><li>Reviewer decision captured</li><li>Output verified</li><li>Action authorized</li><li>Runtime trace captured</li><li>Post-execution verification completed</li><li>Evidence lineage generated</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Continuous Assurance</div>
+        <ul><li>Capability drift</li><li>Input drift</li><li>Retrieval drift</li><li>Reasoning drift</li><li>Execution drift</li><li>Handoff degradation</li><li>Compound risk increase</li><li>Control coverage gaps</li><li>Evidence lineage gaps</li><li>Ownership gaps</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Operational Trust</div>
+        <ul><li>Capability-level Operational Trust Score</li><li>Cross-capability Operational Trust Score</li><li>Evidence lineage completeness</li><li>Control coverage completeness</li><li>Handoff reliability</li><li>Recovery readiness</li><li>Ownership clarity</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Classification Assurance</div>
+        <ul><li>Classification objective</li><li>Class definitions</li><li>Input source quality</li><li>Label authority</li><li>Confidence threshold</li><li>Reviewer decision</li><li>Misclassification risk</li><li>Downstream decision impact</li><li>Monitoring and drift</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Similarity Assurance</div>
+        <ul><li>Similarity objective</li><li>Embedding model/version</li><li>Reference corpus</li><li>Similarity threshold</li><li>Distance metric</li><li>False match risk</li><li>False non-match risk</li><li>Reviewer confirmation</li><li>Evidence lineage</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Clustering Assurance</div>
+        <ul><li>Clustering objective</li><li>Feature selection</li><li>Cluster rationale</li><li>Cluster stability</li><li>Outlier handling</li><li>Bias/coverage review</li><li>Human interpretation</li><li>Operational use boundary</li><li>Monitoring</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Prediction Assurance</div>
+        <ul><li>Prediction context</li><li>Input quality</li><li>Model version</li><li>Prediction horizon</li><li>Uncertainty</li><li>Decision threshold</li><li>Reviewer decision</li><li>Decision impact</li><li>Monitoring and drift</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Retrieval Assurance</div>
+        <ul><li>Source authority</li><li>Retrieval permissions</li><li>Context relevance</li><li>Citation/source traceability</li><li>Chunk provenance</li><li>Recency</li><li>Retrieval confidence</li><li>Hallucination guardrails</li><li>Reviewer verification</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Discovery Assurance</div>
+        <ul><li>Discovery scope</li><li>Signal provenance</li><li>Search criteria</li><li>Comparison criteria</li><li>Candidate selection rationale</li><li>Coverage completeness</li><li>Bias review</li><li>Source completeness</li><li>Escalation criteria</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Reasoning Assurance</div>
+        <ul><li>Reasoning objective</li><li>Assumptions</li><li>Intermediate evidence</li><li>Decision logic</li><li>Constraint adherence</li><li>Challenge/override</li><li>Human review</li><li>Explanation adequacy</li><li>Reasoning-to-action handoff</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Execution Assurance</div>
+        <ul><li>Tool/action authorization</li><li>Execution boundary</li><li>System of record</li><li>Approval gate</li><li>Runtime trace</li><li>Rollback condition</li><li>Post-execution verification</li><li>Exception handling</li><li>Execution evidence</li></ul>
+    </div>
+
+
+    <div class="ai-capability-library-card">
+        <div class="ai-capability-library-domain">Cross-Capability Interaction Assurance</div>
+        <ul><li>Prediction to retrieval handoff</li><li>Retrieval to reasoning handoff</li><li>Reasoning to execution handoff</li><li>Discovery to governance handoff</li><li>Compound risk</li><li>Evidence lineage</li><li>Ownership continuity</li><li>Control inheritance</li><li>Monitoring continuity</li></ul>
+    </div>
+
+    </div>
+
+    <div class="platform-b-ai-capability-library-pills">
+        <span class="platform-b-ai-capability-library-pill">What AI capability is being used?</span><span class="platform-b-ai-capability-library-pill">What is the capability purpose?</span><span class="platform-b-ai-capability-library-pill">Which lifecycle stage is using the capability?</span><span class="platform-b-ai-capability-library-pill">What input source was used?</span><span class="platform-b-ai-capability-library-pill">Who owns the capability?</span><span class="platform-b-ai-capability-library-pill">What downstream workflow consumes the output?</span><span class="platform-b-ai-capability-library-pill">What model, tool, or framework dependency exists?</span><span class="platform-b-ai-capability-library-pill">What is the compound risk profile?</span><span class="platform-b-ai-capability-library-pill">Was the capability profile selected?</span><span class="platform-b-ai-capability-library-pill">Was the input validated?</span><span class="platform-b-ai-capability-library-pill">Was source authority verified?</span><span class="platform-b-ai-capability-library-pill">Were permissions verified?</span><span class="platform-b-ai-capability-library-pill">Was the capability handoff verified?</span><span class="platform-b-ai-capability-library-pill">Was reviewer decision captured?</span><span class="platform-b-ai-capability-library-pill">Was output verified?</span><span class="platform-b-ai-capability-library-pill">Was action authorized?</span><span class="platform-b-ai-capability-library-pill">Was runtime trace captured?</span><span class="platform-b-ai-capability-library-pill">Was post-execution verification completed?</span><span class="platform-b-ai-capability-library-pill">Was evidence lineage generated?</span><span class="platform-b-ai-capability-library-pill">Is capability drift present?</span><span class="platform-b-ai-capability-library-pill">Is handoff degradation present?</span><span class="platform-b-ai-capability-library-pill">Is compound risk increasing?</span><span class="platform-b-ai-capability-library-pill">Are control coverage gaps present?</span><span class="platform-b-ai-capability-library-pill">Are evidence lineage gaps present?</span><span class="platform-b-ai-capability-library-pill">Are ownership gaps present?</span><span class="platform-b-ai-capability-library-pill">Can this AI capability, and its interaction with other AI capabilities, be operationally trusted right now?</span>
+    </div>
+</section>
+
+<!-- END COBITCHAIN_PLATFORM_B_AI_CAPABILITY_ASSURANCE_LIBRARY_PATCH_V1_ACTIVE -->
+
 <!-- COBITCHAIN_PLATFORM_B_ASSURED_AUTONOMY_CROSS_CUTTING_CAPABILITY_PATCH_V1_ACTIVE -->
 
 <style>
