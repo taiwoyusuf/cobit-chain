@@ -373,7 +373,30 @@
         "Which regulatory obligations are satisfied?",
         "How is human oversight demonstrated?",
         "How are AI decisions traceable?",
-        "How is operational trust maintained?"
+        "How is operational trust maintained?",
+        "Does this AI system continue to operate in accordance with its governance?",
+        "Which AI systems are in the AI inventory?",
+        "Which AI assets support the system?",
+        "Who owns the AI system?",
+        "What is the AI business purpose?",
+        "What is the context of use?",
+        "What is the risk classification?",
+        "What is the intended use?",
+        "Who is the governance owner?",
+        "What is the deployment status?",
+        "Which model version is operating?",
+        "Who approved deployment or use?",
+        "What supporting evidence exists?",
+        "Was human review performed?",
+        "Is evidence lineage complete?",
+        "Was scientific verification performed?",
+        "Are incidents captured and managed?",
+        "Are CAPAs tracked and verified?",
+        "Are governance reviews current?",
+        "Is policy effectiveness being evaluated?",
+        "Is operational performance being monitored?",
+        "Is drift being monitored?",
+        "Is evidence complete?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AICMC-BP-DEMO-001",
@@ -492,7 +515,21 @@
         "risk_effectiveness_evaluated": true,
         "compliance_effectiveness_evaluated": true,
         "operational_effectiveness_evaluated": true,
-        "operational_trust_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
+        "operational_trust_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust.",
+        "iso42001_lifecycle_mapping_state": "ACTIVE",
+        "iso42001_module_created": false,
+        "ai_management_system_continuously_assured": true,
+        "ai_inventory_discovered": true,
+        "ai_passport_expanded": true,
+        "multi_framework_governance_layer": true,
+        "decision_traceability_evidenced": true,
+        "human_review_evidenced": true,
+        "continuous_monitoring_effectiveness_evaluated": true,
+        "incident_management_evaluated": true,
+        "capa_effectiveness_evaluated": true,
+        "drift_monitored": true,
+        "evidence_completeness_monitored": true,
+        "operational_trust_question": "Does this AI system continue to operate in accordance with its governance?"
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -1583,7 +1620,13 @@
         "AI reviewers",
         "AI approvers",
         "AI operators",
-        "AI risk owners"
+        "AI risk owners",
+        "AI inventory",
+        "AI assets",
+        "AI owners",
+        "AI systems",
+        "AI business purpose",
+        "Context of use"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -1599,7 +1642,12 @@
         "Training completion",
         "Role assignments",
         "Separation of duties",
-        "Approval authority"
+        "Approval authority",
+        "Risk classification",
+        "Intended use",
+        "Governance owner",
+        "Deployment status",
+        "Human approver"
       ],
       "governance_scope": [
         "Human accountability",
@@ -1613,7 +1661,15 @@
         "Delegated authority",
         "Competency reviews",
         "Approval authority alignment",
-        "Separation of duties"
+        "Separation of duties",
+        "AI Policy",
+        "Ownership Map",
+        "Management Review",
+        "Risk Classification",
+        "Impact Assessment",
+        "Disclosure",
+        "Regulation Mapping",
+        "Unified governance layer for ISO 42001, NIST AI RMF, EU AI Act, FDA CSA, and MHRA guidance"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -1636,7 +1692,11 @@
         "Regulatory obligations satisfied",
         "Human oversight demonstrated",
         "AI decisions traceable",
-        "Operational trust maintained"
+        "Operational trust maintained",
+        "Decision traceability",
+        "Human review",
+        "Evidence lineage",
+        "Approval history"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
@@ -1652,7 +1712,15 @@
         "Governance effectiveness",
         "Risk effectiveness",
         "Compliance effectiveness",
-        "Operational effectiveness"
+        "Operational effectiveness",
+        "Monitoring effectiveness",
+        "Incident management",
+        "CAPAs",
+        "Governance reviews",
+        "Policy effectiveness",
+        "Operational performance",
+        "Drift",
+        "Evidence completeness"
       ],
       "ai_competency_governance_assurance": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
@@ -1818,7 +1886,9 @@
         "MHRA AI Guidance",
         "WHO AI Guidance",
         "OECD AI Principles",
-        "Organization-specific governance policies"
+        "Organization-specific governance policies",
+        "ISO 42001",
+        "MHRA guidance"
       ],
       "governance_mapping_scope": [
         "Policies",
@@ -1829,7 +1899,158 @@
         "Roles",
         "Approvals",
         "Compliance obligations"
-      ]
+      ],
+      "iso42001_module_created": false,
+      "iso42001_lifecycle_mapping": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_ISO42001_LIFECYCLE_MAPPING_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_module": false,
+        "do_not_create": [
+          "ISO 42001 module",
+          "ISO/IEC 42001 module",
+          "AI management system module",
+          "Framework-specific module"
+        ],
+        "capability_name": "ISO 42001 Lifecycle Mapping",
+        "primary_stage": "Governance",
+        "architecture_instruction": "Do not build an ISO 42001 module. Map each ISO 42001 pillar into the existing Platform B Assurance Lifecycle and strengthen existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "governance_statement": "AI governance is not a document you file once. It is a system you run continuously.",
+        "assurance_engineering_statement": "Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation.",
+        "operational_trust_question": "Does this AI system continue to operate in accordance with its governance?",
+        "not_the_question": "Was governance implemented?",
+        "iso42001_pillar_mapping": [
+          {
+            "iso_42001_pillar": "AI Policy",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Ownership Map",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Management Review",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "AI Inventory",
+            "existing_assurance_lifecycle": "Discovery"
+          },
+          {
+            "iso_42001_pillar": "Risk Classification",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Impact Assessment",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "AI Passport",
+            "existing_assurance_lifecycle": "Visibility"
+          },
+          {
+            "iso_42001_pillar": "Decision Traceability",
+            "existing_assurance_lifecycle": "Evidence"
+          },
+          {
+            "iso_42001_pillar": "Disclosure",
+            "existing_assurance_lifecycle": "Governance / Evidence"
+          },
+          {
+            "iso_42001_pillar": "Incident Register",
+            "existing_assurance_lifecycle": "Operationalization"
+          },
+          {
+            "iso_42001_pillar": "Monitoring Protocol",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Corrective Actions",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Regulation Mapping",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Audit Schedule",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Improvement Cycle",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          }
+        ],
+        "discovery_extension": [
+          "AI inventory",
+          "AI assets",
+          "AI owners",
+          "AI systems",
+          "AI business purpose",
+          "Context of use"
+        ],
+        "visibility_ai_passport_extension": [
+          "Risk classification",
+          "Intended use",
+          "Governance owner",
+          "Deployment status",
+          "Model version",
+          "Human approver",
+          "Supporting evidence"
+        ],
+        "governance_frameworks_mapped_into_one_layer": [
+          "ISO 42001",
+          "NIST AI RMF",
+          "EU AI Act",
+          "FDA CSA",
+          "MHRA guidance"
+        ],
+        "evidence_extension": [
+          "Decision traceability",
+          "Human review",
+          "Evidence lineage",
+          "Scientific verification",
+          "Approval history"
+        ],
+        "continuous_assurance_extension": [
+          "Monitoring effectiveness",
+          "Incident management",
+          "CAPAs",
+          "Governance reviews",
+          "Policy effectiveness",
+          "Operational performance",
+          "Drift",
+          "Evidence completeness"
+        ],
+        "evidence_questions": [
+          "Which AI systems are in the AI inventory?",
+          "Which AI assets support the system?",
+          "Who owns the AI system?",
+          "What is the AI business purpose?",
+          "What is the context of use?",
+          "What is the risk classification?",
+          "What is the intended use?",
+          "Who is the governance owner?",
+          "What is the deployment status?",
+          "Which model version is operating?",
+          "Who approved deployment or use?",
+          "What supporting evidence exists?",
+          "How are AI decisions traceable?",
+          "Was human review performed?",
+          "Is evidence lineage complete?",
+          "Was scientific verification performed?",
+          "What approval history exists?",
+          "Are incidents captured and managed?",
+          "Are CAPAs tracked and verified?",
+          "Are governance reviews current?",
+          "Is policy effectiveness being evaluated?",
+          "Is operational performance being monitored?",
+          "Is drift being monitored?",
+          "Is evidence complete?",
+          "Does this AI system continue to operate in accordance with its governance?"
+        ],
+        "principle": "AI governance is not a document you file once. It is a system you run continuously. Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation."
+      }
     },
     {
       "blueprint_id": "agentic_enterprise",
@@ -2209,7 +2430,30 @@
         "Which regulatory obligations are satisfied?",
         "How is human oversight demonstrated?",
         "How are AI decisions traceable?",
-        "How is operational trust maintained?"
+        "How is operational trust maintained?",
+        "Does this AI system continue to operate in accordance with its governance?",
+        "Which AI systems are in the AI inventory?",
+        "Which AI assets support the system?",
+        "Who owns the AI system?",
+        "What is the AI business purpose?",
+        "What is the context of use?",
+        "What is the risk classification?",
+        "What is the intended use?",
+        "Who is the governance owner?",
+        "What is the deployment status?",
+        "Which model version is operating?",
+        "Who approved deployment or use?",
+        "What supporting evidence exists?",
+        "Was human review performed?",
+        "Is evidence lineage complete?",
+        "Was scientific verification performed?",
+        "Are incidents captured and managed?",
+        "Are CAPAs tracked and verified?",
+        "Are governance reviews current?",
+        "Is policy effectiveness being evaluated?",
+        "Is operational performance being monitored?",
+        "Is drift being monitored?",
+        "Is evidence complete?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AEBP-DEMO-001",
@@ -2328,7 +2572,21 @@
         "risk_effectiveness_evaluated": true,
         "compliance_effectiveness_evaluated": true,
         "operational_effectiveness_evaluated": true,
-        "operational_trust_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
+        "operational_trust_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust.",
+        "iso42001_lifecycle_mapping_state": "ACTIVE",
+        "iso42001_module_created": false,
+        "ai_management_system_continuously_assured": true,
+        "ai_inventory_discovered": true,
+        "ai_passport_expanded": true,
+        "multi_framework_governance_layer": true,
+        "decision_traceability_evidenced": true,
+        "human_review_evidenced": true,
+        "continuous_monitoring_effectiveness_evaluated": true,
+        "incident_management_evaluated": true,
+        "capa_effectiveness_evaluated": true,
+        "drift_monitored": true,
+        "evidence_completeness_monitored": true,
+        "operational_trust_question": "Does this AI system continue to operate in accordance with its governance?"
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -3419,7 +3677,13 @@
         "AI reviewers",
         "AI approvers",
         "AI operators",
-        "AI risk owners"
+        "AI risk owners",
+        "AI inventory",
+        "AI assets",
+        "AI owners",
+        "AI systems",
+        "AI business purpose",
+        "Context of use"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -3435,7 +3699,12 @@
         "Training completion",
         "Role assignments",
         "Separation of duties",
-        "Approval authority"
+        "Approval authority",
+        "Risk classification",
+        "Intended use",
+        "Governance owner",
+        "Deployment status",
+        "Human approver"
       ],
       "governance_scope": [
         "Human accountability",
@@ -3449,7 +3718,15 @@
         "Delegated authority",
         "Competency reviews",
         "Approval authority alignment",
-        "Separation of duties"
+        "Separation of duties",
+        "AI Policy",
+        "Ownership Map",
+        "Management Review",
+        "Risk Classification",
+        "Impact Assessment",
+        "Disclosure",
+        "Regulation Mapping",
+        "Unified governance layer for ISO 42001, NIST AI RMF, EU AI Act, FDA CSA, and MHRA guidance"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -3472,7 +3749,11 @@
         "Regulatory obligations satisfied",
         "Human oversight demonstrated",
         "AI decisions traceable",
-        "Operational trust maintained"
+        "Operational trust maintained",
+        "Decision traceability",
+        "Human review",
+        "Evidence lineage",
+        "Approval history"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
@@ -3488,7 +3769,15 @@
         "Governance effectiveness",
         "Risk effectiveness",
         "Compliance effectiveness",
-        "Operational effectiveness"
+        "Operational effectiveness",
+        "Monitoring effectiveness",
+        "Incident management",
+        "CAPAs",
+        "Governance reviews",
+        "Policy effectiveness",
+        "Operational performance",
+        "Drift",
+        "Evidence completeness"
       ],
       "ai_competency_governance_assurance": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
@@ -3654,7 +3943,9 @@
         "MHRA AI Guidance",
         "WHO AI Guidance",
         "OECD AI Principles",
-        "Organization-specific governance policies"
+        "Organization-specific governance policies",
+        "ISO 42001",
+        "MHRA guidance"
       ],
       "governance_mapping_scope": [
         "Policies",
@@ -3665,7 +3956,158 @@
         "Roles",
         "Approvals",
         "Compliance obligations"
-      ]
+      ],
+      "iso42001_module_created": false,
+      "iso42001_lifecycle_mapping": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_ISO42001_LIFECYCLE_MAPPING_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_module": false,
+        "do_not_create": [
+          "ISO 42001 module",
+          "ISO/IEC 42001 module",
+          "AI management system module",
+          "Framework-specific module"
+        ],
+        "capability_name": "ISO 42001 Lifecycle Mapping",
+        "primary_stage": "Governance",
+        "architecture_instruction": "Do not build an ISO 42001 module. Map each ISO 42001 pillar into the existing Platform B Assurance Lifecycle and strengthen existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "governance_statement": "AI governance is not a document you file once. It is a system you run continuously.",
+        "assurance_engineering_statement": "Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation.",
+        "operational_trust_question": "Does this AI system continue to operate in accordance with its governance?",
+        "not_the_question": "Was governance implemented?",
+        "iso42001_pillar_mapping": [
+          {
+            "iso_42001_pillar": "AI Policy",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Ownership Map",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Management Review",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "AI Inventory",
+            "existing_assurance_lifecycle": "Discovery"
+          },
+          {
+            "iso_42001_pillar": "Risk Classification",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Impact Assessment",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "AI Passport",
+            "existing_assurance_lifecycle": "Visibility"
+          },
+          {
+            "iso_42001_pillar": "Decision Traceability",
+            "existing_assurance_lifecycle": "Evidence"
+          },
+          {
+            "iso_42001_pillar": "Disclosure",
+            "existing_assurance_lifecycle": "Governance / Evidence"
+          },
+          {
+            "iso_42001_pillar": "Incident Register",
+            "existing_assurance_lifecycle": "Operationalization"
+          },
+          {
+            "iso_42001_pillar": "Monitoring Protocol",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Corrective Actions",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Regulation Mapping",
+            "existing_assurance_lifecycle": "Governance"
+          },
+          {
+            "iso_42001_pillar": "Audit Schedule",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          },
+          {
+            "iso_42001_pillar": "Improvement Cycle",
+            "existing_assurance_lifecycle": "Continuous Assurance"
+          }
+        ],
+        "discovery_extension": [
+          "AI inventory",
+          "AI assets",
+          "AI owners",
+          "AI systems",
+          "AI business purpose",
+          "Context of use"
+        ],
+        "visibility_ai_passport_extension": [
+          "Risk classification",
+          "Intended use",
+          "Governance owner",
+          "Deployment status",
+          "Model version",
+          "Human approver",
+          "Supporting evidence"
+        ],
+        "governance_frameworks_mapped_into_one_layer": [
+          "ISO 42001",
+          "NIST AI RMF",
+          "EU AI Act",
+          "FDA CSA",
+          "MHRA guidance"
+        ],
+        "evidence_extension": [
+          "Decision traceability",
+          "Human review",
+          "Evidence lineage",
+          "Scientific verification",
+          "Approval history"
+        ],
+        "continuous_assurance_extension": [
+          "Monitoring effectiveness",
+          "Incident management",
+          "CAPAs",
+          "Governance reviews",
+          "Policy effectiveness",
+          "Operational performance",
+          "Drift",
+          "Evidence completeness"
+        ],
+        "evidence_questions": [
+          "Which AI systems are in the AI inventory?",
+          "Which AI assets support the system?",
+          "Who owns the AI system?",
+          "What is the AI business purpose?",
+          "What is the context of use?",
+          "What is the risk classification?",
+          "What is the intended use?",
+          "Who is the governance owner?",
+          "What is the deployment status?",
+          "Which model version is operating?",
+          "Who approved deployment or use?",
+          "What supporting evidence exists?",
+          "How are AI decisions traceable?",
+          "Was human review performed?",
+          "Is evidence lineage complete?",
+          "Was scientific verification performed?",
+          "What approval history exists?",
+          "Are incidents captured and managed?",
+          "Are CAPAs tracked and verified?",
+          "Are governance reviews current?",
+          "Is policy effectiveness being evaluated?",
+          "Is operational performance being monitored?",
+          "Is drift being monitored?",
+          "Is evidence complete?",
+          "Does this AI system continue to operate in accordance with its governance?"
+        ],
+        "principle": "AI governance is not a document you file once. It is a system you run continuously. Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation."
+      }
     }
   ],
   "enterprise_execution_assurance_capability_patch": {
@@ -4922,5 +5364,159 @@
     ],
     "principle": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
   },
-  "platform_b_governance_foundational_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
+  "platform_b_governance_foundational_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust.",
+  "platform_b_iso42001_lifecycle_mapping_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_ISO42001_LIFECYCLE_MAPPING_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "do_not_create": [
+      "ISO 42001 module",
+      "ISO/IEC 42001 module",
+      "AI management system module",
+      "Framework-specific module"
+    ],
+    "capability_name": "ISO 42001 Lifecycle Mapping",
+    "primary_stage": "Governance",
+    "architecture_instruction": "Do not build an ISO 42001 module. Map each ISO 42001 pillar into the existing Platform B Assurance Lifecycle and strengthen existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "governance_statement": "AI governance is not a document you file once. It is a system you run continuously.",
+    "assurance_engineering_statement": "Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation.",
+    "operational_trust_question": "Does this AI system continue to operate in accordance with its governance?",
+    "not_the_question": "Was governance implemented?",
+    "iso42001_pillar_mapping": [
+      {
+        "iso_42001_pillar": "AI Policy",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "Ownership Map",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "Management Review",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "AI Inventory",
+        "existing_assurance_lifecycle": "Discovery"
+      },
+      {
+        "iso_42001_pillar": "Risk Classification",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "Impact Assessment",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "AI Passport",
+        "existing_assurance_lifecycle": "Visibility"
+      },
+      {
+        "iso_42001_pillar": "Decision Traceability",
+        "existing_assurance_lifecycle": "Evidence"
+      },
+      {
+        "iso_42001_pillar": "Disclosure",
+        "existing_assurance_lifecycle": "Governance / Evidence"
+      },
+      {
+        "iso_42001_pillar": "Incident Register",
+        "existing_assurance_lifecycle": "Operationalization"
+      },
+      {
+        "iso_42001_pillar": "Monitoring Protocol",
+        "existing_assurance_lifecycle": "Continuous Assurance"
+      },
+      {
+        "iso_42001_pillar": "Corrective Actions",
+        "existing_assurance_lifecycle": "Continuous Assurance"
+      },
+      {
+        "iso_42001_pillar": "Regulation Mapping",
+        "existing_assurance_lifecycle": "Governance"
+      },
+      {
+        "iso_42001_pillar": "Audit Schedule",
+        "existing_assurance_lifecycle": "Continuous Assurance"
+      },
+      {
+        "iso_42001_pillar": "Improvement Cycle",
+        "existing_assurance_lifecycle": "Continuous Assurance"
+      }
+    ],
+    "discovery_extension": [
+      "AI inventory",
+      "AI assets",
+      "AI owners",
+      "AI systems",
+      "AI business purpose",
+      "Context of use"
+    ],
+    "visibility_ai_passport_extension": [
+      "Risk classification",
+      "Intended use",
+      "Governance owner",
+      "Deployment status",
+      "Model version",
+      "Human approver",
+      "Supporting evidence"
+    ],
+    "governance_frameworks_mapped_into_one_layer": [
+      "ISO 42001",
+      "NIST AI RMF",
+      "EU AI Act",
+      "FDA CSA",
+      "MHRA guidance"
+    ],
+    "evidence_extension": [
+      "Decision traceability",
+      "Human review",
+      "Evidence lineage",
+      "Scientific verification",
+      "Approval history"
+    ],
+    "continuous_assurance_extension": [
+      "Monitoring effectiveness",
+      "Incident management",
+      "CAPAs",
+      "Governance reviews",
+      "Policy effectiveness",
+      "Operational performance",
+      "Drift",
+      "Evidence completeness"
+    ],
+    "evidence_questions": [
+      "Which AI systems are in the AI inventory?",
+      "Which AI assets support the system?",
+      "Who owns the AI system?",
+      "What is the AI business purpose?",
+      "What is the context of use?",
+      "What is the risk classification?",
+      "What is the intended use?",
+      "Who is the governance owner?",
+      "What is the deployment status?",
+      "Which model version is operating?",
+      "Who approved deployment or use?",
+      "What supporting evidence exists?",
+      "How are AI decisions traceable?",
+      "Was human review performed?",
+      "Is evidence lineage complete?",
+      "Was scientific verification performed?",
+      "What approval history exists?",
+      "Are incidents captured and managed?",
+      "Are CAPAs tracked and verified?",
+      "Are governance reviews current?",
+      "Is policy effectiveness being evaluated?",
+      "Is operational performance being monitored?",
+      "Is drift being monitored?",
+      "Is evidence complete?",
+      "Does this AI system continue to operate in accordance with its governance?"
+    ],
+    "principle": "AI governance is not a document you file once. It is a system you run continuously. Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation."
+  },
+  "platform_b_iso42001_module_created": false,
+  "platform_b_governance_operating_statement": "AI governance is not a document you file once. It is a system you run continuously.",
+  "platform_b_assurance_engineering_statement": "Assurance Engineering continuously generates evidence that the AI management system remains effective throughout AI operation.",
+  "platform_b_operational_trust_question": "Does this AI system continue to operate in accordance with its governance?"
 }
