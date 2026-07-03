@@ -1,0 +1,122 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_AI_FRAMEWORK_RUNTIME_OPERATIONALIZATION_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "capability_name": "AI Framework and Runtime Operationalization Support",
+  "architecture_instruction": "Do not create LangChain Assurance, CrewAI Assurance, Ollama Assurance, n8n Assurance, Dify Assurance, or separate framework-specific assurance modules. Extend Operationalization and assure the resulting workflow consistently through Execution Assurance, Evidence, and Continuous Assurance.",
+  "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+  "platform_statement": "Platform B operationalizes diverse enterprise AI frameworks, runtimes, development platforms, workflow platforms, local runtimes, and retrieval platforms without creating separate assurance modules for each technology.",
+  "core_question": "Can the AI workflow be operationally trusted regardless of the framework, runtime, workflow platform, development tool, or retrieval platform used?",
+  "primary_stage": "Operationalization",
+  "supporting_stages": [
+    "Retrieval Assurance",
+    "Execution Assurance",
+    "Evidence",
+    "Continuous Assurance",
+    "Operational Trust"
+  ],
+  "do_not_create": [
+    "LangChain Assurance",
+    "CrewAI Assurance",
+    "Ollama Assurance",
+    "n8n Assurance",
+    "Dify Assurance",
+    "Framework-specific assurance modules",
+    "Runtime-specific assurance modules"
+  ],
+  "operationalization": {
+    "ai_framework_support": [
+      "Semantic Kernel",
+      "LangChain",
+      "CrewAI",
+      "LangGraph",
+      "AutoGen",
+      "Dify",
+      "Langflow",
+      "OpenAI Agents SDK",
+      "n8n AI",
+      "Azure AI Foundry",
+      "Azure AI Studio"
+    ],
+    "ai_runtime_support": [
+      "Azure OpenAI",
+      "OpenAI",
+      "Claude",
+      "Gemini",
+      "Ollama",
+      "DeepSeek",
+      "Llama",
+      "Mistral",
+      "Qwen"
+    ],
+    "local_ai_runtime_support": [
+      "Ollama",
+      "Open WebUI",
+      "Local inference",
+      "Edge deployment",
+      "Air-gapped deployment"
+    ],
+    "ai_development_platform_support": [
+      "NotebookLM",
+      "Claude Code",
+      "Gemini CLI",
+      "GitHub Copilot",
+      "Cursor",
+      "Windsurf"
+    ],
+    "workflow_platform_support": [
+      "n8n",
+      "Langflow",
+      "Dify",
+      "Microsoft Power Automate",
+      "ServiceNow AI workflows"
+    ],
+    "retrieval_platform_support": [
+      "RAGFlow",
+      "Azure AI Search",
+      "Pinecone",
+      "Weaviate",
+      "Milvus",
+      "Chroma",
+      "Cosmos DB Vector Search"
+    ]
+  },
+  "retrieval_assurance_extension": [
+    "RAGFlow",
+    "Azure AI Search",
+    "Pinecone",
+    "Weaviate",
+    "Milvus",
+    "Chroma",
+    "Cosmos DB Vector Search",
+    "Vector index provenance",
+    "Retrieval platform lineage",
+    "Retrieval platform access control"
+  ],
+  "continuous_assurance_evaluates_regardless_of_framework": [
+    "Orchestration",
+    "Evidence",
+    "Retrieval",
+    "Memory",
+    "Tool calls",
+    "Approvals",
+    "Runtime",
+    "Security"
+  ],
+  "evidence_questions": [
+    "Which framework orchestrated the workflow?",
+    "Which runtime executed the model?",
+    "Which model generated the output?",
+    "Which local or cloud runtime was used?",
+    "Which development platform produced or modified the workflow?",
+    "Which workflow platform executed the process?",
+    "Which retrieval platform was used?",
+    "Which tools were called?",
+    "Which memory or context store was used?",
+    "Which approvals occurred?",
+    "What evidence was generated?",
+    "Was security enforced regardless of framework?"
+  ],
+  "operational_trust_statement": "Operational Trust is not based on the framework brand. It is based on demonstrated orchestration integrity, retrieval trust, memory governance, tool-call control, approval evidence, runtime security, and continuous assurance.",
+  "principle": "Framework choice does not create trust. Platform B operationalizes diverse AI technologies, then assures orchestration, retrieval, memory, tools, approvals, runtime, security, evidence, and operational trust consistently across them."
+}
