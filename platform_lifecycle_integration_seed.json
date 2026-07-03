@@ -737,7 +737,28 @@
       "Were escalations completed?",
       "Were approvals recorded?",
       "Was oversight documented?",
-      "Were corrective actions taken where required?"
+      "Were corrective actions taken where required?",
+      "Governance controls operating",
+      "Risks continuously monitored",
+      "Regulatory obligations satisfied",
+      "Human oversight demonstrated",
+      "AI decisions traceable",
+      "Operational trust maintained",
+      "Which governance frameworks apply?",
+      "Which policies map to each framework?",
+      "Which controls map to each framework?",
+      "Which risks map to each framework?",
+      "Which evidence supports each control?",
+      "Which monitoring activities demonstrate control operation?",
+      "Which roles own each governance obligation?",
+      "Which approvals demonstrate human accountability?",
+      "Which compliance obligations are satisfied?",
+      "Which governance controls are operating?",
+      "Which risks are continuously monitored?",
+      "Which regulatory obligations are satisfied?",
+      "How is human oversight demonstrated?",
+      "How are AI decisions traceable?",
+      "How is operational trust maintained?"
     ],
     "ux_targets": [
       "One-click lifecycle navigation",
@@ -1174,7 +1195,11 @@
       "Mandatory training remains current",
       "Approval authority remains valid",
       "Critical roles remain filled",
-      "Separation of duties is maintained"
+      "Separation of duties is maintained",
+      "Governance effectiveness",
+      "Risk effectiveness",
+      "Compliance effectiveness",
+      "Operational effectiveness"
     ],
     "production_ownership_continuity_state": "ACTIVE",
     "production_ownership_continuity_assurance": {
@@ -1994,7 +2019,102 @@
       ],
       "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
       "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
-    }
+    },
+    "governance_framework_mapping_console_state": "ACTIVE",
+    "framework_module_created": false,
+    "governance_framework_mapping_console": {
+      "patch_marker": "COBITCHAIN_PLATFORM_B_GOVERNANCE_FRAMEWORK_MAPPING_CONSOLE_PATCH_V1_ACTIVE",
+      "architecture_change": false,
+      "new_module": false,
+      "capability_name": "Governance Framework Mapping Console",
+      "primary_stage": "Governance",
+      "architecture_instruction": "Do not add another framework module. Extend the existing Governance capability so multiple governance, risk, compliance, quality, and AI assurance frameworks can be mapped simultaneously.",
+      "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "core_question": "Can the organization demonstrate that governance expectations, risk controls, compliance obligations, human oversight, evidence, monitoring, and operational trust are operating across multiple frameworks at the same time?",
+      "ai_governance_framework_mapping": [
+        "ISO/IEC 42001",
+        "NIST AI RMF",
+        "EU AI Act",
+        "FDA CSA",
+        "GAMP 5 Second Edition",
+        "MHRA AI Guidance",
+        "WHO AI Guidance",
+        "OECD AI Principles",
+        "Organization-specific governance policies"
+      ],
+      "governance_mapping_console_maps": [
+        "Policies",
+        "Controls",
+        "Risks",
+        "Evidence",
+        "Monitoring",
+        "Roles",
+        "Approvals",
+        "Compliance obligations"
+      ],
+      "evidence_outputs": [
+        "Governance controls operating",
+        "Risks continuously monitored",
+        "Regulatory obligations satisfied",
+        "Human oversight demonstrated",
+        "AI decisions traceable",
+        "Operational trust maintained"
+      ],
+      "continuous_assurance_evaluates": [
+        "Governance effectiveness",
+        "Risk effectiveness",
+        "Compliance effectiveness",
+        "Operational effectiveness"
+      ],
+      "operational_trust_foundational_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust.",
+      "not_enough": [
+        "Framework implementation alone",
+        "Policy existence alone",
+        "Static compliance checklist",
+        "One-time risk assessment",
+        "Unverified governance mapping"
+      ],
+      "evidence_questions": [
+        "Which governance frameworks apply?",
+        "Which policies map to each framework?",
+        "Which controls map to each framework?",
+        "Which risks map to each framework?",
+        "Which evidence supports each control?",
+        "Which monitoring activities demonstrate control operation?",
+        "Which roles own each governance obligation?",
+        "Which approvals demonstrate human accountability?",
+        "Which compliance obligations are satisfied?",
+        "Which governance controls are operating?",
+        "Which risks are continuously monitored?",
+        "Which regulatory obligations are satisfied?",
+        "How is human oversight demonstrated?",
+        "How are AI decisions traceable?",
+        "How is operational trust maintained?"
+      ],
+      "principle": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
+    },
+    "governance_frameworks": [
+      "ISO/IEC 42001",
+      "NIST AI RMF",
+      "EU AI Act",
+      "FDA CSA",
+      "GAMP 5 Second Edition",
+      "MHRA AI Guidance",
+      "WHO AI Guidance",
+      "OECD AI Principles",
+      "Organization-specific governance policies"
+    ],
+    "governance_mapping_scope": [
+      "Policies",
+      "Controls",
+      "Risks",
+      "Evidence",
+      "Monitoring",
+      "Roles",
+      "Approvals",
+      "Compliance obligations"
+    ],
+    "operational_trust_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
   },
   "enterprise_execution_assurance_capability_patch": {
     "patch_marker": "COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE",
@@ -3167,5 +3287,77 @@
     ],
     "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
     "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
-  }
+  },
+  "platform_b_governance_framework_mapping_console_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_GOVERNANCE_FRAMEWORK_MAPPING_CONSOLE_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "capability_name": "Governance Framework Mapping Console",
+    "primary_stage": "Governance",
+    "architecture_instruction": "Do not add another framework module. Extend the existing Governance capability so multiple governance, risk, compliance, quality, and AI assurance frameworks can be mapped simultaneously.",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "core_question": "Can the organization demonstrate that governance expectations, risk controls, compliance obligations, human oversight, evidence, monitoring, and operational trust are operating across multiple frameworks at the same time?",
+    "ai_governance_framework_mapping": [
+      "ISO/IEC 42001",
+      "NIST AI RMF",
+      "EU AI Act",
+      "FDA CSA",
+      "GAMP 5 Second Edition",
+      "MHRA AI Guidance",
+      "WHO AI Guidance",
+      "OECD AI Principles",
+      "Organization-specific governance policies"
+    ],
+    "governance_mapping_console_maps": [
+      "Policies",
+      "Controls",
+      "Risks",
+      "Evidence",
+      "Monitoring",
+      "Roles",
+      "Approvals",
+      "Compliance obligations"
+    ],
+    "evidence_outputs": [
+      "Governance controls operating",
+      "Risks continuously monitored",
+      "Regulatory obligations satisfied",
+      "Human oversight demonstrated",
+      "AI decisions traceable",
+      "Operational trust maintained"
+    ],
+    "continuous_assurance_evaluates": [
+      "Governance effectiveness",
+      "Risk effectiveness",
+      "Compliance effectiveness",
+      "Operational effectiveness"
+    ],
+    "operational_trust_foundational_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust.",
+    "not_enough": [
+      "Framework implementation alone",
+      "Policy existence alone",
+      "Static compliance checklist",
+      "One-time risk assessment",
+      "Unverified governance mapping"
+    ],
+    "evidence_questions": [
+      "Which governance frameworks apply?",
+      "Which policies map to each framework?",
+      "Which controls map to each framework?",
+      "Which risks map to each framework?",
+      "Which evidence supports each control?",
+      "Which monitoring activities demonstrate control operation?",
+      "Which roles own each governance obligation?",
+      "Which approvals demonstrate human accountability?",
+      "Which compliance obligations are satisfied?",
+      "Which governance controls are operating?",
+      "Which risks are continuously monitored?",
+      "Which regulatory obligations are satisfied?",
+      "How is human oversight demonstrated?",
+      "How are AI decisions traceable?",
+      "How is operational trust maintained?"
+    ],
+    "principle": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
+  },
+  "platform_b_governance_foundational_statement": "Governance defines expectations. Risk Management identifies uncertainty. Compliance satisfies regulations. Assurance continuously demonstrates operational trust."
 }
