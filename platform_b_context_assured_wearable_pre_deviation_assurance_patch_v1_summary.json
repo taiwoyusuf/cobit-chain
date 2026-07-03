@@ -1,0 +1,185 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_CONTEXT_ASSURED_WEARABLE_PRE_DEVIATION_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "Context-Assured Wearable Endpoint as a cross-cutting Platform B capability for Pre-Deviation Assurance",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Add Context-Assured Wearable Endpoint for Pre-Deviation Assurance as a cross-cutting capability inside the existing Platform B lifecycle.",
+  "cross_cutting_capability": "Context-Assured Wearable Endpoint for Pre-Deviation Assurance",
+  "wearable_support_modes": [
+    "Deviation Intercept Mode",
+    "Context Proof",
+    "Wrong-Action Prevention",
+    "CAPA-at-the-Source Evidence Capture",
+    "Human Oversight Replay",
+    "Weak-Signal Learning",
+    "Evidence Integrity Lock",
+    "Assurance Overlay"
+  ],
+  "discovery_extension": [
+    "Wearable device ID",
+    "Operator identity",
+    "Operator role",
+    "Approved task",
+    "SOP/work instruction",
+    "Equipment ID",
+    "Batch/work order/patient/dose context where applicable",
+    "Location/room",
+    "Required evidence",
+    "Human approval requirement",
+    "Risk history for that task",
+    "Prior deviations linked to the same step, equipment, process, or operator workflow"
+  ],
+  "visibility_extension": [
+    "Current operator context",
+    "Equipment match status",
+    "SOP step status",
+    "Authorization status",
+    "Deviation risk level",
+    "Evidence completeness",
+    "Approval requirement",
+    "Active AI recommendation",
+    "Wearable trust state",
+    "Weak-signal alerts",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "Where wearables are allowed",
+    "What the wearable may capture",
+    "What the wearable must not capture",
+    "Who may use the wearable",
+    "What steps require confirmation",
+    "What actions require escalation",
+    "When AI recommendations require human approval",
+    "When wearable evidence is required",
+    "How wearable evidence is reviewed",
+    "How privacy, security, and data integrity are protected"
+  ],
+  "operationalization_extension": [
+    "Identity check",
+    "Location check",
+    "Equipment check",
+    "SOP step check",
+    "Batch/context check",
+    "Authorization check",
+    "Evidence requirement check",
+    "AI recommendation validation",
+    "Stop / verify / escalate rules",
+    "Wrong-action warning",
+    "Red/yellow/green assurance overlay"
+  ],
+  "manufacturing_monitoring_extension": [
+    "Repeated wrong-equipment approach",
+    "Skipped confirmation",
+    "Repeated manual override",
+    "Repeated evidence gap",
+    "Operator hesitation pattern",
+    "Alarm acknowledgement pattern",
+    "SOP step confusion",
+    "Late escalation",
+    "Recurring near-miss pattern",
+    "Context mismatch before action"
+  ],
+  "evidence_extension": [
+    "What the operator saw",
+    "What instruction was displayed",
+    "What AI recommended",
+    "What system context was active",
+    "What the operator confirmed",
+    "What was rejected",
+    "What was escalated",
+    "What evidence was collected",
+    "Timestamp",
+    "Location",
+    "Equipment/process context",
+    "Reviewer approval",
+    "Deviation-prevention action"
+  ],
+  "continuous_assurance_extension": [
+    "Pre-deviation signals",
+    "Wrong context",
+    "Stale instruction",
+    "Unauthorized action",
+    "Missing evidence",
+    "Approval bypass",
+    "Repeated near-miss pattern",
+    "Ineffective CAPA recurrence",
+    "Evidence weakness",
+    "Wearable misuse",
+    "Degraded operational trust"
+  ],
+  "operational_trust_question": "Can this human-AI-assisted action be trusted right now, based on the operator, context, equipment, instruction, authorization, evidence, and risk state?",
+  "platform_principle": "Platform B uses Context-Assured Wearable Endpoint to intercept pre-deviation risk at the point of action by binding operator identity, equipment context, SOP step, authorization, AI recommendation, evidence capture, and operational trust state.",
+  "capability_profiles": {
+    "Deviation Intercept Mode": [
+      "Pre-deviation signal detected at point of action",
+      "Wrong context detected before execution",
+      "High-risk action paused",
+      "Stop / verify / escalate rule applied",
+      "Deviation-prevention action captured"
+    ],
+    "Context Proof": [
+      "Operator identity confirmed",
+      "Operator role confirmed",
+      "Location/room confirmed",
+      "Equipment ID confirmed",
+      "Batch/work order/patient/dose context confirmed",
+      "SOP/work instruction confirmed"
+    ],
+    "Wrong-Action Prevention": [
+      "Wrong-equipment approach warning",
+      "Wrong-step warning",
+      "Unauthorized action block",
+      "Stale instruction block",
+      "Context mismatch warning",
+      "Red/yellow/green assurance overlay"
+    ],
+    "CAPA-at-the-Source Evidence Capture": [
+      "CAPA-related evidence captured where work occurs",
+      "Operator confirmation captured",
+      "Rejected alternative captured",
+      "Escalation captured",
+      "Preventive intervention evidence captured",
+      "Reviewer approval linked"
+    ],
+    "Human Oversight Replay": [
+      "What the operator saw",
+      "What instruction was displayed",
+      "What AI recommended",
+      "What the operator confirmed",
+      "What was rejected",
+      "What was escalated",
+      "Reviewer replay evidence"
+    ],
+    "Weak-Signal Learning": [
+      "Operator hesitation pattern",
+      "Repeated manual override",
+      "Skipped confirmation",
+      "Repeated evidence gap",
+      "Alarm acknowledgement pattern",
+      "SOP step confusion",
+      "Near-miss recurrence pattern"
+    ],
+    "Evidence Integrity Lock": [
+      "Evidence source locked",
+      "Timestamp locked",
+      "Location locked",
+      "Equipment/process context locked",
+      "Reviewer approval locked",
+      "Evidence completeness checked",
+      "Tamper risk reduced"
+    ],
+    "Assurance Overlay": [
+      "Green state: trusted context",
+      "Yellow state: verify before action",
+      "Red state: stop and escalate",
+      "Operational Trust Score displayed",
+      "Approval requirement displayed",
+      "Evidence completeness displayed",
+      "Deviation risk displayed"
+    ]
+  }
+}
