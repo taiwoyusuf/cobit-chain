@@ -1,0 +1,184 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_AI_RMF_TO_ASSURANCE_EVIDENCE_BRIDGE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "AI RMF-to-Assurance Evidence Bridge as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Keep the lifecycle locked as Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust. Add AI RMF-to-Assurance Evidence Bridge, NIST AI RMF Crosswalk, Trustworthiness Evidence Graph, TEVV Evidence Register, Current-to-Target AI Trust Profile, AI Actor Accountability Map, Residual Risk Evidence Assurance, and AI RMF Profile Gap Dashboard as cross-cutting capabilities.",
+  "cross_cutting_capabilities": [
+    "AI RMF-to-Assurance Evidence Bridge",
+    "NIST AI RMF Crosswalk",
+    "Trustworthiness Evidence Graph",
+    "TEVV Evidence Register",
+    "Current-to-Target AI Trust Profile",
+    "AI Actor Accountability Map",
+    "Residual Risk Evidence Assurance",
+    "AI RMF Profile Gap Dashboard"
+  ],
+  "discovery_extension": [
+    "AI system",
+    "Intended use",
+    "Context of use",
+    "AI actor roles",
+    "Business owner",
+    "Risk owner",
+    "Model owner",
+    "Data owner",
+    "Deployer/operator",
+    "Third-party components",
+    "Applicable NIST AI RMF categories",
+    "Trustworthiness characteristics",
+    "Residual risk areas",
+    "TEVV requirements"
+  ],
+  "visibility_extension": [
+    "NIST AI RMF crosswalk",
+    "Govern/Map/Measure/Manage status",
+    "Trustworthiness evidence status",
+    "Current vs target trust profile",
+    "AI actor accountability map",
+    "TEVV evidence completeness",
+    "Residual risk register",
+    "Gaps in measurement",
+    "Third-party risk visibility",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "Risk tolerance",
+    "AI governance roles",
+    "AI RMF alignment rules",
+    "Trustworthy AI requirements",
+    "TEVV expectations",
+    "Accountability requirements",
+    "Human oversight rules",
+    "Risk acceptance rules",
+    "Residual risk review cadence",
+    "Current/target profile requirements"
+  ],
+  "operationalization_extension": [
+    "AI registration before use",
+    "Context mapping before deployment",
+    "TEVV before production",
+    "Human oversight assignment",
+    "Control implementation",
+    "Risk treatment workflow",
+    "Go/no-go decision pathway",
+    "Residual risk approval",
+    "AI RMF evidence capture"
+  ],
+  "manufacturing_monitoring_extension": [
+    "AI use in regulated workflows",
+    "Performance drift",
+    "Safety risk",
+    "Security/resilience events",
+    "Human oversight activity",
+    "Residual risk changes",
+    "Third-party component risk",
+    "AI actor responsibility gaps",
+    "Real-world risk emergence"
+  ],
+  "evidence_extension": [
+    "AI RMF category mapping",
+    "Context assessment",
+    "Risk classification",
+    "Trustworthiness assessment",
+    "TEVV records",
+    "Human oversight evidence",
+    "Risk treatment evidence",
+    "Go/no-go decision",
+    "Residual risk acceptance",
+    "Monitoring evidence",
+    "Review and reassessment records"
+  ],
+  "continuous_assurance_extension": [
+    "RMF control gaps",
+    "Stale risk assessments",
+    "Missing TEVV evidence",
+    "Trustworthiness degradation",
+    "Residual risk increase",
+    "Third-party risk changes",
+    "Accountability gaps",
+    "Unmanaged emergent risks",
+    "Monitoring failures",
+    "Operational trust decline"
+  ],
+  "operational_trust_question": "Can this AI system demonstrate that NIST-aligned governance, mapping, measurement, management, TEVV, accountability, and residual-risk controls are functioning right now?",
+  "platform_principle": "Platform B converts AI risk management alignment into operational assurance evidence by mapping governance, context, measurement, management, TEVV, accountability, trustworthiness, third-party risk, and residual-risk controls into evidence that can be monitored, defended, and trusted in operation.",
+  "capability_profiles": {
+    "AI RMF-to-Assurance Evidence Bridge": [
+      "AI system",
+      "Intended use",
+      "Context of use",
+      "AI RMF evidence capture",
+      "AI RMF category mapping",
+      "Control implementation",
+      "Operational trust decline detection"
+    ],
+    "NIST AI RMF Crosswalk": [
+      "Applicable NIST AI RMF categories",
+      "Govern/Map/Measure/Manage status",
+      "AI RMF alignment rules",
+      "Risk tolerance",
+      "Risk treatment workflow",
+      "RMF control gap detection",
+      "Gaps in measurement"
+    ],
+    "Trustworthiness Evidence Graph": [
+      "Trustworthiness characteristics",
+      "Trustworthiness evidence status",
+      "Trustworthy AI requirements",
+      "Trustworthiness assessment",
+      "Trustworthiness degradation detection",
+      "Safety risk monitoring",
+      "Security/resilience event monitoring"
+    ],
+    "TEVV Evidence Register": [
+      "TEVV requirements",
+      "TEVV expectations",
+      "TEVV before production",
+      "TEVV records",
+      "TEVV evidence completeness",
+      "Missing TEVV evidence detection",
+      "Review and reassessment records"
+    ],
+    "Current-to-Target AI Trust Profile": [
+      "Current vs target trust profile",
+      "Current/target profile requirements",
+      "Risk classification",
+      "Context assessment",
+      "Go/no-go decision pathway",
+      "Go/no-go decision",
+      "Stale risk assessment detection"
+    ],
+    "AI Actor Accountability Map": [
+      "AI actor roles",
+      "Business owner",
+      "Risk owner",
+      "Model owner",
+      "Data owner",
+      "Deployer/operator",
+      "AI actor responsibility gap detection"
+    ],
+    "Residual Risk Evidence Assurance": [
+      "Residual risk areas",
+      "Residual risk register",
+      "Risk acceptance rules",
+      "Residual risk review cadence",
+      "Residual risk approval",
+      "Residual risk acceptance",
+      "Residual risk increase detection"
+    ],
+    "AI RMF Profile Gap Dashboard": [
+      "Third-party components",
+      "Third-party risk visibility",
+      "Third-party component risk monitoring",
+      "Third-party risk change detection",
+      "Unmanaged emergent risk detection",
+      "Monitoring failure detection",
+      "Operational Trust Score"
+    ]
+  }
+}
