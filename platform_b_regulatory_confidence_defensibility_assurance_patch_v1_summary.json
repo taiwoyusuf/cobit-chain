@@ -1,0 +1,212 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_REGULATORY_CONFIDENCE_DEFENSIBILITY_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "Regulatory Confidence and Defensibility Assurance as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Keep the lifecycle locked as Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust. Add Regulatory Confidence Assurance, Regulatory Currency Assurance, Defensibility Decay Monitoring, Sectoral-Law Interoperability Assurance, Safety-Function Boundary Assurance, Agentic AI Regulatory Classification Assurance, Real-World Testing Assurance, AI Office Enforcement Readiness, Heterogeneous AI Infrastructure Assurance, and Identity Journey Assurance as cross-cutting capabilities.",
+  "cross_cutting_capabilities": [
+    "Regulatory Confidence Assurance",
+    "Regulatory Currency Assurance",
+    "Defensibility Decay Monitoring",
+    "Sectoral-Law Interoperability Assurance",
+    "Safety-Function Boundary Assurance",
+    "Agentic AI Regulatory Classification Assurance",
+    "Real-World Testing Assurance",
+    "AI Office Enforcement Readiness",
+    "Heterogeneous AI Infrastructure Assurance",
+    "Identity Journey Assurance"
+  ],
+  "discovery_extension": [
+    "AI system/use case",
+    "Intended use",
+    "Regulatory context",
+    "Sectoral law applicability",
+    "Model confidence metrics",
+    "Validation status",
+    "Applicable guidance/SOP/law",
+    "Safety-function status",
+    "Agentic AI classification",
+    "Runtime/infrastructure environment",
+    "Identity/access dependency",
+    "Real-world testing plan",
+    "Post-market monitoring requirement",
+    "Regulatory owner",
+    "System owner",
+    "Evidence owner"
+  ],
+  "visibility_extension": [
+    "AI confidence score",
+    "Regulatory confidence score",
+    "Validation status",
+    "Reproducibility status",
+    "Audit trail completeness",
+    "Regulatory currency status",
+    "Stale guidance risk",
+    "Safety-function boundary",
+    "Agentic classification",
+    "Sectoral-law overlap map",
+    "Real-world testing status",
+    "Enforcement-readiness status",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "Intended-use boundaries",
+    "Validation requirements",
+    "Regulatory currency requirements",
+    "Evidence requirements",
+    "Sectoral-law mapping rules",
+    "Safety-function classification rules",
+    "Agentic AI classification rules",
+    "Real-world testing approval rules",
+    "AI Office / regulator response process",
+    "Infrastructure and identity assurance rules"
+  ],
+  "operationalization_extension": [
+    "No regulated use without validation pathway",
+    "No AI output use if source/guidance is stale",
+    "No high-risk use without sector-law mapping",
+    "No safety-function use without safety-boundary assessment",
+    "No agentic AI use without autonomy classification",
+    "No real-world testing without approved plan",
+    "No identity-based AI workflow without verified identity context",
+    "Evidence capture before regulated output is used"
+  ],
+  "manufacturing_monitoring_extension": [
+    "Regulated AI outputs",
+    "Model/provider changes",
+    "Guidance/SOP/regulation changes",
+    "Safety-function boundary changes",
+    "Real-world testing events",
+    "AI-assisted operational decisions",
+    "Infrastructure changes",
+    "Identity context changes",
+    "Post-market monitoring signals",
+    "Defensibility decay"
+  ],
+  "evidence_extension": [
+    "Model confidence evidence",
+    "Validation evidence",
+    "Source/guidance version",
+    "Regulatory currency check",
+    "Intended-use rationale",
+    "Sectoral-law mapping",
+    "Safety-function assessment",
+    "Agentic AI classification",
+    "Real-world testing plan and results",
+    "Post-market monitoring evidence",
+    "Identity/access evidence",
+    "Regulator-response package"
+  ],
+  "continuous_assurance_extension": [
+    "Stale regulatory knowledge",
+    "Expired validation assumptions",
+    "Model/data/use-case drift",
+    "Safety-function reclassification risk",
+    "Agentic authority creep",
+    "Incomplete real-world testing evidence",
+    "Missing post-market monitoring",
+    "Infrastructure/runtime drift",
+    "Identity signal weakness",
+    "Enforcement-readiness gaps",
+    "Operational trust decline"
+  ],
+  "operational_trust_question": "Can this AI system or output be trusted, reproduced, defended, and kept current within its regulatory, sectoral, safety, identity, infrastructure, and evidence boundaries right now?",
+  "platform_principle": "Platform B distinguishes AI confidence from regulatory confidence. AI confidence may reflect model probability, benchmark performance, or output quality; regulatory confidence requires validated intended use, current regulatory knowledge, source traceability, reproducibility, human review, governance evidence, audit readiness, and defensibility under regulatory, legal, clinical, quality, or enforcement challenge.",
+  "capability_profiles": {
+    "Regulatory Confidence Assurance": [
+      "AI confidence score",
+      "Regulatory confidence score",
+      "Model confidence evidence",
+      "Validation evidence",
+      "Intended-use rationale",
+      "Reproducibility status",
+      "Audit trail completeness",
+      "Evidence owner"
+    ],
+    "Regulatory Currency Assurance": [
+      "Applicable guidance/SOP/law",
+      "Regulatory currency status",
+      "Source/guidance version",
+      "Regulatory currency check",
+      "Stale guidance risk",
+      "Stale regulatory knowledge",
+      "No AI output use if source/guidance is stale"
+    ],
+    "Defensibility Decay Monitoring": [
+      "Defensibility decay",
+      "Expired validation assumptions",
+      "Model/data/use-case drift",
+      "Model/provider changes",
+      "Post-market monitoring signals",
+      "Operational trust decline",
+      "Regulator-response package"
+    ],
+    "Sectoral-Law Interoperability Assurance": [
+      "Regulatory context",
+      "Sectoral law applicability",
+      "Sectoral-law overlap map",
+      "Sectoral-law mapping rules",
+      "Sectoral-law mapping",
+      "No high-risk use without sector-law mapping",
+      "AI Office / regulator response process"
+    ],
+    "Safety-Function Boundary Assurance": [
+      "Safety-function status",
+      "Safety-function boundary",
+      "Safety-function classification rules",
+      "Safety-function assessment",
+      "Safety-function boundary changes",
+      "Safety-function reclassification risk",
+      "No safety-function use without safety-boundary assessment"
+    ],
+    "Agentic AI Regulatory Classification Assurance": [
+      "Agentic AI classification",
+      "Agentic classification",
+      "Agentic AI classification rules",
+      "Agentic AI classification evidence",
+      "Agentic authority creep",
+      "No agentic AI use without autonomy classification",
+      "AI-assisted operational decisions"
+    ],
+    "Real-World Testing Assurance": [
+      "Real-world testing plan",
+      "Real-world testing status",
+      "Real-world testing approval rules",
+      "Real-world testing events",
+      "Real-world testing plan and results",
+      "Incomplete real-world testing evidence",
+      "No real-world testing without approved plan"
+    ],
+    "AI Office Enforcement Readiness": [
+      "Enforcement-readiness status",
+      "Enforcement-readiness gaps",
+      "AI Office / regulator response process",
+      "Regulator-response package",
+      "Regulatory owner",
+      "Audit trail completeness",
+      "Post-market monitoring evidence"
+    ],
+    "Heterogeneous AI Infrastructure Assurance": [
+      "Runtime/infrastructure environment",
+      "Infrastructure and identity assurance rules",
+      "Infrastructure changes",
+      "Infrastructure/runtime drift",
+      "Runtime environment evidence",
+      "System owner",
+      "No regulated use without validation pathway"
+    ],
+    "Identity Journey Assurance": [
+      "Identity/access dependency",
+      "Identity context changes",
+      "Identity signal weakness",
+      "Identity/access evidence",
+      "No identity-based AI workflow without verified identity context",
+      "Infrastructure and identity assurance rules",
+      "Evidence capture before regulated output is used"
+    ]
+  }
+}
