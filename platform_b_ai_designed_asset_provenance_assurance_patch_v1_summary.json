@@ -1,0 +1,178 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_AI_DESIGNED_ASSET_PROVENANCE_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "AI-Designed Asset Provenance Assurance as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Keep the lifecycle locked as Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust. Add AI-Designed Asset Provenance Assurance, Discovery-to-Regulatory Evidence Continuity, Partner AI Due Diligence Passport, Discovery Method Reproducibility Capsule, Cross-Border Evidence Equivalence, AI-Origin Traceability, and AI-Designed Asset Trust Passport as cross-cutting capabilities.",
+  "cross_cutting_capabilities": [
+    "AI-Designed Asset Provenance Assurance",
+    "Discovery-to-Regulatory Evidence Continuity",
+    "Partner AI Due Diligence Passport",
+    "Discovery Method Reproducibility Capsule",
+    "Cross-Border Evidence Equivalence",
+    "AI-Origin Traceability",
+    "AI-Designed Asset Trust Passport"
+  ],
+  "discovery_extension": [
+    "AI-designed asset/candidate",
+    "Target",
+    "Molecule/sequence/formulation",
+    "AI platform used",
+    "Partner organization",
+    "Jurisdiction of origin",
+    "Training/input data sources",
+    "Model/platform version",
+    "Assay/experimental data",
+    "Human scientific reviewer",
+    "CMC relevance",
+    "Clinical relevance",
+    "Regulatory filing relevance",
+    "IP/data-rights constraints",
+    "Evidence owner"
+  ],
+  "visibility_extension": [
+    "AI-origin status",
+    "Partner provenance status",
+    "Data provenance completeness",
+    "Model/method traceability",
+    "Discovery reproducibility status",
+    "Cross-border evidence risk",
+    "CMC impact",
+    "Regulatory risk",
+    "Scientific confidence score",
+    "Human review status",
+    "AI-designed asset trust passport",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "Acceptable AI-discovery use",
+    "Partner due-diligence requirements",
+    "Evidence requirements for AI-designed assets",
+    "Source-data requirements",
+    "Model/method documentation expectations",
+    "Human scientific review rules",
+    "Cross-border evidence review rules",
+    "IP/data-rights governance",
+    "Regulatory filing readiness criteria",
+    "Escalation rules for weak provenance"
+  ],
+  "operationalization_extension": [
+    "No asset advancement without provenance review",
+    "No regulatory use without source/method evidence",
+    "Partner AI due-diligence workflow",
+    "Reproducibility capsule creation",
+    "Human scientific approval",
+    "Cross-border evidence review",
+    "CMC/regulatory impact assessment",
+    "Evidence package generation before submission use"
+  ],
+  "manufacturing_monitoring_extension": [
+    "AI-origin assets entering development",
+    "CMC process assumptions derived from AI discovery",
+    "Method changes",
+    "Partner evidence updates",
+    "Assay reproducibility issues",
+    "Discovery-to-CMC translation risks",
+    "Cross-border evidence gaps",
+    "Regulatory-readiness issues"
+  ],
+  "evidence_extension": [
+    "AI platform used",
+    "Partner documentation",
+    "Model/method version",
+    "Data provenance",
+    "Target rationale",
+    "Ranking/selection criteria",
+    "Optimization history",
+    "Assay evidence",
+    "Rejected alternatives",
+    "Uncertainty and limitations",
+    "Human scientific review",
+    "CMC/regulatory rationale",
+    "Cross-border evidence assessment",
+    "Final advancement decision"
+  ],
+  "continuous_assurance_extension": [
+    "Weak provenance",
+    "Missing partner evidence",
+    "Model/method changes",
+    "Unverified discovery claims",
+    "Assay mismatch",
+    "CMC translation risk",
+    "Regulatory evidence gaps",
+    "IP/data-rights concerns",
+    "Cross-border evidence weakness",
+    "Trust degradation before filing"
+  ],
+  "operational_trust_question": "Can this AI-designed asset be scientifically trusted, regulatorily defended, and traced from discovery decision to regulatory evidence right now?",
+  "platform_principle": "Platform B treats AI-designed assets as provenance-sensitive regulated assets whose discovery method, partner evidence, source data, reproducibility, CMC translation, cross-border equivalence, IP/data rights, and regulatory evidence continuity must remain traceable from discovery decision to filing readiness.",
+  "capability_profiles": {
+    "AI-Designed Asset Provenance Assurance": [
+      "AI-designed asset/candidate",
+      "AI-origin status",
+      "AI platform used",
+      "Training/input data sources",
+      "Model/platform version",
+      "Partner provenance status",
+      "Weak provenance detection"
+    ],
+    "Discovery-to-Regulatory Evidence Continuity": [
+      "Discovery decision",
+      "CMC relevance",
+      "Clinical relevance",
+      "Regulatory filing relevance",
+      "CMC/regulatory rationale",
+      "Evidence package generation before submission use",
+      "Discovery-to-CMC translation risk monitoring"
+    ],
+    "Partner AI Due Diligence Passport": [
+      "Partner organization",
+      "Jurisdiction of origin",
+      "Partner documentation",
+      "Partner due-diligence requirements",
+      "Partner AI due-diligence workflow",
+      "Missing partner evidence detection",
+      "Partner evidence update monitoring"
+    ],
+    "Discovery Method Reproducibility Capsule": [
+      "Model/method traceability",
+      "Discovery reproducibility status",
+      "Assay/experimental data",
+      "Assay evidence",
+      "Rejected alternatives",
+      "Uncertainty and limitations",
+      "Assay mismatch detection"
+    ],
+    "Cross-Border Evidence Equivalence": [
+      "Jurisdiction of origin",
+      "Cross-border evidence risk",
+      "Cross-border evidence review rules",
+      "Cross-border evidence assessment",
+      "Cross-border evidence gaps",
+      "Cross-border evidence weakness detection",
+      "Regulatory evidence equivalence state"
+    ],
+    "AI-Origin Traceability": [
+      "AI-origin status",
+      "Target",
+      "Molecule/sequence/formulation",
+      "Target rationale",
+      "Ranking/selection criteria",
+      "Optimization history",
+      "Unverified discovery claim detection"
+    ],
+    "AI-Designed Asset Trust Passport": [
+      "Scientific confidence score",
+      "Human scientific reviewer",
+      "Human scientific approval",
+      "Data provenance completeness",
+      "Regulatory risk",
+      "IP/data-rights constraints",
+      "Final advancement decision"
+    ]
+  }
+}
