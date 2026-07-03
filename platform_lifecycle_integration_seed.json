@@ -559,7 +559,12 @@
       "Visualize active permissions, tool permissions, retrieval permissions, approval points, and runtime access chain.",
       "Extend Retrieval Assurance with permission-aware retrieval, security trimming, authorization filtering, and access validation.",
       "Extend Tool Assurance with tool authorization, API permissions, action authorization, allowed operations, and execution scope.",
-      "Generate execution evidence for identity, permissions, retrieved and filtered records, tools, approvals, credentials, least privilege, and compliance."
+      "Generate execution evidence for identity, permissions, retrieved and filtered records, tools, approvals, credentials, least privilege, and compliance.",
+      "Discover AI systems used to generate inspection responses, regulatory submissions, CMC documentation, validation documentation, CAPAs, deviations, change controls, and quality records.",
+      "Show model version, retained prompt history, human reviewer, review status, approval history, supporting evidence, and source documents.",
+      "Extend AI Governance with Regulatory AI Governance for accountability, regulatory ownership, scientific review, GxP compliance, AI use policy, and disclosure requirements.",
+      "Extend Evidence Assurance to evaluate provenance, scientific verification, human verification, source traceability, citation integrity, ALCOA+, completeness, and approval records.",
+      "Continuously verify regulatory evidence remains valid, current, approved, and trustworthy."
     ],
     "evidence_automation_targets": [
       "Evidence package builder",
@@ -682,7 +687,31 @@
       "Which memory or context store was used?",
       "Which approvals occurred?",
       "What evidence was generated?",
-      "Was security enforced regardless of framework?"
+      "Was security enforced regardless of framework?",
+      "Evidence provenance",
+      "Scientific verification",
+      "Human verification",
+      "Source traceability",
+      "Citation integrity",
+      "ALCOA+",
+      "Evidence completeness",
+      "Approval records",
+      "Which AI system generated the regulatory content?",
+      "Which model version generated the content?",
+      "What prompt history was retained?",
+      "Which source documents supported the content?",
+      "Which evidence supports each claim?",
+      "Was the evidence scientifically verified?",
+      "Was the content human verified?",
+      "Who reviewed the content?",
+      "What was the review status?",
+      "Who approved the content?",
+      "What approval history exists?",
+      "Are citations traceable to approved source documents?",
+      "Is the evidence ALCOA+ aligned?",
+      "Is the evidence complete?",
+      "Does the evidence remain current?",
+      "Can accountability be demonstrated?"
     ],
     "ux_targets": [
       "One-click lifecycle navigation",
@@ -1109,7 +1138,12 @@
       "Tool calls",
       "Approvals",
       "Runtime",
-      "Security"
+      "Security",
+      "AI-generated regulatory content remains valid",
+      "Supporting evidence has not changed",
+      "Source documents remain current",
+      "Human approvals remain complete",
+      "Regulatory evidence remains trustworthy"
     ],
     "production_ownership_continuity_state": "ACTIVE",
     "production_ownership_continuity_assurance": {
@@ -1753,7 +1787,97 @@
       "Milvus",
       "Chroma",
       "Cosmos DB Vector Search"
-    ]
+    ],
+    "regulatory_ai_evidence_assurance_state": "ACTIVE",
+    "regulatory_ai_evidence_assurance": {
+      "patch_marker": "COBITCHAIN_PLATFORM_B_REGULATORY_AI_EVIDENCE_ASSURANCE_PATCH_V1_ACTIVE",
+      "architecture_change": false,
+      "new_module": false,
+      "capability_name": "Regulatory AI Evidence Assurance",
+      "architecture_instruction": "Do not create a new module for AI-generated regulatory content. Extend existing Discovery, Visibility, AI Governance, Evidence Assurance, Continuous Assurance, and Operational Trust capabilities.",
+      "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "core_question": "Can this AI-generated regulatory evidence be operationally trusted?",
+      "not_the_primary_question": "Did AI generate this?",
+      "platform_statement": "Platform B does not only identify AI-generated regulatory content. Platform B continuously assures whether AI-generated inspection responses, regulatory submissions, CMC documentation, validation documentation, CAPAs, deviations, change controls, and quality records are scientifically verified, human-reviewed, source-traceable, ALCOA+ aligned, approval-supported, and operationally trustworthy.",
+      "discovery": [
+        "AI systems used to generate inspection responses",
+        "AI systems used to generate regulatory submissions",
+        "AI systems used to generate CMC documentation",
+        "AI systems used to generate validation documentation",
+        "AI systems used to generate CAPAs",
+        "AI systems used to generate deviations",
+        "AI systems used to generate change controls",
+        "AI systems used to generate quality records"
+      ],
+      "visibility": [
+        "Which AI generated content",
+        "Model version",
+        "Prompt history where retained",
+        "Human reviewer",
+        "Review status",
+        "Approval history",
+        "Supporting evidence",
+        "Source documents"
+      ],
+      "governance_extension": {
+        "name": "Regulatory AI Governance",
+        "evaluates": [
+          "Human accountability",
+          "Regulatory ownership",
+          "Scientific review",
+          "GxP compliance",
+          "AI use policy",
+          "AI disclosure requirements"
+        ]
+      },
+      "evidence_assurance_extension": [
+        "Evidence provenance",
+        "Scientific verification",
+        "Human verification",
+        "Source traceability",
+        "Citation integrity",
+        "ALCOA+",
+        "Evidence completeness",
+        "Approval records"
+      ],
+      "continuous_assurance": [
+        "AI-generated regulatory content remains valid",
+        "Supporting evidence has not changed",
+        "Source documents remain current",
+        "Human approvals remain complete",
+        "Regulatory evidence remains trustworthy"
+      ],
+      "execution_evidence_questions": [
+        "Which AI system generated the regulatory content?",
+        "Which model version generated the content?",
+        "What prompt history was retained?",
+        "Which source documents supported the content?",
+        "Which evidence supports each claim?",
+        "Was the evidence scientifically verified?",
+        "Was the content human verified?",
+        "Who reviewed the content?",
+        "What was the review status?",
+        "Who approved the content?",
+        "What approval history exists?",
+        "Are citations traceable to approved source documents?",
+        "Is the evidence ALCOA+ aligned?",
+        "Is the evidence complete?",
+        "Does the evidence remain current?",
+        "Can accountability be demonstrated?"
+      ],
+      "regulated_content_types": [
+        "Inspection responses",
+        "Regulatory submissions",
+        "CMC documentation",
+        "Validation documentation",
+        "CAPAs",
+        "Deviations",
+        "Change Controls",
+        "Quality records"
+      ],
+      "operational_trust_statement": "Operational Trust should not stop at identifying AI-generated content. Operational Trust should determine whether AI-generated regulatory evidence is scientifically verified, human-reviewed, source-traceable, approval-supported, ALCOA+ aligned, current, complete, and trustworthy.",
+      "principle": "AI-generated evidence does not reduce organizational accountability. Platform B extends Evidence Assurance to continuously evaluate scientific validity, evidence lineage, human verification, traceability, approval completeness, and operational trust before and after regulatory use."
+    }
   },
   "enterprise_execution_assurance_capability_patch": {
     "patch_marker": "COBITCHAIN_ENTERPRISE_EXECUTION_ASSURANCE_CAPABILITY_PATCH_V1_ACTIVE",
@@ -2753,5 +2877,94 @@
     ],
     "operational_trust_statement": "Operational Trust is not based on the framework brand. It is based on demonstrated orchestration integrity, retrieval trust, memory governance, tool-call control, approval evidence, runtime security, and continuous assurance.",
     "principle": "Framework choice does not create trust. Platform B operationalizes diverse AI technologies, then assures orchestration, retrieval, memory, tools, approvals, runtime, security, evidence, and operational trust consistently across them."
+  },
+  "platform_b_regulatory_ai_evidence_assurance_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_REGULATORY_AI_EVIDENCE_ASSURANCE_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "capability_name": "Regulatory AI Evidence Assurance",
+    "architecture_instruction": "Do not create a new module for AI-generated regulatory content. Extend existing Discovery, Visibility, AI Governance, Evidence Assurance, Continuous Assurance, and Operational Trust capabilities.",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "core_question": "Can this AI-generated regulatory evidence be operationally trusted?",
+    "not_the_primary_question": "Did AI generate this?",
+    "platform_statement": "Platform B does not only identify AI-generated regulatory content. Platform B continuously assures whether AI-generated inspection responses, regulatory submissions, CMC documentation, validation documentation, CAPAs, deviations, change controls, and quality records are scientifically verified, human-reviewed, source-traceable, ALCOA+ aligned, approval-supported, and operationally trustworthy.",
+    "discovery": [
+      "AI systems used to generate inspection responses",
+      "AI systems used to generate regulatory submissions",
+      "AI systems used to generate CMC documentation",
+      "AI systems used to generate validation documentation",
+      "AI systems used to generate CAPAs",
+      "AI systems used to generate deviations",
+      "AI systems used to generate change controls",
+      "AI systems used to generate quality records"
+    ],
+    "visibility": [
+      "Which AI generated content",
+      "Model version",
+      "Prompt history where retained",
+      "Human reviewer",
+      "Review status",
+      "Approval history",
+      "Supporting evidence",
+      "Source documents"
+    ],
+    "governance_extension": {
+      "name": "Regulatory AI Governance",
+      "evaluates": [
+        "Human accountability",
+        "Regulatory ownership",
+        "Scientific review",
+        "GxP compliance",
+        "AI use policy",
+        "AI disclosure requirements"
+      ]
+    },
+    "evidence_assurance_extension": [
+      "Evidence provenance",
+      "Scientific verification",
+      "Human verification",
+      "Source traceability",
+      "Citation integrity",
+      "ALCOA+",
+      "Evidence completeness",
+      "Approval records"
+    ],
+    "continuous_assurance": [
+      "AI-generated regulatory content remains valid",
+      "Supporting evidence has not changed",
+      "Source documents remain current",
+      "Human approvals remain complete",
+      "Regulatory evidence remains trustworthy"
+    ],
+    "execution_evidence_questions": [
+      "Which AI system generated the regulatory content?",
+      "Which model version generated the content?",
+      "What prompt history was retained?",
+      "Which source documents supported the content?",
+      "Which evidence supports each claim?",
+      "Was the evidence scientifically verified?",
+      "Was the content human verified?",
+      "Who reviewed the content?",
+      "What was the review status?",
+      "Who approved the content?",
+      "What approval history exists?",
+      "Are citations traceable to approved source documents?",
+      "Is the evidence ALCOA+ aligned?",
+      "Is the evidence complete?",
+      "Does the evidence remain current?",
+      "Can accountability be demonstrated?"
+    ],
+    "regulated_content_types": [
+      "Inspection responses",
+      "Regulatory submissions",
+      "CMC documentation",
+      "Validation documentation",
+      "CAPAs",
+      "Deviations",
+      "Change Controls",
+      "Quality records"
+    ],
+    "operational_trust_statement": "Operational Trust should not stop at identifying AI-generated content. Operational Trust should determine whether AI-generated regulatory evidence is scientifically verified, human-reviewed, source-traceable, approval-supported, ALCOA+ aligned, current, complete, and trustworthy.",
+    "principle": "AI-generated evidence does not reduce organizational accountability. Platform B extends Evidence Assurance to continuously evaluate scientific validity, evidence lineage, human verification, traceability, approval completeness, and operational trust before and after regulatory use."
   }
 }
