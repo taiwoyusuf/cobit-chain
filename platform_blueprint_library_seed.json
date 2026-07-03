@@ -466,7 +466,40 @@
         "Was silent degradation detected?",
         "Was audit completeness verified?",
         "Was ownership ambiguity resolved?",
-        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?"
+        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?",
+        "What autonomy level is active?",
+        "What is the authority boundary?",
+        "Which tool permissions are active?",
+        "What memory capability is enabled?",
+        "What human approval is required?",
+        "What is the current autonomy status?",
+        "Are active permissions still valid?",
+        "Is context fresh enough for the autonomous action?",
+        "Is memory integrity intact?",
+        "Which tools can the AI access?",
+        "What is the Operational Trust Score?",
+        "Which autonomy limits apply?",
+        "Which approval rules apply?",
+        "Which escalation rules apply?",
+        "Which stopping conditions apply?",
+        "Which recovery policies apply?",
+        "Were authority checks performed?",
+        "Were policy checks performed?",
+        "Were risk checks performed?",
+        "Were human approval gates completed?",
+        "Was runtime enforcement executed?",
+        "What did the AI perceive?",
+        "What did the AI reason?",
+        "What was the AI authorized to do?",
+        "What did the AI actually do?",
+        "Who approved the autonomous action?",
+        "Is context drift present?",
+        "Is memory drift present?",
+        "Is tool misuse present?",
+        "Was an unauthorized action attempted?",
+        "Did human oversight fail?",
+        "Is recovery evidence complete?",
+        "Can this autonomous system still be trusted right now?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AICMC-BP-DEMO-001",
@@ -599,7 +632,7 @@
         "capa_effectiveness_evaluated": true,
         "drift_monitored": true,
         "evidence_completeness_monitored": true,
-        "operational_trust_question": "Can this AI system be operationally trusted?",
+        "operational_trust_question": "Can this autonomous system still be trusted right now?",
         "ai_security_runtime_governance_assurance_state": "ACTIVE",
         "security_framework_module_created": false,
         "ai_security_governance_extended": true,
@@ -660,7 +693,42 @@
         "human_approval_gaps_tracked": true,
         "silent_degradation_tracked": true,
         "audit_completeness_tracked": true,
-        "ownership_ambiguity_tracked": true
+        "ownership_ambiguity_tracked": true,
+        "assured_autonomy_state": "ACTIVE",
+        "assured_autonomy_module_created": false,
+        "cross_cutting_capability": true,
+        "autonomy_level_tracked": true,
+        "authority_boundary_tracked": true,
+        "tool_permissions_tracked": true,
+        "memory_capability_tracked": true,
+        "human_approval_requirements_tracked": true,
+        "autonomy_status_visible": true,
+        "active_permissions_visible": true,
+        "context_freshness_visible": true,
+        "memory_integrity_visible": true,
+        "tool_access_visible": true,
+        "operational_trust_score_visible": true,
+        "autonomy_limits_governed": true,
+        "approval_rules_governed": true,
+        "escalation_rules_governed": true,
+        "stopping_conditions_governed": true,
+        "recovery_policies_governed": true,
+        "authority_checks_required": true,
+        "policy_checks_required": true,
+        "risk_checks_required": true,
+        "human_approval_gates_required": true,
+        "runtime_enforcement_required": true,
+        "ai_perception_evidence_required": true,
+        "ai_reasoning_evidence_required": true,
+        "ai_authorization_evidence_required": true,
+        "ai_action_evidence_required": true,
+        "approval_evidence_required": true,
+        "generated_evidence_required": true,
+        "context_drift_monitored": true,
+        "memory_drift_monitored": true,
+        "unauthorized_action_monitored": true,
+        "human_oversight_failure_monitored": true,
+        "recovery_evidence_monitored": true
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -1779,7 +1847,10 @@
         "Human approval requirements",
         "Multi-agent topology",
         "Failure risks",
-        "Runtime dependencies"
+        "Runtime dependencies",
+        "Autonomy level",
+        "Authority boundary",
+        "Memory capability"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -1823,7 +1894,13 @@
         "Unauthorized access",
         "Loop detection",
         "Auditability score",
-        "Human oversight coverage"
+        "Human oversight coverage",
+        "Autonomy status",
+        "Active permissions",
+        "Context freshness",
+        "Memory integrity",
+        "Tool access",
+        "Operational Trust Score"
       ],
       "governance_scope": [
         "Human accountability",
@@ -1867,7 +1944,10 @@
         "Agent coordination",
         "Stopping conditions",
         "Escalation policies",
-        "Recovery policies"
+        "Recovery policies",
+        "Autonomy limits",
+        "Approval rules",
+        "Escalation rules"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -1934,7 +2014,13 @@
         "Detect action recorded",
         "Respond action recorded",
         "Recover action recorded",
-        "Evidence generated"
+        "Evidence generated",
+        "What the AI perceived",
+        "What the AI reasoned",
+        "What the AI was authorized to do",
+        "What the AI actually did",
+        "Who approved it",
+        "What evidence was generated"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
@@ -1991,7 +2077,10 @@
         "Human approval gap trend",
         "Silent degradation signals",
         "Audit completeness score",
-        "Ownership ambiguity backlog"
+        "Ownership ambiguity backlog",
+        "Unauthorized action",
+        "Human oversight failure",
+        "Recovery evidence"
       ],
       "ai_competency_governance_assurance": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
@@ -2463,7 +2552,12 @@
         "Agent conflict prevention",
         "Missing approval prevention",
         "Silent degradation prevention",
-        "Missing audit log prevention"
+        "Missing audit log prevention",
+        "Authority checks",
+        "Policy checks",
+        "Risk checks",
+        "Human approval gates",
+        "Runtime enforcement"
       ],
       "agent_failure_module_created": false,
       "adoption_module_created": false,
@@ -2659,7 +2753,9 @@
         "Audit Completeness",
         "Runtime Stability",
         "Recovery Capability",
-        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?"
+        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?",
+        "Can this autonomous system still be trusted right now?",
+        "Operational Trust Score"
       ],
       "agent_failure_assurance_control_set": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AGENT_FAILURE_ASSURANCE_CONTROL_SET_PATCH_V1_ACTIVE",
@@ -2772,7 +2868,102 @@
         "Respond to agent failure signals during execution",
         "Recover failed or unsafe agent execution",
         "Generate execution evidence for each control operation"
-      ]
+      ],
+      "assured_autonomy_module_created": false,
+      "assured_autonomy_cross_cutting_capability": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_ASSURED_AUTONOMY_CROSS_CUTTING_CAPABILITY_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_lifecycle": false,
+        "new_module": false,
+        "capability_name": "Assured Autonomy",
+        "capability_type": "Cross-cutting capability across the existing Platform B lifecycle",
+        "architecture_instruction": "Do not create a new module and do not create a new lifecycle. Add Assured Autonomy as a cross-cutting capability across Discovery, Visibility, Governance, Operationalization, Evidence, Continuous Assurance, and Operational Trust.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "discovery_extension": [
+          "Autonomy level",
+          "Authority boundary",
+          "Tool permissions",
+          "Memory capability",
+          "Human approval requirements"
+        ],
+        "visibility_extension": [
+          "Autonomy status",
+          "Active permissions",
+          "Context freshness",
+          "Memory integrity",
+          "Tool access",
+          "Operational Trust Score"
+        ],
+        "governance_extension": [
+          "Autonomy limits",
+          "Approval rules",
+          "Escalation rules",
+          "Stopping conditions",
+          "Recovery policies"
+        ],
+        "operationalization_extension": [
+          "Authority checks",
+          "Policy checks",
+          "Risk checks",
+          "Human approval gates",
+          "Runtime enforcement"
+        ],
+        "evidence_extension": [
+          "What the AI perceived",
+          "What the AI reasoned",
+          "What the AI was authorized to do",
+          "What the AI actually did",
+          "Who approved it",
+          "What evidence was generated"
+        ],
+        "continuous_assurance_extension": [
+          "Context drift",
+          "Memory drift",
+          "Tool misuse",
+          "Unauthorized action",
+          "Human oversight failure",
+          "Recovery evidence"
+        ],
+        "operational_trust_question": "Can this autonomous system still be trusted right now?",
+        "platform_statement": "Platform B does not treat autonomy as a feature flag or a separate module. Platform B adds Assured Autonomy as a cross-cutting capability that continuously evaluates authority, permissions, memory, context, approval, execution, evidence, recovery, and operational trust across the existing lifecycle.",
+        "principle": "Autonomy is not trusted because an AI system can act. Autonomy is trusted only when its authority boundaries, permissions, memory, context, approvals, runtime actions, recovery, and evidence remain continuously assured.",
+        "evidence_questions": [
+          "What autonomy level is active?",
+          "What is the authority boundary?",
+          "Which tool permissions are active?",
+          "What memory capability is enabled?",
+          "What human approval is required?",
+          "What is the current autonomy status?",
+          "Are active permissions still valid?",
+          "Is context fresh enough for the autonomous action?",
+          "Is memory integrity intact?",
+          "Which tools can the AI access?",
+          "What is the Operational Trust Score?",
+          "Which autonomy limits apply?",
+          "Which approval rules apply?",
+          "Which escalation rules apply?",
+          "Which stopping conditions apply?",
+          "Which recovery policies apply?",
+          "Were authority checks performed?",
+          "Were policy checks performed?",
+          "Were risk checks performed?",
+          "Were human approval gates completed?",
+          "Was runtime enforcement executed?",
+          "What did the AI perceive?",
+          "What did the AI reason?",
+          "What was the AI authorized to do?",
+          "What did the AI actually do?",
+          "Who approved the autonomous action?",
+          "What evidence was generated?",
+          "Is context drift present?",
+          "Is memory drift present?",
+          "Is tool misuse present?",
+          "Was an unauthorized action attempted?",
+          "Did human oversight fail?",
+          "Is recovery evidence complete?",
+          "Can this autonomous system still be trusted right now?"
+        ]
+      }
     },
     {
       "blueprint_id": "agentic_enterprise",
@@ -3245,7 +3436,40 @@
         "Was silent degradation detected?",
         "Was audit completeness verified?",
         "Was ownership ambiguity resolved?",
-        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?"
+        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?",
+        "What autonomy level is active?",
+        "What is the authority boundary?",
+        "Which tool permissions are active?",
+        "What memory capability is enabled?",
+        "What human approval is required?",
+        "What is the current autonomy status?",
+        "Are active permissions still valid?",
+        "Is context fresh enough for the autonomous action?",
+        "Is memory integrity intact?",
+        "Which tools can the AI access?",
+        "What is the Operational Trust Score?",
+        "Which autonomy limits apply?",
+        "Which approval rules apply?",
+        "Which escalation rules apply?",
+        "Which stopping conditions apply?",
+        "Which recovery policies apply?",
+        "Were authority checks performed?",
+        "Were policy checks performed?",
+        "Were risk checks performed?",
+        "Were human approval gates completed?",
+        "Was runtime enforcement executed?",
+        "What did the AI perceive?",
+        "What did the AI reason?",
+        "What was the AI authorized to do?",
+        "What did the AI actually do?",
+        "Who approved the autonomous action?",
+        "Is context drift present?",
+        "Is memory drift present?",
+        "Is tool misuse present?",
+        "Was an unauthorized action attempted?",
+        "Did human oversight fail?",
+        "Is recovery evidence complete?",
+        "Can this autonomous system still be trusted right now?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AEBP-DEMO-001",
@@ -3378,7 +3602,7 @@
         "capa_effectiveness_evaluated": true,
         "drift_monitored": true,
         "evidence_completeness_monitored": true,
-        "operational_trust_question": "Can this AI system be operationally trusted?",
+        "operational_trust_question": "Can this autonomous system still be trusted right now?",
         "ai_security_runtime_governance_assurance_state": "ACTIVE",
         "security_framework_module_created": false,
         "ai_security_governance_extended": true,
@@ -3439,7 +3663,42 @@
         "human_approval_gaps_tracked": true,
         "silent_degradation_tracked": true,
         "audit_completeness_tracked": true,
-        "ownership_ambiguity_tracked": true
+        "ownership_ambiguity_tracked": true,
+        "assured_autonomy_state": "ACTIVE",
+        "assured_autonomy_module_created": false,
+        "cross_cutting_capability": true,
+        "autonomy_level_tracked": true,
+        "authority_boundary_tracked": true,
+        "tool_permissions_tracked": true,
+        "memory_capability_tracked": true,
+        "human_approval_requirements_tracked": true,
+        "autonomy_status_visible": true,
+        "active_permissions_visible": true,
+        "context_freshness_visible": true,
+        "memory_integrity_visible": true,
+        "tool_access_visible": true,
+        "operational_trust_score_visible": true,
+        "autonomy_limits_governed": true,
+        "approval_rules_governed": true,
+        "escalation_rules_governed": true,
+        "stopping_conditions_governed": true,
+        "recovery_policies_governed": true,
+        "authority_checks_required": true,
+        "policy_checks_required": true,
+        "risk_checks_required": true,
+        "human_approval_gates_required": true,
+        "runtime_enforcement_required": true,
+        "ai_perception_evidence_required": true,
+        "ai_reasoning_evidence_required": true,
+        "ai_authorization_evidence_required": true,
+        "ai_action_evidence_required": true,
+        "approval_evidence_required": true,
+        "generated_evidence_required": true,
+        "context_drift_monitored": true,
+        "memory_drift_monitored": true,
+        "unauthorized_action_monitored": true,
+        "human_oversight_failure_monitored": true,
+        "recovery_evidence_monitored": true
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -4558,7 +4817,10 @@
         "Human approval requirements",
         "Multi-agent topology",
         "Failure risks",
-        "Runtime dependencies"
+        "Runtime dependencies",
+        "Autonomy level",
+        "Authority boundary",
+        "Memory capability"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -4602,7 +4864,13 @@
         "Unauthorized access",
         "Loop detection",
         "Auditability score",
-        "Human oversight coverage"
+        "Human oversight coverage",
+        "Autonomy status",
+        "Active permissions",
+        "Context freshness",
+        "Memory integrity",
+        "Tool access",
+        "Operational Trust Score"
       ],
       "governance_scope": [
         "Human accountability",
@@ -4646,7 +4914,10 @@
         "Agent coordination",
         "Stopping conditions",
         "Escalation policies",
-        "Recovery policies"
+        "Recovery policies",
+        "Autonomy limits",
+        "Approval rules",
+        "Escalation rules"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -4713,7 +4984,13 @@
         "Detect action recorded",
         "Respond action recorded",
         "Recover action recorded",
-        "Evidence generated"
+        "Evidence generated",
+        "What the AI perceived",
+        "What the AI reasoned",
+        "What the AI was authorized to do",
+        "What the AI actually did",
+        "Who approved it",
+        "What evidence was generated"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
@@ -4770,7 +5047,10 @@
         "Human approval gap trend",
         "Silent degradation signals",
         "Audit completeness score",
-        "Ownership ambiguity backlog"
+        "Ownership ambiguity backlog",
+        "Unauthorized action",
+        "Human oversight failure",
+        "Recovery evidence"
       ],
       "ai_competency_governance_assurance": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
@@ -5242,7 +5522,12 @@
         "Agent conflict prevention",
         "Missing approval prevention",
         "Silent degradation prevention",
-        "Missing audit log prevention"
+        "Missing audit log prevention",
+        "Authority checks",
+        "Policy checks",
+        "Risk checks",
+        "Human approval gates",
+        "Runtime enforcement"
       ],
       "agent_failure_module_created": false,
       "adoption_module_created": false,
@@ -5438,7 +5723,9 @@
         "Audit Completeness",
         "Runtime Stability",
         "Recovery Capability",
-        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?"
+        "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?",
+        "Can this autonomous system still be trusted right now?",
+        "Operational Trust Score"
       ],
       "agent_failure_assurance_control_set": {
         "patch_marker": "COBITCHAIN_PLATFORM_B_AGENT_FAILURE_ASSURANCE_CONTROL_SET_PATCH_V1_ACTIVE",
@@ -5551,7 +5838,102 @@
         "Respond to agent failure signals during execution",
         "Recover failed or unsafe agent execution",
         "Generate execution evidence for each control operation"
-      ]
+      ],
+      "assured_autonomy_module_created": false,
+      "assured_autonomy_cross_cutting_capability": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_ASSURED_AUTONOMY_CROSS_CUTTING_CAPABILITY_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_lifecycle": false,
+        "new_module": false,
+        "capability_name": "Assured Autonomy",
+        "capability_type": "Cross-cutting capability across the existing Platform B lifecycle",
+        "architecture_instruction": "Do not create a new module and do not create a new lifecycle. Add Assured Autonomy as a cross-cutting capability across Discovery, Visibility, Governance, Operationalization, Evidence, Continuous Assurance, and Operational Trust.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "discovery_extension": [
+          "Autonomy level",
+          "Authority boundary",
+          "Tool permissions",
+          "Memory capability",
+          "Human approval requirements"
+        ],
+        "visibility_extension": [
+          "Autonomy status",
+          "Active permissions",
+          "Context freshness",
+          "Memory integrity",
+          "Tool access",
+          "Operational Trust Score"
+        ],
+        "governance_extension": [
+          "Autonomy limits",
+          "Approval rules",
+          "Escalation rules",
+          "Stopping conditions",
+          "Recovery policies"
+        ],
+        "operationalization_extension": [
+          "Authority checks",
+          "Policy checks",
+          "Risk checks",
+          "Human approval gates",
+          "Runtime enforcement"
+        ],
+        "evidence_extension": [
+          "What the AI perceived",
+          "What the AI reasoned",
+          "What the AI was authorized to do",
+          "What the AI actually did",
+          "Who approved it",
+          "What evidence was generated"
+        ],
+        "continuous_assurance_extension": [
+          "Context drift",
+          "Memory drift",
+          "Tool misuse",
+          "Unauthorized action",
+          "Human oversight failure",
+          "Recovery evidence"
+        ],
+        "operational_trust_question": "Can this autonomous system still be trusted right now?",
+        "platform_statement": "Platform B does not treat autonomy as a feature flag or a separate module. Platform B adds Assured Autonomy as a cross-cutting capability that continuously evaluates authority, permissions, memory, context, approval, execution, evidence, recovery, and operational trust across the existing lifecycle.",
+        "principle": "Autonomy is not trusted because an AI system can act. Autonomy is trusted only when its authority boundaries, permissions, memory, context, approvals, runtime actions, recovery, and evidence remain continuously assured.",
+        "evidence_questions": [
+          "What autonomy level is active?",
+          "What is the authority boundary?",
+          "Which tool permissions are active?",
+          "What memory capability is enabled?",
+          "What human approval is required?",
+          "What is the current autonomy status?",
+          "Are active permissions still valid?",
+          "Is context fresh enough for the autonomous action?",
+          "Is memory integrity intact?",
+          "Which tools can the AI access?",
+          "What is the Operational Trust Score?",
+          "Which autonomy limits apply?",
+          "Which approval rules apply?",
+          "Which escalation rules apply?",
+          "Which stopping conditions apply?",
+          "Which recovery policies apply?",
+          "Were authority checks performed?",
+          "Were policy checks performed?",
+          "Were risk checks performed?",
+          "Were human approval gates completed?",
+          "Was runtime enforcement executed?",
+          "What did the AI perceive?",
+          "What did the AI reason?",
+          "What was the AI authorized to do?",
+          "What did the AI actually do?",
+          "Who approved the autonomous action?",
+          "What evidence was generated?",
+          "Is context drift present?",
+          "Is memory drift present?",
+          "Is tool misuse present?",
+          "Was an unauthorized action attempted?",
+          "Did human oversight fail?",
+          "Is recovery evidence complete?",
+          "Can this autonomous system still be trusted right now?"
+        ]
+      }
     }
   ],
   "enterprise_execution_assurance_capability_patch": {
@@ -7340,5 +7722,100 @@
     "operational_trust_question": "Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?",
     "platform_statement": "Platform B does not add a new lifecycle for Agent Failure Assurance. Platform B adds an Agent Failure Assurance control set under Execution Assurance and Continuous Assurance so agent failure risks are managed through Prevent, Detect, Respond, Recover, and Evidence.",
     "principle": "Agent failure assurance is not a separate lifecycle. It is an execution and continuous assurance control set that proves whether agent failures can be prevented, detected, responded to, recovered from, and evidenced."
-  }
+  },
+  "platform_b_assured_autonomy_cross_cutting_capability_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_ASSURED_AUTONOMY_CROSS_CUTTING_CAPABILITY_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_lifecycle": false,
+    "new_module": false,
+    "capability_name": "Assured Autonomy",
+    "capability_type": "Cross-cutting capability across the existing Platform B lifecycle",
+    "architecture_instruction": "Do not create a new module and do not create a new lifecycle. Add Assured Autonomy as a cross-cutting capability across Discovery, Visibility, Governance, Operationalization, Evidence, Continuous Assurance, and Operational Trust.",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "discovery_extension": [
+      "Autonomy level",
+      "Authority boundary",
+      "Tool permissions",
+      "Memory capability",
+      "Human approval requirements"
+    ],
+    "visibility_extension": [
+      "Autonomy status",
+      "Active permissions",
+      "Context freshness",
+      "Memory integrity",
+      "Tool access",
+      "Operational Trust Score"
+    ],
+    "governance_extension": [
+      "Autonomy limits",
+      "Approval rules",
+      "Escalation rules",
+      "Stopping conditions",
+      "Recovery policies"
+    ],
+    "operationalization_extension": [
+      "Authority checks",
+      "Policy checks",
+      "Risk checks",
+      "Human approval gates",
+      "Runtime enforcement"
+    ],
+    "evidence_extension": [
+      "What the AI perceived",
+      "What the AI reasoned",
+      "What the AI was authorized to do",
+      "What the AI actually did",
+      "Who approved it",
+      "What evidence was generated"
+    ],
+    "continuous_assurance_extension": [
+      "Context drift",
+      "Memory drift",
+      "Tool misuse",
+      "Unauthorized action",
+      "Human oversight failure",
+      "Recovery evidence"
+    ],
+    "operational_trust_question": "Can this autonomous system still be trusted right now?",
+    "platform_statement": "Platform B does not treat autonomy as a feature flag or a separate module. Platform B adds Assured Autonomy as a cross-cutting capability that continuously evaluates authority, permissions, memory, context, approval, execution, evidence, recovery, and operational trust across the existing lifecycle.",
+    "principle": "Autonomy is not trusted because an AI system can act. Autonomy is trusted only when its authority boundaries, permissions, memory, context, approvals, runtime actions, recovery, and evidence remain continuously assured.",
+    "evidence_questions": [
+      "What autonomy level is active?",
+      "What is the authority boundary?",
+      "Which tool permissions are active?",
+      "What memory capability is enabled?",
+      "What human approval is required?",
+      "What is the current autonomy status?",
+      "Are active permissions still valid?",
+      "Is context fresh enough for the autonomous action?",
+      "Is memory integrity intact?",
+      "Which tools can the AI access?",
+      "What is the Operational Trust Score?",
+      "Which autonomy limits apply?",
+      "Which approval rules apply?",
+      "Which escalation rules apply?",
+      "Which stopping conditions apply?",
+      "Which recovery policies apply?",
+      "Were authority checks performed?",
+      "Were policy checks performed?",
+      "Were risk checks performed?",
+      "Were human approval gates completed?",
+      "Was runtime enforcement executed?",
+      "What did the AI perceive?",
+      "What did the AI reason?",
+      "What was the AI authorized to do?",
+      "What did the AI actually do?",
+      "Who approved the autonomous action?",
+      "What evidence was generated?",
+      "Is context drift present?",
+      "Is memory drift present?",
+      "Is tool misuse present?",
+      "Was an unauthorized action attempted?",
+      "Did human oversight fail?",
+      "Is recovery evidence complete?",
+      "Can this autonomous system still be trusted right now?"
+    ]
+  },
+  "platform_b_assured_autonomy_module_created": false
 }
