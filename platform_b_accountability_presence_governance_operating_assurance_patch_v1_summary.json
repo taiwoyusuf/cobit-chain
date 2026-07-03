@@ -1,0 +1,191 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_ACCOUNTABILITY_PRESENCE_GOVERNANCE_OPERATING_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "Accountability Presence and Governance Operating Assurance as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Keep the lifecycle locked as Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust. Add Accountability Presence Assurance, AI Governance Operating Function Assurance, Policy-to-Practice Assurance, Management-System-to-System Assurance, AI Vendor / Procurement Trust Assurance, Human Oversight Function Monitoring, AI Governance Resourcing Signal, and Governance Evidence Gap Detection as cross-cutting capabilities.",
+  "cross_cutting_capabilities": [
+    "Accountability Presence Assurance",
+    "AI Governance Operating Function Assurance",
+    "Policy-to-Practice Assurance",
+    "Management-System-to-System Assurance",
+    "AI Vendor / Procurement Trust Assurance",
+    "Human Oversight Function Monitoring",
+    "AI Governance Resourcing Signal",
+    "Governance Evidence Gap Detection"
+  ],
+  "discovery_extension": [
+    "AI policy",
+    "AI risk owner",
+    "Business owner",
+    "System owner",
+    "Model owner",
+    "Data owner",
+    "Human reviewer",
+    "Approver",
+    "Legal/privacy/security stakeholders",
+    "Quality Unit role where applicable",
+    "Governance forum or committee",
+    "ISO 42001 alignment",
+    "Applicable regulation",
+    "Vendor certification or assurance evidence",
+    "Operational oversight responsibilities"
+  ],
+  "visibility_extension": [
+    "AI owner presence",
+    "Reviewer activity",
+    "Approval activity",
+    "Governance coverage",
+    "Oversight gaps",
+    "Orphan AI systems",
+    "AI policy-to-control mapping",
+    "ISO 42001-to-use-case mapping",
+    "Regulatory obligation mapping",
+    "Vendor trust evidence",
+    "Governance workload",
+    "Unresolved AI risk decisions",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "AI ownership model",
+    "Governance roles and responsibilities",
+    "Escalation paths",
+    "Human oversight rules",
+    "Policy-to-control requirements",
+    "Legal/privacy/security review rules",
+    "Quality Unit review where required",
+    "Vendor assurance requirements",
+    "Procurement trust criteria",
+    "ISO 42001 management-system expectations",
+    "Evidence requirements for each AI use case"
+  ],
+  "operationalization_extension": [
+    "Named owner before deployment",
+    "Reviewer assignment before regulated use",
+    "Approval gates for high-risk use",
+    "Legal/privacy/security review where required",
+    "Quality Unit review where applicable",
+    "Vendor evidence check before adoption",
+    "Policy acknowledgment",
+    "Governance workflow activation",
+    "Escalation if oversight is missing"
+  ],
+  "manufacturing_monitoring_extension": [
+    "AI-enabled operational use",
+    "Human oversight actually performed",
+    "Delayed reviews",
+    "Missing approvals",
+    "Unresolved risks",
+    "Governance workload",
+    "Quality Unit review burden",
+    "AI policy exceptions",
+    "Repeated use outside approved scope",
+    "Shadow AI behavior"
+  ],
+  "evidence_extension": [
+    "Who owned the AI use case",
+    "Who reviewed it",
+    "Who approved it",
+    "What policy applied",
+    "What risk assessment was completed",
+    "What compliance obligation applied",
+    "What human oversight occurred",
+    "What vendor evidence was reviewed",
+    "What decision was made",
+    "What exception was accepted",
+    "What escalation occurred"
+  ],
+  "continuous_assurance_extension": [
+    "Owner absence",
+    "Reviewer inactivity",
+    "Policy not operationalized",
+    "Controls without evidence",
+    "Legal-only governance weakness",
+    "Vendor assurance gaps",
+    "Unfunded governance function risk",
+    "Oversight fatigue",
+    "Governance drift",
+    "ISO alignment without operational evidence",
+    "AI use outside approved scope"
+  ],
+  "operational_trust_question": "Is AI governance actually functioning right now, or does the organization only have governance on paper?",
+  "platform_principle": "Platform B treats AI governance as operationally real only when accountability is present, funded, competent, observable, evidenced, and continuously exercised across owners, reviewers, approvers, quality, privacy, security, legal, vendor, and governance functions.",
+  "capability_profiles": {
+    "Accountability Presence Assurance": [
+      "Named AI owner evidence",
+      "Risk owner evidence",
+      "Business owner evidence",
+      "Reviewer assignment evidence",
+      "Approval activity evidence",
+      "Escalation activity evidence",
+      "Operational accountability presence state"
+    ],
+    "AI Governance Operating Function Assurance": [
+      "Governance forum evidence",
+      "Operational oversight responsibility",
+      "Governance workflow activation",
+      "Unresolved AI risk decision",
+      "Governance workload",
+      "Governance resourcing signal",
+      "Governance function operating state"
+    ],
+    "Policy-to-Practice Assurance": [
+      "AI policy-to-control mapping",
+      "Policy acknowledgment",
+      "Control execution evidence",
+      "Evidence requirement per use case",
+      "Policy exception monitoring",
+      "Policy not operationalized detection",
+      "Control without evidence detection"
+    ],
+    "Management-System-to-System Assurance": [
+      "ISO 42001 alignment",
+      "ISO 42001-to-use-case mapping",
+      "Applicable regulation mapping",
+      "Management system expectation",
+      "Regulatory obligation mapping",
+      "Operational evidence linkage",
+      "ISO alignment without operational evidence detection"
+    ],
+    "AI Vendor / Procurement Trust Assurance": [
+      "Vendor certification evidence",
+      "Vendor assurance evidence",
+      "Vendor evidence check before adoption",
+      "Procurement trust criteria",
+      "Vendor assurance requirement",
+      "Vendor trust evidence",
+      "Vendor assurance gap detection"
+    ],
+    "Human Oversight Function Monitoring": [
+      "Human reviewer assignment",
+      "Human oversight rule",
+      "Human oversight actually performed",
+      "Reviewer activity",
+      "Delayed review detection",
+      "Reviewer inactivity detection",
+      "Oversight fatigue signal"
+    ],
+    "AI Governance Resourcing Signal": [
+      "Governance workload",
+      "Quality Unit review burden",
+      "Unresolved risk load",
+      "Delayed review load",
+      "Missing approval load",
+      "Unfunded governance function risk",
+      "Operating capacity signal"
+    ],
+    "Governance Evidence Gap Detection": [
+      "Missing owner evidence",
+      "Missing review evidence",
+      "Missing approval evidence",
+      "Missing policy-to-control evidence",
+      "Missing vendor evidence",
+      "Missing escalation evidence",
+      "Governance evidence gap alert"
+    ]
+  }
+}
