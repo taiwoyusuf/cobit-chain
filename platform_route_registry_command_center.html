@@ -168,6 +168,175 @@
 
 
 
+
+<!-- COBITCHAIN_PLATFORM_B_AGENT_FAILURE_ASSURANCE_CONTROL_SET_PATCH_V1_ACTIVE -->
+
+<style>
+.platform-b-agent-failure-control-wrap {
+    margin: 28px 0;
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: linear-gradient(135deg, rgba(245,158,11,.11), rgba(14,165,233,.08));
+}
+.platform-b-agent-failure-control-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+.platform-b-agent-failure-control-head h2 {
+    margin: 0;
+    font-size: 28px;
+}
+.platform-b-agent-failure-control-head p {
+    color: #cbd5e1;
+    line-height: 1.65;
+    max-width: 980px;
+}
+.platform-b-agent-failure-control-tag {
+    border: 1px solid rgba(251,191,36,.45);
+    color: #fde68a;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+    background: rgba(245,158,11,.10);
+}
+.platform-b-agent-failure-control-warning {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(248,113,113,.08);
+    border: 1px solid rgba(248,113,113,.18);
+    color: #fecaca;
+    line-height: 1.55;
+}
+.platform-b-agent-failure-control-principle {
+    margin: 18px 0;
+    padding: 18px;
+    border-left: 4px solid #fbbf24;
+    color: #fef3c7;
+    background: rgba(255,255,255,.055);
+    border-radius: 16px;
+    line-height: 1.65;
+    font-size: 17px;
+    font-weight: 800;
+}
+.platform-b-agent-failure-control-pattern {
+    margin: 18px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.platform-b-agent-failure-control-pattern span {
+    border: 1px solid rgba(251,191,36,.25);
+    background: rgba(245,158,11,.10);
+    color: #fde68a;
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-weight: 800;
+}
+.platform-b-agent-failure-control-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+.agent-failure-control-card {
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.045);
+    border-radius: 18px;
+    padding: 18px;
+}
+.agent-failure-control-card ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+.agent-failure-control-domain {
+    color: #fde68a;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+.platform-b-agent-failure-control-pills {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+.platform-b-agent-failure-control-pill {
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.045);
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #d8dee9;
+    font-size: 13px;
+}
+</style>
+
+<section class="platform-b-agent-failure-control-wrap">
+    <div class="platform-b-agent-failure-control-head">
+        <div>
+            <h2>Agent Failure Assurance Control Set</h2>
+            <p>
+                No new lifecycle. No new module. Platform B places Agent Failure Assurance under existing
+                Execution Assurance and Continuous Assurance so agent failures are prevented, detected,
+                responded to, recovered from, and evidenced.
+            </p>
+        </div>
+        <span class="platform-b-agent-failure-control-tag">Execution / Continuous Assurance Control Set</span>
+    </div>
+
+    <div class="platform-b-agent-failure-control-warning">
+        Do not create an Agent Failure module or new lifecycle. This is a control set inside existing Execution Assurance and Continuous Assurance.
+    </div>
+
+    <div class="platform-b-agent-failure-control-principle">
+        Agent failure assurance is not a separate lifecycle. It is an execution and continuous assurance control set that proves whether agent failures can be prevented, detected, responded to, recovered from, and evidenced.
+    </div>
+
+    <div class="platform-b-agent-failure-control-pattern">
+        <span class="platform-b-agent-failure-control-pattern-pill">Prevent</span><span class="platform-b-agent-failure-control-pattern-pill">Detect</span><span class="platform-b-agent-failure-control-pattern-pill">Respond</span><span class="platform-b-agent-failure-control-pattern-pill">Recover</span><span class="platform-b-agent-failure-control-pattern-pill">Evidence</span>
+    </div>
+
+    <div class="platform-b-agent-failure-control-grid">
+
+    <div class="agent-failure-control-card">
+        <div class="agent-failure-control-domain">Tracked Control Dimensions</div>
+        <ul><li>Goal integrity</li><li>Prompt integrity</li><li>Context drift</li><li>Tool overreach</li><li>Memory contamination</li><li>Loop detection</li><li>Multi-agent conflict</li><li>Unauthorized access</li><li>Human approval gaps</li><li>Silent degradation</li><li>Audit completeness</li><li>Ownership ambiguity</li></ul>
+    </div>
+
+
+    <div class="agent-failure-control-card">
+        <div class="agent-failure-control-domain">Execution Assurance Controls</div>
+        <ul><li>Prevent goal integrity failure before execution</li><li>Prevent prompt integrity failure before execution</li><li>Prevent tool overreach during execution</li><li>Prevent unauthorized access during execution</li><li>Prevent missing human approval during execution</li><li>Prevent ownership ambiguity before execution</li><li>Detect loop formation during execution</li><li>Detect multi-agent conflict during execution</li><li>Detect silent degradation during execution</li><li>Respond to agent failure signals during execution</li><li>Recover failed or unsafe agent execution</li><li>Generate execution evidence for each control operation</li></ul>
+    </div>
+
+
+    <div class="agent-failure-control-card">
+        <div class="agent-failure-control-domain">Continuous Assurance Monitors</div>
+        <ul><li>Goal integrity drift</li><li>Prompt integrity drift</li><li>Context drift</li><li>Tool overreach trend</li><li>Memory contamination trend</li><li>Loop detection events</li><li>Multi-agent conflict events</li><li>Unauthorized access attempts</li><li>Human approval gap trend</li><li>Silent degradation signals</li><li>Audit completeness score</li><li>Ownership ambiguity backlog</li></ul>
+    </div>
+
+
+    <div class="agent-failure-control-card">
+        <div class="agent-failure-control-domain">Evidence Captured</div>
+        <ul><li>Goal integrity checked</li><li>Prompt integrity checked</li><li>Context drift detected</li><li>Tool overreach blocked</li><li>Memory contamination checked</li><li>Loop detected</li><li>Multi-agent conflict detected</li><li>Unauthorized access blocked</li><li>Human approval gap identified</li><li>Silent degradation detected</li><li>Audit completeness verified</li><li>Ownership ambiguity resolved</li><li>Prevent action recorded</li><li>Detect action recorded</li><li>Respond action recorded</li><li>Recover action recorded</li><li>Evidence generated</li></ul>
+    </div>
+
+    </div>
+
+    <div class="platform-b-agent-failure-control-pills">
+        <span class="platform-b-agent-failure-control-pill">Can this agent failure risk be prevented, detected, responded to, recovered from, and evidenced inside the existing Platform B lifecycle?</span>
+    </div>
+</section>
+
+<!-- END COBITCHAIN_PLATFORM_B_AGENT_FAILURE_ASSURANCE_CONTROL_SET_PATCH_V1_ACTIVE -->
+
 <!-- COBITCHAIN_PLATFORM_B_ENTERPRISE_AI_ADOPTION_AGENT_OPERATIONAL_TRUST_PATCH_V1_ACTIVE -->
 
 <style>
