@@ -1,0 +1,161 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_PRE_DEVIATION_CAPA_EFFECTIVENESS_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_architecture": false,
+  "capability_type": "Pre-Deviation Assurance and CAPA Effectiveness Assurance as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, or architecture. Add Pre-Deviation Signal Graph, Deviation Forecasting Window, Root Cause Confidence Score, CAPA Effectiveness Ledger, Preventive Action Firewall, Deviation Debt Register, and Quality Nervous System as cross-cutting capabilities across the existing Platform B lifecycle.",
+  "cross_cutting_capabilities": [
+    "Pre-Deviation Signal Graph",
+    "Deviation Forecasting Window",
+    "Root Cause Confidence Score",
+    "CAPA Effectiveness Ledger",
+    "Preventive Action Firewall",
+    "Deviation Debt Register",
+    "Quality Nervous System"
+  ],
+  "discovery_extension": [
+    "Deviations",
+    "CAPAs",
+    "Recurring events",
+    "Near misses",
+    "Alarms",
+    "Audit findings",
+    "Complaints",
+    "OOS/OOT",
+    "Training gaps",
+    "Equipment issues",
+    "Access issues",
+    "Change controls",
+    "SOP ambiguity",
+    "Batch/process/equipment relationships"
+  ],
+  "visibility_extension": [
+    "Deviation clusters",
+    "Repeat deviation patterns",
+    "Pre-deviation signals",
+    "CAPA recurrence risk",
+    "CAPA effectiveness state",
+    "Root cause confidence",
+    "Deviation debt",
+    "Weak-signal heatmap",
+    "Process control confidence"
+  ],
+  "governance_extension": [
+    "Deviation escalation rules",
+    "CAPA approval rules",
+    "AI-generated CAPA review requirements",
+    "Root-cause evidence requirements",
+    "Preventive action thresholds",
+    "Recurrence definitions",
+    "Effectiveness-check rules",
+    "Forbidden auto-approval rules"
+  ],
+  "operationalization_extension": [
+    "Preventive action before deviation",
+    "High-risk action blocking",
+    "Human review for AI-generated CAPA",
+    "Evidence checks before CAPA closure",
+    "CAPA connection to change control/training/validation",
+    "Escalation when recurrence risk remains high"
+  ],
+  "manufacturing_monitoring_extension": [
+    "Weak signals",
+    "Alarm trends",
+    "Operator workarounds",
+    "Equipment drift",
+    "Process drift",
+    "Batch timing pressure",
+    "Access failures",
+    "Repeated exceptions",
+    "Pre-deviation conditions"
+  ],
+  "evidence_extension": [
+    "Root-cause evidence",
+    "CAPA rationale",
+    "AI-generated recommendation",
+    "Human review",
+    "Rejected alternatives",
+    "Approval records",
+    "Effectiveness evidence",
+    "Recurrence monitoring",
+    "Preventive intervention evidence"
+  ],
+  "continuous_assurance_extension": [
+    "CAPA effectiveness after closure",
+    "Recurrence detection",
+    "Deviation debt detection",
+    "Weak control signal detection",
+    "False AI-generated CAPA confidence detection",
+    "Stale effectiveness check detection"
+  ],
+  "operational_trust_question": "Is this process still under control, or is it entering a pre-deviation state?",
+  "platform_principle": "Platform B extends operational trust from post-event investigation to pre-deviation prevention by linking weak signals, root-cause confidence, CAPA effectiveness, recurrence risk, and evidence integrity across the existing lifecycle.",
+  "capability_profiles": {
+    "Pre-Deviation Signal Graph": [
+      "Weak signal relationship map",
+      "Near-miss linkage",
+      "Alarm trend linkage",
+      "Recurring event linkage",
+      "Batch/process/equipment relationship",
+      "Access and training signal linkage",
+      "Pre-deviation condition map"
+    ],
+    "Deviation Forecasting Window": [
+      "Deviation likelihood window",
+      "Batch timing pressure",
+      "Equipment drift horizon",
+      "Process drift horizon",
+      "Repeated exception trend",
+      "Operator workaround signal",
+      "Escalation timing threshold"
+    ],
+    "Root Cause Confidence Score": [
+      "Root-cause evidence completeness",
+      "Alternative cause rejection",
+      "Evidence strength score",
+      "Human review state",
+      "AI confidence challenge",
+      "Recurrence evidence linkage",
+      "Root-cause confidence rating"
+    ],
+    "CAPA Effectiveness Ledger": [
+      "CAPA rationale record",
+      "Approval record",
+      "Effectiveness check record",
+      "Post-closure monitoring record",
+      "Recurrence tracking",
+      "Evidence refresh status",
+      "Effectiveness state history"
+    ],
+    "Preventive Action Firewall": [
+      "High-risk action block",
+      "Preventive intervention trigger",
+      "CAPA closure evidence gate",
+      "Forbidden auto-approval block",
+      "Escalation trigger",
+      "Change control/training/validation linkage",
+      "Residual recurrence risk block"
+    ],
+    "Deviation Debt Register": [
+      "Open deviation debt",
+      "Repeated event debt",
+      "Weak CAPA debt",
+      "Late effectiveness check",
+      "Unresolved root-cause uncertainty",
+      "Owner assignment",
+      "Remediation due date"
+    ],
+    "Quality Nervous System": [
+      "Weak control signal detection",
+      "Deviation cluster sensing",
+      "CAPA recurrence sensing",
+      "Process control confidence",
+      "Quality signal escalation",
+      "Manufacturing control feedback",
+      "Operational trust degradation alert"
+    ]
+  }
+}
