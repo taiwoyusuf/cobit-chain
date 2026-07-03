@@ -1,0 +1,174 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_REGULATORY_EVIDENCE_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "new_stage": false,
+  "new_pillar": false,
+  "new_architecture": false,
+  "capability_type": "Regulatory Evidence Assurance as cross-cutting Platform B capabilities",
+  "locked_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust",
+  "architecture_instruction": "Do not create a new module, stage, pillar, or architecture. Keep the lifecycle locked as Discovery -> Visibility -> Governance -> Operationalization -> Manufacturing Monitoring -> Evidence -> Continuous Assurance -> Operational Trust. Add Regulatory Evidence Assurance, Submission-Grade AI, Scientific Traceability Assurance, Regulatory Output Confidence Boundary, Regulatory Drift Monitoring, AI-Generated Regulatory Content Review, and Regulatory Evidence Integrity Check as cross-cutting capabilities.",
+  "cross_cutting_capabilities": [
+    "Regulatory Evidence Assurance",
+    "Submission-Grade AI",
+    "Scientific Traceability Assurance",
+    "Regulatory Output Confidence Boundary",
+    "Regulatory Drift Monitoring",
+    "AI-Generated Regulatory Content Review",
+    "Regulatory Evidence Integrity Check"
+  ],
+  "discovery_extension": [
+    "Regulatory AI use case",
+    "Intended use",
+    "Submission/inspection relevance",
+    "Document type",
+    "Source documents",
+    "Product/process context",
+    "CMC impact",
+    "Reviewer role",
+    "Approver role",
+    "Applicable regulation/guidance",
+    "Data source owner",
+    "Model/tool used",
+    "Evidence requirements"
+  ],
+  "visibility_extension": [
+    "AI-generated regulatory outputs",
+    "Source document coverage",
+    "Claim-to-source traceability",
+    "Reviewer status",
+    "Approval status",
+    "Unsupported claims",
+    "Hallucination risk",
+    "Outdated guidance risk",
+    "CMC impact",
+    "Regulatory confidence score",
+    "Evidence completeness",
+    "Operational Trust Score"
+  ],
+  "governance_extension": [
+    "Approved regulatory AI use cases",
+    "Prohibited regulatory AI use cases",
+    "Human review requirements",
+    "Qualified reviewer rules",
+    "Source approval rules",
+    "Citation/evidence rules",
+    "Version-control requirements",
+    "Final approval authority",
+    "Regulatory change-monitoring rules",
+    "Submission-grade criteria"
+  ],
+  "operationalization_extension": [
+    "Approved source-only generation",
+    "Reviewer approval before regulated use",
+    "Unsupported-claim blocking",
+    "Citation/evidence validation",
+    "Document version checks",
+    "Regulatory guidance freshness checks",
+    "AI output labeling",
+    "Confidence-boundary controls",
+    "Escalation when AI output affects CMC, labeling, safety, or health authority response"
+  ],
+  "manufacturing_monitoring_extension": [
+    "AI-assisted regulatory outputs tied to manufacturing context",
+    "CMC-impacting AI-generated content",
+    "Product/process context changes",
+    "Batch/process/equipment relationships used in regulatory content",
+    "Manufacturing change impact on regulatory evidence",
+    "Source document changes affecting CMC claims",
+    "Health-authority-response evidence readiness"
+  ],
+  "evidence_extension": [
+    "Prompt/input",
+    "Model/tool/version",
+    "Source documents used",
+    "Retrieved passages",
+    "Generated output",
+    "Claim-to-source mapping",
+    "Reviewer comments",
+    "Approval/rejection",
+    "Final accepted wording",
+    "Regulatory rationale",
+    "Change history",
+    "Evidence package"
+  ],
+  "continuous_assurance_extension": [
+    "Unsupported regulatory claims",
+    "Hallucinated citations",
+    "Outdated guidance",
+    "Source drift",
+    "Product/process mismatch",
+    "Reviewer bypass",
+    "Weak evidence",
+    "Model/tool changes",
+    "Regulatory obligation changes",
+    "Submission-readiness gaps"
+  ],
+  "operational_trust_question": "Can this AI-assisted regulatory output be trusted, defended, and used in a regulated decision or submission context right now?",
+  "platform_principle": "Platform B treats AI-assisted regulatory output as defensible only when claims, sources, model/tool state, reviewer judgment, CMC context, regulatory rationale, and evidence integrity are traceable, current, reviewable, and submission-grade.",
+  "capability_profiles": {
+    "Regulatory Evidence Assurance": [
+      "Regulatory AI use case",
+      "Submission/inspection relevance",
+      "Applicable regulation/guidance",
+      "Evidence requirement",
+      "Evidence completeness",
+      "Evidence package",
+      "Submission-readiness gap detection"
+    ],
+    "Submission-Grade AI": [
+      "Approved regulatory AI use case",
+      "Submission-grade criteria",
+      "Source-only generation",
+      "Reviewer approval before regulated use",
+      "Final approval authority",
+      "Final accepted wording",
+      "Regulatory defensibility state"
+    ],
+    "Scientific Traceability Assurance": [
+      "Source document coverage",
+      "Retrieved passage evidence",
+      "Claim-to-source mapping",
+      "Regulatory rationale",
+      "Product/process context",
+      "CMC impact linkage",
+      "Scientific traceability state"
+    ],
+    "Regulatory Output Confidence Boundary": [
+      "Regulatory confidence score",
+      "Unsupported claim detection",
+      "Hallucination risk",
+      "Confidence-boundary controls",
+      "AI output labeling",
+      "Escalation for CMC, labeling, safety, or health authority response impact",
+      "Regulatory use boundary state"
+    ],
+    "Regulatory Drift Monitoring": [
+      "Outdated guidance risk",
+      "Regulatory obligation changes",
+      "Source drift",
+      "Product/process mismatch",
+      "Model/tool changes",
+      "Document version checks",
+      "Regulatory guidance freshness checks"
+    ],
+    "AI-Generated Regulatory Content Review": [
+      "Human review requirement",
+      "Qualified reviewer rule",
+      "Reviewer role",
+      "Reviewer status",
+      "Reviewer comments",
+      "Approval/rejection",
+      "Reviewer bypass detection"
+    ],
+    "Regulatory Evidence Integrity Check": [
+      "Prompt/input capture",
+      "Model/tool/version capture",
+      "Source document capture",
+      "Generated output capture",
+      "Change history",
+      "Citation/evidence validation",
+      "Hallucinated citation detection"
+    ]
+  }
+}
