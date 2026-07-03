@@ -1,0 +1,84 @@
+{
+  "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
+  "architecture_change": false,
+  "new_module": false,
+  "do_not_create": [
+    "Certification Assurance module",
+    "Training-only assurance module",
+    "Credential-only assurance module",
+    "Standalone competency module"
+  ],
+  "capability_name": "AI Competency Governance Assurance",
+  "architecture_instruction": "Do not build a Certification Assurance module. Extend existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+  "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+  "core_question": "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+  "operational_trust_questions": [
+    "Was the reviewer qualified?",
+    "Did the reviewer actually perform the review?",
+    "Was the decision evidence-based?",
+    "Can accountability be demonstrated?"
+  ],
+  "platform_statement": "Platform B does not treat competency as a certificate-only question. Platform B continuously assures whether AI reviewers, approvers, operators, owners, and risk owners are assigned, trained, authorized, separated by duty, actively performing oversight, and accountable through evidence.",
+  "discovery": [
+    "AI governance roles",
+    "AI business owners",
+    "AI reviewers",
+    "AI approvers",
+    "AI operators",
+    "AI risk owners"
+  ],
+  "visibility": [
+    "Assigned responsibilities",
+    "Required competencies",
+    "Training completion",
+    "Role assignments",
+    "Separation of duties",
+    "Approval authority"
+  ],
+  "governance_extension": {
+    "name": "AI Competency Governance",
+    "evaluates": [
+      "Role-based competency requirements",
+      "Required training",
+      "Delegated authority",
+      "Competency reviews",
+      "Approval authority alignment",
+      "Separation of duties"
+    ]
+  },
+  "evidence_of_demonstrated_competence": [
+    "Human review performed",
+    "Challenge exercised",
+    "Decisions justified",
+    "Escalations completed",
+    "Approvals recorded",
+    "Oversight documented",
+    "Corrective actions taken"
+  ],
+  "continuous_assurance": [
+    "Competent personnel remain assigned",
+    "Mandatory training remains current",
+    "Approval authority remains valid",
+    "Critical roles remain filled",
+    "Separation of duties is maintained"
+  ],
+  "execution_evidence_questions": [
+    "Who was assigned as the AI business owner?",
+    "Who reviewed the AI output?",
+    "Who approved the AI decision or content?",
+    "Was the reviewer qualified?",
+    "Was required training current?",
+    "Was approval authority valid?",
+    "Was separation of duties maintained?",
+    "Did the reviewer actually perform the review?",
+    "Was the decision evidence-based?",
+    "Was challenge exercised?",
+    "Were escalations completed?",
+    "Were approvals recorded?",
+    "Was oversight documented?",
+    "Were corrective actions taken where required?",
+    "Can accountability be demonstrated?"
+  ],
+  "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
+  "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
+}

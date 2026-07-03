@@ -342,7 +342,22 @@
         "Is the evidence ALCOA+ aligned?",
         "Is the evidence complete?",
         "Does the evidence remain current?",
-        "Can accountability be demonstrated?"
+        "Can accountability be demonstrated?",
+        "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+        "Was the reviewer qualified?",
+        "Did the reviewer actually perform the review?",
+        "Was the decision evidence-based?",
+        "Who was assigned as the AI business owner?",
+        "Who reviewed the AI output?",
+        "Who approved the AI decision or content?",
+        "Was required training current?",
+        "Was approval authority valid?",
+        "Was separation of duties maintained?",
+        "Was challenge exercised?",
+        "Were escalations completed?",
+        "Were approvals recorded?",
+        "Was oversight documented?",
+        "Were corrective actions taken where required?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AICMC-BP-DEMO-001",
@@ -442,7 +457,16 @@
         "source_traceability_required": true,
         "alcoa_plus_alignment_required": true,
         "approval_records_required": true,
-        "continuous_evidence_trust_required": true
+        "continuous_evidence_trust_required": true,
+        "ai_competency_governance_assurance_state": "EXTEND_EXISTING_CAPABILITIES",
+        "certification_assurance_module_created": false,
+        "ai_competency_governance_extended": true,
+        "role_based_competency_required": true,
+        "training_currency_required": true,
+        "approval_authority_alignment_required": true,
+        "separation_of_duties_required": true,
+        "demonstrated_competence_evidence_required": true,
+        "accountability_evidence_required": true
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -1527,7 +1551,13 @@
         "AI systems used to generate CAPAs",
         "AI systems used to generate deviations",
         "AI systems used to generate change controls",
-        "AI systems used to generate quality records"
+        "AI systems used to generate quality records",
+        "AI governance roles",
+        "AI business owners",
+        "AI reviewers",
+        "AI approvers",
+        "AI operators",
+        "AI risk owners"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -1537,7 +1567,13 @@
         "Review status",
         "Approval history",
         "Supporting evidence",
-        "Source documents"
+        "Source documents",
+        "Assigned responsibilities",
+        "Required competencies",
+        "Training completion",
+        "Role assignments",
+        "Separation of duties",
+        "Approval authority"
       ],
       "governance_scope": [
         "Human accountability",
@@ -1545,7 +1581,13 @@
         "Scientific review",
         "GxP compliance",
         "AI use policy",
-        "AI disclosure requirements"
+        "AI disclosure requirements",
+        "Role-based competency requirements",
+        "Required training",
+        "Delegated authority",
+        "Competency reviews",
+        "Approval authority alignment",
+        "Separation of duties"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -1555,15 +1597,111 @@
         "Citation integrity",
         "ALCOA+",
         "Evidence completeness",
-        "Approval records"
+        "Approval records",
+        "Human review performed",
+        "Challenge exercised",
+        "Decisions justified",
+        "Escalations completed",
+        "Approvals recorded",
+        "Oversight documented",
+        "Corrective actions taken"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
         "Supporting evidence has not changed",
         "Source documents remain current",
         "Human approvals remain complete",
-        "Regulatory evidence remains trustworthy"
-      ]
+        "Regulatory evidence remains trustworthy",
+        "Competent personnel remain assigned",
+        "Mandatory training remains current",
+        "Approval authority remains valid",
+        "Critical roles remain filled",
+        "Separation of duties is maintained"
+      ],
+      "ai_competency_governance_assurance": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_module": false,
+        "do_not_create": [
+          "Certification Assurance module",
+          "Training-only assurance module",
+          "Credential-only assurance module",
+          "Standalone competency module"
+        ],
+        "capability_name": "AI Competency Governance Assurance",
+        "architecture_instruction": "Do not build a Certification Assurance module. Extend existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "core_question": "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+        "operational_trust_questions": [
+          "Was the reviewer qualified?",
+          "Did the reviewer actually perform the review?",
+          "Was the decision evidence-based?",
+          "Can accountability be demonstrated?"
+        ],
+        "platform_statement": "Platform B does not treat competency as a certificate-only question. Platform B continuously assures whether AI reviewers, approvers, operators, owners, and risk owners are assigned, trained, authorized, separated by duty, actively performing oversight, and accountable through evidence.",
+        "discovery": [
+          "AI governance roles",
+          "AI business owners",
+          "AI reviewers",
+          "AI approvers",
+          "AI operators",
+          "AI risk owners"
+        ],
+        "visibility": [
+          "Assigned responsibilities",
+          "Required competencies",
+          "Training completion",
+          "Role assignments",
+          "Separation of duties",
+          "Approval authority"
+        ],
+        "governance_extension": {
+          "name": "AI Competency Governance",
+          "evaluates": [
+            "Role-based competency requirements",
+            "Required training",
+            "Delegated authority",
+            "Competency reviews",
+            "Approval authority alignment",
+            "Separation of duties"
+          ]
+        },
+        "evidence_of_demonstrated_competence": [
+          "Human review performed",
+          "Challenge exercised",
+          "Decisions justified",
+          "Escalations completed",
+          "Approvals recorded",
+          "Oversight documented",
+          "Corrective actions taken"
+        ],
+        "continuous_assurance": [
+          "Competent personnel remain assigned",
+          "Mandatory training remains current",
+          "Approval authority remains valid",
+          "Critical roles remain filled",
+          "Separation of duties is maintained"
+        ],
+        "execution_evidence_questions": [
+          "Who was assigned as the AI business owner?",
+          "Who reviewed the AI output?",
+          "Who approved the AI decision or content?",
+          "Was the reviewer qualified?",
+          "Was required training current?",
+          "Was approval authority valid?",
+          "Was separation of duties maintained?",
+          "Did the reviewer actually perform the review?",
+          "Was the decision evidence-based?",
+          "Was challenge exercised?",
+          "Were escalations completed?",
+          "Were approvals recorded?",
+          "Was oversight documented?",
+          "Were corrective actions taken where required?",
+          "Can accountability be demonstrated?"
+        ],
+        "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
+        "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
+      }
     },
     {
       "blueprint_id": "agentic_enterprise",
@@ -1912,7 +2050,22 @@
         "Is the evidence ALCOA+ aligned?",
         "Is the evidence complete?",
         "Does the evidence remain current?",
-        "Can accountability be demonstrated?"
+        "Can accountability be demonstrated?",
+        "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+        "Was the reviewer qualified?",
+        "Did the reviewer actually perform the review?",
+        "Was the decision evidence-based?",
+        "Who was assigned as the AI business owner?",
+        "Who reviewed the AI output?",
+        "Who approved the AI decision or content?",
+        "Was required training current?",
+        "Was approval authority valid?",
+        "Was separation of duties maintained?",
+        "Was challenge exercised?",
+        "Were escalations completed?",
+        "Were approvals recorded?",
+        "Was oversight documented?",
+        "Were corrective actions taken where required?"
       ],
       "sample_blueprint_assessment": {
         "assessment_id": "AEBP-DEMO-001",
@@ -2012,7 +2165,16 @@
         "source_traceability_required": true,
         "alcoa_plus_alignment_required": true,
         "approval_records_required": true,
-        "continuous_evidence_trust_required": true
+        "continuous_evidence_trust_required": true,
+        "ai_competency_governance_assurance_state": "EXTEND_EXISTING_CAPABILITIES",
+        "certification_assurance_module_created": false,
+        "ai_competency_governance_extended": true,
+        "role_based_competency_required": true,
+        "training_currency_required": true,
+        "approval_authority_alignment_required": true,
+        "separation_of_duties_required": true,
+        "demonstrated_competence_evidence_required": true,
+        "accountability_evidence_required": true
       },
       "updated_lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Enterprise Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
       "enterprise_execution_assurance": {
@@ -3097,7 +3259,13 @@
         "AI systems used to generate CAPAs",
         "AI systems used to generate deviations",
         "AI systems used to generate change controls",
-        "AI systems used to generate quality records"
+        "AI systems used to generate quality records",
+        "AI governance roles",
+        "AI business owners",
+        "AI reviewers",
+        "AI approvers",
+        "AI operators",
+        "AI risk owners"
       ],
       "visibility_scope": [
         "Which AI generated content",
@@ -3107,7 +3275,13 @@
         "Review status",
         "Approval history",
         "Supporting evidence",
-        "Source documents"
+        "Source documents",
+        "Assigned responsibilities",
+        "Required competencies",
+        "Training completion",
+        "Role assignments",
+        "Separation of duties",
+        "Approval authority"
       ],
       "governance_scope": [
         "Human accountability",
@@ -3115,7 +3289,13 @@
         "Scientific review",
         "GxP compliance",
         "AI use policy",
-        "AI disclosure requirements"
+        "AI disclosure requirements",
+        "Role-based competency requirements",
+        "Required training",
+        "Delegated authority",
+        "Competency reviews",
+        "Approval authority alignment",
+        "Separation of duties"
       ],
       "evidence_assurance": [
         "Evidence provenance",
@@ -3125,15 +3305,111 @@
         "Citation integrity",
         "ALCOA+",
         "Evidence completeness",
-        "Approval records"
+        "Approval records",
+        "Human review performed",
+        "Challenge exercised",
+        "Decisions justified",
+        "Escalations completed",
+        "Approvals recorded",
+        "Oversight documented",
+        "Corrective actions taken"
       ],
       "continuous_assurance": [
         "AI-generated regulatory content remains valid",
         "Supporting evidence has not changed",
         "Source documents remain current",
         "Human approvals remain complete",
-        "Regulatory evidence remains trustworthy"
-      ]
+        "Regulatory evidence remains trustworthy",
+        "Competent personnel remain assigned",
+        "Mandatory training remains current",
+        "Approval authority remains valid",
+        "Critical roles remain filled",
+        "Separation of duties is maintained"
+      ],
+      "ai_competency_governance_assurance": {
+        "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
+        "architecture_change": false,
+        "new_module": false,
+        "do_not_create": [
+          "Certification Assurance module",
+          "Training-only assurance module",
+          "Credential-only assurance module",
+          "Standalone competency module"
+        ],
+        "capability_name": "AI Competency Governance Assurance",
+        "architecture_instruction": "Do not build a Certification Assurance module. Extend existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+        "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+        "core_question": "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+        "operational_trust_questions": [
+          "Was the reviewer qualified?",
+          "Did the reviewer actually perform the review?",
+          "Was the decision evidence-based?",
+          "Can accountability be demonstrated?"
+        ],
+        "platform_statement": "Platform B does not treat competency as a certificate-only question. Platform B continuously assures whether AI reviewers, approvers, operators, owners, and risk owners are assigned, trained, authorized, separated by duty, actively performing oversight, and accountable through evidence.",
+        "discovery": [
+          "AI governance roles",
+          "AI business owners",
+          "AI reviewers",
+          "AI approvers",
+          "AI operators",
+          "AI risk owners"
+        ],
+        "visibility": [
+          "Assigned responsibilities",
+          "Required competencies",
+          "Training completion",
+          "Role assignments",
+          "Separation of duties",
+          "Approval authority"
+        ],
+        "governance_extension": {
+          "name": "AI Competency Governance",
+          "evaluates": [
+            "Role-based competency requirements",
+            "Required training",
+            "Delegated authority",
+            "Competency reviews",
+            "Approval authority alignment",
+            "Separation of duties"
+          ]
+        },
+        "evidence_of_demonstrated_competence": [
+          "Human review performed",
+          "Challenge exercised",
+          "Decisions justified",
+          "Escalations completed",
+          "Approvals recorded",
+          "Oversight documented",
+          "Corrective actions taken"
+        ],
+        "continuous_assurance": [
+          "Competent personnel remain assigned",
+          "Mandatory training remains current",
+          "Approval authority remains valid",
+          "Critical roles remain filled",
+          "Separation of duties is maintained"
+        ],
+        "execution_evidence_questions": [
+          "Who was assigned as the AI business owner?",
+          "Who reviewed the AI output?",
+          "Who approved the AI decision or content?",
+          "Was the reviewer qualified?",
+          "Was required training current?",
+          "Was approval authority valid?",
+          "Was separation of duties maintained?",
+          "Did the reviewer actually perform the review?",
+          "Was the decision evidence-based?",
+          "Was challenge exercised?",
+          "Were escalations completed?",
+          "Were approvals recorded?",
+          "Was oversight documented?",
+          "Were corrective actions taken where required?",
+          "Can accountability be demonstrated?"
+        ],
+        "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
+        "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
+      }
     }
   ],
   "enterprise_execution_assurance_capability_patch": {
@@ -4234,5 +4510,89 @@
     ],
     "operational_trust_statement": "Operational Trust should not stop at identifying AI-generated content. Operational Trust should determine whether AI-generated regulatory evidence is scientifically verified, human-reviewed, source-traceable, approval-supported, ALCOA+ aligned, current, complete, and trustworthy.",
     "principle": "AI-generated evidence does not reduce organizational accountability. Platform B extends Evidence Assurance to continuously evaluate scientific validity, evidence lineage, human verification, traceability, approval completeness, and operational trust before and after regulatory use."
+  },
+  "platform_b_ai_competency_governance_assurance_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_AI_COMPETENCY_GOVERNANCE_ASSURANCE_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "do_not_create": [
+      "Certification Assurance module",
+      "Training-only assurance module",
+      "Credential-only assurance module",
+      "Standalone competency module"
+    ],
+    "capability_name": "AI Competency Governance Assurance",
+    "architecture_instruction": "Do not build a Certification Assurance module. Extend existing Discovery, Visibility, Governance, Evidence, Continuous Assurance, and Operational Trust capabilities.",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "core_question": "Can the organization demonstrate that accountable AI governance roles were assigned, qualified, trained, authorized, and actively performing oversight?",
+    "operational_trust_questions": [
+      "Was the reviewer qualified?",
+      "Did the reviewer actually perform the review?",
+      "Was the decision evidence-based?",
+      "Can accountability be demonstrated?"
+    ],
+    "platform_statement": "Platform B does not treat competency as a certificate-only question. Platform B continuously assures whether AI reviewers, approvers, operators, owners, and risk owners are assigned, trained, authorized, separated by duty, actively performing oversight, and accountable through evidence.",
+    "discovery": [
+      "AI governance roles",
+      "AI business owners",
+      "AI reviewers",
+      "AI approvers",
+      "AI operators",
+      "AI risk owners"
+    ],
+    "visibility": [
+      "Assigned responsibilities",
+      "Required competencies",
+      "Training completion",
+      "Role assignments",
+      "Separation of duties",
+      "Approval authority"
+    ],
+    "governance_extension": {
+      "name": "AI Competency Governance",
+      "evaluates": [
+        "Role-based competency requirements",
+        "Required training",
+        "Delegated authority",
+        "Competency reviews",
+        "Approval authority alignment",
+        "Separation of duties"
+      ]
+    },
+    "evidence_of_demonstrated_competence": [
+      "Human review performed",
+      "Challenge exercised",
+      "Decisions justified",
+      "Escalations completed",
+      "Approvals recorded",
+      "Oversight documented",
+      "Corrective actions taken"
+    ],
+    "continuous_assurance": [
+      "Competent personnel remain assigned",
+      "Mandatory training remains current",
+      "Approval authority remains valid",
+      "Critical roles remain filled",
+      "Separation of duties is maintained"
+    ],
+    "execution_evidence_questions": [
+      "Who was assigned as the AI business owner?",
+      "Who reviewed the AI output?",
+      "Who approved the AI decision or content?",
+      "Was the reviewer qualified?",
+      "Was required training current?",
+      "Was approval authority valid?",
+      "Was separation of duties maintained?",
+      "Did the reviewer actually perform the review?",
+      "Was the decision evidence-based?",
+      "Was challenge exercised?",
+      "Were escalations completed?",
+      "Were approvals recorded?",
+      "Was oversight documented?",
+      "Were corrective actions taken where required?",
+      "Can accountability be demonstrated?"
+    ],
+    "operational_trust_statement": "Operational Trust should demonstrate that qualified, trained, authorized, and accountable personnel actually performed review, challenge, approval, escalation, oversight, and corrective action where required.",
+    "principle": "Professional qualifications indicate potential competence; Platform B continuously evaluates demonstrated competence through operational evidence of review, challenge, decision-making, escalation, approval, oversight, and accountability."
   }
 }
