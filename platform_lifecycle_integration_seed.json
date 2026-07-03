@@ -554,7 +554,12 @@
       "Support production RAG operationalization through orchestration, plug-ins, vector databases, Azure OpenAI, enterprise connectors, managed identities, and secure runtime execution.",
       "Evaluate orchestration assurance, retrieval assurance, and runtime assurance inside Execution Assurance.",
       "Generate RAG execution evidence for retrieved documents, vector index, embeddings, orchestrator, plug-ins, AI model, enterprise systems, and final answer support.",
-      "Continuously monitor index freshness, retrieval quality, embedding drift, knowledge synchronization, runtime health, security posture, and operational trust."
+      "Continuously monitor index freshness, retrieval quality, embedding drift, knowledge synchronization, runtime health, security posture, and operational trust.",
+      "Discover agent, service, tool, connector, permission, policy, and approval workflow identities.",
+      "Visualize active permissions, tool permissions, retrieval permissions, approval points, and runtime access chain.",
+      "Extend Retrieval Assurance with permission-aware retrieval, security trimming, authorization filtering, and access validation.",
+      "Extend Tool Assurance with tool authorization, API permissions, action authorization, allowed operations, and execution scope.",
+      "Generate execution evidence for identity, permissions, retrieved and filtered records, tools, approvals, credentials, least privilege, and compliance."
     ],
     "evidence_automation_targets": [
       "Evidence package builder",
@@ -654,7 +659,18 @@
       "Source provenance package",
       "Runtime identity evidence",
       "Infrastructure health evidence",
-      "Final answer evidence package"
+      "Final answer evidence package",
+      "Executing identity record",
+      "Active permission snapshot",
+      "Retrieved record list",
+      "Filtered record list",
+      "Authorized tool list",
+      "Approval checkpoint record",
+      "Credential or managed identity evidence",
+      "Least privilege evaluation",
+      "Human approval evidence",
+      "Compliance evidence package",
+      "Runtime access chain"
     ],
     "ux_targets": [
       "One-click lifecycle navigation",
@@ -1066,7 +1082,14 @@
       "Knowledge synchronization",
       "Runtime health",
       "Security posture",
-      "Operational trust"
+      "Operational trust",
+      "Privilege drift",
+      "Permission drift",
+      "Unauthorized access",
+      "Tool misuse",
+      "Identity anomalies",
+      "Policy violations",
+      "Approval failures"
     ],
     "production_ownership_continuity_state": "ACTIVE",
     "production_ownership_continuity_assurance": {
@@ -1410,6 +1433,138 @@
       ],
       "positioning_statement": "Platform B does not evaluate production RAG as a model-only risk. It evaluates the complete operational system: orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure.",
       "principle": "Production RAG trust is achieved only when orchestration, retrieval, runtime security, execution evidence, and infrastructure health operate together reliably, securely, traceably, and continuously under governance."
+    },
+    "identity_permission_aware_execution_state": "ACTIVE",
+    "identity_permission_aware_execution_assurance": {
+      "patch_marker": "COBITCHAIN_PLATFORM_B_IDENTITY_PERMISSION_AWARE_EXECUTION_PATCH_V1_ACTIVE",
+      "architecture_change": false,
+      "new_module": false,
+      "architecture_instruction": "Do not add a new module. Extend existing Platform B capabilities across Discovery, Visibility, Governance, Retrieval Assurance, Tool Assurance, Human Oversight Assurance, Security Assurance, Operationalization, Evidence, and Continuous Assurance.",
+      "capability_name": "Identity, Authorization, and Permission-Aware Execution Assurance",
+      "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+      "core_question": "Was this AI action executed by the right identity, with the right permissions, against authorized records and tools, under least privilege, with required human approval, and with complete evidence?",
+      "enriched_stages": [
+        "Discovery",
+        "Visibility",
+        "Governance",
+        "Operationalization",
+        "Execution Assurance",
+        "Evidence",
+        "Continuous Assurance",
+        "Operational Trust"
+      ],
+      "discovery": [
+        "Agent identities",
+        "Service identities",
+        "Tool identities",
+        "External connectors",
+        "Permission boundaries",
+        "Access policies",
+        "Human approval workflows"
+      ],
+      "visibility": [
+        "Agent identity",
+        "Active permissions",
+        "Tool permissions",
+        "Retrieval permissions",
+        "Human approval points",
+        "Runtime access chain"
+      ],
+      "governance": {
+        "identity_assurance": [
+          "Agent identity",
+          "Service identity",
+          "Human identity",
+          "Federated identity",
+          "Managed identities"
+        ],
+        "authorization_assurance": [
+          "RBAC",
+          "ABAC",
+          "Least privilege",
+          "Permission inheritance",
+          "Scoped authorization",
+          "Temporary access"
+        ]
+      },
+      "retrieval_assurance_extension": [
+        "Permission-aware retrieval",
+        "Authorization filtering",
+        "Evidence filtering",
+        "Security trimming",
+        "Access validation"
+      ],
+      "tool_assurance_extension": [
+        "Tool authorization",
+        "API permissions",
+        "Action authorization",
+        "Allowed operations",
+        "Execution scope"
+      ],
+      "human_oversight_assurance": [
+        "Approval checkpoints",
+        "Escalation",
+        "Human intervention",
+        "Override evidence",
+        "Challenge evidence"
+      ],
+      "security_assurance": [
+        "Secrets",
+        "Credentials",
+        "Token rotation",
+        "Managed identities",
+        "Zero Trust",
+        "Runtime authentication"
+      ],
+      "operationalization_support": [
+        "ServiceNow ACLs",
+        "Record-level security",
+        "Field security",
+        "Permission-aware RAG",
+        "MCP authentication",
+        "Semantic Kernel authorization",
+        "Azure Managed Identity",
+        "OpenAI authentication",
+        "Microsoft Entra ID",
+        "CyberArk",
+        "Service accounts"
+      ],
+      "execution_evidence_questions": [
+        "Which identity executed?",
+        "Which permissions were active?",
+        "Which records were retrieved?",
+        "Which records were filtered?",
+        "Which tools were authorized?",
+        "Which approvals occurred?",
+        "Which credentials were used?",
+        "Was least privilege enforced?",
+        "Was human approval required?",
+        "What evidence demonstrates compliance?"
+      ],
+      "continuous_assurance_monitors": [
+        "Privilege drift",
+        "Permission drift",
+        "Unauthorized access",
+        "Tool misuse",
+        "Identity anomalies",
+        "Policy violations",
+        "Approval failures"
+      ],
+      "operational_trust_evidence": [
+        "Executing identity record",
+        "Active permission snapshot",
+        "Retrieved record list",
+        "Filtered record list",
+        "Authorized tool list",
+        "Approval checkpoint record",
+        "Credential or managed identity evidence",
+        "Least privilege evaluation",
+        "Human approval evidence",
+        "Compliance evidence package",
+        "Runtime access chain"
+      ],
+      "positioning_statement": "Platform B does not add a separate identity or access module. It extends existing capabilities so every AI execution can prove identity, authorization, permission-aware retrieval, tool authorization, human oversight, security posture, and compliance evidence.",
+      "principle": "AI execution cannot be operationally trusted unless identity, authorization, retrieval permissions, tool permissions, credentials, human approval, and least privilege are continuously assured."
     }
   },
   "enterprise_execution_assurance_capability_patch": {
@@ -2157,5 +2312,136 @@
     "positioning_statement": "Platform B does not evaluate production RAG as a model-only risk. It evaluates the complete operational system: orchestration, retrieval, security, execution, evidence generation, and runtime infrastructure.",
     "principle": "Production RAG trust is achieved only when orchestration, retrieval, runtime security, execution evidence, and infrastructure health operate together reliably, securely, traceably, and continuously under governance."
   },
-  "platform_b_new_lifecycle": false
+  "platform_b_new_lifecycle": false,
+  "platform_b_identity_permission_aware_execution_patch": {
+    "patch_marker": "COBITCHAIN_PLATFORM_B_IDENTITY_PERMISSION_AWARE_EXECUTION_PATCH_V1_ACTIVE",
+    "architecture_change": false,
+    "new_module": false,
+    "architecture_instruction": "Do not add a new module. Extend existing Platform B capabilities across Discovery, Visibility, Governance, Retrieval Assurance, Tool Assurance, Human Oversight Assurance, Security Assurance, Operationalization, Evidence, and Continuous Assurance.",
+    "capability_name": "Identity, Authorization, and Permission-Aware Execution Assurance",
+    "lifecycle_sequence": "Discovery -> Visibility -> Governance -> Operationalization -> Execution Assurance -> Evidence -> Continuous Assurance -> Operational Trust",
+    "core_question": "Was this AI action executed by the right identity, with the right permissions, against authorized records and tools, under least privilege, with required human approval, and with complete evidence?",
+    "enriched_stages": [
+      "Discovery",
+      "Visibility",
+      "Governance",
+      "Operationalization",
+      "Execution Assurance",
+      "Evidence",
+      "Continuous Assurance",
+      "Operational Trust"
+    ],
+    "discovery": [
+      "Agent identities",
+      "Service identities",
+      "Tool identities",
+      "External connectors",
+      "Permission boundaries",
+      "Access policies",
+      "Human approval workflows"
+    ],
+    "visibility": [
+      "Agent identity",
+      "Active permissions",
+      "Tool permissions",
+      "Retrieval permissions",
+      "Human approval points",
+      "Runtime access chain"
+    ],
+    "governance": {
+      "identity_assurance": [
+        "Agent identity",
+        "Service identity",
+        "Human identity",
+        "Federated identity",
+        "Managed identities"
+      ],
+      "authorization_assurance": [
+        "RBAC",
+        "ABAC",
+        "Least privilege",
+        "Permission inheritance",
+        "Scoped authorization",
+        "Temporary access"
+      ]
+    },
+    "retrieval_assurance_extension": [
+      "Permission-aware retrieval",
+      "Authorization filtering",
+      "Evidence filtering",
+      "Security trimming",
+      "Access validation"
+    ],
+    "tool_assurance_extension": [
+      "Tool authorization",
+      "API permissions",
+      "Action authorization",
+      "Allowed operations",
+      "Execution scope"
+    ],
+    "human_oversight_assurance": [
+      "Approval checkpoints",
+      "Escalation",
+      "Human intervention",
+      "Override evidence",
+      "Challenge evidence"
+    ],
+    "security_assurance": [
+      "Secrets",
+      "Credentials",
+      "Token rotation",
+      "Managed identities",
+      "Zero Trust",
+      "Runtime authentication"
+    ],
+    "operationalization_support": [
+      "ServiceNow ACLs",
+      "Record-level security",
+      "Field security",
+      "Permission-aware RAG",
+      "MCP authentication",
+      "Semantic Kernel authorization",
+      "Azure Managed Identity",
+      "OpenAI authentication",
+      "Microsoft Entra ID",
+      "CyberArk",
+      "Service accounts"
+    ],
+    "execution_evidence_questions": [
+      "Which identity executed?",
+      "Which permissions were active?",
+      "Which records were retrieved?",
+      "Which records were filtered?",
+      "Which tools were authorized?",
+      "Which approvals occurred?",
+      "Which credentials were used?",
+      "Was least privilege enforced?",
+      "Was human approval required?",
+      "What evidence demonstrates compliance?"
+    ],
+    "continuous_assurance_monitors": [
+      "Privilege drift",
+      "Permission drift",
+      "Unauthorized access",
+      "Tool misuse",
+      "Identity anomalies",
+      "Policy violations",
+      "Approval failures"
+    ],
+    "operational_trust_evidence": [
+      "Executing identity record",
+      "Active permission snapshot",
+      "Retrieved record list",
+      "Filtered record list",
+      "Authorized tool list",
+      "Approval checkpoint record",
+      "Credential or managed identity evidence",
+      "Least privilege evaluation",
+      "Human approval evidence",
+      "Compliance evidence package",
+      "Runtime access chain"
+    ],
+    "positioning_statement": "Platform B does not add a separate identity or access module. It extends existing capabilities so every AI execution can prove identity, authorization, permission-aware retrieval, tool authorization, human oversight, security posture, and compliance evidence.",
+    "principle": "AI execution cannot be operationally trusted unless identity, authorization, retrieval permissions, tool permissions, credentials, human approval, and least privilege are continuously assured."
+  }
 }
