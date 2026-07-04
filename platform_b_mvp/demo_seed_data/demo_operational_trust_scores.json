@@ -1,0 +1,16 @@
+﻿[
+  {
+    "trust_score_id": "TS-DEMO-001",
+    "use_case_id": "UC-DEMO-001",
+    "score": 72,
+    "score_label": "partial_operational_trust",
+    "trust_state": "partially_assured_review_required",
+    "evidence_count": 1,
+    "assurance_check_count": 1,
+    "action_admissibility_count": 1,
+    "wearable_context_signal_count": 1,
+    "interpretation": "The use case has enough simulated evidence to support review, but not enough to proceed without human confirmation.",
+    "calculated_at": "2026-07-04T18:35:00Z",
+    "demo_only": true
+  }
+]

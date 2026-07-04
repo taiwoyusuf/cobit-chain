@@ -1,0 +1,26 @@
+﻿[
+  {
+    "assurance_check_id": "CHK-DEMO-001",
+    "use_case_id": "UC-DEMO-001",
+    "check_name": "SOP Context Readiness Check",
+    "check_type": "context_assurance",
+    "performed_at": "2026-07-04T18:32:00Z",
+    "performed_by": "Platform B Demo Assurance Engine",
+    "readiness_points": 80,
+    "status": "review_required",
+    "findings": [
+      "Operator ID is present.",
+      "Location is present.",
+      "Equipment ID is present.",
+      "SOP step is present.",
+      "Evidence reference is present.",
+      "Human review is required before proceeding."
+    ],
+    "limitations": [
+      "Seed data is simulated.",
+      "No production validation is claimed.",
+      "No regulated decision is being made."
+    ],
+    "demo_only": true
+  }
+]

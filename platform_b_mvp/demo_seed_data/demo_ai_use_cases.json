@@ -1,0 +1,19 @@
+﻿[
+  {
+    "use_case_id": "UC-DEMO-001",
+    "title": "AI-Assisted SOP Step Readiness Check",
+    "domain": "Pharmaceutical Manufacturing Demo",
+    "context_of_use": "A simulated operator is preparing to proceed with a controlled equipment-related SOP step. Platform B evaluates whether the context, evidence, authority, and action state support proceeding.",
+    "owner": "Demo Owner",
+    "business_owner": "Manufacturing Operations Demo",
+    "technical_owner": "Platform B Demo",
+    "risk_class": "medium",
+    "lifecycle_stage": "Governance",
+    "gxp_relevance": "demo-only",
+    "regulated_status": "non-production-demo",
+    "created_at": "2026-07-04T18:30:00Z",
+    "evidence_status": "evidence_available",
+    "trust_score_id": "TS-DEMO-001",
+    "notes": "This is simulated seed data for the Platform B v0.2 demo console."
+  }
+]

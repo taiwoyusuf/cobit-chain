@@ -1,0 +1,16 @@
+﻿[
+  {
+    "evidence_id": "EV-DEMO-001",
+    "use_case_id": "UC-DEMO-001",
+    "evidence_type": "context_readiness_note",
+    "file_name": "demo_context_readiness_note.txt",
+    "storage_reference": "demo/evidence-files/UC-DEMO-001/EV-DEMO-001/demo_context_readiness_note.txt",
+    "source": "wearable_context_simulator",
+    "captured_by": "OP-DEMO-001",
+    "captured_at": "2026-07-04T18:31:00Z",
+    "evidence_status": "captured",
+    "integrity_state": "demo_integrity_notarization_not_applied",
+    "summary": "Simulated evidence note showing that an operator, equipment, SOP step, and work-order context were captured before a proceed/review decision.",
+    "demo_only": true
+  }
+]

@@ -1,0 +1,21 @@
+﻿[
+  {
+    "signal_id": "WRS-DEMO-001",
+    "use_case_id": "UC-DEMO-001",
+    "operator_id": "OP-DEMO-001",
+    "location": "Demo Cleanroom A",
+    "equipment_id": "EQP-DEMO-1803",
+    "sop_step": "Step 4 - Simulated readiness confirmation",
+    "work_order": "WO-DEMO-001",
+    "batch_context": "BATCH-DEMO-001",
+    "evidence_file_id": "EV-DEMO-001",
+    "ai_recommendation": "Proceed",
+    "timestamp": "2026-07-04T18:34:00Z",
+    "assurance_signal": "yellow",
+    "decision": "review_required",
+    "trust_state": "partially_assured",
+    "human_review_required": true,
+    "reason": "The right operator, location, equipment, SOP step, work order, and evidence reference are present, but human review is required before proceeding.",
+    "demo_only": true
+  }
+]

@@ -1,0 +1,16 @@
+﻿{
+  "summary_id": "EXP-DEMO-001",
+  "use_case_id": "UC-DEMO-001",
+  "title": "Platform B v0.2 Demo Evidence Summary",
+  "summary_status": "demo_ready",
+  "included_records": {
+    "ai_use_case": "UC-DEMO-001",
+    "evidence_record": "EV-DEMO-001",
+    "assurance_check": "CHK-DEMO-001",
+    "action_admissibility_record": "AAR-DEMO-001",
+    "wearable_context_signal": "WRS-DEMO-001",
+    "operational_trust_score": "TS-DEMO-001"
+  },
+  "conclusion": "The simulated workflow is partially assured and requires human review before proceeding.",
+  "demo_only": true
+}
