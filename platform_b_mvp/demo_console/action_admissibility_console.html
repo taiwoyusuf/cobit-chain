@@ -1,0 +1,442 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Action Admissibility Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1080px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 28px 34px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .question {
+      background: rgba(37, 99, 235, 0.14);
+      border: 1px solid rgba(37, 99, 235, 0.45);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 82px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.20);
+      color: #86efac;
+      border: 1px solid rgba(22, 163, 74, 0.60);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.20);
+      color: #fecaca;
+      border: 1px solid rgba(220, 38, 38, 0.60);
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .nav {
+      margin-top: 14px;
+    }
+
+    .nav a {
+      display: inline-block;
+      color: #bfdbfe;
+      text-decoration: none;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      background: #0b1220;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — Action Admissibility Console</h1>
+    <p>
+      Demo-only console showing whether a material AI-supported action is allowed before execution.
+      This screen evaluates policy state, approval state, authority boundary, evidence, data lineage, and recovery availability.
+    </p>
+
+    <div class="nav">
+      <a href="wearable_context_signal_console.html">Wearable / Context Signal Console</a>
+      <a href="evidence_viewer.html">Evidence Viewer</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Action Admissibility Simulator</h2>
+
+      <div class="question">
+        <strong>v0.2 question:</strong>
+        Was this material action allowed before execution?
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Action Record ID</label>
+          <input id="action_record_id" value="AAR-DEMO-001">
+        </div>
+
+        <div>
+          <label>Use Case ID</label>
+          <input id="use_case_id" value="UC-DEMO-001">
+        </div>
+
+        <div>
+          <label>Action Name</label>
+          <input id="action_name" value="Proceed with simulated SOP Step 4">
+        </div>
+
+        <div>
+          <label>Requested Action</label>
+          <select id="requested_action">
+            <option selected>proceed</option>
+            <option>hold</option>
+            <option>escalate</option>
+            <option>record_change</option>
+            <option>tool_call</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Policy Status</label>
+          <select id="policy_status">
+            <option>allowed</option>
+            <option selected>conditional</option>
+            <option>blocked</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Approval State</label>
+          <select id="approval_state">
+            <option>approved</option>
+            <option selected>review_required</option>
+            <option>not_approved</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Data Lineage Available</label>
+          <select id="data_lineage_available">
+            <option selected>true</option>
+            <option>false</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Recovery Available</label>
+          <select id="recovery_available">
+            <option selected>true</option>
+            <option>false</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Evidence ID</label>
+          <input id="evidence_id" value="EV-DEMO-001">
+        </div>
+
+        <div>
+          <label>Human Reviewer</label>
+          <input id="human_reviewer" value="Reviewer-DEMO-001">
+        </div>
+      </div>
+
+      <label style="margin-top:16px;">Authority Boundary</label>
+      <textarea id="authority_boundary">Demo operator may request action but may not self-approve execution.</textarea>
+
+      <button onclick="evaluateAdmissibility()">Evaluate Action Admissibility</button>
+
+      <div class="guardrail">
+        Demo guardrail: simulated data only. This screen does not approve real GMP, clinical, patient,
+        customer, production, or regulated actions.
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Platform B Admissibility Decision</h2>
+
+      <div id="decisionBadge" class="badge yellow">yellow — human review required</div>
+
+      <div class="row">
+        <div class="k">Admissibility State</div>
+        <div class="v" id="admissibilityState">human_review_required_before_execution</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Admitted</div>
+        <div class="v" id="admitted">false</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Required Next Step</div>
+        <div class="v" id="nextStep">Human review required before proceeding.</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Reason</div>
+        <div class="v" id="reasonText">
+          Evidence was captured, but the simulated action requires human review before proceeding.
+        </div>
+      </div>
+
+      <h2 style="margin-top:24px;">Generated Action Record</h2>
+      <pre id="payloadPreview"></pre>
+    </aside>
+  </main>
+
+  <script>
+    function val(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function boolVal(id) {
+      return val(id) === "true";
+    }
+
+    function labelText(value) {
+      return value.replace(/_/g, " ");
+    }
+
+    function evaluateAdmissibility() {
+      const payload = {
+        action_record_id: val("action_record_id"),
+        use_case_id: val("use_case_id"),
+        action_name: val("action_name"),
+        requested_action: val("requested_action"),
+        policy_status: val("policy_status"),
+        approval_state: val("approval_state"),
+        authority_boundary: val("authority_boundary"),
+        data_lineage_available: boolVal("data_lineage_available"),
+        recovery_available: boolVal("recovery_available"),
+        evidence_id: val("evidence_id"),
+        human_reviewer: val("human_reviewer"),
+        evaluated_at: new Date().toISOString(),
+        demo_only: true
+      };
+
+      let color = "yellow";
+      let admissibilityState = "human_review_required_before_execution";
+      let admitted = false;
+      let nextStep = "Human review required before proceeding.";
+      let reason = "Evidence was captured, but the simulated action requires human review before proceeding.";
+
+      const missingRequired = [
+        payload.action_record_id,
+        payload.use_case_id,
+        payload.action_name,
+        payload.evidence_id
+      ].some(x => !x);
+
+      if (missingRequired) {
+        color = "red";
+        admissibilityState = "not_admissible_missing_required_context";
+        admitted = false;
+        nextStep = "Stop and complete the missing required fields.";
+        reason = "One or more required action or evidence fields are missing.";
+      } else if (payload.policy_status === "blocked") {
+        color = "red";
+        admissibilityState = "not_admissible_policy_blocked";
+        admitted = false;
+        nextStep = "Stop or escalate.";
+        reason = "The current policy state blocks the simulated action.";
+      } else if (payload.approval_state === "not_approved") {
+        color = "red";
+        admissibilityState = "not_admissible_not_approved";
+        admitted = false;
+        nextStep = "Obtain approval or escalate.";
+        reason = "The simulated action has not been approved.";
+      } else if (!payload.data_lineage_available) {
+        color = "red";
+        admissibilityState = "not_admissible_missing_data_lineage";
+        admitted = false;
+        nextStep = "Resolve data lineage before execution.";
+        reason = "Data lineage is not available for this simulated action.";
+      } else if (!payload.recovery_available) {
+        color = "red";
+        admissibilityState = "not_admissible_recovery_unavailable";
+        admitted = false;
+        nextStep = "Define recovery path before execution.";
+        reason = "A recovery path is not available for this simulated action.";
+      } else if (payload.policy_status === "allowed" && payload.approval_state === "approved") {
+        color = "green";
+        admissibilityState = "admitted_before_execution";
+        admitted = true;
+        nextStep = "Proceed in demo mode.";
+        reason = "Policy allows the action, approval is present, evidence is referenced, data lineage is available, and recovery is available.";
+      }
+
+      payload.admissibility_state = admissibilityState;
+      payload.admitted = admitted;
+      payload.required_next_step = nextStep;
+      payload.reason = reason;
+
+      const badge = document.getElementById("decisionBadge");
+      badge.className = "badge " + color;
+      badge.textContent = color + " — " + labelText(admissibilityState);
+
+      document.getElementById("admissibilityState").textContent = admissibilityState;
+      document.getElementById("admitted").textContent = String(admitted);
+      document.getElementById("nextStep").textContent = nextStep;
+      document.getElementById("reasonText").textContent = reason;
+      document.getElementById("payloadPreview").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    evaluateAdmissibility();
+  </script>
+</body>
+</html>
