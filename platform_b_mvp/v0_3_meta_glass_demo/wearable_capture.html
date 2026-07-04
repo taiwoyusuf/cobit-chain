@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.3 Wearable Capture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #f9fafb;
+      --muted: #cbd5e1;
+      --line: #334155;
+      --green: #16a34a;
+      --yellow: #ca8a04;
+      --red: #dc2626;
+      --blue: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #111827, #1e293b);
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      margin-top: 26px;
+      font-size: 18px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      font-size: 16px;
+      background: var(--panel2);
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 16px;
+      background: var(--blue);
+      border: 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    .notice {
+      border-left: 5px solid var(--yellow);
+      background: rgba(202, 138, 4, 0.12);
+      padding: 12px;
+      border-radius: 10px;
+      color: var(--muted);
+    }
+
+    .signal {
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.18);
+      border: 1px solid var(--green);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.18);
+      border: 1px solid var(--yellow);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.18);
+      border: 1px solid var(--red);
+    }
+
+    .preview {
+      margin-top: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #020617;
+    }
+
+    .preview img, .preview video {
+      width: 100%;
+      display: block;
+      max-height: 420px;
+      object-fit: contain;
+      background: #020617;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #020617;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: #d1d5db;
+      font-size: 13px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.3 Wearable Capture</h1>
+    <p>Meta Glass field demo capture page. Non-production. Non-regulated. Non-confidential.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="notice">
+        <strong>Demo-only boundary:</strong>
+        Do not upload patient data, real GMP batch data, confidential company information, credentials, badges, restricted facility images, or regulated operational evidence.
+      </div>
+      <p><strong>Doctrine:</strong> Wearables are not the product. Context-assured evidence is the product.</p>
+      <p><strong>Strong phrase:</strong> Smart glasses capture the scene. Platform B proves whether the scene was admissible for action.</p>
+    </section>
+
+    <section class="card">
+      <h2>Wearable Evidence Capture Form</h2>
+
+      <label for="operatorId">Operator ID</label>
+      <input id="operatorId" value="Demo Operator 001">
+
+      <label for="location">Location</label>
+      <input id="location" value="Demo Lab Room">
+
+      <label for="equipmentId">Equipment ID</label>
+      <input id="equipmentId" value="EQP-DEMO-1803">
+
+      <label for="sopStep">SOP Step</label>
+      <input id="sopStep" value="Step 4 — Visual context check">
+
+      <label for="workContext">Work Order / Demo Context</label>
+      <textarea id="workContext">Demo wearable field capture. Non-confidential context only.</textarea>
+
+      <label for="evidenceFile">Evidence File</label>
+      <input id="evidenceFile" type="file" accept="image/*,video/*">
+      <p class="small">Use media imported to your phone from Ray-Ban Meta smart glasses, then upload it here.</p>
+
+      <div id="preview" class="preview" style="display:none;"></div>
+
+      <label for="aiRecommendation">AI Recommendation</label>
+      <select id="aiRecommendation">
+        <option>Proceed</option>
+        <option selected>Review Required</option>
+        <option>Stop / Escalate</option>
+      </select>
+
+      <label for="humanReviewer">Human Reviewer</label>
+      <input id="humanReviewer" value="Demo Reviewer 001">
+
+      <label for="requestedAction">Requested Action</label>
+      <select id="requestedAction">
+        <option>Proceed</option>
+        <option selected>Review</option>
+        <option>Stop</option>
+      </select>
+
+      <button onclick="generateDemoSignal()">Generate Demo Context Signal</button>
+      <button class="secondary" onclick="clearDemo()">Clear Demo</button>
+    </section>
+
+    <section class="card">
+      <h2>Platform B Demo Result</h2>
+      <div id="signalBox" class="signal yellow">Waiting for demo evidence capture.</div>
+
+      <h2>Wearable Capture Draft Record</h2>
+      <pre id="recordOutput">No record generated yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>v0.3 Success Criteria</h2>
+      <p>A reviewer should be able to see one wearable-captured photo or video, one context-assurance signal, one action admissibility result, one operational trust score update, and one exportable evidence summary.</p>
+    </section>
+  </main>
+
+  <script>
+    const evidenceInput = document.getElementById("evidenceFile");
+    const preview = document.getElementById("preview");
+
+    evidenceInput.addEventListener("change", function () {
+      preview.innerHTML = "";
+      const file = evidenceInput.files[0];
+
+      if (!file) {
+        preview.style.display = "none";
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+
+      if (file.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "Wearable evidence preview";
+        preview.appendChild(img);
+      } else if (file.type.startsWith("video/")) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        preview.appendChild(video);
+      } else {
+        preview.innerHTML = "<p>Unsupported demo file type.</p>";
+      }
+
+      preview.style.display = "block";
+    });
+
+    function generateDemoSignal() {
+      const file = evidenceInput.files[0];
+      const aiRecommendation = document.getElementById("aiRecommendation").value;
+      const requestedAction = document.getElementById("requestedAction").value;
+
+      let signal = "Yellow";
+      let admissibility = "Pause for review";
+      let reason = "Default demo review state.";
+
+      if (!file) {
+        signal = "Red";
+        admissibility = "Stop / escalate";
+        reason = "No wearable evidence file uploaded.";
+      } else if (aiRecommendation === "Proceed" && requestedAction === "Proceed") {
+        signal = "Green";
+        admissibility = "Proceed";
+        reason = "Demo evidence present and requested action aligns with AI recommendation.";
+      } else if (aiRecommendation === "Stop / Escalate" || requestedAction === "Stop") {
+        signal = "Red";
+        admissibility = "Stop / escalate";
+        reason = "AI recommendation or requested action requires stop/escalation.";
+      } else {
+        signal = "Yellow";
+        admissibility = "Pause for review";
+        reason = "Demo evidence present but review is required before action.";
+      }
+
+      const signalBox = document.getElementById("signalBox");
+      signalBox.className = "signal " + signal.toLowerCase();
+      signalBox.textContent = signal + " context-assurance signal — " + admissibility;
+
+      const now = new Date().toISOString();
+      const record = {
+        platform_b_version: "v0.3",
+        demo_name: "Meta Glass Wearable Field Demo",
+        generated_at: now,
+        evidence_id: "EV-WEARABLE-DEMO-" + Date.now(),
+        operator_id: document.getElementById("operatorId").value,
+        location: document.getElementById("location").value,
+        equipment_id: document.getElementById("equipmentId").value,
+        sop_step: document.getElementById("sopStep").value,
+        work_order_or_demo_context: document.getElementById("workContext").value,
+        evidence_file_name: file ? file.name : null,
+        evidence_file_type: file ? file.type : null,
+        evidence_file_size_bytes: file ? file.size : null,
+        ai_recommendation: aiRecommendation,
+        human_reviewer: document.getElementById("humanReviewer").value,
+        requested_action: requestedAction,
+        context_assurance_signal: signal,
+        action_admissibility_result: admissibility,
+        trust_score_demo_update: signal === "Green" ? 88 : signal === "Yellow" ? 62 : 25,
+        reason: reason,
+        disclaimer: "Demo only. Non-production. Non-regulated. Non-confidential."
+      };
+
+      document.getElementById("recordOutput").textContent = JSON.stringify(record, null, 2);
+    }
+
+    function clearDemo() {
+      evidenceInput.value = "";
+      preview.innerHTML = "";
+      preview.style.display = "none";
+      document.getElementById("signalBox").className = "signal yellow";
+      document.getElementById("signalBox").textContent = "Waiting for demo evidence capture.";
+      document.getElementById("recordOutput").textContent = "No record generated yet.";
+    }
+  </script>
+</body>
+</html>
