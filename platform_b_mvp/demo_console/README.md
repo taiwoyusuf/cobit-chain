@@ -9,6 +9,7 @@ DEMO UI ONLY
 - Wearable / Context Signal Console
 - Evidence Viewer
 - Action Admissibility Console
+- Operational Trust Score Console
 
 ## Demo guardrail
 

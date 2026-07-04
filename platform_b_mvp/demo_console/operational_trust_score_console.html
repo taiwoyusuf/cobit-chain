@@ -1,0 +1,477 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Operational Trust Score Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1080px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 28px 34px;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .nav {
+      margin-top: 14px;
+    }
+
+    .nav a {
+      display: inline-block;
+      color: #bfdbfe;
+      text-decoration: none;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      background: #0b1220;
+    }
+
+    .question {
+      background: rgba(37, 99, 235, 0.14);
+      border: 1px solid rgba(37, 99, 235, 0.45);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .score-box {
+      text-align: center;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+
+    .score {
+      font-size: 72px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      margin: 0;
+    }
+
+    .score-label {
+      margin-top: 10px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 14px;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.20);
+      color: #86efac;
+      border: 1px solid rgba(22, 163, 74, 0.60);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.20);
+      color: #fecaca;
+      border: 1px solid rgba(220, 38, 38, 0.60);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .metric {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .metric .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .metric .v {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input, select {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — Operational Trust Score Console</h1>
+    <p>
+      Demo-only screen showing how Platform B summarizes operational trust using available evidence,
+      assurance checks, action admissibility records, and wearable/context-assurance signals.
+    </p>
+
+    <div class="nav">
+      <a href="wearable_context_signal_console.html">Wearable / Context Signal Console</a>
+      <a href="evidence_viewer.html">Evidence Viewer</a>
+      <a href="action_admissibility_console.html">Action Admissibility Console</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Trust Score Inputs</h2>
+
+      <div class="question">
+        <strong>v0.2 question:</strong>
+        What evidence supports the current operational trust position?
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Use Case ID</label>
+          <input id="use_case_id" value="UC-DEMO-001">
+        </div>
+
+        <div>
+          <label>Trust Score ID</label>
+          <input id="trust_score_id" value="TS-DEMO-001">
+        </div>
+
+        <div>
+          <label>Evidence Count</label>
+          <input id="evidence_count" type="number" min="0" max="10" value="1">
+        </div>
+
+        <div>
+          <label>Assurance Check Count</label>
+          <input id="assurance_check_count" type="number" min="0" max="10" value="1">
+        </div>
+
+        <div>
+          <label>Action Admissibility Count</label>
+          <input id="action_admissibility_count" type="number" min="0" max="10" value="1">
+        </div>
+
+        <div>
+          <label>Wearable / Context Signal Count</label>
+          <input id="wearable_context_signal_count" type="number" min="0" max="10" value="1">
+        </div>
+
+        <div>
+          <label>Action State</label>
+          <select id="action_state">
+            <option>admitted_before_execution</option>
+            <option selected>human_review_required_before_execution</option>
+            <option>not_admissible</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Context State</label>
+          <select id="context_state">
+            <option>context_assured</option>
+            <option selected>partially_assured</option>
+            <option>not_assured</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="calculateTrustScore()">Calculate Demo Trust Score</button>
+
+      <div class="guardrail">
+        Demo guardrail: this score is simulated for v0.2 demonstration only. It is not a production scoring model,
+        regulated decision model, GMP release decision, clinical decision, or customer assurance decision.
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Operational Trust Position</h2>
+
+      <div class="score-box">
+        <p class="score" id="scoreText">72</p>
+        <div class="score-label">Operational Trust Score</div>
+        <div id="trustBadge" class="badge yellow">partial operational trust</div>
+      </div>
+
+      <div class="grid">
+        <div class="metric">
+          <div class="k">Evidence</div>
+          <div class="v" id="metricEvidence">1</div>
+        </div>
+
+        <div class="metric">
+          <div class="k">Assurance</div>
+          <div class="v" id="metricAssurance">1</div>
+        </div>
+
+        <div class="metric">
+          <div class="k">Action</div>
+          <div class="v" id="metricAction">1</div>
+        </div>
+
+        <div class="metric">
+          <div class="k">Context</div>
+          <div class="v" id="metricContext">1</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="k">Trust State</div>
+        <div class="v" id="trustState">partially_assured_review_required</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Interpretation</div>
+        <div class="v" id="interpretation">
+          The use case has enough simulated evidence to support review, but not enough to proceed without human confirmation.
+        </div>
+      </div>
+
+      <h2 style="margin-top:24px;">Generated Trust Score Record</h2>
+      <pre id="payloadPreview"></pre>
+    </aside>
+  </main>
+
+  <script>
+    function val(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function num(id) {
+      const parsed = parseInt(val(id), 10);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function calculateTrustScore() {
+      const evidenceCount = num("evidence_count");
+      const assuranceCheckCount = num("assurance_check_count");
+      const actionAdmissibilityCount = num("action_admissibility_count");
+      const wearableContextSignalCount = num("wearable_context_signal_count");
+      const actionState = val("action_state");
+      const contextState = val("context_state");
+
+      let score = 0;
+
+      score += Math.min(evidenceCount, 3) * 12;
+      score += Math.min(assuranceCheckCount, 3) * 10;
+      score += Math.min(actionAdmissibilityCount, 3) * 10;
+      score += Math.min(wearableContextSignalCount, 3) * 8;
+
+      if (actionState === "admitted_before_execution") {
+        score += 18;
+      } else if (actionState === "human_review_required_before_execution") {
+        score += 10;
+      } else {
+        score -= 15;
+      }
+
+      if (contextState === "context_assured") {
+        score += 12;
+      } else if (contextState === "partially_assured") {
+        score += 6;
+      } else {
+        score -= 15;
+      }
+
+      if (score < 0) {
+        score = 0;
+      }
+
+      if (score > 100) {
+        score = 100;
+      }
+
+      let color = "yellow";
+      let scoreLabel = "partial operational trust";
+      let trustState = "partially_assured_review_required";
+      let interpretation = "The use case has enough simulated evidence to support review, but not enough to proceed without human confirmation.";
+
+      if (score >= 85 && actionState === "admitted_before_execution" && contextState === "context_assured") {
+        color = "green";
+        scoreLabel = "operational trust demonstrated";
+        trustState = "operationally_assured_demo";
+        interpretation = "The simulated use case has evidence, assurance checks, action admissibility, and context signals sufficient to support demo-mode proceeding.";
+      } else if (score < 50 || actionState === "not_admissible" || contextState === "not_assured") {
+        color = "red";
+        scoreLabel = "insufficient operational trust";
+        trustState = "not_operationally_assured";
+        interpretation = "The simulated use case does not have enough supporting evidence or admissibility to proceed. Review, remediation, or escalation is required.";
+      }
+
+      const payload = {
+        trust_score_id: val("trust_score_id"),
+        use_case_id: val("use_case_id"),
+        score: score,
+        score_label: scoreLabel,
+        trust_state: trustState,
+        evidence_count: evidenceCount,
+        assurance_check_count: assuranceCheckCount,
+        action_admissibility_count: actionAdmissibilityCount,
+        wearable_context_signal_count: wearableContextSignalCount,
+        action_state: actionState,
+        context_state: contextState,
+        interpretation: interpretation,
+        calculated_at: new Date().toISOString(),
+        demo_only: true
+      };
+
+      document.getElementById("scoreText").textContent = String(score);
+
+      const badge = document.getElementById("trustBadge");
+      badge.className = "badge " + color;
+      badge.textContent = scoreLabel;
+
+      document.getElementById("metricEvidence").textContent = String(evidenceCount);
+      document.getElementById("metricAssurance").textContent = String(assuranceCheckCount);
+      document.getElementById("metricAction").textContent = String(actionAdmissibilityCount);
+      document.getElementById("metricContext").textContent = String(wearableContextSignalCount);
+      document.getElementById("trustState").textContent = trustState;
+      document.getElementById("interpretation").textContent = interpretation;
+      document.getElementById("payloadPreview").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    calculateTrustScore();
+  </script>
+</body>
+</html>
