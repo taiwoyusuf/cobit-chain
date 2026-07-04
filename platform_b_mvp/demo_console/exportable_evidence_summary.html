@@ -1,0 +1,488 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Exportable Evidence Summary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1080px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 28px 34px;
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .nav {
+      margin-top: 14px;
+    }
+
+    .nav a {
+      display: inline-block;
+      color: #bfdbfe;
+      text-decoration: none;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      background: #0b1220;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+      margin-bottom: 12px;
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .secondary {
+      background: #374151;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .report {
+      background: #f8fafc;
+      color: #0f172a;
+      border-radius: 16px;
+      padding: 28px;
+      line-height: 1.55;
+    }
+
+    .report h2 {
+      margin-top: 26px;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 8px;
+    }
+
+    .report h1 {
+      margin-top: 0;
+    }
+
+    .report table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      margin-bottom: 18px;
+    }
+
+    .report th, .report td {
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .report th {
+      background: #e2e8f0;
+    }
+
+    .report .note {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      header, .card:first-child {
+        display: none;
+      }
+
+      main {
+        display: block;
+        padding: 0;
+      }
+
+      .card {
+        border: 0;
+        padding: 0;
+        background: white;
+      }
+
+      .report {
+        border-radius: 0;
+        padding: 0;
+      }
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — Exportable Evidence Summary</h1>
+    <p>
+      Demo-only export screen that converts the v0.2 use case, evidence, admissibility,
+      context signal, and operational trust score into a readable evidence summary.
+    </p>
+
+    <div class="nav">
+      <a href="wearable_context_signal_console.html">Wearable / Context Signal Console</a>
+      <a href="evidence_viewer.html">Evidence Viewer</a>
+      <a href="action_admissibility_console.html">Action Admissibility Console</a>
+      <a href="operational_trust_score_console.html">Operational Trust Score Console</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Export Controls</h2>
+      <span class="badge">demo export only</span>
+
+      <div class="row">
+        <div class="k">Summary ID</div>
+        <div class="v">EXP-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Use Case ID</div>
+        <div class="v">UC-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Included Records</div>
+        <div class="v">
+          AI use case, evidence record, assurance check, action admissibility record,
+          wearable/context signal, operational trust score.
+        </div>
+      </div>
+
+      <button onclick="window.print()">Print / Save as PDF</button>
+      <button class="secondary" onclick="downloadMarkdown()">Download Markdown Summary</button>
+      <button class="secondary" onclick="copyJson()">Copy Summary JSON</button>
+
+      <div class="guardrail">
+        Demo guardrail: this export is simulated. It is not production evidence, GMP evidence,
+        clinical evidence, patient evidence, customer evidence, or a regulated submission package.
+      </div>
+
+      <h2 style="margin-top:24px;">Summary JSON</h2>
+      <pre id="summaryJson"></pre>
+    </section>
+
+    <section class="card">
+      <article class="report" id="report">
+        <h1>Platform B v0.2 Demo Evidence Summary</h1>
+
+        <p><strong>Summary ID:</strong> EXP-DEMO-001</p>
+        <p><strong>Generated At:</strong> <span id="generatedAt"></span></p>
+        <p><strong>Document Status:</strong> Demo-only evidence summary</p>
+
+        <div class="note">
+          <strong>Guardrail:</strong>
+          This report is a simulated, non-production Platform B v0.2 demo artifact.
+          It does not constitute regulated evidence, GMP evidence, clinical evidence,
+          patient evidence, customer evidence, validation evidence, or a regulatory submission.
+        </div>
+
+        <h2>1. AI Use Case</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Use Case ID</td><td>UC-DEMO-001</td></tr>
+          <tr><td>Title</td><td>AI-Assisted SOP Step Readiness Check</td></tr>
+          <tr><td>Domain</td><td>Pharmaceutical Manufacturing Demo</td></tr>
+          <tr><td>Context of Use</td><td>A simulated operator is preparing to proceed with a controlled equipment-related SOP step.</td></tr>
+          <tr><td>Lifecycle Stage</td><td>Governance</td></tr>
+          <tr><td>Risk Class</td><td>medium</td></tr>
+        </table>
+
+        <h2>2. Evidence Record</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Evidence ID</td><td>EV-DEMO-001</td></tr>
+          <tr><td>Evidence Type</td><td>context_readiness_note</td></tr>
+          <tr><td>Source</td><td>wearable_context_simulator</td></tr>
+          <tr><td>Status</td><td>captured</td></tr>
+          <tr><td>Meaning</td><td>Supports context visibility before a proceed/review decision.</td></tr>
+        </table>
+
+        <h2>3. Assurance Check</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Assurance Check ID</td><td>CHK-DEMO-001</td></tr>
+          <tr><td>Check Name</td><td>SOP Context Readiness Check</td></tr>
+          <tr><td>Status</td><td>review_required</td></tr>
+          <tr><td>Readiness Points</td><td>80</td></tr>
+          <tr><td>Limitation</td><td>Seed data is simulated. No production validation is claimed.</td></tr>
+        </table>
+
+        <h2>4. Action Admissibility Record</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Action Record ID</td><td>AAR-DEMO-001</td></tr>
+          <tr><td>Requested Action</td><td>proceed</td></tr>
+          <tr><td>Policy Status</td><td>conditional</td></tr>
+          <tr><td>Approval State</td><td>review_required</td></tr>
+          <tr><td>Admitted</td><td>false</td></tr>
+          <tr><td>Admissibility State</td><td>human_review_required_before_execution</td></tr>
+        </table>
+
+        <h2>5. Wearable / Context Signal</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Signal ID</td><td>WRS-DEMO-001</td></tr>
+          <tr><td>Operator</td><td>OP-DEMO-001</td></tr>
+          <tr><td>Location</td><td>Demo Cleanroom A</td></tr>
+          <tr><td>Equipment</td><td>EQP-DEMO-1803</td></tr>
+          <tr><td>SOP Step</td><td>Step 4 - Simulated readiness confirmation</td></tr>
+          <tr><td>Assurance Signal</td><td>yellow</td></tr>
+          <tr><td>Decision</td><td>review_required</td></tr>
+        </table>
+
+        <h2>6. Operational Trust Score</h2>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Trust Score ID</td><td>TS-DEMO-001</td></tr>
+          <tr><td>Score</td><td>72</td></tr>
+          <tr><td>Trust State</td><td>partially_assured_review_required</td></tr>
+          <tr><td>Evidence Count</td><td>1</td></tr>
+          <tr><td>Assurance Check Count</td><td>1</td></tr>
+          <tr><td>Action Admissibility Count</td><td>1</td></tr>
+          <tr><td>Wearable / Context Signal Count</td><td>1</td></tr>
+        </table>
+
+        <h2>7. Demo Conclusion</h2>
+        <p>
+          The simulated workflow is partially assured and requires human review before proceeding.
+          The evidence supports context visibility, but the action is not admitted for automatic execution.
+        </p>
+
+        <h2>8. v0.2 Boundary</h2>
+        <p>
+          This report demonstrates Platform B v0.2 demo usability only. It does not implement v2 backlog concepts,
+          production compliance claims, regulated evidence workflows, or customer-specific assurance logic.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const summary = {
+      summary_id: "EXP-DEMO-001",
+      title: "Platform B v0.2 Demo Evidence Summary",
+      generated_at: new Date().toISOString(),
+      document_status: "demo_only",
+      use_case: {
+        use_case_id: "UC-DEMO-001",
+        title: "AI-Assisted SOP Step Readiness Check",
+        lifecycle_stage: "Governance",
+        risk_class: "medium"
+      },
+      included_records: {
+        ai_use_case: "UC-DEMO-001",
+        evidence_record: "EV-DEMO-001",
+        assurance_check: "CHK-DEMO-001",
+        action_admissibility_record: "AAR-DEMO-001",
+        wearable_context_signal: "WRS-DEMO-001",
+        operational_trust_score: "TS-DEMO-001"
+      },
+      conclusion: "The simulated workflow is partially assured and requires human review before proceeding.",
+      guardrail: "Demo-only. Not production, GMP, clinical, patient, customer, validation, or regulated submission evidence.",
+      demo_only: true
+    };
+
+    document.getElementById("generatedAt").textContent = summary.generated_at;
+    document.getElementById("summaryJson").textContent = JSON.stringify(summary, null, 2);
+
+    function markdownText() {
+      return [
+        "# Platform B v0.2 Demo Evidence Summary",
+        "",
+        "Summary ID: EXP-DEMO-001",
+        "Generated At: " + summary.generated_at,
+        "Document Status: Demo-only evidence summary",
+        "",
+        "## Guardrail",
+        "",
+        "This report is simulated and non-production. It is not regulated evidence, GMP evidence, clinical evidence, patient evidence, customer evidence, validation evidence, or a regulatory submission.",
+        "",
+        "## AI Use Case",
+        "",
+        "- Use Case ID: UC-DEMO-001",
+        "- Title: AI-Assisted SOP Step Readiness Check",
+        "- Domain: Pharmaceutical Manufacturing Demo",
+        "- Lifecycle Stage: Governance",
+        "- Risk Class: medium",
+        "",
+        "## Evidence Record",
+        "",
+        "- Evidence ID: EV-DEMO-001",
+        "- Evidence Type: context_readiness_note",
+        "- Source: wearable_context_simulator",
+        "- Status: captured",
+        "",
+        "## Assurance Check",
+        "",
+        "- Assurance Check ID: CHK-DEMO-001",
+        "- Check Name: SOP Context Readiness Check",
+        "- Status: review_required",
+        "- Readiness Points: 80",
+        "",
+        "## Action Admissibility",
+        "",
+        "- Action Record ID: AAR-DEMO-001",
+        "- Requested Action: proceed",
+        "- Policy Status: conditional",
+        "- Approval State: review_required",
+        "- Admitted: false",
+        "- Admissibility State: human_review_required_before_execution",
+        "",
+        "## Wearable / Context Signal",
+        "",
+        "- Signal ID: WRS-DEMO-001",
+        "- Operator: OP-DEMO-001",
+        "- Location: Demo Cleanroom A",
+        "- Equipment: EQP-DEMO-1803",
+        "- Assurance Signal: yellow",
+        "- Decision: review_required",
+        "",
+        "## Operational Trust Score",
+        "",
+        "- Trust Score ID: TS-DEMO-001",
+        "- Score: 72",
+        "- Trust State: partially_assured_review_required",
+        "",
+        "## Demo Conclusion",
+        "",
+        "The simulated workflow is partially assured and requires human review before proceeding.",
+        "",
+        "## v0.2 Boundary",
+        "",
+        "This report demonstrates Platform B v0.2 demo usability only. It does not implement v2 backlog concepts or production compliance claims.",
+        ""
+      ].join("\n");
+    }
+
+    function downloadMarkdown() {
+      const blob = new Blob([markdownText()], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "platform_b_v0_2_demo_evidence_summary.md";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function copyJson() {
+      navigator.clipboard.writeText(JSON.stringify(summary, null, 2)).then(function () {
+        alert("Summary JSON copied.");
+      }).catch(function () {
+        alert("Copy failed. You can manually select the JSON.");
+      });
+    }
+  </script>
+</body>
+</html>

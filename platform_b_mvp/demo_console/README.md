@@ -10,6 +10,7 @@ DEMO UI ONLY
 - Evidence Viewer
 - Action Admissibility Console
 - Operational Trust Score Console
+- Exportable Evidence Summary
 
 ## Demo guardrail
 
