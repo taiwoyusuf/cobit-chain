@@ -110,3 +110,6 @@ desktop.ini
 scratch*
 tmp*
 temp*
+
+# Local Azure inventory exports
+azure_inventory/
