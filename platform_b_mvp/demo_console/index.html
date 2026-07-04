@@ -1,0 +1,338 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Demo Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1120px;
+      line-height: 1.55;
+      font-size: 16px;
+    }
+
+    main {
+      padding: 30px 34px 46px 34px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .card p {
+      color: #d1d5db;
+      line-height: 1.55;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 4px 6px 4px 0;
+    }
+
+    .blue {
+      background: rgba(37, 99, 235, 0.18);
+      color: #bfdbfe;
+      border: 1px solid rgba(37, 99, 235, 0.55);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.20);
+      color: #86efac;
+      border: 1px solid rgba(22, 163, 74, 0.60);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.20);
+      color: #fecaca;
+      border: 1px solid rgba(220, 38, 38, 0.60);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .screen {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .screen h3 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+    }
+
+    .screen p {
+      color: #9ca3af;
+      line-height: 1.5;
+      margin: 0 0 14px 0;
+    }
+
+    a.button {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+    }
+
+    .secondary {
+      background: #374151 !important;
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .success {
+      background: rgba(22, 163, 74, 0.10);
+      border: 1px solid rgba(22, 163, 74, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #bbf7d0;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1120px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      header {
+        padding: 22px 18px;
+      }
+
+      main {
+        padding: 18px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 Demo Console</h1>
+    <p>
+      Non-production demonstration layer for Platform B Operational Trust Infrastructure.
+      This console shows how AI use case context, evidence, action admissibility,
+      wearable/context signals, operational trust scoring, and exportable evidence summaries can be presented to a reviewer.
+    </p>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <h2>v0.2 Purpose</h2>
+        <p>
+          Platform B v0.2 converts the v0.1 technical proof into a demonstrable operational product layer.
+          It is designed to help a reviewer understand the MVP without reading source code or PowerShell logs.
+        </p>
+
+        <span class="badge green">v0.1 frozen</span>
+        <span class="badge blue">v0.2 demo usability</span>
+        <span class="badge yellow">simulated evidence</span>
+        <span class="badge red">v2 backlog not implemented</span>
+
+        <div class="success">
+          v0.2 demo goal: show one AI use case, one evidence record, one assurance check,
+          one action admissibility record, one wearable/context signal, one operational trust score,
+          and one exportable evidence summary.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Demo Guardrails</h2>
+
+        <div class="row">
+          <div class="k">Data Status</div>
+          <div class="v">Simulated seed data only</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Production Status</div>
+          <div class="v">Not production, not customer-specific, not regulated evidence</div>
+        </div>
+
+        <div class="row">
+          <div class="k">v2 Status</div>
+          <div class="v">Future backlog concepts only; not implemented in v0.2</div>
+        </div>
+
+        <div class="guardrail">
+          This demo does not claim GMP validation, clinical validation, patient safety assurance,
+          regulatory submission readiness, or customer production readiness.
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="screen">
+        <div>
+          <h3>Wearable / Context Signal Console</h3>
+          <p>
+            Simulates whether the right operator, location, equipment, SOP step, authority,
+            and evidence are aligned before proceeding.
+          </p>
+          <span class="badge yellow">green / yellow / red</span>
+        </div>
+        <a class="button" href="wearable_context_signal_console.html">Open Context Console</a>
+      </div>
+
+      <div class="screen">
+        <div>
+          <h3>Evidence Viewer</h3>
+          <p>
+            Shows evidence metadata, evidence ID, source, status, storage reference,
+            and interpretation boundary.
+          </p>
+          <span class="badge blue">evidence visibility</span>
+        </div>
+        <a class="button" href="evidence_viewer.html">Open Evidence Viewer</a>
+      </div>
+
+      <div class="screen">
+        <div>
+          <h3>Action Admissibility Console</h3>
+          <p>
+            Evaluates whether a material AI-supported action is allowed before execution
+            using policy, approval, lineage, recovery, and evidence state.
+          </p>
+          <span class="badge yellow">before execution</span>
+        </div>
+        <a class="button" href="action_admissibility_console.html">Open Action Console</a>
+      </div>
+
+      <div class="screen">
+        <div>
+          <h3>Operational Trust Score Console</h3>
+          <p>
+            Summarizes trust state using evidence count, assurance checks, action admissibility,
+            and wearable/context signals.
+          </p>
+          <span class="badge blue">trust score</span>
+        </div>
+        <a class="button" href="operational_trust_score_console.html">Open Trust Score</a>
+      </div>
+
+      <div class="screen">
+        <div>
+          <h3>Exportable Evidence Summary</h3>
+          <p>
+            Produces a readable demo evidence summary and supports print/save as PDF,
+            markdown download, and JSON copy.
+          </p>
+          <span class="badge green">reviewer package</span>
+        </div>
+        <a class="button" href="exportable_evidence_summary.html">Open Evidence Summary</a>
+      </div>
+
+      <div class="screen">
+        <div>
+          <h3>v0.2 Boundary</h3>
+          <p>
+            v0.2 is a demo usability layer. It does not implement v2 backlog concepts,
+            production scoring, regulated workflows, or customer-specific logic.
+          </p>
+          <span class="badge red">guardrail</span>
+        </div>
+        <a class="button secondary" href="../PLATFORM_B_V0_2_ROADMAP.md">Open v0.2 Roadmap</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

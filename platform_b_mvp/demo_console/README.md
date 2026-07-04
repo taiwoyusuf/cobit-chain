@@ -6,6 +6,7 @@ DEMO UI ONLY
 
 ## Screens
 
+- Platform B Demo Home
 - Wearable / Context Signal Console
 - Evidence Viewer
 - Action Admissibility Console
