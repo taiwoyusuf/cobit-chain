@@ -1,4 +1,4 @@
-.Azure/
+﻿.Azure/
 .cache/
 .local/
 app_BACKUP_*.py
@@ -113,3 +113,9 @@ temp*
 
 # Local Azure inventory exports
 azure_inventory/
+PLATFORM_B_MVP_AZURE_RESOURCES_LOCAL.txt
+platform_b_mvp/functions/local.settings.json
+platform_b_mvp/functions/.venv/
+platform_b_mvp/functions/.python_packages/
+platform_b_mvp/functions/__pycache__/
+platform_b_mvp/functions/*.zip

@@ -1,0 +1,17 @@
+﻿{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "PLATFORMB_STORAGE_ACCOUNT": "stpbmvp61806",
+    "PLATFORMB_EVIDENCE_CONTAINER": "evidence-files",
+    "PLATFORMB_USECASE_TABLE": "UseCaseRegistry",
+    "PLATFORMB_EVIDENCE_TABLE": "EvidenceMetadata",
+    "PLATFORMB_TRUST_TABLE": "TrustScores",
+    "PLATFORMB_ACTION_TABLE": "ActionAdmissibilityRecords",
+    "PLATFORMB_WEARABLE_TABLE": "WearableSignals",
+    "PLATFORMB_ASSURANCE_TABLE": "AssuranceChecks",
+    "PLATFORMB_MODE": "mvp",
+    "PLATFORMB_V1_FROZEN": "true"
+  }
+}
