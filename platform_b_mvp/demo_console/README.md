@@ -1,4 +1,4 @@
-# Platform B v0.2 Demo Console
+﻿# Platform B v0.2 Demo Console
 
 ## Document status
 
