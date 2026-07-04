@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — AI Use Case Registry Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1080px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 28px 34px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .nav {
+      margin-top: 14px;
+    }
+
+    .nav a {
+      display: inline-block;
+      color: #bfdbfe;
+      text-decoration: none;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      background: #0b1220;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 4px 6px 4px 0;
+    }
+
+    .blue {
+      background: rgba(37, 99, 235, 0.18);
+      color: #bfdbfe;
+      border: 1px solid rgba(37, 99, 235, 0.55);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.20);
+      color: #86efac;
+      border: 1px solid rgba(22, 163, 74, 0.60);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.20);
+      color: #fecaca;
+      border: 1px solid rgba(220, 38, 38, 0.60);
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .question {
+      background: rgba(37, 99, 235, 0.14);
+      border: 1px solid rgba(37, 99, 235, 0.45);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .secondary {
+      background: #374151;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — AI Use Case Registry Console</h1>
+    <p>
+      Demo-only registry screen showing the governed AI use case, context of use, owner,
+      lifecycle stage, risk class, evidence status, and related v0.2 evidence objects.
+    </p>
+
+    <div class="nav">
+      <a href="index.html">Demo Home</a>
+      <a href="wearable_context_signal_console.html">Wearable / Context Signal Console</a>
+      <a href="evidence_viewer.html">Evidence Viewer</a>
+      <a href="action_admissibility_console.html">Action Admissibility Console</a>
+      <a href="operational_trust_score_console.html">Operational Trust Score Console</a>
+      <a href="exportable_evidence_summary.html">Exportable Evidence Summary</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Registered AI Use Case</h2>
+
+      <div class="question">
+        <strong>v0.2 question:</strong>
+        What AI use case is being governed, and what evidence objects support its current trust position?
+      </div>
+
+      <span class="badge blue">registered use case</span>
+      <span class="badge yellow">non-production demo</span>
+      <span class="badge green">evidence available</span>
+
+      <div class="row">
+        <div class="k">Use Case ID</div>
+        <div class="v">UC-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Title</div>
+        <div class="v">AI-Assisted SOP Step Readiness Check</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Domain</div>
+        <div class="v">Pharmaceutical Manufacturing Demo</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Context of Use</div>
+        <div class="v">
+          A simulated operator is preparing to proceed with a controlled equipment-related SOP step.
+          Platform B evaluates whether the context, evidence, authority, and action state support proceeding.
+        </div>
+      </div>
+
+      <div class="guardrail">
+        Demo guardrail: this registry item is simulated seed data. It is not a production AI system,
+        GMP system record, clinical system record, patient record, customer record, or regulated submission record.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Registry Metadata</h2>
+
+      <div class="grid">
+        <div class="row">
+          <div class="k">Owner</div>
+          <div class="v">Demo Owner</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Business Owner</div>
+          <div class="v">Manufacturing Operations Demo</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Technical Owner</div>
+          <div class="v">Platform B Demo</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Risk Class</div>
+          <div class="v">medium</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Lifecycle Stage</div>
+          <div class="v">Governance</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Regulated Status</div>
+          <div class="v">non-production-demo</div>
+        </div>
+
+        <div class="row">
+          <div class="k">GxP Relevance</div>
+          <div class="v">demo-only</div>
+        </div>
+
+        <div class="row">
+          <div class="k">Evidence Status</div>
+          <div class="v">evidence_available</div>
+        </div>
+      </div>
+
+      <h2 style="margin-top:24px;">Related Evidence Objects</h2>
+
+      <div class="row">
+        <div class="k">Evidence Record</div>
+        <div class="v">EV-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Assurance Check</div>
+        <div class="v">CHK-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Action Admissibility Record</div>
+        <div class="v">AAR-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Wearable / Context Signal</div>
+        <div class="v">WRS-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Trust Score</div>
+        <div class="v">TS-DEMO-001</div>
+      </div>
+
+      <button onclick="copyJson()">Copy Use Case JSON</button>
+      <button class="secondary" onclick="window.location.href='exportable_evidence_summary.html'">Open Evidence Summary</button>
+
+      <h2 style="margin-top:24px;">Use Case JSON</h2>
+      <pre id="useCaseJson"></pre>
+    </section>
+  </main>
+
+  <script>
+    const useCase = {
+      use_case_id: "UC-DEMO-001",
+      title: "AI-Assisted SOP Step Readiness Check",
+      domain: "Pharmaceutical Manufacturing Demo",
+      context_of_use: "A simulated operator is preparing to proceed with a controlled equipment-related SOP step. Platform B evaluates whether the context, evidence, authority, and action state support proceeding.",
+      owner: "Demo Owner",
+      business_owner: "Manufacturing Operations Demo",
+      technical_owner: "Platform B Demo",
+      risk_class: "medium",
+      lifecycle_stage: "Governance",
+      gxp_relevance: "demo-only",
+      regulated_status: "non-production-demo",
+      created_at: "2026-07-04T18:30:00Z",
+      evidence_status: "evidence_available",
+      related_records: {
+        evidence_record: "EV-DEMO-001",
+        assurance_check: "CHK-DEMO-001",
+        action_admissibility_record: "AAR-DEMO-001",
+        wearable_context_signal: "WRS-DEMO-001",
+        trust_score: "TS-DEMO-001"
+      },
+      notes: "This is simulated seed data for the Platform B v0.2 demo console.",
+      demo_only: true
+    };
+
+    document.getElementById("useCaseJson").textContent = JSON.stringify(useCase, null, 2);
+
+    function copyJson() {
+      navigator.clipboard.writeText(JSON.stringify(useCase, null, 2)).then(function () {
+        alert("Use Case JSON copied.");
+      }).catch(function () {
+        alert("Copy failed. You can manually select the JSON.");
+      });
+    }
+  </script>
+</body>
+</html>
