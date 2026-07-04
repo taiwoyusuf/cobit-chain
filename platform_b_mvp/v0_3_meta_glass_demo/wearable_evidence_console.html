@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.3 Wearable Evidence Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #f9fafb;
+      --muted: #cbd5e1;
+      --line: #334155;
+      --green: #16a34a;
+      --yellow: #ca8a04;
+      --red: #dc2626;
+      --blue: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #111827, #1e293b);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    a {
+      color: #93c5fd;
+    }
+
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 0;
+      padding: 12px;
+      font-size: 16px;
+      background: var(--blue);
+      color: var(--text);
+      font-weight: bold;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .record {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.22);
+      border: 1px solid var(--green);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.22);
+      border: 1px solid var(--yellow);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.22);
+      border: 1px solid var(--red);
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #020617;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: #d1d5db;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.3 Wearable Evidence Console</h1>
+    <p>Linked evidence view for the Meta Glass Wearable Field Demo.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <p><strong>Demo-only boundary:</strong> Non-production. Non-regulated. Non-confidential.</p>
+      <p><strong>Doctrine:</strong> Wearables are not the product. Context-assured evidence is the product.</p>
+      <p><strong>Strong phrase:</strong> Smart glasses capture the scene. Platform B proves whether the scene was admissible for action.</p>
+      <p><a href="wearable_capture.html">Back to wearable capture page</a></p>
+      <button onclick="renderRecords()">Refresh Records</button>
+      <button class="secondary" onclick="downloadAllRecords()">Download All Records JSON</button>
+      <button class="secondary" onclick="clearRecords()">Clear Local Demo Records</button>
+    </section>
+
+    <section class="card">
+      <h2>Evidence Console</h2>
+      <div id="recordCount">Loading records...</div>
+      <div id="records"></div>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "platform_b_v03_wearable_records";
+
+    function loadRecords() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function signalClass(signal) {
+      const normalized = String(signal || "").toLowerCase();
+      if (normalized === "green") return "green";
+      if (normalized === "red") return "red";
+      return "yellow";
+    }
+
+    function renderRecords() {
+      const records = loadRecords();
+      const recordsDiv = document.getElementById("records");
+      document.getElementById("recordCount").textContent = records.length + " wearable evidence record(s) found.";
+
+      if (records.length === 0) {
+        recordsDiv.innerHTML = "<p>No local demo records yet. Create one from the wearable capture page.</p>";
+        return;
+      }
+
+      recordsDiv.innerHTML = records.map(function (record) {
+        const badgeClass = signalClass(record.context_assurance_signal);
+        return `
+          <div class="record">
+            <div class="badge ${badgeClass}">${escapeHtml(record.context_assurance_signal)} — ${escapeHtml(record.action_admissibility_result)}</div>
+            <p><strong>Evidence ID:</strong> ${escapeHtml(record.evidence_id)}</p>
+            <p><strong>Equipment:</strong> ${escapeHtml(record.equipment_id)} | <strong>SOP:</strong> ${escapeHtml(record.sop_step)}</p>
+            <p><strong>Trust score update:</strong> ${escapeHtml(record.operational_trust_score_update)}</p>
+            <p><strong>Evidence file:</strong> ${escapeHtml(record.evidence_file_name || "None")}</p>
+            <p><strong>Linkage:</strong> ${escapeHtml(record.linkage_status)}</p>
+            <pre>${escapeHtml(JSON.stringify(record, null, 2))}</pre>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function downloadAllRecords() {
+      const records = loadRecords();
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "platform_b_v0_3_wearable_evidence_records.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearRecords() {
+      if (confirm("Clear local demo records?")) {
+        localStorage.removeItem(storageKey);
+        renderRecords();
+      }
+    }
+
+    renderRecords();
+  </script>
+</body>
+</html>

@@ -32,7 +32,7 @@
     }
 
     main {
-      max-width: 760px;
+      max-width: 780px;
       margin: 0 auto;
       padding: 18px;
     }
@@ -51,6 +51,10 @@
     p {
       color: var(--muted);
       line-height: 1.5;
+    }
+
+    a {
+      color: #93c5fd;
     }
 
     .card {
@@ -175,6 +179,7 @@
       </div>
       <p><strong>Doctrine:</strong> Wearables are not the product. Context-assured evidence is the product.</p>
       <p><strong>Strong phrase:</strong> Smart glasses capture the scene. Platform B proves whether the scene was admissible for action.</p>
+      <p><a href="wearable_evidence_console.html">Open v0.3 Wearable Evidence Console</a></p>
     </section>
 
     <section class="card">
@@ -218,27 +223,31 @@
         <option>Stop</option>
       </select>
 
-      <button onclick="generateDemoSignal()">Generate Demo Context Signal</button>
+      <button onclick="generateLinkedEvidenceRecord()">Create Linked Evidence Record</button>
+      <button class="secondary" onclick="downloadCurrentRecord()">Download Current Record JSON</button>
       <button class="secondary" onclick="clearDemo()">Clear Demo</button>
     </section>
 
     <section class="card">
-      <h2>Platform B Demo Result</h2>
+      <h2>Platform B Linked Demo Result</h2>
       <div id="signalBox" class="signal yellow">Waiting for demo evidence capture.</div>
 
-      <h2>Wearable Capture Draft Record</h2>
+      <h2>Linked Wearable Evidence Record</h2>
       <pre id="recordOutput">No record generated yet.</pre>
     </section>
 
     <section class="card">
-      <h2>v0.3 Success Criteria</h2>
-      <p>A reviewer should be able to see one wearable-captured photo or video, one context-assurance signal, one action admissibility result, one operational trust score update, and one exportable evidence summary.</p>
+      <h2>Day 4 Linkage</h2>
+      <p>This page now creates a linked demo evidence record with an evidence ID, context signal, action admissibility result, trust score update, and export readiness flag.</p>
+      <p>The record is saved locally in the browser for the v0.3 wearable evidence console.</p>
     </section>
   </main>
 
   <script>
     const evidenceInput = document.getElementById("evidenceFile");
     const preview = document.getElementById("preview");
+    const storageKey = "platform_b_v03_wearable_records";
+    let currentRecord = null;
 
     evidenceInput.addEventListener("change", function () {
       preview.innerHTML = "";
@@ -268,7 +277,25 @@
       preview.style.display = "block";
     });
 
-    function generateDemoSignal() {
+    function loadRecords() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveRecord(record) {
+      const records = loadRecords();
+      records.unshift(record);
+      localStorage.setItem(storageKey, JSON.stringify(records.slice(0, 25)));
+    }
+
+    function makeId(prefix) {
+      return prefix + "-" + Date.now() + "-" + Math.random().toString(16).slice(2, 8).toUpperCase();
+    }
+
+    function generateLinkedEvidenceRecord() {
       const file = evidenceInput.files[0];
       const aiRecommendation = document.getElementById("aiRecommendation").value;
       const requestedAction = document.getElementById("requestedAction").value;
@@ -295,16 +322,21 @@
         reason = "Demo evidence present but review is required before action.";
       }
 
-      const signalBox = document.getElementById("signalBox");
-      signalBox.className = "signal " + signal.toLowerCase();
-      signalBox.textContent = signal + " context-assurance signal — " + admissibility;
-
+      const score = signal === "Green" ? 88 : signal === "Yellow" ? 62 : 25;
       const now = new Date().toISOString();
-      const record = {
+      const evidenceId = makeId("EV-WEARABLE-DEMO");
+      const contextSignalId = makeId("CTX");
+      const actionRecordId = makeId("AAR");
+      const trustScoreId = makeId("TS");
+
+      currentRecord = {
         platform_b_version: "v0.3",
         demo_name: "Meta Glass Wearable Field Demo",
         generated_at: now,
-        evidence_id: "EV-WEARABLE-DEMO-" + Date.now(),
+        evidence_id: evidenceId,
+        context_signal_id: contextSignalId,
+        action_admissibility_record_id: actionRecordId,
+        trust_score_record_id: trustScoreId,
         operator_id: document.getElementById("operatorId").value,
         location: document.getElementById("location").value,
         equipment_id: document.getElementById("equipmentId").value,
@@ -318,18 +350,41 @@
         requested_action: requestedAction,
         context_assurance_signal: signal,
         action_admissibility_result: admissibility,
-        trust_score_demo_update: signal === "Green" ? 88 : signal === "Yellow" ? 62 : 25,
+        operational_trust_score_update: score,
+        exportable_evidence_summary_ready: true,
+        linkage_status: "Linked wearable evidence -> context signal -> action admissibility -> trust score update",
         reason: reason,
         disclaimer: "Demo only. Non-production. Non-regulated. Non-confidential."
       };
 
-      document.getElementById("recordOutput").textContent = JSON.stringify(record, null, 2);
+      saveRecord(currentRecord);
+
+      const signalBox = document.getElementById("signalBox");
+      signalBox.className = "signal " + signal.toLowerCase();
+      signalBox.textContent = signal + " context-assurance signal — " + admissibility + " — Trust score: " + score;
+
+      document.getElementById("recordOutput").textContent = JSON.stringify(currentRecord, null, 2);
+    }
+
+    function downloadCurrentRecord() {
+      if (!currentRecord) {
+        generateLinkedEvidenceRecord();
+      }
+
+      const blob = new Blob([JSON.stringify(currentRecord, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = currentRecord.evidence_id + ".json";
+      link.click();
+      URL.revokeObjectURL(url);
     }
 
     function clearDemo() {
       evidenceInput.value = "";
       preview.innerHTML = "";
       preview.style.display = "none";
+      currentRecord = null;
       document.getElementById("signalBox").className = "signal yellow";
       document.getElementById("signalBox").textContent = "Waiting for demo evidence capture.";
       document.getElementById("recordOutput").textContent = "No record generated yet.";
