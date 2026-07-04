@@ -1,0 +1,285 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Evidence Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1080px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 28px 34px;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(37, 99, 235, 0.18);
+      color: #bfdbfe;
+      border: 1px solid rgba(37, 99, 235, 0.55);
+    }
+
+    .demo {
+      background: rgba(202, 138, 4, 0.16);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.55);
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .nav {
+      margin-top: 14px;
+    }
+
+    .nav a {
+      display: inline-block;
+      color: #bfdbfe;
+      text-decoration: none;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-right: 8px;
+      margin-top: 8px;
+      background: #0b1220;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — Evidence Viewer</h1>
+    <p>
+      Demo-only evidence viewer showing how Platform B presents evidence metadata,
+      evidence status, source, storage reference, and relationship to a governed AI use case.
+    </p>
+
+    <div class="nav">
+      <a href="wearable_context_signal_console.html">Open Wearable / Context Signal Console</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Evidence Record</h2>
+      <span class="badge demo">demo evidence</span>
+
+      <div class="row">
+        <div class="k">Evidence ID</div>
+        <div class="v">EV-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Use Case ID</div>
+        <div class="v">UC-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Evidence Type</div>
+        <div class="v">context_readiness_note</div>
+      </div>
+
+      <div class="row">
+        <div class="k">File Name</div>
+        <div class="v">demo_context_readiness_note.txt</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Source</div>
+        <div class="v">wearable_context_simulator</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Captured By</div>
+        <div class="v">OP-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Captured At</div>
+        <div class="v">2026-07-04T18:31:00Z</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Evidence Status</div>
+        <div class="v">captured</div>
+      </div>
+
+      <div class="guardrail">
+        Demo guardrail: this record is simulated seed data. It is not production, GMP, clinical,
+        patient, customer, or regulated evidence.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Evidence Interpretation</h2>
+
+      <div class="row">
+        <div class="k">Storage Reference</div>
+        <div class="v">demo/evidence-files/UC-DEMO-001/EV-DEMO-001/demo_context_readiness_note.txt</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Integrity State</div>
+        <div class="v">demo_integrity_notarization_not_applied</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Summary</div>
+        <div class="v">
+          Simulated evidence note showing that an operator, equipment, SOP step, and work-order context
+          were captured before a proceed/review decision.
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="k">Evidence Meaning</div>
+        <div class="v">
+          The evidence supports context visibility. It does not by itself authorize execution.
+          It must be evaluated with authority state, action admissibility, assurance checks, and trust score.
+        </div>
+      </div>
+
+      <button onclick="copyEvidence()">Copy Evidence JSON</button>
+
+      <h2 style="margin-top:24px;">Evidence JSON</h2>
+      <pre id="evidenceJson"></pre>
+    </section>
+  </main>
+
+  <script>
+    const evidence = {
+      evidence_id: "EV-DEMO-001",
+      use_case_id: "UC-DEMO-001",
+      evidence_type: "context_readiness_note",
+      file_name: "demo_context_readiness_note.txt",
+      storage_reference: "demo/evidence-files/UC-DEMO-001/EV-DEMO-001/demo_context_readiness_note.txt",
+      source: "wearable_context_simulator",
+      captured_by: "OP-DEMO-001",
+      captured_at: "2026-07-04T18:31:00Z",
+      evidence_status: "captured",
+      integrity_state: "demo_integrity_notarization_not_applied",
+      summary: "Simulated evidence note showing that an operator, equipment, SOP step, and work-order context were captured before a proceed/review decision.",
+      demo_only: true
+    };
+
+    document.getElementById("evidenceJson").textContent = JSON.stringify(evidence, null, 2);
+
+    function copyEvidence() {
+      const text = JSON.stringify(evidence, null, 2);
+      navigator.clipboard.writeText(text).then(function () {
+        alert("Evidence JSON copied.");
+      }).catch(function () {
+        alert("Copy failed. You can manually select the JSON.");
+      });
+    }
+  </script>
+</body>
+</html>

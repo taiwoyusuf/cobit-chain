@@ -4,9 +4,10 @@
 
 DEMO UI ONLY
 
-## Current screen
+## Screens
 
-Wearable / Context Signal Console
+- Wearable / Context Signal Console
+- Evidence Viewer
 
 ## Demo guardrail
 
