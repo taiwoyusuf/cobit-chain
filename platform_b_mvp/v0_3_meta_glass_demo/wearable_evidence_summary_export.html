@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.3 Wearable Evidence Summary Export</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #f9fafb;
+      --muted: #cbd5e1;
+      --line: #334155;
+      --green: #16a34a;
+      --yellow: #ca8a04;
+      --red: #dc2626;
+      --blue: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #111827, #1e293b);
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    a {
+      color: #93c5fd;
+    }
+
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 0;
+      padding: 12px;
+      font-size: 16px;
+      background: var(--blue);
+      color: var(--text);
+      font-weight: bold;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: bold;
+      margin: 4px 4px 8px 0;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.22);
+      border: 1px solid var(--green);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.22);
+      border: 1px solid var(--yellow);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.22);
+      border: 1px solid var(--red);
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #020617;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: #d1d5db;
+      font-size: 13px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #111827;
+      }
+
+      header, .card {
+        background: #ffffff;
+        color: #111827;
+        box-shadow: none;
+      }
+
+      p, pre {
+        color: #111827;
+      }
+
+      button, a {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.3 Wearable Context Assurance Evidence Summary</h1>
+    <p>Exportable summary for the Meta Glass Wearable Field Demo.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <p><strong>Demo-only boundary:</strong> Non-production. Non-regulated. Non-confidential.</p>
+      <p><strong>Doctrine:</strong> Wearables are not the product. Context-assured evidence is the product.</p>
+      <p><strong>Strong phrase:</strong> Smart glasses capture the scene. Platform B proves whether the scene was admissible for action.</p>
+      <p><a href="wearable_capture.html">Back to wearable capture</a> | <a href="wearable_evidence_console.html">Open evidence console</a></p>
+      <button onclick="buildSummary()">Refresh Export Summary</button>
+      <button class="secondary" onclick="downloadSummaryJson()">Download Summary JSON</button>
+      <button class="secondary" onclick="window.print()">Print / Save as PDF</button>
+    </section>
+
+    <section class="card">
+      <h2>Executive Summary</h2>
+      <div class="summary-grid">
+        <div class="metric">Evidence records <strong id="totalRecords">0</strong></div>
+        <div class="metric">Green signals <strong id="greenCount">0</strong></div>
+        <div class="metric">Yellow signals <strong id="yellowCount">0</strong></div>
+        <div class="metric">Red signals <strong id="redCount">0</strong></div>
+        <div class="metric">Latest trust score <strong id="latestScore">N/A</strong></div>
+        <div class="metric">Export readiness <strong id="exportReady">N/A</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Reviewer View</h2>
+      <div id="reviewerView">No summary generated yet.</div>
+    </section>
+
+    <section class="card">
+      <h2>Exportable Evidence Summary JSON</h2>
+      <pre id="summaryJson">No summary generated yet.</pre>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "platform_b_v03_wearable_records";
+    let currentSummary = null;
+
+    function loadRecords() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function signalClass(signal) {
+      const normalized = String(signal || "").toLowerCase();
+      if (normalized === "green") return "green";
+      if (normalized === "red") return "red";
+      return "yellow";
+    }
+
+    function buildSummary() {
+      const records = loadRecords();
+      const green = records.filter(r => r.context_assurance_signal === "Green").length;
+      const yellow = records.filter(r => r.context_assurance_signal === "Yellow").length;
+      const red = records.filter(r => r.context_assurance_signal === "Red").length;
+      const latest = records[0] || null;
+
+      currentSummary = {
+        platform_b_version: "v0.3",
+        report_name: "Platform B v0.3 Wearable Context Assurance Evidence Summary",
+        demo_name: "Meta Glass Wearable Field Demo",
+        generated_at: new Date().toISOString(),
+        demo_boundary: "Non-production. Non-regulated. Non-confidential.",
+        doctrine: "Wearables are not the product. Context-assured evidence is the product.",
+        strong_phrase: "Smart glasses capture the scene. Platform B proves whether the scene was admissible for action.",
+        record_count: records.length,
+        signal_counts: {
+          green: green,
+          yellow: yellow,
+          red: red
+        },
+        latest_evidence_id: latest ? latest.evidence_id : null,
+        latest_context_signal: latest ? latest.context_assurance_signal : null,
+        latest_action_admissibility_result: latest ? latest.action_admissibility_result : null,
+        latest_operational_trust_score_update: latest ? latest.operational_trust_score_update : null,
+        export_readiness: records.length > 0 ? "Ready for demo review" : "No local demo record available",
+        reviewer_success_criteria: {
+          wearable_evidence: records.length > 0 && !!latest.evidence_file_name,
+          context_assurance_signal: records.length > 0 && !!latest.context_assurance_signal,
+          action_admissibility_result: records.length > 0 && !!latest.action_admissibility_result,
+          operational_trust_score_update: records.length > 0 && latest.operational_trust_score_update !== undefined,
+          exportable_evidence_summary: true
+        },
+        records: records,
+        disclaimer: "Demo only. Do not use for production, GMP, clinical, validation, patient, customer, regulated operations, or regulatory submission decisions."
+      };
+
+      document.getElementById("totalRecords").textContent = records.length;
+      document.getElementById("greenCount").textContent = green;
+      document.getElementById("yellowCount").textContent = yellow;
+      document.getElementById("redCount").textContent = red;
+      document.getElementById("latestScore").textContent = latest ? latest.operational_trust_score_update : "N/A";
+      document.getElementById("exportReady").textContent = records.length > 0 ? "Ready" : "No record";
+
+      if (!latest) {
+        document.getElementById("reviewerView").innerHTML = "<p>No local wearable evidence record found. Create one from the wearable capture page first.</p>";
+      } else {
+        const badge = signalClass(latest.context_assurance_signal);
+        document.getElementById("reviewerView").innerHTML = `
+          <p><span class="badge ${badge}">${escapeHtml(latest.context_assurance_signal)} — ${escapeHtml(latest.action_admissibility_result)}</span></p>
+          <p><strong>Evidence ID:</strong> ${escapeHtml(latest.evidence_id)}</p>
+          <p><strong>Evidence file:</strong> ${escapeHtml(latest.evidence_file_name || "None")}</p>
+          <p><strong>Operator:</strong> ${escapeHtml(latest.operator_id)}</p>
+          <p><strong>Location:</strong> ${escapeHtml(latest.location)}</p>
+          <p><strong>Equipment:</strong> ${escapeHtml(latest.equipment_id)}</p>
+          <p><strong>SOP step:</strong> ${escapeHtml(latest.sop_step)}</p>
+          <p><strong>AI recommendation:</strong> ${escapeHtml(latest.ai_recommendation)}</p>
+          <p><strong>Human reviewer:</strong> ${escapeHtml(latest.human_reviewer)}</p>
+          <p><strong>Requested action:</strong> ${escapeHtml(latest.requested_action)}</p>
+          <p><strong>Operational trust score update:</strong> ${escapeHtml(latest.operational_trust_score_update)}</p>
+          <p><strong>Linkage:</strong> ${escapeHtml(latest.linkage_status)}</p>
+        `;
+      }
+
+      document.getElementById("summaryJson").textContent = JSON.stringify(currentSummary, null, 2);
+    }
+
+    function downloadSummaryJson() {
+      if (!currentSummary) {
+        buildSummary();
+      }
+
+      const blob = new Blob([JSON.stringify(currentSummary, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "platform_b_v0_3_wearable_context_assurance_evidence_summary.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    buildSummary();
+  </script>
+</body>
+</html>
