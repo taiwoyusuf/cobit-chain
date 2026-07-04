@@ -1,0 +1,405 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Platform B v0.2 — Wearable / Context Signal Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 28px 34px;
+      border-bottom: 1px solid #334155;
+      background: #111827;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #9ca3af;
+      max-width: 1050px;
+      line-height: 1.5;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      padding: 28px 34px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 88px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .question {
+      background: rgba(37, 99, 235, 0.14);
+      border: 1px solid rgba(37, 99, 235, 0.45);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .guardrail {
+      background: rgba(220, 38, 38, 0.10);
+      border: 1px solid rgba(220, 38, 38, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      color: #fecaca;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .green {
+      background: rgba(22, 163, 74, 0.20);
+      color: #86efac;
+      border: 1px solid rgba(22, 163, 74, 0.60);
+    }
+
+    .yellow {
+      background: rgba(202, 138, 4, 0.20);
+      color: #fde68a;
+      border: 1px solid rgba(202, 138, 4, 0.60);
+    }
+
+    .red {
+      background: rgba(220, 38, 38, 0.20);
+      color: #fecaca;
+      border: 1px solid rgba(220, 38, 38, 0.60);
+    }
+
+    .row {
+      background: #1f2937;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .k {
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .v {
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      header {
+        padding: 22px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platform B v0.2 — Wearable / Context Signal Console</h1>
+    <p>
+      Demo-only context-assurance simulator. It checks whether the right person, in the right place,
+      with the right equipment, at the right SOP step, under the right authority, with the right evidence,
+      is allowed to proceed.
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Context Signal Simulator</h2>
+
+      <div class="question">
+        <strong>v0.2 question:</strong>
+        Is the workflow context aligned enough to proceed, or should Platform B require review or escalation?
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Operator ID</label>
+          <input id="operator_id" value="OP-DEMO-001">
+        </div>
+
+        <div>
+          <label>Location / Room</label>
+          <input id="location" value="Demo Cleanroom A">
+        </div>
+
+        <div>
+          <label>Equipment ID</label>
+          <input id="equipment_id" value="EQP-DEMO-1803">
+        </div>
+
+        <div>
+          <label>SOP Step</label>
+          <input id="sop_step" value="Step 4 - Simulated readiness confirmation">
+        </div>
+
+        <div>
+          <label>Work Order</label>
+          <input id="work_order" value="WO-DEMO-001">
+        </div>
+
+        <div>
+          <label>Batch / Workflow Context</label>
+          <input id="batch_context" value="BATCH-DEMO-001">
+        </div>
+
+        <div>
+          <label>Evidence File ID</label>
+          <input id="evidence_file_id" value="EV-DEMO-001">
+        </div>
+
+        <div>
+          <label>AI Recommendation</label>
+          <select id="ai_recommendation">
+            <option selected>Proceed</option>
+            <option>Hold</option>
+            <option>Escalate</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Authority State</label>
+          <select id="authority_state">
+            <option>approved_to_proceed</option>
+            <option selected>review_required</option>
+            <option>not_authorized</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Requested Signal</label>
+          <select id="requested_signal">
+            <option>green</option>
+            <option selected>yellow</option>
+            <option>red</option>
+          </select>
+        </div>
+      </div>
+
+      <label style="margin-top:16px;">Evidence Note</label>
+      <textarea id="evidence_note">Simulated evidence note showing that operator, equipment, SOP step, work order, and evidence reference were captured before a proceed/review decision.</textarea>
+
+      <button onclick="evaluateSignal()">Evaluate Context Signal</button>
+
+      <div class="guardrail">
+        Demo guardrail: simulated data only. No production, GMP, clinical, patient, customer, or regulated evidence is created by this screen.
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Platform B Decision</h2>
+
+      <div id="decisionBadge" class="badge yellow">yellow — review required</div>
+
+      <div class="row">
+        <div class="k">Decision</div>
+        <div class="v" id="decisionText">review_required</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Trust State</div>
+        <div class="v" id="trustState">partially_assured</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Human Review Required</div>
+        <div class="v" id="humanReview">true</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Evidence ID</div>
+        <div class="v" id="evidenceId">EV-DEMO-001</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Reason</div>
+        <div class="v" id="reasonText">
+          The required context is present, but human review is required before proceeding.
+        </div>
+      </div>
+
+      <h2 style="margin-top:24px;">Generated Payload</h2>
+      <pre id="payloadPreview"></pre>
+    </aside>
+  </main>
+
+  <script>
+    function val(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function evaluateSignal() {
+      const payload = {
+        signal_id: "WRS-DEMO-" + Math.floor(Math.random() * 9000 + 1000),
+        use_case_id: "UC-DEMO-001",
+        operator_id: val("operator_id"),
+        location: val("location"),
+        equipment_id: val("equipment_id"),
+        sop_step: val("sop_step"),
+        work_order: val("work_order"),
+        batch_context: val("batch_context"),
+        evidence_file_id: val("evidence_file_id"),
+        ai_recommendation: val("ai_recommendation"),
+        authority_state: val("authority_state"),
+        requested_signal: val("requested_signal"),
+        evidence_note: val("evidence_note"),
+        timestamp: new Date().toISOString(),
+        demo_only: true
+      };
+
+      const missingRequired = [
+        payload.operator_id,
+        payload.location,
+        payload.equipment_id,
+        payload.sop_step,
+        payload.work_order,
+        payload.evidence_file_id
+      ].some(x => !x);
+
+      let signal = "yellow";
+      let decision = "review_required";
+      let trustState = "partially_assured";
+      let humanReviewRequired = true;
+      let reason = "The required context is present, but human review is required before proceeding.";
+
+      if (missingRequired) {
+        signal = "red";
+        decision = "stop_escalate";
+        trustState = "not_assured";
+        reason = "One or more required context fields are missing. Stop or escalate.";
+      } else if (payload.authority_state === "not_authorized") {
+        signal = "red";
+        decision = "stop_escalate";
+        trustState = "not_authorized";
+        reason = "The operator or workflow is not authorized for this simulated action.";
+      } else if (payload.ai_recommendation === "Escalate" || payload.requested_signal === "red") {
+        signal = "red";
+        decision = "stop_escalate";
+        trustState = "escalation_required";
+        reason = "The AI recommendation or requested signal requires escalation.";
+      } else if (
+        payload.authority_state === "approved_to_proceed" &&
+        payload.requested_signal === "green" &&
+        payload.ai_recommendation === "Proceed"
+      ) {
+        signal = "green";
+        decision = "proceed";
+        trustState = "context_assured";
+        humanReviewRequired = false;
+        reason = "Required context fields are present, authority is approved, evidence is referenced, and the simulated signal supports proceeding.";
+      }
+
+      payload.assurance_signal = signal;
+      payload.decision = decision;
+      payload.trust_state = trustState;
+      payload.human_review_required = humanReviewRequired;
+      payload.reason = reason;
+
+      const badge = document.getElementById("decisionBadge");
+      badge.className = "badge " + signal;
+      badge.textContent = signal + " — " + decision.replaceAll("_", " ");
+
+      document.getElementById("decisionText").textContent = decision;
+      document.getElementById("trustState").textContent = trustState;
+      document.getElementById("humanReview").textContent = String(humanReviewRequired);
+      document.getElementById("evidenceId").textContent = payload.evidence_file_id || "missing";
+      document.getElementById("reasonText").textContent = reason;
+      document.getElementById("payloadPreview").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    evaluateSignal();
+  </script>
+</body>
+</html>
