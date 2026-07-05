@@ -1,0 +1,48 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Readiness Trust State</title>
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#07111f;color:#eef5ff;}
+.wrap{max-width:1180px;margin:0 auto;padding:34px 24px;}
+a{color:#9cc7ff;text-decoration:none;font-weight:700;}
+.hero{border:1px solid #263a55;background:#0d1b2d;border-radius:22px;padding:28px;margin-top:18px;}
+.kicker{letter-spacing:.14em;text-transform:uppercase;color:#8fb7ff;font-size:12px;font-weight:700;}
+h1{font-size:38px;line-height:1.05;margin:12px 0;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px;}
+.card{border:1px solid #263a55;background:#0b1728;border-radius:18px;padding:20px;}
+.state{display:inline-block;padding:7px 11px;border-radius:999px;background:#152d4d;font-weight:700;}
+.muted{color:#aab9cf;line-height:1.55;}
+pre{white-space:pre-wrap;background:#050b14;border:1px solid #263a55;border-radius:16px;padding:16px;overflow:auto;}
+</style>
+</head>
+<body>
+<main class="wrap">
+<a href="index.html">Back to v0.6 console</a>
+<section class="hero">
+<div class="kicker">v0.6 Site State View</div>
+<h1>Site Readiness Trust State</h1>
+<p class="muted">Summarizes site readiness across people, rooms, equipment, procedures, environment, time, evidence, review status, and exceptions.</p>
+<span class="state">review_ready</span>
+</section>
+<section class="grid">
+<article class="card"><h2>Primary object</h2><p>SRTS-DEMO-0001</p></article>
+<article class="card"><h2>Evidence line</h2><p>Site state shows readiness is an evidence state, not just a room or sensor state.</p></article>
+<article class="card"><h2>Core doctrine</h2><p>A regulated action is not trusted because one signal is green. It is trusted when the evidence mesh agrees.</p></article>
+<article class="card"><h2>Protected phrase</h2><p>Quiet when trusted. Alert when trust is at risk. Evidence when action is challenged.</p></article>
+</section>
+<section class="hero">
+<h2>Demo packet</h2>
+<pre>{
+  "platform": "Platform B v0.6",
+  "view": "Site Readiness Trust State",
+  "status": "review_ready",
+  "guardrail_status": "controlled_non_production_demonstrator"
+}</pre>
+</section>
+<p class="muted">Controlled non-production demonstrator only. No patient data. No real GMP batch data. No confidential company information. No validated GMP, clinical, batch release, shipment release, regulatory submission, autonomous execution, or production compliance claim.</p>
+</main>
+</body>
+</html>
