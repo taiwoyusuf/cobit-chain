@@ -1,0 +1,7 @@
+﻿[
+  {"event_id":"CTX-ENDOSAFE-001","scenario":"Endosafe Backup Guardian","context_signal":"yellow","action_admissibility":"review_required","trust_state":"partially_assured"},
+  {"event_id":"CTX-SG-001","scenario":"Speedy Glove Black Box Gateway","context_signal":"green","action_admissibility":"proceed","trust_state":"assured"},
+  {"event_id":"CTX-CLEANROOM-001","scenario":"CleanroomTrust","context_signal":"yellow","action_admissibility":"review_required","trust_state":"partially_assured"},
+  {"event_id":"CTX-LASAIR-EMS-001","scenario":"Lasair / EMS Evidence Overlay","context_signal":"yellow","action_admissibility":"review_required","trust_state":"partially_assured"},
+  {"event_id":"CTX-IRLT-001","scenario":"IRLT Dose-Time Evidence Assurance","context_signal":"red","action_admissibility":"stop","trust_state":"not_assured"}
+]
