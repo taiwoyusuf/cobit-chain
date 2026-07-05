@@ -1,0 +1,24 @@
+﻿{
+  "platform": "Platform B v0.6",
+  "release_working_title": "Operational Trust Passport and Ambient Evidence Mesh",
+  "doctrine": "A regulated action is not trusted because one signal is green. It is trusted when the evidence mesh agrees.",
+  "protected_phrase": "Quiet when trusted. Alert when trust is at risk. Evidence when action is challenged.",
+  "demo_objects": {
+    "operational_trust_passport": "OTP-DEMO-ROOM-001",
+    "ambient_evidence_mesh": "AEM-DEMO-0002",
+    "action_admissibility_ledger": "AAL-DEMO-0002",
+    "context_witness_chain": "CWC-DEMO-0001",
+    "reviewer_evidence_packet": "REP-DEMO-0001",
+    "exception_only_alert": "EOA-DEMO-0001",
+    "site_readiness_trust_state": "SRTS-DEMO-0001"
+  },
+  "scenario": {
+    "name": "Cleanroom readiness review",
+    "trust_state": "partially_assured",
+    "action_admissibility": "review_required",
+    "alert_state": "yellow",
+    "site_readiness_state": "review_ready",
+    "evidence_gap_summary": "Cleaning confirmation and environmental review confirmation require reviewer assessment."
+  },
+  "guardrail_status": "controlled_non_production_demonstrator"
+}
