@@ -1,0 +1,32 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ambient Trust Dashboard</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#07111f;color:#eef5ff;margin:0;}
+.wrap{max-width:1180px;margin:0 auto;padding:34px 24px;}
+a{color:#9cc7ff;text-decoration:none;font-weight:700;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:22px;}
+.card{border:1px solid #263a55;background:#0d1b2d;border-radius:18px;padding:20px;}
+.state{display:inline-block;padding:6px 10px;border-radius:999px;background:#152d4d;font-weight:700;}
+.guardrail{margin-top:24px;color:#aab9cf;font-size:14px;}
+</style>
+</head>
+<body>
+<main class="wrap">
+<a href="index.html">Back to console</a>
+<h1>Ambient Trust Dashboard</h1>
+<p>Quiet when trusted. Alert when trust is at risk. Evidence when action is challenged.</p>
+<section class="grid">
+<article class="card"><h2>Endosafe Backup Guardian</h2><span class="state">Yellow</span><p>Backup evidence requires reviewer confirmation.</p></article>
+<article class="card"><h2>Speedy Glove Black Box Gateway</h2><span class="state">Green</span><p>External evidence is linked to the demo asset.</p></article>
+<article class="card"><h2>CleanroomTrust</h2><span class="state">Yellow</span><p>Environmental and cleaning evidence require review.</p></article>
+<article class="card"><h2>Lasair / EMS Overlay</h2><span class="state">Yellow</span><p>Environmental evidence is incomplete or stale.</p></article>
+<article class="card"><h2>IRLT Dose-Time Assurance</h2><span class="state">Red</span><p>Dose-time action is not admissible until evidence is complete.</p></article>
+</section>
+<p class="guardrail">Demo-only. Not validated GMP. Not for patient, batch, release, shipment, or regulated decision use.</p>
+</main>
+</body>
+</html>

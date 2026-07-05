@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Witness Event Factory</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#07111f;color:#eef5ff;margin:0;}
+.wrap{max-width:1100px;margin:0 auto;padding:34px 24px;}
+a{color:#9cc7ff;text-decoration:none;font-weight:700;}
+.panel{border:1px solid #263a55;background:#0d1b2d;border-radius:20px;padding:24px;margin-top:18px;}
+label{display:block;margin-top:14px;color:#cfe2ff;font-weight:700;}
+select,input{width:100%;box-sizing:border-box;margin-top:6px;padding:12px;border-radius:10px;border:1px solid #3b5476;background:#081424;color:#eef5ff;}
+button{margin-top:18px;padding:12px 16px;border:0;border-radius:10px;font-weight:700;cursor:pointer;}
+pre{white-space:pre-wrap;background:#050b14;border:1px solid #263a55;border-radius:16px;padding:18px;overflow:auto;}
+</style>
+</head>
+<body>
+<main class="wrap">
+<a href="index.html">Back to console</a>
+<h1>Context Witness Event Factory</h1>
+<p>The witness does not approve. The witness provides a signal that Platform B converts into evidence, assurance, admissibility, trust state, and exception-only alerts.</p>
+<section class="panel">
+<label>Demo scenario</label>
+<select id="scenario"><option>Endosafe Backup Guardian</option><option>Speedy Glove Black Box Gateway</option><option>CleanroomTrust</option><option>Lasair / EMS Evidence Overlay</option><option>IRLT Dose-Time Evidence Assurance</option></select>
+<label>Source type</label>
+<select id="source"><option>qr</option><option>nfc</option><option>glasses</option><option>phone</option><option>m5stack</option><option>sensor</option><option>particle_counter</option><option>ems</option><option>manual</option></select>
+<label>Context signal</label>
+<select id="signal"><option>green</option><option>yellow</option><option>red</option></select>
+<label>Asset or workflow ID</label>
+<input id="asset" value="EQP-DEMO-ENDOSAFE-001">
+<button onclick="makeEvent()">Generate event</button>
+</section>
+<section class="panel">
+<h2>Generated context witness event</h2>
+<pre id="out">{}</pre>
+</section>
+</main>
+<script>
+function makeEvent(){
+var signal=document.getElementById("signal").value;
+var action=signal==="green"?"proceed":signal==="yellow"?"review_required":"stop";
+var trust=signal==="green"?"assured":signal==="yellow"?"partially_assured":"not_assured";
+var recommended=signal==="green"?"continue":signal==="yellow"?"assign_reviewer":"stop";
+var event={event_id:"CTX-DEMO-"+Date.now(),source_type:document.getElementById("source").value,device_vendor:"demo",asset_id:document.getElementById("asset").value,operator_id:"Demo Operator 001",location_signal:"Demo Area",workflow_context:document.getElementById("scenario").value,event_type:"evidence_capture",evidence_reference:"EV-DEMO-"+Date.now(),context_signal:signal,action_admissibility:action,trust_state:trust,recommended_action:recommended};
+document.getElementById("out").textContent=JSON.stringify(event,null,2);
+}
+makeEvent();
+</script>
+</body>
+</html>
