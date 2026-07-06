@@ -1,0 +1,29 @@
+﻿{
+  "platform": "Platform B v0.7 - Assurance-Sensed Site Runtime",
+  "guardrail_status": "controlled_non_production_demonstrator",
+  "doctrine": "The future regulated site will not only be monitored. It will be assurance-sensed.",
+  "demo_runtime": {
+    "runtime_id": "ASR-DEMO-0001",
+    "site_context": "Demo Cleanroom Area",
+    "current_runtime_state": "review_required",
+    "runtime_decision": "review_required",
+    "runtime_decision_reason": "Evidence is linked but room and environmental readiness require reviewer confirmation."
+  },
+  "demo_events": [
+    {
+      "runtime_event_id": "RTE-DEMO-0001",
+      "source_type": "qr",
+      "normalized_event_type": "room_identity_observed",
+      "event_category": "identity_event",
+      "routing_topic": "runtime.context.mesh_update",
+      "runtime_decision_impact": "review_required"
+    }
+  ],
+  "demo_scenarios": [
+    "cleanroom_entry_readiness",
+    "black_box_equipment_evidence",
+    "lasair_ems_runtime_check",
+    "dose_time_assurance",
+    "endosafe_backup_guardian"
+  ]
+}
