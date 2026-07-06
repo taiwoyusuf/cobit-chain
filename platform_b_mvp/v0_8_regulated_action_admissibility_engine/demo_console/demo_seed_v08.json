@@ -1,0 +1,30 @@
+﻿{
+  "platform": "Platform B",
+  "version": "v0.8",
+  "title": "Regulated Action Admissibility Engine",
+  "core_doctrine": "A regulated action should not proceed because data exists. It should proceed only when the evidence state makes the action admissible.",
+  "demo_scenarios": [
+    {
+      "scenario_id": "cleanroom_entry_action",
+      "action_type": "cleanroom_entry",
+      "eligibility_status": "eligible",
+      "evidence_sufficiency_status": "sufficient",
+      "admissibility_status": "admissible"
+    },
+    {
+      "scenario_id": "black_box_equipment_action",
+      "action_type": "equipment_use",
+      "eligibility_status": "conditionally_eligible",
+      "evidence_sufficiency_status": "conditionally_sufficient",
+      "admissibility_status": "human_review_required"
+    },
+    {
+      "scenario_id": "lasair_ems_environmental_action",
+      "action_type": "environment_sensitive_action",
+      "eligibility_status": "not_eligible",
+      "evidence_sufficiency_status": "conflicted",
+      "admissibility_status": "not_admissible"
+    }
+  ],
+  "guardrail": "Controlled non-production demonstrator only."
+}
