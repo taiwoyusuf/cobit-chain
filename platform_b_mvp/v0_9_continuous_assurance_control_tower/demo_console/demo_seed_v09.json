@@ -1,0 +1,28 @@
+﻿{
+  "platform": "Platform B v0.9 - Continuous Assurance Control Tower",
+  "guardrail_status": "controlled_non_production_demonstrator",
+  "core_doctrine": "Assurance is not a one-time gate. It is a living operational state.",
+  "control_tower": {
+    "control_tower_id": "CACT-DEMO-0001",
+    "site_context": "Demo Cleanroom Area",
+    "current_trust_state": "watch",
+    "current_assurance_score": 82,
+    "recommended_action": "route_review"
+  },
+  "scorecard": {
+    "scorecard_id": "SAS-DEMO-0001",
+    "overall_assurance_score": 82,
+    "overall_assurance_state": "watch"
+  },
+  "exceptions": {
+    "yellow": 2,
+    "red": 0,
+    "expired": 1,
+    "escalated": 1
+  },
+  "reviewer_workload": {
+    "pending": 3,
+    "overdue": 1,
+    "capacity_state": "constrained"
+  }
+}
