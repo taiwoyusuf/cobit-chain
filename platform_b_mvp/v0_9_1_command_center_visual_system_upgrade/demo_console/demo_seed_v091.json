@@ -1,0 +1,16 @@
+﻿{
+  "platform": "Platform B v0.9.1 - Command Center Visual System Upgrade",
+  "visual_system": "orange_graphite_command_center",
+  "release_type": "visual_system_enhancement",
+  "architecture_change": false,
+  "decision_logic_change": false,
+  "core_doctrine": "Assurance is not a one-time gate. It is a living operational state.",
+  "platform_rule": "Any device may witness. Only Platform B decides.",
+  "kpis": {
+    "assurance_score": 82,
+    "proceed_ratio": 74,
+    "open_exceptions": 3,
+    "pending_reviews": 3
+  },
+  "guardrail_status": "controlled_non_production_demonstrator"
+}
