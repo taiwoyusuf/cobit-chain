@@ -26,8 +26,7 @@ Any device may witness. Only Platform B decides.
 | Regulated translation | RAMAT Live Interpreter Mode | Translation is not approval | Platform B |
 | SafetyShare | Multilingual SafetyShare Mode | Acknowledgement is not competence proof | Platform B and human review |
 | Controlled document viewing | Controlled Document Lens | Controlled document remains source of truth | QMS and Platform B boundary |
-| Gowning and cleanroom boundary | Gowning and Cleanroom Boundary Check | Context mismatch may holdMS and Platform B boundary |
-| Gowning and cleanroom boundary | Gown action | Platform B |
+| Gowning and cleanroom boundary | Gowning and Cleanroom Boundary Check | Context mismatch may hold action | Platform B |
 | Line clearance | Line-Clearance Lens | Visual confirmation alone is insufficient | Platform B |
 | Material identity | Label and Material Identity Check | NFC or approved confirmation may be required | Platform B |
 | Batch and equipment passport | Batch Passport View, Equipment Passport View | Passport view is evidence context, not release | Platform B and authorized reviewers |
