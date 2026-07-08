@@ -1,0 +1,6096 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Thread D - RAMAT Vision Context Witness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --orange: #ff7a18;
+  --orange2: #ff9d42;
+  --graphite: #17191d;
+  --graphite2: #23262d;
+  --graphite3: #30343d;
+  --line: #3b404a;
+  --text: #f4f4f5;
+  --muted: #aeb4bf;
+  --green: #28d17c;
+  --amber: #ffbf3f;
+  --red: #ff4f5e;
+  --blue: #58a6ff;
+  --purple: #b58cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255,122,24,0.18), transparent 32%),
+    linear-gradient(135deg, #101114 0%, #181b21 48%, #0c0d10 100%);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.5fr 0.7fr;
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, rgba(35,38,45,0.96), rgba(18,20,24,0.96));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 26px;
+  padding: 28px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card:before {
+  content: "";
+  position: absolute;
+  top: -90px;
+  right: -80px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255,122,24,0.28), transparent 64%);
+}
+
+.kicker {
+  color: var(--orange2);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.subtitle {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 950px;
+  line-height: 1.55;
+}
+
+.guardrail {
+  margin-top: 18px;
+  border-left: 4px solid var(--orange);
+  padding: 14px 16px;
+  background: rgba(255,122,24,0.08);
+  border-radius: 12px;
+  color: #f7dcc8;
+}
+
+.status-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.status-tile {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.status-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.status-value {
+  font-size: 25px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 420px minmax(640px, 1fr) 420px;
+  gap: 22px;
+  align-items: start;
+}
+
+.card {
+  background: rgba(28,31,37,0.94);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.28);
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.card h3 {
+  margin: 18px 0 10px;
+  font-size: 15px;
+  color: var(--orange2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+label {
+  display: block;
+  margin: 14px 0 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+select, input, textarea {
+  width: 100%;
+  background: #121418;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,122,24,0.18);
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+button {
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #101114;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  box-shadow: 0 10px 25px rgba(255,122,24,0.25);
+}
+
+button.secondary {
+  color: var(--text);
+  background: #30343d;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+.vision-frame {
+  border-radius: 28px;
+  min-height: 470px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    linear-gradient(180deg, rgba(255,122,24,0.10), transparent 36%),
+    radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 42%),
+    #0b0d10;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.vision-topline {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.reticle {
+  width: 260px;
+  height: 260px;
+  border: 2px solid rgba(255,122,24,0.60);
+  border-radius: 32px;
+  margin: 50px auto 24px;
+  position: relative;
+}
+
+.reticle:before, .reticle:after {
+  content: "";
+  position: absolute;
+  background: rgba(255,122,24,0.80);
+}
+
+.reticle:before {
+  width: 80px;
+  height: 2px;
+  top: 129px;
+  left: 90px;
+}
+
+.reticle:after {
+  height: 80px;
+  width: 2px;
+  left: 129px;
+  top: 90px;
+}
+
+.asset-chip {
+  text-align: center;
+  margin-top: -4px;
+  color: var(--orange2);
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.micro-display {
+  width: 256px;
+  height: 256px;
+  margin: 20px auto 0;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #050607;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 16px;
+  box-shadow: inset 0 0 40px rgba(255,122,24,0.13);
+}
+
+.micro-state {
+  font-size: 34px;
+  line-height: 1.02;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.micro-reason {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.055);
+  color: var(--muted);
+  margin: 4px 5px 4px 0;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.dot.green { background: var(--green); }
+.dot.amber { background: var(--amber); }
+.dot.red { background: var(--red); }
+.dot.blue { background: var(--blue); }
+.dot.purple { background: var(--purple); }
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.kpi {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.kpi-title {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.kpi-value {
+  font-size: 22px;
+  font-weight: 900;
+  margin-top: 6px;
+}
+
+.result {
+  border-radius: 22px;
+  padding: 22px;
+  margin-top: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.result.proceed {
+  border-color: rgba(40,209,124,0.45);
+  background: rgba(40,209,124,0.08);
+}
+
+.result.hold {
+  border-color: rgba(255,191,63,0.55);
+  background: rgba(255,191,63,0.08);
+}
+
+.result.escalate {
+  border-color: rgba(255,79,94,0.55);
+  background: rgba(255,79,94,0.08);
+}
+
+.result-title {
+  font-size: 34px;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+}
+
+.result-reason {
+  color: var(--text);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.table {
+  display: grid;
+  gap: 9px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.key {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.value {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+pre {
+  background: #090a0d;
+  color: #d7dde8;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 18px;
+  overflow: auto;
+  max-height: 360px;
+  line-height: 1.45;
+  font-size: 12px;
+}
+
+.roadmap {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.locked-card {
+  border-radius: 20px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+  border: 1px dashed rgba(255,255,255,0.18);
+}
+
+.locked-card strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 8px;
+}
+
+.locked-card span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.footer {
+  margin-top: 22px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+@media (max-width: 1400px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .roadmap {
+    grid-template-columns: 1fr 1fr;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.history-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 14px 0 16px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.history-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 13px 12px;
+  background: rgba(255,255,255,0.055);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.history-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.decision-pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.decision-pill.proceed {
+  background: rgba(40,209,124,0.12);
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.32);
+}
+
+.decision-pill.hold {
+  background: rgba(255,191,63,0.12);
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.36);
+}
+
+.decision-pill.escalate {
+  background: rgba(255,79,94,0.12);
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.36);
+}
+
+.small-muted {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.endpoint-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.endpoint-buttons {
+  display: grid;
+  gap: 10px;
+}
+
+.endpoint-buttons button {
+  width: 100%;
+}
+
+.timeline {
+  display: grid;
+  gap: 10px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.timeline-item {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.045);
+  border-radius: 16px;
+  padding: 13px 14px;
+}
+
+.timeline-title {
+  font-size: 12px;
+  color: var(--orange2);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+
+.timeline-message {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.endpoint-signal {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,122,24,0.08);
+  border: 1px solid rgba(255,122,24,0.18);
+  margin-bottom: 12px;
+}
+
+.endpoint-signal strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .endpoint-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.audit-challenge-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.audit-question-list {
+  display: grid;
+  gap: 12px;
+  max-height: 430px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.audit-question-card {
+  border-radius: 18px;
+  padding: 15px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.audit-question-title {
+  font-size: 12px;
+  color: var(--orange2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
+
+.audit-question-text {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.audit-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.audit-chip {
+  border-radius: 999px;
+  padding: 8px 11px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.10);
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.audit-chip.green {
+  color: var(--green);
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.10);
+}
+
+.audit-chip.amber {
+  color: var(--amber);
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.10);
+}
+
+.audit-chip.red {
+  color: var(--red);
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.10);
+}
+
+.audit-chip.blue {
+  color: var(--blue);
+  border-color: rgba(88,166,255,0.35);
+  background: rgba(88,166,255,0.10);
+}
+
+.audit-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,122,24,0.08);
+  border: 1px solid rgba(255,122,24,0.18);
+  margin-bottom: 12px;
+}
+
+.audit-summary-box strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .audit-challenge-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.replay-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.replay-steps {
+  display: grid;
+  gap: 12px;
+}
+
+.replay-step {
+  border-radius: 18px;
+  padding: 15px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.replay-step-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255,122,24,0.14);
+  color: var(--orange2);
+  font-weight: 900;
+  border: 1px solid rgba(255,122,24,0.32);
+}
+
+.replay-step.active {
+  border-color: rgba(255,122,24,0.55);
+  background: rgba(255,122,24,0.10);
+  box-shadow: 0 0 0 3px rgba(255,122,24,0.08);
+}
+
+.replay-step.done {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.replay-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.replay-message {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.replay-command-row {
+  display: grid;
+  gap: 10px;
+}
+
+.replay-status-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.18);
+  margin-bottom: 12px;
+}
+
+.replay-status-box strong {
+  display: block;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .replay-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.connector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.connector-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,122,24,0.08);
+  border: 1px solid rgba(255,122,24,0.18);
+  margin-bottom: 12px;
+}
+
+.connector-box strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 6px;
+}
+
+.connector-route {
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  background: #090a0d;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #d7dde8;
+  padding: 12px;
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1400px) {
+  .connector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo-control-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.demo-scenario-buttons {
+  display: grid;
+  gap: 10px;
+}
+
+.demo-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.demo-mini-card {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.demo-mini-card strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 8px;
+}
+
+.demo-mini-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.bundle-status {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(40,209,124,0.08);
+  border: 1px solid rgba(40,209,124,0.20);
+  margin-bottom: 12px;
+}
+
+.bundle-status strong {
+  display: block;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .demo-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hud-control-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.hud-preview-card {
+  min-height: 360px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at center, rgba(255,122,24,0.14), transparent 45%),
+    linear-gradient(135deg, #050607 0%, #101216 58%, #050607 100%);
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-preview-card:before {
+  content: "";
+  position: absolute;
+  inset: 24px;
+  border: 1px solid rgba(255,122,24,0.22);
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.hud-lens-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hud-lens {
+  min-height: 300px;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.35);
+  padding: 22px;
+  display: grid;
+  align-content: center;
+  text-align: center;
+  box-shadow: inset 0 0 35px rgba(255,122,24,0.08);
+}
+
+.hud-lens-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.hud-big-state {
+  font-size: 38px;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.hud-small-text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: 12px;
+}
+
+.hud-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background:
+    radial-gradient(circle at center, rgba(255,122,24,0.14), transparent 38%),
+    linear-gradient(135deg, #030405 0%, #111318 50%, #030405 100%);
+  display: none;
+  padding: 38px;
+  color: var(--text);
+}
+
+.hud-fullscreen.active {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 22px;
+}
+
+.hud-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
+
+.hud-close {
+  width: auto;
+  padding: 10px 16px;
+  color: var(--text);
+  background: #30343d;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: none;
+}
+
+.hud-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.hud-full-lens {
+  border-radius: 42px;
+  border: 1px solid rgba(255,255,255,0.13);
+  background:
+    linear-gradient(180deg, rgba(255,122,24,0.10), transparent 42%),
+    rgba(0,0,0,0.42);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  padding: 34px;
+  box-shadow: inset 0 0 80px rgba(255,122,24,0.09);
+}
+
+.hud-reticle-large {
+  width: 260px;
+  height: 260px;
+  border: 2px solid rgba(255,122,24,0.58);
+  border-radius: 34px;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.hud-reticle-large:before,
+.hud-reticle-large:after {
+  content: "";
+  position: absolute;
+  background: rgba(255,122,24,0.78);
+}
+
+.hud-reticle-large:before {
+  width: 82px;
+  height: 2px;
+  top: 129px;
+  left: 89px;
+}
+
+.hud-reticle-large:after {
+  width: 2px;
+  height: 82px;
+  top: 89px;
+  left: 129px;
+}
+
+.hud-decision-large {
+  font-size: 72px;
+  font-weight: 950;
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+}
+
+.hud-decision-large.proceed {
+  color: var(--green);
+}
+
+.hud-decision-large.hold {
+  color: var(--amber);
+}
+
+.hud-decision-large.escalate {
+  color: var(--red);
+}
+
+.hud-decision-large.waiting {
+  color: var(--orange2);
+}
+
+.hud-bottom-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.hud-bottom-tile {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.hud-bottom-label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+.hud-bottom-value {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1400px) {
+  .hud-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hud-main {
+    grid-template-columns: 1fr;
+  }
+
+  .hud-bottom-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.device-passport-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.device-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.device-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.device-check.pass {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.device-check.wait {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.device-check.fail {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.device-status-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.device-status-pill.pass {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.device-status-pill.wait {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.device-status-pill.fail {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.device-check-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.device-check-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.device-readiness-summary {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.18);
+  margin-bottom: 12px;
+}
+
+.device-readiness-summary strong {
+  display: block;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .device-passport-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.servicenow-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.ci-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.ci-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.ci-check.good {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.ci-check.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.ci-check.bad {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.ci-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.ci-pill.good {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.ci-pill.warn {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.ci-pill.bad {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.ci-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.ci-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ci-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.18);
+  margin-bottom: 12px;
+}
+
+.ci-summary-box strong {
+  display: block;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .servicenow-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.validation-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.validation-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.validation-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.validation-check.good {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.validation-check.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.validation-check.bad {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.validation-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.validation-pill.good {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.validation-pill.warn {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.validation-pill.bad {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.validation-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.validation-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.validation-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,122,24,0.08);
+  border: 1px solid rgba(255,122,24,0.18);
+  margin-bottom: 12px;
+}
+
+.validation-summary-box strong {
+  display: block;
+  color: var(--orange2);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .validation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.authority-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.authority-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.authority-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.authority-check.good {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.authority-check.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.authority-check.bad {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.authority-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.authority-pill.good {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.authority-pill.warn {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.authority-pill.bad {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.authority-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.authority-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.authority-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(181,140,255,0.08);
+  border: 1px solid rgba(181,140,255,0.18);
+  margin-bottom: 12px;
+}
+
+.authority-summary-box strong {
+  display: block;
+  color: var(--purple);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .authority-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fusion-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.fusion-score-card {
+  border-radius: 26px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(255,122,24,0.16), transparent 42%),
+    rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align: center;
+}
+
+.fusion-score {
+  font-size: 64px;
+  font-weight: 950;
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+  margin-top: 12px;
+}
+
+.fusion-score.ready {
+  color: var(--green);
+}
+
+.fusion-score.review {
+  color: var(--amber);
+}
+
+.fusion-score.escalate {
+  color: var(--red);
+}
+
+.fusion-score.wait {
+  color: var(--orange2);
+}
+
+.fusion-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fusion-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.fusion-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.fusion-check.good {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.fusion-check.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.fusion-check.bad {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.fusion-check.wait {
+  border-color: rgba(255,122,24,0.35);
+  background: rgba(255,122,24,0.07);
+}
+
+.fusion-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.fusion-pill.good {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.fusion-pill.warn {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.fusion-pill.bad {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.fusion-pill.wait {
+  color: var(--orange2);
+  border: 1px solid rgba(255,122,24,0.35);
+  background: rgba(255,122,24,0.12);
+}
+
+.fusion-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.fusion-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.fusion-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(40,209,124,0.08);
+  border: 1px solid rgba(40,209,124,0.18);
+  margin-bottom: 12px;
+}
+
+.fusion-summary-box strong {
+  display: block;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .fusion-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.report-brief {
+  border-radius: 24px;
+  padding: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(255,122,24,0.18), transparent 42%),
+    rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.report-brief h3 {
+  margin-top: 0;
+  color: var(--orange2);
+}
+
+.report-line {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.report-line:last-child {
+  border-bottom: none;
+}
+
+.report-label {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
+}
+
+.report-value {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.report-guardrail-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.report-guardrail {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.report-guardrail.good {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.report-guardrail.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.report-guardrail-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.report-guardrail-text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.report-status-large {
+  font-size: 46px;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin: 12px 0;
+}
+
+.report-status-large.ready {
+  color: var(--green);
+}
+
+.report-status-large.review {
+  color: var(--amber);
+}
+
+.report-status-large.escalate {
+  color: var(--red);
+}
+
+.report-status-large.wait {
+  color: var(--orange2);
+}
+
+@media (max-width: 1400px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-line {
+    grid-template-columns: 1fr;
+  }
+}
+
+.acceptance-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.acceptance-check-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.acceptance-check {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.acceptance-check.pass {
+  border-color: rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.07);
+}
+
+.acceptance-check.warn {
+  border-color: rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.07);
+}
+
+.acceptance-check.fail {
+  border-color: rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.07);
+}
+
+.acceptance-pill {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.acceptance-pill.pass {
+  color: var(--green);
+  border: 1px solid rgba(40,209,124,0.35);
+  background: rgba(40,209,124,0.12);
+}
+
+.acceptance-pill.warn {
+  color: var(--amber);
+  border: 1px solid rgba(255,191,63,0.35);
+  background: rgba(255,191,63,0.12);
+}
+
+.acceptance-pill.fail {
+  color: var(--red);
+  border: 1px solid rgba(255,79,94,0.35);
+  background: rgba(255,79,94,0.12);
+}
+
+.acceptance-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.acceptance-reason {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.acceptance-score-box {
+  border-radius: 26px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(40,209,124,0.16), transparent 42%),
+    rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.10);
+  text-align: center;
+  margin-top: 18px;
+}
+
+.acceptance-score {
+  font-size: 58px;
+  font-weight: 950;
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+  margin-top: 12px;
+}
+
+.acceptance-score.pass {
+  color: var(--green);
+}
+
+.acceptance-score.warn {
+  color: var(--amber);
+}
+
+.acceptance-score.fail {
+  color: var(--red);
+}
+
+.acceptance-score.wait {
+  color: var(--orange2);
+}
+
+.acceptance-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.acceptance-summary-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(40,209,124,0.08);
+  border: 1px solid rgba(40,209,124,0.18);
+  margin-bottom: 12px;
+}
+
+.acceptance-summary-box strong {
+  display: block;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .acceptance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.handoff-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.handoff-summary-card {
+  border-radius: 24px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255,122,24,0.16), transparent 42%),
+    rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.handoff-section-list {
+  display: grid;
+  gap: 10px;
+  max-height: 520px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.handoff-section-item {
+  border-radius: 16px;
+  padding: 13px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.handoff-section-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.handoff-section-text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.handoff-status-large {
+  font-size: 46px;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin: 12px 0;
+  color: var(--green);
+}
+
+.handoff-box {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.18);
+  margin-bottom: 12px;
+}
+
+.handoff-box strong {
+  display: block;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1400px) {
+  .handoff-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <section class="hero">
+    <div class="hero-card">
+      <div class="kicker">Thread D Implementation MVP</div>
+      <h1>RAMAT Vision Context Witness Simulator</h1>
+      <div class="subtitle">
+        Hardware-light demo for RAMAT Vision, ELSA, OMA, and JEFERY implementation.
+        The simulator captures a wearable context event, asks the mock Platform B decision layer
+        if the action can proceed, displays the glasses-style decision, and records an evidence package.
+      </div>
+      <div class="guardrail">
+        Guardrail: This demo does not redesign Platform B. Platform B remains the assurance decision engine.
+        Thread D only simulates wearable context capture, glasses UI behavior, evidence packaging, and audit visibility.
+      </div>
+    </div>
+
+    <div class="hero-card status-panel">
+      <div class="status-tile">
+        <div class="status-label">MVP State</div>
+        <div class="status-value">Simulator First</div>
+      </div>
+      <div class="status-tile">
+        <div class="status-label">Hardware Dependency</div>
+        <div class="status-value">None</div>
+      </div>
+      <div class="status-tile">
+        <div class="status-label">Decision Authority</div>
+        <div class="status-value">Mock Platform B</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>1. Wearable Context Event Simulator</h2>
+
+      <label for="assetSelect">Simulated asset in view</label>
+      <select id="assetSelect">
+        <option value="EQP-1803">EQP-1803 - Speedy Glove Operational</option>
+        <option value="BMS-NIAGARA">BMS-NIAGARA - Building Management System</option>
+        <option value="EQP-1802">EQP-1802 - Speedy Glove OOS Closure</option>
+        <option value="AI-CAPA-AGENT">AI-CAPA-AGENT - AI CAPA Draft Assistant</option>
+      </select>
+
+      <label for="technicianSelect">Technician</label>
+      <select id="technicianSelect">
+        <option value="Taiwo Yusuf">Taiwo Yusuf</option>
+        <option value="Ben Frederick">Ben Frederick</option>
+        <option value="External Vendor">External Vendor</option>
+        <option value="Unassigned User">Unassigned User</option>
+      </select>
+
+      <label for="intentSelect">Voice intent</label>
+      <select id="intentSelect">
+        <option value="check status">check status</option>
+        <option value="capture evidence">capture evidence</option>
+        <option value="confirm action">confirm action</option>
+        <option value="request reviewer">request reviewer</option>
+        <option value="create stop-line">create stop-line</option>
+      </select>
+
+      <label for="scenarioSelect">Mock operating scenario</label>
+      <select id="scenarioSelect">
+        <option value="clean">Clean path - all evidence present</option>
+        <option value="reviewer_missing">Reviewer missing</option>
+        <option value="training_gap">Training gap</option>
+        <option value="validation_gap">Validation gap</option>
+        <option value="asset_mismatch">Visual asset and physical witness mismatch</option>
+        <option value="critical_deviation">Open critical deviation</option>
+      </select>
+
+      <div class="button-row">
+        <button onclick="captureContext()">Capture Context</button>
+        <button class="secondary" onclick="askPlatformB()">Ask Platform B</button>
+      </div>
+
+      <h3>Wearable readiness</h3>
+      <span class="badge"><span class="dot green"></span>Device online</span>
+      <span class="badge"><span class="dot green"></span>Camera ready</span>
+      <span class="badge"><span class="dot green"></span>Voice ready</span>
+      <span class="badge"><span class="dot amber"></span>NFC simulated</span>
+      <span class="badge"><span class="dot blue"></span>JEFERY relay mock</span>
+    </div>
+
+    <div class="card">
+      <h2>2. RAMAT Vision Command Center</h2>
+      <div class="vision-frame">
+        <div class="vision-topline">
+          <span>RAMAT Vision Pro Preview</span>
+          <span id="visionClock">--:--:--</span>
+        </div>
+
+        <div class="reticle"></div>
+        <div class="asset-chip" id="assetChip">No context captured</div>
+
+        <div class="micro-display">
+          <div>
+            <div class="micro-state" id="microState">READY</div>
+            <div class="micro-reason" id="microReason">Capture a simulated asset context to begin.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-title">Context Events</div>
+          <div class="kpi-value" id="kpiEvents">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">Proceed</div>
+          <div class="kpi-value" id="kpiProceed">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">Hold</div>
+          <div class="kpi-value" id="kpiHold">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">Escalate</div>
+          <div class="kpi-value" id="kpiEscalate">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Asset / Equipment Passport View</h2>
+      <div class="table" id="passportTable"></div>
+
+      <h3>4. Action Admissibility Result</h3>
+      <div class="result" id="resultPanel">
+        <div class="result-title" id="resultTitle">WAITING</div>
+        <div class="result-reason" id="resultReason">No decision has been requested yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid" style="margin-top:22px;">
+    <div class="card">
+      <h2>5. Evidence Package Viewer</h2>
+      <pre id="evidenceViewer">{ "status": "No evidence package recorded yet" }</pre>
+    </div>
+
+    <div class="card">
+      <h2>6. RAMAT Vision Pro Audit Mode Preview</h2>
+      <div class="table" id="auditTable"></div>
+      <div class="result" id="auditResult">
+        <div class="result-title" id="auditTitle">AUDIT READY</div>
+        <div class="result-reason" id="auditReason">Auditor will see the action admissibility record after Platform B decision.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Locked Future Feature Cards</h2>
+      <div class="locked-card">
+        <strong>SERAPH</strong>
+        <span>Future evidence integrity layer. Locked for this MVP.</span>
+      </div>
+      <div class="locked-card" style="margin-top:12px;">
+        <strong>ARCHANGEL</strong>
+        <span>Future assurance ledger. Locked for this MVP.</span>
+      </div>
+      <div class="locked-card" style="margin-top:12px;">
+        <strong>Regulatory AI Inspection Passport</strong>
+        <span>Future inspection readiness mode. Locked for this MVP.</span>
+      </div>
+      <div class="locked-card" style="margin-top:12px;">
+        <strong>Living SOP Assurance</strong>
+        <span>Future SOP-to-reality mode. Locked for this MVP.</span>
+      </div>
+      <div class="locked-card" style="margin-top:12px;">
+        <strong>Agentic Submission Assurance</strong>
+        <span>Future submission workflow evidence mode. Locked for this MVP.</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">7. Action History / Evidence Log</h2>
+    <div class="subtitle" style="margin-bottom:14px;">
+      Auditor-facing log of all simulated RAMAT Vision context events. Each row records the asset, technician, voice intent,
+      mock Platform B decision, evidence hash, and reason.
+    </div>
+
+    <div class="history-toolbar">
+      <button onclick="downloadLatestEvidence()">Export Latest Evidence JSON</button>
+      <button class="secondary" onclick="clearHistory()">Clear Local History</button>
+    </div>
+
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Event</th>
+          <th>Asset</th>
+          <th>Technician</th>
+          <th>Intent</th>
+          <th>Decision</th>
+          <th>Evidence Hash</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable">
+        <tr>
+          <td colspan="8" class="small-muted">No action history yet. Capture context and ask Platform B.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">MVP Roadmap Badges</h2>
+    <div class="roadmap">
+      <div class="locked-card">
+        <strong>Phase 1</strong>
+        <span>Local mock context witness simulator.</span>
+      </div>
+      <div class="locked-card">
+        <strong>Phase 2</strong>
+        <span>Connect simulator to Platform B API.</span>
+      </div>
+      <div class="locked-card">
+        <strong>Phase 3</strong>
+        <span>Add ServiceNow PDI mock or live context.</span>
+      </div>
+      <div class="locked-card">
+        <strong>Phase 4</strong>
+        <span>Add RFID, NFC, M5Stack, and JEFERY relay.</span>
+      </div>
+      <div class="locked-card">
+        <strong>Phase 5</strong>
+        <span>Add Halo, ELSA, OMA, or real wearable endpoint.</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">8. Wearable Endpoint Behavior Lab</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Simulates how RAMAT Vision, ELSA, OMA, Halo, or a future wearable endpoint captures intent,
+      displays micro-decisions, records tap confirmation, requests review, and prepares an endpoint event
+      envelope for future Platform B integration.
+    </div>
+
+    <div class="endpoint-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Endpoint Commands</h2>
+        <div class="endpoint-buttons">
+          <button onclick="simulateVoiceCommand('check status')">Voice: Check Status</button>
+          <button onclick="simulateVoiceCommand('capture evidence')">Voice: Capture Evidence</button>
+          <button onclick="simulateVoiceCommand('request reviewer')">Voice: Request Reviewer</button>
+          <button onclick="simulateTapConfirm()" class="secondary">Tap Confirm Human Intent</button>
+          <button onclick="simulateReviewerRequest()" class="secondary">Request Reviewer</button>
+          <button onclick="simulateStopLine()" class="secondary">Create Stop-Line Event</button>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Endpoint Timeline</h2>
+        <div class="timeline" id="endpointTimeline">
+          <div class="timeline-item">
+            <div class="timeline-title">READY</div>
+            <div class="timeline-message">No wearable endpoint events yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Endpoint Event Envelope</h2>
+        <div class="endpoint-signal">
+          <strong>Purpose</strong>
+          Minimum necessary structured payload that a wearable or JEFERY relay would send to Platform B later.
+        </div>
+        <pre id="endpointEnvelope">{ "status": "No endpoint envelope generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">9. Audit Challenge Panel</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      RAMAT Vision Pro read-only audit mode. Generates inspection-style challenge questions from the latest
+      Action Admissibility Record so an auditor can test whether the simulated action is defensible.
+    </div>
+
+    <div class="audit-challenge-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Audit Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="generateAuditChallenge()">Generate Audit Challenge</button>
+          <button onclick="showAdmissibilityBrief()" class="secondary">Show Admissibility Brief</button>
+          <button onclick="showEvidenceGapBrief()" class="secondary">Show Evidence Gap Brief</button>
+        </div>
+
+        <h3>Read-only guardrail</h3>
+        <span class="badge"><span class="dot blue"></span>Audit mode only</span>
+        <span class="badge"><span class="dot green"></span>Evidence reconstruction</span>
+        <span class="badge"><span class="dot amber"></span>No record modification</span>
+        <span class="badge"><span class="dot red"></span>No approval action</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Generated Audit Questions</h2>
+        <div class="audit-question-list" id="auditQuestionList">
+          <div class="audit-question-card">
+            <div class="audit-question-title">WAITING</div>
+            <div class="audit-question-text">Capture context and ask Platform B, then generate an audit challenge.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Audit Defensibility Brief</h2>
+        <div class="audit-summary-box">
+          <strong>Purpose</strong>
+          Summarizes whether the latest action has enough context for an auditor to understand the decision.
+        </div>
+        <pre id="auditBriefViewer">{ "status": "No audit brief generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">10. Context Witness Event Replay</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Replays the latest RAMAT Vision context witness event as an auditor-facing sequence.
+      This shows how the simulated action can be reconstructed without making the wearable the decision engine.
+    </div>
+
+    <div class="replay-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Replay Controls</h2>
+        <div class="replay-command-row">
+          <button onclick="buildEventReplay()">Build Replay From Latest Evidence</button>
+          <button onclick="runEventReplay()" class="secondary">Run Replay</button>
+          <button onclick="downloadReplayPacket()" class="secondary">Export Replay JSON</button>
+        </div>
+
+        <h3>Replay guardrail</h3>
+        <span class="badge"><span class="dot blue"></span>Read-only reconstruction</span>
+        <span class="badge"><span class="dot green"></span>Evidence story</span>
+        <span class="badge"><span class="dot amber"></span>No approval</span>
+        <span class="badge"><span class="dot red"></span>No record edit</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Replay Timeline</h2>
+        <div class="replay-steps" id="replayTimeline">
+          <div class="replay-step">
+            <div class="replay-step-number">0</div>
+            <div>
+              <div class="replay-title">WAITING</div>
+              <div class="replay-message">Capture context and ask Platform B, then build replay.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Replay Packet</h2>
+        <div class="replay-status-box">
+          <strong>Purpose</strong>
+          The replay packet reconstructs the event story using the latest Action Admissibility Record.
+        </div>
+        <pre id="replayPacketViewer">{ "status": "No replay packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">11. Mock Platform B Connector Preview</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Shows the future request and response contract between RAMAT Vision / JEFERY and Platform B.
+      This is a local mock only. It does not call real Platform B yet and does not modify Platform B architecture.
+    </div>
+
+    <div class="connector-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Future API Request</h2>
+        <div class="connector-box">
+          <strong>Future route placeholder</strong>
+          <div class="connector-route">POST /api/platform-b/action-admissibility/check</div>
+        </div>
+        <pre id="platformBRequestViewer">{ "status": "No request payload generated yet" }</pre>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Mock Platform B Response</h2>
+        <div class="connector-box">
+          <strong>Boundary</strong>
+          RAMAT Vision sends context. Platform B returns the decision.
+        </div>
+        <pre id="platformBResponseViewer">{ "status": "No response payload generated yet" }</pre>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Connector Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="buildPlatformBConnectorPreview()">Build Connector Preview</button>
+          <button onclick="downloadPlatformBConnectorPreview()" class="secondary">Export Connector JSON</button>
+        </div>
+
+        <h3>Connector readiness</h3>
+        <span class="badge"><span class="dot green"></span>Mock payload</span>
+        <span class="badge"><span class="dot blue"></span>Future API ready</span>
+        <span class="badge"><span class="dot amber"></span>No live call</span>
+        <span class="badge"><span class="dot red"></span>No Platform B redesign</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">12. Executive Demo Control Panel</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Runs preset Thread D scenarios and creates a full local evidence bundle for demo, audit review,
+      investor walkthrough, or future Platform B integration planning.
+    </div>
+
+    <div class="demo-control-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Preset Scenarios</h2>
+        <div class="demo-scenario-buttons">
+          <button onclick="runProceedDemo()">Run PROCEED Demo</button>
+          <button onclick="runHoldDemo()" class="secondary">Run HOLD Demo</button>
+          <button onclick="runEscalateDemo()" class="secondary">Run ESCALATE Demo</button>
+          <button onclick="buildFullEvidenceBundle()" class="secondary">Build Full Evidence Bundle</button>
+          <button onclick="downloadFullEvidenceBundle()" class="secondary">Export Full Evidence Bundle JSON</button>
+        </div>
+
+        <h3>Demo boundary</h3>
+        <span class="badge"><span class="dot green"></span>Local simulator</span>
+        <span class="badge"><span class="dot blue"></span>Mock Platform B</span>
+        <span class="badge"><span class="dot amber"></span>No live system</span>
+        <span class="badge"><span class="dot red"></span>No GMP modification</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Demo Storyboard</h2>
+        <div class="demo-card-grid">
+          <div class="demo-mini-card">
+            <strong>1. Context Witness</strong>
+            <span>User looks at an asset. RAMAT Vision captures the simulated asset, technician, intent, and physical witness context.</span>
+          </div>
+          <div class="demo-mini-card">
+            <strong>2. Platform B Decision</strong>
+            <span>The wearable asks mock Platform B: Can I proceed? Platform B returns PROCEED, HOLD, or ESCALATE.</span>
+          </div>
+          <div class="demo-mini-card">
+            <strong>3. Evidence Record</strong>
+            <span>The action admissibility record, evidence hash, audit questions, replay packet, and connector payload become reviewable.</span>
+          </div>
+        </div>
+
+        <h3>Latest Demo Summary</h3>
+        <pre id="demoSummaryViewer">{ "status": "No demo scenario has been run yet" }</pre>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Full Evidence Bundle</h2>
+        <div class="bundle-status">
+          <strong>Purpose</strong>
+          One exportable package that shows what the local simulator captured and reconstructed.
+        </div>
+        <pre id="fullBundleViewer">{ "status": "No full evidence bundle generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">13. Glasses HUD Presenter Mode</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Demo-ready glasses-style HUD view for RAMAT Vision, ELSA, OMA, or Halo-style endpoints.
+      This is a visual endpoint simulation only. Platform B remains the decision engine.
+    </div>
+
+    <div class="hud-control-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>HUD Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="refreshHudPreview()">Refresh HUD Preview</button>
+          <button onclick="openHudPresenter()" class="secondary">Open Fullscreen HUD</button>
+          <button onclick="closeHudPresenter()" class="secondary">Close Fullscreen HUD</button>
+        </div>
+
+        <h3>HUD boundary</h3>
+        <span class="badge"><span class="dot green"></span>Display only</span>
+        <span class="badge"><span class="dot blue"></span>Context witness</span>
+        <span class="badge"><span class="dot amber"></span>Human-readable</span>
+        <span class="badge"><span class="dot red"></span>No decision override</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Glasses Preview</h2>
+        <div class="hud-preview-card">
+          <div class="hud-lens-grid">
+            <div class="hud-lens">
+              <div class="hud-lens-label">Left Lens</div>
+              <div class="hud-big-state" id="hudPreviewAsset">NO ASSET</div>
+              <div class="hud-small-text" id="hudPreviewAssetDetail">Capture context to show asset identity.</div>
+            </div>
+            <div class="hud-lens">
+              <div class="hud-lens-label">Right Lens</div>
+              <div class="hud-big-state" id="hudPreviewDecision">READY</div>
+              <div class="hud-small-text" id="hudPreviewInstruction">Ask Platform B to show decision state.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>HUD Data Packet</h2>
+        <pre id="hudPacketViewer">{ "status": "No HUD packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="hud-fullscreen" id="hudFullscreen">
+    <div class="hud-top-bar">
+      <span>RAMAT Vision HUD Presenter</span>
+      <button class="hud-close" onclick="closeHudPresenter()">Close HUD</button>
+    </div>
+
+    <div class="hud-main">
+      <div class="hud-full-lens">
+        <div class="hud-reticle-large"></div>
+        <div class="hud-lens-label">Asset in view</div>
+        <div class="hud-decision-large waiting" id="hudFullAsset">NO ASSET</div>
+        <div class="hud-small-text" id="hudFullAssetDetail">Capture context to populate asset view.</div>
+      </div>
+
+      <div class="hud-full-lens">
+        <div class="hud-lens-label">Platform B Decision</div>
+        <div class="hud-decision-large waiting" id="hudFullDecision">READY</div>
+        <div class="hud-small-text" id="hudFullInstruction">RAMAT Vision displays the decision. It does not decide.</div>
+      </div>
+    </div>
+
+    <div class="hud-bottom-bar">
+      <div class="hud-bottom-tile">
+        <div class="hud-bottom-label">Technician</div>
+        <div class="hud-bottom-value" id="hudFullTechnician">Not captured</div>
+      </div>
+      <div class="hud-bottom-tile">
+        <div class="hud-bottom-label">Intent</div>
+        <div class="hud-bottom-value" id="hudFullIntent">Not captured</div>
+      </div>
+      <div class="hud-bottom-tile">
+        <div class="hud-bottom-label">Evidence Hash</div>
+        <div class="hud-bottom-value" id="hudFullHash">None</div>
+      </div>
+      <div class="hud-bottom-tile">
+        <div class="hud-bottom-label">Boundary</div>
+        <div class="hud-bottom-value">Platform B decides</div>
+      </div>
+    </div>
+  </div>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">14. Device Readiness Passport</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Confirms whether the simulated wearable endpoint is ready to act as a context witness.
+      The passport proves device/display readiness only. It does not approve work and does not modify regulated records.
+    </div>
+
+    <div class="device-passport-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Device Mode</h2>
+
+        <label for="deviceModeSelect">Simulated endpoint</label>
+        <select id="deviceModeSelect">
+          <option value="RAMAT Vision Sim">RAMAT Vision Sim</option>
+          <option value="ELSA 22.4">ELSA 22.4 - Field Technician Lens</option>
+          <option value="OMA 5.4">OMA 5.4 - Operations / Area Lens</option>
+          <option value="RAMAT Vision Pro">RAMAT Vision Pro - QA / Audit Lens</option>
+          <option value="Halo Prototype">Halo Prototype - Wearable Node</option>
+          <option value="JEFERY Relay">JEFERY Relay - Developer Adapter</option>
+        </select>
+
+        <div class="endpoint-buttons" style="margin-top:14px;">
+          <button onclick="generateDeviceReadinessPassport()">Generate Device Passport</button>
+          <button onclick="downloadDeviceReadinessPassport()" class="secondary">Export Device Passport JSON</button>
+        </div>
+
+        <h3>Device boundary</h3>
+        <span class="badge"><span class="dot green"></span>Witness only</span>
+        <span class="badge"><span class="dot blue"></span>Display only</span>
+        <span class="badge"><span class="dot amber"></span>Relay only</span>
+        <span class="badge"><span class="dot red"></span>No approval</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Readiness Checks</h2>
+        <div class="device-check-grid" id="deviceReadinessChecks">
+          <div class="device-check wait">
+            <div><span class="device-status-pill wait">WAIT</span></div>
+            <div>
+              <div class="device-check-title">Passport not generated</div>
+              <div class="device-check-reason">Capture context, ask Platform B, then generate the device passport.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Device Passport Packet</h2>
+        <div class="device-readiness-summary">
+          <strong>Purpose</strong>
+          Exportable readiness packet for the simulated wearable endpoint.
+        </div>
+        <pre id="devicePassportViewer">{ "status": "No device readiness passport generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">15. ServiceNow / CI Context Mock Adapter</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Simulates how RAMAT Vision or JEFERY could later request CMDB, CI, work order, owner, LCM,
+      support group, lifecycle, relationship, and MyAccess context from ServiceNow or a PDI environment.
+      This is local mock data only.
+    </div>
+
+    <div class="servicenow-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Mock ServiceNow Controls</h2>
+
+        <label for="ciScenarioSelect">Mock CI context scenario</label>
+        <select id="ciScenarioSelect">
+          <option value="ci_clean">CI clean - owner and support context present</option>
+          <option value="ci_owner_gap">Owner / LCM gap</option>
+          <option value="ci_support_gap">Support group missing</option>
+          <option value="ci_relationship_gap">CI relationship gap</option>
+          <option value="ci_access_gap">MyAccess / entitlement gap</option>
+          <option value="ci_retired">Retired or restricted CI</option>
+        </select>
+
+        <div class="endpoint-buttons" style="margin-top:14px;">
+          <button onclick="buildServiceNowContextPacket()">Build CI Context Packet</button>
+          <button onclick="downloadServiceNowContextPacket()" class="secondary">Export CI Context JSON</button>
+        </div>
+
+        <h3>Adapter boundary</h3>
+        <span class="badge"><span class="dot green"></span>Mock CMDB only</span>
+        <span class="badge"><span class="dot blue"></span>Future PDI ready</span>
+        <span class="badge"><span class="dot amber"></span>No live API</span>
+        <span class="badge"><span class="dot red"></span>No CMDB update</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>CI Context Checks</h2>
+        <div class="ci-check-grid" id="ciContextChecks">
+          <div class="ci-check warn">
+            <div><span class="ci-pill warn">WAIT</span></div>
+            <div>
+              <div class="ci-title">CI context not built</div>
+              <div class="ci-reason">Capture context, then build the mock CI context packet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>CI Context Packet</h2>
+        <div class="ci-summary-box">
+          <strong>Purpose</strong>
+          Future ServiceNow/PDI context envelope for Platform B action admissibility checks.
+        </div>
+        <pre id="serviceNowContextViewer">{ "status": "No CI context packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">16. Validation / Change Control Context Mock Adapter</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Simulates how RAMAT Vision or JEFERY could later collect validation, CSV, SOP, change control,
+      reviewer, and source-of-truth context before Platform B makes an action admissibility decision.
+      This is local mock data only.
+    </div>
+
+    <div class="validation-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Validation / Change Controls</h2>
+
+        <label for="validationScenarioSelect">Mock validation scenario</label>
+        <select id="validationScenarioSelect">
+          <option value="validation_clean">Validation clean - current and supported</option>
+          <option value="change_control_required">Change control required</option>
+          <option value="change_control_missing">Change control missing</option>
+          <option value="csv_review_required">CSV review required</option>
+          <option value="sop_mismatch">SOP/source-of-truth mismatch</option>
+          <option value="validation_expired">Validation expired or not current</option>
+          <option value="quality_reviewer_missing">Quality reviewer missing</option>
+        </select>
+
+        <div class="endpoint-buttons" style="margin-top:14px;">
+          <button onclick="buildValidationChangePacket()">Build Validation Context Packet</button>
+          <button onclick="downloadValidationChangePacket()" class="secondary">Export Validation JSON</button>
+        </div>
+
+        <h3>Adapter boundary</h3>
+        <span class="badge"><span class="dot green"></span>Mock validation only</span>
+        <span class="badge"><span class="dot blue"></span>CSV context</span>
+        <span class="badge"><span class="dot amber"></span>Change-control aware</span>
+        <span class="badge"><span class="dot red"></span>No QMS update</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Validation / Change Checks</h2>
+        <div class="validation-check-grid" id="validationChangeChecks">
+          <div class="validation-check warn">
+            <div><span class="validation-pill warn">WAIT</span></div>
+            <div>
+              <div class="validation-title">Validation context not built</div>
+              <div class="validation-reason">Capture context, then build the validation/change packet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Validation Context Packet</h2>
+        <div class="validation-summary-box">
+          <strong>Purpose</strong>
+          Future validation/change-control context envelope for Platform B action admissibility checks.
+        </div>
+        <pre id="validationChangeViewer">{ "status": "No validation context packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">17. Human Authority / Training / Shift Context Mock Adapter</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Simulates how RAMAT Vision, JEFERY, or a future shift-structure app could provide human accountability context
+      to Platform B before an action is treated as admissible. This is local mock data only.
+    </div>
+
+    <div class="authority-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Human Context Controls</h2>
+
+        <label for="authorityScenarioSelect">Mock authority scenario</label>
+        <select id="authorityScenarioSelect">
+          <option value="authorized_on_shift">Authorized and on shift</option>
+          <option value="off_shift">User is off shift</option>
+          <option value="training_gap">Training gap</option>
+          <option value="supervisor_required">Supervisor / reviewer required</option>
+          <option value="vendor_access">External vendor access path</option>
+          <option value="unassigned_user">Unassigned user</option>
+          <option value="access_expired">Access expired</option>
+        </select>
+
+        <label for="shiftSelect">Mock shift context</label>
+        <select id="shiftSelect">
+          <option value="Day Shift">Day Shift</option>
+          <option value="Night Shift">Night Shift</option>
+          <option value="Weekend Coverage">Weekend Coverage</option>
+          <option value="Emergency Coverage">Emergency Coverage</option>
+          <option value="Not Scheduled">Not Scheduled</option>
+        </select>
+
+        <div class="endpoint-buttons" style="margin-top:14px;">
+          <button onclick="buildHumanAuthorityShiftPacket()">Build Human Authority Packet</button>
+          <button onclick="downloadHumanAuthorityShiftPacket()" class="secondary">Export Human Authority JSON</button>
+        </div>
+
+        <h3>Human accountability boundary</h3>
+        <span class="badge"><span class="dot green"></span>Authority context</span>
+        <span class="badge"><span class="dot blue"></span>Training context</span>
+        <span class="badge"><span class="dot amber"></span>Shift context</span>
+        <span class="badge"><span class="dot red"></span>No auto approval</span>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Human Authority Checks</h2>
+        <div class="authority-check-grid" id="authorityShiftChecks">
+          <div class="authority-check warn">
+            <div><span class="authority-pill warn">WAIT</span></div>
+            <div>
+              <div class="authority-title">Human context not built</div>
+              <div class="authority-reason">Capture context, then build the human authority packet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Human Authority Packet</h2>
+        <div class="authority-summary-box">
+          <strong>Purpose</strong>
+          Future human accountability context envelope for Platform B action admissibility checks.
+        </div>
+        <pre id="authorityShiftViewer">{ "status": "No human authority packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">18. Integrated Assurance Context Fusion Panel</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Combines the latest mock Platform B decision, device readiness, CI context, validation/change-control context,
+      and human authority context into one integrated assurance view. This is a context fusion preview only.
+      Platform B remains the decision engine.
+    </div>
+
+    <div class="fusion-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Fusion Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="buildAssuranceContextFusion()">Build Context Fusion</button>
+          <button onclick="runCompleteFusionDemo()" class="secondary">Run Complete Fusion Demo</button>
+          <button onclick="downloadAssuranceContextFusion()" class="secondary">Export Fusion JSON</button>
+        </div>
+
+        <h3>Fusion boundary</h3>
+        <span class="badge"><span class="dot green"></span>Context aggregator</span>
+        <span class="badge"><span class="dot blue"></span>Read-only</span>
+        <span class="badge"><span class="dot amber"></span>Platform B input</span>
+        <span class="badge"><span class="dot red"></span>Not decision engine</span>
+
+        <div class="fusion-score-card" style="margin-top:18px;">
+          <div class="fusion-label">Integrated readiness</div>
+          <div class="fusion-score wait" id="fusionScoreState">WAIT</div>
+          <div class="hud-small-text" id="fusionScoreReason">Build context fusion after running the mock context adapters.</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Fusion Checks</h2>
+        <div class="fusion-check-grid" id="fusionChecks">
+          <div class="fusion-check wait">
+            <div><span class="fusion-pill wait">WAIT</span></div>
+            <div>
+              <div class="fusion-title">Fusion not built</div>
+              <div class="fusion-reason">Run context capture, Platform B decision, and mock adapters, then build fusion.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Integrated Fusion Packet</h2>
+        <div class="fusion-summary-box">
+          <strong>Purpose</strong>
+          One packet showing whether the simulated action has enough connected context for a defensible Platform B decision.
+        </div>
+        <pre id="fusionPacketViewer">{ "status": "No integrated fusion packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">19. Thread D MVP Readiness Report</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Generates a demo-ready MVP report for RAMAT Vision Context Witness. This summarizes the local simulator,
+      latest evidence, context adapters, fusion state, and guardrails.
+    </div>
+
+    <div class="report-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Report Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="generateMvpReadinessReport()">Generate MVP Report</button>
+          <button onclick="runCompleteReportDemo()" class="secondary">Run Complete Report Demo</button>
+          <button onclick="downloadMvpReadinessReport()" class="secondary">Export MVP Report JSON</button>
+          <button onclick="printMvpReadinessReport()" class="secondary">Print / Save as PDF</button>
+        </div>
+
+        <h3>Report boundary</h3>
+        <span class="badge"><span class="dot green"></span>Demo report</span>
+        <span class="badge"><span class="dot blue"></span>Mock evidence</span>
+        <span class="badge"><span class="dot amber"></span>Local only</span>
+        <span class="badge"><span class="dot red"></span>No production claim</span>
+
+        <div class="report-brief" style="margin-top:18px;">
+          <h3>Overall MVP State</h3>
+          <div class="report-status-large wait" id="mvpReportState">WAIT</div>
+          <div class="hud-small-text" id="mvpReportReason">Generate the MVP report after running a scenario or complete fusion demo.</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Readable MVP Summary</h2>
+        <div class="report-brief" id="mvpReadableReport">
+          <h3>No report generated yet</h3>
+          <div class="report-line">
+            <div class="report-label">Instruction</div>
+            <div class="report-value">Run a demo scenario, then generate the MVP report.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>MVP Report JSON</h2>
+        <pre id="mvpReportViewer">{ "status": "No MVP readiness report generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">20. Thread D MVP Acceptance Test Runner</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Runs a local MVP acceptance test for RAMAT Vision Context Witness.
+      This confirms the demo can generate a complete clean evidence story without using real hardware,
+      ServiceNow, QMS, RFID, NFC, or live Platform B API calls.
+    </div>
+
+    <div class="acceptance-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Acceptance Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="runMvpAcceptanceTest()">Run MVP Acceptance Test</button>
+          <button onclick="downloadMvpAcceptancePacket()" class="secondary">Export Acceptance Test JSON</button>
+        </div>
+
+        <h3>Acceptance boundary</h3>
+        <span class="badge"><span class="dot green"></span>Local MVP check</span>
+        <span class="badge"><span class="dot blue"></span>Mock evidence</span>
+        <span class="badge"><span class="dot amber"></span>Demo readiness</span>
+        <span class="badge"><span class="dot red"></span>No production validation</span>
+
+        <div class="acceptance-score-box">
+          <div class="acceptance-label">Acceptance state</div>
+          <div class="acceptance-score wait" id="acceptanceScoreState">WAIT</div>
+          <div class="hud-small-text" id="acceptanceScoreReason">Run the MVP acceptance test.</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Acceptance Checks</h2>
+        <div class="acceptance-check-grid" id="acceptanceChecks">
+          <div class="acceptance-check warn">
+            <div><span class="acceptance-pill warn">WAIT</span></div>
+            <div>
+              <div class="acceptance-title">Acceptance test not run</div>
+              <div class="acceptance-reason">Click Run MVP Acceptance Test.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Acceptance Test Packet</h2>
+        <div class="acceptance-summary-box">
+          <strong>Purpose</strong>
+          Final local demo test packet showing whether Thread D is ready for walkthrough, Git handoff, or documentation.
+        </div>
+        <pre id="acceptancePacketViewer">{ "status": "No acceptance test packet generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="hero-card" style="margin-top:22px;">
+    <h2 style="margin-top:0;">21. Thread D Handoff Package Builder</h2>
+    <div class="subtitle" style="margin-bottom:16px;">
+      Generates a clean handoff package for documentation, GitHub commit notes, demo walkthrough,
+      architecture review, and future Platform B integration planning.
+    </div>
+
+    <div class="handoff-grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Handoff Controls</h2>
+        <div class="endpoint-buttons">
+          <button onclick="buildThreadDHandoffPackage()">Build Handoff Package</button>
+          <button onclick="downloadThreadDHandoffJson()" class="secondary">Export Handoff JSON</button>
+          <button onclick="downloadThreadDHandoffMarkdown()" class="secondary">Export Handoff Markdown</button>
+        </div>
+
+        <h3>Handoff boundary</h3>
+        <span class="badge"><span class="dot green"></span>MVP documented</span>
+        <span class="badge"><span class="dot blue"></span>Demo ready</span>
+        <span class="badge"><span class="dot amber"></span>Future integration only</span>
+        <span class="badge"><span class="dot red"></span>No production claim</span>
+
+        <div class="handoff-summary-card" style="margin-top:18px;">
+          <div class="fusion-label">Handoff state</div>
+          <div class="handoff-status-large" id="handoffState">READY</div>
+          <div class="hud-small-text" id="handoffReason">Build the handoff package after running the acceptance test.</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Section Inventory</h2>
+        <div class="handoff-section-list" id="handoffSectionInventory">
+          <div class="handoff-section-item">
+            <div class="handoff-section-title">Waiting</div>
+            <div class="handoff-section-text">Click Build Handoff Package.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Handoff Package JSON</h2>
+        <div class="handoff-box">
+          <strong>Purpose</strong>
+          Exportable Thread D handoff record for repository notes, README, demo script, and architecture boundary.
+        </div>
+        <pre id="handoffPackageViewer">{ "status": "No handoff package generated yet" }</pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    Thread D local simulator. Hardware-light. Mock data only. Platform B remains the assurance decision engine.
+  </div>
+</div>
+
+<script>
+const assets = {
+  "EQP-1803": {
+    assetId: "EQP-1803",
+    name: "Speedy Glove Operational",
+    location: "IRLT Manufacturing",
+    sourceOfTruth: "Mock Equipment Passport",
+    workOrder: "WO-CTX-1803",
+    workOrderStatus: "Active",
+    validationStatus: "Current",
+    trainingRequired: "Yes",
+    reviewerRequired: "No",
+    openDeviation: "None",
+    changeControl: "Not required",
+    physicalWitness: "RFID simulated confirmed",
+    auditTrail: "Available"
+  },
+  "BMS-NIAGARA": {
+    assetId: "BMS-NIAGARA",
+    name: "Niagara BMS",
+    location: "Utility and Facility Control Layer",
+    sourceOfTruth: "Mock ServiceNow CI",
+    workOrder: "WO-BMS-0415",
+    workOrderStatus: "Active",
+    validationStatus: "Current",
+    trainingRequired: "Yes",
+    reviewerRequired: "Yes",
+    openDeviation: "None",
+    changeControl: "Linked",
+    physicalWitness: "NFC simulated confirmed",
+    auditTrail: "Available"
+  },
+  "EQP-1802": {
+    assetId: "EQP-1802",
+    name: "Speedy Glove OOS Closure",
+    location: "IRLT Manufacturing",
+    sourceOfTruth: "Mock Equipment Passport",
+    workOrder: "WO-CLOSE-1802",
+    workOrderStatus: "Closure only",
+    validationStatus: "OOS restricted",
+    trainingRequired: "Yes",
+    reviewerRequired: "Yes",
+    openDeviation: "Linked",
+    changeControl: "Review required",
+    physicalWitness: "RFID simulated confirmed",
+    auditTrail: "Available"
+  },
+  "AI-CAPA-AGENT": {
+    assetId: "AI-CAPA-AGENT",
+    name: "AI CAPA Draft Assistant",
+    location: "AI Product Registry",
+    sourceOfTruth: "Mock AI Registry",
+    workOrder: "AI-GOV-009",
+    workOrderStatus: "Governance review",
+    validationStatus: "Quality review required",
+    trainingRequired: "No",
+    reviewerRequired: "Yes",
+    openDeviation: "None",
+    changeControl: "Required",
+    physicalWitness: "Digital identity simulated",
+    auditTrail: "Partial"
+  }
+};
+
+let currentContext = null;
+let lastEvidence = null;
+let evidenceHistory = [];
+let counters = { events: 0, proceed: 0, hold: 0, escalate: 0 };
+
+function nowStamp() {
+  return new Date().toISOString();
+}
+
+function updateClock() {
+  const d = new Date();
+  document.getElementById("visionClock").innerText = d.toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function simpleHash(input) {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return "EVH-" + Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
+}
+
+function row(key, value) {
+  return '<div class="row"><div class="key">' + key + '</div><div class="value">' + value + '</div></div>';
+}
+
+function renderPassport(asset) {
+  document.getElementById("passportTable").innerHTML =
+    row("Asset ID", asset.assetId) +
+    row("Asset Name", asset.name) +
+    row("Location", asset.location) +
+    row("Source of Truth", asset.sourceOfTruth) +
+    row("Work Order", asset.workOrder) +
+    row("Work Order Status", asset.workOrderStatus) +
+    row("Validation Status", asset.validationStatus) +
+    row("Reviewer Required", asset.reviewerRequired) +
+    row("Open Deviation", asset.openDeviation) +
+    row("Change Control", asset.changeControl) +
+    row("Physical Witness", asset.physicalWitness) +
+    row("Audit Trail", asset.auditTrail);
+}
+
+function captureContext() {
+  const assetId = document.getElementById("assetSelect").value;
+  const technician = document.getElementById("technicianSelect").value;
+  const intent = document.getElementById("intentSelect").value;
+  const scenario = document.getElementById("scenarioSelect").value;
+  const asset = assets[assetId];
+
+  currentContext = {
+    eventId: "CTX-" + Date.now(),
+    timestamp: nowStamp(),
+    wearableNode: "RAMAT-VISION-SIM-001",
+    relayNode: "JEFERY-MOCK-RELAY",
+    captureMode: "visual candidate plus voice intent",
+    visualCandidateId: asset.assetId,
+    technician: technician,
+    voiceIntent: intent,
+    scenario: scenario,
+    asset: asset
+  };
+
+  counters.events += 1;
+
+  document.getElementById("assetChip").innerText = "Looking at: " + asset.assetId + " - " + asset.name;
+  document.getElementById("microState").innerText = "CAPTURED";
+  document.getElementById("microReason").innerText = "Context captured. Ask Platform B for admissibility.";
+  renderPassport(asset);
+  updateKpis();
+
+  document.getElementById("evidenceViewer").innerText = JSON.stringify({
+    contextCaptured: true,
+    message: "Context event captured. Platform B decision not requested yet.",
+    context: currentContext
+  }, null, 2);
+}
+
+function decide(context) {
+  const scenario = context.scenario;
+  const asset = context.asset;
+
+  if (scenario === "asset_mismatch") {
+    return {
+      decision: "ESCALATE",
+      reason: "Visual candidate and physical witness do not match.",
+      microInstruction: "Context mismatch. Escalate.",
+      className: "escalate"
+    };
+  }
+
+  if (scenario === "critical_deviation") {
+    return {
+      decision: "ESCALATE",
+      reason: "Open critical deviation blocks normal action.",
+      microInstruction: "Critical deviation. Do not proceed.",
+      className: "escalate"
+    };
+  }
+
+  if (scenario === "validation_gap") {
+    return {
+      decision: "ESCALATE",
+      reason: "Validation evidence is not current or requires quality review.",
+      microInstruction: "Validation gap. Escalate.",
+      className: "escalate"
+    };
+  }
+
+  if (scenario === "reviewer_missing") {
+    return {
+      decision: "HOLD",
+      reason: "Reviewer is required but not linked to the action.",
+      microInstruction: "Reviewer required.",
+      className: "hold"
+    };
+  }
+
+  if (scenario === "training_gap") {
+    return {
+      decision: "HOLD",
+      reason: "Technician training is missing or not current for this action.",
+      microInstruction: "Training gap. Hold.",
+      className: "hold"
+    };
+  }
+
+  if (context.technician === "Unassigned User") {
+    return {
+      decision: "HOLD",
+      reason: "User is not assigned or authorized for this simulated action.",
+      microInstruction: "Authority missing.",
+      className: "hold"
+    };
+  }
+
+  if (asset.assetId === "EQP-1802") {
+    return {
+      decision: "HOLD",
+      reason: "Equipment is restricted to closure activity only.",
+      microInstruction: "Closure only. Reviewer required.",
+      className: "hold"
+    };
+  }
+
+  if (asset.assetId === "AI-CAPA-AGENT") {
+    return {
+      decision: "HOLD",
+      reason: "AI product requires governance and human review before operational use.",
+      microInstruction: "Human review required.",
+      className: "hold"
+    };
+  }
+
+  return {
+    decision: "PROCEED",
+    reason: "Asset, work order, technician authority, validation status, and evidence context are acceptable in this mock scenario.",
+    microInstruction: "Proceed. Evidence captured.",
+    className: "proceed"
+  };
+}
+
+function askPlatformB() {
+  if (!currentContext) {
+    alert("Capture context first.");
+    return;
+  }
+
+  const platformBDecision = decide(currentContext);
+  const evidenceCore = {
+    eventId: currentContext.eventId,
+    timestamp: nowStamp(),
+    assetId: currentContext.asset.assetId,
+    assetName: currentContext.asset.name,
+    technician: currentContext.technician,
+    voiceIntent: currentContext.voiceIntent,
+    visualCandidateId: currentContext.visualCandidateId,
+    physicalWitness: currentContext.asset.physicalWitness,
+    sourceOfTruth: currentContext.asset.sourceOfTruth,
+    workOrder: currentContext.asset.workOrder,
+    workOrderStatus: currentContext.asset.workOrderStatus,
+    validationStatus: currentContext.asset.validationStatus,
+    reviewerRequired: currentContext.asset.reviewerRequired,
+    openDeviation: currentContext.asset.openDeviation,
+    changeControl: currentContext.asset.changeControl,
+    scenario: currentContext.scenario,
+    platformBDecision: platformBDecision.decision,
+    decisionReason: platformBDecision.reason,
+    finalAdmissibilityStatus: platformBDecision.decision
+  };
+
+  const evidenceHash = simpleHash(JSON.stringify(evidenceCore));
+  lastEvidence = {
+    actionAdmissibilityRecord: evidenceCore,
+    evidencePackage: {
+      packageId: "PKG-" + Date.now(),
+      evidenceHash: evidenceHash,
+      privacyMode: "minimum necessary context only",
+      videoStored: "No",
+      imageStored: "Simulated label frame only",
+      auditViewAvailable: "Yes"
+    },
+    guardrail: "Platform B remains the assurance decision engine. RAMAT Vision displays the decision."
+  };
+
+  document.getElementById("microState").innerText = platformBDecision.decision;
+  document.getElementById("microReason").innerText = platformBDecision.microInstruction;
+
+  const resultPanel = document.getElementById("resultPanel");
+  resultPanel.className = "result " + platformBDecision.className;
+  document.getElementById("resultTitle").innerText = platformBDecision.decision;
+  document.getElementById("resultReason").innerText = platformBDecision.reason;
+
+  document.getElementById("evidenceViewer").innerText = JSON.stringify(lastEvidence, null, 2);
+
+  renderAuditRecord(lastEvidence);
+  recordHistory(lastEvidence);
+
+  if (platformBDecision.decision === "PROCEED") counters.proceed += 1;
+  if (platformBDecision.decision === "HOLD") counters.hold += 1;
+  if (platformBDecision.decision === "ESCALATE") counters.escalate += 1;
+  updateKpis();
+}
+
+function renderAuditRecord(evidence) {
+  const r = evidence.actionAdmissibilityRecord;
+  document.getElementById("auditTable").innerHTML =
+    row("Event ID", r.eventId) +
+    row("Asset", r.assetId + " - " + r.assetName) +
+    row("Technician", r.technician) +
+    row("Intent", r.voiceIntent) +
+    row("Work Order", r.workOrder + " / " + r.workOrderStatus) +
+    row("Validation", r.validationStatus) +
+    row("Physical Witness", r.physicalWitness) +
+    row("Evidence Hash", evidence.evidencePackage.evidenceHash) +
+    row("Decision", r.platformBDecision) +
+    row("Reason", r.decisionReason);
+
+  const auditResult = document.getElementById("auditResult");
+  auditResult.className = "result " + (r.platformBDecision === "PROCEED" ? "proceed" : r.platformBDecision === "HOLD" ? "hold" : "escalate");
+  document.getElementById("auditTitle").innerText = "ACTION RECORD READY";
+  document.getElementById("auditReason").innerText = "Auditor can reconstruct who, what, when, source of truth, physical witness, mock Platform B decision, and evidence hash.";
+}
+
+
+function recordHistory(evidence) {
+  if (!evidence || !evidence.actionAdmissibilityRecord) {
+    return;
+  }
+
+  evidenceHistory.unshift(evidence);
+
+  if (evidenceHistory.length > 25) {
+    evidenceHistory = evidenceHistory.slice(0, 25);
+  }
+
+  renderHistory();
+}
+
+function renderHistory() {
+  const table = document.getElementById("historyTable");
+
+  if (!table) {
+    return;
+  }
+
+  if (evidenceHistory.length === 0) {
+    table.innerHTML = '<tr><td colspan="8" class="small-muted">No action history yet. Capture context and ask Platform B.</td></tr>';
+    return;
+  }
+
+  table.innerHTML = evidenceHistory.map(function(item) {
+    const r = item.actionAdmissibilityRecord;
+    const decisionClass = r.platformBDecision.toLowerCase();
+    const time = new Date(r.timestamp).toLocaleTimeString();
+
+    return '<tr>' +
+      '<td>' + time + '</td>' +
+      '<td>' + r.eventId + '</td>' +
+      '<td>' + r.assetId + '<div class="small-muted">' + r.assetName + '</div></td>' +
+      '<td>' + r.technician + '</td>' +
+      '<td>' + r.voiceIntent + '</td>' +
+      '<td><span class="decision-pill ' + decisionClass + '">' + r.platformBDecision + '</span></td>' +
+      '<td>' + item.evidencePackage.evidenceHash + '</td>' +
+      '<td>' + r.decisionReason + '</td>' +
+    '</tr>';
+  }).join("");
+}
+
+function clearHistory() {
+  evidenceHistory = [];
+  renderHistory();
+}
+
+function downloadLatestEvidence() {
+  if (!lastEvidence) {
+    alert("No evidence package available yet. Capture context and ask Platform B first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(lastEvidence, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = lastEvidence.evidencePackage.packageId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function endpointLog(type, message, extra) {
+  const event = {
+    endpointEventId: "WEP-" + Date.now(),
+    timestamp: nowStamp(),
+    type: type,
+    message: message,
+    currentAsset: currentContext ? currentContext.asset.assetId : "No asset captured",
+    technician: currentContext ? currentContext.technician : "No technician selected",
+    extra: extra || {}
+  };
+
+  endpointEvents.unshift(event);
+
+  if (endpointEvents.length > 30) {
+    endpointEvents = endpointEvents.slice(0, 30);
+  }
+
+  renderEndpointTimeline();
+  renderEndpointEnvelope(event);
+}
+
+function renderEndpointTimeline() {
+  const timeline = document.getElementById("endpointTimeline");
+
+  if (!timeline) {
+    return;
+  }
+
+  if (endpointEvents.length === 0) {
+    timeline.innerHTML =
+      '<div class="timeline-item">' +
+      '<div class="timeline-title">READY</div>' +
+      '<div class="timeline-message">No wearable endpoint events yet.</div>' +
+      '</div>';
+    return;
+  }
+
+  timeline.innerHTML = endpointEvents.map(function(event) {
+    const time = new Date(event.timestamp).toLocaleTimeString();
+    return '<div class="timeline-item">' +
+      '<div class="timeline-title">' + event.type + ' / ' + time + '</div>' +
+      '<div class="timeline-message">' + event.message + '</div>' +
+      '<div class="small-muted" style="margin-top:6px;">Asset: ' + event.currentAsset + ' | Technician: ' + event.technician + '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function renderEndpointEnvelope(event) {
+  const envelope = document.getElementById("endpointEnvelope");
+
+  if (!envelope) {
+    return;
+  }
+
+  const payload = {
+    endpointEventId: event.endpointEventId,
+    timestamp: event.timestamp,
+    endpointType: "RAMAT_VISION_SIMULATED_WEARABLE",
+    wearableNode: currentContext ? currentContext.wearableNode : "RAMAT-VISION-SIM-001",
+    relayNode: currentContext ? currentContext.relayNode : "JEFERY-MOCK-RELAY",
+    eventType: event.type,
+    message: event.message,
+    assetCandidate: currentContext ? currentContext.visualCandidateId : null,
+    technician: currentContext ? currentContext.technician : null,
+    voiceIntent: currentContext ? currentContext.voiceIntent : null,
+    latestPlatformBDecision: lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision yet",
+    evidenceHash: lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null,
+    privacyMode: "minimum necessary endpoint context only",
+    readyForFuturePlatformBApi: true,
+    extra: event.extra
+  };
+
+  envelope.innerText = JSON.stringify(payload, null, 2);
+}
+
+function simulateVoiceCommand(command) {
+  const intent = document.getElementById("intentSelect");
+
+  if (intent) {
+    intent.value = command;
+  }
+
+  endpointLog(
+    "VOICE INTENT",
+    "Wearable captured voice command: " + command + ". Intent dropdown updated.",
+    { command: command }
+  );
+
+  document.getElementById("microState").innerText = "VOICE";
+  document.getElementById("microReason").innerText = "Voice intent captured: " + command + ".";
+}
+
+function simulateTapConfirm() {
+  if (!lastEvidence) {
+    endpointLog(
+      "TAP CONFIRM",
+      "Tap received, but no Platform B decision exists yet. Capture context and ask Platform B first.",
+      { humanIntentSignal: "tap_without_decision" }
+    );
+    alert("Ask Platform B first, then use Tap Confirm.");
+    return;
+  }
+
+  lastEvidence.humanIntentSignal = {
+    signalType: "tap confirmation",
+    timestamp: nowStamp(),
+    meaning: "Human intentionally confirmed awareness of the displayed Platform B decision.",
+    guardrail: "Tap confirmation does not override Platform B decision."
+  };
+
+  document.getElementById("evidenceViewer").innerText = JSON.stringify(lastEvidence, null, 2);
+
+  endpointLog(
+    "TAP CONFIRM",
+    "Human intentionality signal recorded. Tap does not override Platform B decision.",
+    lastEvidence.humanIntentSignal
+  );
+
+  document.getElementById("microState").innerText = "CONFIRMED";
+  document.getElementById("microReason").innerText = "Human tap confirmation recorded.";
+}
+
+function simulateReviewerRequest() {
+  endpointLog(
+    "REVIEWER REQUEST",
+    "Reviewer request created from wearable endpoint.",
+    {
+      requestedRole: "QA reviewer",
+      requestStatus: "mock request created",
+      note: "Future integration can route this to workflow, Teams, ServiceNow, or Platform B."
+    }
+  );
+
+  document.getElementById("microState").innerText = "REVIEWER";
+  document.getElementById("microReason").innerText = "Reviewer request created.";
+}
+
+function simulateStopLine() {
+  const stopLineEvent = {
+    stopLineId: "STOP-" + Date.now(),
+    timestamp: nowStamp(),
+    asset: currentContext ? currentContext.asset.assetId : "No asset captured",
+    technician: currentContext ? currentContext.technician : "Unknown",
+    reason: "Manual wearable stop-line trigger",
+    status: "STOP-LINE RECORDED",
+    guardrail: "Stop-line evidence is recorded for human and QA review."
+  };
+
+  endpointLog(
+    "STOP-LINE",
+    "Stop-line event recorded from wearable endpoint. Human/QA review required.",
+    stopLineEvent
+  );
+
+  document.getElementById("microState").innerText = "STOP-LINE";
+  document.getElementById("microReason").innerText = "Stop-line recorded. Do not proceed.";
+
+  document.getElementById("evidenceViewer").innerText = JSON.stringify({
+    stopLineEvent: stopLineEvent,
+    latestEvidencePackage: lastEvidence || "No Platform B evidence package yet"
+  }, null, 2);
+}
+
+function makeQuestion(title, text) {
+  return '<div class="audit-question-card">' +
+    '<div class="audit-question-title">' + title + '</div>' +
+    '<div class="audit-question-text">' + text + '</div>' +
+    '</div>';
+}
+
+function generateAuditChallenge() {
+  if (!lastEvidence) {
+    alert("No evidence package yet. Capture context and ask Platform B first.");
+    return;
+  }
+
+  const r = lastEvidence.actionAdmissibilityRecord;
+  const questions = [];
+
+  questions.push(makeQuestion("SOURCE OF TRUTH", "Which record is the approved source of truth for " + r.assetId + "?"));
+  questions.push(makeQuestion("ACTION AUTHORITY", "Was " + r.technician + " authorized to perform or request this action?"));
+  questions.push(makeQuestion("WORK ORDER CONTEXT", "Does work order " + r.workOrder + " support the requested intent: " + r.voiceIntent + "?"));
+  questions.push(makeQuestion("PHYSICAL WITNESS", "How was the physical object confirmed? Witness state: " + r.physicalWitness + "."));
+  questions.push(makeQuestion("VALIDATION STATE", "Was the asset validation state acceptable at the time of the action? Current state: " + r.validationStatus + "."));
+
+  if (r.platformBDecision === "PROCEED") {
+    questions.push(makeQuestion("PROCEED CHALLENGE", "What evidence supports allowing this action to proceed without reviewer intervention?"));
+    questions.push(makeQuestion("RECONSTRUCTION", "Can the auditor reconstruct who, what, when, asset context, work order context, and evidence hash?"));
+  }
+
+  if (r.platformBDecision === "HOLD") {
+    questions.push(makeQuestion("HOLD CHALLENGE", "What missing evidence or authority caused the hold decision?"));
+    questions.push(makeQuestion("RELEASE CONDITION", "What must be corrected before this action can be reconsidered?"));
+  }
+
+  if (r.platformBDecision === "ESCALATE") {
+    questions.push(makeQuestion("ESCALATION CHALLENGE", "What risk condition caused escalation instead of a simple hold?"));
+    questions.push(makeQuestion("QA OR SME RESPONSE", "Who should review the escalation and what evidence should they inspect first?"));
+  }
+
+  questions.push(makeQuestion("EVIDENCE HASH", "Does the evidence hash " + lastEvidence.evidencePackage.evidenceHash + " match the latest Action Admissibility Record?"));
+  questions.push(makeQuestion("PLATFORM B BOUNDARY", "Confirm that RAMAT Vision displayed the decision but did not become the decision engine."));
+
+  document.getElementById("auditQuestionList").innerHTML = questions.join("");
+
+  document.getElementById("microState").innerText = "AUDIT";
+  document.getElementById("microReason").innerText = "Audit challenge questions generated.";
+
+  showAdmissibilityBrief();
+}
+
+function showAdmissibilityBrief() {
+  if (!lastEvidence) {
+    alert("No evidence package yet. Capture context and ask Platform B first.");
+    return;
+  }
+
+  const r = lastEvidence.actionAdmissibilityRecord;
+
+  let defensibilityState = "PARTIAL";
+  let risk = "MEDIUM";
+
+  if (r.platformBDecision === "PROCEED") {
+    defensibilityState = "ACTION DEFENSIBLE IN MOCK CONTEXT";
+    risk = "LOW";
+  }
+
+  if (r.platformBDecision === "HOLD") {
+    defensibilityState = "ACTION NOT READY";
+    risk = "MEDIUM";
+  }
+
+  if (r.platformBDecision === "ESCALATE") {
+    defensibilityState = "QA OR SME REVIEW REQUIRED";
+    risk = "HIGH";
+  }
+
+  const brief = {
+    auditMode: "RAMAT Vision Pro Audit Mode Preview",
+    modeType: "read-only evidence reconstruction",
+    defensibilityState: defensibilityState,
+    auditRisk: risk,
+    eventId: r.eventId,
+    assetId: r.assetId,
+    assetName: r.assetName,
+    technician: r.technician,
+    voiceIntent: r.voiceIntent,
+    workOrder: r.workOrder,
+    workOrderStatus: r.workOrderStatus,
+    validationStatus: r.validationStatus,
+    physicalWitness: r.physicalWitness,
+    sourceOfTruth: r.sourceOfTruth,
+    platformBDecision: r.platformBDecision,
+    reason: r.decisionReason,
+    evidenceHash: lastEvidence.evidencePackage.evidenceHash,
+    readOnlyGuardrail: "Audit Mode can reconstruct and challenge evidence. It does not approve work or modify records.",
+    platformBoundary: "RAMAT Vision displays Platform B output. Platform B remains the assurance decision engine."
+  };
+
+  document.getElementById("auditBriefViewer").innerText = JSON.stringify(brief, null, 2);
+}
+
+function showEvidenceGapBrief() {
+  if (!lastEvidence) {
+    alert("No evidence package yet. Capture context and ask Platform B first.");
+    return;
+  }
+
+  const r = lastEvidence.actionAdmissibilityRecord;
+  const gaps = [];
+
+  if (r.platformBDecision === "PROCEED") {
+    gaps.push("No blocking gap in this mock scenario.");
+  }
+
+  if (r.platformBDecision === "HOLD") {
+    gaps.push("Action is not ready for proceed state.");
+    gaps.push("Reviewer, training, authorization, or workflow context may require completion depending on scenario.");
+  }
+
+  if (r.platformBDecision === "ESCALATE") {
+    gaps.push("Escalation condition exists.");
+    gaps.push("QA, SME, validation, or system owner review should inspect the context before action continues.");
+  }
+
+  if (r.validationStatus !== "Current") {
+    gaps.push("Validation status is not current.");
+  }
+
+  if (r.reviewerRequired === "Yes") {
+    gaps.push("Reviewer linkage should be verified.");
+  }
+
+  if (r.openDeviation !== "None") {
+    gaps.push("Deviation linkage should be reviewed.");
+  }
+
+  const brief = {
+    auditMode: "Evidence Gap Brief",
+    eventId: r.eventId,
+    assetId: r.assetId,
+    decision: r.platformBDecision,
+    evidenceGaps: gaps,
+    nextHumanReview: r.platformBDecision === "PROCEED" ? "Routine audit review" : "Reviewer or QA review required before proceeding",
+    guardrail: "Gap brief is advisory and read-only. It does not release, approve, or close work."
+  };
+
+  document.getElementById("auditBriefViewer").innerText = JSON.stringify(brief, null, 2);
+
+  document.getElementById("microState").innerText = "GAP BRIEF";
+  document.getElementById("microReason").innerText = "Evidence gap brief generated.";
+}
+
+let replayPacket = null;
+
+function renderReplayTimeline(activeIndex) {
+  const timeline = document.getElementById("replayTimeline");
+
+  if (!timeline) {
+    return;
+  }
+
+  if (!replayPacket || !replayPacket.steps) {
+    timeline.innerHTML =
+      '<div class="replay-step">' +
+      '<div class="replay-step-number">0</div>' +
+      '<div><div class="replay-title">WAITING</div>' +
+      '<div class="replay-message">Capture context and ask Platform B, then build replay.</div></div>' +
+      '</div>';
+    return;
+  }
+
+  timeline.innerHTML = replayPacket.steps.map(function(step, index) {
+    let className = "replay-step";
+
+    if (index === activeIndex) {
+      className += " active";
+    }
+
+    if (activeIndex !== null && index < activeIndex) {
+      className += " done";
+    }
+
+    return '<div class="' + className + '">' +
+      '<div class="replay-step-number">' + (index + 1) + '</div>' +
+      '<div>' +
+      '<div class="replay-title">' + step.title + '</div>' +
+      '<div class="replay-message">' + step.message + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function buildEventReplay() {
+  if (!lastEvidence) {
+    alert("No evidence package yet. Capture context and ask Platform B first.");
+    return;
+  }
+
+  const r = lastEvidence.actionAdmissibilityRecord;
+
+  replayPacket = {
+    replayId: "RPL-" + Date.now(),
+    createdAt: nowStamp(),
+    mode: "RAMAT Vision Context Witness Replay",
+    replayType: "read-only action reconstruction",
+    eventId: r.eventId,
+    assetId: r.assetId,
+    assetName: r.assetName,
+    technician: r.technician,
+    decision: r.platformBDecision,
+    evidenceHash: lastEvidence.evidencePackage.evidenceHash,
+    guardrail: "Replay reconstructs the action story. It does not approve, release, close, or modify regulated records.",
+    platformBoundary: "RAMAT Vision displays and reconstructs. Platform B remains the assurance decision engine.",
+    steps: [
+      {
+        title: "LOOK AT ASSET",
+        message: "Wearable context witness sees simulated asset " + r.assetId + " - " + r.assetName + "."
+      },
+      {
+        title: "CAPTURE CONTEXT",
+        message: "Context captured with technician " + r.technician + ", intent " + r.voiceIntent + ", and source of truth " + r.sourceOfTruth + "."
+      },
+      {
+        title: "PHYSICAL WITNESS",
+        message: "Physical witness state recorded as: " + r.physicalWitness + "."
+      },
+      {
+        title: "ASK PLATFORM B",
+        message: "Device asks the mock Platform B decision layer: Can I proceed?"
+      },
+      {
+        title: "DECISION RETURNED",
+        message: "Mock Platform B returned " + r.platformBDecision + " because: " + r.decisionReason
+      },
+      {
+        title: "DISPLAY MICRO-DECISION",
+        message: "RAMAT Vision displays " + r.platformBDecision + " to the user. The wearable does not decide."
+      },
+      {
+        title: "EVIDENCE PACKAGE RECORDED",
+        message: "Evidence package recorded with hash " + lastEvidence.evidencePackage.evidenceHash + "."
+      },
+      {
+        title: "AUDITOR REVIEW READY",
+        message: "Auditor can reconstruct who, what, when, asset, work order, witness state, decision, reason, and evidence hash."
+      }
+    ]
+  };
+
+  document.getElementById("replayPacketViewer").innerText = JSON.stringify(replayPacket, null, 2);
+  renderReplayTimeline(null);
+
+  document.getElementById("microState").innerText = "REPLAY";
+  document.getElementById("microReason").innerText = "Replay packet built from latest evidence.";
+}
+
+function runEventReplay() {
+  if (!replayPacket) {
+    alert("Build the replay first.");
+    return;
+  }
+
+  let index = 0;
+
+  function playNext() {
+    if (index >= replayPacket.steps.length) {
+      document.getElementById("microState").innerText = "REPLAY DONE";
+      document.getElementById("microReason").innerText = "Context witness replay completed.";
+      renderReplayTimeline(replayPacket.steps.length);
+      return;
+    }
+
+    const step = replayPacket.steps[index];
+    renderReplayTimeline(index);
+
+    document.getElementById("microState").innerText = step.title;
+    document.getElementById("microReason").innerText = step.message;
+
+    index += 1;
+    setTimeout(playNext, 950);
+  }
+
+  playNext();
+}
+
+function downloadReplayPacket() {
+  if (!replayPacket) {
+    alert("No replay packet available. Build replay first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(replayPacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = replayPacket.replayId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let platformBConnectorPreview = null;
+
+function buildPlatformBConnectorPreview() {
+  if (!currentContext) {
+    alert("Capture context first.");
+    return;
+  }
+
+  const mockDecision = lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "DECISION_NOT_REQUESTED";
+  const mockReason = lastEvidence ? lastEvidence.actionAdmissibilityRecord.decisionReason : "Platform B decision has not been requested yet.";
+  const evidenceHash = lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null;
+
+  const requestPayload = {
+    requestType: "ActionAdmissibilityCheck",
+    source: "RAMAT_VISION_CONTEXT_WITNESS_SIMULATOR",
+    futureRelay: "JEFERY",
+    futureEndpoint: "RAMAT Vision / ELSA / OMA / Halo-style wearable",
+    routePlaceholder: "POST /api/platform-b/action-admissibility/check",
+    timestamp: nowStamp(),
+    contextEvent: {
+      eventId: currentContext.eventId,
+      wearableNode: currentContext.wearableNode,
+      relayNode: currentContext.relayNode,
+      captureMode: currentContext.captureMode,
+      visualCandidateId: currentContext.visualCandidateId,
+      technician: currentContext.technician,
+      voiceIntent: currentContext.voiceIntent,
+      scenario: currentContext.scenario
+    },
+    assetContext: {
+      assetId: currentContext.asset.assetId,
+      assetName: currentContext.asset.name,
+      location: currentContext.asset.location,
+      sourceOfTruth: currentContext.asset.sourceOfTruth,
+      workOrder: currentContext.asset.workOrder,
+      workOrderStatus: currentContext.asset.workOrderStatus,
+      validationStatus: currentContext.asset.validationStatus,
+      reviewerRequired: currentContext.asset.reviewerRequired,
+      openDeviation: currentContext.asset.openDeviation,
+      changeControl: currentContext.asset.changeControl,
+      physicalWitness: currentContext.asset.physicalWitness,
+      auditTrail: currentContext.asset.auditTrail
+    },
+    privacyBoundary: {
+      minimumNecessaryContextOnly: true,
+      videoStored: false,
+      productionRecordModified: false,
+      regulatedApprovalRequestedFromWearable: false
+    }
+  };
+
+  const responsePayload = {
+    responseType: "ActionAdmissibilityDecision",
+    decisionEngine: "Mock Platform B",
+    decision: mockDecision,
+    reason: mockReason,
+    evidenceHash: evidenceHash,
+    microDisplayInstruction: mockDecision,
+    wearableDisplayAllowed: true,
+    wearableMayOverrideDecision: false,
+    humanConfirmationRequired: mockDecision === "PROCEED" ? false : true,
+    reviewerRequired: currentContext.asset.reviewerRequired === "Yes" || mockDecision !== "PROCEED",
+    auditRecordAvailable: lastEvidence ? true : false,
+    guardrail: "Platform B decides. RAMAT Vision displays, captures, relays, and reconstructs."
+  };
+
+  platformBConnectorPreview = {
+    connectorPreviewId: "CNX-" + Date.now(),
+    createdAt: nowStamp(),
+    status: "MOCK_CONNECTOR_PREVIEW_READY",
+    requestPayload: requestPayload,
+    responsePayload: responsePayload,
+    implementationBoundary: {
+      currentMvp: "local simulator only",
+      realApiCall: false,
+      platformBArchitectureChanged: false,
+      futureIntegrationRequired: true
+    }
+  };
+
+  document.getElementById("platformBRequestViewer").innerText = JSON.stringify(requestPayload, null, 2);
+  document.getElementById("platformBResponseViewer").innerText = JSON.stringify(responsePayload, null, 2);
+
+  document.getElementById("microState").innerText = "API MOCK";
+  document.getElementById("microReason").innerText = "Mock Platform B connector preview generated.";
+}
+
+function downloadPlatformBConnectorPreview() {
+  if (!platformBConnectorPreview) {
+    alert("No connector preview available. Build connector preview first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(platformBConnectorPreview, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = platformBConnectorPreview.connectorPreviewId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let fullEvidenceBundle = null;
+
+function setScenario(assetId, technician, intent, scenario) {
+  document.getElementById("assetSelect").value = assetId;
+  document.getElementById("technicianSelect").value = technician;
+  document.getElementById("intentSelect").value = intent;
+  document.getElementById("scenarioSelect").value = scenario;
+}
+
+function runProceedDemo() {
+  setScenario("EQP-1803", "Taiwo Yusuf", "check status", "clean");
+  captureContext();
+  askPlatformB();
+  endpointLog("DEMO SCENARIO", "Executive PROCEED demo executed.", { expectedDecision: "PROCEED" });
+  buildEventReplay();
+  buildPlatformBConnectorPreview();
+  generateAuditChallenge();
+  buildFullEvidenceBundle();
+
+  document.getElementById("microState").innerText = "DEMO PROCEED";
+  document.getElementById("microReason").innerText = "Clean context demo completed.";
+}
+
+function runHoldDemo() {
+  setScenario("BMS-NIAGARA", "Taiwo Yusuf", "request reviewer", "reviewer_missing");
+  captureContext();
+  askPlatformB();
+  endpointLog("DEMO SCENARIO", "Executive HOLD demo executed.", { expectedDecision: "HOLD" });
+  buildEventReplay();
+  buildPlatformBConnectorPreview();
+  generateAuditChallenge();
+  buildFullEvidenceBundle();
+
+  document.getElementById("microState").innerText = "DEMO HOLD";
+  document.getElementById("microReason").innerText = "Reviewer missing demo completed.";
+}
+
+function runEscalateDemo() {
+  setScenario("EQP-1803", "External Vendor", "confirm action", "asset_mismatch");
+  captureContext();
+  askPlatformB();
+  endpointLog("DEMO SCENARIO", "Executive ESCALATE demo executed.", { expectedDecision: "ESCALATE" });
+  buildEventReplay();
+  buildPlatformBConnectorPreview();
+  generateAuditChallenge();
+  buildFullEvidenceBundle();
+
+  document.getElementById("microState").innerText = "DEMO ESCALATE";
+  document.getElementById("microReason").innerText = "Context mismatch demo completed.";
+}
+
+function buildDemoSummary() {
+  if (!lastEvidence) {
+    return {
+      status: "No evidence package yet",
+      instruction: "Run a preset scenario or capture context and ask Platform B."
+    };
+  }
+
+  const r = lastEvidence.actionAdmissibilityRecord;
+
+  return {
+    demoName: "Thread D RAMAT Vision Context Witness Demo",
+    currentMvp: "local simulator",
+    platformBoundary: "Platform B remains the assurance decision engine",
+    wearableBoundary: "RAMAT Vision displays, captures, relays, and reconstructs",
+    latestDecision: r.platformBDecision,
+    latestReason: r.decisionReason,
+    latestAsset: r.assetId + " - " + r.assetName,
+    latestTechnician: r.technician,
+    latestIntent: r.voiceIntent,
+    evidenceHash: lastEvidence.evidencePackage.evidenceHash,
+    historyCount: evidenceHistory ? evidenceHistory.length : 0,
+    endpointEventCount: endpointEvents ? endpointEvents.length : 0,
+    replayReady: replayPacket ? true : false,
+    connectorPreviewReady: platformBConnectorPreview ? true : false,
+    lockedFutureFeatures: [
+      "SERAPH",
+      "ARCHANGEL",
+      "Regulatory AI Inspection Passport",
+      "Living SOP Assurance",
+      "Agentic Submission Assurance"
+    ],
+    guardrail: "Future concepts are roadmap cards only in this MVP."
+  };
+}
+
+function buildFullEvidenceBundle() {
+  if (!lastEvidence) {
+    alert("No evidence package yet. Run a preset scenario or capture context and ask Platform B first.");
+    return;
+  }
+
+  const summary = buildDemoSummary();
+
+  fullEvidenceBundle = {
+    bundleId: "BND-" + Date.now(),
+    createdAt: nowStamp(),
+    bundleType: "Thread D RAMAT Vision Context Witness Local MVP Evidence Bundle",
+    implementationState: {
+      localSimulator: true,
+      mockDataOnly: true,
+      realGlassesRequired: false,
+      realRFIDRequired: false,
+      realServiceNowRequired: false,
+      realPlatformBApiCall: false,
+      platformBArchitectureChanged: false
+    },
+    demoSummary: summary,
+    latestActionAdmissibilityRecord: lastEvidence.actionAdmissibilityRecord,
+    latestEvidencePackage: lastEvidence.evidencePackage,
+    actionHistory: evidenceHistory || [],
+    endpointEvents: endpointEvents || [],
+    replayPacket: replayPacket || null,
+    connectorPreview: platformBConnectorPreview || null,
+    serviceNowContext: serviceNowContextPacket || null,
+    validationChangeContext: validationChangePacket || null,
+    humanAuthorityContext: authorityShiftPacket || null,
+    assuranceContextFusion: assuranceContextFusionPacket || null,
+    mvpReadinessReport: mvpReadinessReport || null,
+    mvpAcceptancePacket: mvpAcceptancePacket || null,
+    auditMode: {
+      readOnly: true,
+      modifiesRecords: false,
+      approvesWork: false,
+      closesDeviationOrCAPA: false
+    },
+    futureRoadmapLockedCards: [
+      {
+        feature: "SERAPH",
+        mvpStatus: "locked future evidence integrity layer"
+      },
+      {
+        feature: "ARCHANGEL",
+        mvpStatus: "locked future assurance ledger"
+      },
+      {
+        feature: "Regulatory AI Inspection Passport",
+        mvpStatus: "locked future inspection readiness passport"
+      },
+      {
+        feature: "Living SOP Assurance",
+        mvpStatus: "locked future SOP-to-reality assurance"
+      },
+      {
+        feature: "Agentic Submission Assurance",
+        mvpStatus: "locked future submission evidence mode"
+      }
+    ],
+    finalGuardrail: "This bundle proves the local simulator flow only. It does not prove validation, production readiness, GMP use, FDA readiness, or autonomous decisioning."
+  };
+
+  document.getElementById("demoSummaryViewer").innerText = JSON.stringify(summary, null, 2);
+  document.getElementById("fullBundleViewer").innerText = JSON.stringify(fullEvidenceBundle, null, 2);
+
+  document.getElementById("microState").innerText = "BUNDLE";
+  document.getElementById("microReason").innerText = "Full evidence bundle generated.";
+}
+
+function downloadFullEvidenceBundle() {
+  if (!fullEvidenceBundle) {
+    alert("No full evidence bundle available. Build full evidence bundle first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(fullEvidenceBundle, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fullEvidenceBundle.bundleId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let hudPacket = null;
+
+function getHudDecisionClass(decision) {
+  if (decision === "PROCEED") return "proceed";
+  if (decision === "HOLD") return "hold";
+  if (decision === "ESCALATE") return "escalate";
+  return "waiting";
+}
+
+function buildHudPacket() {
+  const assetId = currentContext ? currentContext.asset.assetId : "NO ASSET";
+  const assetName = currentContext ? currentContext.asset.name : "Capture context to populate asset view.";
+  const technician = currentContext ? currentContext.technician : "Not captured";
+  const intent = currentContext ? currentContext.voiceIntent : "Not captured";
+  const decision = lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "READY";
+  const instruction = lastEvidence ? lastEvidence.actionAdmissibilityRecord.decisionReason : "Ask Platform B to show decision state.";
+  const evidenceHash = lastEvidence ? lastEvidence.evidencePackage.evidenceHash : "None";
+
+  hudPacket = {
+    hudPacketId: "HUD-" + Date.now(),
+    createdAt: nowStamp(),
+    hudMode: "RAMAT Vision Glasses Presenter Mode",
+    displayOnly: true,
+    assetInView: {
+      assetId: assetId,
+      assetName: assetName
+    },
+    userContext: {
+      technician: technician,
+      intent: intent
+    },
+    platformBState: {
+      decision: decision,
+      instruction: instruction,
+      evidenceHash: evidenceHash
+    },
+    guardrail: "HUD displays the Platform B decision and context witness state. HUD does not approve, release, close, or override."
+  };
+
+  return hudPacket;
+}
+
+function refreshHudPreview() {
+  const packet = buildHudPacket();
+  const decisionClass = getHudDecisionClass(packet.platformBState.decision);
+
+  document.getElementById("hudPreviewAsset").innerText = packet.assetInView.assetId;
+  document.getElementById("hudPreviewAssetDetail").innerText = packet.assetInView.assetName;
+  document.getElementById("hudPreviewDecision").innerText = packet.platformBState.decision;
+  document.getElementById("hudPreviewInstruction").innerText = packet.platformBState.instruction;
+
+  document.getElementById("hudFullAsset").innerText = packet.assetInView.assetId;
+  document.getElementById("hudFullAssetDetail").innerText = packet.assetInView.assetName;
+  document.getElementById("hudFullDecision").innerText = packet.platformBState.decision;
+  document.getElementById("hudFullDecision").className = "hud-decision-large " + decisionClass;
+  document.getElementById("hudFullInstruction").innerText = packet.platformBState.instruction;
+  document.getElementById("hudFullTechnician").innerText = packet.userContext.technician;
+  document.getElementById("hudFullIntent").innerText = packet.userContext.intent;
+  document.getElementById("hudFullHash").innerText = packet.platformBState.evidenceHash;
+
+  document.getElementById("hudPacketViewer").innerText = JSON.stringify(packet, null, 2);
+
+  document.getElementById("microState").innerText = "HUD READY";
+  document.getElementById("microReason").innerText = "Glasses HUD preview refreshed.";
+}
+
+function openHudPresenter() {
+  refreshHudPreview();
+  document.getElementById("hudFullscreen").classList.add("active");
+}
+
+function closeHudPresenter() {
+  const hud = document.getElementById("hudFullscreen");
+  if (hud) {
+    hud.classList.remove("active");
+  }
+}
+
+let deviceReadinessPassport = null;
+
+function deviceCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function renderDeviceReadinessChecks(checks) {
+  const container = document.getElementById("deviceReadinessChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="device-check ' + statusClass + '">' +
+      '<div><span class="device-status-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="device-check-title">' + check.name + '</div>' +
+      '<div class="device-check-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function generateDeviceReadinessPassport() {
+  const deviceMode = document.getElementById("deviceModeSelect") ? document.getElementById("deviceModeSelect").value : "RAMAT Vision Sim";
+
+  const checks = [];
+
+  checks.push(deviceCheck(
+    "Device mode selected",
+    "PASS",
+    "Endpoint mode is set to " + deviceMode + "."
+  ));
+
+  checks.push(deviceCheck(
+    "Camera / visual candidate readiness",
+    currentContext ? "PASS" : "WAIT",
+    currentContext ? "Visual candidate captured: " + currentContext.visualCandidateId + "." : "No context captured yet."
+  ));
+
+  checks.push(deviceCheck(
+    "Voice intent readiness",
+    currentContext ? "PASS" : "WAIT",
+    currentContext ? "Voice intent captured: " + currentContext.voiceIntent + "." : "No voice intent captured yet."
+  ));
+
+  checks.push(deviceCheck(
+    "Platform B decision state",
+    lastEvidence ? "PASS" : "WAIT",
+    lastEvidence ? "Latest Platform B decision: " + lastEvidence.actionAdmissibilityRecord.platformBDecision + "." : "Platform B has not been asked yet."
+  ));
+
+  checks.push(deviceCheck(
+    "Evidence hash state",
+    lastEvidence ? "PASS" : "WAIT",
+    lastEvidence ? "Evidence hash available: " + lastEvidence.evidencePackage.evidenceHash + "." : "No evidence hash available yet."
+  ));
+
+  checks.push(deviceCheck(
+    "Source of truth context",
+    currentContext ? "PASS" : "WAIT",
+    currentContext ? "Source of truth: " + currentContext.asset.sourceOfTruth + "." : "No source-of-truth context captured yet."
+  ));
+
+  checks.push(deviceCheck(
+    "Privacy boundary",
+    "PASS",
+    "Minimum necessary context only. No video storage required for this local MVP."
+  ));
+
+  checks.push(deviceCheck(
+    "GMP record modification boundary",
+    "PASS",
+    "The wearable simulator does not modify GMP records, audit trails, deviations, CAPA, or work orders."
+  ));
+
+  checks.push(deviceCheck(
+    "Decision override boundary",
+    "PASS",
+    "The device may display the decision but cannot override Platform B."
+  ));
+
+  const waitCount = checks.filter(function(check) { return check.status === "WAIT"; }).length;
+  const failCount = checks.filter(function(check) { return check.status === "FAIL"; }).length;
+
+  let readinessState = "DEVICE READY AS CONTEXT WITNESS";
+  let readinessClass = "PASS";
+
+  if (waitCount > 0) {
+    readinessState = "DEVICE PARTIALLY READY";
+    readinessClass = "WAIT";
+  }
+
+  if (failCount > 0) {
+    readinessState = "DEVICE NOT READY";
+    readinessClass = "FAIL";
+  }
+
+  deviceReadinessPassport = {
+    passportId: "DRP-" + Date.now(),
+    createdAt: nowStamp(),
+    deviceMode: deviceMode,
+    readinessState: readinessState,
+    readinessClass: readinessClass,
+    currentAsset: currentContext ? currentContext.asset.assetId + " - " + currentContext.asset.name : "No asset captured",
+    technician: currentContext ? currentContext.technician : "No technician captured",
+    latestDecision: lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision yet",
+    evidenceHash: lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null,
+    checks: checks,
+    allowedFunctions: [
+      "capture visual context",
+      "capture voice intent",
+      "display Platform B decision",
+      "record human intent signal",
+      "request reviewer",
+      "trigger stop-line evidence",
+      "support audit reconstruction"
+    ],
+    forbiddenFunctions: [
+      "approve work",
+      "release batch",
+      "close deviation",
+      "close CAPA",
+      "modify GMP record",
+      "alter audit trail",
+      "override Platform B decision"
+    ],
+    guardrail: "Device readiness is not action approval. It only proves the endpoint can serve as a controlled context witness in this local simulation."
+  };
+
+  renderDeviceReadinessChecks(checks);
+
+  document.getElementById("devicePassportViewer").innerText = JSON.stringify(deviceReadinessPassport, null, 2);
+
+  document.getElementById("microState").innerText = readinessState;
+  document.getElementById("microReason").innerText = "Device readiness passport generated for " + deviceMode + ".";
+}
+
+function downloadDeviceReadinessPassport() {
+  if (!deviceReadinessPassport) {
+    alert("No device passport available. Generate device passport first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(deviceReadinessPassport, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = deviceReadinessPassport.passportId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let serviceNowContextPacket = null;
+
+function ciCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function renderCiContextChecks(checks) {
+  const container = document.getElementById("ciContextChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="ci-check ' + statusClass + '">' +
+      '<div><span class="ci-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="ci-title">' + check.name + '</div>' +
+      '<div class="ci-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function buildMockCiRecord(assetId, scenario) {
+  const base = {
+    ciNumber: "CI-" + assetId,
+    ciName: assetId,
+    cmdbClass: "Business Application / Equipment Service Context",
+    lifecycleState: "Operational",
+    owner: "Ben Frederick",
+    lcm: "Taiwo Yusuf",
+    supportGroup: "IRLT Manufacturing IT Systems",
+    assignmentGroup: "IRLT IT Support",
+    myAccessRequired: "Yes",
+    myAccessApproverGroup: "System Owner / LCM",
+    relationshipStatus: "Mapped to equipment and application service",
+    workOrderLinked: "Yes",
+    sourceSystem: "Mock ServiceNow / Future PDI",
+    pdiStatus: "Future integration only"
+  };
+
+  if (assetId === "BMS-NIAGARA") {
+    base.ciName = "Niagara BMS";
+    base.cmdbClass = "Business Application";
+    base.owner = "David / Ben";
+    base.supportGroup = "Facilities / Manufacturing IT";
+    base.relationshipStatus = "Mapped to BMS application service";
+  }
+
+  if (assetId === "EQP-1802") {
+    base.lifecycleState = "OOS restricted";
+    base.relationshipStatus = "Mapped but restricted to closure context";
+  }
+
+  if (assetId === "AI-CAPA-AGENT") {
+    base.ciName = "AI CAPA Draft Assistant";
+    base.cmdbClass = "AI Product / Business Application";
+    base.lifecycleState = "Governance review";
+    base.owner = "AI Product Owner required";
+    base.lcm = "Pending governance assignment";
+    base.supportGroup = "AI Governance / Quality Systems";
+    base.myAccessRequired = "Yes";
+    base.relationshipStatus = "AI registry relationship pending";
+  }
+
+  if (scenario === "ci_owner_gap") {
+    base.owner = "Missing";
+    base.lcm = "Missing";
+  }
+
+  if (scenario === "ci_support_gap") {
+    base.supportGroup = "Missing";
+    base.assignmentGroup = "Missing";
+  }
+
+  if (scenario === "ci_relationship_gap") {
+    base.relationshipStatus = "Relationship missing";
+  }
+
+  if (scenario === "ci_access_gap") {
+    base.myAccessApproverGroup = "Missing";
+  }
+
+  if (scenario === "ci_retired") {
+    base.lifecycleState = "Retired or restricted";
+  }
+
+  return base;
+}
+
+function buildServiceNowContextPacket() {
+  if (!currentContext) {
+    alert("Capture context first.");
+    return;
+  }
+
+  const scenario = document.getElementById("ciScenarioSelect") ? document.getElementById("ciScenarioSelect").value : "ci_clean";
+  const assetId = currentContext.asset.assetId;
+  const ci = buildMockCiRecord(assetId, scenario);
+
+  const checks = [];
+
+  checks.push(ciCheck(
+    "CI identity",
+    ci.ciNumber && ci.ciName ? "GOOD" : "BAD",
+    "CI identity resolved as " + ci.ciNumber + " / " + ci.ciName + "."
+  ));
+
+  checks.push(ciCheck(
+    "Lifecycle state",
+    ci.lifecycleState === "Operational" || ci.lifecycleState === "Governance review" ? "GOOD" : "WARN",
+    "Lifecycle state: " + ci.lifecycleState + "."
+  ));
+
+  checks.push(ciCheck(
+    "Owner / LCM",
+    ci.owner !== "Missing" && ci.lcm !== "Missing" ? "GOOD" : "BAD",
+    "Owner: " + ci.owner + ". LCM: " + ci.lcm + "."
+  ));
+
+  checks.push(ciCheck(
+    "Support group",
+    ci.supportGroup !== "Missing" && ci.assignmentGroup !== "Missing" ? "GOOD" : "BAD",
+    "Support group: " + ci.supportGroup + ". Assignment group: " + ci.assignmentGroup + "."
+  ));
+
+  checks.push(ciCheck(
+    "CI relationship",
+    ci.relationshipStatus !== "Relationship missing" ? "GOOD" : "WARN",
+    "Relationship status: " + ci.relationshipStatus + "."
+  ));
+
+  checks.push(ciCheck(
+    "Work order linkage",
+    ci.workOrderLinked === "Yes" ? "GOOD" : "WARN",
+    "Work order linkage state: " + ci.workOrderLinked + "."
+  ));
+
+  checks.push(ciCheck(
+    "MyAccess context",
+    ci.myAccessApproverGroup !== "Missing" ? "GOOD" : "WARN",
+    "MyAccess required: " + ci.myAccessRequired + ". Approver group: " + ci.myAccessApproverGroup + "."
+  ));
+
+  checks.push(ciCheck(
+    "Live system boundary",
+    "GOOD",
+    "This adapter uses mock data only and does not call or update ServiceNow."
+  ));
+
+  const badCount = checks.filter(function(check) { return check.status === "BAD"; }).length;
+  const warnCount = checks.filter(function(check) { return check.status === "WARN"; }).length;
+
+  let ciContextState = "CI CONTEXT READY";
+  if (warnCount > 0) {
+    ciContextState = "CI CONTEXT REVIEW REQUIRED";
+  }
+  if (badCount > 0) {
+    ciContextState = "CI CONTEXT INCOMPLETE";
+  }
+
+  serviceNowContextPacket = {
+    packetId: "SNC-" + Date.now(),
+    createdAt: nowStamp(),
+    adapterMode: "ServiceNow / CI Context Mock Adapter",
+    currentMvp: "local mock only",
+    futureIntegration: "ServiceNow PDI or approved ServiceNow API",
+    ciContextState: ciContextState,
+    assetId: assetId,
+    assetName: currentContext.asset.name,
+    technician: currentContext.technician,
+    voiceIntent: currentContext.voiceIntent,
+    ciRecord: ci,
+    checks: checks,
+    platformBUse: {
+      useAsContextInput: true,
+      useAsDecisionEngine: false,
+      actionAdmissibilitySupport: "Provides CI, ownership, lifecycle, access, relationship, and work-order context."
+    },
+    guardrail: "ServiceNow context informs Platform B. RAMAT Vision does not update CMDB, approve access, or change lifecycle state."
+  };
+
+  renderCiContextChecks(checks);
+  document.getElementById("serviceNowContextViewer").innerText = JSON.stringify(serviceNowContextPacket, null, 2);
+
+  document.getElementById("microState").innerText = ciContextState;
+  document.getElementById("microReason").innerText = "Mock ServiceNow CI context packet generated.";
+}
+
+function downloadServiceNowContextPacket() {
+  if (!serviceNowContextPacket) {
+    alert("No CI context packet available. Build CI context packet first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(serviceNowContextPacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = serviceNowContextPacket.packetId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let validationChangePacket = null;
+
+function validationCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function renderValidationChangeChecks(checks) {
+  const container = document.getElementById("validationChangeChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="validation-check ' + statusClass + '">' +
+      '<div><span class="validation-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="validation-title">' + check.name + '</div>' +
+      '<div class="validation-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function buildMockValidationRecord(assetId, scenario) {
+  const base = {
+    validationRecordId: "VAL-" + assetId,
+    csvState: "Current",
+    sopState: "Current controlled procedure",
+    sourceOfTruthState: "Aligned",
+    changeControlId: "Not required",
+    changeControlState: "Not required",
+    qualityReviewer: "Not required for clean check-status action",
+    reviewerState: "Not required",
+    trainingImpact: "No new training impact",
+    rollbackState: "Not required",
+    postChangeVerification: "Not required",
+    validationBoundary: "Mock validation context only"
+  };
+
+  if (assetId === "BMS-NIAGARA") {
+    base.validationRecordId = "VAL-BMS-NIAGARA-CSV";
+    base.changeControlId = "CC-BMS-0415";
+    base.changeControlState = "Linked";
+    base.qualityReviewer = "QA / System Owner review available";
+    base.reviewerState = "Available";
+    base.postChangeVerification = "Required after change implementation";
+  }
+
+  if (assetId === "EQP-1802") {
+    base.csvState = "OOS restricted";
+    base.sopState = "Closure-only procedure";
+    base.changeControlState = "Review required";
+    base.qualityReviewer = "QA required";
+    base.reviewerState = "Required";
+    base.rollbackState = "Not applicable";
+  }
+
+  if (assetId === "AI-CAPA-AGENT") {
+    base.validationRecordId = "AI-VAL-CAPA-009";
+    base.csvState = "AI quality review required";
+    base.sopState = "AI governance procedure required";
+    base.changeControlId = "CC-AI-REQUIRED";
+    base.changeControlState = "Required";
+    base.qualityReviewer = "AI governance and QA reviewer required";
+    base.reviewerState = "Required";
+    base.trainingImpact = "Training impact assessment required";
+  }
+
+  if (scenario === "change_control_required") {
+    base.changeControlId = "CC-REQUIRED-NOT-YET-APPROVED";
+    base.changeControlState = "Required";
+    base.postChangeVerification = "Required";
+  }
+
+  if (scenario === "change_control_missing") {
+    base.changeControlId = "Missing";
+    base.changeControlState = "Missing";
+  }
+
+  if (scenario === "csv_review_required") {
+    base.csvState = "CSV review required";
+    base.qualityReviewer = "CSV/QA reviewer required";
+    base.reviewerState = "Required";
+  }
+
+  if (scenario === "sop_mismatch") {
+    base.sopState = "Possible SOP mismatch";
+    base.sourceOfTruthState = "Conflict";
+  }
+
+  if (scenario === "validation_expired") {
+    base.csvState = "Expired or not current";
+  }
+
+  if (scenario === "quality_reviewer_missing") {
+    base.qualityReviewer = "Missing";
+    base.reviewerState = "Missing";
+  }
+
+  return base;
+}
+
+function buildValidationChangePacket() {
+  if (!currentContext) {
+    alert("Capture context first.");
+    return;
+  }
+
+  const scenario = document.getElementById("validationScenarioSelect") ? document.getElementById("validationScenarioSelect").value : "validation_clean";
+  const assetId = currentContext.asset.assetId;
+  const validation = buildMockValidationRecord(assetId, scenario);
+
+  const checks = [];
+
+  checks.push(validationCheck(
+    "Validation record",
+    validation.validationRecordId && validation.validationRecordId !== "Missing" ? "GOOD" : "BAD",
+    "Validation record reference: " + validation.validationRecordId + "."
+  ));
+
+  checks.push(validationCheck(
+    "CSV state",
+    validation.csvState === "Current" ? "GOOD" : validation.csvState.indexOf("required") >= 0 || validation.csvState.indexOf("review") >= 0 ? "WARN" : "BAD",
+    "CSV state: " + validation.csvState + "."
+  ));
+
+  checks.push(validationCheck(
+    "SOP / procedure state",
+    validation.sopState === "Current controlled procedure" || validation.sopState === "Closure-only procedure" ? "GOOD" : "WARN",
+    "SOP state: " + validation.sopState + "."
+  ));
+
+  checks.push(validationCheck(
+    "Source of truth",
+    validation.sourceOfTruthState === "Aligned" ? "GOOD" : "BAD",
+    "Source-of-truth state: " + validation.sourceOfTruthState + "."
+  ));
+
+  checks.push(validationCheck(
+    "Change control",
+    validation.changeControlState === "Not required" || validation.changeControlState === "Linked" ? "GOOD" : validation.changeControlState === "Required" || validation.changeControlState === "Review required" ? "WARN" : "BAD",
+    "Change control: " + validation.changeControlId + " / " + validation.changeControlState + "."
+  ));
+
+  checks.push(validationCheck(
+    "Quality reviewer",
+    validation.reviewerState === "Not required" || validation.reviewerState === "Available" ? "GOOD" : validation.reviewerState === "Required" ? "WARN" : "BAD",
+    "Reviewer state: " + validation.qualityReviewer + "."
+  ));
+
+  checks.push(validationCheck(
+    "Training impact",
+    validation.trainingImpact === "No new training impact" ? "GOOD" : "WARN",
+    "Training impact: " + validation.trainingImpact + "."
+  ));
+
+  checks.push(validationCheck(
+    "QMS boundary",
+    "GOOD",
+    "This adapter does not update QMS, change controls, SOPs, validation records, deviations, or CAPA."
+  ));
+
+  const badCount = checks.filter(function(check) { return check.status === "BAD"; }).length;
+  const warnCount = checks.filter(function(check) { return check.status === "WARN"; }).length;
+
+  let validationState = "VALIDATION CONTEXT READY";
+  let recommendedPlatformBState = "PROCEED ELIGIBLE";
+
+  if (warnCount > 0) {
+    validationState = "VALIDATION / CHANGE REVIEW REQUIRED";
+    recommendedPlatformBState = "HOLD";
+  }
+
+  if (badCount > 0) {
+    validationState = "VALIDATION CONTEXT INCOMPLETE";
+    recommendedPlatformBState = "ESCALATE";
+  }
+
+  validationChangePacket = {
+    packetId: "VCC-" + Date.now(),
+    createdAt: nowStamp(),
+    adapterMode: "Validation / Change Control Context Mock Adapter",
+    currentMvp: "local mock only",
+    validationState: validationState,
+    recommendedPlatformBState: recommendedPlatformBState,
+    assetId: assetId,
+    assetName: currentContext.asset.name,
+    technician: currentContext.technician,
+    voiceIntent: currentContext.voiceIntent,
+    validationRecord: validation,
+    checks: checks,
+    platformBUse: {
+      useAsContextInput: true,
+      useAsDecisionEngine: false,
+      actionAdmissibilitySupport: "Provides validation, CSV, SOP, source-of-truth, reviewer, change-control, and training-impact context."
+    },
+    guardrail: "Validation context informs Platform B. RAMAT Vision does not approve validation, close change controls, update SOPs, or modify QMS records."
+  };
+
+  renderValidationChangeChecks(checks);
+  document.getElementById("validationChangeViewer").innerText = JSON.stringify(validationChangePacket, null, 2);
+
+  document.getElementById("microState").innerText = validationState;
+  document.getElementById("microReason").innerText = "Mock validation and change-control context packet generated.";
+}
+
+function downloadValidationChangePacket() {
+  if (!validationChangePacket) {
+    alert("No validation context packet available. Build validation context packet first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(validationChangePacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = validationChangePacket.packetId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let authorityShiftPacket = null;
+
+function authorityCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function renderAuthorityShiftChecks(checks) {
+  const container = document.getElementById("authorityShiftChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="authority-check ' + statusClass + '">' +
+      '<div><span class="authority-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="authority-title">' + check.name + '</div>' +
+      '<div class="authority-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function buildMockHumanAuthorityRecord(technician, scenario, shift) {
+  const base = {
+    person: technician,
+    role: "GMP IT Equipment Analyst / Context Witness User",
+    assignedToAsset: "Yes",
+    shiftStatus: "On shift",
+    shiftName: shift,
+    trainingStatus: "Current",
+    accessStatus: "Active",
+    reviewerRequired: "No",
+    supervisorRequired: "No",
+    vendorPathRequired: "No",
+    humanAccountabilityState: "Accountable human context present",
+    sourceSystem: "Mock Shift Structure / Training / Access Context"
+  };
+
+  if (technician === "Ben Frederick") {
+    base.role = "System Owner / Reviewer";
+    base.reviewerRequired = "No";
+  }
+
+  if (technician === "External Vendor") {
+    base.role = "External Vendor";
+    base.assignedToAsset = "Conditional";
+    base.vendorPathRequired = "Yes";
+    base.reviewerRequired = "Yes";
+    base.supervisorRequired = "Yes";
+    base.humanAccountabilityState = "Vendor requires supervised access path";
+  }
+
+  if (technician === "Unassigned User") {
+    base.assignedToAsset = "No";
+    base.accessStatus = "Unknown";
+    base.humanAccountabilityState = "User is not assigned";
+  }
+
+  if (scenario === "off_shift" || shift === "Not Scheduled") {
+    base.shiftStatus = "Off shift";
+  }
+
+  if (scenario === "training_gap") {
+    base.trainingStatus = "Missing or expired";
+  }
+
+  if (scenario === "supervisor_required") {
+    base.reviewerRequired = "Yes";
+    base.supervisorRequired = "Yes";
+  }
+
+  if (scenario === "vendor_access") {
+    base.role = "External Vendor / Supervised Access";
+    base.assignedToAsset = "Conditional";
+    base.vendorPathRequired = "Yes";
+    base.reviewerRequired = "Yes";
+    base.supervisorRequired = "Yes";
+  }
+
+  if (scenario === "unassigned_user") {
+    base.assignedToAsset = "No";
+    base.accessStatus = "Unknown";
+    base.humanAccountabilityState = "User is not assigned";
+  }
+
+  if (scenario === "access_expired") {
+    base.accessStatus = "Expired";
+  }
+
+  return base;
+}
+
+function buildHumanAuthorityShiftPacket() {
+  if (!currentContext) {
+    alert("Capture context first.");
+    return;
+  }
+
+  const scenario = document.getElementById("authorityScenarioSelect") ? document.getElementById("authorityScenarioSelect").value : "authorized_on_shift";
+  const shift = document.getElementById("shiftSelect") ? document.getElementById("shiftSelect").value : "Day Shift";
+  const technician = currentContext.technician;
+
+  const authority = buildMockHumanAuthorityRecord(technician, scenario, shift);
+  const checks = [];
+
+  checks.push(authorityCheck(
+    "Person identity",
+    technician && technician !== "Unassigned User" && scenario !== "unassigned_user" ? "GOOD" : "BAD",
+    "Person captured as: " + technician + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Role assignment",
+    authority.assignedToAsset === "Yes" ? "GOOD" : authority.assignedToAsset === "Conditional" ? "WARN" : "BAD",
+    "Assigned to asset/action: " + authority.assignedToAsset + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Shift status",
+    authority.shiftStatus === "On shift" ? "GOOD" : "WARN",
+    "Shift state: " + authority.shiftStatus + " / " + authority.shiftName + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Training status",
+    authority.trainingStatus === "Current" ? "GOOD" : "BAD",
+    "Training state: " + authority.trainingStatus + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Access status",
+    authority.accessStatus === "Active" ? "GOOD" : authority.accessStatus === "Unknown" ? "WARN" : "BAD",
+    "Access state: " + authority.accessStatus + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Reviewer / supervisor requirement",
+    authority.reviewerRequired === "No" && authority.supervisorRequired === "No" ? "GOOD" : "WARN",
+    "Reviewer required: " + authority.reviewerRequired + ". Supervisor required: " + authority.supervisorRequired + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Vendor access path",
+    authority.vendorPathRequired === "No" ? "GOOD" : "WARN",
+    "Vendor path required: " + authority.vendorPathRequired + "."
+  ));
+
+  checks.push(authorityCheck(
+    "Human approval boundary",
+    "GOOD",
+    "Human authority context informs Platform B. It does not automatically approve the action."
+  ));
+
+  const badCount = checks.filter(function(check) { return check.status === "BAD"; }).length;
+  const warnCount = checks.filter(function(check) { return check.status === "WARN"; }).length;
+
+  let authorityState = "HUMAN AUTHORITY READY";
+  let recommendedPlatformBState = "PROCEED ELIGIBLE";
+
+  if (warnCount > 0) {
+    authorityState = "HUMAN AUTHORITY REVIEW REQUIRED";
+    recommendedPlatformBState = "HOLD";
+  }
+
+  if (badCount > 0) {
+    authorityState = "HUMAN AUTHORITY INCOMPLETE";
+    recommendedPlatformBState = "ESCALATE";
+  }
+
+  authorityShiftPacket = {
+    packetId: "HUM-" + Date.now(),
+    createdAt: nowStamp(),
+    adapterMode: "Human Authority / Training / Shift Context Mock Adapter",
+    currentMvp: "local mock only",
+    authorityState: authorityState,
+    recommendedPlatformBState: recommendedPlatformBState,
+    assetId: currentContext.asset.assetId,
+    assetName: currentContext.asset.name,
+    technician: technician,
+    voiceIntent: currentContext.voiceIntent,
+    authorityRecord: authority,
+    checks: checks,
+    platformBUse: {
+      useAsContextInput: true,
+      useAsDecisionEngine: false,
+      actionAdmissibilitySupport: "Provides person, role, assignment, training, access, shift, reviewer, supervisor, and vendor-context signals."
+    },
+    guardrail: "Human authority context informs Platform B. It does not release work, approve execution, or override quality-system requirements."
+  };
+
+  renderAuthorityShiftChecks(checks);
+  document.getElementById("authorityShiftViewer").innerText = JSON.stringify(authorityShiftPacket, null, 2);
+
+  document.getElementById("microState").innerText = authorityState;
+  document.getElementById("microReason").innerText = "Mock human authority and shift context packet generated.";
+}
+
+function downloadHumanAuthorityShiftPacket() {
+  if (!authorityShiftPacket) {
+    alert("No human authority packet available. Build human authority packet first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(authorityShiftPacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = authorityShiftPacket.packetId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let assuranceContextFusionPacket = null;
+
+function fusionCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function getSafeGlobal(name) {
+  try {
+    if (typeof window[name] !== "undefined") {
+      return window[name];
+    }
+  } catch (e) {
+    return null;
+  }
+
+  try {
+    return eval("typeof " + name + " !== 'undefined' ? " + name + " : null");
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderFusionChecks(checks) {
+  const container = document.getElementById("fusionChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="fusion-check ' + statusClass + '">' +
+      '<div><span class="fusion-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="fusion-title">' + check.name + '</div>' +
+      '<div class="fusion-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function updateFusionScore(state, reason) {
+  const score = document.getElementById("fusionScoreState");
+  const scoreReason = document.getElementById("fusionScoreReason");
+
+  if (!score || !scoreReason) {
+    return;
+  }
+
+  let className = "fusion-score wait";
+
+  if (state === "READY") {
+    className = "fusion-score ready";
+  }
+
+  if (state === "REVIEW") {
+    className = "fusion-score review";
+  }
+
+  if (state === "ESCALATE") {
+    className = "fusion-score escalate";
+  }
+
+  score.className = className;
+  score.innerText = state;
+  scoreReason.innerText = reason;
+}
+
+function getPacketState(packet, readyText, reviewText, incompleteText) {
+  if (!packet) {
+    return {
+      state: "WAIT",
+      reason: "Packet has not been generated yet."
+    };
+  }
+
+  const text = JSON.stringify(packet).toUpperCase();
+
+  if (text.indexOf("INCOMPLETE") >= 0 || text.indexOf("ESCALATE") >= 0 || text.indexOf("EXPIRED") >= 0 || text.indexOf("MISSING") >= 0) {
+    return {
+      state: "BAD",
+      reason: incompleteText
+    };
+  }
+
+  if (text.indexOf("REVIEW REQUIRED") >= 0 || text.indexOf("HOLD") >= 0 || text.indexOf("REQUIRED") >= 0 || text.indexOf("WARN") >= 0 || text.indexOf("PARTIALLY") >= 0) {
+    return {
+      state: "WARN",
+      reason: reviewText
+    };
+  }
+
+  return {
+    state: "GOOD",
+    reason: readyText
+  };
+}
+
+function buildAssuranceContextFusion() {
+  const serviceNowPacket = getSafeGlobal("serviceNowContextPacket");
+  const validationPacket = getSafeGlobal("validationChangePacket");
+  const authorityPacket = getSafeGlobal("authorityShiftPacket");
+  const devicePassport = getSafeGlobal("deviceReadinessPassport");
+
+  const checks = [];
+
+  checks.push(fusionCheck(
+    "Platform B decision",
+    lastEvidence ? (lastEvidence.actionAdmissibilityRecord.platformBDecision === "PROCEED" ? "GOOD" : lastEvidence.actionAdmissibilityRecord.platformBDecision === "HOLD" ? "WARN" : "BAD") : "WAIT",
+    lastEvidence ? "Latest mock Platform B decision: " + lastEvidence.actionAdmissibilityRecord.platformBDecision + "." : "No Platform B decision yet."
+  ));
+
+  checks.push(fusionCheck(
+    "Evidence hash",
+    lastEvidence && lastEvidence.evidencePackage.evidenceHash ? "GOOD" : "WAIT",
+    lastEvidence && lastEvidence.evidencePackage.evidenceHash ? "Evidence hash available: " + lastEvidence.evidencePackage.evidenceHash + "." : "No evidence hash available yet."
+  ));
+
+  const deviceState = getPacketState(
+    devicePassport,
+    "Device passport supports context witness readiness.",
+    "Device passport shows partial readiness or review need.",
+    "Device passport shows incomplete endpoint readiness."
+  );
+
+  checks.push(fusionCheck(
+    "Device readiness",
+    deviceState.state,
+    deviceState.reason
+  ));
+
+  const ciState = getPacketState(
+    serviceNowPacket,
+    "CI context supports ownership, lifecycle, support group, and relationship visibility.",
+    "CI context requires review before full confidence.",
+    "CI context is incomplete and should be escalated."
+  );
+
+  checks.push(fusionCheck(
+    "ServiceNow / CI context",
+    ciState.state,
+    ciState.reason
+  ));
+
+  const validationState = getPacketState(
+    validationPacket,
+    "Validation and change-control context supports proceeding in this mock case.",
+    "Validation or change-control context requires review.",
+    "Validation or source-of-truth context is incomplete."
+  );
+
+  checks.push(fusionCheck(
+    "Validation / change control",
+    validationState.state,
+    validationState.reason
+  ));
+
+  const authorityState = getPacketState(
+    authorityPacket,
+    "Human authority, training, and shift context support the action in this mock case.",
+    "Human authority context requires reviewer or supervisor review.",
+    "Human authority context is incomplete."
+  );
+
+  checks.push(fusionCheck(
+    "Human authority / training / shift",
+    authorityState.state,
+    authorityState.reason
+  ));
+
+  checks.push(fusionCheck(
+    "Platform boundary",
+    "GOOD",
+    "Fusion aggregates context only. Platform B remains the decision engine."
+  ));
+
+  const badCount = checks.filter(function(check) { return check.status === "BAD"; }).length;
+  const warnCount = checks.filter(function(check) { return check.status === "WARN"; }).length;
+  const waitCount = checks.filter(function(check) { return check.status === "WAIT"; }).length;
+
+  let integratedState = "READY";
+  let integratedReason = "All available mock context supports a defensible proceed path.";
+
+  if (waitCount > 0) {
+    integratedState = "REVIEW";
+    integratedReason = "Some context packets have not been generated yet.";
+  }
+
+  if (warnCount > 0) {
+    integratedState = "REVIEW";
+    integratedReason = "One or more context layers require human or quality review.";
+  }
+
+  if (badCount > 0) {
+    integratedState = "ESCALATE";
+    integratedReason = "One or more context layers are incomplete or escalation-worthy.";
+  }
+
+  assuranceContextFusionPacket = {
+    fusionId: "FUS-" + Date.now(),
+    createdAt: nowStamp(),
+    fusionMode: "Integrated Assurance Context Fusion",
+    currentMvp: "local mock only",
+    integratedState: integratedState,
+    integratedReason: integratedReason,
+    asset: currentContext ? currentContext.asset.assetId + " - " + currentContext.asset.name : "No asset captured",
+    technician: currentContext ? currentContext.technician : "No technician captured",
+    voiceIntent: currentContext ? currentContext.voiceIntent : "No intent captured",
+    platformBDecision: lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision yet",
+    evidenceHash: lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null,
+    checks: checks,
+    contextInputs: {
+      latestEvidence: lastEvidence || null,
+      deviceReadinessPassport: devicePassport || null,
+      serviceNowContext: serviceNowPacket || null,
+      validationChangeContext: validationPacket || null,
+      humanAuthorityContext: authorityPacket || null
+    },
+    recommendedNextStep: integratedState === "READY" ? "Proceed eligible in mock context" : integratedState === "REVIEW" ? "Hold for reviewer or missing context completion" : "Escalate to QA, SME, system owner, or accountable reviewer",
+    guardrail: "Integrated fusion is an input summary only. It does not approve work, update systems, change records, release batches, close deviations, close CAPA, or override Platform B."
+  };
+
+  renderFusionChecks(checks);
+  updateFusionScore(integratedState, integratedReason);
+
+  document.getElementById("fusionPacketViewer").innerText = JSON.stringify(assuranceContextFusionPacket, null, 2);
+
+  document.getElementById("microState").innerText = "FUSION " + integratedState;
+  document.getElementById("microReason").innerText = integratedReason;
+}
+
+function runCompleteFusionDemo() {
+  runProceedDemo();
+
+  if (document.getElementById("deviceModeSelect")) {
+    document.getElementById("deviceModeSelect").value = "RAMAT Vision Pro";
+    generateDeviceReadinessPassport();
+  }
+
+  if (document.getElementById("ciScenarioSelect")) {
+    document.getElementById("ciScenarioSelect").value = "ci_clean";
+    buildServiceNowContextPacket();
+  }
+
+  if (document.getElementById("validationScenarioSelect")) {
+    document.getElementById("validationScenarioSelect").value = "validation_clean";
+    buildValidationChangePacket();
+  }
+
+  if (document.getElementById("authorityScenarioSelect")) {
+    document.getElementById("authorityScenarioSelect").value = "authorized_on_shift";
+    buildHumanAuthorityShiftPacket();
+  }
+
+  buildAssuranceContextFusion();
+}
+
+function downloadAssuranceContextFusion() {
+  if (!assuranceContextFusionPacket) {
+    alert("No fusion packet available. Build context fusion first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(assuranceContextFusionPacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = assuranceContextFusionPacket.fusionId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let mvpReadinessReport = null;
+
+function getReportGlobal(name) {
+  try {
+    return eval("typeof " + name + " !== 'undefined' ? " + name + " : null");
+  } catch (e) {
+    return null;
+  }
+}
+
+function setMvpReportState(state, reason) {
+  const stateEl = document.getElementById("mvpReportState");
+  const reasonEl = document.getElementById("mvpReportReason");
+
+  if (!stateEl || !reasonEl) {
+    return;
+  }
+
+  let className = "report-status-large wait";
+
+  if (state === "READY") {
+    className = "report-status-large ready";
+  }
+
+  if (state === "REVIEW") {
+    className = "report-status-large review";
+  }
+
+  if (state === "ESCALATE") {
+    className = "report-status-large escalate";
+  }
+
+  stateEl.className = className;
+  stateEl.innerText = state;
+  reasonEl.innerText = reason;
+}
+
+function reportLine(label, value) {
+  return '<div class="report-line">' +
+    '<div class="report-label">' + label + '</div>' +
+    '<div class="report-value">' + value + '</div>' +
+    '</div>';
+}
+
+function renderReadableMvpReport(report) {
+  const container = document.getElementById("mvpReadableReport");
+
+  if (!container) {
+    return;
+  }
+
+  const guardrails = report.guardrails.map(function(item) {
+    return '<div class="report-guardrail ' + item.className + '">' +
+      '<div class="report-guardrail-title">' + item.title + '</div>' +
+      '<div class="report-guardrail-text">' + item.text + '</div>' +
+      '</div>';
+  }).join("");
+
+  container.innerHTML =
+    '<h3>' + report.reportTitle + '</h3>' +
+    reportLine("MVP State", report.overallState) +
+    reportLine("Purpose", report.purpose) +
+    reportLine("Latest Asset", report.latestAsset) +
+    reportLine("Technician", report.technician) +
+    reportLine("Intent", report.voiceIntent) +
+    reportLine("Platform B Decision", report.platformBDecision) +
+    reportLine("Fusion State", report.fusionState) +
+    reportLine("Evidence Hash", report.evidenceHash || "None") +
+    reportLine("Recommended Next Step", report.recommendedNextStep) +
+    '<h3 style="margin-top:22px;">Guardrails</h3>' +
+    '<div class="report-guardrail-grid">' + guardrails + '</div>';
+}
+
+function generateMvpReadinessReport() {
+  const devicePassport = getReportGlobal("deviceReadinessPassport");
+  const serviceNowPacket = getReportGlobal("serviceNowContextPacket");
+  const validationPacket = getReportGlobal("validationChangePacket");
+  const authorityPacket = getReportGlobal("authorityShiftPacket");
+  const fusionPacket = getReportGlobal("assuranceContextFusionPacket");
+  const fullBundle = getReportGlobal("fullEvidenceBundle");
+
+  let overallState = "REVIEW";
+  let overallReason = "Report generated, but some context may still be missing.";
+
+  if (fusionPacket && fusionPacket.integratedState === "READY") {
+    overallState = "READY";
+    overallReason = "Thread D local MVP has a complete clean mock evidence story.";
+  }
+
+  if (fusionPacket && fusionPacket.integratedState === "ESCALATE") {
+    overallState = "ESCALATE";
+    overallReason = "One or more mock context layers are escalation-worthy.";
+  }
+
+  const latestAsset = currentContext ? currentContext.asset.assetId + " - " + currentContext.asset.name : "No asset captured";
+  const technician = currentContext ? currentContext.technician : "No technician captured";
+  const voiceIntent = currentContext ? currentContext.voiceIntent : "No intent captured";
+  const platformBDecision = lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision yet";
+  const evidenceHash = lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null;
+  const fusionState = fusionPacket ? fusionPacket.integratedState : "Fusion not built";
+
+  let recommendedNextStep = "Run Complete Report Demo to create a full clean MVP evidence story.";
+
+  if (fusionPacket && fusionPacket.recommendedNextStep) {
+    recommendedNextStep = fusionPacket.recommendedNextStep;
+  }
+
+  const guardrails = [
+    {
+      title: "Platform B boundary",
+      className: "good",
+      text: "Platform B remains the assurance decision engine. RAMAT Vision only captures, displays, relays, and reconstructs context."
+    },
+    {
+      title: "Mock-only boundary",
+      className: "good",
+      text: "This local MVP does not call real ServiceNow, QMS, Platform B API, RFID, NFC, Halo, or production systems."
+    },
+    {
+      title: "No GMP record modification",
+      className: "good",
+      text: "The simulator does not update work orders, deviations, CAPA, validation records, audit trails, or CMDB records."
+    },
+    {
+      title: "No autonomous approval",
+      className: "good",
+      text: "The wearable cannot approve, release, close, or override human or quality-system requirements."
+    },
+    {
+      title: "Future features locked",
+      className: "warn",
+      text: "SERAPH, ARCHANGEL, Regulatory AI Inspection Passport, Living SOP Assurance, and Agentic Submission Assurance remain roadmap concepts only."
+    },
+    {
+      title: "Production readiness",
+      className: "warn",
+      text: "This proves the demo logic and evidence story only. It is not validation, production qualification, or regulatory approval."
+    }
+  ];
+
+  mvpReadinessReport = {
+    reportId: "MVP-" + Date.now(),
+    createdAt: nowStamp(),
+    reportTitle: "Thread D RAMAT Vision Context Witness MVP Readiness Report",
+    overallState: overallState,
+    overallReason: overallReason,
+    purpose: "Demonstrate how a wearable context witness can capture operational context, request a Platform B decision, display micro-instructions, and package evidence for audit reconstruction.",
+    latestAsset: latestAsset,
+    technician: technician,
+    voiceIntent: voiceIntent,
+    platformBDecision: platformBDecision,
+    fusionState: fusionState,
+    evidenceHash: evidenceHash,
+    recommendedNextStep: recommendedNextStep,
+    contextCoverage: {
+      actionAdmissibilityRecord: lastEvidence ? true : false,
+      deviceReadinessPassport: devicePassport ? true : false,
+      serviceNowCiContext: serviceNowPacket ? true : false,
+      validationChangeContext: validationPacket ? true : false,
+      humanAuthorityContext: authorityPacket ? true : false,
+      integratedFusion: fusionPacket ? true : false,
+      fullEvidenceBundle: fullBundle ? true : false
+    },
+    includedPackets: {
+      latestEvidence: lastEvidence || null,
+      deviceReadinessPassport: devicePassport || null,
+      serviceNowContext: serviceNowPacket || null,
+      validationChangeContext: validationPacket || null,
+      humanAuthorityContext: authorityPacket || null,
+      assuranceContextFusion: fusionPacket || null,
+      fullEvidenceBundle: fullBundle || null
+    },
+    guardrails: guardrails,
+    finalStatement: "Any device may witness. Only Platform B decides. The glasses do not prove the work; they initiate and display the proof chain."
+  };
+
+  document.getElementById("mvpReportViewer").innerText = JSON.stringify(mvpReadinessReport, null, 2);
+  renderReadableMvpReport(mvpReadinessReport);
+  setMvpReportState(overallState, overallReason);
+
+  document.getElementById("microState").innerText = "MVP " + overallState;
+  document.getElementById("microReason").innerText = overallReason;
+}
+
+function runCompleteReportDemo() {
+  if (typeof runCompleteFusionDemo === "function") {
+    runCompleteFusionDemo();
+  } else {
+    runProceedDemo();
+  }
+
+  if (typeof buildFullEvidenceBundle === "function") {
+    buildFullEvidenceBundle();
+  }
+
+  generateMvpReadinessReport();
+}
+
+function downloadMvpReadinessReport() {
+  if (!mvpReadinessReport) {
+    alert("No MVP report available. Generate the MVP report first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(mvpReadinessReport, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = mvpReadinessReport.reportId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function printMvpReadinessReport() {
+  if (!mvpReadinessReport) {
+    alert("Generate the MVP report first.");
+    return;
+  }
+
+  window.print();
+}
+
+let mvpAcceptancePacket = null;
+
+function acceptanceCheck(name, status, reason) {
+  return {
+    name: name,
+    status: status,
+    reason: reason
+  };
+}
+
+function renderAcceptanceChecks(checks) {
+  const container = document.getElementById("acceptanceChecks");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = checks.map(function(check) {
+    const statusClass = check.status.toLowerCase();
+
+    return '<div class="acceptance-check ' + statusClass + '">' +
+      '<div><span class="acceptance-pill ' + statusClass + '">' + check.status + '</span></div>' +
+      '<div>' +
+      '<div class="acceptance-title">' + check.name + '</div>' +
+      '<div class="acceptance-reason">' + check.reason + '</div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function setAcceptanceScore(state, reason) {
+  const stateEl = document.getElementById("acceptanceScoreState");
+  const reasonEl = document.getElementById("acceptanceScoreReason");
+
+  if (!stateEl || !reasonEl) {
+    return;
+  }
+
+  let className = "acceptance-score wait";
+
+  if (state === "PASS") {
+    className = "acceptance-score pass";
+  }
+
+  if (state === "WARN") {
+    className = "acceptance-score warn";
+  }
+
+  if (state === "FAIL") {
+    className = "acceptance-score fail";
+  }
+
+  stateEl.className = className;
+  stateEl.innerText = state;
+  reasonEl.innerText = reason;
+}
+
+function safeExists(value) {
+  return value !== null && typeof value !== "undefined";
+}
+
+function runMvpAcceptanceTest() {
+  const checks = [];
+
+  try {
+    if (typeof runCompleteReportDemo === "function") {
+      runCompleteReportDemo();
+    } else if (typeof runCompleteFusionDemo === "function") {
+      runCompleteFusionDemo();
+    } else if (typeof runProceedDemo === "function") {
+      runProceedDemo();
+    }
+  } catch (e) {
+    checks.push(acceptanceCheck(
+      "One-click demo execution",
+      "FAIL",
+      "The complete demo runner failed: " + e.message
+    ));
+  }
+
+  checks.push(acceptanceCheck(
+    "Context capture",
+    safeExists(currentContext) ? "PASS" : "FAIL",
+    safeExists(currentContext) ? "Current context captured for " + currentContext.asset.assetId + "." : "No current context was captured."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Platform B mock decision",
+    safeExists(lastEvidence) ? "PASS" : "FAIL",
+    safeExists(lastEvidence) ? "Latest decision is " + lastEvidence.actionAdmissibilityRecord.platformBDecision + "." : "No Action Admissibility Record exists."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Evidence package",
+    safeExists(lastEvidence) && safeExists(lastEvidence.evidencePackage) ? "PASS" : "FAIL",
+    safeExists(lastEvidence) && safeExists(lastEvidence.evidencePackage) ? "Evidence package exists with hash " + lastEvidence.evidencePackage.evidenceHash + "." : "No evidence package exists."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Action history",
+    safeExists(evidenceHistory) && evidenceHistory.length > 0 ? "PASS" : "WARN",
+    safeExists(evidenceHistory) && evidenceHistory.length > 0 ? "Action history contains " + evidenceHistory.length + " record(s)." : "Action history is empty."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Endpoint events",
+    safeExists(endpointEvents) && endpointEvents.length > 0 ? "PASS" : "WARN",
+    safeExists(endpointEvents) && endpointEvents.length > 0 ? "Endpoint timeline contains " + endpointEvents.length + " event(s)." : "Endpoint event timeline is empty."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Device readiness passport",
+    safeExists(deviceReadinessPassport) ? "PASS" : "WARN",
+    safeExists(deviceReadinessPassport) ? "Device passport state: " + deviceReadinessPassport.readinessState + "." : "Device readiness passport has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "ServiceNow / CI context",
+    safeExists(serviceNowContextPacket) ? "PASS" : "WARN",
+    safeExists(serviceNowContextPacket) ? "CI context state: " + serviceNowContextPacket.ciContextState + "." : "CI context packet has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Validation / change context",
+    safeExists(validationChangePacket) ? "PASS" : "WARN",
+    safeExists(validationChangePacket) ? "Validation state: " + validationChangePacket.validationState + "." : "Validation/change packet has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Human authority context",
+    safeExists(authorityShiftPacket) ? "PASS" : "WARN",
+    safeExists(authorityShiftPacket) ? "Human authority state: " + authorityShiftPacket.authorityState + "." : "Human authority packet has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Integrated fusion",
+    safeExists(assuranceContextFusionPacket) ? "PASS" : "WARN",
+    safeExists(assuranceContextFusionPacket) ? "Fusion state: " + assuranceContextFusionPacket.integratedState + "." : "Integrated fusion packet has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "MVP readiness report",
+    safeExists(mvpReadinessReport) ? "PASS" : "WARN",
+    safeExists(mvpReadinessReport) ? "MVP report state: " + mvpReadinessReport.overallState + "." : "MVP readiness report has not been generated."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Export readiness",
+    "PASS",
+    "JSON export functions are available for evidence, replay, connector, device, CI, validation, authority, fusion, report, and acceptance packets."
+  ));
+
+  checks.push(acceptanceCheck(
+    "Critical guardrail",
+    "PASS",
+    "Any device may witness. Only Platform B decides. This MVP does not modify production or GMP records."
+  ));
+
+  const failCount = checks.filter(function(check) { return check.status === "FAIL"; }).length;
+  const warnCount = checks.filter(function(check) { return check.status === "WARN"; }).length;
+  const passCount = checks.filter(function(check) { return check.status === "PASS"; }).length;
+
+  let acceptanceState = "PASS";
+  let acceptanceReason = "Thread D local MVP is ready for demo walkthrough.";
+
+  if (warnCount > 0) {
+    acceptanceState = "WARN";
+    acceptanceReason = "Thread D works, but some optional packets or timelines need review.";
+  }
+
+  if (failCount > 0) {
+    acceptanceState = "FAIL";
+    acceptanceReason = "One or more required MVP checks failed.";
+  }
+
+  mvpAcceptancePacket = {
+    acceptanceId: "ACC-" + Date.now(),
+    createdAt: nowStamp(),
+    acceptanceTest: "Thread D RAMAT Vision Context Witness MVP Acceptance Test",
+    acceptanceState: acceptanceState,
+    acceptanceReason: acceptanceReason,
+    passCount: passCount,
+    warnCount: warnCount,
+    failCount: failCount,
+    checks: checks,
+    latestAsset: currentContext ? currentContext.asset.assetId + " - " + currentContext.asset.name : "No asset captured",
+    latestDecision: lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision",
+    latestEvidenceHash: lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null,
+    demoReadyUseCases: [
+      "executive walkthrough",
+      "architecture review",
+      "PhD concept demonstration",
+      "Platform B v1.1 backlog explanation",
+      "future wearable integration planning",
+      "audit reconstruction demonstration"
+    ],
+    notReadyFor: [
+      "production GMP use",
+      "validated system use",
+      "real ServiceNow update",
+      "real QMS update",
+      "autonomous work approval",
+      "regulatory submission claim"
+    ],
+    finalBoundaryStatement: "The glasses do not prove the work. The glasses initiate and display the proof chain. Platform B remains the decision engine."
+  };
+
+  renderAcceptanceChecks(checks);
+  setAcceptanceScore(acceptanceState, acceptanceReason);
+
+  document.getElementById("acceptancePacketViewer").innerText = JSON.stringify(mvpAcceptancePacket, null, 2);
+
+  document.getElementById("microState").innerText = "ACCEPT " + acceptanceState;
+  document.getElementById("microReason").innerText = acceptanceReason;
+}
+
+function downloadMvpAcceptancePacket() {
+  if (!mvpAcceptancePacket) {
+    alert("No acceptance packet available. Run the MVP acceptance test first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(mvpAcceptancePacket, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = mvpAcceptancePacket.acceptanceId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let threadDHandoffPackage = null;
+let threadDHandoffMarkdown = "";
+
+function handoffGet(name) {
+  try {
+    return eval("typeof " + name + " !== 'undefined' ? " + name + " : null");
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderHandoffInventory(sections) {
+  const container = document.getElementById("handoffSectionInventory");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = sections.map(function(section) {
+    return '<div class="handoff-section-item">' +
+      '<div class="handoff-section-title">' + section.title + '</div>' +
+      '<div class="handoff-section-text">' + section.description + '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function buildThreadDHandoffMarkdown(pkg) {
+  const lines = [];
+
+  lines.push("# Thread D - RAMAT Vision Context Witness MVP Handoff");
+  lines.push("");
+  lines.push("## MVP Purpose");
+  lines.push(pkg.purpose);
+  lines.push("");
+  lines.push("## Core Principle");
+  lines.push("Any device may witness. Only Platform B decides.");
+  lines.push("");
+  lines.push("## Boundary Statement");
+  lines.push(pkg.boundaryStatement);
+  lines.push("");
+  lines.push("## Current State");
+  lines.push("- Local simulator: " + pkg.currentState.localSimulator);
+  lines.push("- Mock data only: " + pkg.currentState.mockDataOnly);
+  lines.push("- Real Platform B API call: " + pkg.currentState.realPlatformBApiCall);
+  lines.push("- Real ServiceNow/QMS integration: " + pkg.currentState.realServiceNowOrQmsIntegration);
+  lines.push("- Production/GMP claim: " + pkg.currentState.productionGmpClaim);
+  lines.push("");
+  lines.push("## Implemented Sections");
+
+  pkg.sectionInventory.forEach(function(section) {
+    lines.push("- **" + section.title + "** - " + section.description);
+  });
+
+  lines.push("");
+  lines.push("## Demo Script");
+  pkg.demoScript.forEach(function(step, index) {
+    lines.push((index + 1) + ". " + step);
+  });
+
+  lines.push("");
+  lines.push("## Guardrails");
+  pkg.guardrails.forEach(function(item) {
+    lines.push("- " + item);
+  });
+
+  lines.push("");
+  lines.push("## Next Backlog Items");
+  pkg.nextBacklogItems.forEach(function(item) {
+    lines.push("- " + item);
+  });
+
+  lines.push("");
+  lines.push("## Latest Evidence Snapshot");
+  lines.push("- Latest asset: " + pkg.latestEvidenceSnapshot.asset);
+  lines.push("- Latest decision: " + pkg.latestEvidenceSnapshot.platformBDecision);
+  lines.push("- Evidence hash: " + pkg.latestEvidenceSnapshot.evidenceHash);
+  lines.push("- Acceptance state: " + pkg.latestEvidenceSnapshot.acceptanceState);
+  lines.push("");
+  lines.push("## Final Statement");
+  lines.push(pkg.finalStatement);
+
+  return lines.join("\n");
+}
+
+function buildThreadDHandoffPackage() {
+  const acceptance = handoffGet("mvpAcceptancePacket");
+  const report = handoffGet("mvpReadinessReport");
+  const fusion = handoffGet("assuranceContextFusionPacket");
+
+  const sectionInventory = [
+    {
+      title: "Wearable Context Event Simulator",
+      description: "Captures mock asset, technician, scenario, and voice intent."
+    },
+    {
+      title: "RAMAT Vision Command Center",
+      description: "Displays current context, micro-decision state, and operational summary."
+    },
+    {
+      title: "Asset / Equipment Passport View",
+      description: "Shows mock operational, validation, deviation, and work-order context."
+    },
+    {
+      title: "Action Admissibility Result",
+      description: "Shows Platform B-style PROCEED, HOLD, or ESCALATE outcome."
+    },
+    {
+      title: "Evidence Package Viewer",
+      description: "Creates a local evidence package and pseudo evidence hash."
+    },
+    {
+      title: "RAMAT Vision Pro Audit Mode Preview",
+      description: "Supports read-only audit reconstruction and challenge framing."
+    },
+    {
+      title: "Action History / Evidence Log",
+      description: "Tracks generated action evidence records during the browser session."
+    },
+    {
+      title: "Wearable Endpoint Behavior Lab",
+      description: "Simulates voice, tap, reviewer request, and stop-line endpoint events."
+    },
+    {
+      title: "Audit Challenge Panel",
+      description: "Generates auditor-style questions from the latest action record."
+    },
+    {
+      title: "Context Witness Event Replay",
+      description: "Reconstructs the action story as an event replay."
+    },
+    {
+      title: "Mock Platform B Connector Preview",
+      description: "Shows future request and response payload shape without a live API call."
+    },
+    {
+      title: "Executive Demo Control Panel",
+      description: "Runs preset PROCEED, HOLD, and ESCALATE demo scenarios."
+    },
+    {
+      title: "Glasses HUD Presenter Mode",
+      description: "Displays a simulated wearable HUD for demo and presentation."
+    },
+    {
+      title: "Device Readiness Passport",
+      description: "Confirms the endpoint is a witness/display device, not a decision engine."
+    },
+    {
+      title: "ServiceNow / CI Context Mock Adapter",
+      description: "Mocks CI, owner, LCM, support group, lifecycle, and MyAccess context."
+    },
+    {
+      title: "Validation / Change Control Context Mock Adapter",
+      description: "Mocks CSV, SOP, source-of-truth, reviewer, and change-control context."
+    },
+    {
+      title: "Human Authority / Training / Shift Context Mock Adapter",
+      description: "Mocks person authority, training, access, shift, reviewer, and vendor context."
+    },
+    {
+      title: "Integrated Assurance Context Fusion Panel",
+      description: "Combines context layers into a read-only integrated assurance view."
+    },
+    {
+      title: "Thread D MVP Readiness Report",
+      description: "Creates a demo-ready MVP report."
+    },
+    {
+      title: "Thread D MVP Acceptance Test Runner",
+      description: "Runs local acceptance checks for demo readiness."
+    },
+    {
+      title: "Thread D Handoff Package Builder",
+      description: "Creates JSON and Markdown handoff documentation."
+    }
+  ];
+
+  const latestEvidenceSnapshot = {
+    asset: currentContext ? currentContext.asset.assetId + " - " + currentContext.asset.name : "No asset captured",
+    technician: currentContext ? currentContext.technician : "No technician captured",
+    voiceIntent: currentContext ? currentContext.voiceIntent : "No intent captured",
+    platformBDecision: lastEvidence ? lastEvidence.actionAdmissibilityRecord.platformBDecision : "No decision yet",
+    evidenceHash: lastEvidence ? lastEvidence.evidencePackage.evidenceHash : null,
+    fusionState: fusion ? fusion.integratedState : "Fusion not generated",
+    reportState: report ? report.overallState : "Report not generated",
+    acceptanceState: acceptance ? acceptance.acceptanceState : "Acceptance test not generated"
+  };
+
+  threadDHandoffPackage = {
+    handoffId: "HND-" + Date.now(),
+    createdAt: nowStamp(),
+    title: "Thread D - RAMAT Vision Context Witness MVP Handoff",
+    purpose: "Demonstrate how a wearable or mobile context witness can capture operational context, request a Platform B action admissibility decision, display micro-instructions, package evidence, and support audit reconstruction.",
+    boundaryStatement: "Thread D is the context witness and display layer. It does not redesign Platform B, does not replace Platform B, and does not make regulated decisions.",
+    currentState: {
+      localSimulator: true,
+      mockDataOnly: true,
+      realPlatformBApiCall: false,
+      realServiceNowOrQmsIntegration: false,
+      realWearableHardwareRequired: false,
+      productionGmpClaim: false
+    },
+    implementedCapabilities: [
+      "context capture",
+      "Platform B-style mock decision display",
+      "action admissibility evidence package",
+      "audit challenge questions",
+      "event replay",
+      "mock connector contract",
+      "glasses HUD presenter",
+      "device readiness passport",
+      "ServiceNow / CI mock context",
+      "validation / change-control mock context",
+      "human authority mock context",
+      "integrated fusion",
+      "MVP readiness report",
+      "acceptance test packet"
+    ],
+    sectionInventory: sectionInventory,
+    demoScript: [
+      "Open ramat-context-witness-demo.html in Microsoft Edge.",
+      "Scroll to Executive Demo Control Panel.",
+      "Click Run PROCEED Demo.",
+      "Open Glasses HUD Presenter Mode and show the Platform B decision display.",
+      "Run Device Readiness Passport.",
+      "Run ServiceNow / CI Context Mock Adapter.",
+      "Run Validation / Change Control Context Mock Adapter.",
+      "Run Human Authority / Training / Shift Context Mock Adapter.",
+      "Run Integrated Assurance Context Fusion Panel.",
+      "Run MVP Readiness Report.",
+      "Run MVP Acceptance Test Runner.",
+      "Export JSON packets as demo evidence."
+    ],
+    guardrails: [
+      "Any device may witness. Only Platform B decides.",
+      "RAMAT Vision captures, displays, relays, and reconstructs; it does not approve work.",
+      "This MVP does not modify GMP records, work orders, CMDB records, validation records, deviations, CAPA, or audit trails.",
+      "This MVP does not call real Platform B, ServiceNow, QMS, RFID, NFC, Halo, or production APIs.",
+      "SERAPH, ARCHANGEL, Regulatory AI Inspection Passport, Living SOP Assurance, and Agentic Submission Assurance remain locked future concepts."
+    ],
+    nextBacklogItems: [
+      "Move local simulator into a dedicated Thread D Git branch or worktree.",
+      "Create README_THREAD_D.md from the exported handoff Markdown.",
+      "Create screenshots for PROCEED, HOLD, ESCALATE, HUD, Fusion, and Acceptance Test.",
+      "Create a future API contract issue for Platform B action admissibility endpoint.",
+      "Create a future ServiceNow/PDI mock issue for CI context retrieval.",
+      "Create a future hardware adapter issue for Halo / M5Stack / BLE / RFID / NFC experiments.",
+      "Create a future audit documentation package for PhD and Assurance Engineering demo."
+    ],
+    latestEvidenceSnapshot: latestEvidenceSnapshot,
+    relatedPlatformBBoundary: {
+      platformBVersion: "Platform B v1 remains frozen",
+      platformBRole: "assurance decision engine",
+      threadDRole: "context witness, endpoint display, evidence relay, audit reconstruction",
+      architectureChangeRequiredNow: false
+    },
+    finalStatement: "The glasses do not prove the work. The glasses initiate and display the proof chain. Platform B remains the decision engine."
+  };
+
+  threadDHandoffMarkdown = buildThreadDHandoffMarkdown(threadDHandoffPackage);
+
+  renderHandoffInventory(sectionInventory);
+  document.getElementById("handoffPackageViewer").innerText = JSON.stringify(threadDHandoffPackage, null, 2);
+
+  document.getElementById("handoffState").innerText = "READY";
+  document.getElementById("handoffReason").innerText = "Handoff package generated. JSON and Markdown exports are ready.";
+
+  document.getElementById("microState").innerText = "HANDOFF READY";
+  document.getElementById("microReason").innerText = "Thread D handoff package generated.";
+}
+
+function downloadThreadDHandoffJson() {
+  if (!threadDHandoffPackage) {
+    alert("No handoff package available. Build the handoff package first.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(threadDHandoffPackage, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = threadDHandoffPackage.handoffId + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadThreadDHandoffMarkdown() {
+  if (!threadDHandoffMarkdown) {
+    alert("No handoff Markdown available. Build the handoff package first.");
+    return;
+  }
+
+  const blob = new Blob([threadDHandoffMarkdown], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "THREAD_D_RAMAT_CONTEXT_WITNESS_HANDOFF.md";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function updateKpis() {
+  document.getElementById("kpiEvents").innerText = counters.events;
+  document.getElementById("kpiProceed").innerText = counters.proceed;
+  document.getElementById("kpiHold").innerText = counters.hold;
+  document.getElementById("kpiEscalate").innerText = counters.escalate;
+}
+
+renderPassport(assets["EQP-1803"]);
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
