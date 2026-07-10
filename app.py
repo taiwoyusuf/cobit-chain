@@ -271871,3 +271871,263 @@ def api_platform_enterprise_execution_assurance_demo():
 if __name__ == "__main__":
     app.run(debug=True)
 
+
+# ============================================================
+# THREAD_D_PLATFORM_B_MVP_CONNECTOR_ACTIVE
+# Thread D RAMAT Vision / Context Witness -> Platform B MVP proxy
+#
+# Boundary:
+# - Thread D witnesses, displays, alerts, guides, and surfaces evidence state.
+# - Platform B remains the assurance decision engine.
+# - Browser must not contain Azure Function keys.
+# - This proxy reads secrets only from environment variables.
+# - No future roadmap features are activated here.
+# ============================================================
+
+try:
+    import os as td_os
+    import json as td_json
+    import urllib.request as td_urllib_request
+    import urllib.error as td_urllib_error
+    from pathlib import Path as td_Path
+    from flask import request as td_flask_request
+    from flask import jsonify as td_flask_jsonify
+    from flask import send_file as td_flask_send_file
+except Exception as thread_d_proxy_import_error:
+    thread_d_proxy_import_error = thread_d_proxy_import_error
+
+
+THREAD_D_PLATFORMB_API_BASE_DEFAULT = "https://func-cobitchain-pbmvp-61806.azurewebsites.net/api"
+
+THREAD_D_PLATFORMB_ALLOWED_ENDPOINTS = {
+    "health": {
+        "method": "GET",
+        "path": "health",
+        "capability": "Platform B MVP Health"
+    },
+    "usecase-create": {
+        "method": "POST",
+        "path": "usecases",
+        "capability": "AI Use Case Registry"
+    },
+    "usecase-get": {
+        "method": "GET",
+        "path": "usecases/{use_case_id}",
+        "capability": "AI Use Case Registry"
+    },
+    "assurance-check": {
+        "method": "POST",
+        "path": "assurance/check",
+        "capability": "Assurance Check API"
+    },
+    "evidence-upload": {
+        "method": "POST",
+        "path": "evidence/upload",
+        "capability": "Evidence Upload"
+    },
+    "trust-score": {
+        "method": "GET",
+        "path": "trust-score/{use_case_id}",
+        "capability": "Operational Trust Score"
+    },
+    "action-admissibility": {
+        "method": "POST",
+        "path": "action-admissibility",
+        "capability": "Action Admissibility Record"
+    },
+    "wearable-simulate": {
+        "method": "POST",
+        "path": "wearable/simulate",
+        "capability": "Wearable Endpoint Simulator"
+    },
+}
+
+
+def thread_d_platformb_json(payload, status_code=200):
+    response = td_flask_jsonify(payload)
+    response.status_code = status_code
+    return response
+
+
+def thread_d_platformb_build_url(endpoint_path, payload):
+    api_base = td_os.environ.get(
+        "PLATFORMB_MVP_API_BASE",
+        THREAD_D_PLATFORMB_API_BASE_DEFAULT
+    ).strip().rstrip("/")
+
+    use_case_id = ""
+    if isinstance(payload, dict):
+        use_case_id = str(payload.get("use_case_id", "")).strip()
+
+    if "{use_case_id}" in endpoint_path:
+        if not use_case_id:
+            return None, "Missing required use_case_id for this endpoint."
+        endpoint_path = endpoint_path.replace("{use_case_id}", use_case_id)
+
+    return f"{api_base}/{endpoint_path.lstrip('/')}", None
+
+
+@app.route("/thread-d/ramat-simulator")
+@app.route("/thread-d/context-witness-simulator")
+def thread_d_ramat_context_witness_simulator():
+    simulator_path = (
+        td_Path(__file__).resolve().parent
+        / "thread-d"
+        / "ramat-context-witness-mvp"
+        / "demo"
+        / "index.html"
+    )
+
+    if not simulator_path.exists():
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "simulator_missing",
+                "message": "Thread D simulator index.html was not found.",
+                "boundary": "No Platform B call was made."
+            },
+            404
+        )
+
+    return td_flask_send_file(str(simulator_path))
+
+
+@app.route("/thread-d/platform-b/proxy/<endpoint_key>", methods=["GET", "POST"])
+def thread_d_platform_b_proxy(endpoint_key):
+    endpoint = THREAD_D_PLATFORMB_ALLOWED_ENDPOINTS.get(endpoint_key)
+
+    if not endpoint:
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "endpoint_not_allowed",
+                "message": "This proxy only allows the six validated Platform B MVP capabilities.",
+                "allowed_endpoint_keys": sorted(THREAD_D_PLATFORMB_ALLOWED_ENDPOINTS.keys()),
+                "guardrail": "No future roadmap feature is exposed through this proxy."
+            },
+            404
+        )
+
+    expected_method = endpoint["method"].upper()
+    actual_method = td_flask_request.method.upper()
+
+    if actual_method != expected_method:
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "method_not_allowed",
+                "message": f"{endpoint_key} requires {expected_method}.",
+                "received_method": actual_method
+            },
+            405
+        )
+
+    function_key = td_os.environ.get("PLATFORMB_MVP_FUNCTION_KEY", "").strip()
+
+    if not function_key:
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "platform_b_function_key_not_configured",
+                "message": "Platform B Function key is not configured in environment variables.",
+                "safe_next_step": "Set PLATFORMB_MVP_FUNCTION_KEY locally or in deployment config. Do not put it in HTML or JavaScript.",
+                "capability": endpoint["capability"],
+                "platform_b_call_made": False
+            },
+            503
+        )
+
+    if actual_method == "GET":
+        payload = dict(td_flask_request.args)
+    else:
+        payload = td_flask_request.get_json(silent=True) or {}
+
+    url, url_error = thread_d_platformb_build_url(endpoint["path"], payload)
+
+    if url_error:
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "missing_required_route_parameter",
+                "message": url_error,
+                "capability": endpoint["capability"],
+                "platform_b_call_made": False
+            },
+            400
+        )
+
+    headers = {
+        "Content-Type": "application/json",
+        "x-functions-key": function_key
+    }
+
+    data = None
+    if actual_method == "POST":
+        data = td_json.dumps(payload).encode("utf-8")
+
+    req = td_urllib_request.Request(
+        url=url,
+        data=data,
+        headers=headers,
+        method=actual_method
+    )
+
+    try:
+        with td_urllib_request.urlopen(req, timeout=25) as resp:
+            raw_body = resp.read().decode("utf-8", errors="replace")
+            status_code = int(resp.status)
+
+            try:
+                platform_payload = td_json.loads(raw_body) if raw_body else {}
+            except Exception:
+                platform_payload = {"raw_response": raw_body}
+
+            return thread_d_platformb_json(
+                {
+                    "ok": True,
+                    "thread_d_role": "context_witness_display_proxy",
+                    "platform_b_role": "assurance_decision_engine",
+                    "endpoint_key": endpoint_key,
+                    "capability": endpoint["capability"],
+                    "platform_b_status_code": status_code,
+                    "platform_b_response": platform_payload,
+                    "guardrail": "Any device may witness. Only Platform B decides."
+                },
+                status_code
+            )
+
+    except td_urllib_error.HTTPError as exc:
+        raw_body = exc.read().decode("utf-8", errors="replace")
+
+        try:
+            error_payload = td_json.loads(raw_body) if raw_body else {}
+        except Exception:
+            error_payload = {"raw_response": raw_body}
+
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "platform_b_http_error",
+                "endpoint_key": endpoint_key,
+                "capability": endpoint["capability"],
+                "platform_b_status_code": int(exc.code),
+                "platform_b_response": error_payload,
+                "secret_printed": False
+            },
+            int(exc.code)
+        )
+
+    except Exception as exc:
+        return thread_d_platformb_json(
+            {
+                "ok": False,
+                "error": "platform_b_proxy_error",
+                "endpoint_key": endpoint_key,
+                "capability": endpoint["capability"],
+                "message": str(exc),
+                "secret_printed": False
+            },
+            502
+        )
+
+# END THREAD_D_PLATFORM_B_MVP_CONNECTOR_ACTIVE
