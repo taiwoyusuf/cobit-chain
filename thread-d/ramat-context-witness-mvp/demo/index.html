@@ -6077,8 +6077,188 @@ function updateKpis() {
 
 renderPassport(assets["EQP-1803"]);
 </script>
+
+<!-- THREAD_D_PLATFORM_B_UI_CONNECTOR_ACTIVE -->
+<section id="thread-d-platform-b-connector-panel" style="margin: 28px auto; max-width: 1180px; padding: 22px; border: 1px solid rgba(148,163,184,.35); border-radius: 22px; background: rgba(15,23,42,.92); color: #e5e7eb; box-shadow: 0 18px 45px rgba(0,0,0,.28);">
+  <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; justify-content:space-between;">
+    <div>
+      <div style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#93c5fd; font-weight:800;">Validated Platform B MVP Connector</div>
+      <h2 style="margin:8px 0 6px; font-size:26px;">RAMAT Vision / Context Witness → Platform B MVP</h2>
+      <p style="margin:0; color:#cbd5e1; max-width:850px; line-height:1.55;">
+        This panel connects the Thread D simulator to the same-origin Flask proxy for the six validated Platform B MVP capabilities only.
+        The browser does not receive or store Azure Function keys.
+      </p>
+    </div>
+    <div style="padding:10px 14px; border-radius:999px; background:#111827; border:1px solid rgba(148,163,184,.35); color:#fde68a; font-weight:800;">
+      LOCKED MVP CONNECTOR
+    </div>
+  </div>
+
+  <div style="margin-top:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:12px;">
+    <button type="button" class="thread-d-pb-btn" data-endpoint="usecase-create">1. Register AI Use Case</button>
+    <button type="button" class="thread-d-pb-btn" data-endpoint="assurance-check">2. Run Assurance Check</button>
+    <button type="button" class="thread-d-pb-btn" data-endpoint="evidence-upload">3. Upload Evidence Metadata</button>
+    <button type="button" class="thread-d-pb-btn" data-endpoint="trust-score">4. Get Operational Trust Score</button>
+    <button type="button" class="thread-d-pb-btn" data-endpoint="action-admissibility">5. Record Action Admissibility</button>
+    <button type="button" class="thread-d-pb-btn" data-endpoint="wearable-simulate">6. Send Wearable Signal</button>
+  </div>
+
+  <div style="margin-top:18px; padding:14px; border-radius:16px; background:rgba(30,41,59,.9); border:1px solid rgba(148,163,184,.25);">
+    <div style="font-size:13px; color:#93c5fd; font-weight:800; margin-bottom:8px;">Connector Result</div>
+    <pre id="thread-d-platform-b-output" style="white-space:pre-wrap; overflow:auto; max-height:360px; margin:0; color:#d1fae5; font-size:13px; line-height:1.45;">Ready. Select a Platform B MVP capability.</pre>
+  </div>
+
+  <div style="margin-top:16px; color:#cbd5e1; font-size:13px; line-height:1.5;">
+    <strong>Boundary:</strong> Any device may witness. Only Platform B decides. The glasses do not prove the work. The glasses initiate and display the proof chain.
+  </div>
+</section>
+
+<style>
+  .thread-d-pb-btn {
+    border: 1px solid rgba(147,197,253,.35);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(37,99,235,.35), rgba(15,23,42,.85));
+    color: #f8fafc;
+    padding: 13px 14px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 800;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .thread-d-pb-btn:hover {
+    filter: brightness(1.15);
+  }
+</style>
+
+<script>
+(function () {
+  const THREAD_D_USE_CASE_ID = "THREAD-D-RAMAT-CONTEXT-WITNESS-LOCAL-001";
+  const output = document.getElementById("thread-d-platform-b-output");
+
+  function showResult(label, status, payload) {
+    if (!output) return;
+    output.textContent = JSON.stringify({
+      capability: label,
+      http_status: status,
+      response: payload
+    }, null, 2);
+  }
+
+  function showError(label, err) {
+    if (!output) return;
+    output.textContent = JSON.stringify({
+      capability: label,
+      error: String(err),
+      guardrail: "No secret is stored in browser JavaScript."
+    }, null, 2);
+  }
+
+  function payloadFor(endpointKey) {
+    const base = {
+      use_case_id: THREAD_D_USE_CASE_ID,
+      source: "THREAD_D_RAMAT_VISION_CONTEXT_WITNESS_SIMULATOR",
+      asset_id: "EQP-RAMAT-DEMO-001",
+      witness_device: "RAMAT Vision Simulator",
+      operator_context: "simulated_authenticated_user",
+      boundary: "Thread D witnesses and displays; Platform B decides."
+    };
+
+    const payloads = {
+      "usecase-create": {
+        use_case_id: THREAD_D_USE_CASE_ID,
+        name: "RAMAT Vision Context Witness Simulator",
+        description: "Thread D simulator event registered for Platform B MVP assurance demonstration.",
+        owner: "Thread D MVP",
+        risk_tier: "MVP_DEMO",
+        status: "SIMULATED"
+      },
+      "assurance-check": Object.assign({}, base, {
+        action: "simulate_context_witness_assurance_check",
+        requested_decision: "CHECK_ACTION_ADMISSIBILITY"
+      }),
+      "evidence-upload": Object.assign({}, base, {
+        evidence_type: "SIMULATED_CONTEXT_WITNESS_EVENT",
+        evidence_name: "RAMAT Vision simulator local evidence packet",
+        evidence_hash: "SIMULATED_HASH_ONLY_NO_GMP_RECORD",
+        storage_mode: "metadata_only"
+      }),
+      "action-admissibility": Object.assign({}, base, {
+        action: "display_platform_b_assurance_result",
+        proposed_outcome: "DISPLAY_ONLY",
+        human_review_required: true
+      }),
+      "wearable-simulate": Object.assign({}, base, {
+        wearable_event_type: "CONTEXT_WITNESS_SIGNAL",
+        signal: "asset_viewed",
+        display_mode: "RAMAT_VISION_SIMULATOR"
+      })
+    };
+
+    return payloads[endpointKey] || base;
+  }
+
+  async function callPlatformB(endpointKey) {
+    const labelMap = {
+      "usecase-create": "AI Use Case Registry",
+      "assurance-check": "Assurance Check API",
+      "evidence-upload": "Evidence Upload",
+      "trust-score": "Operational Trust Score",
+      "action-admissibility": "Action Admissibility Record",
+      "wearable-simulate": "Wearable Endpoint Simulator"
+    };
+
+    const label = labelMap[endpointKey] || endpointKey;
+
+    try {
+      if (output) {
+        output.textContent = "Calling local same-origin proxy for " + label + "...";
+      }
+
+      let url = "/thread-d/platform-b/proxy/" + endpointKey;
+      let options = {
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+
+      if (endpointKey === "trust-score") {
+        url = url + "?use_case_id=" + encodeURIComponent(THREAD_D_USE_CASE_ID);
+        options.method = "GET";
+      } else {
+        options.method = "POST";
+        options.body = JSON.stringify(payloadFor(endpointKey));
+      }
+
+      const response = await fetch(url, options);
+      let payload;
+
+      try {
+        payload = await response.json();
+      } catch (jsonError) {
+        payload = {
+          raw_response: await response.text()
+        };
+      }
+
+      showResult(label, response.status, payload);
+    } catch (err) {
+      showError(label, err);
+    }
+  }
+
+  document.querySelectorAll(".thread-d-pb-btn").forEach(function (button) {
+    button.addEventListener("click", function () {
+      callPlatformB(button.getAttribute("data-endpoint"));
+    });
+  });
+})();
+</script>
+<!-- END THREAD_D_PLATFORM_B_UI_CONNECTOR_ACTIVE -->
+
 </body>
 </html>
+
 
 
 
