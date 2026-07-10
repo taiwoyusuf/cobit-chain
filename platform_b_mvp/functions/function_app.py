@@ -1,4 +1,4 @@
-﻿import base64
+import base64
 import json
 import os
 import uuid
@@ -13,6 +13,19 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+
+# Platform B MVP storage defaults.
+# These are the six active MVP storage objects only.
+# Future v1.1 backlog capabilities are intentionally not active here.
+MVP_STORAGE_DEFAULTS = {
+    "PLATFORMB_USECASE_TABLE": "UseCaseRegistry",
+    "PLATFORMB_EVIDENCE_TABLE": "EvidenceMetadata",
+    "PLATFORMB_TRUST_TABLE": "TrustScores",
+    "PLATFORMB_ACTION_TABLE": "ActionAdmissibilityRecords",
+    "PLATFORMB_WEARABLE_TABLE": "WearableSignals",
+    "PLATFORMB_ASSURANCE_TABLE": "AssuranceChecks",
+    "PLATFORMB_EVIDENCE_CONTAINER": "evidence-files",
+}
 
 LOCKED_LIFECYCLE = [
     "Discovery",
