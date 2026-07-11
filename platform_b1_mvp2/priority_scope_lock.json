@@ -1,0 +1,134 @@
+﻿{
+  "scope_lock_name": "Platform B1 MVP2 Priority Scope Lock",
+  "scope_lock_status": "LOCKED_MVP2_PRIORITY_DIRECTION",
+  "workstream": "Platform B1 / MVP2",
+  "purpose": "Prevent MVP2 scope creep by locking first-tier commercialization tracks, foundation principles, build boundaries, and future-extension handling.",
+  "first_tier_tracks": [
+    {
+      "track_id": "compound_pharmacy",
+      "track_name": "Compound Pharmacy",
+      "priority": "FIRST_TIER",
+      "commercial_position": "One of the first commercial target groups.",
+      "module_status": "ALREADY_BUILT_PRIORITY_PACKAGE",
+      "purpose": "Package the existing compounding-pharmacy capability as a first commercialization pathway for COBIT-Chain.",
+      "core_assurance_focus": [
+        "formula and preparation evidence",
+        "material and lot traceability",
+        "operator accountability",
+        "beyond-use-date evidence",
+        "quality review",
+        "audit readiness",
+        "AI-generated content governance",
+        "hashing and rehashing of evidence"
+      ]
+    },
+    {
+      "track_id": "irlt_radiopharma_operations",
+      "track_name": "IRLT / Radiopharma Operations",
+      "priority": "FIRST_TIER",
+      "commercial_position": "One of the first-tier demonstration and commercialization tracks.",
+      "module_status": "PRIORITY_EXTENSION_TRACK",
+      "purpose": "Use IRLT / radiopharma operations as a flagship regulated-operations assurance scenario.",
+      "core_assurance_focus": [
+        "radiopharma manufacturing readiness",
+        "equipment and CI readiness",
+        "controlled operational handoffs",
+        "quality and release dependency checks",
+        "ServiceNow operational assurance",
+        "RAMAT Vision display",
+        "AI governance around operational recommendations",
+        "hashing and rehashing of evidence"
+      ]
+    },
+    {
+      "track_id": "dscsa_evidence_integrity_exception_assurance",
+      "track_name": "DSCSA Evidence Integrity & Exception Assurance",
+      "priority": "FIRST_TIER",
+      "commercial_position": "Top-tier supply-chain and evidence-integrity extension.",
+      "module_status": "PROJECT_IMMEDIATELY_AS_TOP_TIER_EXTENSION",
+      "purpose": "Evaluate whether serialized prescription-drug supply-chain evidence can be trusted, reconstructed, and defended across DSCSA trading-partner handoffs.",
+      "core_assurance_focus": [
+        "serialized product identity",
+        "EPCIS evidence integrity",
+        "VRS response assurance",
+        "authorized trading partner trust",
+        "exception classification",
+        "quarantine and release-readiness support",
+        "AI-governed exception triage",
+        "hashing and rehashing of supply-chain evidence"
+      ]
+    }
+  ],
+  "core_foundation": [
+    "Hashing",
+    "Rehashing",
+    "Evidence integrity",
+    "Chain-of-custody truth",
+    "Workflow dependency assurance",
+    "Action admissibility",
+    "Digital twin state awareness",
+    "Governed AI in regulated workflows",
+    "Human and Quality Unit accountability",
+    "RAMAT Vision / Thread D2 display"
+  ],
+  "mvp2_current_validated_chain": {
+    "feature_name": "Workflow Dependency Assurance Lens",
+    "feature_id": "workflow_dependency_assurance_lens",
+    "status": "VALIDATED_LOCAL_MVP2_CHAIN",
+    "chain": "mock data -> schema -> evaluator -> registry -> Thread D2 display fixture -> orchestration smoke runner",
+    "primary_case": "Middleware Verified / LIS Held",
+    "primary_output": "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "reason": "LIS HOLD DETECTED",
+    "required_action": "SECONDARY REVIEW REQUIRED",
+    "evidence_state": "AUDIT EVIDENCE NOT READY"
+  },
+  "manufacturing_and_supply_chain_extension_candidates": [
+    "MES Execution Dependency Assurance",
+    "Batch Release Dependency Assurance",
+    "Material Genealogy / ERP / Weigh-and-Dispense Assurance",
+    "Equipment Readiness / Calibration / PM Assurance",
+    "Automation / PLC / SCADA / Historian Truth Assurance",
+    "Cleaning / Line Clearance / Changeover Assurance",
+    "Utilities / Environmental Monitoring Assurance",
+    "Recipe / Master Data / MBR / BOM Assurance",
+    "Tech Transfer / PPQ / Continued Process Verification Assurance",
+    "Packaging / Labeling / Serialization Assurance",
+    "Aseptic / Sterility Assurance",
+    "Manufacturing Deviation Impact Assurance",
+    "CMO / External Manufacturing Assurance"
+  ],
+  "build_rules": [
+    "Do not modify Platform B v1.",
+    "Do not reopen Thread D v1.",
+    "Do not activate MVP3.",
+    "Do not build full commercial integrations now.",
+    "Use mock-data-first, simulator-first, local-validation-first implementation.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, VRS, EPCIS, or GMP production data.",
+    "No PHI.",
+    "No company production data.",
+    "Every extension must preserve hashing, rehashing, evidence integrity, chain-of-custody truth, and governed AI boundaries."
+  ],
+  "doctrine": [
+    "COBIT-Chain does not replace source systems.",
+    "COBIT-Chain does not release product.",
+    "COBIT-Chain does not approve GMP work.",
+    "COBIT-Chain does not replace Quality Unit review.",
+    "COBIT-Chain does not become MES, LIMS, ERP, eQMS, VRS, EPCIS, or ServiceNow.",
+    "COBIT-Chain verifies whether the evidence chain, workflow state, identity, authority, AI output, and dependency state can be trusted.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "Official records remain in source systems.",
+    "Humans remain accountable.",
+    "Quality Unit remains authoritative."
+  ],
+  "next_order_of_work": [
+    "Create First-Tier Track Registry.",
+    "Create Manufacturing and Supply Chain Extension Catalogue.",
+    "Create DSCSA Evidence Integrity & Exception Assurance addendum.",
+    "Create Compound Pharmacy commercialization addendum.",
+    "Create IRLT / Radiopharma Operations first-tier addendum.",
+    "Create shared Regulated Operations Digital Twin object model.",
+    "Build first DSCSA mock scenario only after scope documents are locked."
+  ]
+}
