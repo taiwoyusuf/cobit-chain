@@ -1,0 +1,125 @@
+﻿{
+  "fixture_name": "IRLT Equipment / CI / Quality Handoff Review",
+  "fixture_status": "LOCKED_MOCK_FIXTURE_ONLY",
+  "track_id": "irlt_radiopharma_operations",
+  "scenario_id": "irlt_equipment_ci_quality_handoff_review",
+  "source": "IRLT / Radiopharma Operations First-Tier Addendum",
+  "purpose": "Represent a mock IRLT / radiopharma equipment, CI, ServiceNow, quality dependency, AI recommendation, and RAMAT Vision readiness review.",
+  "twin_state": {
+    "identity_role_persona": {
+      "user_identity": "mock_production_manager",
+      "role_assignment": "production_manager",
+      "persona_view": "irlt_readiness_review",
+      "session_context": "mock_irlt_readiness_session",
+      "outputs": [
+        "ROLE VERIFIED",
+        "PRODUCTION MANAGER VIEW ACTIVE"
+      ]
+    },
+    "equipment_ci_asset": {
+      "equipment_identifier": "mock_irlt_equipment_001",
+      "ci_identifier": "mock_ci_irlt_001",
+      "lcm_status": "active",
+      "support_group_present": false,
+      "validation_status": "review_required",
+      "outputs": [
+        "CI READINESS GAP",
+        "SUPPORT GROUP MISSING",
+        "VALIDATION STATUS REVIEW REQUIRED"
+      ]
+    },
+    "quality_state": {
+      "quality_dependency_state": "blocked",
+      "incident_impact_reviewed": false,
+      "deviation_reference": "mock_deviation_reference_pending",
+      "outputs": [
+        "INCIDENT IMPACT REVIEW REQUIRED",
+        "QUALITY DEPENDENCY BLOCKED",
+        "QUALITY REVIEW REQUIRED"
+      ]
+    },
+    "execution_context": {
+      "radiopharma_execution_context": "mock_irlt_context_001",
+      "handoff_record": "mock_handoff_irlt_001",
+      "time_sensitive_handoff": true,
+      "outputs": [
+        "TIME-SENSITIVE HANDOFF REVIEW REQUIRED",
+        "HANDOFF REVIEW REQUIRED"
+      ]
+    },
+    "ai_agent_output": {
+      "ai_output_id": "mock_ai_irlt_readiness_summary_001",
+      "model_version": "mock-model-v1",
+      "prompt_version": "mock-prompt-v1",
+      "ai_output_hash": "mock_hash_ai_irlt_001",
+      "human_review_required": true,
+      "approval_boundary": "recommendation_only",
+      "outputs": [
+        "AI OUTPUT HASHED",
+        "AI RECOMMENDATION REVIEW REQUIRED",
+        "HUMAN REVIEW REQUIRED",
+        "AGENT ACTION NOT ADMISSIBLE"
+      ]
+    },
+    "evidence_integrity": {
+      "evidence_package_id": "mock_irlt_package_001",
+      "hash_record": "mock_hash_irlt_package_001",
+      "hash_status": "HASH VERIFIED",
+      "rehash_status": "NOT_REQUIRED",
+      "outputs": [
+        "IRLT EVIDENCE SEALED",
+        "HASH VERIFIED"
+      ]
+    },
+    "workflow_dependency_chain": {
+      "workflow_id": "mock_irlt_workflow_001",
+      "blocked": true,
+      "blockers": [
+        "support group missing",
+        "incident impact not reviewed",
+        "quality dependency blocked"
+      ],
+      "outputs": [
+        "IRLT WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+        "CI READINESS GAP",
+        "SUPPORT GROUP MISSING",
+        "INCIDENT IMPACT REVIEW REQUIRED",
+        "QUALITY DEPENDENCY BLOCKED"
+      ]
+    },
+    "ramat_vision_display": {
+      "display_event": "mock_display_irlt_001",
+      "display_allowed": true,
+      "approval_authority": false,
+      "outputs": [
+        "RAMAT VISION DISPLAY READY",
+        "PLATFORM B1 DECISION DISPLAYED"
+      ]
+    }
+  },
+  "expected_platform_b1_outputs": [
+    "IRLT EVIDENCE SEALED",
+    "HASH VERIFIED",
+    "CI READINESS GAP",
+    "SUPPORT GROUP MISSING",
+    "INCIDENT IMPACT REVIEW REQUIRED",
+    "QUALITY DEPENDENCY BLOCKED",
+    "AI RECOMMENDATION REVIEW REQUIRED",
+    "RAMAT VISION DISPLAY READY",
+    "HUMAN REVIEW REQUIRED",
+    "IRLT WORKFLOW APPEARS COMPLETE BUT BLOCKED"
+  ],
+  "boundary": [
+    "Mock fixture only.",
+    "No real ServiceNow production data.",
+    "No real radiopharma production data.",
+    "No PHI.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No Quality Unit replacement.",
+    "No source-system override.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only."
+  ]
+}
