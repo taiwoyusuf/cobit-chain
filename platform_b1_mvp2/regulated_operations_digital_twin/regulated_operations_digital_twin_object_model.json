@@ -1,0 +1,370 @@
+﻿{
+  "model_name": "Regulated Operations Digital Twin Object Model",
+  "model_status": "LOCKED_OBJECT_MODEL_ONLY",
+  "workstream": "Platform B1 / MVP2",
+  "purpose": "Define a shared software-defined regulated operations digital twin object model for Compound Pharmacy, IRLT / Radiopharma Operations, DSCSA, MES, equipment, quality, workflow dependency, AI governance, evidence integrity, and RAMAT Vision display without deploying Azure Digital Twins or connecting to real production systems.",
+  "core_doctrine": [
+    "The digital twin is a regulated operations state model, not a source system.",
+    "The twin represents evidence, dependency, identity, quality, AI, equipment, supply-chain, and workflow state for assurance evaluation.",
+    "The twin does not replace MES, LIS, ERP, eQMS, VRS, EPCIS, ServiceNow, QMS, LIMS, SCADA, PLC, historian, BMS, or pharmacy systems.",
+    "Official records remain in source systems.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only.",
+    "Humans remain accountable."
+  ],
+  "object_families": [
+    {
+      "object_family_id": "identity_role_persona",
+      "object_family_name": "Identity, Role, and Persona State",
+      "purpose": "Represent user, device, role, persona, entitlement, and session context.",
+      "example_objects": [
+        "user_identity",
+        "device_identity",
+        "role_assignment",
+        "persona_view",
+        "session_context",
+        "access_evidence"
+      ],
+      "example_outputs": [
+        "USER SIGN-IN REQUIRED",
+        "ROLE VERIFIED",
+        "ROLE NOT VERIFIED",
+        "ACTION NOT PERMITTED FOR ROLE",
+        "AUDITOR READ-ONLY VIEW ACTIVE"
+      ]
+    },
+    {
+      "object_family_id": "equipment_ci_asset",
+      "object_family_name": "Equipment, CI, and Asset State",
+      "purpose": "Represent equipment identity, CI identity, lifecycle, support group, ownership, validation, calibration, PM, and operational-readiness state.",
+      "example_objects": [
+        "equipment",
+        "configuration_item",
+        "application_service",
+        "asset_passport",
+        "calibration_state",
+        "maintenance_state"
+      ],
+      "example_outputs": [
+        "EQUIPMENT CI READY",
+        "CI READINESS GAP",
+        "SUPPORT GROUP MISSING",
+        "CALIBRATION EXPIRED",
+        "PM OVERDUE"
+      ]
+    },
+    {
+      "object_family_id": "workflow_dependency_chain",
+      "object_family_name": "Workflow Dependency Chain State",
+      "purpose": "Represent hidden dependencies across workflow steps, source systems, required evidence, review gates, and blocking states.",
+      "example_objects": [
+        "workflow",
+        "workflow_step",
+        "dependency_edge",
+        "blocker",
+        "review_gate",
+        "release_readiness_state"
+      ],
+      "example_outputs": [
+        "WORKFLOW COMPLETE",
+        "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+        "DEPENDENCY MISSING",
+        "SECONDARY REVIEW REQUIRED",
+        "RELEASE NOT ADMISSIBLE"
+      ]
+    },
+    {
+      "object_family_id": "evidence_integrity",
+      "object_family_name": "Evidence Integrity and Chain-of-Custody State",
+      "purpose": "Represent evidence objects, source references, hash state, rehash triggers, provenance, custody, and audit-readiness state.",
+      "example_objects": [
+        "evidence_object",
+        "source_reference",
+        "hash_record",
+        "rehash_event",
+        "custody_event",
+        "audit_package"
+      ],
+      "example_outputs": [
+        "EVIDENCE SEALED",
+        "HASH VERIFIED",
+        "REHASH REQUIRED",
+        "CHAIN OF CUSTODY GAP",
+        "AUDIT EVIDENCE READY"
+      ]
+    },
+    {
+      "object_family_id": "quality_state",
+      "object_family_name": "Quality, Deviation, CAPA, and Review State",
+      "purpose": "Represent quality dependency, deviation impact, CAPA linkage, review state, SOP alignment, validation, and Quality Unit accountability.",
+      "example_objects": [
+        "quality_review",
+        "deviation_reference",
+        "capa_reference",
+        "validation_state",
+        "sop_alignment_state",
+        "quality_unit_gate"
+      ],
+      "example_outputs": [
+        "QUALITY DEPENDENCY VERIFIED",
+        "QUALITY DEPENDENCY BLOCKED",
+        "DEVIATION IMPACT REVIEW REQUIRED",
+        "CAPA LINK REVIEW REQUIRED",
+        "QUALITY REVIEW REQUIRED"
+      ]
+    },
+    {
+      "object_family_id": "material_product_supply_chain",
+      "object_family_name": "Material, Product, Serialization, and Supply-Chain State",
+      "purpose": "Represent material genealogy, lot state, supplier evidence, serialized product identity, DSCSA event state, EPCIS evidence, VRS response, and trading-partner trust.",
+      "example_objects": [
+        "material_lot",
+        "supplier_evidence",
+        "serialized_product",
+        "dscsa_event",
+        "epcis_evidence",
+        "vrs_response",
+        "trading_partner"
+      ],
+      "example_outputs": [
+        "MATERIAL LOT TRACEABLE",
+        "DSCSA EVIDENCE SEALED",
+        "EPCIS FILE MISMATCH",
+        "VRS RESPONSE MISSING",
+        "TRADING PARTNER VERIFIED",
+        "QUARANTINE REQUIRED"
+      ]
+    },
+    {
+      "object_family_id": "execution_context",
+      "object_family_name": "Manufacturing, Compounding, and Radiopharma Execution Context",
+      "purpose": "Represent batch, preparation, formula, BUD, execution context, timing sensitivity, handoff state, and operational readiness.",
+      "example_objects": [
+        "batch_context",
+        "compound_preparation",
+        "formula_record",
+        "bud_evidence",
+        "radiopharma_execution_context",
+        "handoff_record"
+      ],
+      "example_outputs": [
+        "COMPOUNDING EVIDENCE SEALED",
+        "BUD EVIDENCE REVIEW REQUIRED",
+        "IRLT EVIDENCE SEALED",
+        "TIME-SENSITIVE HANDOFF REVIEW REQUIRED",
+        "CONTROLLED HANDOFF VERIFIED"
+      ]
+    },
+    {
+      "object_family_id": "ai_agent_output",
+      "object_family_name": "AI Agent, Recommendation, and Content State",
+      "purpose": "Represent AI-generated summaries, recommendations, classifications, prompts, model versions, tool calls, human review, output hash, and recommendation-versus-approval boundary.",
+      "example_objects": [
+        "ai_agent",
+        "ai_output",
+        "model_version",
+        "prompt_version",
+        "tool_call",
+        "human_review",
+        "recommendation_boundary"
+      ],
+      "example_outputs": [
+        "AI OUTPUT HASHED",
+        "MODEL VERSION RECORDED",
+        "AI RECOMMENDATION REVIEW REQUIRED",
+        "AI CONTENT REVIEW REQUIRED",
+        "HUMAN REVIEW REQUIRED",
+        "AGENT ACTION NOT ADMISSIBLE"
+      ]
+    },
+    {
+      "object_family_id": "ramat_vision_display",
+      "object_family_name": "RAMAT Vision / Thread D2 Display State",
+      "purpose": "Represent field display, role-based view, read-only review state, evidence prompts, readiness display, and Platform B1 decision display without approving regulated work.",
+      "example_objects": [
+        "display_event",
+        "field_prompt",
+        "role_based_view",
+        "read_only_review",
+        "device_witness_event",
+        "platform_b1_decision_display"
+      ],
+      "example_outputs": [
+        "RAMAT VISION DISPLAY READY",
+        "PLATFORM B1 DECISION DISPLAYED",
+        "READ-ONLY REVIEW ACTIVE",
+        "FIELD REVIEW REQUIRED",
+        "RAMAT Vision displays only"
+      ]
+    }
+  ],
+  "relationship_types": [
+    {
+      "relationship_id": "equipment_has_ci",
+      "description": "Equipment is represented by or linked to a configuration item.",
+      "source_object": "equipment",
+      "target_object": "configuration_item"
+    },
+    {
+      "relationship_id": "workflow_step_depends_on_evidence",
+      "description": "A workflow step depends on required evidence before it can be considered complete.",
+      "source_object": "workflow_step",
+      "target_object": "evidence_object"
+    },
+    {
+      "relationship_id": "evidence_has_hash_record",
+      "description": "An evidence object has a hash record and may require rehashing when source evidence changes.",
+      "source_object": "evidence_object",
+      "target_object": "hash_record"
+    },
+    {
+      "relationship_id": "ai_output_requires_human_review",
+      "description": "An AI output requires human review before it can support a regulated action.",
+      "source_object": "ai_output",
+      "target_object": "human_review"
+    },
+    {
+      "relationship_id": "dscsa_event_has_epcis_evidence",
+      "description": "A DSCSA event is linked to EPCIS evidence.",
+      "source_object": "dscsa_event",
+      "target_object": "epcis_evidence"
+    },
+    {
+      "relationship_id": "serialized_product_has_vrs_response",
+      "description": "A serialized product verification state is linked to a VRS response.",
+      "source_object": "serialized_product",
+      "target_object": "vrs_response"
+    },
+    {
+      "relationship_id": "compound_preparation_has_formula",
+      "description": "A compound preparation is linked to a formula record.",
+      "source_object": "compound_preparation",
+      "target_object": "formula_record"
+    },
+    {
+      "relationship_id": "irlt_context_has_handoff_record",
+      "description": "An IRLT / radiopharma execution context is linked to controlled handoff evidence.",
+      "source_object": "radiopharma_execution_context",
+      "target_object": "handoff_record"
+    },
+    {
+      "relationship_id": "platform_decision_displayed_by_ramat_vision",
+      "description": "A Platform B1 decision may be displayed by RAMAT Vision / Thread D2 without becoming approval authority.",
+      "source_object": "platform_b1_decision",
+      "target_object": "display_event"
+    }
+  ],
+  "track_alignment": [
+    {
+      "track_id": "compound_pharmacy",
+      "uses_object_families": [
+        "identity_role_persona",
+        "workflow_dependency_chain",
+        "evidence_integrity",
+        "quality_state",
+        "material_product_supply_chain",
+        "execution_context",
+        "ai_agent_output",
+        "ramat_vision_display"
+      ],
+      "example_twin_state": [
+        "formula selected",
+        "ingredient lots entered",
+        "BUD evidence incomplete",
+        "AI generated preparation summary",
+        "human review required",
+        "quality review not complete"
+      ],
+      "example_outputs": [
+        "COMPOUNDING WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+        "BUD EVIDENCE REVIEW REQUIRED",
+        "AI CONTENT REVIEW REQUIRED",
+        "QUALITY REVIEW REQUIRED"
+      ]
+    },
+    {
+      "track_id": "irlt_radiopharma_operations",
+      "uses_object_families": [
+        "identity_role_persona",
+        "equipment_ci_asset",
+        "workflow_dependency_chain",
+        "evidence_integrity",
+        "quality_state",
+        "execution_context",
+        "ai_agent_output",
+        "ramat_vision_display"
+      ],
+      "example_twin_state": [
+        "equipment record exists",
+        "CI record exists",
+        "support group missing",
+        "incident impact not reviewed",
+        "quality dependency blocked",
+        "RAMAT Vision field user requests readiness state"
+      ],
+      "example_outputs": [
+        "CI READINESS GAP",
+        "SUPPORT GROUP MISSING",
+        "QUALITY DEPENDENCY BLOCKED",
+        "RAMAT VISION DISPLAY READY",
+        "IRLT WORKFLOW APPEARS COMPLETE BUT BLOCKED"
+      ]
+    },
+    {
+      "track_id": "dscsa_evidence_integrity_exception_assurance",
+      "uses_object_families": [
+        "identity_role_persona",
+        "workflow_dependency_chain",
+        "evidence_integrity",
+        "quality_state",
+        "material_product_supply_chain",
+        "ai_agent_output",
+        "ramat_vision_display"
+      ],
+      "example_twin_state": [
+        "serialized shipment received",
+        "physical scan captured",
+        "EPCIS data late or incomplete",
+        "VRS response missing",
+        "trading partner evidence stale",
+        "AI classifies exception as review required"
+      ],
+      "example_outputs": [
+        "DSCSA EXCEPTION DETECTED",
+        "EPCIS FILE MISMATCH",
+        "VRS RESPONSE MISSING",
+        "TRADING PARTNER EVIDENCE STALE",
+        "QUARANTINE REQUIRED"
+      ]
+    }
+  ],
+  "boundary": [
+    "Object model only.",
+    "Do not deploy Azure Digital Twins now.",
+    "Do not deploy Azure resources now.",
+    "Do not modify Platform B v1.",
+    "Do not reopen Thread D v1.",
+    "Do not activate MVP3.",
+    "Do not connect to real production systems now.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, QMS, VRS, EPCIS, pharmacy, or radiopharma production data.",
+    "No PHI.",
+    "No company production data.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No source-system override.",
+    "No Quality Unit replacement.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only.",
+    "Official records remain in source systems.",
+    "Humans remain accountable."
+  ],
+  "next_order_of_work": [
+    "Commit Regulated Operations Digital Twin object model.",
+    "Merge Regulated Operations Digital Twin object model.",
+    "Create first mock object fixtures for Compound Pharmacy, IRLT / Radiopharma, and DSCSA.",
+    "Create digital twin state validator after mock fixtures are locked."
+  ]
+}
