@@ -2,6 +2,23 @@
 
 This folder holds local evaluator logic for Platform B1 / MVP2.
 
+## Registry
+
+- `evaluator_registry.json`
+- `evaluator_registry.py`
+- `EVALUATOR_REGISTRY.md`
+
+The evaluator registry maps each MVP2 feature to:
+
+- evaluator module
+- evaluator function
+- mock record
+- schema
+- Thread D2 display contract
+- Thread D2 display fixture
+- primary outputs
+- guardrail
+
 ## Current evaluators
 
 - `workflow_dependency_evaluator.py`

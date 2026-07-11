@@ -1,0 +1,43 @@
+﻿{
+  "registry_name": "Platform B1 MVP2 Evaluator Registry",
+  "registry_status": "MVP2 LOCAL PREVIEW",
+  "workstream": "Platform B1 / MVP2",
+  "boundary": {
+    "platform_b_v1_change": false,
+    "thread_d_v1_change": false,
+    "azure_deployment": false,
+    "mvp3_activation": false,
+    "real_source_systems": false
+  },
+  "doctrine": [
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "Official records remain in source systems.",
+    "Glasses do not approve GMP work.",
+    "Glasses do not release results."
+  ],
+  "evaluators": [
+    {
+      "feature_id": "workflow_dependency_assurance_lens",
+      "feature_name": "Workflow Dependency Assurance Lens",
+      "depth": "deep",
+      "status": "ACTIVE_MVP2_LOCAL",
+      "evaluator_module": "platform_b1_mvp2/evaluators/workflow_dependency_evaluator.py",
+      "evaluator_function": "evaluate_workflow_dependency",
+      "mock_record": "platform_b1_mvp2/mock_data/prakriti_middleware_verified_lis_held.json",
+      "schema": "platform_b1_mvp2/schemas/workflow_dependency_record.schema.json",
+      "d2_display_contract": "platform_b1_mvp2/ui_contracts/WORKFLOW_DEPENDENCY_D2_DISPLAY_CONTRACT.md",
+      "d2_display_fixture": "platform_b1_mvp2/ui_contracts/workflow_dependency_d2_display_fixture.json",
+      "primary_case": "Middleware Verified / LIS Held",
+      "primary_outputs": [
+        "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+        "LIS HOLD DETECTED",
+        "MIDDLEWARE VERIFIED ONLY",
+        "MANDATORY FIELD MISSING",
+        "SECONDARY REVIEW REQUIRED",
+        "RESULT RELEASE NOT ADMISSIBLE"
+      ],
+      "guardrail": "Platform B1 evaluates dependency assurance. Thread D2 displays the dependency state. Official records remain in source systems. Glasses do not release results."
+    }
+  ]
+}
