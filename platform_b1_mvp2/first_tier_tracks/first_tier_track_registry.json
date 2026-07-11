@@ -1,0 +1,210 @@
+﻿{
+  "registry_name": "Platform B1 MVP2 First-Tier Track Registry",
+  "registry_status": "LOCKED_FIRST_TIER_TRACKS",
+  "workstream": "Platform B1 / MVP2",
+  "purpose": "Define the first-tier commercialization and demonstration tracks for COBIT-Chain without creating uncontrolled scope expansion.",
+  "tracks": [
+    {
+      "track_id": "compound_pharmacy",
+      "track_name": "Compound Pharmacy",
+      "priority": "FIRST_TIER",
+      "commercial_position": "One of the first commercial target groups.",
+      "module_state": "EXISTING_MODULE_TO_PACKAGE",
+      "build_posture": "PACKAGE_AND_ALIGN_WITH_MVP2_FOUNDATION",
+      "primary_question": "Can a compounded preparation workflow be trusted, reconstructed, reviewed, and defended from formula through preparation, quality review, and evidence package?",
+      "target_users": [
+        "compounding pharmacy owner",
+        "pharmacist in charge",
+        "quality reviewer",
+        "operator or technician",
+        "auditor or inspector",
+        "consultant or compliance advisor"
+      ],
+      "assurance_focus": [
+        "formula evidence",
+        "preparation evidence",
+        "material and lot traceability",
+        "beyond-use-date evidence",
+        "operator accountability",
+        "quality review",
+        "audit readiness",
+        "AI-generated content governance",
+        "hashing and rehashing of evidence"
+      ],
+      "governed_ai_use_cases": [
+        "AI-assisted compounding record review",
+        "AI-generated SOP or procedure draft review",
+        "AI-assisted discrepancy summary",
+        "AI-assisted audit package preparation",
+        "AI-assisted training or readiness checklist"
+      ],
+      "prohibited_ai_actions": [
+        "AI may not release compounded preparation.",
+        "AI may not replace pharmacist or Quality Unit review.",
+        "AI may not override source-system evidence.",
+        "AI may not create uncontrolled GMP instructions for direct use.",
+        "AI may not approve deviations, investigations, or corrective actions."
+      ],
+      "example_outputs": [
+        "COMPOUNDING EVIDENCE SEALED",
+        "HASH VERIFIED",
+        "REHASH REQUIRED",
+        "MATERIAL LOT TRACEABLE",
+        "BUD EVIDENCE REVIEW REQUIRED",
+        "FORMULA EVIDENCE MISSING",
+        "AI CONTENT REVIEW REQUIRED",
+        "QUALITY REVIEW REQUIRED",
+        "COMPOUNDING PACKAGE DEFENSIBLE"
+      ]
+    },
+    {
+      "track_id": "irlt_radiopharma_operations",
+      "track_name": "IRLT / Radiopharma Operations",
+      "priority": "FIRST_TIER",
+      "commercial_position": "One of the first-tier demonstration and commercialization tracks.",
+      "module_state": "PRIORITY_EXTENSION_TRACK",
+      "build_posture": "USE_AS_FLAGSHIP_REGULATED_OPERATIONS_ASSURANCE_SCENARIO",
+      "primary_question": "Can IRLT / radiopharma operational execution be trusted, reconstructed, and defended across equipment, CI readiness, operational handoffs, quality dependencies, and evidence state?",
+      "target_users": [
+        "radiopharma operations leader",
+        "GMP manufacturing technology owner",
+        "quality reviewer",
+        "IT / LCM / CMDB owner",
+        "ServiceNow process owner",
+        "auditor or inspector",
+        "RAMAT Vision field user"
+      ],
+      "assurance_focus": [
+        "radiopharma manufacturing readiness",
+        "equipment and CI readiness",
+        "controlled operational handoffs",
+        "quality and release dependency checks",
+        "ServiceNow operational assurance",
+        "RAMAT Vision display",
+        "AI governance around operational recommendations",
+        "hashing and rehashing of evidence"
+      ],
+      "governed_ai_use_cases": [
+        "AI-assisted operational readiness summary",
+        "AI-assisted CI and evidence gap detection",
+        "AI-assisted change or incident impact summary",
+        "AI-assisted quality dependency review",
+        "AI-assisted RAMAT Vision field guidance"
+      ],
+      "prohibited_ai_actions": [
+        "AI may not release product.",
+        "AI may not approve GMP work.",
+        "AI may not override ServiceNow, QMS, LIS, MES, or source-system records.",
+        "AI may not replace Quality Unit review.",
+        "AI may not authorize regulated execution without human accountability."
+      ],
+      "example_outputs": [
+        "IRLT EVIDENCE SEALED",
+        "HASH VERIFIED",
+        "REHASH REQUIRED",
+        "EQUIPMENT CI READY",
+        "CI READINESS GAP",
+        "CONTROLLED HANDOFF VERIFIED",
+        "QUALITY DEPENDENCY BLOCKED",
+        "RAMAT VISION DISPLAY READY",
+        "AI RECOMMENDATION REVIEW REQUIRED",
+        "IRLT PACKAGE DEFENSIBLE"
+      ]
+    },
+    {
+      "track_id": "dscsa_evidence_integrity_exception_assurance",
+      "track_name": "DSCSA Evidence Integrity & Exception Assurance",
+      "priority": "FIRST_TIER",
+      "commercial_position": "Top-tier supply-chain and evidence-integrity extension.",
+      "module_state": "PROJECT_IMMEDIATELY_AS_TOP_TIER_EXTENSION",
+      "build_posture": "ADD_ROADMAP_AND_MOCK_SCENARIO_AFTER_SCOPE_DOCUMENTS",
+      "primary_question": "Can serialized prescription-drug supply-chain evidence be trusted, reconstructed, and defended across DSCSA trading-partner handoffs, EPCIS evidence, VRS response, exception resolution, and AI-assisted triage?",
+      "target_users": [
+        "manufacturer",
+        "repackager",
+        "wholesaler",
+        "dispenser",
+        "compound pharmacy",
+        "radiopharma / IRLT operation",
+        "supply-chain quality reviewer",
+        "trading partner compliance owner"
+      ],
+      "assurance_focus": [
+        "serialized product identity",
+        "EPCIS evidence integrity",
+        "VRS response assurance",
+        "authorized trading partner trust",
+        "exception classification",
+        "quarantine and release-readiness support",
+        "AI-governed exception triage",
+        "hashing and rehashing of supply-chain evidence"
+      ],
+      "governed_ai_use_cases": [
+        "AI-assisted DSCSA exception classification",
+        "AI-assisted EPCIS mismatch summary",
+        "AI-assisted trading partner outreach draft",
+        "AI-assisted quarantine or review routing",
+        "AI-assisted exception trend analysis"
+      ],
+      "prohibited_ai_actions": [
+        "AI may not release product.",
+        "AI may not override quarantine.",
+        "AI may not declare DSCSA compliance.",
+        "AI may not declare product legitimate or illegitimate without responsible human review.",
+        "AI may not replace required regulatory, quality, or trading-partner processes."
+      ],
+      "example_outputs": [
+        "DSCSA EVIDENCE SEALED",
+        "HASH VERIFIED",
+        "REHASH REQUIRED",
+        "EPCIS FILE MISMATCH",
+        "SERIAL EVENT CHANGED",
+        "CHAIN OF CUSTODY GAP",
+        "TRADING PARTNER NOT VERIFIED",
+        "VRS RESPONSE MISSING",
+        "AGGREGATION CONFLICT",
+        "DSCSA EXCEPTION DETECTED",
+        "AI EXCEPTION CLASSIFICATION GENERATED",
+        "HUMAN REVIEW REQUIRED",
+        "QUARANTINE REQUIRED",
+        "EXCEPTION RESOLUTION EVIDENCE COMPLETE",
+        "EXCEPTION NOT DEFENSIBLE"
+      ]
+    }
+  ],
+  "shared_foundation": [
+    "Hashing",
+    "Rehashing",
+    "Evidence integrity",
+    "Chain-of-custody truth",
+    "Workflow dependency assurance",
+    "Action admissibility",
+    "Regulated operations digital twin",
+    "Governed AI",
+    "Human accountability",
+    "Quality Unit accountability",
+    "RAMAT Vision / Thread D2 display"
+  ],
+  "global_boundary": [
+    "Do not modify Platform B v1.",
+    "Do not reopen Thread D v1.",
+    "Do not activate MVP3.",
+    "Do not build full commercial integrations now.",
+    "Use mock-data-first, simulator-first, local-validation-first implementation.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, VRS, EPCIS, or GMP production data.",
+    "No PHI.",
+    "No company production data.",
+    "Official records remain in source systems.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays."
+  ],
+  "next_order_of_work": [
+    "Create Manufacturing and Supply Chain Extension Catalogue.",
+    "Create DSCSA Evidence Integrity & Exception Assurance addendum.",
+    "Create Compound Pharmacy commercialization addendum.",
+    "Create IRLT / Radiopharma Operations first-tier addendum.",
+    "Create shared Regulated Operations Digital Twin object model.",
+    "Build first DSCSA mock scenario only after scope documents are locked."
+  ]
+}
