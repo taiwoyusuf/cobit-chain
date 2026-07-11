@@ -1,0 +1,121 @@
+﻿{
+  "fixture_name": "Late EPCIS / VRS No Response Exception",
+  "fixture_status": "LOCKED_MOCK_FIXTURE_ONLY",
+  "track_id": "dscsa_evidence_integrity_exception_assurance",
+  "scenario_id": "dscsa_late_epcis_vrs_no_response_exception",
+  "source": "DSCSA Evidence Integrity and Exception Assurance Addendum",
+  "purpose": "Represent a mock DSCSA serialized shipment exception where EPCIS evidence is late or incomplete, VRS response is missing, trading partner evidence is stale, and human review is required.",
+  "twin_state": {
+    "identity_role_persona": {
+      "user_identity": "mock_supply_chain_quality_reviewer",
+      "role_assignment": "quality_reviewer",
+      "persona_view": "dscsa_exception_review",
+      "session_context": "mock_dscsa_exception_session",
+      "outputs": [
+        "ROLE VERIFIED"
+      ]
+    },
+    "material_product_supply_chain": {
+      "serialized_product": "mock_serialized_product_001",
+      "gtin": "mock_gtin_0001",
+      "serial_number": "mock_serial_0001",
+      "lot": "mock_lot_dscsa_001",
+      "epcis_evidence_state": "late_or_incomplete",
+      "vrs_response_state": "missing",
+      "trading_partner_evidence_state": "stale",
+      "quarantine_required": true,
+      "outputs": [
+        "EPCIS FILE MISMATCH",
+        "VRS RESPONSE MISSING",
+        "TRADING PARTNER EVIDENCE STALE",
+        "QUARANTINE REQUIRED"
+      ]
+    },
+    "quality_state": {
+      "exception_review_state": "review_required",
+      "human_reviewer_required": true,
+      "resolution_evidence_complete": false,
+      "outputs": [
+        "DSCSA EXCEPTION DETECTED",
+        "HUMAN REVIEW REQUIRED",
+        "EXCEPTION NOT DEFENSIBLE"
+      ]
+    },
+    "ai_agent_output": {
+      "ai_output_id": "mock_ai_dscsa_exception_classification_001",
+      "model_version": "mock-model-v1",
+      "prompt_version": "mock-prompt-v1",
+      "ai_output_hash": "mock_hash_ai_dscsa_001",
+      "classification": "review_required",
+      "approval_boundary": "recommendation_only",
+      "outputs": [
+        "AI OUTPUT HASHED",
+        "AI EXCEPTION CLASSIFICATION GENERATED",
+        "AI RECOMMENDATION REVIEW REQUIRED",
+        "HUMAN REVIEW REQUIRED",
+        "AGENT ACTION NOT ADMISSIBLE"
+      ]
+    },
+    "evidence_integrity": {
+      "evidence_package_id": "mock_dscsa_package_001",
+      "hash_record": "mock_hash_dscsa_package_001",
+      "hash_status": "HASH VERIFIED",
+      "rehash_status": "NOT_REQUIRED",
+      "outputs": [
+        "DSCSA EVIDENCE SEALED",
+        "HASH VERIFIED"
+      ]
+    },
+    "workflow_dependency_chain": {
+      "workflow_id": "mock_dscsa_workflow_001",
+      "blocked": true,
+      "blockers": [
+        "EPCIS file mismatch",
+        "VRS response missing",
+        "trading partner evidence stale",
+        "human review required",
+        "quarantine required"
+      ],
+      "outputs": [
+        "DSCSA EXCEPTION DETECTED",
+        "EPCIS FILE MISMATCH",
+        "VRS RESPONSE MISSING",
+        "TRADING PARTNER EVIDENCE STALE",
+        "QUARANTINE REQUIRED",
+        "EXCEPTION NOT DEFENSIBLE"
+      ]
+    },
+    "ramat_vision_display": {
+      "display_event": "mock_display_dscsa_001",
+      "display_allowed": true,
+      "approval_authority": false,
+      "outputs": [
+        "RAMAT VISION DISPLAY READY",
+        "PLATFORM B1 DECISION DISPLAYED"
+      ]
+    }
+  },
+  "expected_platform_b1_outputs": [
+    "DSCSA EXCEPTION DETECTED",
+    "EPCIS FILE MISMATCH",
+    "VRS RESPONSE MISSING",
+    "TRADING PARTNER EVIDENCE STALE",
+    "AI EXCEPTION CLASSIFICATION GENERATED",
+    "HUMAN REVIEW REQUIRED",
+    "QUARANTINE REQUIRED",
+    "EXCEPTION NOT DEFENSIBLE"
+  ],
+  "boundary": [
+    "Mock fixture only.",
+    "No real EPCIS integration.",
+    "No real VRS integration.",
+    "No real DSCSA production data.",
+    "No PHI.",
+    "No product release decision.",
+    "No quarantine override.",
+    "No source-system override.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only."
+  ]
+}

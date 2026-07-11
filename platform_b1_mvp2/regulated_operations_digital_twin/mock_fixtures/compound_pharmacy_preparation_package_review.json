@@ -1,0 +1,115 @@
+﻿{
+    "fixture_name":  "Compound Pharmacy Preparation Package Review",
+    "fixture_status":  "LOCKED_MOCK_FIXTURE_ONLY",
+    "track_id":  "compound_pharmacy",
+    "scenario_id":  "compound_pharmacy_preparation_package_review",
+    "source":  "Compound Pharmacy Commercialization Addendum",
+    "purpose":  "Represent a mock compound pharmacy preparation package review using the Regulated Operations Digital Twin object model.",
+    "twin_state":  {
+                       "identity_role_persona":  {
+                                                     "user_identity":  "mock_pharmacist_reviewer",
+                                                     "role_assignment":  "quality_reviewer",
+                                                     "persona_view":  "compound_pharmacy_review",
+                                                     "session_context":  "mock_review_session",
+                                                     "outputs":  [
+                                                                     "ROLE VERIFIED"
+                                                                 ]
+                                                 },
+                       "execution_context":  {
+                                                 "compound_preparation":  "mock_preparation_cp_001",
+                                                 "formula_record":  "mock_formula_f001",
+                                                 "formula_version":  "v2.1",
+                                                 "ingredient_lots_entered":  true,
+                                                 "calculation_evidence_present":  true,
+                                                 "bud_evidence_complete":  false,
+                                                 "quality_review_complete":  false,
+                                                 "outputs":  [
+                                                                 "BUD EVIDENCE REVIEW REQUIRED",
+                                                                 "QUALITY REVIEW REQUIRED"
+                                                             ]
+                                             },
+                       "material_product_supply_chain":  {
+                                                             "material_lots":  [
+                                                                                   "mock_lot_a100",
+                                                                                   "mock_lot_b200"
+                                                                               ],
+                                                             "supplier_evidence_present":  true,
+                                                             "lot_traceability_state":  "traceable",
+                                                             "outputs":  [
+                                                                             "MATERIAL LOT TRACEABLE"
+                                                                         ]
+                                                         },
+                       "ai_agent_output":  {
+                                               "ai_output_id":  "mock_ai_summary_cp_001",
+                                               "model_version":  "mock-model-v1",
+                                               "prompt_version":  "mock-prompt-v1",
+                                               "ai_output_hash":  "mock_hash_ai_cp_001",
+                                               "human_review_required":  true,
+                                               "approval_boundary":  "recommendation_only",
+                                               "outputs":  [
+                                                               "AI OUTPUT HASHED",
+                                                               "AI CONTENT REVIEW REQUIRED",
+                                                               "HUMAN REVIEW REQUIRED",
+                                                               "AGENT ACTION NOT ADMISSIBLE"
+                                                           ]
+                                           },
+                       "evidence_integrity":  {
+                                                  "evidence_package_id":  "mock_compound_package_001",
+                                                  "hash_record":  "mock_hash_compound_package_001",
+                                                  "hash_status":  "HASH VERIFIED",
+                                                  "rehash_status":  "NOT_REQUIRED",
+                                                  "outputs":  [
+                                                                  "COMPOUNDING EVIDENCE SEALED",
+                                                                  "HASH VERIFIED"
+                                                              ]
+                                              },
+                       "workflow_dependency_chain":  {
+                                                         "workflow_id":  "mock_compound_workflow_001",
+                                                         "blocked":  true,
+                                                         "blockers":  [
+                                                                          "BUD evidence incomplete",
+                                                                          "quality review not complete",
+                                                                          "AI content review required"
+                                                                      ],
+                                                         "outputs":  [
+                                                                         "COMPOUNDING WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+                                                                         "BUD EVIDENCE REVIEW REQUIRED",
+                                                                         "AI CONTENT REVIEW REQUIRED",
+                                                                         "QUALITY REVIEW REQUIRED",
+                                                                         "COMPOUNDING PACKAGE NOT YET DEFENSIBLE"
+                                                                     ]
+                                                     },
+                       "ramat_vision_display":  {
+                                                    "display_event":  "mock_display_cp_001",
+                                                    "display_allowed":  true,
+                                                    "approval_authority":  false,
+                                                    "outputs":  [
+                                                                    "RAMAT VISION DISPLAY READY",
+                                                                    "PLATFORM B1 DECISION DISPLAYED"
+                                                                ]
+                                                }
+                   },
+    "expected_platform_b1_outputs":  [
+                                         "COMPOUNDING EVIDENCE SEALED",
+                                         "HASH VERIFIED",
+                                         "BUD EVIDENCE REVIEW REQUIRED",
+                                         "AI CONTENT REVIEW REQUIRED",
+                                         "HUMAN REVIEW REQUIRED",
+                                         "QUALITY REVIEW REQUIRED",
+                                         "COMPOUNDING WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+                                         "COMPOUNDING PACKAGE NOT YET DEFENSIBLE"
+                                     ],
+    "boundary":  [
+                     "Mock fixture only.",
+                     "No real pharmacy production data.",
+                     "No real patient data.",
+                     "No PHI.",
+                     "No preparation release decision.",
+                     "No product release decision.",
+                     "No pharmacist replacement.",
+                     "No source-system override.",
+                     "Platform B1 evaluates.",
+                     "Thread D2 displays.",
+                     "RAMAT Vision displays only."
+                 ]
+}
