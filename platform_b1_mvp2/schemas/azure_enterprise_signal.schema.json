@@ -1,0 +1,18 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/azure-enterprise-signal.schema.json",
+  "title": "AzureEnterpriseSignal",
+  "type": "object",
+  "required": ["signal_id", "signal_group", "service_name", "status", "outputs", "guardrail"],
+  "properties": {
+    "signal_id": { "type": "string" },
+    "signal_group": { "type": "string" },
+    "service_name": { "type": "string" },
+    "status": { "type": "string" },
+    "severity": { "type": "string" },
+    "evidence_object": { "type": "string" },
+    "owner": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

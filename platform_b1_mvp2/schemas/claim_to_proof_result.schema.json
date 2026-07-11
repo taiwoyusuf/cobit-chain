@@ -1,0 +1,17 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/claim-to-proof-result.schema.json",
+  "title": "ClaimToProofResult",
+  "type": "object",
+  "required": ["claim_id", "claim_text", "supporting_evidence", "proof_status", "outputs", "guardrail"],
+  "properties": {
+    "claim_id": { "type": "string" },
+    "claim_text": { "type": "string" },
+    "supporting_evidence": { "type": "array", "items": { "type": "string" } },
+    "missing_evidence": { "type": "array", "items": { "type": "string" } },
+    "proof_status": { "type": "string" },
+    "qa_review_required": { "type": "boolean" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

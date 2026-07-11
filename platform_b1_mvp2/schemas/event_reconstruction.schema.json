@@ -1,0 +1,21 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/event-reconstruction.schema.json",
+  "title": "EventReconstruction",
+  "type": "object",
+  "required": ["event_id", "actor", "action", "system_touched", "evidence_used", "final_decision", "outputs", "guardrail"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "actor": { "type": "string" },
+    "action": { "type": "string" },
+    "timestamp_utc": { "type": "string" },
+    "system_touched": { "type": "string" },
+    "evidence_used": { "type": "array", "items": { "type": "string" } },
+    "ai_involvement": { "type": "string" },
+    "human_reviewer": { "type": "string" },
+    "final_decision": { "type": "string" },
+    "related_records": { "type": "array", "items": { "type": "string" } },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

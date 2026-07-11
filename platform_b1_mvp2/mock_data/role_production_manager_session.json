@@ -1,0 +1,22 @@
+﻿{
+  "session_id": "sess-prod-manager-001",
+  "device_id": "RAMAT-ELSA-SIM-001",
+  "device_type": "RAMAT Vision Simulator",
+  "user": {
+    "user_id": "mock-user-production-manager",
+    "display_name": "Mock Production Manager",
+    "training_status": "CURRENT",
+    "site_access": "AUTHORIZED",
+    "shift_status": "ACTIVE"
+  },
+  "requested_role": "Production Manager",
+  "verified_role": "Production Manager",
+  "view_loaded": "Production Manager View",
+  "outputs": [
+    "USER SIGN-IN REQUIRED",
+    "ROLE VERIFIED",
+    "PRODUCTION MANAGER VIEW ACTIVE",
+    "ROLE-BASED INTERFACE LOADED"
+  ],
+  "guardrail": "A device does not equal a role. Voice may request a role, but Platform B1 must verify identity and role before switching views."
+}

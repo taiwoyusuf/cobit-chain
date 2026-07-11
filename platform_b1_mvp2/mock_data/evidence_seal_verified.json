@@ -1,0 +1,16 @@
+﻿{
+  "evidence_id": "ev-seal-001",
+  "record_type": "Mock SOP PDF",
+  "source_system": "Mock SOP Repository",
+  "owner": "Mock Document Owner",
+  "version": "v1.0",
+  "timestamp_utc": "2026-07-11T00:00:00Z",
+  "hash_algorithm": "SHA-256",
+  "hash_value_mock": "mock-hash-not-real-0001",
+  "hash_status": "HASH VERIFIED",
+  "outputs": [
+    "EVIDENCE SEALED",
+    "HASH VERIFIED"
+  ],
+  "guardrail": "SERAPH Lite stores proof metadata only. It does not replace the source system."
+}

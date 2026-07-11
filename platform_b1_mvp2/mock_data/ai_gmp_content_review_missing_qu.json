@@ -1,0 +1,23 @@
+﻿{
+  "document_id": "doc-ai-gmp-001",
+  "document_type": "Deviation Summary",
+  "ai_used": true,
+  "ai_tool_name": "Mock AI Drafting Assistant",
+  "ai_influence_type": "summarized investigation notes",
+  "human_reviewer": "Mock QA Reviewer",
+  "human_review_status": "PENDING",
+  "quality_unit_reviewer": "",
+  "quality_unit_review_status": "MISSING",
+  "approval_status": "NOT CLEARED",
+  "source_evidence_status": "PARTIAL",
+  "passport_status": "GMP CONTENT PASSPORT RED",
+  "outputs": [
+    "AI USED",
+    "AI SOURCE DISCLOSED",
+    "HUMAN REVIEW REQUIRED",
+    "QUALITY UNIT REVIEW MISSING",
+    "NOT CLEARED FOR GMP USE",
+    "GMP CONTENT PASSPORT RED"
+  ],
+  "guardrail": "AI may draft or summarize. AI does not approve GMP content. Quality Unit clearance is required before GMP use."
+}

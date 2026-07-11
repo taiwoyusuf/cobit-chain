@@ -1,0 +1,17 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/source-of-truth-record.schema.json",
+  "title": "SourceOfTruthRecord",
+  "type": "object",
+  "required": ["record_id", "record_name", "candidate_sources", "approved_source", "conflict_status", "outputs", "guardrail"],
+  "properties": {
+    "record_id": { "type": "string" },
+    "record_name": { "type": "string" },
+    "candidate_sources": { "type": "array", "items": { "type": "string" } },
+    "approved_source": { "type": "string" },
+    "conflict_status": { "type": "string" },
+    "superseded_records": { "type": "array", "items": { "type": "string" } },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}
