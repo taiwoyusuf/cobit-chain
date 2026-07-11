@@ -1,0 +1,319 @@
+﻿{
+  "catalogue_name": "Platform B1 MVP2 Manufacturing and Supply Chain Extension Catalogue",
+  "catalogue_status": "LOCKED_CATALOGUE_ONLY",
+  "workstream": "Platform B1 / MVP2",
+  "purpose": "Organize manufacturing, supply-chain, compounding, IRLT, DSCSA, MES, quality, laboratory, equipment, automation, and AI-governance extension opportunities without triggering uncontrolled build scope.",
+  "first_tier_tracks": [
+    {
+      "track_id": "compound_pharmacy",
+      "track_name": "Compound Pharmacy",
+      "priority": "FIRST_TIER",
+      "catalogue_role": "Early commercial target and packaged module pathway.",
+      "build_status": "PACKAGE_EXISTING_MODULE_FIRST"
+    },
+    {
+      "track_id": "irlt_radiopharma_operations",
+      "track_name": "IRLT / Radiopharma Operations",
+      "priority": "FIRST_TIER",
+      "catalogue_role": "First-tier regulated operations and radiopharma demonstration track.",
+      "build_status": "PRIORITY_EXTENSION_TRACK"
+    },
+    {
+      "track_id": "dscsa_evidence_integrity_exception_assurance",
+      "track_name": "DSCSA Evidence Integrity & Exception Assurance",
+      "priority": "FIRST_TIER",
+      "catalogue_role": "Top-tier supply-chain evidence integrity, exception assurance, EPCIS, VRS, and trading-partner trust track.",
+      "build_status": "PROJECT_IMMEDIATELY_AS_TOP_TIER_EXTENSION"
+    }
+  ],
+  "extension_categories": [
+    {
+      "category_id": "manufacturing_execution",
+      "category_name": "Manufacturing Execution Assurance",
+      "extensions": [
+        {
+          "extension_id": "mes_execution_dependency_assurance",
+          "extension_name": "MES Execution Dependency Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "MES may show a batch, step, or operation as complete, but do PLC, LIMS, equipment, materials, training, signatures, QMS, ERP, and audit states agree?",
+          "example_outputs": [
+            "MES COMPLETE — DEPENDENCY VERIFIED",
+            "MES COMPLETE — DEPENDENCY FAILURE DETECTED",
+            "BATCH COMPLETE BUT NOT RELEASE-READY",
+            "PLC COMPLETION NOT VERIFIED",
+            "QUALITY REVIEW REQUIRED",
+            "RELEASE NOT ADMISSIBLE"
+          ]
+        },
+        {
+          "extension_id": "batch_release_dependency_assurance",
+          "extension_name": "Batch Release Dependency Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "The batch record appears complete, but is the batch truly reviewable, defensible, and release-ready?",
+          "example_outputs": [
+            "BATCH RECORD COMPLETE — RELEASE NOT ADMISSIBLE",
+            "DEVIATION IMPACT REVIEW MISSING",
+            "QUALITY UNIT REVIEW REQUIRED",
+            "RELEASE PACKAGE DEFENSIBLE",
+            "AUDIT TRAIL REVIEW REQUIRED"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "materials_and_supply_chain",
+      "category_name": "Materials, Serialization, and Supply Chain Assurance",
+      "extensions": [
+        {
+          "extension_id": "dscsa_evidence_integrity_exception_assurance",
+          "extension_name": "DSCSA Evidence Integrity & Exception Assurance",
+          "priority": "FIRST_TIER",
+          "status": "TOP_TIER_EXTENSION_PROJECT_IMMEDIATELY",
+          "core_question": "Can serialized prescription-drug supply-chain evidence be trusted, reconstructed, and defended across EPCIS, VRS, trading-partner handoffs, exception resolution, and AI-assisted triage?",
+          "example_outputs": [
+            "DSCSA EVIDENCE SEALED",
+            "HASH VERIFIED",
+            "REHASH REQUIRED",
+            "EPCIS FILE MISMATCH",
+            "VRS RESPONSE MISSING",
+            "CHAIN OF CUSTODY GAP",
+            "DSCSA EXCEPTION DETECTED",
+            "QUARANTINE REQUIRED",
+            "EXCEPTION NOT DEFENSIBLE"
+          ]
+        },
+        {
+          "extension_id": "material_genealogy_erp_weigh_dispense_assurance",
+          "extension_name": "Material Genealogy / ERP / Weigh-and-Dispense Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Were the right materials, lots, quantities, statuses, expiry dates, and genealogy used?",
+          "example_outputs": [
+            "MATERIAL USED — RELEASE STATUS NOT VERIFIED",
+            "ERP LOT STATUS MISMATCH",
+            "MATERIAL LOT TRACEABLE",
+            "EXPIRY REVIEW REQUIRED",
+            "WEIGHING RECORD OUT OF TOLERANCE"
+          ]
+        },
+        {
+          "extension_id": "packaging_labeling_serialization_assurance",
+          "extension_name": "Packaging / Labeling / Serialization Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Were the correct labels, packaging components, serialization events, aggregation records, and reconciliation evidence used?",
+          "example_outputs": [
+            "PACKAGING COMPLETE — LABEL VERSION MISMATCH",
+            "SERIALIZATION EVENT VERIFIED",
+            "AGGREGATION CONFLICT",
+            "LABEL RECONCILIATION REQUIRED",
+            "MARKET PACK MISMATCH"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "equipment_automation_facility",
+      "category_name": "Equipment, Automation, Facility, and Environmental Assurance",
+      "extensions": [
+        {
+          "extension_id": "equipment_readiness_calibration_pm_assurance",
+          "extension_name": "Equipment Readiness / Calibration / PM Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Was the equipment fit for GMP use at the time of execution?",
+          "example_outputs": [
+            "EQUIPMENT READY",
+            "CALIBRATION EXPIRED",
+            "PM OVERDUE",
+            "EQUIPMENT ON HOLD",
+            "CHANGE CONTROL REVIEW REQUIRED"
+          ]
+        },
+        {
+          "extension_id": "automation_plc_scada_historian_truth_assurance",
+          "extension_name": "Automation / PLC / SCADA / Historian Truth Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Does automation evidence support the manufacturing record?",
+          "example_outputs": [
+            "MES STEP COMPLETE — HISTORIAN EVIDENCE CONFLICT",
+            "PLC COMPLETION VERIFIED",
+            "SCADA ALARM REVIEW REQUIRED",
+            "MANUAL OVERRIDE REVIEW REQUIRED",
+            "CRITICAL PARAMETER OUT OF RANGE"
+          ]
+        },
+        {
+          "extension_id": "utilities_environmental_monitoring_assurance",
+          "extension_name": "Utilities / Environmental Monitoring Assurance",
+          "priority": "MEDIUM_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Were the facility, utilities, room state, and environmental conditions acceptable during execution?",
+          "example_outputs": [
+            "ENVIRONMENTAL STATE ACCEPTABLE",
+            "ROOM PRESSURE EXCURSION REVIEW REQUIRED",
+            "BMS ALARM REVIEW REQUIRED",
+            "UTILITY STATUS NOT VERIFIED",
+            "BATCH EXECUTED — ENVIRONMENTAL EXCURSION REVIEW REQUIRED"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "quality_and_process_assurance",
+      "category_name": "Quality, Cleaning, Aseptic, Recipe, and Process Assurance",
+      "extensions": [
+        {
+          "extension_id": "cleaning_line_clearance_changeover_assurance",
+          "extension_name": "Cleaning / Line Clearance / Changeover Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Was the line, room, equipment, and process state truly ready for the next operation?",
+          "example_outputs": [
+            "LINE CLEARED",
+            "PRIOR PRODUCT CLEARANCE EVIDENCE MISSING",
+            "CLEANING RECORD INCOMPLETE",
+            "HOLD TIME EXCEEDED",
+            "QA VERIFICATION REQUIRED"
+          ]
+        },
+        {
+          "extension_id": "recipe_master_data_mbr_bom_assurance",
+          "extension_name": "Recipe / Master Data / MBR / BOM Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Was the right approved manufacturing recipe, BOM, parameter set, and master data used?",
+          "example_outputs": [
+            "RECIPE VERSION VERIFIED",
+            "BATCH EXECUTED — RECIPE VERSION NOT ALIGNED WITH APPROVED MBR",
+            "BOM VERSION MISMATCH",
+            "CPP CQA LIMIT REVIEW REQUIRED",
+            "MASTER DATA CONFLICT"
+          ]
+        },
+        {
+          "extension_id": "aseptic_sterility_assurance",
+          "extension_name": "Aseptic / Sterility Assurance",
+          "priority": "HIGH_EXTENSION_LATER",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Can aseptic manufacturing conditions be defended?",
+          "example_outputs": [
+            "ASEPTIC OPERATION COMPLETE — INTERVENTION REVIEW MISSING",
+            "STERILIZATION CYCLE VERIFIED",
+            "FILTER INTEGRITY REVIEW REQUIRED",
+            "EM RESULT REVIEW REQUIRED",
+            "MEDIA FILL QUALIFICATION REQUIRED"
+          ]
+        },
+        {
+          "extension_id": "manufacturing_deviation_impact_assurance",
+          "extension_name": "Manufacturing Deviation Impact Assurance",
+          "priority": "HIGH_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Did this manufacturing event impact the batch, equipment, material, process, facility, release decision, or patient-risk posture?",
+          "example_outputs": [
+            "DEVIATION CLOSED — BATCH IMPACT NOT DEFENSIBLE",
+            "BATCH IMPACT ASSESSED",
+            "REPEAT EVENT REVIEW REQUIRED",
+            "CAPA LINK MISSING",
+            "QUALITY REVIEW REQUIRED"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "lifecycle_external_manufacturing",
+      "category_name": "Lifecycle, CPV, and External Manufacturing Assurance",
+      "extensions": [
+        {
+          "extension_id": "tech_transfer_ppq_cpv_assurance",
+          "extension_name": "Tech Transfer / PPQ / Continued Process Verification Assurance",
+          "priority": "MEDIUM_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Did knowledge, controls, parameters, and evidence transfer correctly from development to manufacturing and remain controlled during CPV?",
+          "example_outputs": [
+            "PROCESS TRANSFERRED — CONTROL STRATEGY EVIDENCE GAP",
+            "PPQ EVIDENCE COMPLETE",
+            "CPV SIGNAL REVIEW REQUIRED",
+            "PROCESS DRIFT DETECTED",
+            "DIGITAL TWIN ASSUMPTION REVIEW REQUIRED"
+          ]
+        },
+        {
+          "extension_id": "cmo_external_manufacturing_assurance",
+          "extension_name": "CMO / External Manufacturing Assurance",
+          "priority": "MEDIUM_EXTENSION",
+          "status": "CATALOGUED_NOT_BUILT",
+          "core_question": "Can a sponsor trust external manufacturing evidence from a CMO or CDMO?",
+          "example_outputs": [
+            "CMO PACKAGE RECEIVED — RELEASE EVIDENCE INCOMPLETE",
+            "QUALITY AGREEMENT RESPONSIBILITY VERIFIED",
+            "CMO DEVIATION PACKAGE INCOMPLETE",
+            "DATA INTEGRITY EVIDENCE REQUIRED",
+            "RELEASE RESPONSIBILITY REVIEW REQUIRED"
+          ]
+        }
+      ]
+    }
+  ],
+  "cross_cutting_ai_governance": {
+    "principle": "AI may assist, classify, summarize, route, recommend, and prepare evidence; AI may not independently approve, release, override quarantine, replace Quality Unit review, replace source-system truth, or execute regulated actions without accountable human governance.",
+    "required_controls": [
+      "AI agent identity",
+      "model and prompt version",
+      "approved context of use",
+      "input source traceability",
+      "tool-call evidence",
+      "human reviewer",
+      "Quality Unit accountability where applicable",
+      "hash of AI output",
+      "rehash status when source evidence changes",
+      "recommendation-versus-execution boundary"
+    ],
+    "example_outputs": [
+      "AI RECOMMENDATION REVIEW REQUIRED",
+      "AI CONTEXT NOT APPROVED",
+      "AI OUTPUT HASHED",
+      "MODEL VERSION RECORDED",
+      "HUMAN REVIEW REQUIRED",
+      "QUALITY REVIEW REQUIRED",
+      "AGENT ACTION NOT ADMISSIBLE"
+    ]
+  },
+  "shared_foundation": [
+    "Hashing",
+    "Rehashing",
+    "Evidence integrity",
+    "Chain-of-custody truth",
+    "Workflow dependency assurance",
+    "Action admissibility",
+    "Regulated operations digital twin",
+    "Governed AI",
+    "RAMAT Vision / Thread D2 display",
+    "Official records remain in source systems"
+  ],
+  "global_boundary": [
+    "Catalogue only.",
+    "Do not modify Platform B v1.",
+    "Do not reopen Thread D v1.",
+    "Do not activate MVP3.",
+    "Do not build full commercial integrations now.",
+    "Use mock-data-first, simulator-first, local-validation-first implementation.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, VRS, EPCIS, or GMP production data.",
+    "No PHI.",
+    "No company production data.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays."
+  ],
+  "next_order_of_work": [
+    "Create DSCSA Evidence Integrity & Exception Assurance addendum.",
+    "Create Compound Pharmacy commercialization addendum.",
+    "Create IRLT / Radiopharma Operations first-tier addendum.",
+    "Create shared Regulated Operations Digital Twin object model.",
+    "Build first DSCSA mock scenario only after scope documents are locked."
+  ]
+}
