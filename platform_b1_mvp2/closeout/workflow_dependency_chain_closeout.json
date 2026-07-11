@@ -1,0 +1,86 @@
+﻿{
+  "closeout_name": "Platform B1 MVP2 Workflow Dependency Assurance Chain Closeout",
+  "closeout_status": "VALIDATED_LOCAL_MVP2_CHAIN",
+  "workstream": "Platform B1 / MVP2",
+  "feature_id": "workflow_dependency_assurance_lens",
+  "feature_name": "Workflow Dependency Assurance Lens",
+  "primary_case": "Middleware Verified / LIS Held",
+  "validated_chain": "mock data -> schema -> evaluator -> registry -> Thread D2 display fixture -> orchestration smoke runner",
+  "latest_verified_main_commit": "391bfea",
+  "merged_pull_requests": [
+    {
+      "pr": "#17",
+      "scope": "Platform B1 MVP2 mock schemas and data"
+    },
+    {
+      "pr": "#18",
+      "scope": "Workflow Dependency Assurance evaluator"
+    },
+    {
+      "pr": "#19",
+      "scope": "Thread D2 workflow dependency display fixture"
+    },
+    {
+      "pr": "#20",
+      "scope": "Platform B1 MVP2 evaluator registry"
+    },
+    {
+      "pr": "#21",
+      "scope": "Platform B1 MVP2 orchestration smoke runner"
+    }
+  ],
+  "validated_artifacts": [
+    "platform_b1_mvp2/mock_data/prakriti_middleware_verified_lis_held.json",
+    "platform_b1_mvp2/schemas/workflow_dependency_record.schema.json",
+    "platform_b1_mvp2/evaluators/workflow_dependency_evaluator.py",
+    "platform_b1_mvp2/evaluators/evaluator_registry.json",
+    "platform_b1_mvp2/ui_contracts/WORKFLOW_DEPENDENCY_D2_DISPLAY_CONTRACT.md",
+    "platform_b1_mvp2/ui_contracts/workflow_dependency_d2_display_fixture.json",
+    "platform_b1_mvp2/tests/run_mvp2_orchestration_smoke.py",
+    "platform_b1_mvp2/tests/test_mvp2_orchestration_smoke.py"
+  ],
+  "primary_outputs": [
+    "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "LIS HOLD DETECTED",
+    "MIDDLEWARE VERIFIED ONLY",
+    "MANDATORY FIELD MISSING",
+    "SECONDARY REVIEW REQUIRED",
+    "RESULT RELEASE NOT ADMISSIBLE",
+    "AUDIT EVIDENCE NOT READY"
+  ],
+  "validation_checks": [
+    "JSON parse checks passed",
+    "Python syntax checks passed",
+    "Workflow Dependency evaluator unit tests passed",
+    "Thread D2 display fixture unit tests passed",
+    "Evaluator registry unit tests passed",
+    "MVP2 orchestration smoke runner passed",
+    "MVP2 orchestration unit tests passed",
+    "Key term checks passed",
+    "Defensive secret scans passed"
+  ],
+  "doctrine": [
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "Official records remain in source systems.",
+    "Glasses do not approve GMP work.",
+    "Glasses do not release results.",
+    "The workflow is not trustworthy simply because one system marks it complete.",
+    "The workflow is trustworthy when dependencies, evidence, identity, mappings, controls, reviews, and source-system states agree."
+  ],
+  "boundary": {
+    "local_closeout_only": true,
+    "platform_b_v1_change": false,
+    "thread_d_v1_change": false,
+    "azure_deployment": false,
+    "mvp3_activation": false,
+    "real_servicenow": false,
+    "real_lis": false,
+    "real_middleware": false,
+    "real_eqms": false,
+    "real_phi": false,
+    "real_gmp_production_data": false,
+    "company_production_data": false
+  },
+  "next_recommended_step": "Create the next MVP2 evaluator skeleton only after this first Workflow Dependency Assurance chain is closed and stable."
+}
