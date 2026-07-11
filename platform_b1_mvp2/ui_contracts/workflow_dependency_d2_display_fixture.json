@@ -1,0 +1,37 @@
+﻿{
+  "card_id": "d2-workflow-dependency-prakriti-001",
+  "feature_name": "Workflow Dependency Assurance Lens",
+  "display_mode": "Thread D2 — RAMAT Vision Advanced Assurance Preview",
+  "source_evaluator": "platform_b1_mvp2/evaluators/workflow_dependency_evaluator.py",
+  "source_mock_record": "platform_b1_mvp2/mock_data/prakriti_middleware_verified_lis_held.json",
+  "case_name": "Middleware Verified / LIS Held",
+  "wearer_prompt": "Is this workflow really complete?",
+  "headline": "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+  "reason": "LIS HOLD DETECTED",
+  "required_action": "SECONDARY REVIEW REQUIRED",
+  "evidence_state": "AUDIT EVIDENCE NOT READY",
+  "severity": "red",
+  "badge": "MVP2 PREVIEW",
+  "outputs": [
+    "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "LIS HOLD DETECTED",
+    "MIDDLEWARE VERIFIED ONLY",
+    "RESULT RELEASE NOT ADMISSIBLE",
+    "MANDATORY FIELD MISSING",
+    "SECONDARY REVIEW REQUIRED"
+  ],
+  "context": {
+    "source_system": "Mock Middleware",
+    "target_system": "Mock LIS",
+    "blocked_node": "Mock LIS",
+    "missing_item": "Mandatory audit/accountability field",
+    "release_state": "RESULT RELEASE NOT ADMISSIBLE"
+  },
+  "d2_card_text": [
+    "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "Reason: LIS HOLD DETECTED",
+    "Action: SECONDARY REVIEW REQUIRED",
+    "Evidence: AUDIT EVIDENCE NOT READY"
+  ],
+  "guardrail": "Thread D2 displays Platform B1 output. Thread D2 does not release results. Official records remain in source systems."
+}
