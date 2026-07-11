@@ -1,0 +1,20 @@
+﻿{
+  "record_id": "sot-001",
+  "record_name": "Mock SOP for Result Verification",
+  "candidate_sources": [
+    "Mock SharePoint draft SOP",
+    "Mock eQMS approved SOP",
+    "Mock local workstation copy"
+  ],
+  "approved_source": "Mock eQMS approved SOP",
+  "conflict_status": "SOURCE OF TRUTH CONFLICT",
+  "superseded_records": [
+    "Mock local workstation copy"
+  ],
+  "outputs": [
+    "SOURCE OF TRUTH IDENTIFIED",
+    "SOURCE OF TRUTH CONFLICT",
+    "SUPERSEDED RECORD FOUND"
+  ],
+  "guardrail": "Platform B1 identifies source-of-truth state. Official record control remains in the approved source system."
+}

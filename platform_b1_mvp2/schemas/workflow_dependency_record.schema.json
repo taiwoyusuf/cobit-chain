@@ -1,0 +1,56 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/workflow-dependency-record.schema.json",
+  "title": "WorkflowDependencyRecord",
+  "type": "object",
+  "required": ["workflow_id", "case_name", "dependency_chain", "checks", "result", "outputs", "guardrail"],
+  "properties": {
+    "workflow_id": { "type": "string" },
+    "case_name": { "type": "string" },
+    "source_system": { "type": "string" },
+    "target_system": { "type": "string" },
+    "dependency_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node", "system_type", "state"],
+        "properties": {
+          "node": { "type": "string" },
+          "system_type": { "type": "string" },
+          "state": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "properties": {
+        "lis_status": { "type": "string" },
+        "middleware_status": { "type": "string" },
+        "mandatory_field_status": { "type": "string" },
+        "mapping_status": { "type": "string" },
+        "identity_match_status": { "type": "string" },
+        "interface_latency_status": { "type": "string" },
+        "communication_path_status": { "type": "string" },
+        "shift_site_drift_status": { "type": "string" },
+        "manual_entry_risk": { "type": "string" },
+        "secondary_review_status": { "type": "string" },
+        "audit_evidence_status": { "type": "string" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["status", "reason", "required_action"],
+      "properties": {
+        "status": { "type": "string" },
+        "reason": { "type": "string" },
+        "missing": { "type": "string" },
+        "required_action": { "type": "string" },
+        "evidence_state": { "type": "string" }
+      }
+    },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}
+

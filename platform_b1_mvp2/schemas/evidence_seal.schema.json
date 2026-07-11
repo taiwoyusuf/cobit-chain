@@ -1,0 +1,20 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/evidence-seal.schema.json",
+  "title": "EvidenceSeal",
+  "type": "object",
+  "required": ["evidence_id", "record_type", "source_system", "hash_status", "outputs", "guardrail"],
+  "properties": {
+    "evidence_id": { "type": "string" },
+    "record_type": { "type": "string" },
+    "source_system": { "type": "string" },
+    "owner": { "type": "string" },
+    "version": { "type": "string" },
+    "timestamp_utc": { "type": "string" },
+    "hash_algorithm": { "type": "string" },
+    "hash_value_mock": { "type": "string" },
+    "hash_status": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

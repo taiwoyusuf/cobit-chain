@@ -1,0 +1,28 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/role-persona-session.schema.json",
+  "title": "RolePersonaSession",
+  "type": "object",
+  "required": ["session_id", "device_id", "user", "requested_role", "verified_role", "view_loaded", "outputs", "guardrail"],
+  "properties": {
+    "session_id": { "type": "string" },
+    "device_id": { "type": "string" },
+    "device_type": { "type": "string" },
+    "user": {
+      "type": "object",
+      "required": ["user_id", "display_name"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "display_name": { "type": "string" },
+        "training_status": { "type": "string" },
+        "site_access": { "type": "string" },
+        "shift_status": { "type": "string" }
+      }
+    },
+    "requested_role": { "type": "string" },
+    "verified_role": { "type": "string" },
+    "view_loaded": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

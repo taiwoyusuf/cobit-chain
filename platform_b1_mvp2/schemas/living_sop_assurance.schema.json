@@ -1,0 +1,21 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/living-sop-assurance.schema.json",
+  "title": "LivingSOPAssurance",
+  "type": "object",
+  "required": ["sop_id", "sop_version", "task", "training_status", "reality_match_status", "outputs", "guardrail"],
+  "properties": {
+    "sop_id": { "type": "string" },
+    "sop_version": { "type": "string" },
+    "effective_date": { "type": "string" },
+    "task": { "type": "string" },
+    "training_status": { "type": "string" },
+    "linked_capa": { "type": "string" },
+    "linked_deviation": { "type": "string" },
+    "linked_change_control": { "type": "string" },
+    "current_practice_notes": { "type": "string" },
+    "reality_match_status": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}

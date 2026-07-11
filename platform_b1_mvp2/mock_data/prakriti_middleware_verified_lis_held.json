@@ -1,0 +1,63 @@
+﻿{
+  "feature_name": "Workflow Dependency Assurance Lens",
+"workflow_id": "wf-prakriti-001",
+  "case_name": "Middleware Verified / LIS Held",
+  "source_system": "Mock Middleware",
+  "target_system": "Mock LIS",
+  "dependency_chain": [
+    {
+      "node": "Mock Instrument",
+      "system_type": "instrument",
+      "state": "RESULT SENT",
+      "notes": "Instrument transmitted result to middleware."
+    },
+    {
+      "node": "Mock Middleware",
+      "system_type": "middleware",
+      "state": "VERIFIED",
+      "notes": "Result appears complete in middleware."
+    },
+    {
+      "node": "Mock LIS",
+      "system_type": "LIS",
+      "state": "HELD",
+      "notes": "Result is held because mandatory audit/accountability field is missing."
+    },
+    {
+      "node": "Final Reporting",
+      "system_type": "release/reporting",
+      "state": "NOT READY",
+      "notes": "Release is not admissible until LIS hold is resolved."
+    }
+  ],
+  "checks": {
+    "lis_status": "HELD",
+    "middleware_status": "VERIFIED",
+    "mandatory_field_status": "MISSING",
+    "mapping_status": "MATCHED",
+    "identity_match_status": "MATCHED",
+    "interface_latency_status": "NORMAL",
+    "communication_path_status": "AVAILABLE",
+    "shift_site_drift_status": "NO DRIFT",
+    "manual_entry_risk": "LOW",
+    "secondary_review_status": "REQUIRED",
+    "audit_evidence_status": "NOT READY"
+  },
+  "result": {
+    "status": "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "reason": "LIS HOLD DETECTED",
+    "missing": "Mandatory audit/accountability field",
+    "required_action": "SECONDARY REVIEW REQUIRED",
+    "evidence_state": "AUDIT EVIDENCE NOT READY"
+  },
+  "outputs": [
+    "WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+    "LIS HOLD DETECTED",
+    "MIDDLEWARE VERIFIED ONLY",
+    "MANDATORY FIELD MISSING",
+    "SECONDARY REVIEW REQUIRED",
+    "RESULT RELEASE NOT ADMISSIBLE"
+  ],
+  "guardrail": "Platform B1 evaluates dependency assurance. Thread D2 displays the dependency state. Official records remain in source systems. Glasses do not release results."
+}
+

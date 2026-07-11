@@ -1,0 +1,14 @@
+﻿{
+  "signal_id": "az-signal-001",
+  "signal_group": "Security posture",
+  "service_name": "Microsoft Defender for Cloud",
+  "status": "DEFENDER RECOMMENDATION OPEN",
+  "severity": "Medium",
+  "evidence_object": "Mock Defender recommendation record",
+  "owner": "Mock Platform Owner",
+  "outputs": [
+    "DEFENDER RECOMMENDATION OPEN",
+    "CLOUD POSTURE REVIEW REQUIRED"
+  ],
+  "guardrail": "Azure security signal is advisory in MVP2. Remediation requires authorized review."
+}

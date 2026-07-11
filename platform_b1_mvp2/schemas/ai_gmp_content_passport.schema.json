@@ -1,0 +1,23 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-b1-mvp2/ai-gmp-content-passport.schema.json",
+  "title": "AIGMPContentPassport",
+  "type": "object",
+  "required": ["document_id", "document_type", "ai_used", "human_review_status", "quality_unit_review_status", "passport_status", "outputs", "guardrail"],
+  "properties": {
+    "document_id": { "type": "string" },
+    "document_type": { "type": "string" },
+    "ai_used": { "type": "boolean" },
+    "ai_tool_name": { "type": "string" },
+    "ai_influence_type": { "type": "string" },
+    "human_reviewer": { "type": "string" },
+    "human_review_status": { "type": "string" },
+    "quality_unit_reviewer": { "type": "string" },
+    "quality_unit_review_status": { "type": "string" },
+    "approval_status": { "type": "string" },
+    "source_evidence_status": { "type": "string" },
+    "passport_status": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "guardrail": { "type": "string" }
+  }
+}
