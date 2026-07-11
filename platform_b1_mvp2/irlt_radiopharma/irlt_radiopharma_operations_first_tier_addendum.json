@@ -1,0 +1,345 @@
+﻿{
+  "addendum_name": "IRLT / Radiopharma Operations First-Tier Addendum",
+  "addendum_status": "LOCKED_FIRST_TIER_OPERATIONS_ADDENDUM",
+  "workstream": "Platform B1 / MVP2",
+  "track_id": "irlt_radiopharma_operations",
+  "track_name": "IRLT / Radiopharma Operations",
+  "priority": "FIRST_TIER",
+  "commercial_position": "First-tier regulated operations and radiopharma demonstration track for COBIT-Chain.",
+  "module_state": "PRIORITY_EXTENSION_TRACK",
+  "purpose": "Define the IRLT / Radiopharma Operations first-tier track as a regulated-operations assurance scenario covering equipment readiness, CI readiness, ServiceNow operational evidence, manufacturing handoffs, quality dependencies, AI-governed recommendations, and RAMAT Vision display without building real production integrations.",
+  "core_question": "Can IRLT / radiopharma operational execution be trusted, reconstructed, and defended across equipment, CI readiness, controlled handoffs, quality dependencies, ServiceNow operational state, AI-assisted recommendations, and evidence state?",
+  "operational_package": {
+    "package_name": "IRLT / Radiopharma Operations Assurance Package",
+    "package_status": "DEFINED_NOT_BUILT",
+    "target_users": [
+      "radiopharma operations leader",
+      "GMP manufacturing technology owner",
+      "quality reviewer",
+      "IT / LCM / CMDB owner",
+      "ServiceNow process owner",
+      "maintenance or engineering owner",
+      "auditor or inspector",
+      "RAMAT Vision field user"
+    ],
+    "operational_pain_points": [
+      "equipment readiness uncertainty",
+      "CI and CMDB ownership gaps",
+      "ServiceNow change or incident evidence not aligned with execution",
+      "quality dependency not visible at execution time",
+      "handoff ambiguity between IT, manufacturing, quality, vendor, and engineering",
+      "AI recommendation without clear accountability",
+      "manual evidence reconstruction burden",
+      "late discovery of operational blockers",
+      "difficulty proving what was known at the time of action"
+    ],
+    "positioning_statement": "COBIT-Chain helps IRLT / radiopharma operations determine whether equipment, CI, ServiceNow, quality, AI, and workflow evidence can be trusted before regulated execution, audit review, deviation assessment, or operational handoff."
+  },
+  "assurance_components": [
+    {
+      "component_id": "equipment_ci_readiness_assurance",
+      "component_name": "Equipment and CI Readiness Assurance",
+      "purpose": "Check whether equipment identity, CI state, ownership, lifecycle, support group, validation status, and operational readiness are sufficient for regulated use.",
+      "example_outputs": [
+        "EQUIPMENT CI READY",
+        "CI READINESS GAP",
+        "LCM OWNER MISSING",
+        "SUPPORT GROUP MISSING",
+        "VALIDATION STATUS REVIEW REQUIRED",
+        "EQUIPMENT NOT READY FOR REGULATED EXECUTION"
+      ]
+    },
+    {
+      "component_id": "servicenow_operational_assurance",
+      "component_name": "ServiceNow Operational Assurance",
+      "purpose": "Check whether change, incident, problem, CMDB, LCM, access, and operational records support the execution state.",
+      "example_outputs": [
+        "SERVICENOW EVIDENCE FOUND",
+        "CHANGE CONTROL REVIEW REQUIRED",
+        "INCIDENT IMPACT REVIEW REQUIRED",
+        "CMDB RELATIONSHIP GAP",
+        "ACCESS ROUTING REVIEW REQUIRED",
+        "OPERATIONAL RECORD NOT DEFENSIBLE"
+      ]
+    },
+    {
+      "component_id": "controlled_handoff_assurance",
+      "component_name": "Controlled Handoff Assurance",
+      "purpose": "Check whether manufacturing, IT, quality, maintenance, vendor, and engineering handoffs are clear, accountable, and evidence-backed.",
+      "example_outputs": [
+        "CONTROLLED HANDOFF VERIFIED",
+        "HANDOFF OWNER MISSING",
+        "SHIFT HANDOFF REVIEW REQUIRED",
+        "VENDOR HANDOFF RESTRICTED",
+        "RESPONSIBILITY GAP DETECTED"
+      ]
+    },
+    {
+      "component_id": "quality_dependency_assurance",
+      "component_name": "Quality Dependency Assurance",
+      "purpose": "Check whether quality dependencies such as deviation state, CAPA linkage, validation state, audit trail review, SOP alignment, and release-support evidence are acceptable.",
+      "example_outputs": [
+        "QUALITY DEPENDENCY VERIFIED",
+        "QUALITY DEPENDENCY BLOCKED",
+        "DEVIATION IMPACT REVIEW REQUIRED",
+        "CAPA LINK REVIEW REQUIRED",
+        "SOP ALIGNMENT REVIEW REQUIRED",
+        "QUALITY REVIEW REQUIRED"
+      ]
+    },
+    {
+      "component_id": "radiopharma_execution_context_assurance",
+      "component_name": "Radiopharma Execution Context Assurance",
+      "purpose": "Check whether the execution context, equipment state, timing sensitivity, operational readiness, environmental state, and evidence package support the radiopharma operation.",
+      "example_outputs": [
+        "RADIOPHARMA EXECUTION CONTEXT VERIFIED",
+        "EXECUTION CONTEXT INCOMPLETE",
+        "TIME-SENSITIVE HANDOFF REVIEW REQUIRED",
+        "ENVIRONMENTAL STATE REVIEW REQUIRED",
+        "OPERATIONAL BLOCKER DETECTED"
+      ]
+    },
+    {
+      "component_id": "ramat_vision_field_display_assurance",
+      "component_name": "RAMAT Vision Field Display Assurance",
+      "purpose": "Define what RAMAT Vision / Thread D2 may display to field users without approving regulated work.",
+      "example_outputs": [
+        "RAMAT VISION DISPLAY READY",
+        "ROLE VERIFIED",
+        "READ-ONLY REVIEW ACTIVE",
+        "ACTION NOT PERMITTED FOR ROLE",
+        "FIELD REVIEW REQUIRED",
+        "PLATFORM B1 DECISION DISPLAYED"
+      ]
+    },
+    {
+      "component_id": "ai_recommendation_boundary_assurance",
+      "component_name": "AI Recommendation Boundary Assurance",
+      "purpose": "Check whether AI-assisted operational recommendations are traceable, reviewed, bounded, hashed, and not mistaken for approval.",
+      "example_outputs": [
+        "AI RECOMMENDATION GENERATED",
+        "AI RECOMMENDATION REVIEW REQUIRED",
+        "AI OUTPUT HASHED",
+        "HUMAN REVIEW REQUIRED",
+        "QUALITY REVIEW REQUIRED",
+        "AGENT ACTION NOT ADMISSIBLE"
+      ]
+    }
+  ],
+  "evidence_integrity_model": {
+    "seal_name": "IRLT / Radiopharma Operations Evidence Integrity Seal",
+    "hashing_required": true,
+    "rehashing_required": true,
+    "sealed_evidence_objects": [
+      "equipment identifier",
+      "CI identifier",
+      "application service reference",
+      "owner and support group",
+      "LCM status",
+      "validation status",
+      "change record reference",
+      "incident record reference",
+      "access or entitlement evidence",
+      "handoff record",
+      "quality dependency status",
+      "deviation or CAPA reference where applicable",
+      "SOP or procedure reference",
+      "environmental or facility context where applicable",
+      "RAMAT Vision display event",
+      "AI output hash where AI assisted",
+      "human reviewer",
+      "final evidence package hash"
+    ],
+    "rehash_triggers": [
+      "CI ownership changed",
+      "support group changed",
+      "validation status changed",
+      "change record updated",
+      "incident impact updated",
+      "access evidence updated",
+      "handoff disposition changed",
+      "quality dependency status changed",
+      "deviation or CAPA linkage changed",
+      "AI-generated operational summary updated",
+      "RAMAT Vision display event updated",
+      "human reviewer disposition changed"
+    ],
+    "example_outputs": [
+      "IRLT EVIDENCE SEALED",
+      "HASH VERIFIED",
+      "REHASH REQUIRED",
+      "CI RECORD CHANGED",
+      "SERVICE NOW EVIDENCE CHANGED",
+      "QUALITY REVIEW STATE CHANGED",
+      "RAMAT DISPLAY EVENT SEALED"
+    ]
+  },
+  "workflow_dependency_model": {
+    "lens_name": "IRLT / Radiopharma Workflow Dependency Assurance Lens",
+    "dependency_checks": [
+      "equipment identity verified",
+      "CI ownership present",
+      "support group present",
+      "LCM state present",
+      "validation state present",
+      "ServiceNow change state checked",
+      "ServiceNow incident impact checked",
+      "access and role state checked",
+      "handoff owner present",
+      "quality dependency state checked",
+      "SOP or procedure reference present",
+      "AI recommendation reviewed where AI assisted",
+      "RAMAT Vision display bounded by role",
+      "final package sealed"
+    ],
+    "example_outputs": [
+      "IRLT WORKFLOW COMPLETE",
+      "IRLT WORKFLOW APPEARS COMPLETE BUT BLOCKED",
+      "EQUIPMENT DEPENDENCY MISSING",
+      "CI DEPENDENCY MISSING",
+      "SERVICENOW DEPENDENCY MISSING",
+      "QUALITY DEPENDENCY BLOCKED",
+      "ACCESS DEPENDENCY REVIEW REQUIRED",
+      "HANDOFF REVIEW REQUIRED",
+      "IRLT PACKAGE DEFENSIBLE"
+    ]
+  },
+  "ramat_vision_display_model": {
+    "name": "IRLT / Radiopharma RAMAT Vision Display Boundary",
+    "display_allowed": [
+      "readiness state",
+      "CI readiness state",
+      "ServiceNow evidence state",
+      "quality dependency state",
+      "handoff status",
+      "role-based view",
+      "AI recommendation review state",
+      "evidence package status",
+      "field review prompt"
+    ],
+    "display_prohibited": [
+      "RAMAT Vision may not approve GMP work.",
+      "RAMAT Vision may not release product.",
+      "RAMAT Vision may not override ServiceNow, QMS, LIS, MES, ERP, or source-system records.",
+      "RAMAT Vision may not replace Quality Unit review.",
+      "RAMAT Vision may not replace human accountability.",
+      "RAMAT Vision may not convert AI recommendation into approval."
+    ],
+    "example_outputs": [
+      "RAMAT VISION DISPLAY READY",
+      "USER SIGN-IN REQUIRED",
+      "ROLE VERIFIED",
+      "PRODUCTION MANAGER VIEW ACTIVE",
+      "QA REVIEW VIEW ACTIVE",
+      "AUDITOR READ-ONLY VIEW ACTIVE",
+      "ACTION NOT PERMITTED FOR ROLE",
+      "PLATFORM B1 DECISION DISPLAYED"
+    ]
+  },
+  "governed_ai_model": {
+    "name": "IRLT / Radiopharma AI Operational Recommendation Boundary",
+    "allowed_ai_actions": [
+      "summarize operational readiness evidence",
+      "identify missing CI or equipment evidence",
+      "draft change or incident impact summary",
+      "classify quality dependency review state",
+      "recommend review routing",
+      "prepare field guidance for RAMAT Vision display",
+      "prepare audit package draft"
+    ],
+    "prohibited_ai_actions": [
+      "AI may not release product.",
+      "AI may not approve GMP work.",
+      "AI may not override ServiceNow, QMS, LIS, MES, ERP, or source-system records.",
+      "AI may not replace Quality Unit review.",
+      "AI may not authorize regulated execution without accountable human governance.",
+      "AI may not convert recommendation into approval."
+    ],
+    "required_controls": [
+      "AI agent identity",
+      "model version",
+      "prompt version",
+      "approved context of use",
+      "input source traceability",
+      "tool-call evidence",
+      "human reviewer",
+      "quality reviewer where required",
+      "AI output hash",
+      "rehash status when source evidence changes",
+      "recommendation-versus-approval boundary"
+    ],
+    "example_outputs": [
+      "AI RECOMMENDATION GENERATED",
+      "AI RECOMMENDATION REVIEW REQUIRED",
+      "AI OUTPUT HASHED",
+      "MODEL VERSION RECORDED",
+      "HUMAN REVIEW REQUIRED",
+      "QUALITY REVIEW REQUIRED",
+      "AGENT ACTION NOT ADMISSIBLE"
+    ]
+  },
+  "first_demo_direction": {
+    "scenario_id": "irlt_equipment_ci_quality_handoff_review",
+    "scenario_name": "IRLT Equipment / CI / Quality Handoff Review",
+    "status": "DEFINED_NOT_BUILT",
+    "purpose": "Create the first future IRLT / radiopharma operations demo scenario after addendum lock.",
+    "input_state": [
+      "equipment record exists",
+      "CI record exists",
+      "support group missing",
+      "ServiceNow change evidence present",
+      "incident impact not reviewed",
+      "quality dependency blocked",
+      "RAMAT Vision field user requests readiness state",
+      "AI generates operational readiness summary",
+      "human review required"
+    ],
+    "expected_outputs": [
+      "IRLT EVIDENCE SEALED",
+      "HASH VERIFIED",
+      "CI READINESS GAP",
+      "SUPPORT GROUP MISSING",
+      "INCIDENT IMPACT REVIEW REQUIRED",
+      "QUALITY DEPENDENCY BLOCKED",
+      "AI RECOMMENDATION REVIEW REQUIRED",
+      "RAMAT VISION DISPLAY READY",
+      "HUMAN REVIEW REQUIRED",
+      "IRLT WORKFLOW APPEARS COMPLETE BUT BLOCKED"
+    ]
+  },
+  "commercialization_notes": [
+    "Use IRLT / Radiopharma Operations as a flagship regulated-operations assurance scenario.",
+    "Lead with equipment readiness, ServiceNow evidence, CI trust, quality dependency, handoff clarity, AI governance, and RAMAT Vision display value.",
+    "Use mock data and simulator-first demo only.",
+    "Do not claim product release authority, GMP approval authority, ServiceNow replacement, QMS replacement, MES replacement, or Quality Unit replacement.",
+    "Preserve cross-track alignment with DSCSA where supply-chain or serialized product evidence matters.",
+    "Preserve cross-track alignment with Compound Pharmacy where preparation evidence, material traceability, and quality review overlap."
+  ],
+  "global_boundary": [
+    "Addendum only.",
+    "Do not modify Platform B v1.",
+    "Do not reopen Thread D v1.",
+    "Do not activate MVP3.",
+    "Do not build new commercial module now.",
+    "Do not connect to real ServiceNow production data now.",
+    "Do not connect to real LIS, MES, ERP, eQMS, or QMS production systems now.",
+    "No PHI.",
+    "No company production data.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No Quality Unit replacement.",
+    "No source-system override.",
+    "No real radiopharma production data.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only.",
+    "Official records remain in source systems.",
+    "Humans remain accountable."
+  ],
+  "next_order_of_work": [
+    "Commit IRLT / Radiopharma Operations first-tier addendum.",
+    "Merge IRLT / Radiopharma Operations first-tier addendum.",
+    "Create shared Regulated Operations Digital Twin object model.",
+    "Build first IRLT / Radiopharma mock demo after addenda are locked."
+  ]
+}
