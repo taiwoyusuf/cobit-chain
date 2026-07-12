@@ -1,0 +1,352 @@
+﻿{
+  "registry_name": "Platform B1 Agentic & Ambient AI Vendor Assurance Passport Registry",
+  "registry_status": "LOCKED_AGENTIC_AMBIENT_AI_VENDOR_ASSURANCE_PASSPORT_ONLY",
+  "registry_type": "LOCAL_RESEARCH_WATCH_ASSURANCE_PASSPORT_REGISTRY",
+  "passport_name": "Agentic & Ambient AI Vendor Assurance Passport™",
+  "purpose": "Define a stronger-than-checklist assurance passport for evaluating agentic AI, ambient AI, AI documentation, AI copilots, and vendor-operated AI systems before and after deployment in regulated healthcare, pharma, laboratory, and manufacturing contexts.",
+  "core_question": "Can this AI-supported vendor system, documentation output, recommendation, agentic action, or workflow be trusted, reconstructed, reviewed, governed, and defended at the moment it matters?",
+  "positioning": {
+    "not_just_checklist": "This is not merely a vendor checklist. It is a pre-contract, pre-deployment, runtime, and audit-reconstruction assurance passport.",
+    "platform_a_relationship": "Platform A captures use case intent, vendor role, intended use, risk class, authority model, human review design, evidence requirements, data boundaries, and lifecycle governance design.",
+    "platform_b1_relationship": "Platform B1 evaluates whether evidence, authority, review, accountability, vendor controls, lifecycle controls, and action admissibility are sufficient.",
+    "thread_d2_relationship": "Thread D2 / RAMAT Vision displays assurance state only. It does not approve, release, diagnose, treat, or override source systems."
+  },
+  "source_problem_statement": [
+    "Agentic and ambient AI systems may be deployed before governance documentation is mature.",
+    "AI-generated documentation may be clinically or operationally influential even when humans remain accountable.",
+    "A signed or approved output is not defensible unless the organization can reconstruct what the AI produced, what the human saw, what changed, who approved it, and what authority applied.",
+    "Human-in-the-loop is not sufficient unless the human identity, qualification, review time, authority, evidence, and final accountability are provable.",
+    "Information governance is part of AI governance because AI behavior depends on governed information boundaries, provenance, purpose, retention, access, and release controls."
+  ],
+  "assurance_domains": [
+    {
+      "domain_id": "D01",
+      "domain_name": "Intended Use and Consequence Classification",
+      "assurance_question": "What is the AI system intended to do, what decision or workflow can it influence, and what consequence could follow?",
+      "required_evidence": [
+        "intended_use_statement",
+        "prohibited_use_statement",
+        "consequence_classification",
+        "regulated_workflow_mapping",
+        "patient_or_product_or_quality_impact_flag"
+      ],
+      "red_flags": [
+        "vendor cannot define intended use",
+        "system can influence consequential action without classification",
+        "organization treats all AI outputs as low risk"
+      ]
+    },
+    {
+      "domain_id": "D02",
+      "domain_name": "Regulatory Applicability Map",
+      "assurance_question": "Which regulatory, quality, privacy, safety, and contractual obligations apply to this AI use case?",
+      "required_evidence": [
+        "hipaa_phi_assessment_if_healthcare",
+        "gxp_assessment_if_pharma_or_quality",
+        "eu_ai_act_applicability_if_relevant",
+        "nist_ai_rmf_mapping",
+        "iso_iec_42001_management_system_mapping",
+        "records_retention_mapping"
+      ],
+      "red_flags": [
+        "vendor says compliance is entirely customer responsibility",
+        "no documented mapping to applicable controls",
+        "regulated use is hidden under productivity language"
+      ]
+    },
+    {
+      "domain_id": "D03",
+      "domain_name": "Data, Privacy, Consent, and Information Governance",
+      "assurance_question": "What information does the AI access, capture, generate, retain, disclose, transform, or destroy?",
+      "required_evidence": [
+        "data_flow_map",
+        "data_source_inventory",
+        "phi_or_pii_classification",
+        "consent_or_notice_assessment",
+        "retention_schedule",
+        "deletion_or_destruction_procedure",
+        "cross_border_transfer_assessment",
+        "secondary_use_and_model_training_statement"
+      ],
+      "red_flags": [
+        "unclear whether customer data trains vendor models",
+        "no retention or deletion commitment",
+        "no source provenance or data lineage controls"
+      ]
+    },
+    {
+      "domain_id": "D04",
+      "domain_name": "Vendor, Subprocessor, and Contract Assurance",
+      "assurance_question": "Can the vendor and its subprocessors be trusted contractually, operationally, and evidentially?",
+      "required_evidence": [
+        "vendor_security_package",
+        "business_associate_agreement_if_required",
+        "subprocessor_list",
+        "audit_rights",
+        "incident_notification_terms",
+        "data_return_and_exit_terms",
+        "service_level_commitments",
+        "support_model"
+      ],
+      "red_flags": [
+        "subprocessors undisclosed",
+        "no audit rights",
+        "no clear data return or deletion procedure",
+        "vendor refuses evidence export"
+      ]
+    },
+    {
+      "domain_id": "D05",
+      "domain_name": "Model, Agent, Tool, and Automation Boundary",
+      "assurance_question": "What can the AI model, agent, or tool call actually do, and where are its execution boundaries?",
+      "required_evidence": [
+        "model_or_agent_architecture_summary",
+        "tool_call_inventory",
+        "permitted_actions",
+        "blocked_actions",
+        "autonomy_level",
+        "human_intervention_points",
+        "system_prompt_or_policy_boundary_summary",
+        "agent_identity_and_service_account_mapping"
+      ],
+      "red_flags": [
+        "agent can execute actions without governed authority",
+        "tool calls are not logged",
+        "vendor cannot explain autonomy boundaries"
+      ]
+    },
+    {
+      "domain_id": "D06",
+      "domain_name": "Human Authority and No-Bind Governance",
+      "assurance_question": "Who is the accountable human or role, what authority do they have, and what happens if they are silent, unavailable, or unqualified?",
+      "required_evidence": [
+        "named_or_role_based_authority_map",
+        "qualification_requirements",
+        "human_review_procedure",
+        "silence_default_rule",
+        "escalation_path",
+        "delegation_rules",
+        "no_bind_governance_state_model"
+      ],
+      "red_flags": [
+        "silence is treated as approval",
+        "reviewer authority is not defined",
+        "no escalation path exists",
+        "human-in-the-loop cannot be proven"
+      ]
+    },
+    {
+      "domain_id": "D07",
+      "domain_name": "Evidence Capture and Audit Reconstruction",
+      "assurance_question": "Can the organization reconstruct what was captured, what the AI generated, what the human saw, what changed, who approved it, and when?",
+      "required_evidence": [
+        "input_capture_record",
+        "ai_output_record",
+        "review_screen_or_review_payload",
+        "human_edits",
+        "approval_or_rejection_event",
+        "timestamped_audit_trail",
+        "evidence_hash_or_integrity_seal",
+        "exportable_audit_package"
+      ],
+      "red_flags": [
+        "no proof of what reviewer saw",
+        "AI draft and final record cannot be compared",
+        "audit logs are not exportable",
+        "evidence is overwritten without lineage"
+      ]
+    },
+    {
+      "domain_id": "D08",
+      "domain_name": "Validation, Testing, and Real-World Performance",
+      "assurance_question": "How was the AI system tested before use, and how is performance verified in real operating conditions?",
+      "required_evidence": [
+        "validation_protocol",
+        "test_dataset_description",
+        "acceptance_criteria",
+        "known_failure_modes",
+        "bias_or_equity_assessment_if_relevant",
+        "real_world_monitoring_plan",
+        "user_acceptance_testing",
+        "clinical_or_quality_safety_review_if_relevant"
+      ],
+      "red_flags": [
+        "vendor relies only on generic accuracy claims",
+        "no site-specific validation",
+        "no test of realistic workflow conditions",
+        "no monitoring of failure modes"
+      ]
+    },
+    {
+      "domain_id": "D09",
+      "domain_name": "Security, Identity, Access, and Logging",
+      "assurance_question": "Are identity, access, privilege, session control, and logging sufficient for regulated AI use?",
+      "required_evidence": [
+        "identity_provider_integration",
+        "role_based_access_control",
+        "privileged_access_controls",
+        "session_logging",
+        "api_access_controls",
+        "encryption_controls",
+        "security_event_logging",
+        "least_privilege_review"
+      ],
+      "red_flags": [
+        "shared accounts",
+        "weak role separation",
+        "no privileged access trail",
+        "logs cannot identify the human or agent actor"
+      ]
+    },
+    {
+      "domain_id": "D10",
+      "domain_name": "Change Control, Drift, and Lifecycle Monitoring",
+      "assurance_question": "How are model, prompt, workflow, configuration, and vendor changes governed over time?",
+      "required_evidence": [
+        "change_control_procedure",
+        "model_update_notice_terms",
+        "prompt_or_configuration_change_log",
+        "drift_monitoring_plan",
+        "periodic_review_cadence",
+        "revalidation_triggers",
+        "rollback_plan"
+      ],
+      "red_flags": [
+        "vendor can change model behavior without notice",
+        "no revalidation trigger",
+        "configuration changes are not logged",
+        "no rollback plan"
+      ]
+    },
+    {
+      "domain_id": "D11",
+      "domain_name": "Incident, Deviation, CAPA, Complaint, and Safety Readiness",
+      "assurance_question": "What happens when the AI output is wrong, unsafe, misleading, incomplete, biased, or operationally harmful?",
+      "required_evidence": [
+        "incident_response_procedure",
+        "deviation_or_nonconformance_mapping",
+        "capa_mapping",
+        "complaint_handling_mapping",
+        "safety_escalation_path",
+        "regulatory_notification_assessment",
+        "root_cause_reconstruction_package"
+      ],
+      "red_flags": [
+        "no incident route for AI-generated errors",
+        "no root cause package",
+        "vendor support does not preserve evidence",
+        "business process lacks CAPA connection"
+      ]
+    },
+    {
+      "domain_id": "D12",
+      "domain_name": "Exit, Continuity, Data Return, and Decommissioning",
+      "assurance_question": "Can the organization safely exit, pause, replace, or decommission the AI system without losing evidence or continuity?",
+      "required_evidence": [
+        "data_return_plan",
+        "deletion_certificate_process",
+        "transition_plan",
+        "business_continuity_plan",
+        "record_retention_after_exit",
+        "decommissioning_plan",
+        "vendor_lock_in_risk_assessment"
+      ],
+      "red_flags": [
+        "no exit plan",
+        "records become inaccessible after termination",
+        "no deletion evidence",
+        "business process becomes dependent on unverifiable AI service"
+      ]
+    }
+  ],
+  "required_outputs": [
+    "VENDOR ASSURANCE PASSPORT CREATED",
+    "INTENDED USE CLASSIFIED",
+    "REGULATORY APPLICABILITY MAPPED",
+    "DATA GOVERNANCE REVIEW REQUIRED",
+    "HUMAN AUTHORITY REQUIRED",
+    "NO-BIND GOVERNANCE REQUIRED",
+    "AUDIT RECONSTRUCTION REQUIRED",
+    "MODEL AND AGENT BOUNDARY REVIEW REQUIRED",
+    "VALIDATION EVIDENCE REQUIRED",
+    "CHANGE CONTROL REQUIRED",
+    "INCIDENT READINESS REQUIRED",
+    "VENDOR EXIT PLAN REQUIRED",
+    "ACTION NOT ADMISSIBLE WITHOUT EVIDENCE",
+    "AI OUTPUT NOT BINDING"
+  ],
+  "minimum_audit_trail": [
+    "ai_system_id",
+    "vendor_id",
+    "use_case_id",
+    "workflow_id",
+    "source_input_reference",
+    "ai_output_reference",
+    "human_reviewer_id_or_role",
+    "reviewer_qualification_status",
+    "review_started_timestamp",
+    "review_completed_timestamp",
+    "human_edits_reference",
+    "approval_or_rejection_status",
+    "authority_basis",
+    "no_bind_state",
+    "evidence_hash",
+    "final_record_reference"
+  ],
+  "assurance_scoring_model": {
+    "passport_score_range": "0-100",
+    "minimum_passport_threshold": 80,
+    "critical_domain_failure_rule": "Failure in human authority, evidence reconstruction, data governance, security logging, or incident readiness creates ACTION NOT ADMISSIBLE WITHOUT EVIDENCE regardless of total score.",
+    "status_levels": [
+      "NOT REVIEWED",
+      "EVIDENCE MISSING",
+      "CONDITIONAL REVIEW",
+      "ASSURANCE READY",
+      "NOT ADMISSIBLE"
+    ]
+  },
+  "implementation_status": {
+    "registry_status": "CREATED_LOCAL_ONLY",
+    "platform_b_v1_impact": "NONE",
+    "thread_d_v1_impact": "NONE",
+    "platform_b1_bundle_impact": "NONE",
+    "local_validation_bundle_count_change": "NONE",
+    "azure_deployment_status": "NOT_DEPLOYED",
+    "azure_digital_twins_status": "NOT_DEPLOYED",
+    "mvp3_activation": "NONE",
+    "hardware_integration": "NONE",
+    "production_system_connection": "NONE"
+  },
+  "boundary": [
+    "Vendor assurance passport registry only.",
+    "Local research watch only.",
+    "No architecture change.",
+    "No Platform B v1 change.",
+    "No Thread D v1 change.",
+    "No Platform B1 local validation bundle count change.",
+    "No MVP3 activation.",
+    "No Azure deployment.",
+    "No Azure Digital Twins deployment.",
+    "No real production system connection.",
+    "No real vendor integration.",
+    "No real healthcare system integration.",
+    "No real EHR integration.",
+    "No real pharmacy system integration.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, QMS, VRS, EPCIS, pharmacy, EHR, or radiopharma production data.",
+    "No PHI.",
+    "No company production data.",
+    "No real glasses hardware integration.",
+    "No real Halo hardware integration.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No clinical decision support claim.",
+    "No patient-specific medical decision.",
+    "No diagnosis.",
+    "No treatment recommendation.",
+    "No source-system override.",
+    "No Quality Unit replacement.",
+    "No regulated action execution.",
+    "No binding operational consequence."
+  ]
+}
