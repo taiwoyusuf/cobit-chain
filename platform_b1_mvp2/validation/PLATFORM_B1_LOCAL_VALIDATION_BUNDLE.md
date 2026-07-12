@@ -6,53 +6,70 @@ Workstream: Platform B1 / MVP2
 
 ## Purpose
 
-This bundle provides one local validation entry point for the current Platform B1 / MVP2 Digital Twin assurance layer.
+This bundle provides one local validation entry point for the current Platform B1 / MVP2 Digital Twin assurance layer and local validation result summary layer.
 
-It runs the locked local checks for:
+It runs the locked local checks before any future Thread D2 / RAMAT Vision preview display work.
+
+It does not deploy Azure.
+
+It does not create Azure Digital Twins.
+
+It does not modify Platform B v1.
+
+It does not reopen Thread D v1.
+
+## Expected pass signal
+
+`PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED`
+
+## Locked validation commands
+
+The bundle runs these locked commands:
+
+1. `digital_twin_object_model_unit_test`
+2. `digital_twin_mock_fixtures_unit_test`
+3. `digital_twin_mock_fixture_validator_cli`
+4. `digital_twin_mock_fixture_validator_unit_test`
+5. `result_summary_fixture_validator_cli`
+6. `result_summary_fixture_validator_unit_test`
+
+## Validation purpose by layer
+
+### Digital Twin assurance layer
+
+The first four commands validate:
 
 - Regulated Operations Digital Twin object model
 - Digital Twin mock fixtures
 - Digital Twin mock fixture validator CLI
 - Digital Twin mock fixture validator unit tests
 
-This does not deploy Azure resources.
+### Result summary assurance layer
 
-This does not modify Platform B v1.
+The final two commands validate:
 
-This does not reopen Thread D v1.
+- Platform B1 local validation result summary fixture validator CLI
+- Platform B1 local validation result summary fixture validator unit tests
 
-## Validation commands
+This ensures the result summary intended for future Thread D2 / RAMAT Vision preview display remains locked, bounded, and non-authoritative.
 
-The bundle executes:
+## Assurance outputs preserved
 
-1. `platform_b1_mvp2.tests.test_regulated_operations_digital_twin_object_model`
-2. `platform_b1_mvp2.tests.test_regulated_operations_digital_twin_mock_fixtures`
-3. `platform_b1_mvp2/regulated_operations_digital_twin/validator/digital_twin_mock_fixture_validator.py`
-4. `platform_b1_mvp2.tests.test_regulated_operations_digital_twin_mock_fixture_validator`
-
-## Expected pass signal
-
-The bundle prints:
-
-`PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED`
-
-## Validation coverage
-
-The bundle confirms:
-
-- Digital Twin object model parses and preserves object families.
-- Mock fixtures parse and preserve first-tier tracks.
-- Digital Twin mock fixture validator passes all current fixtures.
-- Validator unit tests reject unsafe changes.
-- AI OUTPUT HASHED remains enforced.
-- HASH VERIFIED remains enforced.
-- RAMAT Vision no-approval boundary remains enforced.
-- AI recommendation-only boundary remains enforced.
-- No product release decision boundary remains enforced.
+- PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED
+- DIGITAL TWIN OBJECT MODEL VALIDATED
+- DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED
+- LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED
+- AI OUTPUT HASHED
+- HASH VERIFIED
+- AGENT ACTION NOT ADMISSIBLE
+- RAMAT VISION DISPLAY READY
+- PLATFORM B1 DECISION DISPLAYED
 
 ## Boundary
 
 Local validation bundle only.
+
+Local validation evidence only.
 
 No Azure deployment.
 
@@ -92,9 +109,14 @@ Official records remain in source systems.
 
 Humans remain accountable.
 
-## Next order of work
+## Doctrine
 
-1. Commit Platform B1 local validation bundle.
-2. Merge Platform B1 local validation bundle.
-3. Add local validation bundle result summary fixture.
-4. Later, expose validation result to Thread D2 / RAMAT Vision preview only after the local validation bundle is locked.
+Platform B1 evaluates.
+
+Thread D2 displays.
+
+RAMAT Vision displays only.
+
+Official records remain in source systems.
+
+Humans remain accountable.
