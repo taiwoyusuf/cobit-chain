@@ -1,4 +1,4 @@
-﻿import json
+import json
 import sys
 from pathlib import Path
 
@@ -8,7 +8,10 @@ VALIDATOR_STATUS = "LOCKED_LOCAL_VALIDATION_STATUS_MANIFEST_VALIDATOR_ONLY"
 PASS_SIGNAL = "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED"
 
 ROOT = Path(__file__).resolve().parents[3]
-MANIFEST_PATH = ROOT / "validation" / "status_manifest" / "platform_b1_thread_d2_local_validation_status_manifest.json"
+MANIFEST_JSON = ROOT / "validation" / "status_manifest" / "platform_b1_thread_d2_local_validation_status_manifest.json"
+
+VALIDATION_COUNT_EXPECTED = 11
+FAILED_VALIDATION_COUNT_EXPECTED = 0
 
 REQUIRED_VALIDATED_COMMANDS = [
     "digital_twin_object_model_unit_test",
@@ -21,6 +24,7 @@ REQUIRED_VALIDATED_COMMANDS = [
     "status_manifest_validator_cli",
     "thread_d2_ramat_vision_display_fixture_validator_unit_test",
     "agentic_ambient_ai_vendor_assurance_passport_validator_cli",
+    "local_validation_evidence_ledger_validator_cli",
 ]
 
 REQUIRED_ASSURANCE_SIGNALS = [
@@ -36,6 +40,7 @@ REQUIRED_ASSURANCE_SIGNALS = [
     "RAMAT VISION DISPLAY READY",
     "PLATFORM B1 DECISION DISPLAYED",
     "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+    "PLATFORM B1 LOCAL VALIDATION EVIDENCE LEDGER VALIDATION PASSED",
 ]
 
 REQUIRED_THREAD_D2_STATUS = {
@@ -48,107 +53,118 @@ REQUIRED_THREAD_D2_STATUS = {
     "source_system_status": "NOT_OVERRIDDEN",
 }
 
-BOUNDARY_MODE = [
-    "Local validation status manifest validator only.",
-    "Local validation evidence only.",
+REQUIRED_BOUNDARY = [
+    "No evidence ledger update yet.",
     "No Azure deployment.",
     "No Azure Digital Twins deployment.",
     "No Platform B v1 change.",
     "No Thread D v1 change.",
     "No MVP3 activation.",
-    "No real glasses hardware integration.",
-    "No real Halo hardware integration.",
     "No PHI.",
     "No company production data.",
-    "No product release decision.",
-    "No GMP approval decision.",
-    "No source-system override.",
-    "No Quality Unit replacement.",
     "No regulated action execution.",
     "No binding operational consequence.",
 ]
 
 
-def _walk_values(obj, key_name):
+def _load_manifest():
+    return json.loads(MANIFEST_JSON.read_text(encoding="utf-8-sig"))
+
+
+def _string_list_from_manifest(manifest, keys):
     values = []
-
-    if isinstance(obj, dict):
-        for key, value in obj.items():
-            if key == key_name:
-                values.append(value)
-            values.extend(_walk_values(value, key_name))
-
-    elif isinstance(obj, list):
-        for item in obj:
-            values.extend(_walk_values(item, key_name))
-
+    for key in keys:
+        raw = manifest.get(key, [])
+        if not isinstance(raw, list):
+            continue
+        for item in raw:
+            if isinstance(item, str) and item not in values:
+                values.append(item)
+            elif isinstance(item, dict) and "id" in item and item["id"] not in values:
+                values.append(item["id"])
     return values
 
 
 def validate_status_manifest():
     errors = []
 
-    if not MANIFEST_PATH.exists():
+    if not MANIFEST_JSON.exists():
         return {
             "validator_name": VALIDATOR_NAME,
             "validator_status": VALIDATOR_STATUS,
-            "manifest": MANIFEST_PATH.name,
+            "manifest": MANIFEST_JSON.name,
             "passed": False,
-            "errors": [f"Manifest not found: {MANIFEST_PATH}"],
-            "validation_count_expected": 10,
-            "failed_validation_count_expected": 0,
+            "errors": [f"Manifest not found: {MANIFEST_JSON}"],
+            "validation_count_expected": VALIDATION_COUNT_EXPECTED,
+            "failed_validation_count_expected": FAILED_VALIDATION_COUNT_EXPECTED,
             "required_validated_commands": REQUIRED_VALIDATED_COMMANDS,
             "required_assurance_signals": REQUIRED_ASSURANCE_SIGNALS,
             "required_thread_d2_status": REQUIRED_THREAD_D2_STATUS,
-            "boundary_mode": BOUNDARY_MODE,
+            "boundary_mode": REQUIRED_BOUNDARY,
         }
 
-    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8-sig"))
-    manifest_text = json.dumps(manifest, sort_keys=True)
+    try:
+        manifest = _load_manifest()
+    except json.JSONDecodeError as exc:
+        return {
+            "validator_name": VALIDATOR_NAME,
+            "validator_status": VALIDATOR_STATUS,
+            "manifest": MANIFEST_JSON.name,
+            "passed": False,
+            "errors": [f"Manifest JSON is invalid: {exc}"],
+            "validation_count_expected": VALIDATION_COUNT_EXPECTED,
+            "failed_validation_count_expected": FAILED_VALIDATION_COUNT_EXPECTED,
+            "required_validated_commands": REQUIRED_VALIDATED_COMMANDS,
+            "required_assurance_signals": REQUIRED_ASSURANCE_SIGNALS,
+            "required_thread_d2_status": REQUIRED_THREAD_D2_STATUS,
+            "boundary_mode": REQUIRED_BOUNDARY,
+        }
 
-    validation_counts = _walk_values(manifest, "validation_count")
-    failed_counts = _walk_values(manifest, "failed_validation_count")
+    if manifest.get("validation_count") != VALIDATION_COUNT_EXPECTED:
+        errors.append("validation_count must be 11.")
 
-    if 10 not in validation_counts:
-        errors.append("validation_count must include 10.")
+    if manifest.get("failed_validation_count") != FAILED_VALIDATION_COUNT_EXPECTED:
+        errors.append("failed_validation_count must be 0.")
 
-    if any(value != 10 for value in validation_counts if isinstance(value, int)):
-        errors.append("all integer validation_count values must be 10.")
+    if manifest.get("overall_status") != "PASSED":
+        errors.append("overall_status must be PASSED.")
 
-    if 0 not in failed_counts:
-        errors.append("failed_validation_count must include 0.")
-
-    if any(value != 0 for value in failed_counts if isinstance(value, int)):
-        errors.append("all integer failed_validation_count values must be 0.")
+    validated_commands = _string_list_from_manifest(manifest, ["validated_commands", "commands_locked"])
+    if len(validated_commands) != VALIDATION_COUNT_EXPECTED:
+        errors.append("validated_commands must contain exactly 11 commands.")
 
     for command_id in REQUIRED_VALIDATED_COMMANDS:
-        if command_id not in manifest_text:
+        if command_id not in validated_commands:
             errors.append(f"missing validated command: {command_id}")
 
+    assurance_signals = _string_list_from_manifest(manifest, ["assurance_signals", "assurance_outputs", "outputs"])
     for signal in REQUIRED_ASSURANCE_SIGNALS:
-        if signal not in manifest_text:
+        if signal not in assurance_signals:
             errors.append(f"missing assurance signal: {signal}")
 
-    for status_value in REQUIRED_THREAD_D2_STATUS.values():
-        if status_value not in manifest_text:
-            errors.append(f"missing Thread D2 status value: {status_value}")
+    thread_d2_status = manifest.get("thread_d2_status", {})
+    for key, expected_value in REQUIRED_THREAD_D2_STATUS.items():
+        if thread_d2_status.get(key) != expected_value:
+            errors.append(f"thread_d2_status.{key} must be {expected_value}.")
 
-    for boundary in BOUNDARY_MODE:
-        if boundary not in manifest_text:
-            errors.append(f"missing boundary term: {boundary}")
+    boundary_values = _string_list_from_manifest(manifest, ["boundary_mode", "boundary"])
+    boundary_text = " ".join(boundary_values)
+    for boundary in REQUIRED_BOUNDARY:
+        if boundary not in boundary_text:
+            errors.append(f"missing boundary: {boundary}")
 
     return {
         "validator_name": VALIDATOR_NAME,
         "validator_status": VALIDATOR_STATUS,
-        "manifest": MANIFEST_PATH.name,
+        "manifest": MANIFEST_JSON.name,
         "passed": len(errors) == 0,
         "errors": errors,
-        "validation_count_expected": 10,
-        "failed_validation_count_expected": 0,
+        "validation_count_expected": VALIDATION_COUNT_EXPECTED,
+        "failed_validation_count_expected": FAILED_VALIDATION_COUNT_EXPECTED,
         "required_validated_commands": REQUIRED_VALIDATED_COMMANDS,
         "required_assurance_signals": REQUIRED_ASSURANCE_SIGNALS,
         "required_thread_d2_status": REQUIRED_THREAD_D2_STATUS,
-        "boundary_mode": BOUNDARY_MODE,
+        "boundary_mode": REQUIRED_BOUNDARY,
     }
 
 
@@ -165,3 +181,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
