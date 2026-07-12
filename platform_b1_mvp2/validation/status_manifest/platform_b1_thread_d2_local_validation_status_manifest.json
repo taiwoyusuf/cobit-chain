@@ -1,15 +1,15 @@
-﻿{
+{
   "manifest_name": "Platform B1 / Thread D2 Local Validation Status Manifest",
   "manifest_status": "LOCKED_LOCAL_VALIDATION_STATUS_MANIFEST_ONLY",
   "manifest_type": "LOCAL_VALIDATION_STATUS_SNAPSHOT",
   "workstreams": [
     "Platform B1 / MVP2",
-    "Thread D2 — RAMAT Vision Advanced Assurance Preview"
+    "Thread D2 \u2014 RAMAT Vision Advanced Assurance Preview"
   ],
   "source_bundle": "Platform B1 / MVP2 Local Validation Bundle",
   "source_bundle_status": "LOCKED_LOCAL_VALIDATION_BUNDLE_ONLY",
   "overall_status": "PASSED",
-  "validation_count": 8,
+  "validation_count": 10,
   "failed_validation_count": 0,
   "azure_deployment_status": "NOT_DEPLOYED",
   "azure_digital_twins_status": "NOT_DEPLOYED",
@@ -33,7 +33,9 @@
     "result_summary_fixture_validator_cli",
     "result_summary_fixture_validator_unit_test",
     "thread_d2_ramat_vision_display_fixture_validator_cli",
-    "thread_d2_ramat_vision_display_fixture_validator_unit_test"
+    "status_manifest_validator_cli",
+    "thread_d2_ramat_vision_display_fixture_validator_unit_test",
+    "agentic_ambient_ai_vendor_assurance_passport_validator_cli"
   ],
   "required_assurance_signals": [
     "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
@@ -41,11 +43,13 @@
     "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
     "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
     "THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
+    "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
     "AI OUTPUT HASHED",
     "HASH VERIFIED",
     "AGENT ACTION NOT ADMISSIBLE",
     "RAMAT VISION DISPLAY READY",
-    "PLATFORM B1 DECISION DISPLAYED"
+    "PLATFORM B1 DECISION DISPLAYED",
+    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED"
   ],
   "doctrine": [
     "Platform B1 evaluates.",
@@ -73,7 +77,8 @@
     "No source-system override.",
     "No Quality Unit replacement.",
     "No regulated action execution.",
-    "No binding operational consequence."
+    "No binding operational consequence.",
+    "Local validation status manifest validator only."
   ],
   "next_allowed_work": [
     "Create local status manifest validator.",
@@ -81,5 +86,54 @@
     "Keep all real glasses and Halo integration out of this step.",
     "Keep Platform B v1 frozen.",
     "Keep Thread D v1 closed."
-  ]
+  ],
+  "boundary_mode": [
+    "Local validation status manifest validator only.",
+    "Local validation evidence only.",
+    "No Azure deployment.",
+    "No Azure Digital Twins deployment.",
+    "No Platform B v1 change.",
+    "No Thread D v1 change.",
+    "No MVP3 activation.",
+    "No real glasses hardware integration.",
+    "No real Halo hardware integration.",
+    "No PHI.",
+    "No company production data.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No source-system override.",
+    "No Quality Unit replacement.",
+    "No regulated action execution.",
+    "No binding operational consequence."
+  ],
+  "required_validated_commands": [
+    "digital_twin_object_model_unit_test",
+    "digital_twin_mock_fixtures_unit_test",
+    "digital_twin_mock_fixture_validator_cli",
+    "digital_twin_mock_fixture_validator_unit_test",
+    "result_summary_fixture_validator_cli",
+    "result_summary_fixture_validator_unit_test",
+    "thread_d2_ramat_vision_display_fixture_validator_cli",
+    "status_manifest_validator_cli",
+    "thread_d2_ramat_vision_display_fixture_validator_unit_test",
+    "agentic_ambient_ai_vendor_assurance_passport_validator_cli"
+  ],
+  "local_validation_summary": {
+    "overall_status": "PASSED",
+    "validation_count": 10,
+    "failed_validation_count": 0,
+    "azure_deployment_status": "NOT_DEPLOYED",
+    "platform_b_v1_impact": "NONE",
+    "thread_d_v1_impact": "NONE",
+    "mvp3_activation": "NONE"
+  },
+  "required_thread_d2_status": {
+    "display_fixture_status": "LOCKED_THREAD_D2_DISPLAY_FIXTURE_ONLY",
+    "display_validator_status": "LOCKED_THREAD_D2_DISPLAY_FIXTURE_VALIDATOR_ONLY",
+    "ramat_vision_display_status": "DISPLAY_READY",
+    "platform_b1_decision_status": "DISPLAYED_ONLY",
+    "operator_action_status": "NOT_AUTHORIZED_BY_DISPLAY",
+    "quality_unit_status": "NOT_REPLACED",
+    "source_system_status": "NOT_OVERRIDDEN"
+  }
 }
