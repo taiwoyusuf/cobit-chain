@@ -9,7 +9,7 @@
   "source_bundle": "Platform B1 / MVP2 Local Validation Bundle",
   "source_bundle_status": "LOCKED_LOCAL_VALIDATION_BUNDLE_ONLY",
   "overall_status": "PASSED",
-  "validation_count": 10,
+  "validation_count": 11,
   "failed_validation_count": 0,
   "azure_deployment_status": "NOT_DEPLOYED",
   "azure_digital_twins_status": "NOT_DEPLOYED",
@@ -35,7 +35,8 @@
     "thread_d2_ramat_vision_display_fixture_validator_cli",
     "status_manifest_validator_cli",
     "thread_d2_ramat_vision_display_fixture_validator_unit_test",
-    "agentic_ambient_ai_vendor_assurance_passport_validator_cli"
+    "agentic_ambient_ai_vendor_assurance_passport_validator_cli",
+    "local_validation_evidence_ledger_validator_cli"
   ],
   "required_assurance_signals": [
     "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
@@ -60,14 +61,13 @@
     "Humans remain accountable."
   ],
   "boundary": [
-    "Local validation status manifest only.",
+    "Local validation status manifest validator only.",
     "Local validation evidence only.",
     "No Azure deployment.",
     "No Azure Digital Twins deployment.",
     "No Platform B v1 change.",
     "No Thread D v1 change.",
     "No MVP3 activation.",
-    "No real production system connection.",
     "No real glasses hardware integration.",
     "No real Halo hardware integration.",
     "No PHI.",
@@ -78,7 +78,10 @@
     "No Quality Unit replacement.",
     "No regulated action execution.",
     "No binding operational consequence.",
-    "Local validation status manifest validator only."
+    "Local validation status manifest only.",
+    "No real production system connection.",
+    "No evidence ledger update yet.",
+    "No architecture change."
   ],
   "next_allowed_work": [
     "Create local status manifest validator.",
@@ -104,7 +107,11 @@
     "No source-system override.",
     "No Quality Unit replacement.",
     "No regulated action execution.",
-    "No binding operational consequence."
+    "No binding operational consequence.",
+    "Local validation status manifest only.",
+    "No real production system connection.",
+    "No evidence ledger update yet.",
+    "No architecture change."
   ],
   "required_validated_commands": [
     "digital_twin_object_model_unit_test",
@@ -135,5 +142,35 @@
     "operator_action_status": "NOT_AUTHORIZED_BY_DISPLAY",
     "quality_unit_status": "NOT_REPLACED",
     "source_system_status": "NOT_OVERRIDDEN"
-  }
+  },
+  "assurance_signals": [
+    "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+    "DIGITAL TWIN OBJECT MODEL VALIDATED",
+    "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
+    "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
+    "THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
+    "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
+    "AI OUTPUT HASHED",
+    "HASH VERIFIED",
+    "AGENT ACTION NOT ADMISSIBLE",
+    "RAMAT VISION DISPLAY READY",
+    "PLATFORM B1 DECISION DISPLAYED",
+    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+    "PLATFORM B1 LOCAL VALIDATION EVIDENCE LEDGER VALIDATION PASSED"
+  ],
+  "assurance_outputs": [
+    "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+    "DIGITAL TWIN OBJECT MODEL VALIDATED",
+    "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
+    "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
+    "THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
+    "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
+    "AI OUTPUT HASHED",
+    "HASH VERIFIED",
+    "AGENT ACTION NOT ADMISSIBLE",
+    "RAMAT VISION DISPLAY READY",
+    "PLATFORM B1 DECISION DISPLAYED",
+    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+    "PLATFORM B1 LOCAL VALIDATION EVIDENCE LEDGER VALIDATION PASSED"
+  ]
 }
