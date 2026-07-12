@@ -3,7 +3,7 @@
   "ledger_status": "LOCKED_LOCAL_VALIDATION_EVIDENCE_LEDGER_ONLY",
   "ledger_version": "1.0",
   "evidence_scope": "Platform B1 / MVP2 local validation evidence only",
-  "validation_count": 10,
+  "validation_count": 11,
   "failed_validation_count": 0,
   "overall_status": "PASSED",
   "pass_signal": "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
@@ -17,7 +17,8 @@
     "thread_d2_ramat_vision_display_fixture_validator_cli",
     "status_manifest_validator_cli",
     "thread_d2_ramat_vision_display_fixture_validator_unit_test",
-    "agentic_ambient_ai_vendor_assurance_passport_validator_cli"
+    "agentic_ambient_ai_vendor_assurance_passport_validator_cli",
+    "local_validation_evidence_ledger_validator_cli"
   ],
   "assurance_signals": [
     "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
@@ -31,7 +32,8 @@
     "AGENT ACTION NOT ADMISSIBLE",
     "RAMAT VISION DISPLAY READY",
     "PLATFORM B1 DECISION DISPLAYED",
-    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED"
+    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+    "PLATFORM B1 LOCAL VALIDATION EVIDENCE LEDGER VALIDATION PASSED"
   ],
   "evidence_objects_referenced": [
     "platform_b1_local_validation_bundle.py",
@@ -74,5 +76,49 @@
     "No treatment recommendation.",
     "No regulated action execution.",
     "No binding operational consequence."
+  ],
+  "assurance_outputs": [
+    "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+    "DIGITAL TWIN OBJECT MODEL VALIDATED",
+    "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
+    "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
+    "THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
+    "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
+    "AI OUTPUT HASHED",
+    "HASH VERIFIED",
+    "AGENT ACTION NOT ADMISSIBLE",
+    "RAMAT VISION DISPLAY READY",
+    "PLATFORM B1 DECISION DISPLAYED",
+    "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+    "PLATFORM B1 LOCAL VALIDATION EVIDENCE LEDGER VALIDATION PASSED"
+  ],
+  "boundary_mode": [
+    "Local validation evidence ledger only.",
+    "No architecture change.",
+    "No Platform B v1 change.",
+    "No Thread D v1 change.",
+    "No MVP3 activation.",
+    "No Azure deployment.",
+    "No Azure Digital Twins deployment.",
+    "No real production system connection.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, QMS, VRS, EPCIS, pharmacy, or radiopharma production data.",
+    "No real vendor integration.",
+    "No real healthcare system integration.",
+    "No real EHR integration.",
+    "No PHI.",
+    "No company production data.",
+    "No clinical decision support claim.",
+    "No patient-specific medical decision.",
+    "No diagnosis.",
+    "No treatment recommendation.",
+    "No regulated action execution.",
+    "No binding operational consequence."
+  ],
+  "evidence_objects": [
+    "platform_b1_local_validation_bundle.py",
+    "platform_b1_thread_d2_local_validation_status_manifest.json",
+    "platform_b1_mvp2_local_validation_evidence_ledger.json",
+    "platform_b1_mvp2_local_validation_evidence_ledger_validator.py"
   ]
 }
