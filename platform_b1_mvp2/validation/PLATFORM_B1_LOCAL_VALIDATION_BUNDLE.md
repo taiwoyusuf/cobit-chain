@@ -1,4 +1,4 @@
-﻿# Platform B1 / MVP2 Local Validation Bundle
+# Platform B1 / MVP2 Local Validation Bundle
 
 Status: LOCKED LOCAL VALIDATION BUNDLE ONLY
 
@@ -43,7 +43,7 @@ The bundle contains eight local validation commands:
 
 ## Validation count
 
-`validation_count`: `8`
+`validation_count`: `9`
 
 Expected:
 
@@ -161,3 +161,36 @@ Only Platform B1 evaluates in this preview workstream.
 Official records remain in source systems.
 
 Humans remain accountable.
+
+## Step 105 Bundle Hardening Update
+
+Status: LOCKED LOCAL VALIDATION BUNDLE UPDATE ONLY
+
+The Platform B1 / MVP2 local validation bundle now includes the local validation status manifest validator.
+
+Updated validation count: 9
+
+Updated failed validation count: 0
+
+Added validation command:
+
+- `status_manifest_validator_cli`
+
+Required pass signal:
+
+- `PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED`
+
+Boundary:
+
+- Local validation bundle update only.
+- No Azure deployment.
+- No Azure Digital Twins deployment.
+- No Platform B v1 change.
+- No Thread D v1 change.
+- No MVP3 activation.
+- No real glasses hardware integration.
+- No real Halo hardware integration.
+- No PHI.
+- No company production data.
+- No regulated action execution.
+- No binding operational consequence.
