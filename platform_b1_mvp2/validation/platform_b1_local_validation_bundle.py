@@ -243,5 +243,91 @@ def main() -> int:
     return 1
 
 
+
+# BEGIN STEP 120 AGENTIC AMBIENT AI VALIDATOR BUNDLE INTEGRATION
+# This wrapper keeps the existing local validation bundle intact and appends the
+# Agentic & Ambient AI Vendor Assurance Passport validator as an additional
+# locked local validation command.
+import copy as _step120_copy
+import subprocess as _step120_subprocess
+import sys as _step120_sys
+from pathlib import Path as _step120_Path
+
+_STEP120_COMMAND_ID = "agentic_ambient_ai_vendor_assurance_passport_validator_cli"
+_STEP120_EXPECTED_SIGNAL = "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED"
+
+
+def _step120_run_agentic_ambient_ai_vendor_assurance_passport_validator():
+    _root = _step120_Path(__file__).resolve().parents[1]
+    _validator = _root / "research_watch" / "validator" / "platform_b1_agentic_ambient_ai_vendor_assurance_passport_validator.py"
+    _command = [_step120_sys.executable, str(_validator)]
+    _completed = _step120_subprocess.run(
+        _command,
+        capture_output=True,
+        text=True,
+    )
+    _stdout = _completed.stdout or ""
+    _stderr = _completed.stderr or ""
+    _expected_found = _STEP120_EXPECTED_SIGNAL in (_stdout + "\n" + _stderr)
+    _passed = _completed.returncode == 0 and _expected_found
+    return {
+        "id": _STEP120_COMMAND_ID,
+        "description": "Run Platform B1 Agentic & Ambient AI Vendor Assurance Passport validator CLI.",
+        "command": _command,
+        "expected_signal": _STEP120_EXPECTED_SIGNAL,
+        "expected_signal_found": _expected_found,
+        "returncode": _completed.returncode,
+        "passed": _passed,
+        "stdout": _stdout,
+        "stderr": _stderr,
+    }
+
+
+def _step120_append_agentic_ambient_ai_validator_to_bundle_result(_result):
+    if not isinstance(_result, dict):
+        return _result
+
+    _result = _step120_copy.deepcopy(_result)
+    _results = _result.setdefault("results", [])
+
+    if any(_entry.get("id") == _STEP120_COMMAND_ID for _entry in _results if isinstance(_entry, dict)):
+        return _result
+
+    _validation_result = _step120_run_agentic_ambient_ai_vendor_assurance_passport_validator()
+    _results.append(_validation_result)
+
+    _commands_locked = _result.setdefault("commands_locked", [])
+    if not any(_entry.get("id") == _STEP120_COMMAND_ID for _entry in _commands_locked if isinstance(_entry, dict)):
+        _commands_locked.append({
+            "id": _STEP120_COMMAND_ID,
+            "description": "Run Platform B1 Agentic & Ambient AI Vendor Assurance Passport validator CLI.",
+            "command": _validation_result["command"],
+            "expected_signal": _STEP120_EXPECTED_SIGNAL,
+        })
+
+    _assurance_outputs = _result.setdefault("assurance_outputs", [])
+    if _STEP120_EXPECTED_SIGNAL not in _assurance_outputs:
+        _assurance_outputs.append(_STEP120_EXPECTED_SIGNAL)
+
+    _result["validation_count"] = len(_results)
+    _result["failed_validation_count"] = len([
+        _entry for _entry in _results
+        if isinstance(_entry, dict) and not _entry.get("passed", False)
+    ])
+    _result["passed"] = bool(_result.get("passed")) and _result["failed_validation_count"] == 0
+
+    return _result
+
+
+if "run_bundle" in globals():
+    _step120_original_run_bundle = run_bundle
+
+    def run_bundle():
+        return _step120_append_agentic_ambient_ai_validator_to_bundle_result(
+            _step120_original_run_bundle()
+        )
+
+# END STEP 120 AGENTIC AMBIENT AI VALIDATOR BUNDLE INTEGRATION
+
 if __name__ == "__main__":
     raise SystemExit(main())
