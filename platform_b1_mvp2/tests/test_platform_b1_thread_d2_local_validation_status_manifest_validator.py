@@ -1,104 +1,105 @@
-﻿import importlib.util
+﻿import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
 
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-VALIDATOR_PATH = (
-    REPO_ROOT
-    / "platform_b1_mvp2"
-    / "validation"
-    / "status_manifest"
-    / "validator"
-    / "platform_b1_thread_d2_local_validation_status_manifest_validator.py"
+from platform_b1_mvp2.validation.status_manifest.validator import (
+    platform_b1_thread_d2_local_validation_status_manifest_validator as validator,
 )
-
-
-def load_validator_module():
-    spec = importlib.util.spec_from_file_location(
-        "platform_b1_thread_d2_local_validation_status_manifest_validator",
-        VALIDATOR_PATH,
-    )
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
 
 
 class PlatformB1ThreadD2LocalValidationStatusManifestValidatorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.validator = load_validator_module()
-        cls.report = cls.validator.validate_status_manifest()
+        cls.result = validator.validate_status_manifest()
+        cls.manifest_text = validator.MANIFEST_PATH.read_text(encoding="utf-8-sig")
+        cls.manifest = json.loads(cls.manifest_text)
 
     def test_validator_identity_is_locked(self):
         self.assertEqual(
-            self.report["validator_name"],
+            self.result["validator_name"],
             "Platform B1 Thread D2 Local Validation Status Manifest Validator",
         )
         self.assertEqual(
-            self.report["validator_status"],
+            self.result["validator_status"],
             "LOCKED_LOCAL_VALIDATION_STATUS_MANIFEST_VALIDATOR_ONLY",
         )
 
-    def test_status_manifest_validation_passes(self):
-        self.assertTrue(self.report["passed"])
-        self.assertEqual(self.report["errors"], [])
+    def test_status_manifest_validator_passes(self):
+        self.assertTrue(self.result["passed"], self.result["errors"])
+        self.assertEqual(self.result["errors"], [])
 
-    def test_required_validated_commands_are_locked(self):
-        commands = self.report["required_validated_commands"]
+    def test_status_manifest_reflects_validation_count_10(self):
+        self.assertIn('"validation_count": 10', self.manifest_text)
+        self.assertIn('"failed_validation_count": 0', self.manifest_text)
+        self.assertEqual(self.result["validation_count_expected"], 10)
+        self.assertEqual(self.result["failed_validation_count_expected"], 0)
 
-        self.assertEqual(len(commands), 8)
-        self.assertIn("digital_twin_object_model_unit_test", commands)
-        self.assertIn("digital_twin_mock_fixtures_unit_test", commands)
-        self.assertIn("digital_twin_mock_fixture_validator_cli", commands)
-        self.assertIn("digital_twin_mock_fixture_validator_unit_test", commands)
-        self.assertIn("result_summary_fixture_validator_cli", commands)
-        self.assertIn("result_summary_fixture_validator_unit_test", commands)
-        self.assertIn("thread_d2_ramat_vision_display_fixture_validator_cli", commands)
-        self.assertIn("thread_d2_ramat_vision_display_fixture_validator_unit_test", commands)
+    def test_required_command_ids_are_locked_at_10(self):
+        self.assertEqual(len(validator.REQUIRED_VALIDATED_COMMANDS), 10)
 
-    def test_required_assurance_signals_are_locked(self):
-        signals = " ".join(self.report["required_assurance_signals"])
+        for command_id in validator.REQUIRED_VALIDATED_COMMANDS:
+            with self.subTest(command_id):
+                self.assertIn(command_id, self.manifest_text)
 
-        self.assertIn("PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED", signals)
-        self.assertIn("DIGITAL TWIN OBJECT MODEL VALIDATED", signals)
-        self.assertIn("DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED", signals)
-        self.assertIn("LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED", signals)
-        self.assertIn("THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED", signals)
-        self.assertIn("AI OUTPUT HASHED", signals)
-        self.assertIn("HASH VERIFIED", signals)
-        self.assertIn("AGENT ACTION NOT ADMISSIBLE", signals)
-        self.assertIn("RAMAT VISION DISPLAY READY", signals)
-        self.assertIn("PLATFORM B1 DECISION DISPLAYED", signals)
+        self.assertIn(
+            "agentic_ambient_ai_vendor_assurance_passport_validator_cli",
+            validator.REQUIRED_VALIDATED_COMMANDS,
+        )
 
-    def test_thread_d2_status_requirements_are_locked(self):
-        state = self.report["required_thread_d2_status"]
+    def test_required_assurance_signals_include_agentic_ambient_ai_signal(self):
+        self.assertIn(
+            "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+            validator.REQUIRED_ASSURANCE_SIGNALS,
+        )
 
-        self.assertEqual(state["display_fixture_status"], "LOCKED_THREAD_D2_DISPLAY_FIXTURE_ONLY")
-        self.assertEqual(state["display_validator_status"], "LOCKED_THREAD_D2_DISPLAY_FIXTURE_VALIDATOR_ONLY")
-        self.assertEqual(state["ramat_vision_display_status"], "DISPLAY_READY")
-        self.assertEqual(state["platform_b1_decision_status"], "DISPLAYED_ONLY")
-        self.assertEqual(state["operator_action_status"], "NOT_AUTHORIZED_BY_DISPLAY")
-        self.assertEqual(state["quality_unit_status"], "NOT_REPLACED")
-        self.assertEqual(state["source_system_status"], "NOT_OVERRIDDEN")
+        for signal in validator.REQUIRED_ASSURANCE_SIGNALS:
+            with self.subTest(signal):
+                self.assertIn(signal, self.manifest_text)
 
-    def test_boundary_mode_preserves_guardrails(self):
-        boundary = " ".join(self.report["boundary_mode"])
+    def test_thread_d2_boundary_status_is_preserved(self):
+        for status_value in validator.REQUIRED_THREAD_D2_STATUS.values():
+            with self.subTest(status_value):
+                self.assertIn(status_value, self.manifest_text)
 
-        self.assertIn("Local validation status manifest validator only", boundary)
-        self.assertIn("Local validation evidence only", boundary)
-        self.assertIn("No Azure deployment", boundary)
-        self.assertIn("No Azure Digital Twins deployment", boundary)
-        self.assertIn("No Platform B v1 change", boundary)
-        self.assertIn("No Thread D v1 change", boundary)
-        self.assertIn("No MVP3 activation", boundary)
-        self.assertIn("No real glasses hardware integration", boundary)
-        self.assertIn("No real Halo hardware integration", boundary)
-        self.assertIn("No product release decision", boundary)
-        self.assertIn("No GMP approval decision", boundary)
-        self.assertIn("No Quality Unit replacement", boundary)
+    def test_boundary_terms_are_preserved(self):
+        required_terms = [
+            "No Azure deployment.",
+            "No Azure Digital Twins deployment.",
+            "No Platform B v1 change.",
+            "No Thread D v1 change.",
+            "No MVP3 activation.",
+            "No PHI.",
+            "No company production data.",
+            "No regulated action execution.",
+            "No binding operational consequence.",
+        ]
+
+        for term in required_terms:
+            with self.subTest(term):
+                self.assertIn(term, self.manifest_text)
+
+    def test_validator_cli_emits_pass_signal(self):
+        completed = subprocess.run(
+            [sys.executable, str(Path(validator.__file__).resolve())],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.assertIn(
+            "PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
+            completed.stdout,
+        )
+        self.assertIn(
+            "agentic_ambient_ai_vendor_assurance_passport_validator_cli",
+            completed.stdout,
+        )
+        self.assertIn(
+            "AGENTIC AMBIENT AI VENDOR ASSURANCE PASSPORT VALIDATION PASSED",
+            completed.stdout,
+        )
 
 
 if __name__ == "__main__":
