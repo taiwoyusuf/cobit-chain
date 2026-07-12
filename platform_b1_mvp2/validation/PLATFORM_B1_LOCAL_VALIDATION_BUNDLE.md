@@ -2,29 +2,35 @@
 
 Status: LOCKED LOCAL VALIDATION BUNDLE ONLY
 
-Workstream: Platform B1 / MVP2
+Bundle status constant:
 
-## Purpose
+`LOCKED_LOCAL_VALIDATION_BUNDLE_ONLY`
 
-This bundle provides one local validation entry point for the current Platform B1 / MVP2 Digital Twin assurance layer and local validation result summary layer.
-
-It runs the locked local checks before any future Thread D2 / RAMAT Vision preview display work.
-
-It does not deploy Azure.
-
-It does not create Azure Digital Twins.
-
-It does not modify Platform B v1.
-
-It does not reopen Thread D v1.
-
-## Expected pass signal
+Pass signal:
 
 `PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED`
 
+## Purpose
+
+This bundle is the locked local validation entry point for Platform B1 / MVP2 preview assurance evidence.
+
+It validates the current local Digital Twin mock fixture layer, the local validation result summary layer, and the Thread D2 / RAMAT Vision preview display fixture validator.
+
+This is local validation only.
+
+No Azure resources are deployed.
+
+No Azure Digital Twins instance is deployed.
+
+No Platform B v1 architecture is changed.
+
+No Thread D v1 scope is reopened.
+
+No MVP3 functionality is activated.
+
 ## Locked validation commands
 
-The bundle runs these locked commands:
+The bundle contains eight local validation commands:
 
 1. `digital_twin_object_model_unit_test`
 2. `digital_twin_mock_fixtures_unit_test`
@@ -32,33 +38,56 @@ The bundle runs these locked commands:
 4. `digital_twin_mock_fixture_validator_unit_test`
 5. `result_summary_fixture_validator_cli`
 6. `result_summary_fixture_validator_unit_test`
+7. `thread_d2_ramat_vision_display_fixture_validator_cli`
+8. `thread_d2_ramat_vision_display_fixture_validator_unit_test`
 
-## Validation purpose by layer
+## Validation count
 
-### Digital Twin assurance layer
+`validation_count`: `8`
 
-The first four commands validate:
+Expected:
 
-- Regulated Operations Digital Twin object model
-- Digital Twin mock fixtures
-- Digital Twin mock fixture validator CLI
-- Digital Twin mock fixture validator unit tests
+`failed_validation_count`: `0`
 
-### Result summary assurance layer
+## Validators included
 
-The final two commands validate:
+### Digital Twin mock fixture validator
 
-- Platform B1 local validation result summary fixture validator CLI
-- Platform B1 local validation result summary fixture validator unit tests
+Path:
 
-This ensures the result summary intended for future Thread D2 / RAMAT Vision preview display remains locked, bounded, and non-authoritative.
+`platform_b1_mvp2/regulated_operations_digital_twin/validator/digital_twin_mock_fixture_validator.py`
 
-## Assurance outputs preserved
+Required signal:
+
+`DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED`
+
+### Local validation result summary fixture validator
+
+Path:
+
+`platform_b1_mvp2/validation/result_fixtures/validator/result_summary_fixture_validator.py`
+
+Required signal:
+
+`LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED`
+
+### Thread D2 RAMAT Vision display fixture validator
+
+Path:
+
+`platform_b1_mvp2/thread_d2_ramat_vision_preview/validator/thread_d2_ramat_vision_display_fixture_validator.py`
+
+Required signal:
+
+`THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED`
+
+## Required assurance outputs
 
 - PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED
 - DIGITAL TWIN OBJECT MODEL VALIDATED
 - DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED
 - LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED
+- THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED
 - AI OUTPUT HASHED
 - HASH VERIFIED
 - AGENT ACTION NOT ADMISSIBLE
@@ -91,6 +120,10 @@ No PHI.
 
 No company production data.
 
+No real glasses hardware integration.
+
+No real Halo hardware integration.
+
 No product release decision.
 
 No GMP approval decision.
@@ -98,6 +131,10 @@ No GMP approval decision.
 No source-system override.
 
 No Quality Unit replacement.
+
+No regulated action execution.
+
+No binding operational consequence.
 
 Platform B1 evaluates.
 
@@ -116,6 +153,10 @@ Platform B1 evaluates.
 Thread D2 displays.
 
 RAMAT Vision displays only.
+
+Any device may witness.
+
+Only Platform B1 evaluates in this preview workstream.
 
 Official records remain in source systems.
 

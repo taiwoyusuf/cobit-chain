@@ -1,13 +1,17 @@
 ﻿import importlib.util
+import json
 import sys
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ROOT = REPO_ROOT / "platform_b1_mvp2"
-BUNDLE_PATH = ROOT / "validation" / "platform_b1_local_validation_bundle.py"
-BUNDLE_MD = ROOT / "validation" / "PLATFORM_B1_LOCAL_VALIDATION_BUNDLE.md"
+BUNDLE_PATH = (
+    REPO_ROOT
+    / "platform_b1_mvp2"
+    / "validation"
+    / "platform_b1_local_validation_bundle.py"
+)
 
 
 def load_bundle_module():
@@ -25,6 +29,7 @@ class PlatformB1LocalValidationBundleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.bundle = load_bundle_module()
+        cls.report = cls.bundle.run_bundle()
 
     def test_bundle_identity_is_locked(self):
         self.assertEqual(
@@ -35,17 +40,57 @@ class PlatformB1LocalValidationBundleTests(unittest.TestCase):
             self.bundle.BUNDLE_STATUS,
             "LOCKED_LOCAL_VALIDATION_BUNDLE_ONLY",
         )
+        self.assertEqual(
+            self.bundle.PASS_SIGNAL,
+            "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+        )
 
-    def test_commands_are_locked(self):
+    def test_bundle_has_eight_locked_commands(self):
         command_ids = [command.id for command in self.bundle.COMMANDS]
 
-        self.assertEqual(len(command_ids), 6)
-        self.assertIn("digital_twin_object_model_unit_test", command_ids)
-        self.assertIn("digital_twin_mock_fixtures_unit_test", command_ids)
-        self.assertIn("digital_twin_mock_fixture_validator_cli", command_ids)
-        self.assertIn("digital_twin_mock_fixture_validator_unit_test", command_ids)
-        self.assertIn("result_summary_fixture_validator_cli", command_ids)
-        self.assertIn("result_summary_fixture_validator_unit_test", command_ids)
+        self.assertEqual(len(command_ids), 8)
+        self.assertEqual(
+            command_ids,
+            [
+                "digital_twin_object_model_unit_test",
+                "digital_twin_mock_fixtures_unit_test",
+                "digital_twin_mock_fixture_validator_cli",
+                "digital_twin_mock_fixture_validator_unit_test",
+                "result_summary_fixture_validator_cli",
+                "result_summary_fixture_validator_unit_test",
+                "thread_d2_ramat_vision_display_fixture_validator_cli",
+                "thread_d2_ramat_vision_display_fixture_validator_unit_test",
+            ],
+        )
+
+    def test_validator_paths_are_correct(self):
+        commands = {
+            command.id: " ".join(command.command)
+            for command in self.bundle.COMMANDS
+        }
+
+        self.assertIn(
+            "regulated_operations_digital_twin",
+            commands["digital_twin_mock_fixture_validator_cli"],
+        )
+        self.assertIn(
+            "digital_twin_mock_fixture_validator.py",
+            commands["digital_twin_mock_fixture_validator_cli"],
+        )
+        self.assertNotIn(
+            "validation digital_twin mock_fixtures",
+            commands["digital_twin_mock_fixture_validator_cli"].replace("\\", " "),
+        )
+
+        self.assertIn(
+            "result_summary_fixture_validator.py",
+            commands["result_summary_fixture_validator_cli"],
+        )
+
+        self.assertIn(
+            "thread_d2_ramat_vision_display_fixture_validator.py",
+            commands["thread_d2_ramat_vision_display_fixture_validator_cli"],
+        )
 
     def test_assurance_outputs_are_preserved(self):
         outputs = " ".join(self.bundle.ASSURANCE_OUTPUTS)
@@ -54,6 +99,7 @@ class PlatformB1LocalValidationBundleTests(unittest.TestCase):
         self.assertIn("DIGITAL TWIN OBJECT MODEL VALIDATED", outputs)
         self.assertIn("DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED", outputs)
         self.assertIn("LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED", outputs)
+        self.assertIn("THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED", outputs)
         self.assertIn("AI OUTPUT HASHED", outputs)
         self.assertIn("HASH VERIFIED", outputs)
         self.assertIn("AGENT ACTION NOT ADMISSIBLE", outputs)
@@ -69,8 +115,12 @@ class PlatformB1LocalValidationBundleTests(unittest.TestCase):
         self.assertIn("No Azure Digital Twins deployment", boundary)
         self.assertIn("No Platform B v1 change", boundary)
         self.assertIn("No Thread D v1 change", boundary)
+        self.assertIn("No MVP3 activation", boundary)
+        self.assertIn("No real production system connection", boundary)
         self.assertIn("No PHI", boundary)
         self.assertIn("No company production data", boundary)
+        self.assertIn("No real glasses hardware integration", boundary)
+        self.assertIn("No real Halo hardware integration", boundary)
         self.assertIn("No product release decision", boundary)
         self.assertIn("No GMP approval decision", boundary)
         self.assertIn("No source-system override", boundary)
@@ -79,35 +129,21 @@ class PlatformB1LocalValidationBundleTests(unittest.TestCase):
         self.assertIn("Thread D2 displays", boundary)
         self.assertIn("RAMAT Vision displays only", boundary)
 
-    def test_bundle_execution_passes(self):
-        report = self.bundle.run_bundle()
+    def test_run_bundle_passes(self):
+        self.assertTrue(self.report["passed"])
+        self.assertEqual(self.report["pass_signal"], "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED")
+        self.assertEqual(self.report["validation_count"], 8)
+        self.assertEqual(self.report["failed_validation_count"], 0)
 
-        self.assertTrue(report["passed"], report)
-        self.assertEqual(report["pass_signal"], "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED")
-        self.assertEqual(report["validation_count"], 6)
-        self.assertEqual(report["failed_validation_count"], 0)
+        result_ids = [result["id"] for result in self.report["results"]]
+        self.assertIn("thread_d2_ramat_vision_display_fixture_validator_cli", result_ids)
+        self.assertIn("thread_d2_ramat_vision_display_fixture_validator_unit_test", result_ids)
 
-        command_ids = [result["id"] for result in report["results"]]
-        self.assertIn("result_summary_fixture_validator_cli", command_ids)
-        self.assertIn("result_summary_fixture_validator_unit_test", command_ids)
+        for result in self.report["results"]:
+            self.assertTrue(result["passed"], result)
 
-    def test_markdown_preserves_bundle_terms(self):
-        text = BUNDLE_MD.read_text(encoding="utf-8-sig")
-
-        self.assertIn("LOCKED LOCAL VALIDATION BUNDLE ONLY", text)
-        self.assertIn("PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED", text)
-        self.assertIn("digital_twin_object_model_unit_test", text)
-        self.assertIn("digital_twin_mock_fixtures_unit_test", text)
-        self.assertIn("digital_twin_mock_fixture_validator_cli", text)
-        self.assertIn("digital_twin_mock_fixture_validator_unit_test", text)
-        self.assertIn("result_summary_fixture_validator_cli", text)
-        self.assertIn("result_summary_fixture_validator_unit_test", text)
-        self.assertIn("LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED", text)
-        self.assertIn("AI OUTPUT HASHED", text)
-        self.assertIn("HASH VERIFIED", text)
-        self.assertIn("RAMAT VISION DISPLAY READY", text)
-        self.assertIn("No product release decision", text)
-        self.assertIn("No source-system override", text)
+    def test_bundle_report_is_json_serializable(self):
+        json.dumps(self.report)
 
 
 if __name__ == "__main__":

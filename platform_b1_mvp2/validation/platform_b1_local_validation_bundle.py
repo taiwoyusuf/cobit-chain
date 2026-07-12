@@ -30,10 +30,14 @@ BOUNDARY = [
     "No real LIS, MES, ERP, eQMS, QMS, VRS, EPCIS, pharmacy, or radiopharma production data.",
     "No PHI.",
     "No company production data.",
+    "No real glasses hardware integration.",
+    "No real Halo hardware integration.",
     "No product release decision.",
     "No GMP approval decision.",
     "No source-system override.",
     "No Quality Unit replacement.",
+    "No regulated action execution.",
+    "No binding operational consequence.",
     "Platform B1 evaluates.",
     "Thread D2 displays.",
     "RAMAT Vision displays only.",
@@ -46,6 +50,7 @@ ASSURANCE_OUTPUTS = [
     "DIGITAL TWIN OBJECT MODEL VALIDATED",
     "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
     "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
+    "THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
     "AI OUTPUT HASHED",
     "HASH VERIFIED",
     "AGENT ACTION NOT ADMISSIBLE",
@@ -133,6 +138,31 @@ COMMANDS = [
             "-m",
             "unittest",
             "platform_b1_mvp2.tests.test_platform_b1_local_validation_result_summary_fixture_validator",
+        ],
+        expected_signal="OK",
+    ),
+    ValidationCommand(
+        id="thread_d2_ramat_vision_display_fixture_validator_cli",
+        description="Run Thread D2 RAMAT Vision display fixture validator CLI.",
+        command=[
+            sys.executable,
+            str(
+                ROOT
+                / "thread_d2_ramat_vision_preview"
+                / "validator"
+                / "thread_d2_ramat_vision_display_fixture_validator.py"
+            ),
+        ],
+        expected_signal="THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
+    ),
+    ValidationCommand(
+        id="thread_d2_ramat_vision_display_fixture_validator_unit_test",
+        description="Validate Thread D2 RAMAT Vision display fixture validator unit tests.",
+        command=[
+            sys.executable,
+            "-m",
+            "unittest",
+            "platform_b1_mvp2.tests.test_thread_d2_ramat_vision_display_fixture_validator",
         ],
         expected_signal="OK",
     ),
