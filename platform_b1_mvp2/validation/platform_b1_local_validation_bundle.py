@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import subprocess
@@ -155,6 +155,20 @@ COMMANDS = [
         ],
         expected_signal="THREAD D2 RAMAT VISION DISPLAY FIXTURE VALIDATION PASSED",
     ),
+    ValidationCommand(
+            id="status_manifest_validator_cli",
+            description="Run Platform B1 Thread D2 local validation status manifest validator CLI.",
+            command=[
+                sys.executable,
+                str(
+                    ROOT
+                    / "validation/status_manifest"
+                    / "validator"
+                    / "platform_b1_thread_d2_local_validation_status_manifest_validator.py"
+                ),
+            ],
+            expected_signal="PLATFORM B1 THREAD D2 LOCAL VALIDATION STATUS MANIFEST VALIDATION PASSED",
+        ),
     ValidationCommand(
         id="thread_d2_ramat_vision_display_fixture_validator_unit_test",
         description="Validate Thread D2 RAMAT Vision display fixture validator unit tests.",
