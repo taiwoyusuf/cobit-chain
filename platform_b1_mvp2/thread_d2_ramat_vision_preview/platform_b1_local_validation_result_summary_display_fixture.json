@@ -1,0 +1,112 @@
+﻿{
+  "display_fixture_name": "Thread D2 RAMAT Vision Local Validation Result Summary Display Fixture",
+  "fixture_status": "LOCKED_THREAD_D2_DISPLAY_FIXTURE_ONLY",
+  "workstream": "Thread D2 — RAMAT Vision Advanced Assurance Preview",
+  "source_workstream": "Platform B1 / MVP2",
+  "source_bundle": "Platform B1 / MVP2 Local Validation Bundle",
+  "source_bundle_status": "LOCKED_LOCAL_VALIDATION_BUNDLE_ONLY",
+  "source_result_summary_fixture": "platform_b1_local_validation_result_summary_fixture.json",
+  "source_result_type": "LOCAL_VALIDATION_RESULT_SUMMARY",
+  "display_type": "RAMAT_VISION_PREVIEW_DISPLAY_ONLY",
+  "display_state": {
+    "thread_d2_display_status": "PREVIEW_READY",
+    "ramat_vision_display_status": "DISPLAY_READY",
+    "platform_b1_decision_status": "DISPLAYED_ONLY",
+    "operator_action_status": "NOT_AUTHORIZED_BY_DISPLAY",
+    "quality_unit_status": "NOT_REPLACED",
+    "source_system_status": "NOT_OVERRIDDEN"
+  },
+  "source_validation_summary": {
+    "overall_status": "PASSED",
+    "validation_count": 6,
+    "failed_validation_count": 0,
+    "result_admissibility": "LOCAL_VALIDATION_SUMMARY_ONLY",
+    "azure_deployment_status": "NOT_DEPLOYED",
+    "platform_b_v1_impact": "NONE",
+    "thread_d_v1_impact": "NONE",
+    "mvp3_activation": "NONE"
+  },
+  "ramat_vision_cards": [
+    {
+      "card_id": "rv-summary-card",
+      "card_title": "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+      "display_level": "GREEN_PREVIEW",
+      "display_message": "Platform B1 local validation bundle passed. This is preview display only.",
+      "allowed_interpretation": "Local validation result summary may be displayed in Thread D2 / RAMAT Vision preview.",
+      "prohibited_interpretation": "This is not a GMP approval, product release decision, source-system override, or Quality Unit replacement."
+    },
+    {
+      "card_id": "rv-evidence-card",
+      "card_title": "EVIDENCE INTEGRITY SIGNALS PRESENT",
+      "display_level": "BLUE_PREVIEW",
+      "display_message": "AI OUTPUT HASHED, HASH VERIFIED, and DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED.",
+      "allowed_interpretation": "Evidence-integrity signals are available for preview display.",
+      "prohibited_interpretation": "This display does not make the evidence official record authority."
+    },
+    {
+      "card_id": "rv-action-card",
+      "card_title": "AGENT ACTION NOT ADMISSIBLE",
+      "display_level": "AMBER_PREVIEW",
+      "display_message": "Agent action is not admissible without required evidence, authority, continuity, and human accountability.",
+      "allowed_interpretation": "RAMAT Vision may display Platform B1 action-admissibility state.",
+      "prohibited_interpretation": "RAMAT Vision does not approve, execute, release, or bind regulated action."
+    },
+    {
+      "card_id": "rv-boundary-card",
+      "card_title": "RAMAT VISION DISPLAYS ONLY",
+      "display_level": "BOUNDARY_PREVIEW",
+      "display_message": "Platform B1 evaluates. Thread D2 displays. RAMAT Vision displays only.",
+      "allowed_interpretation": "Display is read-only preview state.",
+      "prohibited_interpretation": "Display is not source-system truth, Quality Unit decision, or production authorization."
+    }
+  ],
+  "required_assurance_signals": [
+    "PLATFORM B1 LOCAL VALIDATION BUNDLE PASSED",
+    "DIGITAL TWIN OBJECT MODEL VALIDATED",
+    "DIGITAL TWIN MOCK FIXTURE VALIDATION PASSED",
+    "LOCAL VALIDATION RESULT SUMMARY FIXTURE VALIDATION PASSED",
+    "AI OUTPUT HASHED",
+    "HASH VERIFIED",
+    "AGENT ACTION NOT ADMISSIBLE",
+    "RAMAT VISION DISPLAY READY",
+    "PLATFORM B1 DECISION DISPLAYED"
+  ],
+  "display_doctrine": [
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only.",
+    "Any device may witness.",
+    "Only Platform B1 evaluates in this preview workstream.",
+    "Official records remain in source systems.",
+    "Humans remain accountable."
+  ],
+  "boundary": [
+    "Thread D2 display fixture only.",
+    "RAMAT Vision preview display only.",
+    "Display fixture only.",
+    "Local validation evidence only.",
+    "No Azure deployment.",
+    "No Azure Digital Twins deployment.",
+    "No Platform B v1 change.",
+    "No Thread D v1 change.",
+    "No MVP3 activation.",
+    "No real glasses hardware integration.",
+    "No real Halo hardware integration.",
+    "No real production system connection.",
+    "No real ServiceNow production data.",
+    "No real LIS, MES, ERP, eQMS, QMS, VRS, EPCIS, pharmacy, or radiopharma production data.",
+    "No PHI.",
+    "No company production data.",
+    "No product release decision.",
+    "No GMP approval decision.",
+    "No source-system override.",
+    "No Quality Unit replacement.",
+    "No regulated action execution.",
+    "No binding operational consequence.",
+    "Platform B1 evaluates.",
+    "Thread D2 displays.",
+    "RAMAT Vision displays only.",
+    "Official records remain in source systems.",
+    "Humans remain accountable."
+  ]
+}
