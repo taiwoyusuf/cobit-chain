@@ -1,0 +1,18 @@
+{
+  "actor_id": "ACTOR-DSCSA-COMPLIANCE-001",
+  "allowed_action_types": [
+    "DSCSA_TRANSFER_READINESS"
+  ],
+  "authority_id": "AUTH-DSCSA-001",
+  "authority_status": "ACTIVE",
+  "consequence_scope": [
+    "HIGH"
+  ],
+  "object_scope": [
+    "A17-DSCSA-SERIAL-001"
+  ],
+  "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE",
+  "synthetic": true,
+  "valid_from_utc": "2026-07-12T22:57:23.9124587Z",
+  "valid_to_utc": "2026-08-12T22:57:23.9124587Z"
+}

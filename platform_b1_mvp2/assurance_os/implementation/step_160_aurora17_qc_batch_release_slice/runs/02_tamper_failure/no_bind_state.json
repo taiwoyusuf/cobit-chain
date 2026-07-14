@@ -1,0 +1,13 @@
+{
+  "action_id": "ACTION-A17-BATCH-RELEASE-001",
+  "activated": true,
+  "activated_at_utc": "2026-07-13T22:42:25Z",
+  "no_bind_id": "NB-6bfb3f6d-054d-44d4-a76c-e3ddaf66e880",
+  "no_bind_state": "NO-BIND STATE ACTIVE",
+  "object_id": "A17-BATCH-2026-001",
+  "reason_codes": [
+    "EVIDENCE_REHASH_MISMATCH"
+  ],
+  "resolution_required": true,
+  "silence_is_not_consent": true
+}

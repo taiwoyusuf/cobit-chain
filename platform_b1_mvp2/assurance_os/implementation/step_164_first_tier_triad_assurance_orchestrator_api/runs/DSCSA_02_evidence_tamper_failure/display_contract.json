@@ -1,0 +1,26 @@
+{
+  "can_administer": false,
+  "can_approve": false,
+  "can_dispense": false,
+  "can_execute": false,
+  "can_override": false,
+  "can_release": false,
+  "can_resolve_no_bind": false,
+  "can_transfer_real_product": false,
+  "display_authority": "DISPLAY / WITNESS ONLY",
+  "display_contract_id": "DISPLAY-0cd9e7cf-d096-4249-87be-67edae5b684d",
+  "display_states": [
+    "EVIDENCE INSUFFICIENT",
+    "NO-BIND STATE ACTIVE",
+    "ACTION HELD",
+    "HUMAN AUTHORITY REQUIRED"
+  ],
+  "generated_at_utc": "2026-07-13T23:23:44Z",
+  "scenario_name": "DSCSA_02_evidence_tamper_failure",
+  "source_of_truth": {
+    "record_id": "DSCSA-SOURCE-164-001",
+    "system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC"
+  },
+  "track_id": "DSCSA",
+  "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+}

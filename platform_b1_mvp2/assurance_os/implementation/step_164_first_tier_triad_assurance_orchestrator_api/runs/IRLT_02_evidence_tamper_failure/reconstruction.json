@@ -1,0 +1,18 @@
+{
+  "action_id": "ACTION-IRLT-READINESS-164-001",
+  "authority_reference": "AUTH-IRLT-164-001",
+  "correlation_id": "a70c84a2-572d-4b88-9383-ac1e5dc19a66",
+  "evidence_hash": "df22c982f664e81b90939f8a1770672a581a2b88fd0a3cc7c81415d3278c47c7",
+  "evidence_seal_reference": "SEAL-7916e218-27ec-4bb4-b194-57916d5ad0a1",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T23:23:44Z",
+  "object_id": "A17-IRLT-BATCH-164-001",
+  "reconstruction_id": "RECON-fc79dcf6-be3b-4219-8176-3b10d4cacae4",
+  "scenario_name": "IRLT_02_evidence_tamper_failure",
+  "source_system_reference": "IRLT-SOURCE-164-001",
+  "track_id": "IRLT",
+  "unresolved_gaps": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ]
+}

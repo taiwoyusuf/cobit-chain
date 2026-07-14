@@ -1,0 +1,83 @@
+{
+  "action_admissibility_state": "ADMISSIBLE",
+  "action_consequence_level": "HIGH",
+  "action_id": "ACTION-DSCSA-TRANSFER-READINESS-001",
+  "action_type": "DSCSA_TRANSFER_READINESS",
+  "authority": {
+    "actor_id": "ACTOR-DSCSA-COMPLIANCE-001",
+    "authority_current": true,
+    "authority_id": "AUTH-DSCSA-001",
+    "authority_in_scope": true,
+    "authority_present": true,
+    "authority_state": "VALID",
+    "authority_valid": true,
+    "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE"
+  },
+  "correlation_id": "4dc5b669-6012-4e01-ab52-2fc10bd7278c",
+  "current_hash": "0e36484df0218aaf9dfa2d99a7633b1c4138bfdd97b8b41bc7f197645023d8cf",
+  "dependencies": [
+    {
+      "dependency_id": "DSCSA-DEP-001",
+      "dependency_name": "Serialization completion",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "DSCSA-DEP-002",
+      "dependency_name": "EPCIS sequence validity",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "DSCSA-DEP-003",
+      "dependency_name": "Trading-partner authority",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "DSCSA-DEP-004",
+      "dependency_name": "Transaction evidence",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "DSCSA-DEP-005",
+      "dependency_name": "Suspect-product clearance",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    }
+  ],
+  "dependencies_satisfied": true,
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "evaluated_at_utc": "2026-07-13T22:57:24Z",
+  "evaluation_id": "EVAL-d8d94b5f-e05d-4266-ae2b-bcfbdab61612",
+  "evidence_sufficient": true,
+  "execution_performed": false,
+  "human_accountability_identified": true,
+  "human_binding_decision_performed": false,
+  "identity_verified": true,
+  "implementation_version": "162.1.0",
+  "integrity_state": "REHASH_VERIFIED",
+  "no_bind_reasons": [],
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "official_source_record_id": "DSCSA-SOURCE-001",
+  "official_source_system": "MOCK DSCSA EPCIS AND SERIALIZATION FABRIC",
+  "priority_tier": "FIRST-TIER",
+  "scenario_name": "DSCSA_01_success_before_tamper",
+  "schema_version": "1.0",
+  "sealed_hash": "0e36484df0218aaf9dfa2d99a7633b1c4138bfdd97b8b41bc7f197645023d8cf",
+  "security_trust_state": "NORMAL",
+  "source_system_execution_required": true,
+  "timing_valid": true,
+  "track_id": "DSCSA",
+  "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+}

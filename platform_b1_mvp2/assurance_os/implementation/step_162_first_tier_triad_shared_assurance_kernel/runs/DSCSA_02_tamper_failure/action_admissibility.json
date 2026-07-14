@@ -1,0 +1,13 @@
+{
+  "action_id": "ACTION-DSCSA-TRANSFER-READINESS-001",
+  "admissibility_id": "ADM-ad608ace-b4a5-4201-9c8a-8be025d2dea3",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "rationale": [
+    "EVIDENCE_REHASH_MISMATCH"
+  ],
+  "source_execution_required": true,
+  "track_id": "DSCSA"
+}

@@ -1,0 +1,4 @@
+Scenario,IntegrityState,IdentityVerified,DependenciesSatisfied,EvidenceSufficient,AuthorityValid,TimingValid,HumanAccountabilityIdentified,NoBindState,ActionAdmissibilityState,DisplayStates,SourceExecutionRequired,ExecutionPerformed
+01_success_before_tamper,REHASH_VERIFIED,True,True,True,True,True,True,INACTIVE,ADMISSIBLE,ACTION ADMISSIBLE; SOURCE-SYSTEM EXECUTION REQUIRED,True,False
+02_tamper_failure,REHASH_MISMATCH,True,True,False,True,True,True,ACTIVE,HELD,EVIDENCE INSUFFICIENT; NO-BIND STATE ACTIVE; ACTION HELD,True,False
+03_recovery_success,REHASH_VERIFIED,True,True,True,True,True,True,INACTIVE,ADMISSIBLE,ACTION ADMISSIBLE; SOURCE-SYSTEM EXECUTION REQUIRED,True,False

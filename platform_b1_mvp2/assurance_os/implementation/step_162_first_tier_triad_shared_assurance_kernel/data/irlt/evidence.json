@@ -1,0 +1,17 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-IRLT-001",
+  "evidence_type": "IRLT_RELEASE_CUSTODY_PACKAGE",
+  "measurements": {
+    "custody_ready": true,
+    "decay_window_valid": true,
+    "material_genealogy_complete": true,
+    "qc_complete": true,
+    "radiochemical_identity": "PASS"
+  },
+  "object_id": "A17-IRLT-BATCH-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-IRLT-QA-001",
+  "source_record_id": "IRLT-SOURCE-001",
+  "synthetic": true
+}

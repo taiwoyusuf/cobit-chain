@@ -1,0 +1,12 @@
+{
+  "activated": true,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-8c3eef50-60cd-4643-9ddc-66d486128d1a",
+  "reason_codes": [
+    "DEPENDENCY_UNSATISFIED",
+    "IRLT_CUSTODY_GAP"
+  ],
+  "silence_is_not_consent": true,
+  "state": "NO-BIND STATE ACTIVE",
+  "track_id": "IRLT"
+}

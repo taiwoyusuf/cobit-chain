@@ -1,0 +1,82 @@
+{
+  "action_admissibility_state": "ADMISSIBLE",
+  "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+  "action_type": "COMPOUNDING_DISPENSING_READINESS",
+  "authority": {
+    "actor_id": "ACTOR-COMPOUNDING-AUTHORITY-001",
+    "authority_current": true,
+    "authority_id": "AUTH-COMPOUNDING-164-001",
+    "authority_in_scope": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "role_id": "AUTHORIZED_PHARMACIST"
+  },
+  "correlation_id": "25a4e076-78a3-4ef0-b8dc-52d41dce554c",
+  "current_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+  "dependencies": [
+    {
+      "dependency_id": "COMPOUNDING-DEP-001",
+      "dependency_name": "Order identity agreement",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "COMPOUNDING-DEP-002",
+      "dependency_name": "Formula version current",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "COMPOUNDING-DEP-003",
+      "dependency_name": "Ingredient genealogy complete",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "COMPOUNDING-DEP-004",
+      "dependency_name": "Calculation verified",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "COMPOUNDING-DEP-005",
+      "dependency_name": "Label agreement",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "COMPOUNDING-DEP-006",
+      "dependency_name": "Beyond-use timing valid",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    }
+  ],
+  "dependencies_satisfied": true,
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "evaluated_at_utc": "2026-07-13T23:23:44Z",
+  "evaluation_id": "EVAL-c51c7874-bba4-4e4d-8567-8005e47535b2",
+  "evidence_sufficient": true,
+  "execution_performed": false,
+  "failure_type": null,
+  "human_binding_decision_performed": false,
+  "human_binding_decision_required": true,
+  "identity_verified": true,
+  "implementation_version": "164.1.1",
+  "integrity_state": "REHASH_VERIFIED",
+  "no_bind_reasons": [],
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-COMPOUND-PREP-164-001",
+  "official_source_record_id": "COMPOUND-SOURCE-164-001",
+  "official_source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+  "priority_tier": "FIRST-TIER",
+  "scenario_name": "COMPOUNDING_04_recovery_success",
+  "schema_version": "1.0",
+  "sealed_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+  "source_system_execution_required": true,
+  "timing_valid": true,
+  "track_id": "COMPOUNDING",
+  "track_name": "Compounding Pharmacy Assurance Track"
+}

@@ -1,0 +1,18 @@
+{
+  "actor_id": "ACTOR-IRLT-RELEASER-001",
+  "allowed_action_types": [
+    "IRLT_RELEASE_AND_CUSTODY_READINESS"
+  ],
+  "authority_id": "AUTH-IRLT-001",
+  "authority_status": "ACTIVE",
+  "consequence_scope": [
+    "CRITICAL"
+  ],
+  "object_scope": [
+    "A17-IRLT-BATCH-001"
+  ],
+  "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY",
+  "synthetic": true,
+  "valid_from_utc": "2026-07-12T22:57:23.9124587Z",
+  "valid_to_utc": "2026-08-12T22:57:23.9124587Z"
+}

@@ -1,0 +1,13 @@
+{
+  "action_id": "ACTION-COMPOUND-DISPENSING-READINESS-001",
+  "admissibility_id": "ADM-394188da-55fd-4f33-b11d-c57e3919382e",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_ADMISSIBLE",
+  "execution_performed": false,
+  "object_id": "A17-COMPOUND-PREP-001",
+  "rationale": [
+    "ALL_REQUIRED_ASSURANCE_CONDITIONS_POSITIVELY_SATISFIED"
+  ],
+  "source_execution_required": true,
+  "track_id": "COMPOUNDING"
+}

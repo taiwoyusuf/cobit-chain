@@ -1,0 +1,545 @@
+{
+    "step":  "164",
+    "algorithm":  "SHA-256",
+    "generated_at_utc":  "2026-07-13T23:23:45.3978957Z",
+    "authorization_source":  "Explicit user command: NEXT",
+    "implementation_boundary":  "LOCAL SYNTHETIC READ-ONLY FIRST-TIER TRIAD ORCHESTRATOR ONLY",
+    "file_count":  107,
+    "files":  [
+                  {
+                      "relative_path":  "api_self_test\\api_self_test_result.json",
+                      "sha256":  "961578E5C6CBCCC5E35BCEE0ABAF22A0394829F802425EF8F6B9071A798CA1D8",
+                      "length_bytes":  935
+                  },
+                  {
+                      "relative_path":  "backup\\compounding_evidence.backup.json",
+                      "sha256":  "C7BEFF9EAA6D1B1B47ACF6F3F0838B9D5065A88B750A4795A7A99D8864246BE1",
+                      "length_bytes":  367
+                  },
+                  {
+                      "relative_path":  "backup\\compounding_restore_verification.json",
+                      "sha256":  "D0907DA8DA482E162E6EA9136DA298C033281BC90337E57917D8EF4155172DC8",
+                      "length_bytes":  374
+                  },
+                  {
+                      "relative_path":  "backup\\dscsa_evidence.backup.json",
+                      "sha256":  "335373650F27B3D417F9595123624AAB662447CC58C5F9B2ABBB140EDAC46E86",
+                      "length_bytes":  339
+                  },
+                  {
+                      "relative_path":  "backup\\dscsa_restore_verification.json",
+                      "sha256":  "ED46A08EADEDAAFDB208FA47C56409BA457292AFD7A97E95B0708A87C1445B8D",
+                      "length_bytes":  368
+                  },
+                  {
+                      "relative_path":  "backup\\irlt_evidence.backup.json",
+                      "sha256":  "6B3C5F19189C67EAC103D25B016987ECB00E6163C5E521FC6F1B4B3224D27FFE",
+                      "length_bytes":  332
+                  },
+                  {
+                      "relative_path":  "backup\\irlt_restore_verification.json",
+                      "sha256":  "A65B076566C219FCA6C8440D589BAA859E5C9546D1A50A20E4B6CB8EFC933BA0",
+                      "length_bytes":  367
+                  },
+                  {
+                      "relative_path":  "config\\orchestrator_config.json",
+                      "sha256":  "6C17DF2843619FA303DBDD60CAA1AD979174CF2D5D7EE6C67B582D4BD816A6E3",
+                      "length_bytes":  5461
+                  },
+                  {
+                      "relative_path":  "data\\compounding\\authority.json",
+                      "sha256":  "AE02147F5B7EC433EF7F7239EA0B8AA16FD83913B0C60D88B98555F5F27EEC72",
+                      "length_bytes":  465
+                  },
+                  {
+                      "relative_path":  "data\\compounding\\dependencies.json",
+                      "sha256":  "BA7CD4AD49C4450D1845D62208BDB3B2244470653C756E0106E269BB83973EC9",
+                      "length_bytes":  862
+                  },
+                  {
+                      "relative_path":  "data\\compounding\\evidence.json",
+                      "sha256":  "C7BEFF9EAA6D1B1B47ACF6F3F0838B9D5065A88B750A4795A7A99D8864246BE1",
+                      "length_bytes":  367
+                  },
+                  {
+                      "relative_path":  "data\\compounding\\source_state.json",
+                      "sha256":  "FC87733135691B61F096971FBC338376AB87BCBFFBF7A82E5EF62434CFB481CB",
+                      "length_bytes":  279
+                  },
+                  {
+                      "relative_path":  "data\\dscsa\\authority.json",
+                      "sha256":  "4711DF4ECA23BED89AD02DAAA689B32E0A2BAF7AC691FEB51D68A67FA529F4E3",
+                      "length_bytes":  461
+                  },
+                  {
+                      "relative_path":  "data\\dscsa\\dependencies.json",
+                      "sha256":  "0DE53B6BB9C91F3C0D6287503488C1D0189F7672B010C1AA64A90183987954A1",
+                      "length_bytes":  830
+                  },
+                  {
+                      "relative_path":  "data\\dscsa\\evidence.json",
+                      "sha256":  "335373650F27B3D417F9595123624AAB662447CC58C5F9B2ABBB140EDAC46E86",
+                      "length_bytes":  339
+                  },
+                  {
+                      "relative_path":  "data\\dscsa\\source_state.json",
+                      "sha256":  "BEF413BAABBB1068B18ECAD4F84419297FA3116E47DF0488F7519955E637E2DC",
+                      "length_bytes":  280
+                  },
+                  {
+                      "relative_path":  "data\\irlt\\authority.json",
+                      "sha256":  "D2879E9C936C30E0442A757A8C4C52EBA1AA7B18273EF093E95F0C45DCCD46B4",
+                      "length_bytes":  473
+                  },
+                  {
+                      "relative_path":  "data\\irlt\\dependencies.json",
+                      "sha256":  "70B92DB006CCA0FC03E29B82D9FD28D4E79FE4156038FC83AC9FA8781BF9EAC9",
+                      "length_bytes":  680
+                  },
+                  {
+                      "relative_path":  "data\\irlt\\evidence.json",
+                      "sha256":  "6B3C5F19189C67EAC103D25B016987ECB00E6163C5E521FC6F1B4B3224D27FFE",
+                      "length_bytes":  332
+                  },
+                  {
+                      "relative_path":  "data\\irlt\\source_state.json",
+                      "sha256":  "DB4DE2D0F9ECBDDF88ED32BC8879AA07BBB7E9E5112A9613717217501A7C43CB",
+                      "length_bytes":  273
+                  },
+                  {
+                      "relative_path":  "manifests\\component_manifest.json",
+                      "sha256":  "255D822630D8EB9E57743EF0C46DD1B38A15B4C64F3FD035A4A1E1C9493C491B",
+                      "length_bytes":  1995
+                  },
+                  {
+                      "relative_path":  "passports\\compounding_assurance_passport.json",
+                      "sha256":  "C335BBB920AC8ECD12DC4384AE07D6E51B538793DB355EA6324BCF7969CD4D93",
+                      "length_bytes":  1058
+                  },
+                  {
+                      "relative_path":  "passports\\compounding_assurance_passport.seal.json",
+                      "sha256":  "BF39262B08C967C5579518863FEDE2913790FB929F77725288F10EF65EB4819F",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "passports\\dscsa_assurance_passport.json",
+                      "sha256":  "655C1823D569057C8B233045FC47E497D73457277486E0A38D07975AE32BCE55",
+                      "length_bytes":  1065
+                  },
+                  {
+                      "relative_path":  "passports\\dscsa_assurance_passport.seal.json",
+                      "sha256":  "8759E520F77DD6AECB8CE377D1D298DB1081B231C5687F03C38034AA6F4D5721",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "passports\\irlt_assurance_passport.json",
+                      "sha256":  "3D293537EE55610833C08E912B322D5F31390774D4475A1217996D07E0D9904B",
+                      "length_bytes":  1048
+                  },
+                  {
+                      "relative_path":  "passports\\irlt_assurance_passport.seal.json",
+                      "sha256":  "D0C17C79EE146072F6E731578930BE902B8808B18C01BFEDE719A6E5D6474921",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "ramat\\compounding_current_display.json",
+                      "sha256":  "4F4A6E28B337A881E3DC8A46B8FED416DCCF4BF29610C30F7499639D5D95B739",
+                      "length_bytes":  741
+                  },
+                  {
+                      "relative_path":  "ramat\\dscsa_current_display.json",
+                      "sha256":  "D3931CD7C81BC3B1E221F2B97BADC1730D63BDBAA9C1C9FA493DBA0A90A85609",
+                      "length_bytes":  748
+                  },
+                  {
+                      "relative_path":  "ramat\\irlt_current_display.json",
+                      "sha256":  "8C743AF9BD70F7E77E69647BCCE2F68EB040DB92D667936D51C0BC76B9E3C4A0",
+                      "length_bytes":  732
+                  },
+                  {
+                      "relative_path":  "README.md",
+                      "sha256":  "CA912FBD131F158D211793B323286DFD323D2DE1382FA7058A711F1C3217B809",
+                      "length_bytes":  1314
+                  },
+                  {
+                      "relative_path":  "reconstruction\\compounding_current_reconstruction.json",
+                      "sha256":  "201D1D2785CF73524300A6BFB87D9D88AE13B58C456052468C9DD38F63C9C47E",
+                      "length_bytes":  685
+                  },
+                  {
+                      "relative_path":  "reconstruction\\dscsa_current_reconstruction.json",
+                      "sha256":  "A40E59332FCBE19DBE0247B0CAAE1324DB91C065D7E6EF1BEE0FB15DD1E64F61",
+                      "length_bytes":  658
+                  },
+                  {
+                      "relative_path":  "reconstruction\\irlt_current_reconstruction.json",
+                      "sha256":  "C4596C671548F710B0665CFC4EF804F8ADDE631599A411488E1BC11CB153DD89",
+                      "length_bytes":  652
+                  },
+                  {
+                      "relative_path":  "requirements.txt",
+                      "sha256":  "6467B10856D7C7C7566A2B32EAE93C70DEACF6ED849D9669B11CC6A4B53E0001",
+                      "length_bytes":  33
+                  },
+                  {
+                      "relative_path":  "runs\\audit_events.jsonl",
+                      "sha256":  "BFBC9BC2120902DFAAD9C56F2DE714F56E7311CA11B3BCA8061A68BCD219A246",
+                      "length_bytes":  5756
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_01_baseline_success\\action_admissibility.json",
+                      "sha256":  "4EB1BDCA2081777496BD852C792D4D86DB9838659F9B5FF0D24DB4D6C288D09A",
+                      "length_bytes":  348
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_01_baseline_success\\display_contract.json",
+                      "sha256":  "73F1D706C1F6AA17B5875913EFE071034FBD9F95FCB58E19AC629483B2939D4F",
+                      "length_bytes":  741
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_01_baseline_success\\evaluation.json",
+                      "sha256":  "A52E5F2D2462EAE168BAA4A8EAB5E841F69CDD7DC5C2C1CEBF78984CD670CF36",
+                      "length_bytes":  2764
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_01_baseline_success\\no_bind_state.json",
+                      "sha256":  "BC4460EE32E7BD7059AF2A08D0E507971E1807702A52D6B8DFCD282D5A04E160",
+                      "length_bytes":  226
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_01_baseline_success\\reconstruction.json",
+                      "sha256":  "3B710F942C266B832A8E4E6667C7F0CC3E8C88ED3DF4EA4370DD98B507A16D76",
+                      "length_bytes":  685
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_02_evidence_tamper_failure\\action_admissibility.json",
+                      "sha256":  "A293F956C25B38838F9D59226F2EE3CBC7F66BA6F067FB4008FF310F2CAFB917",
+                      "length_bytes":  355
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_02_evidence_tamper_failure\\display_contract.json",
+                      "sha256":  "40B58F967A6A9035626CE1A876A17769227E6C94950BD7BC1BF569436D1B6036",
+                      "length_bytes":  791
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_02_evidence_tamper_failure\\evaluation.json",
+                      "sha256":  "879ADD2F7B9291BC8FCA800B9555EF903B9679D6EB5F2987E26893A5C1418E96",
+                      "length_bytes":  2895
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_02_evidence_tamper_failure\\no_bind_state.json",
+                      "sha256":  "8D93E780FA0CD9DB1CA56C1EE7A72FC3FED0B7B823B1D89D63CE96CF519029E3",
+                      "length_bytes":  303
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_02_evidence_tamper_failure\\reconstruction.json",
+                      "sha256":  "2B8E9635F9E57F5999DACA369D905F530269076DC5AAC6E0C1364C670270AA7A",
+                      "length_bytes":  758
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_03_domain_failure\\action_admissibility.json",
+                      "sha256":  "B661551B61B1ADE2B4503F455CF0F768A29DC2461B1B13C6004C3D995E74DED9",
+                      "length_bytes":  355
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_03_domain_failure\\display_contract.json",
+                      "sha256":  "9E9C60863A9FCAE70C6B13CA97974456F507608DB4519FB4E78D91AC3C108107",
+                      "length_bytes":  783
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_03_domain_failure\\evaluation.json",
+                      "sha256":  "AC0A7B164DE80F54047B3304C30EC3096414EF5B741EB18265E26DAE6E8ADFC2",
+                      "length_bytes":  2916
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_03_domain_failure\\no_bind_state.json",
+                      "sha256":  "21548716EAB2C20A85164B43ACA228FEE159E14C3F9B372246D509B438DD7BA4",
+                      "length_bytes":  303
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_03_domain_failure\\reconstruction.json",
+                      "sha256":  "6259E7F9C314CA66290E5D1B1E7B09907535A0032CA99AD23D01D3358BB146B7",
+                      "length_bytes":  749
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_04_recovery_success\\action_admissibility.json",
+                      "sha256":  "DFCF32A2CF68BEBE3BF8050B557DE84F74A7B8D698130D318423B41C88095585",
+                      "length_bytes":  348
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_04_recovery_success\\display_contract.json",
+                      "sha256":  "4F4A6E28B337A881E3DC8A46B8FED416DCCF4BF29610C30F7499639D5D95B739",
+                      "length_bytes":  741
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_04_recovery_success\\evaluation.json",
+                      "sha256":  "00551737BB8840943E418E368A21EED1239B1A34D828D9141428B7821B903A28",
+                      "length_bytes":  2764
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_04_recovery_success\\no_bind_state.json",
+                      "sha256":  "ABEAB6A4B00A7C3FAB5ADE28A69C68C03FE171CB99F57477496CF8C78D3BBE60",
+                      "length_bytes":  226
+                  },
+                  {
+                      "relative_path":  "runs\\COMPOUNDING_04_recovery_success\\reconstruction.json",
+                      "sha256":  "201D1D2785CF73524300A6BFB87D9D88AE13B58C456052468C9DD38F63C9C47E",
+                      "length_bytes":  685
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_01_baseline_success\\action_admissibility.json",
+                      "sha256":  "0FB488D04C059F1BED7A45B806E475ADC897E583F85A0622E6D13C128D1CC7A5",
+                      "length_bytes":  342
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_01_baseline_success\\display_contract.json",
+                      "sha256":  "D315F57746F8F541B8EEF70BD72F81D803265A365A5F650F39B4AE728C2E9D50",
+                      "length_bytes":  748
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_01_baseline_success\\evaluation.json",
+                      "sha256":  "1DC1C271F0236939F7386BC2EBAD049720EFEC85B591A5ED9D661A4963903384",
+                      "length_bytes":  2740
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_01_baseline_success\\no_bind_state.json",
+                      "sha256":  "C6CC7B55CFADC4DEA8A24F1A63BF66CEAD54ED4BDBFFFB8BA3603629A8ED20BD",
+                      "length_bytes":  220
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_01_baseline_success\\reconstruction.json",
+                      "sha256":  "40929BCD409AEFCDB0D63249585F6FD9F5DF4786CBAED39A35AEBA8A9F920E13",
+                      "length_bytes":  658
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_02_evidence_tamper_failure\\action_admissibility.json",
+                      "sha256":  "50AA3B62DB97FFDD854F26E7AF24A3CBA587A8D81BCB66B2CD6E68528454B9B9",
+                      "length_bytes":  349
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_02_evidence_tamper_failure\\display_contract.json",
+                      "sha256":  "57F9EDA6E4B0BCE83FF4BB8812E45978D70BEE3491C1F2362DA3BAA0373FBB0E",
+                      "length_bytes":  798
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_02_evidence_tamper_failure\\evaluation.json",
+                      "sha256":  "775CA903F1D3552AC79FAE38DCE7BAE53F444DA966A72EEDB521FB0967B03BBD",
+                      "length_bytes":  2871
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_02_evidence_tamper_failure\\no_bind_state.json",
+                      "sha256":  "F70F2D5AD5E28EBEEEF78BB475F550C0C463737AE28BC5D7A23495FC3D9A3470",
+                      "length_bytes":  297
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_02_evidence_tamper_failure\\reconstruction.json",
+                      "sha256":  "DCFE7D0D3D16AF8145AD813425053BFBBEFD47BB50DD0348127770CC1170715F",
+                      "length_bytes":  731
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_03_domain_failure\\action_admissibility.json",
+                      "sha256":  "78837F3EE4F54A83177E28D19C3B7807B68AB9BEF6A9862CBE7CEB74CEAC02CD",
+                      "length_bytes":  349
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_03_domain_failure\\display_contract.json",
+                      "sha256":  "1451B3D9293544ED81CDDA690FA3DEA01CBE9D858635C539DFF0810525FE6D03",
+                      "length_bytes":  790
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_03_domain_failure\\evaluation.json",
+                      "sha256":  "CDD493E0C2F25DF0E0DBAD545B10C76345AED4A968F9ECCA4BD28CFED70E1A4D",
+                      "length_bytes":  2892
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_03_domain_failure\\no_bind_state.json",
+                      "sha256":  "A0B11F882EAE0369A3CA170E7EE7270CE53D762FA2E1F649411ABEF43475629D",
+                      "length_bytes":  297
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_03_domain_failure\\reconstruction.json",
+                      "sha256":  "DF055D0FA8DD6DF55CC63C05AF9D5F70706610DF6BF748E6E5F9DF35D91434F2",
+                      "length_bytes":  722
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_04_recovery_success\\action_admissibility.json",
+                      "sha256":  "8FBBB59134D94BAA8233A8FCA1CF26DA6B119CD00CC03ED686624D9915F895DE",
+                      "length_bytes":  342
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_04_recovery_success\\display_contract.json",
+                      "sha256":  "D3931CD7C81BC3B1E221F2B97BADC1730D63BDBAA9C1C9FA493DBA0A90A85609",
+                      "length_bytes":  748
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_04_recovery_success\\evaluation.json",
+                      "sha256":  "EA9969E55D5E1EA1EBD56A905E5697803A21D31713E2A53089B235A90580CDD4",
+                      "length_bytes":  2740
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_04_recovery_success\\no_bind_state.json",
+                      "sha256":  "BA2B99AE3743FA4E323731827DD9462B2CFE1A960DB85E7C7B5A584AF1C00D9F",
+                      "length_bytes":  220
+                  },
+                  {
+                      "relative_path":  "runs\\DSCSA_04_recovery_success\\reconstruction.json",
+                      "sha256":  "A40E59332FCBE19DBE0247B0CAAE1324DB91C065D7E6EF1BEE0FB15DD1E64F61",
+                      "length_bytes":  658
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_01_baseline_success\\action_admissibility.json",
+                      "sha256":  "2CE9892745C9DF7EDD98CFCEC4A7124EAFA6391C913111764A5120E3AAFE731B",
+                      "length_bytes":  341
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_01_baseline_success\\display_contract.json",
+                      "sha256":  "7D42F0C3D36976F80646D5AE404ADB15718BD8AAA92CEA2B52A02227E9695CE0",
+                      "length_bytes":  732
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_01_baseline_success\\evaluation.json",
+                      "sha256":  "BD6D918FEC090FB1B8CDC3E5FCE6F6D6BD4B0A09DEA33660CBC22D2ABE17CF5A",
+                      "length_bytes":  2540
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_01_baseline_success\\no_bind_state.json",
+                      "sha256":  "C38399E76BC9AD56D472F54F0D734872CF9AD83390C32907B3A1437CD69577F3",
+                      "length_bytes":  219
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_01_baseline_success\\reconstruction.json",
+                      "sha256":  "C545097C15C15612D185FC5212641552DD9C631FC4F9A0E2636F8E8435B9C09A",
+                      "length_bytes":  652
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_02_evidence_tamper_failure\\action_admissibility.json",
+                      "sha256":  "AD296C13B5AB427F7B0679AE44F22A257BD3F5616AEB22CBF97B47D0B7CCEA75",
+                      "length_bytes":  348
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_02_evidence_tamper_failure\\display_contract.json",
+                      "sha256":  "394FEBD0A123ED5D298B57EB38A4AB5409F3B761ED295EAA99078804D302EE34",
+                      "length_bytes":  782
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_02_evidence_tamper_failure\\evaluation.json",
+                      "sha256":  "8E9B9AC1F8C3144B4A27B887BC5DBE7D891D70E342A0174587EBA42C7E7465C8",
+                      "length_bytes":  2671
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_02_evidence_tamper_failure\\no_bind_state.json",
+                      "sha256":  "666A3E10CDA0D2E9A7D35C515A85D22C20A6608CBCC62F584364F8469C901614",
+                      "length_bytes":  296
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_02_evidence_tamper_failure\\reconstruction.json",
+                      "sha256":  "FA3A63D76A672707A8D3CAFE7F2E70839EB73395F919B48FABF5669C0BC07313",
+                      "length_bytes":  725
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_03_domain_failure\\action_admissibility.json",
+                      "sha256":  "61BDD74DDCE95DEDBDC7AB0C8F6A945D720A3C66A918F0B3B62DA6B54141E67B",
+                      "length_bytes":  338
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_03_domain_failure\\display_contract.json",
+                      "sha256":  "234BA7DD27451C50B4B2FDE558AA26975C711869099D41E23602DCC27468CE9E",
+                      "length_bytes":  774
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_03_domain_failure\\evaluation.json",
+                      "sha256":  "D9C866DF684085E434C96C3A3B24AEDFD6B4A629D7888A4F440707E85623C6D8",
+                      "length_bytes":  2662
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_03_domain_failure\\no_bind_state.json",
+                      "sha256":  "2471A1FB2295675C1FC84294E83ADF8CEF6CAEAC568864FE290CF182393B9623",
+                      "length_bytes":  286
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_03_domain_failure\\reconstruction.json",
+                      "sha256":  "D2D0042C02B037DF2987EA1CA1B5196FBB7235B4CE12EBCE5683AFF4448B6ED7",
+                      "length_bytes":  706
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_04_recovery_success\\action_admissibility.json",
+                      "sha256":  "8F2B3E0AEA60F933496E53195B99646316E2DC3962A2838BE926462C3A944031",
+                      "length_bytes":  341
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_04_recovery_success\\display_contract.json",
+                      "sha256":  "8C743AF9BD70F7E77E69647BCCE2F68EB040DB92D667936D51C0BC76B9E3C4A0",
+                      "length_bytes":  732
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_04_recovery_success\\evaluation.json",
+                      "sha256":  "AA09FB957D22E9CBBF6BC1EF0C63B71A3C376A2C6D6AD17FE0C1DDFAE561514E",
+                      "length_bytes":  2540
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_04_recovery_success\\no_bind_state.json",
+                      "sha256":  "23BC5A8C8C5F7D88B61D085C72D640DD638D7102938D6751AF5F2CDD705DEDB6",
+                      "length_bytes":  219
+                  },
+                  {
+                      "relative_path":  "runs\\IRLT_04_recovery_success\\reconstruction.json",
+                      "sha256":  "C4596C671548F710B0665CFC4EF804F8ADDE631599A411488E1BC11CB153DD89",
+                      "length_bytes":  652
+                  },
+                  {
+                      "relative_path":  "src\\__init__.py",
+                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                      "length_bytes":  0
+                  },
+                  {
+                      "relative_path":  "src\\__pycache__\\orchestrator_api.cpython-311.pyc",
+                      "sha256":  "C4A1E013796EFBA47EDF0CAB2DE18B77A94D0B8D23B284AC82DA689B1D12C031",
+                      "length_bytes":  56969
+                  },
+                  {
+                      "relative_path":  "src\\orchestrator_api.py",
+                      "sha256":  "231659175DA3109C2DA0C1FAD1AF89FD0D13F0C48368A635BFA9CDF5CC328C71",
+                      "length_bytes":  50143
+                  },
+                  {
+                      "relative_path":  "state\\compounding\\evidence_seal.json",
+                      "sha256":  "C6A1E5E354CA9061ADB6CBA4324580005A5099CAE59AE557EAA2A545D084C14C",
+                      "length_bytes":  364
+                  },
+                  {
+                      "relative_path":  "state\\dscsa\\evidence_seal.json",
+                      "sha256":  "2D95321DAA3696E7D4FEB0D341B8CF81838DD609EDDFA7AFC273CFFE6A040437",
+                      "length_bytes":  351
+                  },
+                  {
+                      "relative_path":  "state\\irlt\\evidence_seal.json",
+                      "sha256":  "B2393086DAB6BEC3426F6AAA64C64B1B6C6F9E7C004FA7CD531D35446E83F8F5",
+                      "length_bytes":  347
+                  },
+                  {
+                      "relative_path":  "STEP_164_FIRST_TIER_TRIAD_ASSURANCE_ORCHESTRATOR_AND_EVIDENCE_PASSPORT_API.csv",
+                      "sha256":  "59B9FC008C11C4B2DB9E6EE1DE56D927FD26E90DDD25FD5396BAAFBFDBC01AE7",
+                      "length_bytes":  3164
+                  },
+                  {
+                      "relative_path":  "STEP_164_FIRST_TIER_TRIAD_ASSURANCE_ORCHESTRATOR_AND_EVIDENCE_PASSPORT_API.json",
+                      "sha256":  "AD702A4A0197580D1AB85E337A238DD81BB043221E7842E2966A0CF3395C7599",
+                      "length_bytes":  40038
+                  },
+                  {
+                      "relative_path":  "STEP_164_FIRST_TIER_TRIAD_ASSURANCE_ORCHESTRATOR_AND_EVIDENCE_PASSPORT_API.md",
+                      "sha256":  "E3B97265BBA85671A0D0AB77AA09562CEAAF9E160A8DDD9A09AECDE67D423624",
+                      "length_bytes":  2220
+                  },
+                  {
+                      "relative_path":  "tests\\__pycache__\\test_orchestrator_api.cpython-311.pyc",
+                      "sha256":  "8FA0992F77A11C379360B0774553DBFE037CBBEC82D6185F42064ABB7F934115",
+                      "length_bytes":  5680
+                  },
+                  {
+                      "relative_path":  "tests\\test_orchestrator_api.py",
+                      "sha256":  "05615718094EA61859B666ABD1BFCEB927E65496CDC95A452BCD6AACBAE34B91",
+                      "length_bytes":  3932
+                  }
+              ]
+}

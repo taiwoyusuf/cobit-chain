@@ -1,0 +1,15 @@
+{
+  "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+  "authority_reference": "AUTH-COMPOUNDING-164-001",
+  "correlation_id": "1c577644-e9a1-4c4f-8811-fbb72ee22e06",
+  "evidence_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+  "evidence_seal_reference": "SEAL-867a21d2-60d2-4a4b-9575-d65b0eac1549",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T23:23:44Z",
+  "object_id": "A17-COMPOUND-PREP-164-001",
+  "reconstruction_id": "RECON-5c4f760c-8959-4621-8349-3a1c686206d7",
+  "scenario_name": "COMPOUNDING_01_baseline_success",
+  "source_system_reference": "COMPOUND-SOURCE-164-001",
+  "track_id": "COMPOUNDING",
+  "unresolved_gaps": []
+}

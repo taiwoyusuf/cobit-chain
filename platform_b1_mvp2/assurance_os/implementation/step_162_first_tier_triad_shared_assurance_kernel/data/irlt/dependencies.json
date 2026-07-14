@@ -1,0 +1,24 @@
+{
+  "dependencies": [
+    {
+      "dependency_id": "IRLT-DEP-001",
+      "dependency_name": "QC completion",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-002",
+      "dependency_name": "Material genealogy",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-003",
+      "dependency_name": "Custody readiness",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-004",
+      "dependency_name": "Decay-window validity",
+      "satisfied": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "admissibility_id": "ADM-a826deec-53d5-4740-b205-3fa168916919",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_ADMISSIBLE",
+  "execution_performed": false,
+  "rationale": [
+    "ALL_REQUIRED_ASSURANCE_CONDITIONS_SATISFIED"
+  ],
+  "source_execution_required": true,
+  "track_id": "DSCSA"
+}

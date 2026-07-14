@@ -1,0 +1,10 @@
+{
+  "evidence_id": "EVID-DSCSA-164-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+  "object_id": "A17-DSCSA-SERIAL-164-001",
+  "seal_id": "SEAL-ab99b4dd-d2ce-49fa-bab1-7b2d65957fde",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T23:23:44Z",
+  "track_id": "DSCSA"
+}

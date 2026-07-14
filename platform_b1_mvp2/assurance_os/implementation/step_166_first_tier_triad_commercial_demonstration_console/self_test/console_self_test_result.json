@@ -1,0 +1,50 @@
+{
+  "checks": {
+    "all_expected_gets_return_200": true,
+    "all_write_methods_rejected": true,
+    "console_read_only": true,
+    "localhost_only": true,
+    "no_prohibited_action_controls": true,
+    "production_write_back": false,
+    "regulated_execution": false
+  },
+  "ephemeral_port": 59216,
+  "get_results": {
+    "/": 200,
+    "/api/bundle": 200,
+    "/api/health": 200,
+    "/api/passport/COMPOUNDING": 200,
+    "/api/passport/DSCSA": 200,
+    "/api/passport/IRLT": 200,
+    "/api/ramat/COMPOUNDING": 200,
+    "/api/ramat/DSCSA": 200,
+    "/api/ramat/IRLT": 200,
+    "/api/reconstruction/COMPOUNDING": 200,
+    "/api/reconstruction/DSCSA": 200,
+    "/api/reconstruction/IRLT": 200,
+    "/api/scenario/COMPOUNDING/baseline": 200,
+    "/api/scenario/COMPOUNDING/domain_failure": 200,
+    "/api/scenario/COMPOUNDING/recovery": 200,
+    "/api/scenario/COMPOUNDING/tamper": 200,
+    "/api/scenario/DSCSA/baseline": 200,
+    "/api/scenario/DSCSA/domain_failure": 200,
+    "/api/scenario/DSCSA/recovery": 200,
+    "/api/scenario/DSCSA/tamper": 200,
+    "/api/scenario/IRLT/baseline": 200,
+    "/api/scenario/IRLT/domain_failure": 200,
+    "/api/scenario/IRLT/recovery": 200,
+    "/api/scenario/IRLT/tamper": 200,
+    "/api/tracks": 200,
+    "/app.js": 200,
+    "/styles.css": 200
+  },
+  "host": "127.0.0.1",
+  "status": "PASS",
+  "tested_at_utc": "2026-07-13T23:36:26Z",
+  "write_method_results": {
+    "DELETE": 405,
+    "PATCH": 405,
+    "POST": 405,
+    "PUT": 405
+  }
+}

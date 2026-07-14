@@ -1,0 +1,856 @@
+﻿{
+    "Summary":  {
+                    "Step":  "155",
+                    "Title":  "Evidence, Authority, Accountability, Action, and No-Bind Schema",
+                    "SchemaVersion":  "0.1",
+                    "GeneratedAtUtc":  "2026-07-13T22:03:59.9260946Z",
+                    "RepositoryRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app",
+                    "Step154InputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_154_regulated_object_identity_schema",
+                    "OutputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_155_evidence_authority_no_bind_schema",
+                    "SchemaComponentCount":  24,
+                    "GovernanceInvariantCount":  14,
+                    "DecisionRuleCount":  8,
+                    "SourceIdentityComponentCount":  16,
+                    "SourceIdentityInvariantCount":  12,
+                    "RequiredAuthorityEvaluationDimensions":  [
+                                                                  "authority_present",
+                                                                  "authority_valid",
+                                                                  "authority_current",
+                                                                  "authority_delegated",
+                                                                  "approver_available",
+                                                                  "escalation_available",
+                                                                  "pre_authorized_rule_exists",
+                                                                  "evidence_sufficient",
+                                                                  "timing_valid",
+                                                                  "action_consequence_level",
+                                                                  "human_accountability_identified"
+                                                              ],
+                    "RepositoryRescanPerformed":  false,
+                    "ApplicationFilesModified":  false,
+                    "RuntimeImplementationPerformed":  false,
+                    "ProductionIntegrationPerformed":  false,
+                    "RealRegulatedDataUsed":  false,
+                    "PHIUsed":  false,
+                    "ClassifiedDataUsed":  false,
+                    "PlatformBv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDDisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "ThreadD2DisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "PlatformB1Role":  "Platform B1 evaluates advanced evidence, authority, accountability, action-admissibility, and No-Bind conditions.",
+                    "NoBindDoctrine":  "Silence is a governance state. Silence is not consent. Insufficient binding conditions create an explicit governed hold.",
+                    "HumanAuthorityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                    "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems.",
+                    "Step155Statement":  "Step 155 defines a governance schema baseline. It does not implement runtime services, approve or release regulated work, resolve real governance holds, execute actions, validate production systems, or replace official records.",
+                    "CategorySummary":  [
+                                            {
+                                                "ComponentCategory":  "ACCOUNTABILITY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "ACTION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "ACTION RISK",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "ACTOR IDENTITY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "ADMISSIBILITY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "APPROVER STATE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "AUTHORITY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "AUTHORITY EVALUATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "BINDING DECISION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "BINDING EVALUATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "DELEGATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "DISPLAY CONTRACT",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "ESCALATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "EVIDENCE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "EVIDENCE INTEGRITY",
+                                                "ComponentCount":  2
+                                            },
+                                            {
+                                                "ComponentCategory":  "EVIDENCE SUFFICIENCY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "GOVERNED PAUSE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "NO-BIND GOVERNANCE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "NO-BIND RESOLUTION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "PRE-AUTHORIZATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "PROVENANCE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "RECONSTRUCTION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "TIMING",
+                                                "ComponentCount":  1
+                                            }
+                                        ],
+                    "Step156Gate":  "READY AFTER STEP 155 EVIDENCE, AUTHORITY, ACCOUNTABILITY, ACTION, AND NO-BIND SCHEMA REVIEW"
+                },
+    "Enumerations":  {
+                         "EvidenceSufficiencyState":  [
+                                                          "UNKNOWN",
+                                                          "INSUFFICIENT",
+                                                          "PARTIAL",
+                                                          "SUFFICIENT",
+                                                          "CONFLICTED",
+                                                          "STALE",
+                                                          "INTEGRITY_FAILED"
+                                                      ],
+                         "AuthorityState":  [
+                                                "UNKNOWN",
+                                                "ABSENT",
+                                                "PRESENT",
+                                                "INVALID",
+                                                "EXPIRED",
+                                                "OUT_OF_SCOPE",
+                                                "DELEGATED_VALID",
+                                                "DELEGATED_INVALID",
+                                                "REVOKED"
+                                            ],
+                         "ApproverState":  [
+                                               "UNKNOWN",
+                                               "AVAILABLE",
+                                               "UNAVAILABLE",
+                                               "INELIGIBLE",
+                                               "NOT_RESPONDING",
+                                               "RESPONSE_OVERDUE",
+                                               "ALTERNATE_APPROVER_REQUIRED"
+                                           ],
+                         "EscalationState":  [
+                                                 "UNKNOWN",
+                                                 "AVAILABLE",
+                                                 "UNAVAILABLE",
+                                                 "REQUIRED",
+                                                 "INITIATED",
+                                                 "ACKNOWLEDGED",
+                                                 "COMPLETED",
+                                                 "FAILED"
+                                             ],
+                         "TimingState":  [
+                                             "UNKNOWN",
+                                             "VALID",
+                                             "NOT_YET_VALID",
+                                             "EXPIRED",
+                                             "MISALIGNED",
+                                             "CRITICAL_WINDOW_AT_RISK"
+                                         ],
+                         "ActionConsequenceLevel":  [
+                                                        "LOW",
+                                                        "MODERATE",
+                                                        "HIGH",
+                                                        "CRITICAL"
+                                                    ],
+                         "AccountabilityState":  [
+                                                     "UNKNOWN",
+                                                     "NOT_IDENTIFIED",
+                                                     "ASSIGNED",
+                                                     "ACCEPTED",
+                                                     "CURRENT",
+                                                     "EXPIRED",
+                                                     "DECLINED",
+                                                     "ESCALATION_REQUIRED"
+                                                 ],
+                         "NoBindState":  [
+                                             "INACTIVE",
+                                             "ACTIVE",
+                                             "ACTION_HELD",
+                                             "DOCUMENTED_PAUSE_CREATED",
+                                             "ESCALATION_REQUIRED",
+                                             "RESOLUTION_PENDING",
+                                             "RESOLVED",
+                                             "ACTION_REJECTED"
+                                         ],
+                         "ActionAdmissibilityState":  [
+                                                          "NOT_EVALUATED",
+                                                          "INCOMPLETE",
+                                                          "HELD",
+                                                          "ESCALATED",
+                                                          "INADMISSIBLE",
+                                                          "ADMISSIBLE",
+                                                          "REJECTED",
+                                                          "CANCELLED"
+                                                      ],
+                         "BindingDecisionState":  [
+                                                      "PENDING",
+                                                      "APPROVED_BY_AUTHORIZED_HUMAN",
+                                                      "REJECTED_BY_AUTHORIZED_HUMAN",
+                                                      "EXECUTED_IN_SOURCE_SYSTEM",
+                                                      "SOURCE_EXECUTION_FAILED",
+                                                      "CANCELLED"
+                                                  ],
+                         "GovernanceDisplayState":  [
+                                                        "AUTHORITY ABSENT",
+                                                        "AUTHORITY INVALID",
+                                                        "AUTHORITY EXPIRED",
+                                                        "AUTHORITY OUT OF SCOPE",
+                                                        "NO-BIND STATE ACTIVE",
+                                                        "ACTION HELD",
+                                                        "ESCALATION REQUIRED",
+                                                        "ESCALATION AVAILABLE",
+                                                        "DOCUMENTED PAUSE CREATED",
+                                                        "APPROVER UNAVAILABLE",
+                                                        "EVIDENCE INSUFFICIENT",
+                                                        "TIMING INVALID",
+                                                        "HUMAN ACCOUNTABILITY MISSING",
+                                                        "HUMAN AUTHORITY REQUIRED",
+                                                        "ACTION INADMISSIBLE",
+                                                        "ACTION ADMISSIBLE",
+                                                        "SOURCE-SYSTEM EXECUTION REQUIRED"
+                                                    ]
+                     },
+    "DecisionRules":  [
+                          {
+                              "RuleId":  "NB-RULE-001",
+                              "RuleName":  "Authority Failure Rule",
+                              "Condition":  "authority_present is false or authority_valid is false or authority_current is false or authority is outside scope",
+                              "Result":  "NO-BIND STATE ACTIVE; ACTION HELD; HUMAN AUTHORITY REQUIRED"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-002",
+                              "RuleName":  "Approver Unavailable Rule",
+                              "Condition":  "approver_available is false and no valid escalation route or pre-authorized rule permits continuation",
+                              "Result":  "APPROVER UNAVAILABLE; ESCALATION REQUIRED; DOCUMENTED PAUSE CREATED"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-003",
+                              "RuleName":  "Evidence Insufficiency Rule",
+                              "Condition":  "evidence_sufficient is false or unknown",
+                              "Result":  "EVIDENCE INSUFFICIENT; NO-BIND STATE ACTIVE; ACTION HELD"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-004",
+                              "RuleName":  "Timing Failure Rule",
+                              "Condition":  "timing_valid is false or the authorized execution window has expired",
+                              "Result":  "TIMING INVALID; NO-BIND STATE ACTIVE; ACTION HELD"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-005",
+                              "RuleName":  "Human Accountability Rule",
+                              "Condition":  "human_accountability_identified is false or unknown",
+                              "Result":  "HUMAN ACCOUNTABILITY MISSING; HUMAN AUTHORITY REQUIRED; NO-BIND STATE ACTIVE"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-006",
+                              "RuleName":  "Identity or Dependency Hold Rule",
+                              "Condition":  "identity_hold_active is true or dependency_hold_active is true",
+                              "Result":  "ACTION INADMISSIBLE OR HELD; GOVERNED RESOLUTION REQUIRED"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-007",
+                              "RuleName":  "High-Consequence Positive Assurance Rule",
+                              "Condition":  "action_consequence_level is HIGH or CRITICAL and any required authority, evidence, timing, accountability, identity, or dependency state is not positively satisfied",
+                              "Result":  "NO-BIND STATE ACTIVE; ACTION HELD; ESCALATION REQUIRED"
+                          },
+                          {
+                              "RuleId":  "NB-RULE-008",
+                              "RuleName":  "Admissibility Rule",
+                              "Condition":  "authority is present, valid, current, and in scope; evidence is sufficient; timing is valid; accountability is identified; identity and dependencies are acceptable; and no unresolved No-Bind state exists",
+                              "Result":  "ACTION ADMISSIBLE FOR AUTHORIZED HUMAN OR SOURCE-SYSTEM DECISION; NOT EXECUTED BY THE ASSURANCE ENGINE"
+                          }
+                      ],
+    "Invariants":  [
+                       {
+                           "InvariantId":  "EAG-INV-001",
+                           "InvariantName":  "Silence Is Not Consent",
+                           "Rule":  "Missed alerts, absent objection, delayed response, unavailable approvers, and silent dashboards must not create authorization."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-002",
+                           "InvariantName":  "Silence Is a Governance State",
+                           "Rule":  "Silence and non-response must be recorded as explicit states requiring hold, escalation, timeout handling, or authorized resolution."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-003",
+                           "InvariantName":  "Authority Must Be Positive and Current",
+                           "Rule":  "Authority must be present, valid, current, in scope, and compatible with delegation and consequence requirements."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-004",
+                           "InvariantName":  "Unknown Is Not Satisfied",
+                           "Rule":  "Unknown, missing, delayed, conflicted, expired, and unresolved states must not be treated as positive assurance."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-005",
+                           "InvariantName":  "Evidence Before Binding",
+                           "Rule":  "A binding action requires sufficient, attributable, current, relevant, and integrity-verifiable evidence."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-006",
+                           "InvariantName":  "Human Accountability Required",
+                           "Rule":  "High and critical consequence actions require an identifiable qualified human or authorized organizational role."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-007",
+                           "InvariantName":  "Admissibility Is Not Execution",
+                           "Rule":  "An admissibility decision evaluates whether an action may proceed. It does not execute the action."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-008",
+                           "InvariantName":  "Source-System Execution Required",
+                           "Rule":  "Official execution and final regulated records remain in governed source systems."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-009",
+                           "InvariantName":  "No-Bind Prevents Default Continuation",
+                           "Rule":  "When binding requirements are insufficient, the action must be held, paused, escalated, rejected, or otherwise prevented from default continuation."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-010",
+                           "InvariantName":  "No-Bind Requires Explicit Resolution",
+                           "Rule":  "No-Bind remains active until an authorized, evidence-backed resolution is recorded. Silence cannot resolve it."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-011",
+                           "InvariantName":  "Delegation Cannot Expand Authority",
+                           "Rule":  "Delegated authority must remain within the original grant\u0027s action, object, consequence, and validity scope."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-012",
+                           "InvariantName":  "Identity Conflict Creates Governance Hold",
+                           "Rule":  "Material identity conflicts prevent evidence, authority, and action from binding until governed resolution."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-013",
+                           "InvariantName":  "Display Is Not Authority",
+                           "Rule":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display state but may not approve or execute."
+                       },
+                       {
+                           "InvariantId":  "EAG-INV-014",
+                           "InvariantName":  "Architecture Locks Remain Preserved",
+                           "Rule":  "Platform B v1 and Thread D v1 remain architecture locked. Step 155 does not reopen either architecture."
+                       }
+                   ],
+    "Components":  [
+                       {
+                           "ComponentId":  "EAG-001",
+                           "ComponentName":  "Governed Evidence Record",
+                           "ComponentCategory":  "EVIDENCE",
+                           "Purpose":  "Represents one governed evidence item supporting, contradicting, or qualifying an assurance claim, authority evaluation, action, hold, escalation, or binding decision.",
+                           "RequiredFields":  "evidence_id; object_id; evidence_type; source_system_id; source_record_id; captured_at_utc; captured_by_actor_id; evidence_status; evidence_scope",
+                           "ValidationRule":  "Evidence must identify the canonical regulated object, source system, official record reference, capture time, accountable actor, scope, and status.",
+                           "FailureState":  "EVIDENCE_MISSING_OR_UNATTRIBUTED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Audit trail, approval record, laboratory result, batch event, identity record, device log, policy evaluation, signed document, sensor reading, or investigation record.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must use governed evidence records across discovery, development, manufacturing, release, distribution, and patient use.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-002",
+                           "ComponentName":  "Evidence Source and Provenance Link",
+                           "ComponentCategory":  "PROVENANCE",
+                           "Purpose":  "Connects evidence to its official source record, parent evidence, transformation, actor, time, and governed object.",
+                           "RequiredFields":  "provenance_id; evidence_id; object_id; source_system_id; source_record_id; parent_evidence_id; transformation_type; recorded_at_utc; recorded_by_actor_id",
+                           "ValidationRule":  "Derived or transformed evidence must preserve its parent reference, source record, transformation method, accountable actor, and time.",
+                           "FailureState":  "EVIDENCE_PROVENANCE_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "AI-generated content derived from source documents, summarized audit evidence, transformed laboratory data, reconstructed event package, or converted regulatory submission content.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 claim-to-proof paths must preserve complete provenance.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-003",
+                           "ComponentName":  "Evidence Integrity Seal",
+                           "ComponentCategory":  "EVIDENCE INTEGRITY",
+                           "Purpose":  "Stores the cryptographic integrity seal for a governed evidence item.",
+                           "RequiredFields":  "seal_id; evidence_id; object_id; hash_algorithm; hash_value; sealed_field_scope; content_length; sealed_at_utc; sealed_by_actor_id; seal_status",
+                           "ValidationRule":  "The evidence item, object identity, field scope, algorithm, hash value, content length, time, and responsible actor must be complete.",
+                           "FailureState":  "EVIDENCE_INTEGRITY_SEAL_INVALID",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "SHA-256 seal over an evidence file, source record export, event payload, approval package, batch record, or regulatory document.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 evidence packages must support hashing and integrity verification.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-004",
+                           "ComponentName":  "Evidence Rehash Verification",
+                           "ComponentCategory":  "EVIDENCE INTEGRITY",
+                           "Purpose":  "Records whether current evidence still matches its original integrity seal.",
+                           "RequiredFields":  "rehash_id; seal_id; evidence_id; recalculated_hash; comparison_result; verified_at_utc; verified_by_actor_id; verification_status",
+                           "ValidationRule":  "The evidence must be recalculated using the original algorithm and declared field scope before comparison with the stored seal.",
+                           "FailureState":  "EVIDENCE_REHASH_MISMATCH",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Inspection preparation, archive verification, transfer verification, submission review, audit reconstruction, or custody review.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must demonstrate rehash verification at lifecycle checkpoints.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-005",
+                           "ComponentName":  "Evidence Sufficiency Assessment",
+                           "ComponentCategory":  "EVIDENCE SUFFICIENCY",
+                           "Purpose":  "Determines whether the available evidence is sufficient, current, relevant, complete, attributable, and integrity-verified for the proposed action.",
+                           "RequiredFields":  "assessment_id; object_id; action_id; required_evidence_ids; present_evidence_ids; missing_evidence_ids; integrity_state; currency_state; relevance_state; evidence_sufficient; assessed_at_utc; rationale",
+                           "ValidationRule":  "Evidence is sufficient only when all mandatory evidence requirements are satisfied or a governed exception explicitly permits an alternative.",
+                           "FailureState":  "EVIDENCE_INSUFFICIENT",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Batch release evidence, clinical review evidence, DSCSA transaction evidence, compounding verification evidence, CAPA closure evidence, or AI action evidence.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 action gates must explicitly evaluate evidence_sufficient.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-006",
+                           "ComponentName":  "Proposed Action Record",
+                           "ComponentCategory":  "ACTION",
+                           "Purpose":  "Defines the action being proposed, its target object, requester, purpose, consequence, timing, source-system destination, and current state.",
+                           "RequiredFields":  "action_id; action_type; target_object_id; requested_by_actor_id; requested_at_utc; intended_source_system_id; action_purpose; consequence_level; requested_execution_window; action_state",
+                           "ValidationRule":  "An action must have a stable identity, canonical target object, accountable requester, declared purpose, consequence level, execution window, and destination.",
+                           "FailureState":  "ACTION_DEFINITION_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Release batch, approve document, transmit submission, dispense preparation, transfer custody, execute AI tool call, authorize payment, or administer dose.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must model every major lifecycle transition as a proposed action.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-007",
+                           "ComponentName":  "Action Consequence Classification",
+                           "ComponentCategory":  "ACTION RISK",
+                           "Purpose":  "Classifies the potential consequence of an action to determine required evidence, authority, review, escalation, and No-Bind behavior.",
+                           "RequiredFields":  "classification_id; action_id; consequence_level; patient_impact; product_impact; quality_impact; regulatory_impact; financial_impact; security_impact; reversibility; classified_at_utc; classified_by",
+                           "ValidationRule":  "Consequence classification must consider applicable safety, quality, regulatory, operational, financial, security, and reversibility dimensions.",
+                           "FailureState":  "ACTION_CONSEQUENCE_UNCLASSIFIED",
+                           "PrimaryOwnerLayer":  "PLATFORM A / PLATFORM B1",
+                           "Examples":  "Low-risk display update, medium-risk workflow routing, high-risk quality approval, or critical patient, release, financial, or autonomous action.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must classify consequence levels for all release and patient-facing actions.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-008",
+                           "ComponentName":  "Actor and Role Identity Reference",
+                           "ComponentCategory":  "ACTOR IDENTITY",
+                           "Purpose":  "Identifies the human, service, AI agent, device, or organizational role requesting, reviewing, approving, escalating, or executing an action.",
+                           "RequiredFields":  "actor_reference_id; actor_id; actor_type; role_id; organization_id; identity_verification_id; identity_state; role_state; valid_at_utc",
+                           "ValidationRule":  "The actor and role must resolve to governed identities and current identity verification before authority or accountability may bind.",
+                           "FailureState":  "ACTOR_OR_ROLE_IDENTITY_UNRESOLVED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Quality approver, investigator, pharmacist, batch releaser, clinician, AI agent, service identity, process owner, or regulatory signatory.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must distinguish human, AI-agent, device, and service identities.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-009",
+                           "ComponentName":  "Authority Grant Record",
+                           "ComponentCategory":  "AUTHORITY",
+                           "Purpose":  "Defines the authority granted to an actor or role for a specific action type, object scope, consequence level, and validity period.",
+                           "RequiredFields":  "authority_id; actor_id; role_id; authority_type; allowed_action_types; object_scope; consequence_scope; valid_from_utc; valid_to_utc; granted_by_actor_id; authority_status",
+                           "ValidationRule":  "Authority must identify the accountable actor or role, permitted actions, object scope, consequence scope, validity period, grantor, and status.",
+                           "FailureState":  "AUTHORITY_ABSENT_OR_UNDEFINED",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM B1",
+                           "Examples":  "Batch-release authority, pharmacist verification authority, investigator authority, quality approval authority, delegated system-owner authority, or emergency authority.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must map authority grants to each binding lifecycle action.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-010",
+                           "ComponentName":  "Authority Validity and Scope Evaluation",
+                           "ComponentCategory":  "AUTHORITY EVALUATION",
+                           "Purpose":  "Evaluates whether the presented authority is present, valid, current, applicable to the object, and sufficient for the proposed action.",
+                           "RequiredFields":  "authority_evaluation_id; action_id; object_id; authority_id; authority_present; authority_valid; authority_current; authority_in_scope; authority_delegated; evaluated_at_utc; evaluation_result; rationale",
+                           "ValidationRule":  "Authority is sufficient only when it is present, valid, current, in scope, and compatible with any delegation and consequence restrictions.",
+                           "FailureState":  "AUTHORITY_INVALID_EXPIRED_OR_OUT_OF_SCOPE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Expired training or delegation, wrong site authority, wrong product scope, insufficient consequence authority, or invalid delegated approval.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate authority_present, authority_valid, authority_current, and authority_delegated.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-011",
+                           "ComponentName":  "Authority Delegation Record",
+                           "ComponentCategory":  "DELEGATION",
+                           "Purpose":  "Records a governed delegation from one authorized actor or role to another for a defined action, object scope, and validity period.",
+                           "RequiredFields":  "delegation_id; delegating_actor_id; delegated_actor_id; delegated_role_id; allowed_action_types; object_scope; valid_from_utc; valid_to_utc; revocation_state; delegation_status; evidence_id",
+                           "ValidationRule":  "Delegation must originate from an actor permitted to delegate and must remain within the original authority scope and validity period.",
+                           "FailureState":  "DELEGATION_INVALID_OR_OUT_OF_SCOPE",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM B1",
+                           "Examples":  "Temporary quality approver, alternate clinical reviewer, delegated pharmacist, backup incident commander, or limited emergency authority.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must distinguish original authority from delegated authority.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-012",
+                           "ComponentName":  "Approver Availability State",
+                           "ComponentCategory":  "APPROVER STATE",
+                           "Purpose":  "Records whether the required accountable approver is available, reachable, eligible, and able to act within the required time window.",
+                           "RequiredFields":  "approver_state_id; action_id; required_actor_or_role_id; approver_available; eligibility_state; contact_state; response_due_at_utc; last_contact_at_utc; state",
+                           "ValidationRule":  "Approver availability must be explicit. No response, missed notification, or silent status must not be treated as approval.",
+                           "FailureState":  "APPROVER_UNAVAILABLE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Quality approver offline, pharmacist unavailable, clinical reviewer absent, release authority unreachable, or incident approver not responding.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate approver_available before binding actions.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-013",
+                           "ComponentName":  "Escalation Route Record",
+                           "ComponentCategory":  "ESCALATION",
+                           "Purpose":  "Defines the governed route for escalation when authority is absent, an approver is unavailable, evidence is insufficient, or timing is at risk.",
+                           "RequiredFields":  "escalation_route_id; action_id; trigger_conditions; escalation_level; target_actor_or_role_id; response_window; fallback_route_id; escalation_available; route_status",
+                           "ValidationRule":  "An escalation route must identify trigger conditions, accountable recipient, response window, fallback route, availability, and current status.",
+                           "FailureState":  "ESCALATION_UNAVAILABLE_OR_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "PLATFORM A / HUMAN GOVERNANCE",
+                           "Examples":  "Quality escalation, medical escalation, pharmacy escalation, incident escalation, security escalation, executive escalation, or regulatory escalation.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate escalation_available and escalation requirements.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-014",
+                           "ComponentName":  "Pre-Authorized Rule Record",
+                           "ComponentCategory":  "PRE-AUTHORIZATION",
+                           "Purpose":  "Defines a narrowly scoped, previously approved rule allowing a specified action under defined evidence, timing, consequence, and accountability conditions.",
+                           "RequiredFields":  "rule_id; rule_name; allowed_action_types; object_scope; evidence_requirements; consequence_limit; timing_conditions; accountable_role_id; approved_by_actor_id; valid_from_utc; valid_to_utc; rule_status",
+                           "ValidationRule":  "A pre-authorized rule must be explicit, current, approved, limited in scope, compatible with the action consequence, and linked to accountable human authority.",
+                           "FailureState":  "PRE_AUTHORIZED_RULE_ABSENT_OR_INVALID",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM B1",
+                           "Examples":  "Approved automated alert routing, predefined low-risk workflow continuation, validated emergency response, or bounded agent action.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate pre_authorized_rule_exists without treating absence of objection as pre-authorization.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-015",
+                           "ComponentName":  "Timing Validity Record",
+                           "ComponentCategory":  "TIMING",
+                           "Purpose":  "Evaluates whether evidence, authority, approval, object state, and the proposed action remain valid within the required execution window.",
+                           "RequiredFields":  "timing_record_id; action_id; evaluation_time_utc; required_start_utc; required_end_utc; authority_valid_at_utc; evidence_current_at_utc; object_state_valid_at_utc; timing_valid; rationale",
+                           "ValidationRule":  "Timing is valid only when the action, evidence, authority, object state, and required approvals are current within the declared execution window.",
+                           "FailureState":  "TIMING_INVALID_OR_EXPIRED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Radiopharmaceutical decay window, approval expiry, batch-release window, clinical treatment window, shipment window, or emergency-response window.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate timing_valid for time-critical lifecycle actions.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-016",
+                           "ComponentName":  "Human Accountability Assignment",
+                           "ComponentCategory":  "ACCOUNTABILITY",
+                           "Purpose":  "Identifies the qualified human or authorized organizational role accountable for reviewing, approving, escalating, rejecting, or binding the action.",
+                           "RequiredFields":  "accountability_id; action_id; object_id; accountable_actor_id; accountable_role_id; responsibility_type; assigned_at_utc; accepted_at_utc; accountability_current; status",
+                           "ValidationRule":  "High or critical consequence actions must not be admissible without an identifiable, current, qualified, and accountable human or authorized role.",
+                           "FailureState":  "HUMAN_ACCOUNTABILITY_NOT_IDENTIFIED",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM B1",
+                           "Examples":  "Quality releaser, clinician, pharmacist, investigator, process owner, security authority, financial approver, or regulatory signatory.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must evaluate human_accountability_identified.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-017",
+                           "ComponentName":  "Binding Sufficiency Evaluation",
+                           "ComponentCategory":  "BINDING EVALUATION",
+                           "Purpose":  "Evaluates whether an action has sufficient evidence, authority, timing, approver availability, escalation, pre-authorization, consequence controls, and human accountability to become admissible.",
+                           "RequiredFields":  "binding_evaluation_id; action_id; object_id; authority_present; authority_valid; authority_current; authority_delegated; approver_available; escalation_available; pre_authorized_rule_exists; evidence_sufficient; timing_valid; action_consequence_level; human_accountability_identified; identity_hold_active; dependency_hold_active; decision_state; rationale; evaluated_at_utc",
+                           "ValidationRule":  "Unknown, missing, false, expired, conflicted, or unresolved required states must not be treated as satisfied. Critical and high-consequence actions require positive evidence of sufficient authority, evidence, timing, and accountability.",
+                           "FailureState":  "BINDING_REQUIREMENTS_INSUFFICIENT",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Batch release evaluation, clinical action evaluation, AI-agent action evaluation, pharmacy release evaluation, submission sign-off, or payment authorization.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must demonstrate the full binding-sufficiency decision model.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-018",
+                           "ComponentName":  "No-Bind Governance State Record",
+                           "ComponentCategory":  "NO-BIND GOVERNANCE",
+                           "Purpose":  "Creates an explicit governed hold when evidence, identity, dependency, authority, approver, escalation, timing, or accountability is insufficient.",
+                           "RequiredFields":  "no_bind_id; action_id; object_id; reason_codes; authority_state; evidence_state; identity_state; dependency_state; approver_state; escalation_state; timing_state; accountability_state; activated_at_utc; activated_by; no_bind_state; resolution_required",
+                           "ValidationRule":  "No-Bind must activate when binding requirements are insufficient. Silence, missed alerts, unavailable approvers, delayed review, or absent objection must not permit an action to proceed by default.",
+                           "FailureState":  "NO_BIND_STATE_ACTIVE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Authority absent, approver unavailable, evidence insufficient, identity conflict, dependency mismatch, timing expired, or human accountability missing.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must demonstrate No-Bind activation and governed resolution.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-019",
+                           "ComponentName":  "Documented Pause Record",
+                           "ComponentCategory":  "GOVERNED PAUSE",
+                           "Purpose":  "Records a deliberate, attributable pause created because a proposed action cannot safely or lawfully bind.",
+                           "RequiredFields":  "pause_id; no_bind_id; action_id; object_id; pause_reason; paused_at_utc; paused_by_actor_id; required_resolution_actions; escalation_route_id; resume_conditions; pause_status",
+                           "ValidationRule":  "A pause must identify the held action, affected object, accountable actor, reason, required resolution, escalation route, and conditions for resumption.",
+                           "FailureState":  "DOCUMENTED_PAUSE_REQUIRED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / HUMAN GOVERNANCE",
+                           "Examples":  "Release paused, AI action paused, dispensing paused, submission paused, transfer paused, payment paused, or clinical action paused.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must show DOCUMENTED PAUSE CREATED when No-Bind is active.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-020",
+                           "ComponentName":  "No-Bind Resolution Record",
+                           "ComponentCategory":  "NO-BIND RESOLUTION",
+                           "Purpose":  "Records the governed evidence, authority, escalation, review, correction, or decision that resolves or confirms an active No-Bind state.",
+                           "RequiredFields":  "resolution_id; no_bind_id; resolution_type; resolution_evidence_ids; resolved_by_actor_id; resolved_at_utc; authority_revalidated; evidence_reassessed; identity_reverified; dependency_reassessed; resolution_result; rationale",
+                           "ValidationRule":  "No-Bind may be resolved only through explicit governed evidence and authorized human or approved rule-based resolution. Silence cannot resolve it.",
+                           "FailureState":  "NO_BIND_RESOLUTION_INVALID",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM B1",
+                           "Examples":  "New qualified approver assigned, missing evidence supplied, identity corrected, dependency restored, valid escalation completed, or action permanently rejected.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must distinguish No-Bind resolution from unauthorized bypass.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-021",
+                           "ComponentName":  "Action Admissibility Record",
+                           "ComponentCategory":  "ADMISSIBILITY",
+                           "Purpose":  "Records whether a proposed action is admissible, inadmissible, held, or escalated based on the binding sufficiency evaluation.",
+                           "RequiredFields":  "admissibility_id; action_id; object_id; binding_evaluation_id; no_bind_id; admissibility_state; rationale; decided_at_utc; decided_by; source_execution_required",
+                           "ValidationRule":  "Admissibility is not execution. An admissible state only indicates that governed preconditions are satisfied subject to authorized source-system execution.",
+                           "FailureState":  "ACTION_INADMISSIBLE_OR_HELD",
+                           "PrimaryOwnerLayer":  "PLATFORM B v1 / PLATFORM B1",
+                           "Examples":  "Admissible for human release, held pending evidence, escalated for authority, or rejected because required controls remain unsatisfied.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must distinguish action admissibility from actual execution.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-022",
+                           "ComponentName":  "Binding Decision and Source Execution Reference",
+                           "ComponentCategory":  "BINDING DECISION",
+                           "Purpose":  "Records the authorized human or governed source-system decision and, when applicable, the official source-system execution reference.",
+                           "RequiredFields":  "binding_decision_id; action_id; object_id; admissibility_id; authorized_actor_id; authorized_role_id; decision; decided_at_utc; source_system_id; source_execution_record_id; execution_state; rationale",
+                           "ValidationRule":  "A binding decision must identify the authorized actor and role. Execution must be confirmed through the governed source-system record.",
+                           "FailureState":  "BINDING_DECISION_OR_SOURCE_EXECUTION_UNCONFIRMED",
+                           "PrimaryOwnerLayer":  "HUMAN AUTHORITY / GOVERNED SOURCE SYSTEM",
+                           "Examples":  "Quality release recorded in eQMS or MES, pharmacist release, clinician action, submission sign-off, financial approval, or source-system rejection.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must preserve the distinction between Platform evaluation, human binding decision, and official source-system execution.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-023",
+                           "ComponentName":  "Governance Display State Contract",
+                           "ComponentCategory":  "DISPLAY CONTRACT",
+                           "Purpose":  "Defines the limited governance states that Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, or device witnesses may display.",
+                           "RequiredFields":  "display_contract_id; action_id; object_id; admissibility_id; no_bind_id; allowed_display_states; prohibited_controls; generated_at_utc; expires_at_utc; redaction_rule; display_status",
+                           "ValidationRule":  "The display contract must be DISPLAY / WITNESS ONLY and must not expose an approval, release, override, resolution, or execution control.",
+                           "FailureState":  "DISPLAY_CONTRACT_OVERPERMISSIVE",
+                           "PrimaryOwnerLayer":  "THREAD D / THREAD D2",
+                           "Examples":  "AUTHORITY ABSENT, NO-BIND STATE ACTIVE, ACTION HELD, ESCALATION REQUIRED, DOCUMENTED PAUSE CREATED, APPROVER UNAVAILABLE, HUMAN AUTHORITY REQUIRED, or ACTION ADMISSIBLE.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 RAMAT Vision views must consume display contracts only.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "EAG-024",
+                           "ComponentName":  "Governance Reconstruction Package",
+                           "ComponentCategory":  "RECONSTRUCTION",
+                           "Purpose":  "Assembles the chronology of evidence, identity, authority, delegation, approver state, escalation, timing, accountability, No-Bind, admissibility, binding decision, and source execution.",
+                           "RequiredFields":  "reconstruction_id; action_id; object_id; scope_start_utc; scope_end_utc; evidence_ids; authority_ids; accountability_ids; no_bind_ids; admissibility_ids; binding_decision_ids; source_execution_references; generated_at_utc; generated_by_actor_id",
+                           "ValidationRule":  "The reconstruction must preserve chronology, provenance, integrity status, source references, unresolved gaps, human accountability, and decision rationale.",
+                           "FailureState":  "GOVERNANCE_RECONSTRUCTION_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "Examples":  "Regulatory inspection, audit, deviation review, AI-agent investigation, batch-release reconstruction, clinical decision review, or recall review.",
+                           "GovernanceAuthorityBoundary":  "This schema supports evidence, authority, accountability, No-Bind, and action-admissibility evaluation. It does not independently approve, release, override, execute, or bind regulated or critical actions.",
+                           "SourceOfTruthRule":  "Official records and executed actions remain in governed source systems. The schema stores governed references, integrity values, evaluations, holds, decisions, and reconstruction links without replacing the official source record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions, approvals, releases, overrides, escalations, and execution authority.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated governance state but may not approve, release, override, resolve, execute, or create binding authority.",
+                           "SilenceRule":  "Silence, missed alerts, delayed review, absent objection, unavailable approvers, or a silent dashboard must not be interpreted as consent.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, payment-card data, or real regulated production integration is authorized by this step.",
+                           "Step156Dependency":  "AURORA-17 must provide an end-to-end molecule-to-market governance reconstruction.",
+                           "MaturityStatement":  "Schema registration is not runtime implementation, production readiness, regulatory validation, certification, operational release, or permission to execute regulated work.",
+                           "ReviewStatus":  "HUMAN GOVERNANCE-SCHEMA REVIEW REQUIRED"
+                       }
+                   ]
+}

@@ -1,0 +1,12 @@
+{
+  "admissibility_id": "ADM-28e82bd6-7fee-4ca6-88ea-29b674b94048",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "rationale": [
+    "DEPENDENCY_UNSATISFIED",
+    "IRLT_CUSTODY_GAP"
+  ],
+  "source_execution_required": true,
+  "track_id": "IRLT"
+}

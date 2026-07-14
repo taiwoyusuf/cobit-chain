@@ -1,0 +1,546 @@
+﻿{
+    "Summary":  {
+                    "Step":  "153",
+                    "Title":  "Universal Assurance Kernel Schema",
+                    "KernelSchemaVersion":  "0.1",
+                    "GeneratedAtUtc":  "2026-07-13T21:27:50.5559320Z",
+                    "RepositoryRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app",
+                    "Step152InputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_152_cross_industry_assurance_pack_register",
+                    "OutputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_153_universal_assurance_kernel_schema",
+                    "KernelPrimitiveCount":  18,
+                    "KernelInvariantCount":  10,
+                    "SourceCrossIndustryPackCount":  12,
+                    "RepositoryRescanPerformed":  false,
+                    "ApplicationFilesModified":  false,
+                    "RuntimeImplementationPerformed":  false,
+                    "ProductionIntegrationPerformed":  false,
+                    "RealRegulatedDataUsed":  false,
+                    "PHIUsed":  false,
+                    "ClassifiedDataUsed":  false,
+                    "PlatformBv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDDisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "ThreadD2DisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "KernelAuthorityBoundary":  "The Universal Assurance Kernel defines shared assurance primitives and validation rules. It has no independent approval, release, override, execution, or source-of-truth authority.",
+                    "HumanAuthorityRule":  "Qualified humans and authorized organizational roles remain responsible for binding decisions.",
+                    "SourceOfTruthRule":  "Official records remain in governed source systems.",
+                    "Step153Statement":  "Step 153 defines a universal schema baseline. It does not implement runtime services, modify existing architecture, validate production systems, certify controls, or authorize regulated execution.",
+                    "CategorySummary":  [
+                                            {
+                                                "PrimitiveCategory":  "ACCOUNTABILITY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "AUTHORITY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "CONTROL",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "CUSTODY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "DECISION SUPPORT",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "DEPENDENCY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "DISPLAY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "EVALUATION",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "EVIDENCE",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "GOVERNANCE",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "IDENTITY",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "INTEGRITY",
+                                                "PrimitiveCount":  2
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "OBJECT",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "PROVENANCE",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "RECONSTRUCTION",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "SOURCE OF TRUTH",
+                                                "PrimitiveCount":  1
+                                            },
+                                            {
+                                                "PrimitiveCategory":  "STATE",
+                                                "PrimitiveCount":  1
+                                            }
+                                        ],
+                    "Step154Gate":  "READY AFTER STEP 153 UNIVERSAL ASSURANCE KERNEL REVIEW"
+                },
+    "Enumerations":  {
+                         "AssuranceState":  [
+                                                "UNKNOWN",
+                                                "UNVERIFIED",
+                                                "VERIFIED",
+                                                "WARNING",
+                                                "HOLD",
+                                                "NO-BIND",
+                                                "BLOCKED",
+                                                "INADMISSIBLE",
+                                                "ADMISSIBLE"
+                                            ],
+                         "EvidenceState":  [
+                                               "MISSING",
+                                               "PRESENT",
+                                               "HASHED",
+                                               "REHASH_VERIFIED",
+                                               "MISMATCHED",
+                                               "SUPERSEDED",
+                                               "UNAVAILABLE"
+                                           ],
+                         "DependencyState":  [
+                                                 "UNKNOWN",
+                                                 "SATISFIED",
+                                                 "UNSATISFIED",
+                                                 "MISMATCHED",
+                                                 "DELAYED",
+                                                 "HELD",
+                                                 "NOT_APPLICABLE"
+                                             ],
+                         "AuthorityState":  [
+                                                "UNKNOWN",
+                                                "PRESENT",
+                                                "ABSENT",
+                                                "INVALID",
+                                                "EXPIRED",
+                                                "DELEGATED",
+                                                "APPROVER_UNAVAILABLE",
+                                                "ESCALATION_REQUIRED"
+                                            ],
+                         "ActionState":  [
+                                             "PROPOSED",
+                                             "EVALUATED",
+                                             "HELD",
+                                             "ESCALATED",
+                                             "REJECTED",
+                                             "ADMISSIBLE",
+                                             "EXECUTED_IN_SOURCE_SYSTEM",
+                                             "CANCELLED"
+                                         ],
+                         "IdentityState":  [
+                                               "UNKNOWN",
+                                               "UNVERIFIED",
+                                               "VERIFIED",
+                                               "DUPLICATE",
+                                               "MISMATCHED",
+                                               "SUPERSEDED",
+                                               "RETIRED"
+                                           ],
+                         "IntegrityState":  [
+                                                "UNSEALED",
+                                                "SEALED",
+                                                "REHASH_VERIFIED",
+                                                "HASH_MISMATCH",
+                                                "ALGORITHM_UNSUPPORTED",
+                                                "SOURCE_UNAVAILABLE"
+                                            ]
+                     },
+    "Invariants":  [
+                       {
+                           "InvariantId":  "KINV-001",
+                           "InvariantName":  "Official Source-System Authority",
+                           "Rule":  "Official records remain in governed source systems. The kernel does not replace the official record."
+                       },
+                       {
+                           "InvariantId":  "KINV-002",
+                           "InvariantName":  "Human Binding Authority",
+                           "Rule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions."
+                       },
+                       {
+                           "InvariantId":  "KINV-003",
+                           "InvariantName":  "No Evidence Without Provenance",
+                           "Rule":  "Evidence cannot support an assurance decision unless origin, object linkage, time, and source are known."
+                       },
+                       {
+                           "InvariantId":  "KINV-004",
+                           "InvariantName":  "Hash and Rehash Verifiability",
+                           "Rule":  "Integrity seals must identify the algorithm and evidence scope and must support later rehash verification."
+                       },
+                       {
+                           "InvariantId":  "KINV-005",
+                           "InvariantName":  "Silence Is Not Consent",
+                           "Rule":  "Missed alerts, absent objection, unavailable approvers, and silent dashboards must not create authority."
+                       },
+                       {
+                           "InvariantId":  "KINV-006",
+                           "InvariantName":  "Dependency Agreement Before Trust",
+                           "Rule":  "A workflow is not trustworthy when required dependencies, evidence, identity, controls, reviews, and source states disagree."
+                       },
+                       {
+                           "InvariantId":  "KINV-007",
+                           "InvariantName":  "Display Is Not Decision",
+                           "Rule":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display state but may not decide or execute."
+                       },
+                       {
+                           "InvariantId":  "KINV-008",
+                           "InvariantName":  "Explicit Unknown State",
+                           "Rule":  "Missing, unresolved, delayed, conflicting, and unknown states must be explicit and must not be treated as satisfied."
+                       },
+                       {
+                           "InvariantId":  "KINV-009",
+                           "InvariantName":  "Admissibility Is Not Execution",
+                           "Rule":  "An admissibility record evaluates whether an action may proceed; it does not itself execute the action."
+                       },
+                       {
+                           "InvariantId":  "KINV-010",
+                           "InvariantName":  "Architecture Lock Preservation",
+                           "Rule":  "Platform B v1 and Thread D v1 remain architecture locked. The kernel does not reopen either architecture."
+                       }
+                   ],
+    "Primitives":  [
+                       {
+                           "PrimitiveId":  "UK-001",
+                           "PrimitiveName":  "Assurance Object",
+                           "PrimitiveCategory":  "OBJECT",
+                           "Purpose":  "Defines the universal object being governed, evaluated, referenced, witnessed, reconstructed, or linked to evidence.",
+                           "RequiredFields":  "object_id; object_type; object_name; lifecycle_state; owner_role; source_system_id; created_at_utc; updated_at_utc",
+                           "ValidationRule":  "Every assurance evaluation must reference one uniquely identified assurance object.",
+                           "FailureState":  "OBJECT_IDENTITY_UNRESOLVED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Clinical subjects, samples, batches, equipment, CIs, devices, shipments, transactions, AI agents, documents, cases, and assets.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Step 154 must define the full Regulated Object Identity schema.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-002",
+                           "PrimitiveName":  "Regulated Object Identity Reference",
+                           "PrimitiveCategory":  "IDENTITY",
+                           "Purpose":  "Provides a stable identity reference connecting an assurance object to its official source-system identity.",
+                           "RequiredFields":  "object_id; source_system_id; source_record_id; identity_type; identity_status; identity_verified_at_utc",
+                           "ValidationRule":  "An object identity must be unique within its declared source system and must not be inferred only from display text.",
+                           "FailureState":  "IDENTITY_MISMATCH_OR_DUPLICATE",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "All regulated, critical, operational, digital, physical, human, AI, document, and evidence objects.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Step 154 will expand aliases, identity bindings, canonical IDs, source-system keys, lifecycle states, and duplicate resolution.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-003",
+                           "PrimitiveName":  "Evidence Item",
+                           "PrimitiveCategory":  "EVIDENCE",
+                           "Purpose":  "Represents one governed item of evidence supporting or contradicting an assurance claim.",
+                           "RequiredFields":  "evidence_id; object_id; evidence_type; source_system_id; source_record_id; captured_at_utc; captured_by; evidence_status",
+                           "ValidationRule":  "Evidence must have identifiable origin, time, object linkage, and status before it can support an assurance decision.",
+                           "FailureState":  "EVIDENCE_MISSING_OR_UNATTRIBUTED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Files, records, events, logs, approvals, sensor readings, audit trails, images, reports, signatures, and attestations.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Evidence must reference a valid regulated object identity.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-004",
+                           "PrimitiveName":  "Evidence Integrity Seal",
+                           "PrimitiveCategory":  "INTEGRITY",
+                           "Purpose":  "Stores the cryptographic integrity value calculated for a governed evidence item.",
+                           "RequiredFields":  "seal_id; evidence_id; hash_algorithm; hash_value; hashed_at_utc; hashed_by; content_length; seal_status",
+                           "ValidationRule":  "A seal is valid only when the declared algorithm, hash value, evidence reference, and calculation context are complete.",
+                           "FailureState":  "EVIDENCE_SEAL_INVALID",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Documents, structured records, event payloads, files, exports, images, logs, and evidence packages.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The sealed evidence item must resolve to a governed object identity.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-005",
+                           "PrimitiveName":  "Rehash Verification",
+                           "PrimitiveCategory":  "INTEGRITY",
+                           "Purpose":  "Verifies whether current evidence content still matches its previously recorded integrity seal.",
+                           "RequiredFields":  "verification_id; seal_id; recalculated_hash; verified_at_utc; verified_by; comparison_result; verification_status",
+                           "ValidationRule":  "The recalculated hash must be compared against the stored seal using the same algorithm and declared evidence scope.",
+                           "FailureState":  "REHASH_MISMATCH",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Evidence reconstruction, audit preparation, inspection readiness, transfer verification, archive checks, and chain-of-custody review.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The related evidence and assurance object identities must remain resolvable.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-006",
+                           "PrimitiveName":  "Provenance Link",
+                           "PrimitiveCategory":  "PROVENANCE",
+                           "Purpose":  "Connects evidence, decisions, transformations, actors, and source records into a traceable provenance path.",
+                           "RequiredFields":  "provenance_id; parent_object_id; child_object_id; relation_type; source_system_id; recorded_at_utc; recorded_by",
+                           "ValidationRule":  "Every derived or transformed item must identify its parent, relationship, actor, source, and time.",
+                           "FailureState":  "PROVENANCE_CHAIN_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Derived data, AI outputs, transformed records, reports, submissions, investigations, reconstructions, and decisions.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Parent and child objects must use canonical regulated object identities.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-007",
+                           "PrimitiveName":  "Source-System Reference",
+                           "PrimitiveCategory":  "SOURCE OF TRUTH",
+                           "Purpose":  "Identifies the governed system and official record location from which evidence or state originated.",
+                           "RequiredFields":  "source_system_id; system_name; system_type; environment; record_id; record_version; record_status; reference_uri_or_key",
+                           "ValidationRule":  "An assurance record must not claim official-record authority without a governed source-system reference.",
+                           "FailureState":  "SOURCE_OF_TRUTH_UNRESOLVED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "LIMS, MES, ERP, eQMS, EHR, CMDB, historians, identity systems, document repositories, and other official systems.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Step 154 must define how source-system identities bind to objects.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-008",
+                           "PrimitiveName":  "Chain-of-Custody Event",
+                           "PrimitiveCategory":  "CUSTODY",
+                           "Purpose":  "Records custody, control, possession, transfer, or responsibility changes for a governed object.",
+                           "RequiredFields":  "custody_event_id; object_id; from_custodian; to_custodian; event_type; event_at_utc; location; condition_status; evidence_id",
+                           "ValidationRule":  "Every custody transfer must identify the object, parties, time, location, condition, and supporting evidence.",
+                           "FailureState":  "CUSTODY_CHAIN_BROKEN",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Samples, materials, doses, products, shipments, devices, documents, digital evidence, serialized goods, and assets.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The transferred item must have one canonical object identity.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-009",
+                           "PrimitiveName":  "Workflow Dependency",
+                           "PrimitiveCategory":  "DEPENDENCY",
+                           "Purpose":  "Defines a condition that must agree or be satisfied before execution, release, reporting, transfer, or audit exposure.",
+                           "RequiredFields":  "dependency_id; object_id; dependency_type; required_state; observed_state; source_system_id; evaluated_at_utc; dependency_status",
+                           "ValidationRule":  "A workflow cannot be considered trustworthy when required and observed dependency states disagree or remain unknown.",
+                           "FailureState":  "DEPENDENCY_UNSATISFIED_OR_MISMATCHED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "Clinical, laboratory, manufacturing, quality, supply-chain, IT, equipment, AI-agent, financial, and infrastructure workflows.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Every dependency must identify the regulated objects it constrains.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-010",
+                           "PrimitiveName":  "Control Requirement",
+                           "PrimitiveCategory":  "CONTROL",
+                           "Purpose":  "Defines the governed requirement, policy, obligation, or control that an assurance evaluation tests.",
+                           "RequiredFields":  "control_id; control_name; control_source; obligation_reference; applicable_object_type; evaluation_method; control_owner; control_status",
+                           "ValidationRule":  "A control result must identify the requirement tested, evaluation method, owner, applicable object, and result.",
+                           "FailureState":  "CONTROL_UNMAPPED_OR_UNTESTED",
+                           "PrimaryOwnerLayer":  "PLATFORM A / CROSS-CUTTING ASSURANCE OS",
+                           "AppliesTo":  "Policies, regulations, standards, SOPs, technical controls, quality controls, AI controls, and operational requirements.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Control applicability must resolve to governed object types and identities.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-011",
+                           "PrimitiveName":  "Authority Record",
+                           "PrimitiveCategory":  "AUTHORITY",
+                           "Purpose":  "Represents the authority required for a person, role, rule, or delegated actor to bind an action.",
+                           "RequiredFields":  "authority_id; actor_id; role_id; authority_type; scope; valid_from_utc; valid_to_utc; delegated_by; authority_status",
+                           "ValidationRule":  "Authority must be present, valid, current, in scope, and linked to an accountable actor before an action may be admissible.",
+                           "FailureState":  "AUTHORITY_ABSENT_OR_INVALID",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "Approvals, releases, overrides, delegated decisions, AI actions, clinical decisions, quality decisions, and operational authorizations.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The actor and governed action object must have canonical identities.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-012",
+                           "PrimitiveName":  "No-Bind Governance State",
+                           "PrimitiveCategory":  "GOVERNANCE",
+                           "Purpose":  "Creates an explicit governed hold when binding authority, evidence, review, timing, or escalation is insufficient.",
+                           "RequiredFields":  "no_bind_id; object_id; action_id; reason_code; authority_state; evidence_state; approver_state; escalation_state; activated_at_utc; status",
+                           "ValidationRule":  "Silence, missed alerts, unavailable approvers, or absent objection must never be interpreted as authorization.",
+                           "FailureState":  "NO_BIND_STATE_ACTIVE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "AI actions, quality approvals, clinical decisions, release decisions, financial actions, public-sector decisions, and critical operations.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The held object, proposed action, actor, and authority record must be identifiable.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-013",
+                           "PrimitiveName":  "Human Accountability Record",
+                           "PrimitiveCategory":  "ACCOUNTABILITY",
+                           "Purpose":  "Identifies the qualified human or authorized organizational role responsible for review, approval, escalation, or binding action.",
+                           "RequiredFields":  "accountability_id; actor_id; role_id; responsibility_type; object_id; action_id; assigned_at_utc; accepted_at_utc; status",
+                           "ValidationRule":  "A high-consequence action must not become admissible without an identifiable accountable human or authorized role.",
+                           "FailureState":  "HUMAN_ACCOUNTABILITY_NOT_IDENTIFIED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "Regulated decisions, critical actions, approvals, releases, escalations, investigations, and AI-mediated workflows.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The accountable actor, governed object, and action must use stable identities.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-014",
+                           "PrimitiveName":  "Assurance Evaluation",
+                           "PrimitiveCategory":  "EVALUATION",
+                           "Purpose":  "Records the result of evaluating evidence, controls, dependencies, identity, authority, timing, and source agreement.",
+                           "RequiredFields":  "evaluation_id; object_id; evaluation_type; evaluated_at_utc; evaluated_by; evidence_ids; control_ids; result; rationale",
+                           "ValidationRule":  "An evaluation result must be reproducible from declared evidence, controls, states, and evaluation logic.",
+                           "FailureState":  "ASSURANCE_EVALUATION_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "PLATFORM B v1 / PLATFORM B1",
+                           "AppliesTo":  "Assurance checks, integrity reviews, dependency reviews, authority checks, release readiness, audit readiness, and risk reviews.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Every evaluation must resolve to the governed object being evaluated.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-015",
+                           "PrimitiveName":  "Action Admissibility Record",
+                           "PrimitiveCategory":  "DECISION SUPPORT",
+                           "Purpose":  "Records whether a proposed action is admissible based on evaluated evidence, controls, dependencies, authority, timing, and accountability.",
+                           "RequiredFields":  "admissibility_id; action_id; object_id; evaluation_id; authority_id; accountability_id; decision_state; rationale; decided_at_utc",
+                           "ValidationRule":  "Admissibility must not equal execution. The record evaluates whether an action may proceed subject to valid human and source-system authority.",
+                           "FailureState":  "ACTION_INADMISSIBLE_OR_HELD",
+                           "PrimaryOwnerLayer":  "PLATFORM B v1 / PLATFORM B1",
+                           "AppliesTo":  "Release, approval, transfer, submission, execution, override, access, payment, treatment, and autonomous-agent actions.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The action target, actor, authority, and governed object identities must resolve.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-016",
+                           "PrimitiveName":  "Assurance State Snapshot",
+                           "PrimitiveCategory":  "STATE",
+                           "Purpose":  "Captures the evaluated assurance state of an object at a specific time without replacing the object\u0027s official source-system state.",
+                           "RequiredFields":  "snapshot_id; object_id; snapshot_at_utc; assurance_state; evidence_state; dependency_state; authority_state; source_state",
+                           "ValidationRule":  "A snapshot must identify its time, source references, evaluation basis, and whether any state remains unknown.",
+                           "FailureState":  "STATE_UNKNOWN_OR_CONFLICTED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "Dashboards, inspections, release readiness, audit reconstruction, wearable displays, and operational assurance views.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "The snapshot must reference one canonical assurance object identity.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-017",
+                           "PrimitiveName":  "Evidence Reconstruction Package",
+                           "PrimitiveCategory":  "RECONSTRUCTION",
+                           "Purpose":  "Assembles the governed sequence of objects, evidence, integrity checks, states, actors, controls, and decisions for audit or inspection.",
+                           "RequiredFields":  "reconstruction_id; object_id; scope; start_at_utc; end_at_utc; evidence_ids; event_ids; evaluation_ids; generated_at_utc; generated_by",
+                           "ValidationRule":  "A reconstruction package must preserve chronology, provenance, integrity status, source references, gaps, and unresolved conflicts.",
+                           "FailureState":  "RECONSTRUCTION_INCOMPLETE_OR_NONDEFENSIBLE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / MVP2",
+                           "AppliesTo":  "Inspections, audits, deviations, CAPA, clinical investigations, batch review, recalls, incidents, complaints, and submissions.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "All reconstructed objects and events must use stable governed identities.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "PrimitiveId":  "UK-018",
+                           "PrimitiveName":  "Display and Witness Contract",
+                           "PrimitiveCategory":  "DISPLAY",
+                           "Purpose":  "Defines the limited assurance-state payload that a display, wearable, dashboard, or device witness may present.",
+                           "RequiredFields":  "display_contract_id; object_id; snapshot_id; allowed_fields; redaction_rule; display_mode; generated_at_utc; expires_at_utc",
+                           "ValidationRule":  "A display contract may communicate evaluated state only and must not create approval, release, override, or execution authority.",
+                           "FailureState":  "DISPLAY_CONTRACT_INVALID_OR_OVERPERMISSIVE",
+                           "PrimaryOwnerLayer":  "THREAD D / THREAD D2",
+                           "AppliesTo":  "RAMAT Vision, glasses, wearables, dashboards, mobile displays, device witnesses, regulator views, and audit views.",
+                           "RuntimeAuthority":  "SCHEMA AND ASSURANCE-EVALUATION SUPPORT ONLY. NO INDEPENDENT APPROVAL, RELEASE, OVERRIDE, OR EXECUTION AUTHORITY.",
+                           "SourceOfTruthRule":  "Official records remain in governed source systems. The kernel stores governed references, integrity values, evaluations, and reconstruction links without replacing the official record.",
+                           "HumanAccountabilityRule":  "Qualified humans and authorized organizational roles remain accountable for binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display or witness evaluated state but may not approve, release, override, resolve, or execute actions.",
+                           "Step154Dependency":  "Displayed state must reference the correct governed object identity.",
+                           "MaturityStatement":  "Kernel primitive registration is a schema baseline, not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN SCHEMA REVIEW REQUIRED"
+                       }
+                   ]
+}

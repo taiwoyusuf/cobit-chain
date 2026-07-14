@@ -1,0 +1,17 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-COMPOUND-001",
+  "evidence_type": "COMPOUNDING_PREPARATION_PACKAGE",
+  "measurements": {
+    "beyond_use_time_valid": true,
+    "formula_version_current": true,
+    "ingredient_lots_released": true,
+    "label_matches": true,
+    "order_identity_match": true
+  },
+  "object_id": "A17-COMPOUND-PREP-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-PHARMACIST-001",
+  "source_record_id": "COMPOUND-SOURCE-001",
+  "synthetic": true
+}

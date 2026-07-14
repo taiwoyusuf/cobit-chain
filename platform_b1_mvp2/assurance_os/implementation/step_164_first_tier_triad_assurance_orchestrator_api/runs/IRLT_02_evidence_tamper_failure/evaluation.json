@@ -1,0 +1,81 @@
+{
+  "action_admissibility_state": "HELD",
+  "action_id": "ACTION-IRLT-READINESS-164-001",
+  "action_type": "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+  "authority": {
+    "actor_id": "ACTOR-IRLT-AUTHORITY-001",
+    "authority_current": true,
+    "authority_id": "AUTH-IRLT-164-001",
+    "authority_in_scope": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY"
+  },
+  "correlation_id": "a70c84a2-572d-4b88-9383-ac1e5dc19a66",
+  "current_hash": "df22c982f664e81b90939f8a1770672a581a2b88fd0a3cc7c81415d3278c47c7",
+  "dependencies": [
+    {
+      "dependency_id": "IRLT-DEP-001",
+      "dependency_name": "QC release evidence",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "IRLT-DEP-002",
+      "dependency_name": "Material genealogy",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "IRLT-DEP-003",
+      "dependency_name": "Custody chain continuity",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "IRLT-DEP-004",
+      "dependency_name": "Receiving-site readiness",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    },
+    {
+      "dependency_id": "IRLT-DEP-005",
+      "dependency_name": "Decay-window validity",
+      "dependency_status": "SATISFIED",
+      "failure_code": null
+    }
+  ],
+  "dependencies_satisfied": true,
+  "display_states": [
+    "EVIDENCE INSUFFICIENT",
+    "NO-BIND STATE ACTIVE",
+    "ACTION HELD",
+    "HUMAN AUTHORITY REQUIRED"
+  ],
+  "evaluated_at_utc": "2026-07-13T23:23:44Z",
+  "evaluation_id": "EVAL-90f18210-8dc9-4077-bf40-95f4d2ff7ee2",
+  "evidence_sufficient": false,
+  "execution_performed": false,
+  "failure_type": "EVIDENCE_TAMPER_INJECTED",
+  "human_binding_decision_performed": false,
+  "human_binding_decision_required": true,
+  "identity_verified": true,
+  "implementation_version": "164.1.1",
+  "integrity_state": "REHASH_MISMATCH",
+  "no_bind_reasons": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "no_bind_state": "ACTIVE",
+  "object_id": "A17-IRLT-BATCH-164-001",
+  "official_source_record_id": "IRLT-SOURCE-164-001",
+  "official_source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+  "priority_tier": "FIRST-TIER",
+  "scenario_name": "IRLT_02_evidence_tamper_failure",
+  "schema_version": "1.0",
+  "sealed_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+  "source_system_execution_required": true,
+  "timing_valid": true,
+  "track_id": "IRLT",
+  "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+}

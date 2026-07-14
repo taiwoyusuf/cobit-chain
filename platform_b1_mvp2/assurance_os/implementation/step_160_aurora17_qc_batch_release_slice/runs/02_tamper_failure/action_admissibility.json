@@ -1,0 +1,14 @@
+{
+  "action_id": "ACTION-A17-BATCH-RELEASE-001",
+  "admissibility_id": "ADM-35b9c85b-1b71-48c8-b445-cffdef2a3f75",
+  "decided_at_utc": "2026-07-13T22:42:25Z",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "evaluation_id": "EVAL-ba1603f4-09ce-4202-8478-9d69e6971a69",
+  "execution_performed": false,
+  "object_id": "A17-BATCH-2026-001",
+  "rationale": [
+    "EVIDENCE_REHASH_MISMATCH"
+  ],
+  "source_execution_required": true
+}

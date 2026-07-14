@@ -1,0 +1,12 @@
+{
+  "activated": true,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-61046ed8-7450-47f8-ae59-5bb9e227091d",
+  "reason_codes": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "silence_is_not_consent": true,
+  "state": "NO-BIND STATE ACTIVE",
+  "track_id": "IRLT"
+}

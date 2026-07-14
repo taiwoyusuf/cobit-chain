@@ -1,0 +1,1240 @@
+{
+  "architecture_boundaries": {
+    "human_authority": "REQUIRED FOR BINDING DECISIONS",
+    "platform_b1": "LOCAL ADVANCED ASSURANCE DEMONSTRATION ONLY",
+    "platform_b_v1": "ARCHITECTURE LOCKED",
+    "production_write_back": false,
+    "ramat_vision": "DISPLAY / WITNESS ONLY",
+    "source_system_execution": "REQUIRED",
+    "thread_d2": "DISPLAY / WITNESS ONLY",
+    "thread_d_v1": "ARCHITECTURE LOCKED"
+  },
+  "bundle_id": "STEP166-FIRST-TIER-TRIAD-BUNDLE",
+  "bundle_type": "COMMERCIAL DEMONSTRATION AND INSPECTION PASSPORT BUNDLE",
+  "display_feed_count": 3,
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T23:36:26Z",
+  "human_binding_authority_required": true,
+  "implementation_boundary": "LOCAL SYNTHETIC READ-ONLY COMMERCIAL DEMONSTRATION CONSOLE ONLY",
+  "implementation_version": "166.1.0",
+  "passport_count": 3,
+  "passports": [
+    {
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "admissibility_state": "ADMISSIBLE",
+      "authority_valid": true,
+      "dependencies_satisfied": true,
+      "evidence_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "evidence_seal_id": "SEAL-7916e218-27ec-4bb4-b194-57916d5ad0a1",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "hash_algorithm": "SHA-256",
+      "human_binding_decision_required": true,
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "passport_id": "PASSPORT-f01861db-f2b7-4305-88c0-60b4d70fc135",
+      "passport_type": "FIRST-TIER ASSURANCE EVIDENCE PASSPORT",
+      "priority_tier": "FIRST-TIER",
+      "ramat_boundary": "DISPLAY / WITNESS ONLY",
+      "rehash_state": "REHASH_VERIFIED",
+      "source_record_id": "IRLT-SOURCE-164-001",
+      "source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+      "source_system_execution_required": true,
+      "synthetic": true,
+      "timing_valid": true,
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "admissibility_state": "ADMISSIBLE",
+      "authority_valid": true,
+      "dependencies_satisfied": true,
+      "evidence_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "evidence_seal_id": "SEAL-867a21d2-60d2-4a4b-9575-d65b0eac1549",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "hash_algorithm": "SHA-256",
+      "human_binding_decision_required": true,
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "passport_id": "PASSPORT-31384008-6441-429c-ab70-445c761de6ae",
+      "passport_type": "FIRST-TIER ASSURANCE EVIDENCE PASSPORT",
+      "priority_tier": "FIRST-TIER",
+      "ramat_boundary": "DISPLAY / WITNESS ONLY",
+      "rehash_state": "REHASH_VERIFIED",
+      "source_record_id": "COMPOUND-SOURCE-164-001",
+      "source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+      "source_system_execution_required": true,
+      "synthetic": true,
+      "timing_valid": true,
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "admissibility_state": "ADMISSIBLE",
+      "authority_valid": true,
+      "dependencies_satisfied": true,
+      "evidence_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "evidence_seal_id": "SEAL-ab99b4dd-d2ce-49fa-bab1-7b2d65957fde",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "hash_algorithm": "SHA-256",
+      "human_binding_decision_required": true,
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "passport_id": "PASSPORT-f8a75576-22ad-44ba-8127-ddc4c6b7d80f",
+      "passport_type": "FIRST-TIER ASSURANCE EVIDENCE PASSPORT",
+      "priority_tier": "FIRST-TIER",
+      "ramat_boundary": "DISPLAY / WITNESS ONLY",
+      "rehash_state": "REHASH_VERIFIED",
+      "source_record_id": "DSCSA-SOURCE-164-001",
+      "source_system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+      "source_system_execution_required": true,
+      "synthetic": true,
+      "timing_valid": true,
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    }
+  ],
+  "phi_used": false,
+  "production_write_back_performed": false,
+  "ramat_display_feeds": [
+    {
+      "can_administer": false,
+      "can_approve": false,
+      "can_dispense": false,
+      "can_execute": false,
+      "can_override": false,
+      "can_release": false,
+      "can_resolve_no_bind": false,
+      "can_transfer_real_product": false,
+      "display_authority": "DISPLAY / WITNESS ONLY",
+      "display_contract_id": "DISPLAY-c0cdcc6c-3597-40f2-8916-f6ee65a2c0b0",
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "scenario_name": "IRLT_04_recovery_success",
+      "source_of_truth": {
+        "record_id": "IRLT-SOURCE-164-001",
+        "system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC"
+      },
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "can_administer": false,
+      "can_approve": false,
+      "can_dispense": false,
+      "can_execute": false,
+      "can_override": false,
+      "can_release": false,
+      "can_resolve_no_bind": false,
+      "can_transfer_real_product": false,
+      "display_authority": "DISPLAY / WITNESS ONLY",
+      "display_contract_id": "DISPLAY-4f8b0fb5-b91d-47b6-80f5-467615a60124",
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "scenario_name": "COMPOUNDING_04_recovery_success",
+      "source_of_truth": {
+        "record_id": "COMPOUND-SOURCE-164-001",
+        "system": "MOCK COMPOUNDING PHARMACY FABRIC"
+      },
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "can_administer": false,
+      "can_approve": false,
+      "can_dispense": false,
+      "can_execute": false,
+      "can_override": false,
+      "can_release": false,
+      "can_resolve_no_bind": false,
+      "can_transfer_real_product": false,
+      "display_authority": "DISPLAY / WITNESS ONLY",
+      "display_contract_id": "DISPLAY-d52aa865-1c3a-4ad9-b2e7-009a9c1fbc2a",
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "scenario_name": "DSCSA_04_recovery_success",
+      "source_of_truth": {
+        "record_id": "DSCSA-SOURCE-164-001",
+        "system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC"
+      },
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    }
+  ],
+  "reconstruction_count": 3,
+  "reconstructions": [
+    {
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "authority_reference": "AUTH-IRLT-164-001",
+      "correlation_id": "95d6ba98-222c-4442-9451-50eefb27d48c",
+      "evidence_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "evidence_seal_reference": "SEAL-7916e218-27ec-4bb4-b194-57916d5ad0a1",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "reconstruction_id": "RECON-8b59fca1-7fd1-4aac-8705-a1db88930b40",
+      "scenario_name": "IRLT_04_recovery_success",
+      "source_system_reference": "IRLT-SOURCE-164-001",
+      "track_id": "IRLT",
+      "unresolved_gaps": []
+    },
+    {
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "authority_reference": "AUTH-COMPOUNDING-164-001",
+      "correlation_id": "25a4e076-78a3-4ef0-b8dc-52d41dce554c",
+      "evidence_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "evidence_seal_reference": "SEAL-867a21d2-60d2-4a4b-9575-d65b0eac1549",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "reconstruction_id": "RECON-cbdff218-b55d-4e9a-be8c-f8a60bb68226",
+      "scenario_name": "COMPOUNDING_04_recovery_success",
+      "source_system_reference": "COMPOUND-SOURCE-164-001",
+      "track_id": "COMPOUNDING",
+      "unresolved_gaps": []
+    },
+    {
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "authority_reference": "AUTH-DSCSA-164-001",
+      "correlation_id": "697575f3-76b7-413a-b0e7-6e8c99604b43",
+      "evidence_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "evidence_seal_reference": "SEAL-ab99b4dd-d2ce-49fa-bab1-7b2d65957fde",
+      "execution_performed": false,
+      "generated_at_utc": "2026-07-13T23:23:44Z",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "reconstruction_id": "RECON-0b184e2d-7f6d-42fc-a8de-1163336b6e14",
+      "scenario_name": "DSCSA_04_recovery_success",
+      "source_system_reference": "DSCSA-SOURCE-164-001",
+      "track_id": "DSCSA",
+      "unresolved_gaps": []
+    }
+  ],
+  "scenario_count": 12,
+  "scenarios": [
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "action_type": "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-IRLT-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-IRLT-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY"
+      },
+      "correlation_id": "73a11438-2eb8-4930-b55b-f329d033ba36",
+      "current_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "dependencies": [
+        {
+          "dependency_id": "IRLT-DEP-001",
+          "dependency_name": "QC release evidence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-002",
+          "dependency_name": "Material genealogy",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-003",
+          "dependency_name": "Custody chain continuity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-004",
+          "dependency_name": "Receiving-site readiness",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-005",
+          "dependency_name": "Decay-window validity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-87cd7629-6875-45b1-89d1-e89abff76ed7",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "official_source_record_id": "IRLT-SOURCE-164-001",
+      "official_source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "IRLT_01_baseline_success",
+      "schema_version": "1.0",
+      "sealed_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "action_type": "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-IRLT-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-IRLT-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY"
+      },
+      "correlation_id": "a70c84a2-572d-4b88-9383-ac1e5dc19a66",
+      "current_hash": "df22c982f664e81b90939f8a1770672a581a2b88fd0a3cc7c81415d3278c47c7",
+      "dependencies": [
+        {
+          "dependency_id": "IRLT-DEP-001",
+          "dependency_name": "QC release evidence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-002",
+          "dependency_name": "Material genealogy",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-003",
+          "dependency_name": "Custody chain continuity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-004",
+          "dependency_name": "Receiving-site readiness",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-005",
+          "dependency_name": "Decay-window validity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "EVIDENCE INSUFFICIENT",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-90f18210-8dc9-4077-bf40-95f4d2ff7ee2",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "EVIDENCE_TAMPER_INJECTED",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_MISMATCH",
+      "no_bind_reasons": [
+        "EVIDENCE_REHASH_MISMATCH",
+        "EVIDENCE_TAMPER_INJECTED"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "official_source_record_id": "IRLT-SOURCE-164-001",
+      "official_source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "IRLT_02_evidence_tamper_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "action_type": "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-IRLT-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-IRLT-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY"
+      },
+      "correlation_id": "a4d57a6b-a794-4974-bf3d-73c0d4f95926",
+      "current_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "dependencies": [
+        {
+          "dependency_id": "IRLT-DEP-001",
+          "dependency_name": "QC release evidence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-002",
+          "dependency_name": "Material genealogy",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-003",
+          "dependency_name": "Custody chain continuity",
+          "dependency_status": "UNSATISFIED",
+          "failure_code": "IRLT_CUSTODY_GAP"
+        },
+        {
+          "dependency_id": "IRLT-DEP-004",
+          "dependency_name": "Receiving-site readiness",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-005",
+          "dependency_name": "Decay-window validity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": false,
+      "display_states": [
+        "DEPENDENCY UNSATISFIED",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-5fdd630c-8a2a-4265-82a3-c77dd648f54e",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "IRLT_CUSTODY_GAP",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [
+        "DEPENDENCY_UNSATISFIED",
+        "IRLT_CUSTODY_GAP"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "official_source_record_id": "IRLT-SOURCE-164-001",
+      "official_source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "IRLT_03_domain_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-IRLT-READINESS-164-001",
+      "action_type": "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-IRLT-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-IRLT-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_IRLT_RELEASE_AUTHORITY"
+      },
+      "correlation_id": "95d6ba98-222c-4442-9451-50eefb27d48c",
+      "current_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "dependencies": [
+        {
+          "dependency_id": "IRLT-DEP-001",
+          "dependency_name": "QC release evidence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-002",
+          "dependency_name": "Material genealogy",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-003",
+          "dependency_name": "Custody chain continuity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-004",
+          "dependency_name": "Receiving-site readiness",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "IRLT-DEP-005",
+          "dependency_name": "Decay-window validity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-6ecf66ed-4910-4a4b-97b2-66bb4b2c0183",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-IRLT-BATCH-164-001",
+      "official_source_record_id": "IRLT-SOURCE-164-001",
+      "official_source_system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "IRLT_04_recovery_success",
+      "schema_version": "1.0",
+      "sealed_hash": "6b3c5f19189c67eac103d25b016987ecb00e6163c5e521fc6f1b4b3224d27ffe",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "IRLT",
+      "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "action_type": "COMPOUNDING_DISPENSING_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-COMPOUNDING-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-COMPOUNDING-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_PHARMACIST"
+      },
+      "correlation_id": "1c577644-e9a1-4c4f-8811-fbb72ee22e06",
+      "current_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "dependencies": [
+        {
+          "dependency_id": "COMPOUNDING-DEP-001",
+          "dependency_name": "Order identity agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-002",
+          "dependency_name": "Formula version current",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-003",
+          "dependency_name": "Ingredient genealogy complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-004",
+          "dependency_name": "Calculation verified",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-005",
+          "dependency_name": "Label agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-006",
+          "dependency_name": "Beyond-use timing valid",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-39ee65b6-eec7-46f2-8329-f9b0e9dd7ca9",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "official_source_record_id": "COMPOUND-SOURCE-164-001",
+      "official_source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "COMPOUNDING_01_baseline_success",
+      "schema_version": "1.0",
+      "sealed_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "action_type": "COMPOUNDING_DISPENSING_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-COMPOUNDING-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-COMPOUNDING-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_PHARMACIST"
+      },
+      "correlation_id": "a95c6cef-0ce9-4149-a36f-258051bf282e",
+      "current_hash": "b8fbb5e2bd08f7c2bbc7869ae7211970548fbeab135f893690d9bf099f8eb563",
+      "dependencies": [
+        {
+          "dependency_id": "COMPOUNDING-DEP-001",
+          "dependency_name": "Order identity agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-002",
+          "dependency_name": "Formula version current",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-003",
+          "dependency_name": "Ingredient genealogy complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-004",
+          "dependency_name": "Calculation verified",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-005",
+          "dependency_name": "Label agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-006",
+          "dependency_name": "Beyond-use timing valid",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "EVIDENCE INSUFFICIENT",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-87a3b8b2-c803-42d2-b514-a9eb5b1e7b40",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "EVIDENCE_TAMPER_INJECTED",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_MISMATCH",
+      "no_bind_reasons": [
+        "EVIDENCE_REHASH_MISMATCH",
+        "EVIDENCE_TAMPER_INJECTED"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "official_source_record_id": "COMPOUND-SOURCE-164-001",
+      "official_source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "COMPOUNDING_02_evidence_tamper_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "action_type": "COMPOUNDING_DISPENSING_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-COMPOUNDING-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-COMPOUNDING-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_PHARMACIST"
+      },
+      "correlation_id": "da66c769-7c8c-461f-8a93-585af88920a4",
+      "current_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "dependencies": [
+        {
+          "dependency_id": "COMPOUNDING-DEP-001",
+          "dependency_name": "Order identity agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-002",
+          "dependency_name": "Formula version current",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-003",
+          "dependency_name": "Ingredient genealogy complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-004",
+          "dependency_name": "Calculation verified",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-005",
+          "dependency_name": "Label agreement",
+          "dependency_status": "UNSATISFIED",
+          "failure_code": "COMPOUNDING_LABEL_MISMATCH"
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-006",
+          "dependency_name": "Beyond-use timing valid",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": false,
+      "display_states": [
+        "DEPENDENCY UNSATISFIED",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-5ea62861-2fce-4d21-913e-aac8007a7c05",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "COMPOUNDING_LABEL_MISMATCH",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [
+        "DEPENDENCY_UNSATISFIED",
+        "COMPOUNDING_LABEL_MISMATCH"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "official_source_record_id": "COMPOUND-SOURCE-164-001",
+      "official_source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "COMPOUNDING_03_domain_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-COMPOUND-DISPENSING-164-001",
+      "action_type": "COMPOUNDING_DISPENSING_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-COMPOUNDING-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-COMPOUNDING-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_PHARMACIST"
+      },
+      "correlation_id": "25a4e076-78a3-4ef0-b8dc-52d41dce554c",
+      "current_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "dependencies": [
+        {
+          "dependency_id": "COMPOUNDING-DEP-001",
+          "dependency_name": "Order identity agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-002",
+          "dependency_name": "Formula version current",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-003",
+          "dependency_name": "Ingredient genealogy complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-004",
+          "dependency_name": "Calculation verified",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-005",
+          "dependency_name": "Label agreement",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "COMPOUNDING-DEP-006",
+          "dependency_name": "Beyond-use timing valid",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-c51c7874-bba4-4e4d-8567-8005e47535b2",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-COMPOUND-PREP-164-001",
+      "official_source_record_id": "COMPOUND-SOURCE-164-001",
+      "official_source_system": "MOCK COMPOUNDING PHARMACY FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "COMPOUNDING_04_recovery_success",
+      "schema_version": "1.0",
+      "sealed_hash": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "COMPOUNDING",
+      "track_name": "Compounding Pharmacy Assurance Track"
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "action_type": "DSCSA_TRANSFER_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-DSCSA-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-DSCSA-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE"
+      },
+      "correlation_id": "2247402f-d1ce-40c1-84ae-8a86a6a5cd3a",
+      "current_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "dependencies": [
+        {
+          "dependency_id": "DSCSA-DEP-001",
+          "dependency_name": "Serialization complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-002",
+          "dependency_name": "Aggregation integrity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-003",
+          "dependency_name": "EPCIS event sequence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-004",
+          "dependency_name": "Trading-partner authority",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-005",
+          "dependency_name": "Transaction evidence complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-006",
+          "dependency_name": "Suspect-product state clear",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-6f3b3d38-b4c7-42eb-ba44-5fcdb98aac91",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "official_source_record_id": "DSCSA-SOURCE-164-001",
+      "official_source_system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "DSCSA_01_baseline_success",
+      "schema_version": "1.0",
+      "sealed_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "action_type": "DSCSA_TRANSFER_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-DSCSA-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-DSCSA-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE"
+      },
+      "correlation_id": "a38292e6-fdbe-43c5-bfcc-3fe89a9753ff",
+      "current_hash": "b7f3a75df16293f856bdac5bc9d6f9c2f55c5c33fecd7eee9703db64fc30d877",
+      "dependencies": [
+        {
+          "dependency_id": "DSCSA-DEP-001",
+          "dependency_name": "Serialization complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-002",
+          "dependency_name": "Aggregation integrity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-003",
+          "dependency_name": "EPCIS event sequence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-004",
+          "dependency_name": "Trading-partner authority",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-005",
+          "dependency_name": "Transaction evidence complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-006",
+          "dependency_name": "Suspect-product state clear",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "EVIDENCE INSUFFICIENT",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-6563cc5c-6517-436c-b4d2-f33bfac3f919",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "EVIDENCE_TAMPER_INJECTED",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_MISMATCH",
+      "no_bind_reasons": [
+        "EVIDENCE_REHASH_MISMATCH",
+        "EVIDENCE_TAMPER_INJECTED"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "official_source_record_id": "DSCSA-SOURCE-164-001",
+      "official_source_system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "DSCSA_02_evidence_tamper_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "action_type": "DSCSA_TRANSFER_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-DSCSA-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-DSCSA-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE"
+      },
+      "correlation_id": "438538c5-ba8d-4ef8-9b3e-03bd08b89540",
+      "current_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "dependencies": [
+        {
+          "dependency_id": "DSCSA-DEP-001",
+          "dependency_name": "Serialization complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-002",
+          "dependency_name": "Aggregation integrity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-003",
+          "dependency_name": "EPCIS event sequence",
+          "dependency_status": "UNSATISFIED",
+          "failure_code": "DSCSA_EPCIS_SEQUENCE_BREAK"
+        },
+        {
+          "dependency_id": "DSCSA-DEP-004",
+          "dependency_name": "Trading-partner authority",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-005",
+          "dependency_name": "Transaction evidence complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-006",
+          "dependency_name": "Suspect-product state clear",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": false,
+      "display_states": [
+        "DEPENDENCY UNSATISFIED",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD",
+        "HUMAN AUTHORITY REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-25d59e08-8554-401d-a8f4-e016ba1a6929",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "failure_type": "DSCSA_EPCIS_SEQUENCE_BREAK",
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [
+        "DEPENDENCY_UNSATISFIED",
+        "DSCSA_EPCIS_SEQUENCE_BREAK"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "official_source_record_id": "DSCSA-SOURCE-164-001",
+      "official_source_system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "DSCSA_03_domain_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+      "action_type": "DSCSA_TRANSFER_READINESS",
+      "authority": {
+        "actor_id": "ACTOR-DSCSA-AUTHORITY-001",
+        "authority_current": true,
+        "authority_id": "AUTH-DSCSA-164-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE"
+      },
+      "correlation_id": "697575f3-76b7-413a-b0e7-6e8c99604b43",
+      "current_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "dependencies": [
+        {
+          "dependency_id": "DSCSA-DEP-001",
+          "dependency_name": "Serialization complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-002",
+          "dependency_name": "Aggregation integrity",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-003",
+          "dependency_name": "EPCIS event sequence",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-004",
+          "dependency_name": "Trading-partner authority",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-005",
+          "dependency_name": "Transaction evidence complete",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        },
+        {
+          "dependency_id": "DSCSA-DEP-006",
+          "dependency_name": "Suspect-product state clear",
+          "dependency_status": "SATISFIED",
+          "failure_code": null
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T23:23:44Z",
+      "evaluation_id": "EVAL-f4063e37-6fd5-433a-93c2-5afec6ca196a",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "failure_type": null,
+      "human_binding_decision_performed": false,
+      "human_binding_decision_required": true,
+      "identity_verified": true,
+      "implementation_version": "164.1.1",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-DSCSA-SERIAL-164-001",
+      "official_source_record_id": "DSCSA-SOURCE-164-001",
+      "official_source_system": "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+      "priority_tier": "FIRST-TIER",
+      "scenario_name": "DSCSA_04_recovery_success",
+      "schema_version": "1.0",
+      "sealed_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+      "source_system_execution_required": true,
+      "timing_valid": true,
+      "track_id": "DSCSA",
+      "track_name": "DSCSA and Pharmaceutical Supply-Chain Assurance Track"
+    }
+  ],
+  "source_system_execution_required": true,
+  "track_count": 3,
+  "tracks": [
+    {
+      "display_name": "IRLT / Radiopharmaceutical",
+      "passport_title": "IRLT Assurance and Inspection Passport",
+      "priority_tier": "FIRST-TIER",
+      "track_id": "IRLT"
+    },
+    {
+      "display_name": "Compounding Pharmacy",
+      "passport_title": "Compounding Preparation and Pharmacist Assurance Passport",
+      "priority_tier": "FIRST-TIER",
+      "track_id": "COMPOUNDING"
+    },
+    {
+      "display_name": "DSCSA / Pharmaceutical Supply Chain",
+      "passport_title": "DSCSA Transaction, Trading-Partner, and Custody Assurance Passport",
+      "priority_tier": "FIRST-TIER",
+      "track_id": "DSCSA"
+    }
+  ]
+}

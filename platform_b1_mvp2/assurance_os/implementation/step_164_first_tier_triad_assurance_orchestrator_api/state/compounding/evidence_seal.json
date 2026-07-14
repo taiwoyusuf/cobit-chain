@@ -1,0 +1,10 @@
+{
+  "evidence_id": "EVID-COMPOUNDING-164-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "c7beff9eaa6d1b1b47acf6f3f0838b9d5065a88b750a4795a7a99d8864246be1",
+  "object_id": "A17-COMPOUND-PREP-164-001",
+  "seal_id": "SEAL-867a21d2-60d2-4a4b-9575-d65b0eac1549",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T23:23:44Z",
+  "track_id": "COMPOUNDING"
+}

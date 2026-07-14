@@ -1,0 +1,801 @@
+﻿{
+    "Summary":  {
+                    "Step":  "158",
+                    "Title":  "Azure, On-Premises, Edge, Wearable, and Offline Deployment Plan",
+                    "DeploymentPlanVersion":  "0.1",
+                    "GeneratedAtUtc":  "2026-07-13T22:27:03.9201068Z",
+                    "RepositoryRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app",
+                    "Step157InputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_157_ramat_lifecycle_display_map",
+                    "OutputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_158_azure_onprem_edge_offline_deployment_plan",
+                    "DeploymentComponentCount":  16,
+                    "DeploymentProfileCount":  5,
+                    "DeploymentFlowCount":  8,
+                    "DeploymentInvariantCount":  16,
+                    "SourceDisplayContractCount":  17,
+                    "SourceDisplayLensCount":  8,
+                    "FoundationName":  "Azure Enterprise Assurance Fabric Plus",
+                    "PlannedAzureServices":  [
+                                                 "Azure Functions",
+                                                 "Azure Storage Account",
+                                                 "Azure Table Storage",
+                                                 "Azure Blob Storage",
+                                                 "Azure Key Vault",
+                                                 "Application Insights",
+                                                 "Log Analytics",
+                                                 "Microsoft Entra ID",
+                                                 "Entra app roles",
+                                                 "Managed Identities",
+                                                 "RBAC",
+                                                 "Conditional Access readiness",
+                                                 "Privileged Identity Management readiness",
+                                                 "Cosmos DB",
+                                                 "Azure AI Search",
+                                                 "Azure Document Intelligence",
+                                                 "Event Grid",
+                                                 "API Management readiness",
+                                                 "Front Door and WAF readiness",
+                                                 "Private Link readiness",
+                                                 "Microsoft Purview readiness",
+                                                 "Microsoft Defender readiness",
+                                                 "Microsoft Sentinel readiness",
+                                                 "Digital Twins future readiness",
+                                                 "Agent 365 and Scout future readiness"
+                                             ],
+                    "RepositoryRescanPerformed":  false,
+                    "ApplicationFilesModified":  false,
+                    "AzureResourcesDeployed":  false,
+                    "OnPremisesConnectorsDeployed":  false,
+                    "EdgeDevicesConfigured":  false,
+                    "WearableIntegrationPerformed":  false,
+                    "OfflineRuntimeImplemented":  false,
+                    "ProductionIntegrationPerformed":  false,
+                    "RealRegulatedDataUsed":  false,
+                    "PHIUsed":  false,
+                    "ClassifiedDataUsed":  false,
+                    "PlatformBv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDDisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "ThreadD2DisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "RamatVisionBoundary":  "DISPLAY / WITNESS ONLY",
+                    "AssuranceDecisionRule":  "Platform B and Platform B1 may evaluate assurance state and action admissibility. Qualified humans and authorized organizational roles remain responsible for binding decisions.",
+                    "ExecutionRule":  "Action admissibility is not execution. Official execution and final records remain in governed source systems.",
+                    "OfflineRule":  "Offline, stale, delayed, cached, and unknown state must remain explicit and cannot create current approval or authority.",
+                    "Step158Statement":  "Step 158 defines a deployment plan only. It does not deploy Azure resources, configure production integrations, connect real source systems, configure wearables, authorize PHI use, validate production systems, or execute regulated work.",
+                    "ZoneSummary":  [
+                                        {
+                                            "DeploymentZone":  "AZURE ADVANCED ASSURANCE PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE ADVANCED DISPLAY DELIVERY PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE AI EVIDENCE PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE CONTROLLED DATA PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE EVENT-DRIVEN ASSURANCE PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE GOVERNANCE PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE IDENTITY AND ACCESS PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE LOCKED CORE PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE OBSERVABILITY PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "AZURE SECURITY OPERATIONS PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "LOCAL NON-PRODUCTION VALIDATION PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "LOCKED DISPLAY CONNECTOR PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "OFFLINE AND DISCONNECTED OPERATIONS PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "ON-PREMISES AND PRIVATE ENTERPRISE CONNECTOR ZONE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "SITE EDGE AND DEVICE-INGRESS PLANE",
+                                            "ComponentCount":  1
+                                        },
+                                        {
+                                            "DeploymentZone":  "WEARABLE DISPLAY PLANE",
+                                            "ComponentCount":  1
+                                        }
+                                    ],
+                    "HostingSummary":  [
+                                           {
+                                               "HostingModel":  "AZURE AI SERVICES WITH GOVERNED ACCESS",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "AZURE AND ENTERPRISE SECURITY SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "AZURE EVENT SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "AZURE STORAGE AND DATABASE SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "AZURE WEB AND GOVERNANCE SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "CENTRALIZED AZURE MONITORING SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "ENCRYPTED LOCAL PACKAGE OR FIELD DEVICE CACHE",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "EXISTING PLATFORM B v1 DEPLOYMENT BOUNDARY",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "EXISTING THREAD D v1 BOUNDARY",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "GLASSES, MOBILE, OR WEARABLE SIMULATOR CLIENT",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "LOCAL EDGE SERVICE OR CONTROLLED GATEWAY DEVICE",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "MICROSOFT ENTRA AND GOVERNED ENTERPRISE ACCESS",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "NEW PLATFORM B1 / MVP2 AZURE WORKSTREAM",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "ON-PREMISES OR PRIVATE-NETWORK CONNECTOR SERVICES",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "THREAD D2 / MVP2 SAME-ORIGIN DELIVERY WORKSTREAM",
+                                               "ComponentCount":  1
+                                           },
+                                           {
+                                               "HostingModel":  "WINDOWS LOCALHOST, PYTHON VIRTUAL ENVIRONMENT, AND MOCK SERVICES",
+                                               "ComponentCount":  1
+                                           }
+                                       ],
+                    "Step159Gate":  "READY AFTER STEP 158 DEPLOYMENT PLAN SECURITY, RESILIENCE, TRUSTED-UPDATE, AND COMPROMISE-GOVERNANCE REVIEW"
+                },
+    "DeploymentProfiles":  [
+                               {
+                                   "ProfileId":  "PROFILE-001",
+                                   "ProfileName":  "Local Demonstration Profile",
+                                   "Purpose":  "Local synthetic validation using the repository, mock APIs, simulated source systems, simulated edge devices, and simulated RAMAT displays.",
+                                   "IncludedComponents":  "DEP-016; simulated DEP-003; simulated DEP-013; simulated DEP-014",
+                                   "ProductionUseAllowed":  false
+                               },
+                               {
+                                   "ProfileId":  "PROFILE-002",
+                                   "ProfileName":  "Azure Non-Production Assurance Lab",
+                                   "Purpose":  "Non-production Azure deployment of Platform B1, controlled data services, eventing, observability, identity, and Thread D2 delivery.",
+                                   "IncludedComponents":  "DEP-001; DEP-003; DEP-004; DEP-006; DEP-007; DEP-008; DEP-009; DEP-010; DEP-012",
+                                   "ProductionUseAllowed":  false
+                               },
+                               {
+                                   "ProfileId":  "PROFILE-003",
+                                   "ProfileName":  "Hybrid On-Premises Demonstration Profile",
+                                   "Purpose":  "Non-production hybrid demonstration using bounded private connectors, Azure assurance evaluation, and simulated source-system references.",
+                                   "IncludedComponents":  "DEP-003; DEP-004; DEP-005; DEP-006; DEP-008; DEP-010; DEP-012",
+                                   "ProductionUseAllowed":  false
+                               },
+                               {
+                                   "ProfileId":  "PROFILE-004",
+                                   "ProfileName":  "Edge and Wearable Demonstration Profile",
+                                   "Purpose":  "Synthetic device-witness, QR, NFC, BLE, sensor, and wearable display demonstration.",
+                                   "IncludedComponents":  "DEP-003; DEP-006; DEP-012; DEP-013; DEP-014",
+                                   "ProductionUseAllowed":  false
+                               },
+                               {
+                                   "ProfileId":  "PROFILE-005",
+                                   "ProfileName":  "Controlled Offline Demonstration Profile",
+                                   "Purpose":  "Disconnected synthetic demonstration using expiring signed packages, explicit stale state, local integrity checking, and later reconciliation.",
+                                   "IncludedComponents":  "DEP-013; DEP-014; DEP-015; DEP-016",
+                                   "ProductionUseAllowed":  false
+                               }
+                           ],
+    "DeploymentFlows":  [
+                            {
+                                "FlowId":  "FLOW-001",
+                                "FlowName":  "Governed Use-Case Registration",
+                                "FlowPath":  "Platform A -\u003e Platform B v1 or Platform B1",
+                                "Rule":  "Governance context may inform assurance but does not create binding authority."
+                            },
+                            {
+                                "FlowId":  "FLOW-002",
+                                "FlowName":  "Source-State Observation",
+                                "FlowPath":  "Governed source system -\u003e Connector boundary -\u003e Platform B1",
+                                "Rule":  "Source system remains authoritative; connector transmits bounded observed state."
+                            },
+                            {
+                                "FlowId":  "FLOW-003",
+                                "FlowName":  "Evidence Integrity Processing",
+                                "FlowPath":  "Evidence reference -\u003e Integrity store -\u003e Hash/Rehash evaluation -\u003e Platform B1",
+                                "Rule":  "Integrity metadata does not replace the official evidence record."
+                            },
+                            {
+                                "FlowId":  "FLOW-004",
+                                "FlowName":  "Advanced Assurance Evaluation",
+                                "FlowPath":  "Identity + Evidence + Dependencies + Authority + Timing -\u003e Platform B1",
+                                "Rule":  "Platform B1 evaluates state and may activate No-Bind or admissibility."
+                            },
+                            {
+                                "FlowId":  "FLOW-005",
+                                "FlowName":  "RAMAT Display Delivery",
+                                "FlowPath":  "Platform B1 -\u003e Thread D2 gateway -\u003e RAMAT Vision",
+                                "Rule":  "Only bounded, expiring, redacted display-contract fields may be delivered."
+                            },
+                            {
+                                "FlowId":  "FLOW-006",
+                                "FlowName":  "Authorized Source-System Execution",
+                                "FlowPath":  "Platform admissibility -\u003e Authorized human decision -\u003e Governed source system",
+                                "Rule":  "Admissibility is not execution; official execution remains in the source system."
+                            },
+                            {
+                                "FlowId":  "FLOW-007",
+                                "FlowName":  "Edge Witness Event",
+                                "FlowPath":  "Device witness -\u003e Edge gateway -\u003e Event fabric -\u003e Platform B1",
+                                "Rule":  "Device witness evidence is non-binding and requires identity and integrity verification."
+                            },
+                            {
+                                "FlowId":  "FLOW-008",
+                                "FlowName":  "Offline Reconciliation",
+                                "FlowPath":  "Offline package -\u003e Reauthentication -\u003e Rehash -\u003e Conflict review -\u003e Platform B1",
+                                "Rule":  "Offline state is stale until reconciled; conflicts create a hold."
+                            }
+                        ],
+    "Invariants":  [
+                       {
+                           "InvariantId":  "DEP-INV-001",
+                           "InvariantName":  "Platform B v1 Remains Locked",
+                           "Rule":  "Step 158 does not reopen or extend the frozen Platform B v1 architecture."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-002",
+                           "InvariantName":  "Thread D v1 Remains Locked",
+                           "Rule":  "Step 158 does not reopen or extend the locked Thread D v1 connector."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-003",
+                           "InvariantName":  "Platform B1 Evaluates",
+                           "Rule":  "Advanced assurance, identity, dependency, authority, No-Bind, and admissibility evaluation belongs to Platform B1."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-004",
+                           "InvariantName":  "RAMAT Displays Only",
+                           "Rule":  "Thread D2 and RAMAT Vision remain DISPLAY / WITNESS ONLY."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-005",
+                           "InvariantName":  "No Browser-Exposed Secrets",
+                           "Rule":  "Browsers and wearable clients must not receive storage keys, function keys, database secrets, or source-system credentials."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-006",
+                           "InvariantName":  "Managed Identity Preferred",
+                           "Rule":  "Azure service-to-service access uses managed identity where supported."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-007",
+                           "InvariantName":  "Private Access Preferred",
+                           "Rule":  "Data services and sensitive APIs use private endpoints, Private Link, or equivalent controlled network paths where supported."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-008",
+                           "InvariantName":  "Official Source Systems Remain Authoritative",
+                           "Rule":  "COBIT-Chain references and evaluates evidence but does not replace official source-system records."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-009",
+                           "InvariantName":  "Admissibility Is Not Execution",
+                           "Rule":  "Authorized humans and governed source systems remain responsible for binding action and execution."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-010",
+                           "InvariantName":  "Offline State Is Explicit",
+                           "Rule":  "Offline, stale, cached, disconnected, delayed, and unknown states are never presented as current approval or authority."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-011",
+                           "InvariantName":  "Minimum Necessary Display",
+                           "Rule":  "Wearables and dashboards receive only redacted, expiring, minimum-necessary display-contract fields."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-012",
+                           "InvariantName":  "Edge Witness Is Non-Binding",
+                           "Rule":  "QR, NFC, BLE, sensors, gateways, and wearable observations provide witness evidence only."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-013",
+                           "InvariantName":  "No-Bind Survives Connectivity Loss",
+                           "Rule":  "Loss of connectivity, telemetry, authority state, or source-state verification cannot silently clear a No-Bind hold."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-014",
+                           "InvariantName":  "Synthetic Data Boundary",
+                           "Rule":  "Step 158 authorizes synthetic and mock data only."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-015",
+                           "InvariantName":  "Observability Without Secret Leakage",
+                           "Rule":  "Logs and traces exclude credentials, tokens, full sensitive evidence, and unauthorized personal data."
+                       },
+                       {
+                           "InvariantId":  "DEP-INV-016",
+                           "InvariantName":  "Security State May Create Hold",
+                           "Rule":  "Material security compromise, monitoring loss, or integrity uncertainty may activate a hold or No-Bind state."
+                       }
+                   ],
+    "DeploymentComponents":  [
+                                 {
+                                     "ComponentId":  "DEP-001",
+                                     "ComponentName":  "Platform A Governance and Use-Case Intake",
+                                     "DeploymentZone":  "AZURE GOVERNANCE PLANE",
+                                     "HostingModel":  "AZURE WEB AND GOVERNANCE SERVICES",
+                                     "Purpose":  "Register regulated AI and assurance use cases, ownership, risk context, system inventory, governance classification, and commercialization track.",
+                                     "PrimaryServices":  "Azure Functions; Azure Storage; Microsoft Entra ID; managed identity; Application Insights; Log Analytics; governed API layer.",
+                                     "AllowedData":  "Synthetic use-case metadata, mock owners, risk classifications, system references, control mappings, and governance status.",
+                                     "ProhibitedData":  "PHI, production credentials, raw company production records, classified data, or executable approval instructions.",
+                                     "IdentityAndAccessModel":  "Entra sign-in, app roles, least privilege, managed identities, RBAC, Conditional Access readiness, and PIM readiness.",
+                                     "NetworkBoundary":  "HTTPS-only application boundary behind governed ingress and WAF readiness.",
+                                     "ConnectivityModel":  "Uses approved APIs and governed references; no direct uncontrolled browser access to source systems.",
+                                     "OfflineBehavior":  "No binding offline operation. Cached governance context must be marked stale.",
+                                     "SourceOfTruthRole":  "Governance registry only; not the official operational or regulated source record.",
+                                     "AssuranceRole":  "Registers context but has no independent assurance-decision authority.",
+                                     "DisplayRole":  "May provide governed context to Platform B, Platform B1, Thread C, and authorized dashboards.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define identity hardening, privileged administration, threat monitoring, and compromise response.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-002",
+                                     "ComponentName":  "Platform B v1 Locked Assurance Core",
+                                     "DeploymentZone":  "AZURE LOCKED CORE PLANE",
+                                     "HostingModel":  "EXISTING PLATFORM B v1 DEPLOYMENT BOUNDARY",
+                                     "Purpose":  "Preserve the frozen six-capability assurance core without architectural reopening.",
+                                     "PrimaryServices":  "Existing Platform B v1 application services and approved Azure dependencies only.",
+                                     "AllowedData":  "Governed use-case records, synthetic evidence, trust scores, assurance-check inputs, admissibility records, and simulator messages.",
+                                     "ProhibitedData":  "Unapproved new Platform B v1 capabilities, direct production execution, browser secrets, PHI, or real regulated production records.",
+                                     "IdentityAndAccessModel":  "Existing approved identity model; server-side secrets; managed identity readiness; least privilege.",
+                                     "NetworkBoundary":  "Frozen Platform B v1 application and API boundary.",
+                                     "ConnectivityModel":  "Receives governed inputs and emits bounded assurance state through approved interfaces.",
+                                     "OfflineBehavior":  "No new offline capability introduced by Step 158.",
+                                     "SourceOfTruthRole":  "Assurance record layer only; does not replace official source systems.",
+                                     "AssuranceRole":  "Performs the locked Platform B v1 assurance evaluation functions.",
+                                     "DisplayRole":  "Supplies bounded state to the locked Thread D v1 connector.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Confirm frozen-core security baseline, failover boundary, logging, and trusted-update controls.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-003",
+                                     "ComponentName":  "Platform B1 Advanced Assurance Services",
+                                     "DeploymentZone":  "AZURE ADVANCED ASSURANCE PLANE",
+                                     "HostingModel":  "NEW PLATFORM B1 / MVP2 AZURE WORKSTREAM",
+                                     "Purpose":  "Evaluate evidence integrity, regulated-object identity, workflow dependencies, authority, human accountability, No-Bind state, admissibility, and reconstruction.",
+                                     "PrimaryServices":  "Azure Functions; Event Grid; Cosmos DB; Azure AI Search; Document Intelligence; Storage; Key Vault; Application Insights.",
+                                     "AllowedData":  "Synthetic evidence metadata, hashes, rehash results, canonical mock identities, dependency states, authority states, No-Bind states, and display contracts.",
+                                     "ProhibitedData":  "Unapproved production source records, PHI, browser-exposed credentials, autonomous regulated execution, or hidden human-approval substitution.",
+                                     "IdentityAndAccessModel":  "Managed identities, Entra app roles, RBAC, service-to-service authentication, Key Vault, Conditional Access readiness, and PIM readiness.",
+                                     "NetworkBoundary":  "Private endpoint and Private Link readiness; controlled API Management boundary; no public data-store access.",
+                                     "ConnectivityModel":  "Event-driven and API-mediated assurance evaluation using governed source references.",
+                                     "OfflineBehavior":  "May queue synthetic events locally, but unresolved or stale state must remain unknown or held.",
+                                     "SourceOfTruthRole":  "Evaluates referenced evidence and state; does not become the official operational record.",
+                                     "AssuranceRole":  "Advanced assurance decision-support and No-Bind evaluation layer.",
+                                     "DisplayRole":  "Produces bounded state for Thread D2 and RAMAT Vision display contracts.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define secure event ingestion, fail-closed behavior, replay protection, compromise holds, and recovery.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-004",
+                                     "ComponentName":  "Assurance Evidence and Integrity Store",
+                                     "DeploymentZone":  "AZURE CONTROLLED DATA PLANE",
+                                     "HostingModel":  "AZURE STORAGE AND DATABASE SERVICES",
+                                     "Purpose":  "Store synthetic evidence objects, governed references, hashes, rehash results, identity bindings, assurance snapshots, and reconstruction metadata.",
+                                     "PrimaryServices":  "Azure Blob Storage; Azure Table Storage; Cosmos DB; Storage Account; Key Vault.",
+                                     "AllowedData":  "Synthetic files, mock records, integrity values, metadata, lifecycle state, object references, provenance links, and assurance-event records.",
+                                     "ProhibitedData":  "Unapproved production exports, PHI, plaintext secrets, uncontrolled source-system replicas, or classified data.",
+                                     "IdentityAndAccessModel":  "Managed identity access, least privilege, separate read/write roles, and auditable administrative access.",
+                                     "NetworkBoundary":  "Private endpoint readiness, public-access restriction, storage firewall, and network-segment controls.",
+                                     "ConnectivityModel":  "Accessible only through approved server-side services and controlled administrative paths.",
+                                     "OfflineBehavior":  "Offline packages use encrypted local cache and must reconcile before being treated as current.",
+                                     "SourceOfTruthRole":  "Stores assurance evidence references and integrity metadata; official records remain in source systems.",
+                                     "AssuranceRole":  "Supports hashing, rehashing, provenance, identity, and reconstruction.",
+                                     "DisplayRole":  "No direct wearable or browser access; display receives minimum necessary evaluated state.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define backup, immutable retention readiness, key compromise handling, restore testing, and evidence-tamper response.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-005",
+                                     "ComponentName":  "Source-System Connector Boundary",
+                                     "DeploymentZone":  "ON-PREMISES AND PRIVATE ENTERPRISE CONNECTOR ZONE",
+                                     "HostingModel":  "ON-PREMISES OR PRIVATE-NETWORK CONNECTOR SERVICES",
+                                     "Purpose":  "Provide bounded read-only or simulation-safe access to governed source-system references without exposing source credentials or replacing official systems.",
+                                     "PrimaryServices":  "Private connector service; approved APIs; service accounts; managed gateway; API Management; Private Link or private network path where applicable.",
+                                     "AllowedData":  "Governed record identifiers, status metadata, synthetic payloads, approved event metadata, and verification timestamps.",
+                                     "ProhibitedData":  "Direct browser database access, unrestricted production extracts, shared credentials, unapproved write-back, PHI, or uncontrolled source-system replication.",
+                                     "IdentityAndAccessModel":  "Dedicated service identity, least privilege, read-only default, credential vaulting, certificate or managed-identity authentication where supported.",
+                                     "NetworkBoundary":  "Enterprise private network boundary with explicit firewall, proxy, route, and allow-list controls.",
+                                     "ConnectivityModel":  "Pull or event-based integration through controlled connectors; no ambient trust.",
+                                     "OfflineBehavior":  "Connector outage produces UNKNOWN, STALE, DELAYED, or DEPENDENCY UNSATISFIED state.",
+                                     "SourceOfTruthRole":  "Source systems remain authoritative; connector transmits governed references and observed state.",
+                                     "AssuranceRole":  "Supplies source-state evidence to Platform B1 without making assurance decisions.",
+                                     "DisplayRole":  "No direct display authority.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define connector authentication, network compromise detection, circuit breaking, fail-closed behavior, and recovery.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-006",
+                                     "ComponentName":  "Azure Event and Assurance Signal Fabric",
+                                     "DeploymentZone":  "AZURE EVENT-DRIVEN ASSURANCE PLANE",
+                                     "HostingModel":  "AZURE EVENT SERVICES",
+                                     "Purpose":  "Route synthetic assurance events, evidence changes, dependency-state changes, identity alerts, No-Bind events, and display-contract refresh signals.",
+                                     "PrimaryServices":  "Azure Event Grid; Azure Functions; Application Insights; Log Analytics; future service-bus readiness.",
+                                     "AllowedData":  "Synthetic event envelopes, object IDs, event types, timestamps, correlation IDs, integrity references, and state changes.",
+                                     "ProhibitedData":  "Full uncontrolled source records, secrets, PHI, executable approvals, or unsigned privileged commands.",
+                                     "IdentityAndAccessModel":  "Managed service identities, scoped event publishers and subscribers, and auditable authorization.",
+                                     "NetworkBoundary":  "Private event endpoints and governed subscriptions where supported.",
+                                     "ConnectivityModel":  "Event-driven, idempotent, correlated, and replay-aware assurance messaging.",
+                                     "OfflineBehavior":  "Disconnected publishers queue only bounded synthetic events; delayed events are marked delayed and revalidated.",
+                                     "SourceOfTruthRole":  "Transport only; not the official event or operational source of truth.",
+                                     "AssuranceRole":  "Triggers evaluation and refresh but does not determine final assurance state.",
+                                     "DisplayRole":  "May trigger expiration or refresh of RAMAT display contracts.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define signing, replay protection, dead-letter handling, poison-event quarantine, and recovery sequencing.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-007",
+                                     "ComponentName":  "Azure AI Evidence Intelligence Services",
+                                     "DeploymentZone":  "AZURE AI EVIDENCE PLANE",
+                                     "HostingModel":  "AZURE AI SERVICES WITH GOVERNED ACCESS",
+                                     "Purpose":  "Extract, index, compare, and retrieve synthetic evidence content for human-reviewed assurance and claim-to-proof demonstrations.",
+                                     "PrimaryServices":  "Azure AI Search; Azure Document Intelligence; governed model endpoint readiness; Cosmos DB; Storage.",
+                                     "AllowedData":  "Synthetic documents, mock evidence packages, extracted metadata, controlled embeddings, and claim-to-proof links.",
+                                     "ProhibitedData":  "Unapproved proprietary production documents, PHI, model-training reuse without authorization, autonomous approval, or unsupported regulatory conclusions.",
+                                     "IdentityAndAccessModel":  "Managed identities, private access readiness, restricted indexes, and explicit role separation.",
+                                     "NetworkBoundary":  "Private endpoint readiness and no direct public client access to evidence indexes.",
+                                     "ConnectivityModel":  "Server-side retrieval and extraction through controlled Platform B1 services.",
+                                     "OfflineBehavior":  "No claim may be treated as verified when retrieval or extraction services are unavailable.",
+                                     "SourceOfTruthRole":  "Evidence intelligence and retrieval support only; extracted content does not replace source documents.",
+                                     "AssuranceRole":  "Supports evidence discovery and comparison; Platform B1 evaluates assurance.",
+                                     "DisplayRole":  "Only summarized, attributed, redacted results may enter display contracts.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define prompt-injection resistance, document quarantine, model endpoint compromise response, and index recovery.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-008",
+                                     "ComponentName":  "Identity, Role, and Privileged Access Fabric",
+                                     "DeploymentZone":  "AZURE IDENTITY AND ACCESS PLANE",
+                                     "HostingModel":  "MICROSOFT ENTRA AND GOVERNED ENTERPRISE ACCESS",
+                                     "Purpose":  "Provide user, service, role, privileged-access, and application identity controls.",
+                                     "PrimaryServices":  "Microsoft Entra ID; Entra app roles; Managed Identities; RBAC; Conditional Access readiness; PIM readiness; Key Vault.",
+                                     "AllowedData":  "Mock identities, role assignments, service principals, authorization metadata, and audit events.",
+                                     "ProhibitedData":  "Shared administrator credentials, browser-stored secrets, ungoverned local accounts, or silent privilege elevation.",
+                                     "IdentityAndAccessModel":  "Zero-standing-privilege objective, least privilege, managed identities, role separation, and privileged activation readiness.",
+                                     "NetworkBoundary":  "Identity provider boundary with explicit application registration and redirect restrictions.",
+                                     "ConnectivityModel":  "Token-based user and service authentication with explicit audience and role validation.",
+                                     "OfflineBehavior":  "Offline clients cannot create new authority. Cached identity state must be marked stale and non-binding.",
+                                     "SourceOfTruthRole":  "Entra or the governed enterprise identity source remains authoritative for identity and role state.",
+                                     "AssuranceRole":  "Provides identity and role evidence; Platform B1 evaluates authority sufficiency.",
+                                     "DisplayRole":  "RAMAT may display bounded role and authority state without exposing sensitive identity data.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define credential compromise, token theft, emergency access, role-revocation propagation, and privileged-session review.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-009",
+                                     "ComponentName":  "Enterprise Security Monitoring and Governance Signals",
+                                     "DeploymentZone":  "AZURE SECURITY OPERATIONS PLANE",
+                                     "HostingModel":  "AZURE AND ENTERPRISE SECURITY SERVICES",
+                                     "Purpose":  "Provide security posture, threat, WAF, API, identity, endpoint, and incident signals that may create assurance holds or No-Bind states.",
+                                     "PrimaryServices":  "Microsoft Defender readiness; Microsoft Sentinel readiness; Log Analytics; Application Insights; Front Door/WAF readiness; API Management.",
+                                     "AllowedData":  "Synthetic alerts, security-state metadata, policy outcomes, incident references, and assurance hold signals.",
+                                     "ProhibitedData":  "Unredacted production security secrets, exploit payloads in displays, unrestricted logs, or automatic approval bypass.",
+                                     "IdentityAndAccessModel":  "Security-role separation, least privilege, managed identities, and controlled incident-response access.",
+                                     "NetworkBoundary":  "Security-monitoring plane separated from end-user display and application data planes.",
+                                     "ConnectivityModel":  "Security findings enter Platform B1 as governed evidence and dependency signals.",
+                                     "OfflineBehavior":  "Loss of required security telemetry may create UNKNOWN, STALE, SECURITY HOLD, or NO-BIND state.",
+                                     "SourceOfTruthRole":  "Security platforms remain authoritative for their own alerts and incident records.",
+                                     "AssuranceRole":  "Provides security evidence; Platform B1 determines assurance consequences.",
+                                     "DisplayRole":  "RAMAT displays only bounded security assurance states and required human escalation.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define compromise-state taxonomy, automatic containment boundaries, security No-Bind rules, and forensic preservation.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-010",
+                                     "ComponentName":  "Observability and Assurance Audit Telemetry",
+                                     "DeploymentZone":  "AZURE OBSERVABILITY PLANE",
+                                     "HostingModel":  "CENTRALIZED AZURE MONITORING SERVICES",
+                                     "Purpose":  "Capture application telemetry, evaluation traces, connector health, display-contract issuance, No-Bind events, failures, latency, and audit-support metadata.",
+                                     "PrimaryServices":  "Application Insights; Log Analytics; Azure Monitor readiness; diagnostic settings.",
+                                     "AllowedData":  "Correlation IDs, synthetic object IDs, service health, event timing, errors, audit metadata, and security-safe diagnostics.",
+                                     "ProhibitedData":  "Secrets, tokens, full evidence payloads, PHI, sensitive proprietary content, or uncontrolled personal data.",
+                                     "IdentityAndAccessModel":  "Separate telemetry writers and readers, least privilege, controlled analyst access, and retention governance.",
+                                     "NetworkBoundary":  "Central telemetry boundary with governed ingestion and restricted query access.",
+                                     "ConnectivityModel":  "All deployment zones emit structured, correlated, minimum-necessary telemetry.",
+                                     "OfflineBehavior":  "Edge devices buffer bounded telemetry locally and mark upload gaps explicitly.",
+                                     "SourceOfTruthRole":  "Observability evidence only; not the official regulated operational record.",
+                                     "AssuranceRole":  "Supports health, failure, chronology, and reconstruction assurance.",
+                                     "DisplayRole":  "May provide service-health and freshness signals to authorized displays.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define log integrity, retention, alert routing, tamper detection, monitoring blind-spot handling, and recovery.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-011",
+                                     "ComponentName":  "Thread D v1 Locked Context-Witness Connector",
+                                     "DeploymentZone":  "LOCKED DISPLAY CONNECTOR PLANE",
+                                     "HostingModel":  "EXISTING THREAD D v1 BOUNDARY",
+                                     "Purpose":  "Preserve the locked connector that displays or witnesses bounded Platform B v1 state.",
+                                     "PrimaryServices":  "Existing Thread D v1 connector and validated same-origin proxy pattern.",
+                                     "AllowedData":  "Bounded Platform B v1 display state and synthetic simulator context.",
+                                     "ProhibitedData":  "New decision logic, Platform B1 advanced state, approval controls, execution controls, or exposed secrets.",
+                                     "IdentityAndAccessModel":  "Existing approved access model with no browser-exposed secrets.",
+                                     "NetworkBoundary":  "Locked Thread D v1 connector boundary.",
+                                     "ConnectivityModel":  "Consumes only approved Platform B v1 state.",
+                                     "OfflineBehavior":  "No new offline capability; unavailable state must not appear current.",
+                                     "SourceOfTruthRole":  "Not a source system and not evidence authority.",
+                                     "AssuranceRole":  "No assurance-decision authority.",
+                                     "DisplayRole":  "DISPLAY / WITNESS ONLY for Platform B v1.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Verify connector integrity, same-origin proxy security, fail-closed behavior, and trusted-update controls.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-012",
+                                     "ComponentName":  "Thread D2 and RAMAT Vision Delivery Gateway",
+                                     "DeploymentZone":  "AZURE ADVANCED DISPLAY DELIVERY PLANE",
+                                     "HostingModel":  "THREAD D2 / MVP2 SAME-ORIGIN DELIVERY WORKSTREAM",
+                                     "Purpose":  "Deliver expiring, redacted Platform B1 display contracts to RAMAT Vision, authorized browsers, and wearable simulators.",
+                                     "PrimaryServices":  "Thread D2 application; Azure Functions; same-origin proxy; API Management readiness; Front Door/WAF readiness; Application Insights.",
+                                     "AllowedData":  "Approved display-contract fields, synthetic object identity, assurance state, No-Bind state, human prompts, expiry, and source references.",
+                                     "ProhibitedData":  "Approval controls, release controls, execution controls, No-Bind resolution controls, source-record editing, secrets, PHI, or unrestricted evidence payloads.",
+                                     "IdentityAndAccessModel":  "Entra-authenticated sessions, role-based glasses interface, short-lived tokens, server-side secret access, and minimum-necessary authorization.",
+                                     "NetworkBoundary":  "WAF and API gateway readiness with same-origin browser delivery and no direct data-store access.",
+                                     "ConnectivityModel":  "Pulls only signed or governed Platform B1 display contracts.",
+                                     "OfflineBehavior":  "Cached contracts are marked stale or unknown after expiry or connectivity loss.",
+                                     "SourceOfTruthRole":  "Not a source system and not evidence authority.",
+                                     "AssuranceRole":  "No assurance-decision authority.",
+                                     "DisplayRole":  "DISPLAY / WITNESS ONLY for Platform B1 evaluated state.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define contract signing, token revocation, WAF policy, session compromise response, and display rollback.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-013",
+                                     "ComponentName":  "Edge Assurance Gateway",
+                                     "DeploymentZone":  "SITE EDGE AND DEVICE-INGRESS PLANE",
+                                     "HostingModel":  "LOCAL EDGE SERVICE OR CONTROLLED GATEWAY DEVICE",
+                                     "Purpose":  "Collect synthetic QR, NFC, BLE, sensor, equipment, custody, and wearable-witness events before governed transmission to Platform B1.",
+                                     "PrimaryServices":  "M5Stack or ESP32 simulator devices; local gateway service; secure event queue; certificate readiness; approved outbound API.",
+                                     "AllowedData":  "Synthetic tag IDs, mock equipment IDs, sensor values, timestamps, device identity, custody events, local integrity values, and connectivity state.",
+                                     "ProhibitedData":  "PHI, production credentials, uncontrolled production sensor feeds, autonomous release commands, or shared device secrets.",
+                                     "IdentityAndAccessModel":  "Unique device identity, certificate or per-device credential readiness, device registration, revocation readiness, and least-privileged outbound access.",
+                                     "NetworkBoundary":  "Outbound-only preferred; segmented site network; no direct inbound internet control path.",
+                                     "ConnectivityModel":  "Store-and-forward synthetic events with sequence, timestamp, correlation, and integrity metadata.",
+                                     "OfflineBehavior":  "Queues bounded events; marks clock uncertainty, connectivity loss, stale state, and upload delay.",
+                                     "SourceOfTruthRole":  "Device witness only; does not become official equipment, clinical, manufacturing, or custody record.",
+                                     "AssuranceRole":  "Provides device-witness evidence; Platform B1 evaluates trust and admissibility.",
+                                     "DisplayRole":  "May show local connection and witness status only; no approval authority.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define device identity, secure boot readiness, signed firmware, trusted update, revocation, loss, theft, cloning, and compromise handling.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-014",
+                                     "ComponentName":  "RAMAT Vision Wearable and Glasses Client",
+                                     "DeploymentZone":  "WEARABLE DISPLAY PLANE",
+                                     "HostingModel":  "GLASSES, MOBILE, OR WEARABLE SIMULATOR CLIENT",
+                                     "Purpose":  "Present minimum-necessary assurance, identity, dependency, authority, timing, No-Bind, and human-action prompts at the point of work.",
+                                     "PrimaryServices":  "Brilliant Labs Halo readiness; future Ray-Ban Meta, Vuzix, or RealWear readiness; mobile companion or simulator client.",
+                                     "AllowedData":  "Expiring display-contract fields, synthetic object IDs, assurance state, human prompts, source references, and connection freshness.",
+                                     "ProhibitedData":  "Approval, release, override, No-Bind resolution, source-system editing, unredacted PHI, secrets, full evidence files, or uncontrolled recording.",
+                                     "IdentityAndAccessModel":  "Role-based user session, paired-device trust, short-lived access, remote revocation readiness, and minimum-necessary display.",
+                                     "NetworkBoundary":  "No direct access to Azure data stores or source systems; communicates only through the delivery gateway.",
+                                     "ConnectivityModel":  "Receives bounded display contracts and may send non-binding acknowledgement or witness telemetry.",
+                                     "OfflineBehavior":  "Displays STALE, UNKNOWN, or DISCONNECTED; never presents cached state as current approval or authority.",
+                                     "SourceOfTruthRole":  "Not a source system and not evidence authority.",
+                                     "AssuranceRole":  "No assurance-decision authority.",
+                                     "DisplayRole":  "DISPLAY / WITNESS ONLY.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define device loss, screen privacy, recording restrictions, revocation, jailbreak/root detection readiness, and secure wipe.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-015",
+                                     "ComponentName":  "Controlled Offline Assurance Package",
+                                     "DeploymentZone":  "OFFLINE AND DISCONNECTED OPERATIONS PLANE",
+                                     "HostingModel":  "ENCRYPTED LOCAL PACKAGE OR FIELD DEVICE CACHE",
+                                     "Purpose":  "Support controlled disconnected demonstration of object identity, evidence integrity, display state, and later reconciliation without claiming current authority.",
+                                     "PrimaryServices":  "Encrypted local cache; signed manifest readiness; local hash verification; bounded event journal; reconciliation service.",
+                                     "AllowedData":  "Synthetic object manifests, approved display fields, hashes, timestamps, sequence numbers, offline witness events, and explicit expiry metadata.",
+                                     "ProhibitedData":  "Current approval claims, autonomous regulated execution, unrestricted source records, PHI, production secrets, or unencrypted evidence packages.",
+                                     "IdentityAndAccessModel":  "Pre-authorized device and user identities, local unlock control, package signature verification, expiry, and later online reauthentication.",
+                                     "NetworkBoundary":  "Disconnected boundary with no assumption of current source-system or authority state.",
+                                     "ConnectivityModel":  "No live dependency; reconciliation is required before offline evidence can affect current assurance state.",
+                                     "OfflineBehavior":  "All authority, source, dependency, and timing states are marked OFFLINE, STALE, UNKNOWN, or HELD as applicable.",
+                                     "SourceOfTruthRole":  "Offline package is not the official source record.",
+                                     "AssuranceRole":  "Supports local integrity checks and witness collection only; no final admissibility decision.",
+                                     "DisplayRole":  "May display explicit offline and stale states with human escalation instructions.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define package signing, expiry, encryption, anti-rollback, reconciliation conflicts, device loss, and secure destruction.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 },
+                                 {
+                                     "ComponentId":  "DEP-016",
+                                     "ComponentName":  "Local Simulation and Validation Sandbox",
+                                     "DeploymentZone":  "LOCAL NON-PRODUCTION VALIDATION PLANE",
+                                     "HostingModel":  "WINDOWS LOCALHOST, PYTHON VIRTUAL ENVIRONMENT, AND MOCK SERVICES",
+                                     "Purpose":  "Provide a safe local environment for synthetic end-to-end tests, schema validation, wearable simulation, edge simulation, API testing, and evidence reconstruction.",
+                                     "PrimaryServices":  "Local repository; Python virtual environment; PowerShell 5.1; mock APIs; synthetic fixtures; local storage; simulator clients.",
+                                     "AllowedData":  "Synthetic fixtures, mock identities, fictional AURORA-17 records, local hashes, test logs, and generated validation evidence.",
+                                     "ProhibitedData":  "PHI, company production data, production credentials, real regulated execution, or production network access.",
+                                     "IdentityAndAccessModel":  "Local developer access with no production credentials and explicit separation from enterprise systems.",
+                                     "NetworkBoundary":  "Localhost or isolated development network only.",
+                                     "ConnectivityModel":  "Mock and simulator integrations only unless a separately governed non-production connector is approved.",
+                                     "OfflineBehavior":  "Fully local simulation is permitted; all outputs remain local non-production evidence.",
+                                     "SourceOfTruthRole":  "Local test output only; not production or regulatory validation evidence.",
+                                     "AssuranceRole":  "Supports repeatable local validation of planned controls.",
+                                     "DisplayRole":  "May simulate Thread D2 and RAMAT Vision display contracts.",
+                                     "SecretHandlingRule":  "NO BROWSER-EXPOSED SECRETS. USE MANAGED IDENTITIES, KEY VAULT, SERVER-SIDE SECRET RETRIEVAL, FUNCTION-KEY PROTECTION, AND THE APPROVED SAME-ORIGIN PROXY PATTERN.",
+                                     "EncryptionRule":  "ENCRYPT DATA IN TRANSIT AND AT REST. USE GOVERNED KEY MANAGEMENT, EXPLICIT KEY OWNERSHIP, ROTATION READINESS, AND AUDITABLE ACCESS.",
+                                     "DataMinimizationRule":  "STORE OR TRANSMIT ONLY THE MINIMUM AUTHORIZED ASSURANCE METADATA, GOVERNED REFERENCES, SYNTHETIC DEMONSTRATION DATA, INTEGRITY VALUES, AND DISPLAY-CONTRACT FIELDS REQUIRED FOR THE USE CASE.",
+                                     "AuthorityBoundary":  "THE DEPLOYMENT COMPONENT DOES NOT CREATE INDEPENDENT APPROVAL, RELEASE, OVERRIDE, NO-BIND RESOLUTION, EXECUTION, OR BINDING AUTHORITY.",
+                                     "HumanAccountabilityRule":  "QUALIFIED HUMANS AND AUTHORIZED ORGANIZATIONAL ROLES REMAIN ACCOUNTABLE FOR BINDING DECISIONS.",
+                                     "ArchitectureBoundary":  "PLATFORM B v1 AND THREAD D v1 REMAIN ARCHITECTURE LOCKED. PLATFORM B1 AND THREAD D2 ARE SEPARATE MVP2 WORKSTREAMS.",
+                                     "DataBoundary":  "PLAN-ONLY, SIMULATOR-FIRST, MOCK-DATA-FIRST, LOCAL-VALIDATION-FIRST. NO PHI, COMPANY PRODUCTION DATA, CLASSIFIED DATA, PAYMENT-CARD DATA, OR REAL REGULATED PRODUCTION INTEGRATION IS AUTHORIZED BY STEP 158.",
+                                     "ImplementationStatus":  "DEPLOYMENT PLAN ONLY - NOT IMPLEMENTED",
+                                     "Step159Dependency":  "Define development-environment hardening, dependency integrity, package trust, secret scanning, and test-evidence protection.",
+                                     "ReviewStatus":  "HUMAN DEPLOYMENT-PLAN REVIEW REQUIRED"
+                                 }
+                             ]
+}

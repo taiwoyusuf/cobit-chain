@@ -1,0 +1,30 @@
+{
+  "dependencies": [
+    {
+      "dependency_id": "IRLT-DEP-001",
+      "dependency_name": "QC release evidence",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-002",
+      "dependency_name": "Material genealogy",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-003",
+      "dependency_name": "Custody chain continuity",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-004",
+      "dependency_name": "Receiving-site readiness",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "IRLT-DEP-005",
+      "dependency_name": "Decay-window validity",
+      "satisfied": true
+    }
+  ],
+  "track_id": "IRLT"
+}

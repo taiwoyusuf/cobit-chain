@@ -1,0 +1,83 @@
+{
+  "action_admissibility_state": "ADMISSIBLE",
+  "action_consequence_level": "CRITICAL",
+  "action_id": "ACTION-COMPOUND-DISPENSING-READINESS-001",
+  "action_type": "COMPOUNDING_DISPENSING_READINESS",
+  "authority": {
+    "actor_id": "ACTOR-PHARMACIST-001",
+    "authority_current": true,
+    "authority_id": "AUTH-PHARMACIST-001",
+    "authority_in_scope": true,
+    "authority_present": true,
+    "authority_state": "VALID",
+    "authority_valid": true,
+    "role_id": "AUTHORIZED_PHARMACIST"
+  },
+  "correlation_id": "c021ed44-6a4c-4835-9507-ba20687d6dc2",
+  "current_hash": "6ed54297b16c4d98f6b1d739b82ce959c5c98456771d9a11c7999ca052c5e467",
+  "dependencies": [
+    {
+      "dependency_id": "COMPOUND-DEP-001",
+      "dependency_name": "Order identity agreement",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-002",
+      "dependency_name": "Formula version",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-003",
+      "dependency_name": "Ingredient release",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-004",
+      "dependency_name": "Label agreement",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-005",
+      "dependency_name": "Beyond-use timing",
+      "dependency_status": "SATISFIED",
+      "observed_state": "SATISFIED",
+      "required_state": "SATISFIED"
+    }
+  ],
+  "dependencies_satisfied": true,
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "evaluated_at_utc": "2026-07-13T22:57:24Z",
+  "evaluation_id": "EVAL-116a1543-0e39-49b2-9b3f-7f9aaa529143",
+  "evidence_sufficient": true,
+  "execution_performed": false,
+  "human_accountability_identified": true,
+  "human_binding_decision_performed": false,
+  "identity_verified": true,
+  "implementation_version": "162.1.0",
+  "integrity_state": "REHASH_VERIFIED",
+  "no_bind_reasons": [],
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-COMPOUND-PREP-001",
+  "official_source_record_id": "COMPOUND-SOURCE-001",
+  "official_source_system": "MOCK COMPOUNDING PHARMACY SYSTEM",
+  "priority_tier": "FIRST-TIER",
+  "scenario_name": "COMPOUNDING_03_recovery_success",
+  "schema_version": "1.0",
+  "sealed_hash": "6ed54297b16c4d98f6b1d739b82ce959c5c98456771d9a11c7999ca052c5e467",
+  "security_trust_state": "NORMAL",
+  "source_system_execution_required": true,
+  "timing_valid": true,
+  "track_id": "COMPOUNDING",
+  "track_name": "Compounding Pharmacy Assurance Track"
+}

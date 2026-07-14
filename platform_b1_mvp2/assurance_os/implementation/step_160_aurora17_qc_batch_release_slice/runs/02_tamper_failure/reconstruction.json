@@ -1,0 +1,50 @@
+{
+  "action_id": "ACTION-A17-BATCH-RELEASE-001",
+  "admissibility_reference": "ADM-35b9c85b-1b71-48c8-b445-cffdef2a3f75",
+  "authority_reference": "AUTH-A17-RELEASER-001",
+  "chronology": [
+    {
+      "event": "EVIDENCE_SEALED",
+      "time": "2026-07-13T22:42:25Z"
+    },
+    {
+      "event": "REHASH_EVALUATED",
+      "state": "REHASH_MISMATCH",
+      "time": "2026-07-13T22:42:25Z"
+    },
+    {
+      "event": "DEPENDENCIES_EVALUATED",
+      "state": true,
+      "time": "2026-07-13T22:42:25Z"
+    },
+    {
+      "event": "AUTHORITY_EVALUATED",
+      "state": "VALID",
+      "time": "2026-07-13T22:42:25Z"
+    },
+    {
+      "event": "NO_BIND_EVALUATED",
+      "state": "NO-BIND STATE ACTIVE",
+      "time": "2026-07-13T22:42:25Z"
+    },
+    {
+      "event": "ADMISSIBILITY_RECORDED",
+      "state": "ACTION_HELD",
+      "time": "2026-07-13T22:42:25Z"
+    }
+  ],
+  "correlation_id": "ab7cc488-1f07-4b98-b2a8-c2d3eecd6f75",
+  "current_evidence_hash": "eb5df1d2e410a429928a6c5a8200d96a0cdc4cbd6ed5eb7168150719511a9446",
+  "evidence_seal_reference": "SEAL-d6effcec-f588-4bec-8f64-b1f61d07f7cf",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T22:42:25Z",
+  "no_bind_reference": "NB-6bfb3f6d-054d-44d4-a76c-e3ddaf66e880",
+  "object_id": "A17-BATCH-2026-001",
+  "official_execution_record": null,
+  "reconstruction_id": "RECON-49625fd2-24c7-48a8-8960-43e9dd9c76a6",
+  "scenario_name": "02_tamper_failure",
+  "source_system_reference": "LIMS-A17-QC-001",
+  "unresolved_gaps": [
+    "EVIDENCE_REHASH_MISMATCH"
+  ]
+}

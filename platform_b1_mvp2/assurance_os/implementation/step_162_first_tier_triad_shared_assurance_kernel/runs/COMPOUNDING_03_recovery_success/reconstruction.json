@@ -1,0 +1,45 @@
+{
+  "action_id": "ACTION-COMPOUND-DISPENSING-READINESS-001",
+  "admissibility_reference": "ADM-394188da-55fd-4f33-b11d-c57e3919382e",
+  "authority_reference": "AUTH-PHARMACIST-001",
+  "chronology": [
+    {
+      "event": "REHASH_EVALUATED",
+      "state": "REHASH_VERIFIED",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "DEPENDENCIES_EVALUATED",
+      "state": true,
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "AUTHORITY_EVALUATED",
+      "state": "VALID",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "NO_BIND_EVALUATED",
+      "state": "INACTIVE",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "ADMISSIBILITY_RECORDED",
+      "state": "ACTION_ADMISSIBLE",
+      "time": "2026-07-13T22:57:24Z"
+    }
+  ],
+  "correlation_id": "c021ed44-6a4c-4835-9507-ba20687d6dc2",
+  "current_evidence_hash": "6ed54297b16c4d98f6b1d739b82ce959c5c98456771d9a11c7999ca052c5e467",
+  "evidence_seal_reference": "SEAL-45791f40-a1d3-4a34-916f-d16bacee7687",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T22:57:24Z",
+  "no_bind_reference": "NB-8db67244-7054-458d-af7e-b04abf9f58ac",
+  "object_id": "A17-COMPOUND-PREP-001",
+  "official_execution_record": null,
+  "reconstruction_id": "RECON-9ae0b8ec-71fb-4a31-8924-29f08105ed52",
+  "scenario_name": "COMPOUNDING_03_recovery_success",
+  "source_system_reference": "COMPOUND-SOURCE-001",
+  "track_id": "COMPOUNDING",
+  "unresolved_gaps": []
+}

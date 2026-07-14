@@ -1,0 +1,45 @@
+{
+  "action_id": "ACTION-DSCSA-TRANSFER-READINESS-001",
+  "admissibility_reference": "ADM-2ee9c5f1-c767-47bf-8f5c-b66a46e38a16",
+  "authority_reference": "AUTH-DSCSA-001",
+  "chronology": [
+    {
+      "event": "REHASH_EVALUATED",
+      "state": "REHASH_VERIFIED",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "DEPENDENCIES_EVALUATED",
+      "state": true,
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "AUTHORITY_EVALUATED",
+      "state": "VALID",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "NO_BIND_EVALUATED",
+      "state": "INACTIVE",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "ADMISSIBILITY_RECORDED",
+      "state": "ACTION_ADMISSIBLE",
+      "time": "2026-07-13T22:57:24Z"
+    }
+  ],
+  "correlation_id": "93a59ca0-6506-49fd-93a6-e68ee4482e74",
+  "current_evidence_hash": "0e36484df0218aaf9dfa2d99a7633b1c4138bfdd97b8b41bc7f197645023d8cf",
+  "evidence_seal_reference": "SEAL-a3516577-c2d2-477b-8fdc-7ab81b1711fc",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T22:57:24Z",
+  "no_bind_reference": "NB-18f45527-330a-4548-89b8-e358157808e7",
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "official_execution_record": null,
+  "reconstruction_id": "RECON-4c688a5f-b938-4f56-b7b5-efc33ceddfae",
+  "scenario_name": "DSCSA_03_recovery_success",
+  "source_system_reference": "DSCSA-SOURCE-001",
+  "track_id": "DSCSA",
+  "unresolved_gaps": []
+}

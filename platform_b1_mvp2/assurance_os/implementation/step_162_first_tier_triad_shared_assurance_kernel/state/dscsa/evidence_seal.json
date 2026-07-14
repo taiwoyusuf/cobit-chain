@@ -1,0 +1,12 @@
+{
+  "content_length_bytes": 538,
+  "evidence_id": "EVID-DSCSA-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "0e36484df0218aaf9dfa2d99a7633b1c4138bfdd97b8b41bc7f197645023d8cf",
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "seal_id": "SEAL-a3516577-c2d2-477b-8fdc-7ab81b1711fc",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T22:57:24Z",
+  "sealed_by_actor_id": "ACTOR-DSCSA-COMPLIANCE-001",
+  "track_id": "DSCSA"
+}
