@@ -1,0 +1,60 @@
+{
+  "authority": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "escalation_available": true,
+    "evidence_sufficient": true,
+    "human_accountability_identified": true,
+    "pre_authorized_rule_exists": false,
+    "timing_valid": true
+  },
+  "dependencies": [
+    {
+      "agrees": true,
+      "current": true,
+      "name": "product_identifier",
+      "present": true,
+      "required": true
+    },
+    {
+      "agrees": true,
+      "current": true,
+      "name": "transaction_information",
+      "present": true,
+      "required": true
+    },
+    {
+      "agrees": true,
+      "current": true,
+      "name": "trading_partner_authorization",
+      "present": true,
+      "required": true
+    },
+    {
+      "agrees": true,
+      "current": true,
+      "name": "chain_of_custody",
+      "present": true,
+      "required": true
+    }
+  ],
+  "evidence": {
+    "provenance": "SYNTHETIC",
+    "record_id": "DSCSA-EV-001",
+    "value": "synthetic transaction and custody evidence"
+  },
+  "regulated_object": {
+    "object_id": "DSCSA-PACKAGE-001",
+    "object_type": "SALEABLE_RETURN_TRANSACTION"
+  },
+  "source_state": {
+    "current": true,
+    "state": "VERIFIED",
+    "system": "SYNTHETIC_TRACEABILITY_SYSTEM"
+  },
+  "track_id": "dscsa"
+}

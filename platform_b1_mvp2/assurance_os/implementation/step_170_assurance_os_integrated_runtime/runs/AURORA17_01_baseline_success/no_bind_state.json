@@ -1,0 +1,11 @@
+{
+  "action_held": false,
+  "documented_pause_created": false,
+  "escalation_required": false,
+  "no_bind_state": "INACTIVE",
+  "reasons": [],
+  "scenario_id": "AURORA17_01_baseline_success",
+  "schema_version": "1.0",
+  "silence_is_not_consent": true,
+  "track_id": "aurora17"
+}

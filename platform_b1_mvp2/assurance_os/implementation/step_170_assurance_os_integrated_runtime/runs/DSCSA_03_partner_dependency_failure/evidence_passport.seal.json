@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "DSCSA_03_partner_dependency_failure",
+  "payload_sha256": "9833086030E2C9065BA8945DEDFDDC174F2278E9B35C1D84EF3E2E10C6543496",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

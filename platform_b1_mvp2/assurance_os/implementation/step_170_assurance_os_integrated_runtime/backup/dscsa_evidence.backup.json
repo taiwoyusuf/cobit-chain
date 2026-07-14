@@ -1,0 +1,99 @@
+{
+  "payload": {
+    "action_admissibility": {
+      "action_held": false,
+      "binding_decision_made": false,
+      "decision": "ADMISSIBLE",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "fail_closed": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "release_authorized": false
+    },
+    "authority": {
+      "action_held": false,
+      "authority_state": "AUTHORITY_VERIFIED",
+      "authority_valid": true,
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "silence_is_not_consent": true
+    },
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "evidence_integrity": {
+      "actual_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+      "expected_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+      "fail_closed": false,
+      "state": "VERIFIED",
+      "valid": true
+    },
+    "generated_at": "2026-07-13T00:00:00Z",
+    "passport_content_sha256": "DD88B8898F1CD0ECB5A6D6DF51FB6CFAFFDAC40465DDB00C9F8E3645673C7580",
+    "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+    "regulated_object": {
+      "object_id": "DSCSA-PACKAGE-001",
+      "object_type": "SALEABLE_RETURN_TRANSACTION"
+    },
+    "scenario_id": "DSCSA_04_recovery_success",
+    "schema_version": "1.0",
+    "source_state": {
+      "current": true,
+      "state": "VERIFIED",
+      "system": "SYNTHETIC_TRACEABILITY_SYSTEM"
+    },
+    "track_id": "dscsa",
+    "workflow_dependencies": {
+      "evaluated": [
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "product_identifier",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "transaction_information",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "trading_partner_authorization",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "chain_of_custody",
+          "passed": true,
+          "required": true
+        }
+      ],
+      "fail_closed": false,
+      "failures": [],
+      "state": "DEPENDENCIES_VERIFIED",
+      "valid": true
+    }
+  },
+  "payload_sha256": "BD520F117D5F4594E8FC52E2DCA9BF3352A5A4912AC8150CCE237AD7C9810941",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,95 @@
+{
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "components": [
+    {
+      "name": "__init__",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/__init__.py"
+    },
+    {
+      "name": "admissibility",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/admissibility.py"
+    },
+    {
+      "name": "audit_log",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/audit_log.py"
+    },
+    {
+      "name": "authority_no_bind",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/authority_no_bind.py"
+    },
+    {
+      "name": "backup_restore",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/backup_restore.py"
+    },
+    {
+      "name": "canonicalization",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/canonicalization.py"
+    },
+    {
+      "name": "cli",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/cli.py"
+    },
+    {
+      "name": "dependency_lens",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/dependency_lens.py"
+    },
+    {
+      "name": "display_contracts",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/display_contracts.py"
+    },
+    {
+      "name": "evidence_integrity",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/evidence_integrity.py"
+    },
+    {
+      "name": "inspection_bundle",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/inspection_bundle.py"
+    },
+    {
+      "name": "models",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/models.py"
+    },
+    {
+      "name": "passport_builder",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/passport_builder.py"
+    },
+    {
+      "name": "reconstruction",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/reconstruction.py"
+    },
+    {
+      "name": "runtime",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/runtime.py"
+    },
+    {
+      "name": "source_adapters",
+      "owner": "PLATFORM_B1",
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/source_adapters.py"
+    }
+  ],
+  "governing_commit": "4520fed5d762fb6219fb181b30de4acd89ac63f0",
+  "ramat_authority": "DISPLAY_ONLY",
+  "read_only_dependencies": [
+    "platform_b1_mvp2/assurance_os/implementation/step_160_aurora17_qc_batch_release_slice",
+    "platform_b1_mvp2/assurance_os/implementation/step_162_first_tier_triad_shared_assurance_kernel",
+    "platform_b1_mvp2/assurance_os/implementation/step_164_first_tier_triad_assurance_orchestrator_api",
+    "platform_b1_mvp2/assurance_os/implementation/step_166_first_tier_triad_commercial_demonstration_console"
+  ],
+  "runtime_name": "Assurance OS Integrated Runtime",
+  "schema_version": "1.0"
+}

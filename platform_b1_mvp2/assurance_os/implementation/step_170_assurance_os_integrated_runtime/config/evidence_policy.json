@@ -1,0 +1,10 @@
+{
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "chain_of_custody_required": true,
+  "fail_closed_on_integrity_failure": true,
+  "hash_algorithm": "SHA-256",
+  "provenance_required": true,
+  "rehash_required": true,
+  "schema_version": "1.0",
+  "seal_required": true
+}

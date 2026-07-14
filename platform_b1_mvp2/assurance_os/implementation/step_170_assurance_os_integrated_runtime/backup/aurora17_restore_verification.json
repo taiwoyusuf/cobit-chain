@@ -1,0 +1,7 @@
+{
+  "actual_sha256": "30E3616A3E452A9744FA4848D8A644536E4685820329D71A4EC1EEFAD917D0AD",
+  "expected_sha256": "30E3616A3E452A9744FA4848D8A644536E4685820329D71A4EC1EEFAD917D0AD",
+  "fail_closed": false,
+  "restore_verified": true,
+  "schema_version": "1.0"
+}

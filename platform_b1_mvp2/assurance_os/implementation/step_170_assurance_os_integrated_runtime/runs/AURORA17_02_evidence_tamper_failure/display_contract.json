@@ -1,0 +1,16 @@
+{
+  "action_held": true,
+  "authority_state": "AUTHORITY_VERIFIED",
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "can_approve": false,
+  "can_bind": false,
+  "can_release": false,
+  "decision": "NOT_ADMISSIBLE",
+  "display_only": true,
+  "documented_pause_created": true,
+  "escalation_required": true,
+  "no_bind_state": "ACTIVE",
+  "scenario_id": "AURORA17_02_evidence_tamper_failure",
+  "schema_version": "1.0",
+  "track_id": "aurora17"
+}

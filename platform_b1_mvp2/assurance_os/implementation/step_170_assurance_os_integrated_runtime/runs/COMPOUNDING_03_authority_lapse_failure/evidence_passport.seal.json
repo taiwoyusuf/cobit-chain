@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "COMPOUNDING_03_authority_lapse_failure",
+  "payload_sha256": "FE430CC335CAE02C4AA8F0EBE2C5ED4C749C2C3A246E5622C3290E435EB0EA24",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

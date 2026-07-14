@@ -1,0 +1,89 @@
+{
+  "payload": {
+    "action_admissibility": {
+      "action_held": false,
+      "binding_decision_made": false,
+      "decision": "ADMISSIBLE",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "fail_closed": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "release_authorized": false
+    },
+    "authority": {
+      "action_held": false,
+      "authority_state": "AUTHORITY_VERIFIED",
+      "authority_valid": true,
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "silence_is_not_consent": true
+    },
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "evidence_integrity": {
+      "actual_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+      "expected_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+      "fail_closed": false,
+      "state": "VERIFIED",
+      "valid": true
+    },
+    "generated_at": "2026-07-13T00:00:00Z",
+    "passport_content_sha256": "10EC05A6879CA8BC0CC7E9A745E9448AAD134C67196404D370743F8AF71F1917",
+    "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+    "regulated_object": {
+      "object_id": "CMP-RX-001",
+      "object_type": "COMPOUNDED_PREPARATION_RELEASE"
+    },
+    "scenario_id": "COMPOUNDING_04_recovery_success",
+    "schema_version": "1.0",
+    "source_state": {
+      "current": true,
+      "state": "VERIFIED",
+      "system": "SYNTHETIC_PHARMACY_SYSTEM"
+    },
+    "track_id": "compounding",
+    "workflow_dependencies": {
+      "evaluated": [
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "formula_identity",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "ingredient_lot_trace",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "preparation_review",
+          "passed": true,
+          "required": true
+        }
+      ],
+      "fail_closed": false,
+      "failures": [],
+      "state": "DEPENDENCIES_VERIFIED",
+      "valid": true
+    }
+  },
+  "payload_sha256": "0F534629484C2369C7E8C30A72D0A5928D95770F907B93842AAC5077788A5821",
+  "schema_version": "1.0"
+}

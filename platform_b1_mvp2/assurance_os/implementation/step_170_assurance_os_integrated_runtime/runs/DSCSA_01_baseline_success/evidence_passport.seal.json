@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "DSCSA_01_baseline_success",
+  "payload_sha256": "26EB3B2259B4887C0768472AAABA0DDFF4808EB0D9A280698864C322B645785E",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

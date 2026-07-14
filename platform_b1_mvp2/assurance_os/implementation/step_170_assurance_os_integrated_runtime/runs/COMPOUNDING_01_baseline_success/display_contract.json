@@ -1,0 +1,16 @@
+{
+  "action_held": false,
+  "authority_state": "AUTHORITY_VERIFIED",
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "can_approve": false,
+  "can_bind": false,
+  "can_release": false,
+  "decision": "ADMISSIBLE",
+  "display_only": true,
+  "documented_pause_created": false,
+  "escalation_required": false,
+  "no_bind_state": "INACTIVE",
+  "scenario_id": "COMPOUNDING_01_baseline_success",
+  "schema_version": "1.0",
+  "track_id": "compounding"
+}

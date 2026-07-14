@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "AURORA17_04_recovery_success",
+  "payload_sha256": "30E3616A3E452A9744FA4848D8A644536E4685820329D71A4EC1EEFAD917D0AD",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

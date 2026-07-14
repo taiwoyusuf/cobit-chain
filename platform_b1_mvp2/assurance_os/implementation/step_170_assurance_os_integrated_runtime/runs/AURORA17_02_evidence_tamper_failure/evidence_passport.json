@@ -1,0 +1,87 @@
+{
+  "action_admissibility": {
+    "action_held": true,
+    "binding_decision_made": false,
+    "decision": "NOT_ADMISSIBLE",
+    "documented_pause_created": true,
+    "escalation_required": true,
+    "fail_closed": true,
+    "no_bind_state": "ACTIVE",
+    "reasons": [
+      "EVIDENCE_INTEGRITY_NOT_VERIFIED"
+    ],
+    "release_authorized": false
+  },
+  "authority": {
+    "action_held": false,
+    "authority_state": "AUTHORITY_VERIFIED",
+    "authority_valid": true,
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "documented_pause_created": false,
+    "escalation_required": false,
+    "no_bind_state": "INACTIVE",
+    "reasons": [],
+    "silence_is_not_consent": true
+  },
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "evidence_integrity": {
+    "actual_sha256": "639E8AA2E971CA6C02089D87CD829B4849424E02BA343A216744CC213CA86062",
+    "expected_sha256": "F810D5BB1E9D08F3B5E0D7D4AA163EC068E3C28F073E21A4C6FBB88FA64A2161",
+    "fail_closed": true,
+    "state": "INTEGRITY_FAILURE",
+    "valid": false
+  },
+  "generated_at": "2026-07-13T00:00:00Z",
+  "passport_content_sha256": "9E78B4F238A8BD1CD8BF9093DF694B4743FCC1BD658122E31B2E2E9D93C56DB7",
+  "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+  "regulated_object": {
+    "object_id": "A17-BATCH-001",
+    "object_type": "QC_BATCH_RELEASE"
+  },
+  "scenario_id": "AURORA17_02_evidence_tamper_failure",
+  "schema_version": "1.0",
+  "source_state": {
+    "current": true,
+    "state": "VERIFIED",
+    "system": "SYNTHETIC_LIMS"
+  },
+  "track_id": "aurora17",
+  "workflow_dependencies": {
+    "evaluated": [
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "sample_identity",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "method_status",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "batch_review",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "fail_closed": false,
+    "failures": [],
+    "state": "DEPENDENCIES_VERIFIED",
+    "valid": true
+  }
+}

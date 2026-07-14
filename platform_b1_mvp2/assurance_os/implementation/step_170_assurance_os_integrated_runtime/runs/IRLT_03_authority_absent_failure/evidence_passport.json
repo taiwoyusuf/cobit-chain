@@ -1,0 +1,100 @@
+{
+  "action_admissibility": {
+    "action_held": true,
+    "binding_decision_made": false,
+    "decision": "NOT_ADMISSIBLE",
+    "documented_pause_created": true,
+    "escalation_required": true,
+    "fail_closed": true,
+    "no_bind_state": "ACTIVE",
+    "reasons": [
+      "HUMAN_AUTHORITY_NOT_VERIFIED"
+    ],
+    "release_authorized": false
+  },
+  "authority": {
+    "action_held": true,
+    "authority_state": "AUTHORITY_INSUFFICIENT",
+    "authority_valid": false,
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "documented_pause_created": true,
+    "escalation_required": true,
+    "no_bind_state": "ACTIVE",
+    "reasons": [
+      "AUTHORITY_PRESENT_NOT_CONFIRMED",
+      "APPROVER_AVAILABLE_NOT_CONFIRMED"
+    ],
+    "silence_is_not_consent": true
+  },
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "evidence_integrity": {
+    "actual_sha256": "D70B44CB5486184E500A2BC7B2C18C1333AC141EFE2170468D8E95E444BBD561",
+    "expected_sha256": "D70B44CB5486184E500A2BC7B2C18C1333AC141EFE2170468D8E95E444BBD561",
+    "fail_closed": false,
+    "state": "VERIFIED",
+    "valid": true
+  },
+  "generated_at": "2026-07-13T00:00:00Z",
+  "passport_content_sha256": "9B0A8267C3D5F129AEB6B04B655D843928B134EE3B137AE04D43C450A4439014",
+  "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+  "regulated_object": {
+    "object_id": "IRLT-RESULT-001",
+    "object_type": "LAB_RESULT_RELEASE"
+  },
+  "scenario_id": "IRLT_03_authority_absent_failure",
+  "schema_version": "1.0",
+  "source_state": {
+    "current": true,
+    "state": "VERIFIED",
+    "system": "SYNTHETIC_LIS"
+  },
+  "track_id": "irlt",
+  "workflow_dependencies": {
+    "evaluated": [
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "lis_state",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "middleware_state",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "patient_accession_mapping",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "audit_accountability_fields",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "fail_closed": false,
+    "failures": [],
+    "state": "DEPENDENCIES_VERIFIED",
+    "valid": true
+  }
+}

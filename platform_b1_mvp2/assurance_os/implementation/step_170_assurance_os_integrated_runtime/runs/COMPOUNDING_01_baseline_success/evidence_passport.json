@@ -1,0 +1,85 @@
+{
+  "action_admissibility": {
+    "action_held": false,
+    "binding_decision_made": false,
+    "decision": "ADMISSIBLE",
+    "documented_pause_created": false,
+    "escalation_required": false,
+    "fail_closed": false,
+    "no_bind_state": "INACTIVE",
+    "reasons": [],
+    "release_authorized": false
+  },
+  "authority": {
+    "action_held": false,
+    "authority_state": "AUTHORITY_VERIFIED",
+    "authority_valid": true,
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "documented_pause_created": false,
+    "escalation_required": false,
+    "no_bind_state": "INACTIVE",
+    "reasons": [],
+    "silence_is_not_consent": true
+  },
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "evidence_integrity": {
+    "actual_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+    "expected_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+    "fail_closed": false,
+    "state": "VERIFIED",
+    "valid": true
+  },
+  "generated_at": "2026-07-13T00:00:00Z",
+  "passport_content_sha256": "7C963C9F3A40779BE7D62FEFA1A611BEA4D143B63E38A4167568F96C0D8CC656",
+  "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+  "regulated_object": {
+    "object_id": "CMP-RX-001",
+    "object_type": "COMPOUNDED_PREPARATION_RELEASE"
+  },
+  "scenario_id": "COMPOUNDING_01_baseline_success",
+  "schema_version": "1.0",
+  "source_state": {
+    "current": true,
+    "state": "VERIFIED",
+    "system": "SYNTHETIC_PHARMACY_SYSTEM"
+  },
+  "track_id": "compounding",
+  "workflow_dependencies": {
+    "evaluated": [
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "formula_identity",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "ingredient_lot_trace",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "preparation_review",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "fail_closed": false,
+    "failures": [],
+    "state": "DEPENDENCIES_VERIFIED",
+    "valid": true
+  }
+}

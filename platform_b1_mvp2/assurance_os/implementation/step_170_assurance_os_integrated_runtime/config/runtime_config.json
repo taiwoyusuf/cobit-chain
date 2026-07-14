@@ -1,0 +1,19 @@
+{
+  "allowed_tracks": [
+    "aurora17",
+    "irlt",
+    "compounding",
+    "dscsa"
+  ],
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "deployment_enabled": false,
+  "deterministic_timestamp": "2026-07-13T00:00:00Z",
+  "fail_closed": true,
+  "governing_commit": "4520fed5d762fb6219fb181b30de4acd89ac63f0",
+  "local_only": true,
+  "network_enabled": false,
+  "production_connections_enabled": false,
+  "ramat_mode": "DISPLAY_ONLY",
+  "runtime_name": "Assurance OS Integrated Runtime",
+  "schema_version": "1.0"
+}

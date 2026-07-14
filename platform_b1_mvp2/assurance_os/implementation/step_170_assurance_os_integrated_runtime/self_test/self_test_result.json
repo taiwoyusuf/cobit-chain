@@ -1,0 +1,9 @@
+{
+  "admissible_count": 8,
+  "audit_chain_verified": true,
+  "generated_at": "2026-07-13T00:00:00Z",
+  "not_admissible_count": 8,
+  "passed": true,
+  "scenario_count": 16,
+  "schema_version": "1.0"
+}

@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "DSCSA_02_chain_of_custody_break_failure",
+  "payload_sha256": "38BBD209FF38E9F420F2004089690B54DB5101A786F0A79198FA7C93D9EE01FA",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

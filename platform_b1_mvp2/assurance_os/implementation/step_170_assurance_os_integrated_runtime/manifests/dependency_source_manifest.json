@@ -1,0 +1,11 @@
+{
+  "governing_commit": "4520fed5d762fb6219fb181b30de4acd89ac63f0",
+  "read_only": true,
+  "schema_version": "1.0",
+  "source_roots": [
+    "platform_b1_mvp2/assurance_os/implementation/step_160_aurora17_qc_batch_release_slice",
+    "platform_b1_mvp2/assurance_os/implementation/step_162_first_tier_triad_shared_assurance_kernel",
+    "platform_b1_mvp2/assurance_os/implementation/step_164_first_tier_triad_assurance_orchestrator_api",
+    "platform_b1_mvp2/assurance_os/implementation/step_166_first_tier_triad_commercial_demonstration_console"
+  ]
+}

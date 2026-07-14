@@ -1,0 +1,37 @@
+{
+  "decision_reasons": [
+    "HUMAN_AUTHORITY_NOT_VERIFIED"
+  ],
+  "fail_closed": true,
+  "history_preserved": true,
+  "reconstructed_at": "2026-07-13T00:00:00Z",
+  "scenario_id": "IRLT_03_authority_absent_failure",
+  "schema_version": "1.0",
+  "timeline": [
+    {
+      "event": "SOURCE_STATE_OBSERVED",
+      "sequence": 1
+    },
+    {
+      "event": "VERIFIED",
+      "sequence": 2
+    },
+    {
+      "event": "DEPENDENCIES_VERIFIED",
+      "sequence": 3
+    },
+    {
+      "event": "AUTHORITY_INSUFFICIENT",
+      "sequence": 4
+    },
+    {
+      "event": "NO_BIND_ACTIVE",
+      "sequence": 5
+    },
+    {
+      "event": "NOT_ADMISSIBLE",
+      "sequence": 6
+    }
+  ],
+  "track_id": "irlt"
+}

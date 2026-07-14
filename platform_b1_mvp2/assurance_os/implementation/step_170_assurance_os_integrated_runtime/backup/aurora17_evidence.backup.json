@@ -1,0 +1,89 @@
+{
+  "payload": {
+    "action_admissibility": {
+      "action_held": false,
+      "binding_decision_made": false,
+      "decision": "ADMISSIBLE",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "fail_closed": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "release_authorized": false
+    },
+    "authority": {
+      "action_held": false,
+      "authority_state": "AUTHORITY_VERIFIED",
+      "authority_valid": true,
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "documented_pause_created": false,
+      "escalation_required": false,
+      "no_bind_state": "INACTIVE",
+      "reasons": [],
+      "silence_is_not_consent": true
+    },
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "evidence_integrity": {
+      "actual_sha256": "F810D5BB1E9D08F3B5E0D7D4AA163EC068E3C28F073E21A4C6FBB88FA64A2161",
+      "expected_sha256": "F810D5BB1E9D08F3B5E0D7D4AA163EC068E3C28F073E21A4C6FBB88FA64A2161",
+      "fail_closed": false,
+      "state": "VERIFIED",
+      "valid": true
+    },
+    "generated_at": "2026-07-13T00:00:00Z",
+    "passport_content_sha256": "8108D3884B201045EE3EA59F537C7B44D29E35A0FA68468CD685CE01489B4402",
+    "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+    "regulated_object": {
+      "object_id": "A17-BATCH-001",
+      "object_type": "QC_BATCH_RELEASE"
+    },
+    "scenario_id": "AURORA17_04_recovery_success",
+    "schema_version": "1.0",
+    "source_state": {
+      "current": true,
+      "state": "VERIFIED",
+      "system": "SYNTHETIC_LIMS"
+    },
+    "track_id": "aurora17",
+    "workflow_dependencies": {
+      "evaluated": [
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "sample_identity",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "method_status",
+          "passed": true,
+          "required": true
+        },
+        {
+          "checks": {
+            "agrees": true,
+            "current": true,
+            "present": true
+          },
+          "name": "batch_review",
+          "passed": true,
+          "required": true
+        }
+      ],
+      "fail_closed": false,
+      "failures": [],
+      "state": "DEPENDENCIES_VERIFIED",
+      "valid": true
+    }
+  },
+  "payload_sha256": "30E3616A3E452A9744FA4848D8A644536E4685820329D71A4EC1EEFAD917D0AD",
+  "schema_version": "1.0"
+}

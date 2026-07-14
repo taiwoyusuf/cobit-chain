@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "IRLT_02_lis_middleware_mismatch_failure",
+  "payload_sha256": "E66C06FC4BF748B29D69C3B6772431D89C44527ABACAF97E908691CFFC013A0A",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "COMPOUNDING_02_evidence_tamper_failure",
+  "payload_sha256": "F60E5B351E8E76449DD7BE0A7813DF9117FC025EE982EE2FB91F011612012DAA",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

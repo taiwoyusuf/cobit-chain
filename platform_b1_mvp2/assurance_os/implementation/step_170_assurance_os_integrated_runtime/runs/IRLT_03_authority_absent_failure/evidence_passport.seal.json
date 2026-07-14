@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "IRLT_03_authority_absent_failure",
+  "payload_sha256": "BDAA47CA710CE619943292272F0A0C8CD0B17B51222CD1D7BA14C152656D7DAE",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

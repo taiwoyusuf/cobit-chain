@@ -1,0 +1,7 @@
+{
+  "actual_sha256": "A29D19E0F9743790DD2EF4ADFA388EB78A434629476B0003E5C58068213CDFAC",
+  "expected_sha256": "A29D19E0F9743790DD2EF4ADFA388EB78A434629476B0003E5C58068213CDFAC",
+  "fail_closed": false,
+  "restore_verified": true,
+  "schema_version": "1.0"
+}

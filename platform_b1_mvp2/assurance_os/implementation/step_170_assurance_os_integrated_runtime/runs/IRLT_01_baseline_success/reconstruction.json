@@ -1,0 +1,35 @@
+{
+  "decision_reasons": [],
+  "fail_closed": false,
+  "history_preserved": true,
+  "reconstructed_at": "2026-07-13T00:00:00Z",
+  "scenario_id": "IRLT_01_baseline_success",
+  "schema_version": "1.0",
+  "timeline": [
+    {
+      "event": "SOURCE_STATE_OBSERVED",
+      "sequence": 1
+    },
+    {
+      "event": "VERIFIED",
+      "sequence": 2
+    },
+    {
+      "event": "DEPENDENCIES_VERIFIED",
+      "sequence": 3
+    },
+    {
+      "event": "AUTHORITY_VERIFIED",
+      "sequence": 4
+    },
+    {
+      "event": "NO_BIND_INACTIVE",
+      "sequence": 5
+    },
+    {
+      "event": "ADMISSIBLE",
+      "sequence": 6
+    }
+  ],
+  "track_id": "irlt"
+}

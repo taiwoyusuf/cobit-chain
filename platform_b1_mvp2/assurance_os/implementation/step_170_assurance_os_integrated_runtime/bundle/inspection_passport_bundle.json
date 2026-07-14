@@ -1,0 +1,378 @@
+{
+  "generated_at": "2026-07-13T00:00:00Z",
+  "inspection_message": "Evidence-native, provenance-backed, AI-readable demonstration package.",
+  "passports": [
+    {
+      "action_admissibility": {
+        "action_held": false,
+        "binding_decision_made": false,
+        "decision": "ADMISSIBLE",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "fail_closed": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "release_authorized": false
+      },
+      "authority": {
+        "action_held": false,
+        "authority_state": "AUTHORITY_VERIFIED",
+        "authority_valid": true,
+        "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "silence_is_not_consent": true
+      },
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "evidence_integrity": {
+        "actual_sha256": "F810D5BB1E9D08F3B5E0D7D4AA163EC068E3C28F073E21A4C6FBB88FA64A2161",
+        "expected_sha256": "F810D5BB1E9D08F3B5E0D7D4AA163EC068E3C28F073E21A4C6FBB88FA64A2161",
+        "fail_closed": false,
+        "state": "VERIFIED",
+        "valid": true
+      },
+      "generated_at": "2026-07-13T00:00:00Z",
+      "passport_content_sha256": "8108D3884B201045EE3EA59F537C7B44D29E35A0FA68468CD685CE01489B4402",
+      "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+      "regulated_object": {
+        "object_id": "A17-BATCH-001",
+        "object_type": "QC_BATCH_RELEASE"
+      },
+      "scenario_id": "AURORA17_04_recovery_success",
+      "schema_version": "1.0",
+      "source_state": {
+        "current": true,
+        "state": "VERIFIED",
+        "system": "SYNTHETIC_LIMS"
+      },
+      "track_id": "aurora17",
+      "workflow_dependencies": {
+        "evaluated": [
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "sample_identity",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "method_status",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "batch_review",
+            "passed": true,
+            "required": true
+          }
+        ],
+        "fail_closed": false,
+        "failures": [],
+        "state": "DEPENDENCIES_VERIFIED",
+        "valid": true
+      }
+    },
+    {
+      "action_admissibility": {
+        "action_held": false,
+        "binding_decision_made": false,
+        "decision": "ADMISSIBLE",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "fail_closed": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "release_authorized": false
+      },
+      "authority": {
+        "action_held": false,
+        "authority_state": "AUTHORITY_VERIFIED",
+        "authority_valid": true,
+        "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "silence_is_not_consent": true
+      },
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "evidence_integrity": {
+        "actual_sha256": "D70B44CB5486184E500A2BC7B2C18C1333AC141EFE2170468D8E95E444BBD561",
+        "expected_sha256": "D70B44CB5486184E500A2BC7B2C18C1333AC141EFE2170468D8E95E444BBD561",
+        "fail_closed": false,
+        "state": "VERIFIED",
+        "valid": true
+      },
+      "generated_at": "2026-07-13T00:00:00Z",
+      "passport_content_sha256": "538F50F3EDDEE777E25A3238D3F47C4EC8D11E39CEDFC962990074F1F207D171",
+      "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+      "regulated_object": {
+        "object_id": "IRLT-RESULT-001",
+        "object_type": "LAB_RESULT_RELEASE"
+      },
+      "scenario_id": "IRLT_04_recovery_success",
+      "schema_version": "1.0",
+      "source_state": {
+        "current": true,
+        "state": "VERIFIED",
+        "system": "SYNTHETIC_LIS"
+      },
+      "track_id": "irlt",
+      "workflow_dependencies": {
+        "evaluated": [
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "lis_state",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "middleware_state",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "patient_accession_mapping",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "audit_accountability_fields",
+            "passed": true,
+            "required": true
+          }
+        ],
+        "fail_closed": false,
+        "failures": [],
+        "state": "DEPENDENCIES_VERIFIED",
+        "valid": true
+      }
+    },
+    {
+      "action_admissibility": {
+        "action_held": false,
+        "binding_decision_made": false,
+        "decision": "ADMISSIBLE",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "fail_closed": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "release_authorized": false
+      },
+      "authority": {
+        "action_held": false,
+        "authority_state": "AUTHORITY_VERIFIED",
+        "authority_valid": true,
+        "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "silence_is_not_consent": true
+      },
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "evidence_integrity": {
+        "actual_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+        "expected_sha256": "2B0C00C1D32E771062155D3035B4974F61B4D60DC9DCCF49208370838617388A",
+        "fail_closed": false,
+        "state": "VERIFIED",
+        "valid": true
+      },
+      "generated_at": "2026-07-13T00:00:00Z",
+      "passport_content_sha256": "10EC05A6879CA8BC0CC7E9A745E9448AAD134C67196404D370743F8AF71F1917",
+      "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+      "regulated_object": {
+        "object_id": "CMP-RX-001",
+        "object_type": "COMPOUNDED_PREPARATION_RELEASE"
+      },
+      "scenario_id": "COMPOUNDING_04_recovery_success",
+      "schema_version": "1.0",
+      "source_state": {
+        "current": true,
+        "state": "VERIFIED",
+        "system": "SYNTHETIC_PHARMACY_SYSTEM"
+      },
+      "track_id": "compounding",
+      "workflow_dependencies": {
+        "evaluated": [
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "formula_identity",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "ingredient_lot_trace",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "preparation_review",
+            "passed": true,
+            "required": true
+          }
+        ],
+        "fail_closed": false,
+        "failures": [],
+        "state": "DEPENDENCIES_VERIFIED",
+        "valid": true
+      }
+    },
+    {
+      "action_admissibility": {
+        "action_held": false,
+        "binding_decision_made": false,
+        "decision": "ADMISSIBLE",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "fail_closed": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "release_authorized": false
+      },
+      "authority": {
+        "action_held": false,
+        "authority_state": "AUTHORITY_VERIFIED",
+        "authority_valid": true,
+        "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+        "documented_pause_created": false,
+        "escalation_required": false,
+        "no_bind_state": "INACTIVE",
+        "reasons": [],
+        "silence_is_not_consent": true
+      },
+      "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+      "evidence_integrity": {
+        "actual_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+        "expected_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+        "fail_closed": false,
+        "state": "VERIFIED",
+        "valid": true
+      },
+      "generated_at": "2026-07-13T00:00:00Z",
+      "passport_content_sha256": "DD88B8898F1CD0ECB5A6D6DF51FB6CFAFFDAC40465DDB00C9F8E3645673C7580",
+      "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+      "regulated_object": {
+        "object_id": "DSCSA-PACKAGE-001",
+        "object_type": "SALEABLE_RETURN_TRANSACTION"
+      },
+      "scenario_id": "DSCSA_04_recovery_success",
+      "schema_version": "1.0",
+      "source_state": {
+        "current": true,
+        "state": "VERIFIED",
+        "system": "SYNTHETIC_TRACEABILITY_SYSTEM"
+      },
+      "track_id": "dscsa",
+      "workflow_dependencies": {
+        "evaluated": [
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "product_identifier",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "transaction_information",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "trading_partner_authorization",
+            "passed": true,
+            "required": true
+          },
+          {
+            "checks": {
+              "agrees": true,
+              "current": true,
+              "present": true
+            },
+            "name": "chain_of_custody",
+            "passed": true,
+            "required": true
+          }
+        ],
+        "fail_closed": false,
+        "failures": [],
+        "state": "DEPENDENCIES_VERIFIED",
+        "valid": true
+      }
+    }
+  ],
+  "runtime_summary": {
+    "admissible_count": 8,
+    "audit_chain_verified": true,
+    "deployment_performed": false,
+    "generated_at": "2026-07-13T00:00:00Z",
+    "local_only": true,
+    "not_admissible_count": 8,
+    "production_connections": false,
+    "scenario_count": 16,
+    "schema_version": "1.0"
+  },
+  "schema_version": "1.0"
+}

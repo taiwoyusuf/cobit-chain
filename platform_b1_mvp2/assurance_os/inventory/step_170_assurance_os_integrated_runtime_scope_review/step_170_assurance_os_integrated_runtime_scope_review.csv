@@ -1,0 +1,8 @@
+scope_item,decision
+platform_b_v1,FROZEN
+thread_d_v1,FROZEN
+steps_148b_166,READ_ONLY
+azure_deployment,PROHIBITED
+production_connections,PROHIBITED
+production_data,PROHIBITED
+phi,PROHIBITED

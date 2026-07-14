@@ -1,0 +1,1354 @@
+{
+  "authorized_path_count": 192,
+  "coverage": "ALL_AUTHORIZED_PATHS_LISTED",
+  "entries": [
+    {
+      "class": "STATIC",
+      "length": 489,
+      "path": "platform_b1_mvp2/assurance_os/inventory/step_170_assurance_os_integrated_runtime_scope_review/STEP_170_ASSURANCE_OS_INTEGRATED_RUNTIME_SCOPE_REVIEW.md",
+      "sha256": "CDD4A567F8C1E31B8B90DE9F351BDF5252301F28E8BDF928DAE450CB95CCA6E6",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 501,
+      "path": "platform_b1_mvp2/assurance_os/inventory/step_170_assurance_os_integrated_runtime_scope_review/step_170_assurance_os_integrated_runtime_scope_review.json",
+      "sha256": "E1786DCD72793D0F7BF67A6976746EF9B5D4A7AC966B0E08FA04481589CC2D3F",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 189,
+      "path": "platform_b1_mvp2/assurance_os/inventory/step_170_assurance_os_integrated_runtime_scope_review/step_170_assurance_os_integrated_runtime_scope_review.csv",
+      "sha256": "94D8C8398A841F880B6EF5E2508B7CBC46368D64A680A3B8800BBE1500E6FC08",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 716,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/README.md",
+      "sha256": "1EF58159A73A3B88CEB85BE8D83DF9EDC4688F2B7557D27283C9497D18444B41",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 856,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/STEP_170_ASSURANCE_OS_INTEGRATED_RUNTIME.md",
+      "sha256": "5682FD47C1E6A90A35BA97153B388AF15937B7C06D4AACCA41A3FDD685F26DFC",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 501,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/STEP_170_ASSURANCE_OS_INTEGRATED_RUNTIME.json",
+      "sha256": "E1786DCD72793D0F7BF67A6976746EF9B5D4A7AC966B0E08FA04481589CC2D3F",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 173,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/STEP_170_ASSURANCE_OS_INTEGRATED_RUNTIME.csv",
+      "sha256": "427626A72609AB0F2E0E10D58D7C3FC83341B520D270EDE49F1A1DB57C5C88EB",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 64,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/requirements.txt",
+      "sha256": "2A2A8D884035370774E267E60E220B3F168812EC1D3C13011790E2CFECF83060",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 522,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/runtime_config.json",
+      "sha256": "0A633FC5AFFC1175640E24E13467C6204CE7C4AA7DBA2D94F19FF56134287EBC",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 3010,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/scenario_catalog.json",
+      "sha256": "5DBB0D8B4146E4638125056E5F6F8E90718AD3AB75F218202DA115649EE8F2F3",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 554,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/dependency_source_map.json",
+      "sha256": "50C16280B3AAD073EBC6BBBF014C913752BB61D6B4FDAB29B5A76515E9187404",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 459,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/authority_no_bind_policy.json",
+      "sha256": "92B8E46B3D98C19FC23E31FD75C218C2F99C3B245F421B64D003BC3E6DAFAE00",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 280,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/display_contract_policy.json",
+      "sha256": "5FEDA419EB32D893781C4FDB4D5416267582B9F5180FD32B45B7C93BCBA48091",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 280,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/config/evidence_policy.json",
+      "sha256": "629606917F3DBDDF534CC23EF3B26646861CC0462FAFFD5A15AA6D889EFD932A",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1186,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/data/fixtures/aurora17_fixture.json",
+      "sha256": "D795951C6FA3903A246B867E1C8E40AB2D845F9FC0F18B2BD74683F823CBB3D7",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1352,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/data/fixtures/irlt_fixture.json",
+      "sha256": "D51F0CF708A61DD5FC83AEFA2C3AF454B1366AA97B08187ADA98E4B30F8207C9",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1226,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/data/fixtures/compounding_fixture.json",
+      "sha256": "B6FC752A4AFC98784E17C89FC10CAA17DDE5C5DB2C91C2F26E81794CA8173B3C",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1396,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/data/fixtures/dscsa_fixture.json",
+      "sha256": "8E4958CB721622C14CA5C34E21D6C583B5D703FAE7025DD93A74ACD874ED79A0",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 3854,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/manifests/component_manifest.json",
+      "sha256": "DACC82EFFA1CDACC2E49F0ABB0B49B4AD3FB2788EED8DF66F3E0E22367B4FA0C",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/manifests/file_integrity_manifest.json",
+      "sha256": null,
+      "state": "SELF_LISTED_HASH_RECORDED_BY_OUTER_CONTROL"
+    },
+    {
+      "class": "STATIC",
+      "length": 552,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/manifests/dependency_source_manifest.json",
+      "sha256": "16715FE6A9223569CDE15937E70C79B3A247F7700D9AA8D6282B646852315BFA",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 21215,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/manifests/generated_output_manifest.json",
+      "sha256": "C11559F2BE9D89736121AFD8E0056DFCF5AC49E24001CE0B31BFAA78A8FAA89F",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 377,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/__init__.py",
+      "sha256": "29688020EB16278D9581ADDA2D4264BF17F93C2BABE94CC82E882D56448D1733",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 606,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/models.py",
+      "sha256": "2D4F8205482B9E01F5F6F4D35669F485C6AFE25AB34C92C6E57D16D2E1309DBA",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 896,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/canonicalization.py",
+      "sha256": "97DE495EA92DF62C28AAC05F029EDCD5835D6EC92C3A251408C9423063467C72",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1564,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/source_adapters.py",
+      "sha256": "F809A474A293D06E5BDF6C01F5EEA6ABDFC556890F5453657231307324CC2CD6",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 798,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/evidence_integrity.py",
+      "sha256": "20591CA06366860ADCAC1A3EEF45A90BC04EB665920404854D18163D8D99E811",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1317,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/dependency_lens.py",
+      "sha256": "D5E7EFB0E28E2F51C724A35068B6B6F4C80D980BB8BC8F3020C3F31CDDC75133",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1159,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/authority_no_bind.py",
+      "sha256": "A6B4CA61745A2B7866DC866AF1290405B10D04C1391E2D65BCF44075B18BEA00",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1137,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/admissibility.py",
+      "sha256": "0873964AC5C1BDBB481D590FDE1114429B41AD91F0E7D19B424BC4E185A038B5",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 968,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/passport_builder.py",
+      "sha256": "7080106CD6737D860E095A903468F9FDAD566AE0FE841AC44AEE63F8FC44ECC2",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1799,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/reconstruction.py",
+      "sha256": "06C70B3E1057C7CB7A04C8F2B48DB805BDA90F5BF8575E82A7BBD3DADC9644EC",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1030,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/display_contracts.py",
+      "sha256": "5B2EDDB0584E49177E94875D8CCD2F5A3050AD0551AB85E51761C7E1BC05F31B",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1313,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/audit_log.py",
+      "sha256": "9799E195A9DAFA6E7F19718EE44ED3E240EAD090AF99FE747EC6FE2C10A98E09",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1019,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/backup_restore.py",
+      "sha256": "00446984F3FDF331C2BDB4D1BBADB8FBC55F0A5E6B1269B2A00CF90D91B4FDF0",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 657,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/inspection_bundle.py",
+      "sha256": "4CC7159484537A8B8AE237E1F890817BC4FF362819C3FF884397235C69C82C35",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 13815,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/runtime.py",
+      "sha256": "3E5AEF706803F9740F6A0E9AF1BC4D583BD5EA9F066B648C37F2EF65ADACDE57",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1845,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/cli.py",
+      "sha256": "664E2DA8104955C3364E55642CC9DE45818882962068D7D58AEE4B92764480D4",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 29,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/__init__.py",
+      "sha256": "7C03CF731A02006257001A10D920602CC2193DBF56FA29A9F186F238CA0DA718",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 508,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_canonicalization.py",
+      "sha256": "8078513A8F0C6FD3B2BE5A26C7F0724280B5A0BB14AF35344E215099C55F049B",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 729,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_source_adapters.py",
+      "sha256": "F84D096F996CD3C055754787016ACAF3DAF440DB79B1275C2DFB14714444B8AB",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 718,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_evidence_integrity.py",
+      "sha256": "FA1089F558B76CDC7F6C6C1470167754BA1D4CA02F31AD11E6AEE383CDBEFFF0",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 605,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_dependency_lens.py",
+      "sha256": "5B1C29D7CA77FB5F1F561237E13A4775C398E4FE5ABC424500797317F9BB51B2",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 438,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_authority_no_bind.py",
+      "sha256": "C372E0B7DC11A0205957A6946DA6894804C172E9CA82E808EBD6154677525BF3",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 647,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_admissibility.py",
+      "sha256": "7A648D366FC7A9954FFE0BF4BBD23A6E9FA6DDCE205909090F256BBF3D3059DE",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1813,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_passport_reconstruction.py",
+      "sha256": "937236B7F98322FFC70A0B2877FE59FBA691476654675FE0B2C21BD44563DEDD",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 911,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_display_contracts.py",
+      "sha256": "35B26262916B8FFD5D4A8E731EF0D8156FB0B5054E81334108087C7463B481D2",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 809,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_backup_restore.py",
+      "sha256": "158A2D20546A321038B258D08873AB5473FAD5B0D21B0308982FA57360986A48",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 1237,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_runtime_scenarios.py",
+      "sha256": "9E32B266508316BD98BCC98E01AB92D25786F9DF5F6BEB472A377A2D349B4D0A",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 794,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_fail_closed.py",
+      "sha256": "04E71F98BE84667253650DD07179A7D05A981F9B1B066637CC8A19AFAC73CA8D",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "STATIC",
+      "length": 376,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/tests/test_cli_self_test.py",
+      "sha256": "0289C5D526EDA05DF13612D26770BA3793EE7F97BA2E78FDC0058F3CB432671F",
+      "state": "CREATED_OR_VERIFIED"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/audit_events.jsonl",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/runtime_summary.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/self_test/self_test_result.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/bundle/inspection_passport_bundle.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/bundle/inspection_passport_bundle_manifest.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/aurora17_current_assurance_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/aurora17_current_assurance_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/ramat/aurora17_current_display.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/reconstruction/aurora17_current_reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/aurora17_evidence.backup.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/aurora17_restore_verification.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_01_baseline_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_02_evidence_tamper_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_03_dependency_mismatch_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/AURORA17_04_recovery_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/irlt_current_assurance_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/irlt_current_assurance_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/ramat/irlt_current_display.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/reconstruction/irlt_current_reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/irlt_evidence.backup.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/irlt_restore_verification.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_01_baseline_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_02_lis_middleware_mismatch_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_03_authority_absent_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/IRLT_04_recovery_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/compounding_current_assurance_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/compounding_current_assurance_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/ramat/compounding_current_display.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/reconstruction/compounding_current_reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/compounding_evidence.backup.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/compounding_restore_verification.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_01_baseline_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_02_evidence_tamper_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_03_authority_lapse_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/COMPOUNDING_04_recovery_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/dscsa_current_assurance_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/passports/dscsa_current_assurance_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/ramat/dscsa_current_display.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/reconstruction/dscsa_current_reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/dscsa_evidence.backup.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/backup/dscsa_restore_verification.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_01_baseline_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_02_chain_of_custody_break_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_03_partner_dependency_failure/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/evaluation.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/action_admissibility.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/no_bind_state.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/evidence_passport.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/evidence_passport.seal.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/reconstruction.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    },
+    {
+      "class": "GENERATED",
+      "length": null,
+      "path": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/runs/DSCSA_04_recovery_success/display_contract.json",
+      "sha256": null,
+      "state": "DEFERRED_TO_STEP_170D"
+    }
+  ],
+  "generated_path_count": 141,
+  "governing_commit": "4520fed5d762fb6219fb181b30de4acd89ac63f0",
+  "schema_version": "1.0",
+  "static_path_count": 51
+}

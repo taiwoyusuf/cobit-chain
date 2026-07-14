@@ -1,0 +1,13 @@
+{
+  "action_held": true,
+  "documented_pause_created": true,
+  "escalation_required": true,
+  "no_bind_state": "ACTIVE",
+  "reasons": [
+    "WORKFLOW_DEPENDENCIES_NOT_VERIFIED"
+  ],
+  "scenario_id": "DSCSA_03_partner_dependency_failure",
+  "schema_version": "1.0",
+  "silence_is_not_consent": true,
+  "track_id": "dscsa"
+}

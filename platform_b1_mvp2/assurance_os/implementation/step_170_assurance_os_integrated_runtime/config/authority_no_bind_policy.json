@@ -1,0 +1,18 @@
+{
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "default_action": "HOLD",
+  "default_on_unknown": "NO_BIND",
+  "required_true_fields": [
+    "authority_present",
+    "authority_valid",
+    "authority_current",
+    "authority_delegated",
+    "approver_available",
+    "escalation_available",
+    "evidence_sufficient",
+    "timing_valid",
+    "human_accountability_identified"
+  ],
+  "schema_version": "1.0",
+  "silence_is_governance_state": true
+}

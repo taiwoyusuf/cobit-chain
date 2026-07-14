@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "canonicalization": "JSON_SORTED_KEYS_COMPACT_UTF8",
+  "object_id": "COMPOUNDING_01_baseline_success",
+  "payload_sha256": "316B59DE8B53838810644B10AFB277B15B6F72627F44835E9A1B4654E26B55B6",
+  "schema_version": "1.0",
+  "sealed_at": "2026-07-13T00:00:00Z",
+  "state": "SEALED"
+}

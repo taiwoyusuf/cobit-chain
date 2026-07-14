@@ -1,0 +1,17 @@
+{
+  "company_production_data": false,
+  "deployment": false,
+  "generated_files": 141,
+  "governing_commit": "4520fed5d762fb6219fb181b30de4acd89ac63f0",
+  "name": "Assurance OS Integrated Runtime and Governed Demonstration Baseline",
+  "phi": false,
+  "planned_files": 192,
+  "platform_b_v1_frozen": true,
+  "production_connections": false,
+  "scenarios": 16,
+  "schema_version": "1.0",
+  "static_files": 51,
+  "step": "170",
+  "steps_148b_through_166_read_only": true,
+  "thread_d_v1_frozen": true
+}

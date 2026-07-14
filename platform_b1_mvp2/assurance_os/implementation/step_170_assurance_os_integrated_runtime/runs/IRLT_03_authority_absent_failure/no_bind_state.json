@@ -1,0 +1,15 @@
+{
+  "action_held": true,
+  "documented_pause_created": true,
+  "escalation_required": true,
+  "no_bind_state": "ACTIVE",
+  "reasons": [
+    "APPROVER_AVAILABLE_NOT_CONFIRMED",
+    "AUTHORITY_PRESENT_NOT_CONFIRMED",
+    "HUMAN_AUTHORITY_NOT_VERIFIED"
+  ],
+  "scenario_id": "IRLT_03_authority_absent_failure",
+  "schema_version": "1.0",
+  "silence_is_not_consent": true,
+  "track_id": "irlt"
+}

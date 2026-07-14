@@ -1,0 +1,11 @@
+{
+  "admissible_count": 8,
+  "audit_chain_verified": true,
+  "deployment_performed": false,
+  "generated_at": "2026-07-13T00:00:00Z",
+  "local_only": true,
+  "not_admissible_count": 8,
+  "production_connections": false,
+  "scenario_count": 16,
+  "schema_version": "1.0"
+}

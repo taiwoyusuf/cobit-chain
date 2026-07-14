@@ -1,0 +1,99 @@
+{
+  "action_admissibility": {
+    "action_held": true,
+    "binding_decision_made": false,
+    "decision": "NOT_ADMISSIBLE",
+    "documented_pause_created": true,
+    "escalation_required": true,
+    "fail_closed": true,
+    "no_bind_state": "ACTIVE",
+    "reasons": [
+      "WORKFLOW_DEPENDENCIES_NOT_VERIFIED"
+    ],
+    "release_authorized": false
+  },
+  "authority": {
+    "action_held": false,
+    "authority_state": "AUTHORITY_VERIFIED",
+    "authority_valid": true,
+    "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+    "documented_pause_created": false,
+    "escalation_required": false,
+    "no_bind_state": "INACTIVE",
+    "reasons": [],
+    "silence_is_not_consent": true
+  },
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN",
+  "evidence_integrity": {
+    "actual_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+    "expected_sha256": "8AB4C68259320AFCD4F300DF2CAC94155F4E2C88F56AA931A36BBE8E91F03DD6",
+    "fail_closed": false,
+    "state": "VERIFIED",
+    "valid": true
+  },
+  "generated_at": "2026-07-13T00:00:00Z",
+  "passport_content_sha256": "1677B347662CBE372D7E2BDC9812FB8D3A816765581D2FB35C2B9D063D668D2F",
+  "provenance": "SYNTHETIC_LOCAL_DEMONSTRATION",
+  "regulated_object": {
+    "object_id": "DSCSA-PACKAGE-001",
+    "object_type": "SALEABLE_RETURN_TRANSACTION"
+  },
+  "scenario_id": "DSCSA_03_partner_dependency_failure",
+  "schema_version": "1.0",
+  "source_state": {
+    "current": true,
+    "state": "VERIFIED",
+    "system": "SYNTHETIC_TRACEABILITY_SYSTEM"
+  },
+  "track_id": "dscsa",
+  "workflow_dependencies": {
+    "evaluated": [
+      {
+        "checks": {
+          "agrees": false,
+          "current": true,
+          "present": true
+        },
+        "name": "product_identifier",
+        "passed": false,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "transaction_information",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "trading_partner_authorization",
+        "passed": true,
+        "required": true
+      },
+      {
+        "checks": {
+          "agrees": true,
+          "current": true,
+          "present": true
+        },
+        "name": "chain_of_custody",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "fail_closed": true,
+    "failures": [
+      "product_identifier"
+    ],
+    "state": "DEPENDENCY_FAILURE",
+    "valid": false
+  }
+}

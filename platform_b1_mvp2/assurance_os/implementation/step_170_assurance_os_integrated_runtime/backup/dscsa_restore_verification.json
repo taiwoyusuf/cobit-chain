@@ -1,0 +1,7 @@
+{
+  "actual_sha256": "BD520F117D5F4594E8FC52E2DCA9BF3352A5A4912AC8150CCE237AD7C9810941",
+  "expected_sha256": "BD520F117D5F4594E8FC52E2DCA9BF3352A5A4912AC8150CCE237AD7C9810941",
+  "fail_closed": false,
+  "restore_verified": true,
+  "schema_version": "1.0"
+}

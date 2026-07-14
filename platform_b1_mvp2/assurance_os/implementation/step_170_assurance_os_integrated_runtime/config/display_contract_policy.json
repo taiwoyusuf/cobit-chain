@@ -1,0 +1,14 @@
+{
+  "can_approve": false,
+  "can_bind": false,
+  "can_release": false,
+  "display_only": true,
+  "required_states": [
+    "AUTHORITY_ABSENT",
+    "NO_BIND_STATE_ACTIVE",
+    "ACTION_HELD",
+    "ESCALATION_REQUIRED",
+    "DOCUMENTED_PAUSE_CREATED"
+  ],
+  "schema_version": "1.0"
+}

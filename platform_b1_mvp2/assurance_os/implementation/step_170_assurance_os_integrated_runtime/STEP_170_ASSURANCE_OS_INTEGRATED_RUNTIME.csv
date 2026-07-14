@@ -1,0 +1,9 @@
+control,state
+planned_files,192
+static_files,51
+generated_files,141
+scenarios,16
+platform_b_v1,FROZEN
+thread_d_v1,FROZEN
+production_connections,DISABLED
+deployment,DISABLED

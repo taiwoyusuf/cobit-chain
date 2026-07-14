@@ -1,0 +1,114 @@
+{
+  "deterministic_timestamp": "2026-07-13T00:00:00Z",
+  "schema_version": "1.0",
+  "tracks": [
+    {
+      "code": "AURORA17",
+      "display_name": "Aurora 17 QC Batch Release",
+      "id": "aurora17",
+      "scenarios": [
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "01_baseline_success",
+          "mode": "baseline"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "02_evidence_tamper_failure",
+          "mode": "evidence_tamper"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "03_dependency_mismatch_failure",
+          "mode": "dependency_failure"
+        },
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "04_recovery_success",
+          "mode": "recovery"
+        }
+      ]
+    },
+    {
+      "code": "IRLT",
+      "display_name": "IRLT Workflow Dependency Assurance",
+      "id": "irlt",
+      "scenarios": [
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "01_baseline_success",
+          "mode": "baseline"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "02_lis_middleware_mismatch_failure",
+          "mode": "dependency_failure"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "03_authority_absent_failure",
+          "mode": "authority_failure"
+        },
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "04_recovery_success",
+          "mode": "recovery"
+        }
+      ]
+    },
+    {
+      "code": "COMPOUNDING",
+      "display_name": "Compounding Pharmacy Assurance",
+      "id": "compounding",
+      "scenarios": [
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "01_baseline_success",
+          "mode": "baseline"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "02_evidence_tamper_failure",
+          "mode": "evidence_tamper"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "03_authority_lapse_failure",
+          "mode": "authority_failure"
+        },
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "04_recovery_success",
+          "mode": "recovery"
+        }
+      ]
+    },
+    {
+      "code": "DSCSA",
+      "display_name": "DSCSA Chain-of-Custody Assurance",
+      "id": "dscsa",
+      "scenarios": [
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "01_baseline_success",
+          "mode": "baseline"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "02_chain_of_custody_break_failure",
+          "mode": "dependency_failure"
+        },
+        {
+          "expected_decision": "NOT_ADMISSIBLE",
+          "id": "03_partner_dependency_failure",
+          "mode": "dependency_failure"
+        },
+        {
+          "expected_decision": "ADMISSIBLE",
+          "id": "04_recovery_success",
+          "mode": "recovery"
+        }
+      ]
+    }
+  ]
+}

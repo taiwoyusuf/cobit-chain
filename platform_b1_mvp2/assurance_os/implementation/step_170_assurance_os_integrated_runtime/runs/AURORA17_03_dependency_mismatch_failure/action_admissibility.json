@@ -1,0 +1,13 @@
+{
+  "action_held": true,
+  "binding_decision_made": false,
+  "decision": "NOT_ADMISSIBLE",
+  "documented_pause_created": true,
+  "escalation_required": true,
+  "fail_closed": true,
+  "no_bind_state": "ACTIVE",
+  "reasons": [
+    "WORKFLOW_DEPENDENCIES_NOT_VERIFIED"
+  ],
+  "release_authorized": false
+}
