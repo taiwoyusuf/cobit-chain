@@ -1,0 +1,11 @@
+{
+  "admissibility_id": "ADM-0e4d5269-b042-4802-8312-5e4a0551cc10",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_ADMISSIBLE",
+  "execution_performed": false,
+  "rationale": [
+    "ALL_REQUIRED_ASSURANCE_CONDITIONS_SATISFIED"
+  ],
+  "source_execution_required": true,
+  "track_id": "IRLT"
+}

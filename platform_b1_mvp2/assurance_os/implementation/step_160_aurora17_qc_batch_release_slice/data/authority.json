@@ -1,0 +1,19 @@
+{
+    "authority_id":  "AUTH-A17-RELEASER-001",
+    "actor_id":  "ACTOR-BATCH-RELEASER-001",
+    "role_id":  "AUTHORIZED_BATCH_RELEASER",
+    "allowed_action_types":  [
+                                 "BATCH_RELEASE"
+                             ],
+    "object_scope":  [
+                         "A17-BATCH-2026-001"
+                     ],
+    "consequence_scope":  [
+                              "CRITICAL"
+                          ],
+    "valid_from_utc":  "2026-07-12T22:39:18.6967035Z",
+    "valid_to_utc":  "2026-08-12T22:39:18.6967035Z",
+    "authority_status":  "ACTIVE",
+    "delegated":  false,
+    "synthetic":  true
+}

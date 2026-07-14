@@ -1,0 +1,11 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-COMPOUNDING-164-001",
+  "evidence_type": "COMPOUNDING_ASSURANCE_PACKAGE",
+  "object_id": "A17-COMPOUND-PREP-164-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-COMPOUNDING-REVIEWER-001",
+  "source_record_id": "COMPOUND-SOURCE-164-001",
+  "synthetic": true,
+  "track_id": "COMPOUNDING"
+}

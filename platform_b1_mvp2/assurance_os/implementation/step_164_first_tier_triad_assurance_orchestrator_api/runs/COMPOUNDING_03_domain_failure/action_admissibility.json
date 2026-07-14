@@ -1,0 +1,12 @@
+{
+  "admissibility_id": "ADM-8191b9ac-b6bb-44eb-9670-b6b159c2c4b0",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "rationale": [
+    "DEPENDENCY_UNSATISFIED",
+    "COMPOUNDING_LABEL_MISMATCH"
+  ],
+  "source_execution_required": true,
+  "track_id": "COMPOUNDING"
+}

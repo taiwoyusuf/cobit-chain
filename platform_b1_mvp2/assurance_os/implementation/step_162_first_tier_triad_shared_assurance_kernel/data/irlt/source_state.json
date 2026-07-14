@@ -1,0 +1,10 @@
+{
+  "lifecycle_state": "QC_COMPLETE",
+  "object_id": "A17-IRLT-BATCH-001",
+  "source_record_id": "IRLT-SOURCE-001",
+  "source_system_name": "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+  "synthetic": true,
+  "timing_state": "WITHIN_DECAY_WINDOW",
+  "valid_from_utc": "2026-07-12T22:57:23.9124587Z",
+  "valid_to_utc": "2026-08-12T22:57:23.9124587Z"
+}

@@ -1,0 +1,35 @@
+{
+  "dependencies": [
+    {
+      "dependency_id": "DSCSA-DEP-001",
+      "dependency_name": "Serialization complete",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-002",
+      "dependency_name": "Aggregation integrity",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-003",
+      "dependency_name": "EPCIS event sequence",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-004",
+      "dependency_name": "Trading-partner authority",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-005",
+      "dependency_name": "Transaction evidence complete",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-006",
+      "dependency_name": "Suspect-product state clear",
+      "satisfied": true
+    }
+  ],
+  "track_id": "DSCSA"
+}

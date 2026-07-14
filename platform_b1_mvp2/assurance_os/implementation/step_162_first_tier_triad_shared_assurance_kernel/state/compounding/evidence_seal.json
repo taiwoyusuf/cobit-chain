@@ -1,0 +1,12 @@
+{
+  "content_length_bytes": 510,
+  "evidence_id": "EVID-COMPOUND-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "6ed54297b16c4d98f6b1d739b82ce959c5c98456771d9a11c7999ca052c5e467",
+  "object_id": "A17-COMPOUND-PREP-001",
+  "seal_id": "SEAL-45791f40-a1d3-4a34-916f-d16bacee7687",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T22:57:24Z",
+  "sealed_by_actor_id": "ACTOR-PHARMACIST-001",
+  "track_id": "COMPOUNDING"
+}

@@ -1,0 +1,12 @@
+{
+  "activated": true,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-d8a5f5ff-1ff3-4c0c-ad24-936d1fdbb972",
+  "reason_codes": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "silence_is_not_consent": true,
+  "state": "NO-BIND STATE ACTIVE",
+  "track_id": "COMPOUNDING"
+}

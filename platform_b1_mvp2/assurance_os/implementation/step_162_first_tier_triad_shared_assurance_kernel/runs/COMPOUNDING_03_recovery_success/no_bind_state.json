@@ -1,0 +1,12 @@
+{
+  "action_id": "ACTION-COMPOUND-DISPENSING-READINESS-001",
+  "activated": false,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-8db67244-7054-458d-af7e-b04abf9f58ac",
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-COMPOUND-PREP-001",
+  "reason_codes": [],
+  "resolution_required": false,
+  "silence_is_not_consent": true,
+  "track_id": "COMPOUNDING"
+}

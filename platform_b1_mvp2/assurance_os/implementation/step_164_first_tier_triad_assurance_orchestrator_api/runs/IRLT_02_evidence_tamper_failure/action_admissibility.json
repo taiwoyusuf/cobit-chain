@@ -1,0 +1,12 @@
+{
+  "admissibility_id": "ADM-c2e24a45-f180-4e81-93d2-a00df3a4f1e1",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "rationale": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "source_execution_required": true,
+  "track_id": "IRLT"
+}

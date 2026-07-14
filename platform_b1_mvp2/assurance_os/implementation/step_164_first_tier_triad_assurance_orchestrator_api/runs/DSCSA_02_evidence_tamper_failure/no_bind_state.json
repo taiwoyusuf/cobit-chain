@@ -1,0 +1,12 @@
+{
+  "activated": true,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-cfa33602-0343-4a77-aceb-ea6f7aac852b",
+  "reason_codes": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "silence_is_not_consent": true,
+  "state": "NO-BIND STATE ACTIVE",
+  "track_id": "DSCSA"
+}

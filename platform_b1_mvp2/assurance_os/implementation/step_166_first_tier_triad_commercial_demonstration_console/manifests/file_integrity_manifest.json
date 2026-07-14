@@ -1,0 +1,235 @@
+{
+    "step":  "166",
+    "algorithm":  "SHA-256",
+    "generated_at_utc":  "2026-07-13T23:36:27.6201698Z",
+    "authorization_source":  "Explicit user command: next",
+    "implementation_boundary":  "LOCAL SYNTHETIC READ-ONLY COMMERCIAL DEMONSTRATION CONSOLE ONLY",
+    "file_count":  45,
+    "files":  [
+                  {
+                      "relative_path":  "bundle\\inspection_passport_bundle.json",
+                      "sha256":  "93CF1DE1DA958C2AD953C33F36C333C638B15B5427B310A7D70A8FD285B0AA0B",
+                      "length_bytes":  46928
+                  },
+                  {
+                      "relative_path":  "bundle\\inspection_passport_bundle_manifest.json",
+                      "sha256":  "0DC2A32FE769EB119E0CB70C44FD121EE0FCF4E32E71FE42CA0BDF866AC138D0",
+                      "length_bytes":  2787
+                  },
+                  {
+                      "relative_path":  "config\\console_config.json",
+                      "sha256":  "6AECFDE09559A8F1793F0D5F687536B7836463EED81516462D3DFBDC88F51EB6",
+                      "length_bytes":  3630
+                  },
+                  {
+                      "relative_path":  "manifests\\component_manifest.json",
+                      "sha256":  "5AC5B85CF3AE80893D727C73D74EFB4D0E05B43D3A447FBD0B4F130B5821CCA0",
+                      "length_bytes":  1805
+                  },
+                  {
+                      "relative_path":  "README.md",
+                      "sha256":  "B60C862EAD5432F4586F587137C5770A96BE80283EFBF7A36CFBB7705E519BED",
+                      "length_bytes":  1216
+                  },
+                  {
+                      "relative_path":  "requirements.txt",
+                      "sha256":  "6467B10856D7C7C7566A2B32EAE93C70DEACF6ED849D9669B11CC6A4B53E0001",
+                      "length_bytes":  33
+                  },
+                  {
+                      "relative_path":  "self_test\\console_self_test_result.json",
+                      "sha256":  "1514A491E6D28F6F9DCBB0395F9EE261FA102442099845FE29034CD7A86C2171",
+                      "length_bytes":  1479
+                  },
+                  {
+                      "relative_path":  "snapshot\\audit\\audit_events.jsonl",
+                      "sha256":  "BFBC9BC2120902DFAAD9C56F2DE714F56E7311CA11B3BCA8061A68BCD219A246",
+                      "length_bytes":  5756
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\compounding_assurance_passport.json",
+                      "sha256":  "C335BBB920AC8ECD12DC4384AE07D6E51B538793DB355EA6324BCF7969CD4D93",
+                      "length_bytes":  1058
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\compounding_assurance_passport.seal.json",
+                      "sha256":  "BF39262B08C967C5579518863FEDE2913790FB929F77725288F10EF65EB4819F",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\dscsa_assurance_passport.json",
+                      "sha256":  "655C1823D569057C8B233045FC47E497D73457277486E0A38D07975AE32BCE55",
+                      "length_bytes":  1065
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\dscsa_assurance_passport.seal.json",
+                      "sha256":  "8759E520F77DD6AECB8CE377D1D298DB1081B231C5687F03C38034AA6F4D5721",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\irlt_assurance_passport.json",
+                      "sha256":  "3D293537EE55610833C08E912B322D5F31390774D4475A1217996D07E0D9904B",
+                      "length_bytes":  1048
+                  },
+                  {
+                      "relative_path":  "snapshot\\passports\\irlt_assurance_passport.seal.json",
+                      "sha256":  "D0C17C79EE146072F6E731578930BE902B8808B18C01BFEDE719A6E5D6474921",
+                      "length_bytes":  230
+                  },
+                  {
+                      "relative_path":  "snapshot\\ramat\\compounding_current_display.json",
+                      "sha256":  "4F4A6E28B337A881E3DC8A46B8FED416DCCF4BF29610C30F7499639D5D95B739",
+                      "length_bytes":  741
+                  },
+                  {
+                      "relative_path":  "snapshot\\ramat\\dscsa_current_display.json",
+                      "sha256":  "D3931CD7C81BC3B1E221F2B97BADC1730D63BDBAA9C1C9FA493DBA0A90A85609",
+                      "length_bytes":  748
+                  },
+                  {
+                      "relative_path":  "snapshot\\ramat\\irlt_current_display.json",
+                      "sha256":  "8C743AF9BD70F7E77E69647BCCE2F68EB040DB92D667936D51C0BC76B9E3C4A0",
+                      "length_bytes":  732
+                  },
+                  {
+                      "relative_path":  "snapshot\\reconstruction\\compounding_current_reconstruction.json",
+                      "sha256":  "201D1D2785CF73524300A6BFB87D9D88AE13B58C456052468C9DD38F63C9C47E",
+                      "length_bytes":  685
+                  },
+                  {
+                      "relative_path":  "snapshot\\reconstruction\\dscsa_current_reconstruction.json",
+                      "sha256":  "A40E59332FCBE19DBE0247B0CAAE1324DB91C065D7E6EF1BEE0FB15DD1E64F61",
+                      "length_bytes":  658
+                  },
+                  {
+                      "relative_path":  "snapshot\\reconstruction\\irlt_current_reconstruction.json",
+                      "sha256":  "C4596C671548F710B0665CFC4EF804F8ADDE631599A411488E1BC11CB153DD89",
+                      "length_bytes":  652
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\COMPOUNDING_01_baseline_success.json",
+                      "sha256":  "A52E5F2D2462EAE168BAA4A8EAB5E841F69CDD7DC5C2C1CEBF78984CD670CF36",
+                      "length_bytes":  2764
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\COMPOUNDING_02_evidence_tamper_failure.json",
+                      "sha256":  "879ADD2F7B9291BC8FCA800B9555EF903B9679D6EB5F2987E26893A5C1418E96",
+                      "length_bytes":  2895
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\COMPOUNDING_03_domain_failure.json",
+                      "sha256":  "AC0A7B164DE80F54047B3304C30EC3096414EF5B741EB18265E26DAE6E8ADFC2",
+                      "length_bytes":  2916
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\COMPOUNDING_04_recovery_success.json",
+                      "sha256":  "00551737BB8840943E418E368A21EED1239B1A34D828D9141428B7821B903A28",
+                      "length_bytes":  2764
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\DSCSA_01_baseline_success.json",
+                      "sha256":  "1DC1C271F0236939F7386BC2EBAD049720EFEC85B591A5ED9D661A4963903384",
+                      "length_bytes":  2740
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\DSCSA_02_evidence_tamper_failure.json",
+                      "sha256":  "775CA903F1D3552AC79FAE38DCE7BAE53F444DA966A72EEDB521FB0967B03BBD",
+                      "length_bytes":  2871
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\DSCSA_03_domain_failure.json",
+                      "sha256":  "CDD493E0C2F25DF0E0DBAD545B10C76345AED4A968F9ECCA4BD28CFED70E1A4D",
+                      "length_bytes":  2892
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\DSCSA_04_recovery_success.json",
+                      "sha256":  "EA9969E55D5E1EA1EBD56A905E5697803A21D31713E2A53089B235A90580CDD4",
+                      "length_bytes":  2740
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\IRLT_01_baseline_success.json",
+                      "sha256":  "BD6D918FEC090FB1B8CDC3E5FCE6F6D6BD4B0A09DEA33660CBC22D2ABE17CF5A",
+                      "length_bytes":  2540
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\IRLT_02_evidence_tamper_failure.json",
+                      "sha256":  "8E9B9AC1F8C3144B4A27B887BC5DBE7D891D70E342A0174587EBA42C7E7465C8",
+                      "length_bytes":  2671
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\IRLT_03_domain_failure.json",
+                      "sha256":  "D9C866DF684085E434C96C3A3B24AEDFD6B4A629D7888A4F440707E85623C6D8",
+                      "length_bytes":  2662
+                  },
+                  {
+                      "relative_path":  "snapshot\\scenarios\\IRLT_04_recovery_success.json",
+                      "sha256":  "AA09FB957D22E9CBBF6BC1EF0C63B71A3C376A2C6D6AD17FE0C1DDFAE561514E",
+                      "length_bytes":  2540
+                  },
+                  {
+                      "relative_path":  "snapshot\\step164_scenarios.csv",
+                      "sha256":  "59B9FC008C11C4B2DB9E6EE1DE56D927FD26E90DDD25FD5396BAAFBFDBC01AE7",
+                      "length_bytes":  3164
+                  },
+                  {
+                      "relative_path":  "snapshot\\step164_summary.json",
+                      "sha256":  "AD702A4A0197580D1AB85E337A238DD81BB043221E7842E2966A0CF3395C7599",
+                      "length_bytes":  40038
+                  },
+                  {
+                      "relative_path":  "src\\__init__.py",
+                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                      "length_bytes":  0
+                  },
+                  {
+                      "relative_path":  "src\\__pycache__\\demonstration_console.cpython-311.pyc",
+                      "sha256":  "1FE36DD88335442B195483039FCD800C1B7E5345047700D29489BBF5E8C7A152",
+                      "length_bytes":  35653
+                  },
+                  {
+                      "relative_path":  "src\\demonstration_console.py",
+                      "sha256":  "679DB3D7831C5CF39F728FEA40F86FA5045123FEAF7962BEB65518499F7C8260",
+                      "length_bytes":  32142
+                  },
+                  {
+                      "relative_path":  "static\\app.js",
+                      "sha256":  "99920FD446A58D7E08C9A410B8F94679B8CE79BE7EC9FA0BFEF7B4881BA0F033",
+                      "length_bytes":  4723
+                  },
+                  {
+                      "relative_path":  "static\\index.html",
+                      "sha256":  "351C4DB5EF2CFF092DBBD4052281E20397AE74494E5B4AB065A325A13CBDEC98",
+                      "length_bytes":  3293
+                  },
+                  {
+                      "relative_path":  "static\\styles.css",
+                      "sha256":  "6D1EA9AE3AC0548EE98FF49F47A18B3BE0B27AF6B30D92C6CB935AFDDAB3BDA3",
+                      "length_bytes":  3200
+                  },
+                  {
+                      "relative_path":  "STEP_166_FIRST_TIER_TRIAD_COMMERCIAL_DEMONSTRATION_CONSOLE_AND_INSPECTION_PASSPORT_BUNDLE.csv",
+                      "sha256":  "C1BDC1CB735C79BCAF4A1F162EDE03FBCEFD4A6D1BE33A080B555660AA06A46F",
+                      "length_bytes":  1081
+                  },
+                  {
+                      "relative_path":  "STEP_166_FIRST_TIER_TRIAD_COMMERCIAL_DEMONSTRATION_CONSOLE_AND_INSPECTION_PASSPORT_BUNDLE.json",
+                      "sha256":  "50B5A41492A088F993CF3AD735B13CF15A7D1FEDEEC15CF57D7FA4BB8DFD08C3",
+                      "length_bytes":  1609
+                  },
+                  {
+                      "relative_path":  "STEP_166_FIRST_TIER_TRIAD_COMMERCIAL_DEMONSTRATION_CONSOLE_AND_INSPECTION_PASSPORT_BUNDLE.md",
+                      "sha256":  "F4645DAEF3810D96A4BC581918A048B2F111A0F53F506E4D046D328AA9F7C59B",
+                      "length_bytes":  967
+                  },
+                  {
+                      "relative_path":  "tests\\__pycache__\\test_demonstration_console.cpython-311.pyc",
+                      "sha256":  "8A8DF944E804B76C84782CE4688BCC89CBF63EF7DF3DEA48FF5B43EE2323E8C2",
+                      "length_bytes":  3023
+                  },
+                  {
+                      "relative_path":  "tests\\test_demonstration_console.py",
+                      "sha256":  "BF1C5887629C94DF3DD7A343A7B33FD67357C98B516CA529D0AEFB3A523B9B7E",
+                      "length_bytes":  1678
+                  }
+              ]
+}

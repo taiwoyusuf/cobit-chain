@@ -1,0 +1,563 @@
+﻿{
+    "Summary":  {
+                    "Step":  "154",
+                    "Title":  "Regulated Object Identity Schema",
+                    "IdentitySchemaVersion":  "0.1",
+                    "GeneratedAtUtc":  "2026-07-13T21:31:38.4062173Z",
+                    "RepositoryRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app",
+                    "Step153InputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_153_universal_assurance_kernel_schema",
+                    "OutputRoot":  "C:\\Users\\YUSUFTAIWO\\Desktop\\Cobitchain_app\\platform_b1_mvp2\\assurance_os\\inventory\\step_154_regulated_object_identity_schema",
+                    "IdentityComponentCount":  16,
+                    "IdentityInvariantCount":  12,
+                    "SourceKernelPrimitiveCount":  18,
+                    "SourceKernelInvariantCount":  10,
+                    "RepositoryRescanPerformed":  false,
+                    "ApplicationFilesModified":  false,
+                    "RuntimeImplementationPerformed":  false,
+                    "ProductionIntegrationPerformed":  false,
+                    "RealRegulatedDataUsed":  false,
+                    "PHIUsed":  false,
+                    "ClassifiedDataUsed":  false,
+                    "PlatformBv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDv1Boundary":  "ARCHITECTURE LOCKED",
+                    "ThreadDDisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "ThreadD2DisplayBoundary":  "DISPLAY / WITNESS ONLY",
+                    "IdentityAuthorityBoundary":  "The Regulated Object Identity schema defines canonical object identity, source-system bindings, aliases, verification, duplicate resolution, relationships, lifecycle, physical-digital binding, integrity, holds, and identity passports. It has no independent approval, release, override, execution, or official-record authority.",
+                    "HumanAuthorityRule":  "Qualified humans and authorized organizational roles remain accountable for identity verification, duplicate resolution, lifecycle decisions, and binding actions.",
+                    "SourceOfTruthRule":  "Official object records remain in governed source systems.",
+                    "Step154Statement":  "Step 154 defines a Regulated Object Identity schema baseline. It does not implement runtime identity services, modify existing architecture, validate production systems, merge real records, or authorize regulated execution.",
+                    "CategorySummary":  [
+                                            {
+                                                "ComponentCategory":  "ALIAS",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "CANONICAL KEY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "CANONICAL OBJECT",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "DUPLICATE DETECTION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "DUPLICATE RESOLUTION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "GOVERNANCE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "IDENTITY HOLD",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "IDENTITY INTEGRITY",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "IDENTITY PASSPORT",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "LIFECYCLE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "OBJECT TYPE",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "PHYSICAL-DIGITAL BINDING",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "RELATIONSHIP",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "SOURCE BINDING",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "VERIFICATION",
+                                                "ComponentCount":  1
+                                            },
+                                            {
+                                                "ComponentCategory":  "VERSIONING",
+                                                "ComponentCount":  1
+                                            }
+                                        ],
+                    "Step155Gate":  "READY AFTER STEP 154 REGULATED OBJECT IDENTITY SCHEMA REVIEW"
+                },
+    "Enumerations":  {
+                         "ObjectIdentityStatus":  [
+                                                      "UNKNOWN",
+                                                      "UNVERIFIED",
+                                                      "VERIFIED",
+                                                      "CONFLICTED",
+                                                      "DUPLICATE_CANDIDATE",
+                                                      "HELD",
+                                                      "SUPERSEDED",
+                                                      "RETIRED"
+                                                  ],
+                         "ObjectLifecycleState":  [
+                                                      "DRAFT",
+                                                      "REGISTERED",
+                                                      "ACTIVE",
+                                                      "QUALIFIED",
+                                                      "RELEASED",
+                                                      "HELD",
+                                                      "SUSPENDED",
+                                                      "SUPERSEDED",
+                                                      "RETIRED",
+                                                      "RECALLED",
+                                                      "DESTROYED",
+                                                      "ARCHIVED",
+                                                      "CANCELLED"
+                                                  ],
+                         "SourceBindingStatus":  [
+                                                     "PENDING",
+                                                     "ACTIVE",
+                                                     "VERIFIED",
+                                                     "CONFLICTED",
+                                                     "STALE",
+                                                     "SUPERSEDED",
+                                                     "RETIRED"
+                                                 ],
+                         "AliasStatus":  [
+                                             "ACTIVE",
+                                             "HISTORICAL",
+                                             "SUPERSEDED",
+                                             "REJECTED",
+                                             "AMBIGUOUS",
+                                             "RETIRED"
+                                         ],
+                         "VerificationResult":  [
+                                                    "PASS",
+                                                    "FAIL",
+                                                    "PARTIAL",
+                                                    "UNKNOWN",
+                                                    "MANUAL_REVIEW_REQUIRED"
+                                                ],
+                         "DuplicateResolutionType":  [
+                                                         "MERGE_TO_CANONICAL",
+                                                         "RETAIN_SEPARATELY",
+                                                         "SUPERSEDE",
+                                                         "RETIRE_ALIAS",
+                                                         "REDIRECT",
+                                                         "REJECT_MATCH"
+                                                     ],
+                         "RelationshipType":  [
+                                                  "PARENT_OF",
+                                                  "CHILD_OF",
+                                                  "CONTAINS",
+                                                  "COMPONENT_OF",
+                                                  "PRODUCES",
+                                                  "DERIVED_FROM",
+                                                  "DEPENDS_ON",
+                                                  "ASSIGNED_TO",
+                                                  "OWNED_BY",
+                                                  "CUSTODIAN_OF",
+                                                  "SUPPORTS",
+                                                  "CONTRADICTS",
+                                                  "SUPERSEDES",
+                                                  "BOUND_TO"
+                                              ],
+                         "PhysicalBindingType":  [
+                                                     "QR",
+                                                     "BARCODE",
+                                                     "NFC",
+                                                     "RFID",
+                                                     "BLE_BEACON",
+                                                     "DEVICE_CERTIFICATE",
+                                                     "SENSOR_IDENTITY",
+                                                     "SECURE_LABEL",
+                                                     "MANUAL_GOVERNED_BINDING"
+                                                 ],
+                         "IdentityConflictType":  [
+                                                      "MISSING_IDENTITY",
+                                                      "DUPLICATE_IDENTITY",
+                                                      "SOURCE_MISMATCH",
+                                                      "ALIAS_AMBIGUITY",
+                                                      "STALE_BINDING",
+                                                      "UNVERIFIED_BINDING",
+                                                      "CONFLICTING_SERIAL",
+                                                      "RELATIONSHIP_CONFLICT",
+                                                      "LIFECYCLE_CONFLICT",
+                                                      "INTEGRITY_MISMATCH"
+                                                  ]
+                     },
+    "Invariants":  [
+                       {
+                           "InvariantId":  "ROI-INV-001",
+                           "InvariantName":  "One Canonical Object Identity",
+                           "Rule":  "Every governed object must resolve to one stable canonical object_id."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-002",
+                           "InvariantName":  "Canonical Identity Is Not Display Text",
+                           "Rule":  "Names, labels, filenames, routes, and display values must not serve as the sole canonical identity."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-003",
+                           "InvariantName":  "Source Binding Required",
+                           "Rule":  "Official-state claims must include a governed source-system identity binding."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-004",
+                           "InvariantName":  "Aliases Do Not Replace Canonical Identity",
+                           "Rule":  "Aliases may resolve to a canonical object but must not silently create or replace canonical identity."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-005",
+                           "InvariantName":  "Duplicate State Remains Explicit",
+                           "Rule":  "Suspected duplicates remain unresolved until a governed human or rule-based resolution is completed and recorded."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-006",
+                           "InvariantName":  "Lifecycle State Is Explicit",
+                           "Rule":  "Active, held, suspended, superseded, retired, recalled, archived, and other lifecycle states must not be inferred from absence."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-007",
+                           "InvariantName":  "Identity Relationships Are Evidence-Backed",
+                           "Rule":  "Object relationships must reference valid canonical identities and supporting evidence."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-008",
+                           "InvariantName":  "Physical-Digital Binding Requires Evidence",
+                           "Rule":  "QR, NFC, RFID, barcode, BLE, certificate, sensor, and wearable bindings must be governed, attributable, current, and evidence-backed."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-009",
+                           "InvariantName":  "Identity Conflict Creates Hold",
+                           "Rule":  "Material identity mismatch, duplication, ambiguity, or source conflict must create an explicit governance hold."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-010",
+                           "InvariantName":  "Human Identity Stewardship",
+                           "Rule":  "Active regulated objects require an identifiable owner, steward, or authorized organizational role."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-011",
+                           "InvariantName":  "Official Records Remain Authoritative",
+                           "Rule":  "The identity schema does not replace official records in governed source systems."
+                       },
+                       {
+                           "InvariantId":  "ROI-INV-012",
+                           "InvariantName":  "Display Does Not Create Identity Authority",
+                           "Rule":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and witnesses may display identity state but may not create, merge, retire, approve, or override canonical identity."
+                       }
+                   ],
+    "Components":  [
+                       {
+                           "ComponentId":  "ROI-001",
+                           "ComponentName":  "Canonical Regulated Object",
+                           "ComponentCategory":  "CANONICAL OBJECT",
+                           "Purpose":  "Defines the single governed identity record representing a regulated, critical, operational, physical, digital, human, AI, document, transactional, or evidence-bearing object.",
+                           "RequiredFields":  "object_id; object_type_id; canonical_name; lifecycle_state; identity_status; owner_role_id; steward_role_id; created_at_utc; updated_at_utc",
+                           "ValidationRule":  "Every governed object must have one stable canonical object_id that does not depend only on a mutable name, label, route, display value, filename, or local alias.",
+                           "FailureState":  "CANONICAL_OBJECT_IDENTITY_UNRESOLVED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Clinical subject, specimen, batch, equipment item, CI, AI agent, shipment, serialized product, document, transaction, dose, or case.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence, authority, No-Bind, accountability, and admissibility records must reference a valid canonical object_id.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-002",
+                           "ComponentName":  "Regulated Object Type Definition",
+                           "ComponentCategory":  "OBJECT TYPE",
+                           "Purpose":  "Defines the governed taxonomy and required identity attributes for each class of regulated or critical object.",
+                           "RequiredFields":  "object_type_id; object_type_name; domain; parent_object_type_id; required_identity_fields; allowed_relationship_types; owner_role; status",
+                           "ValidationRule":  "Every canonical object must resolve to one active object type whose required identity attributes and allowed relationships are defined.",
+                           "FailureState":  "OBJECT_TYPE_UNDEFINED_OR_INACTIVE",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "SUBJECT, SAMPLE, BATCH, MATERIAL, EQUIPMENT, APPLICATION_CI, AI_AGENT, DOCUMENT, SHIPMENT, PRODUCT_SERIAL, TRANSACTION, DEVICE, or CASE.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence and authority rules may use object_type_id to determine applicability, consequence level, and required controls.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-003",
+                           "ComponentName":  "Canonical Identity Key",
+                           "ComponentCategory":  "CANONICAL KEY",
+                           "Purpose":  "Defines the stable technical key used to distinguish one governed object from every other object.",
+                           "RequiredFields":  "identity_key_id; object_id; key_namespace; key_value; key_version; issued_at_utc; issued_by; key_status",
+                           "ValidationRule":  "A canonical key must be unique within its declared namespace and must not be reassigned to a different object after issuance.",
+                           "FailureState":  "CANONICAL_KEY_DUPLICATE_OR_REASSIGNED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "UUID, governed enterprise object key, canonical batch key, canonical sample key, device identity key, or agent identity key.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 must use canonical keys when linking evidence, actors, actions, authority, holds, and accountability.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-004",
+                           "ComponentName":  "Source-System Identity Binding",
+                           "ComponentCategory":  "SOURCE BINDING",
+                           "Purpose":  "Binds a canonical regulated object to its corresponding official record identity in a governed source system.",
+                           "RequiredFields":  "binding_id; object_id; source_system_id; source_record_id; source_record_type; source_record_version; binding_status; verified_at_utc",
+                           "ValidationRule":  "A source binding must identify the canonical object, governed source system, official record key, record type, record version, and status.",
+                           "FailureState":  "SOURCE_BINDING_MISSING_OR_CONFLICTED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "LIMS sample ID, MES batch ID, ServiceNow sys_id, EHR encounter ID, ERP material ID, EPCIS serial ID, or eQMS deviation ID.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence and authority records must preserve the source-system record reference supporting the evaluated state.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-005",
+                           "ComponentName":  "Alias and Alternate Identifier",
+                           "ComponentCategory":  "ALIAS",
+                           "Purpose":  "Records legacy, local, external, human-readable, renamed, supplier, partner, or historical identifiers associated with one canonical object.",
+                           "RequiredFields":  "alias_id; object_id; alias_type; alias_value; namespace; valid_from_utc; valid_to_utc; alias_status; source_system_id",
+                           "ValidationRule":  "An alias may resolve to one canonical object but must never silently replace or create a second canonical identity.",
+                           "FailureState":  "ALIAS_AMBIGUOUS_OR_MULTI_BOUND",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Previous CI name, local equipment number, supplier lot number, external accession number, legacy document ID, or renamed application.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence submitted under an alias must resolve to the correct canonical object before it can support an assurance evaluation.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-006",
+                           "ComponentName":  "Identity Verification Event",
+                           "ComponentCategory":  "VERIFICATION",
+                           "Purpose":  "Records how, when, by whom, and against which evidence an object identity or source binding was verified.",
+                           "RequiredFields":  "verification_id; object_id; verification_type; evidence_ids; verified_by_actor_id; verified_at_utc; verification_result; rationale",
+                           "ValidationRule":  "Identity cannot be marked VERIFIED without identifiable verification evidence, verification method, accountable verifier, time, result, and rationale.",
+                           "FailureState":  "IDENTITY_VERIFICATION_INCOMPLETE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Barcode verification, source-record comparison, human review, digital-certificate verification, device attestation, or partner confirmation.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Authority and admissibility evaluations may require current identity verification for the object and accountable actor.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-007",
+                           "ComponentName":  "Duplicate Identity Candidate",
+                           "ComponentCategory":  "DUPLICATE DETECTION",
+                           "Purpose":  "Records a suspected duplicate, overlapping, renamed, cloned, or conflicting object identity requiring governed review.",
+                           "RequiredFields":  "duplicate_candidate_id; primary_object_id; candidate_object_id; match_basis; confidence_level; detected_at_utc; detected_by; review_status",
+                           "ValidationRule":  "A duplicate candidate must remain explicit and unresolved until a qualified human or governed rule completes the review.",
+                           "FailureState":  "DUPLICATE_IDENTITY_REVIEW_REQUIRED",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Duplicate CI, duplicate patient identity candidate, duplicate sample, renamed application, repeated batch record, or cloned device identity.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence and authority binding must be held when object identity is subject to unresolved duplicate review.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-008",
+                           "ComponentName":  "Duplicate Resolution Record",
+                           "ComponentCategory":  "DUPLICATE RESOLUTION",
+                           "Purpose":  "Records the governed decision to merge, retain separately, supersede, retire, redirect, or reject a duplicate identity candidate.",
+                           "RequiredFields":  "resolution_id; duplicate_candidate_id; resolution_type; canonical_object_id; affected_object_ids; decided_by_actor_id; decided_at_utc; rationale; status",
+                           "ValidationRule":  "Duplicate resolution must identify the accountable decision maker, canonical object, affected identities, resolution type, evidence, and rationale.",
+                           "FailureState":  "DUPLICATE_RESOLUTION_INVALID_OR_UNAPPROVED",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Merge duplicate CIs, retain two legitimate devices, retire a historical alias, redirect a renamed application, or reject an incorrect match.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 must prevent evidence, authority, or action admissibility from binding to retired or non-canonical duplicate identities.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-009",
+                           "ComponentName":  "Regulated Object Relationship",
+                           "ComponentCategory":  "RELATIONSHIP",
+                           "Purpose":  "Defines governed relationships between canonical objects, including parent, child, component, source, destination, ownership, custody, derivation, dependency, and evidence relationships.",
+                           "RequiredFields":  "relationship_id; source_object_id; target_object_id; relationship_type; direction; valid_from_utc; valid_to_utc; relationship_status; evidence_id",
+                           "ValidationRule":  "Every relationship must reference two resolvable canonical objects, an allowed relationship type, validity period, status, and supporting evidence.",
+                           "FailureState":  "OBJECT_RELATIONSHIP_INVALID_OR_UNRESOLVED",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Batch CONTAINS material, device PRODUCES result, application DEPENDS_ON server, dose ASSIGNED_TO patient, shipment CONTAINS product, or evidence SUPPORTS claim.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence, authority, and No-Bind rules may use object relationships to determine affected scope and dependency consequences.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-010",
+                           "ComponentName":  "Object Lifecycle State Record",
+                           "ComponentCategory":  "LIFECYCLE",
+                           "Purpose":  "Records the governed lifecycle state of an object and the evidence supporting each lifecycle transition.",
+                           "RequiredFields":  "lifecycle_record_id; object_id; previous_state; new_state; transition_reason; effective_at_utc; changed_by_actor_id; evidence_id; status",
+                           "ValidationRule":  "Lifecycle transitions must be explicit, chronological, authorized, evidence-backed, and valid for the object type.",
+                           "FailureState":  "LIFECYCLE_STATE_CONFLICT_OR_INVALID_TRANSITION",
+                           "PrimaryOwnerLayer":  "SOURCE SYSTEM / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Draft, active, qualified, released, suspended, held, superseded, retired, destroyed, recalled, archived, or cancelled.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 must consider object lifecycle state when determining evidence applicability, authority validity, and action admissibility.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-011",
+                           "ComponentName":  "Object Version and Supersession Record",
+                           "ComponentCategory":  "VERSIONING",
+                           "Purpose":  "Distinguishes versions, revisions, replacements, and superseded forms of the same governed object without losing identity history.",
+                           "RequiredFields":  "version_record_id; object_id; version_number; revision_number; effective_at_utc; supersedes_object_id; superseded_by_object_id; version_status",
+                           "ValidationRule":  "Current, superseded, and historical versions must remain distinguishable, chronological, and traceable to the canonical identity lineage.",
+                           "FailureState":  "OBJECT_VERSION_OR_SUPERSESSION_CONFLICT",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Protocol revision, SOP version, recipe version, software version, formulation version, model version, or equipment configuration revision.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence and controls must bind to the correct effective object version.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-012",
+                           "ComponentName":  "Identity Ownership and Stewardship Record",
+                           "ComponentCategory":  "GOVERNANCE",
+                           "Purpose":  "Identifies the human and organizational roles responsible for object ownership, identity stewardship, verification, correction, and escalation.",
+                           "RequiredFields":  "stewardship_id; object_id; owner_actor_or_role_id; steward_actor_or_role_id; responsibility_scope; valid_from_utc; valid_to_utc; assignment_status",
+                           "ValidationRule":  "Every active regulated object must have an identifiable owner or accountable role and a governed route for identity correction and escalation.",
+                           "FailureState":  "OBJECT_OWNER_OR_STEWARD_NOT_IDENTIFIED",
+                           "PrimaryOwnerLayer":  "HUMAN GOVERNANCE / PLATFORM A",
+                           "Examples":  "Application owner, equipment owner, specimen custodian, batch owner, clinical investigator, AI-agent owner, document owner, or data steward.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Authority and accountability records must resolve to current owners, stewards, and authorized roles.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-013",
+                           "ComponentName":  "Physical-Digital Identity Binding",
+                           "ComponentCategory":  "PHYSICAL-DIGITAL BINDING",
+                           "Purpose":  "Binds a physical object to its digital identity using controlled labels, tags, device credentials, sensors, or other governed identifiers.",
+                           "RequiredFields":  "physical_binding_id; object_id; binding_type; tag_or_device_id; binding_evidence_id; bound_at_utc; bound_by_actor_id; binding_status",
+                           "ValidationRule":  "A physical-digital binding must identify the canonical object, binding method, tag or device, accountable binder, time, evidence, and current status.",
+                           "FailureState":  "PHYSICAL_DIGITAL_BINDING_INVALID",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS / DEVICE WITNESS",
+                           "Examples":  "QR label, NFC tag, RFID tag, barcode, BLE beacon, secure device certificate, equipment label, shipment seal, or wearable-observed object marker.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Evidence captured by devices or wearables must resolve through a valid physical-digital binding before supporting assurance decisions.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-014",
+                           "ComponentName":  "Identity Integrity Seal",
+                           "ComponentCategory":  "IDENTITY INTEGRITY",
+                           "Purpose":  "Creates a cryptographic seal over the selected identity attributes, source bindings, aliases, relationships, and lifecycle state.",
+                           "RequiredFields":  "identity_seal_id; object_id; sealed_field_scope; hash_algorithm; hash_value; sealed_at_utc; sealed_by; content_length; seal_status",
+                           "ValidationRule":  "An identity seal is valid only when the field scope, algorithm, hash, object, calculation context, time, and responsible actor are complete.",
+                           "FailureState":  "IDENTITY_INTEGRITY_SEAL_INVALID",
+                           "PrimaryOwnerLayer":  "CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Seal over object type, canonical key, source-system bindings, active aliases, lifecycle state, and critical relationships.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 may require a valid identity seal or successful rehash verification before evidence or authority may bind to the object.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-015",
+                           "ComponentName":  "Identity Conflict and Governance Hold",
+                           "ComponentCategory":  "IDENTITY HOLD",
+                           "Purpose":  "Creates an explicit governance hold when object identity is missing, duplicated, mismatched, stale, unverified, disputed, or bound to conflicting sources.",
+                           "RequiredFields":  "identity_hold_id; object_id; conflict_type; affected_bindings; reason_code; activated_at_utc; escalation_route; resolution_status",
+                           "ValidationRule":  "Identity conflict must remain explicit and must prevent silent evidence, authority, release, or execution binding until governed resolution.",
+                           "FailureState":  "IDENTITY_GOVERNANCE_HOLD_ACTIVE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Patient mismatch, accession mismatch, duplicate CI, conflicting serial number, renamed application ambiguity, stale identity, or disputed custody object.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 must activate No-Bind or inadmissibility when a material identity conflict remains unresolved.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       },
+                       {
+                           "ComponentId":  "ROI-016",
+                           "ComponentName":  "Regulated Object Identity Passport",
+                           "ComponentCategory":  "IDENTITY PASSPORT",
+                           "Purpose":  "Provides a governed, reviewable identity summary containing canonical identity, source bindings, aliases, lifecycle state, owner, verification, integrity, relationships, conflicts, and current assurance status.",
+                           "RequiredFields":  "passport_id; object_id; canonical_key; object_type_id; current_bindings; active_aliases; lifecycle_state; owner_role_id; verification_state; integrity_state; conflict_state; generated_at_utc",
+                           "ValidationRule":  "An identity passport must be generated from current governed records, must expose unresolved conflicts, and must not become the official source record.",
+                           "FailureState":  "IDENTITY_PASSPORT_INCOMPLETE_OR_STALE",
+                           "PrimaryOwnerLayer":  "PLATFORM B1 / CROSS-CUTTING ASSURANCE OS",
+                           "Examples":  "Batch identity passport, sample identity passport, equipment CI passport, AI-agent identity passport, shipment passport, dose passport, or document passport.",
+                           "IdentityAuthorityBoundary":  "The schema identifies, binds, verifies, relates, and governs regulated objects. It does not independently approve, release, override, execute, or authorize regulated actions.",
+                           "SourceOfTruthRule":  "Official object records remain in governed source systems. The identity schema stores canonical references, bindings, aliases, verification results, integrity values, relationships, and governance states without replacing the official source record.",
+                           "HumanAccountabilityRule":  "A designated object owner, data steward, system owner, process owner, Quality Unit, clinical authority, or other authorized human role remains accountable for identity verification and binding decisions.",
+                           "DisplayBoundary":  "Thread D, Thread D2, RAMAT Vision, glasses, wearables, dashboards, and device witnesses may display object identity state but may not create, approve, merge, retire, release, or override canonical identity.",
+                           "DataBoundary":  "Schema-only, simulator-first, mock-data-first, and local-validation-first. No PHI, company production data, classified data, or real regulated production integration is authorized by this step.",
+                           "Step155Dependency":  "Step 155 may use the identity passport as a governed input to evidence, authority, No-Bind, and accountability evaluation.",
+                           "MaturityStatement":  "Identity schema registration is not runtime implementation, production readiness, regulatory validation, certification, or operational release.",
+                           "ReviewStatus":  "HUMAN IDENTITY-SCHEMA REVIEW REQUIRED"
+                       }
+                   ]
+}

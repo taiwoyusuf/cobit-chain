@@ -1,0 +1,76 @@
+{
+  "action_admissibility_state": "ADMISSIBLE",
+  "action_consequence_level": "CRITICAL",
+  "action_id": "ACTION-A17-BATCH-RELEASE-001",
+  "action_type": "BATCH_RELEASE",
+  "authority": {
+    "actor_id": "ACTOR-BATCH-RELEASER-001",
+    "authority_current": true,
+    "authority_delegated": false,
+    "authority_id": "AUTH-A17-RELEASER-001",
+    "authority_in_scope": true,
+    "authority_present": true,
+    "authority_status": "VALID",
+    "authority_valid": true,
+    "role_id": "AUTHORIZED_BATCH_RELEASER",
+    "valid_from_utc": "2026-07-12T22:39:18.6967035Z",
+    "valid_to_utc": "2026-08-12T22:39:18.6967035Z"
+  },
+  "correlation_id": "65b183a7-f661-4857-9496-47f789be5b9a",
+  "current_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+  "dependencies": [
+    {
+      "dependency_id": "DEP-QC-RESULTS",
+      "dependency_status": "SATISFIED",
+      "dependency_type": "QC_RESULTS_COMPLETE",
+      "observed_state": "COMPLETE",
+      "required_state": "COMPLETE"
+    },
+    {
+      "dependency_id": "DEP-SOURCE-AGREEMENT",
+      "dependency_status": "SATISFIED",
+      "dependency_type": "SOURCE_SYSTEM_AGREEMENT",
+      "observed_state": "AGREED",
+      "required_state": "AGREED"
+    },
+    {
+      "dependency_id": "DEP-DEVIATION",
+      "dependency_status": "SATISFIED",
+      "dependency_type": "CRITICAL_DEVIATIONS_DISPOSITIONED",
+      "observed_state": "ZERO_OPEN_CRITICAL",
+      "required_state": "ZERO_OPEN_CRITICAL"
+    },
+    {
+      "dependency_id": "DEP-SAMPLE-IDENTITY",
+      "dependency_status": "SATISFIED",
+      "dependency_type": "SAMPLE_IDENTITY_MATCH",
+      "observed_state": "MATCHED",
+      "required_state": "MATCHED"
+    }
+  ],
+  "dependencies_satisfied": true,
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "evaluated_at_utc": "2026-07-13T22:42:25Z",
+  "evaluation_id": "EVAL-f59ca0b8-35f2-4506-b098-9a46edd1a634",
+  "evidence_sufficient": true,
+  "execution_performed": false,
+  "human_accountability_identified": true,
+  "human_binding_decision_performed": false,
+  "identity_verified": true,
+  "implementation_version": "160.1.0",
+  "integrity_state": "REHASH_VERIFIED",
+  "no_bind_reasons": [],
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-BATCH-2026-001",
+  "official_source_record_id": "LIMS-A17-QC-001",
+  "official_source_system": "MOCK LIMS",
+  "scenario_name": "03_recovery_success",
+  "schema_version": "1.0",
+  "sealed_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+  "security_trust_state": "NORMAL",
+  "source_system_execution_required": true,
+  "timing_valid": true
+}

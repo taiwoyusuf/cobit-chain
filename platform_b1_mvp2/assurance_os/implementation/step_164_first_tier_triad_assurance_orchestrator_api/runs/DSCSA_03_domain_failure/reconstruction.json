@@ -1,0 +1,18 @@
+{
+  "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+  "authority_reference": "AUTH-DSCSA-164-001",
+  "correlation_id": "438538c5-ba8d-4ef8-9b3e-03bd08b89540",
+  "evidence_hash": "335373650f27b3d417f9595123624aab662447cc58c5f9b2abbb140edac46e86",
+  "evidence_seal_reference": "SEAL-ab99b4dd-d2ce-49fa-bab1-7b2d65957fde",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T23:23:44Z",
+  "object_id": "A17-DSCSA-SERIAL-164-001",
+  "reconstruction_id": "RECON-b36d25fe-c123-4d0a-a2fb-3078d6973f89",
+  "scenario_name": "DSCSA_03_domain_failure",
+  "source_system_reference": "DSCSA-SOURCE-164-001",
+  "track_id": "DSCSA",
+  "unresolved_gaps": [
+    "DEPENDENCY_UNSATISFIED",
+    "DSCSA_EPCIS_SEQUENCE_BREAK"
+  ]
+}

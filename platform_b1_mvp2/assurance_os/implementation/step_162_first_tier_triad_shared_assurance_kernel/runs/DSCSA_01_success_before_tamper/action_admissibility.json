@@ -1,0 +1,13 @@
+{
+  "action_id": "ACTION-DSCSA-TRANSFER-READINESS-001",
+  "admissibility_id": "ADM-b1ad4ee9-63c5-466a-84dd-d34edc1eb432",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_ADMISSIBLE",
+  "execution_performed": false,
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "rationale": [
+    "ALL_REQUIRED_ASSURANCE_CONDITIONS_POSITIVELY_SATISFIED"
+  ],
+  "source_execution_required": true,
+  "track_id": "DSCSA"
+}

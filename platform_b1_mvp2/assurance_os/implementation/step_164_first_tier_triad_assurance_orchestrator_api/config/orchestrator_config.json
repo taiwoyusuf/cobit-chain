@@ -1,0 +1,94 @@
+{
+    "schema_version":  "1.0",
+    "implementation_version":  "164.1.1",
+    "authorized_by":  "Explicit user command: NEXT",
+    "authorization_recorded_at_utc":  "2026-07-13T23:23:43.2959505Z",
+    "implementation_boundary":  "LOCAL SYNTHETIC READ-ONLY FIRST-TIER TRIAD ORCHESTRATOR ONLY",
+    "api":  {
+                "host":  "127.0.0.1",
+                "default_port":  8765,
+                "read_only":  true,
+                "allowed_methods":  [
+                                        "GET"
+                                    ],
+                "prohibited_methods":  [
+                                           "POST",
+                                           "PUT",
+                                           "PATCH",
+                                           "DELETE"
+                                       ]
+            },
+    "tracks":  [
+                   {
+                       "track_id":  "IRLT",
+                       "track_name":  "IRLT and Radiopharmaceutical Assurance Track",
+                       "priority_tier":  "FIRST-TIER",
+                       "object_id":  "A17-IRLT-BATCH-164-001",
+                       "action_id":  "ACTION-IRLT-READINESS-164-001",
+                       "action_type":  "IRLT_RELEASE_CUSTODY_ADMINISTRATION_READINESS",
+                       "consequence_level":  "CRITICAL",
+                       "required_role":  "AUTHORIZED_IRLT_RELEASE_AUTHORITY",
+                       "source_system":  "MOCK IRLT MES-LIMS-CUSTODY FABRIC",
+                       "source_record_id":  "IRLT-SOURCE-164-001",
+                       "domain_dependency":  "Custody chain continuity",
+                       "domain_failure_code":  "IRLT_CUSTODY_GAP",
+                       "valid_from_utc":  "2026-07-12T23:23:43.2959505Z",
+                       "valid_to_utc":  "2026-08-12T23:23:43.2959505Z",
+                       "dependencies":  [
+                                            "QC release evidence",
+                                            "Material genealogy",
+                                            "Custody chain continuity",
+                                            "Receiving-site readiness",
+                                            "Decay-window validity"
+                                        ]
+                   },
+                   {
+                       "track_id":  "COMPOUNDING",
+                       "track_name":  "Compounding Pharmacy Assurance Track",
+                       "priority_tier":  "FIRST-TIER",
+                       "object_id":  "A17-COMPOUND-PREP-164-001",
+                       "action_id":  "ACTION-COMPOUND-DISPENSING-164-001",
+                       "action_type":  "COMPOUNDING_DISPENSING_READINESS",
+                       "consequence_level":  "CRITICAL",
+                       "required_role":  "AUTHORIZED_PHARMACIST",
+                       "source_system":  "MOCK COMPOUNDING PHARMACY FABRIC",
+                       "source_record_id":  "COMPOUND-SOURCE-164-001",
+                       "domain_dependency":  "Label agreement",
+                       "domain_failure_code":  "COMPOUNDING_LABEL_MISMATCH",
+                       "valid_from_utc":  "2026-07-12T23:23:43.2959505Z",
+                       "valid_to_utc":  "2026-08-12T23:23:43.2959505Z",
+                       "dependencies":  [
+                                            "Order identity agreement",
+                                            "Formula version current",
+                                            "Ingredient genealogy complete",
+                                            "Calculation verified",
+                                            "Label agreement",
+                                            "Beyond-use timing valid"
+                                        ]
+                   },
+                   {
+                       "track_id":  "DSCSA",
+                       "track_name":  "DSCSA and Pharmaceutical Supply-Chain Assurance Track",
+                       "priority_tier":  "FIRST-TIER",
+                       "object_id":  "A17-DSCSA-SERIAL-164-001",
+                       "action_id":  "ACTION-DSCSA-TRANSFER-164-001",
+                       "action_type":  "DSCSA_TRANSFER_READINESS",
+                       "consequence_level":  "HIGH",
+                       "required_role":  "AUTHORIZED_TRADING_PARTNER_COMPLIANCE_ROLE",
+                       "source_system":  "MOCK DSCSA SERIALIZATION-EPCIS FABRIC",
+                       "source_record_id":  "DSCSA-SOURCE-164-001",
+                       "domain_dependency":  "EPCIS event sequence",
+                       "domain_failure_code":  "DSCSA_EPCIS_SEQUENCE_BREAK",
+                       "valid_from_utc":  "2026-07-12T23:23:43.2959505Z",
+                       "valid_to_utc":  "2026-08-12T23:23:43.2959505Z",
+                       "dependencies":  [
+                                            "Serialization complete",
+                                            "Aggregation integrity",
+                                            "EPCIS event sequence",
+                                            "Trading-partner authority",
+                                            "Transaction evidence complete",
+                                            "Suspect-product state clear"
+                                        ]
+                   }
+               ]
+}

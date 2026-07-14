@@ -1,0 +1,30 @@
+{
+    "action_id":  "ACTION-A17-BATCH-RELEASE-001",
+    "action_type":  "BATCH_RELEASE",
+    "target_object_id":  "A17-BATCH-2026-001",
+    "action_consequence_level":  "CRITICAL",
+    "required_authority_roles":  [
+                                     "AUTHORIZED_BATCH_RELEASER"
+                                 ],
+    "display_contract_ttl_minutes":  5,
+    "display_allowed_fields":  [
+                                   "object_id",
+                                   "action_id",
+                                   "integrity_state",
+                                   "evidence_sufficient",
+                                   "authority_state",
+                                   "no_bind_state",
+                                   "admissibility_state",
+                                   "source_system_reference",
+                                   "generated_at_utc",
+                                   "expires_at_utc"
+                               ],
+    "display_prohibited_controls":  [
+                                        "approve",
+                                        "release",
+                                        "override",
+                                        "resolve_no_bind",
+                                        "execute_action",
+                                        "edit_source_record"
+                                    ]
+}

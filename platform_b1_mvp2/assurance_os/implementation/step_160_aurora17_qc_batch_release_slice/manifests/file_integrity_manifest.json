@@ -1,0 +1,184 @@
+{
+    "step":  "160",
+    "algorithm":  "SHA-256",
+    "generated_at_utc":  "2026-07-13T22:42:25.6838786Z",
+    "implementation_boundary":  "LOCAL NON-PRODUCTION IMPLEMENTATION SLICE ONLY",
+    "file_count":  35,
+    "files":  [
+                  {
+                      "relative_path":  "backup\\aurora17_qc_release_evidence.backup.json",
+                      "sha256":  "A13350DA3EBE69D7BFF185538E89484896C1ED850E437EC58F79F1EBC3D431B2",
+                      "length_bytes":  917
+                  },
+                  {
+                      "relative_path":  "backup\\backup_verification.json",
+                      "sha256":  "AAB70DE327D15627C350BC8A791FCE4A1ECA8F399EDE0E491AEC25D4831DD3C2",
+                      "length_bytes":  326
+                  },
+                  {
+                      "relative_path":  "backup\\restore_verification.json",
+                      "sha256":  "94C205B0C5F4F11374981A87102203FEDB9B80E12949F73F1A70A89D2443D70A",
+                      "length_bytes":  260
+                  },
+                  {
+                      "relative_path":  "config\\slice_config.json",
+                      "sha256":  "61D0EC9BF306CA0102A7F7E2E6455F3B43BD322267DC8EC67E3A3FEBB4FB6433",
+                      "length_bytes":  1405
+                  },
+                  {
+                      "relative_path":  "data\\authority.json",
+                      "sha256":  "3CD8C58ADC85A43431B47E4F818097EFBAB188CADF32A3A2EA8678FFF700AB3C",
+                      "length_bytes":  653
+                  },
+                  {
+                      "relative_path":  "data\\evidence\\aurora17_qc_release_evidence.json",
+                      "sha256":  "A13350DA3EBE69D7BFF185538E89484896C1ED850E437EC58F79F1EBC3D431B2",
+                      "length_bytes":  917
+                  },
+                  {
+                      "relative_path":  "data\\source_state.json",
+                      "sha256":  "7A9E5B2E998293EDE73A8D33A4AB4ACED7949F220931B57F84D8D0D6D0CF8155",
+                      "length_bytes":  436
+                  },
+                  {
+                      "relative_path":  "manifests\\component_manifest.json",
+                      "sha256":  "8BBAD14C79033005390BB7E0D2BF2E30C9A5B9A59C15F19C611947AAA2BA91BB",
+                      "length_bytes":  3312
+                  },
+                  {
+                      "relative_path":  "README.md",
+                      "sha256":  "7ABC795F563A0725A30E20C1C60B6A59FFBEAB8C8C8176F442F8B32726690C6C",
+                      "length_bytes":  1143
+                  },
+                  {
+                      "relative_path":  "requirements.txt",
+                      "sha256":  "6C6DD5FB9B5EE44431253E143D3AA88418174EABDB21D1A9AB6D93BF1344A4DB",
+                      "length_bytes":  64
+                  },
+                  {
+                      "relative_path":  "runs\\01_success_before_tamper\\action_admissibility.json",
+                      "sha256":  "315036FC11B27CF8498917AAAD510FAA7CB7C204FA00FA1DB61AB4880AC8A445",
+                      "length_bytes":  522
+                  },
+                  {
+                      "relative_path":  "runs\\01_success_before_tamper\\display_contract.json",
+                      "sha256":  "57C2E601613FA6D08C1687F7FBF21308AB6218A903FAE70B98A6C3E5DC0A9C6C",
+                      "length_bytes":  1206
+                  },
+                  {
+                      "relative_path":  "runs\\01_success_before_tamper\\evaluation.json",
+                      "sha256":  "FB70F987A1FCF924B52D46BE72C76DE211EAD3E5AEC53A8157B9D9FA180C5957",
+                      "length_bytes":  2629
+                  },
+                  {
+                      "relative_path":  "runs\\01_success_before_tamper\\no_bind_state.json",
+                      "sha256":  "0687B398CF961D51D344A758BA63599480C5C04FD4142B9DB44C38C910190D11",
+                      "length_bytes":  315
+                  },
+                  {
+                      "relative_path":  "runs\\01_success_before_tamper\\reconstruction.json",
+                      "sha256":  "7B29A8E801DA78BC53509D74B5BB0644ED956416AC3129326E83F8A8F880268D",
+                      "length_bytes":  1498
+                  },
+                  {
+                      "relative_path":  "runs\\02_tamper_failure\\action_admissibility.json",
+                      "sha256":  "742789471A3208E09B5C7145BF9F0AACDF6D49295C6AE86862AD3615D8C6D867",
+                      "length_bytes":  486
+                  },
+                  {
+                      "relative_path":  "runs\\02_tamper_failure\\display_contract.json",
+                      "sha256":  "1EFE6700201262FE992640B477C813395227C1104A15F39089370F71B47BCEC5",
+                      "length_bytes":  1199
+                  },
+                  {
+                      "relative_path":  "runs\\02_tamper_failure\\evaluation.json",
+                      "sha256":  "304124463592CCFF5E199099728E618389C1062441F020E01D9748C105B758CE",
+                      "length_bytes":  2660
+                  },
+                  {
+                      "relative_path":  "runs\\02_tamper_failure\\no_bind_state.json",
+                      "sha256":  "F1D07339099D41BC34DE6B56A004CAA5E150F67BB920B0133F986CDB1DF26F4F",
+                      "length_bytes":  377
+                  },
+                  {
+                      "relative_path":  "runs\\02_tamper_failure\\reconstruction.json",
+                      "sha256":  "9CB9FC8A822747E13D633565C6A2F60ECA0DD7011BC49B94E87C7869AFB09854",
+                      "length_bytes":  1531
+                  },
+                  {
+                      "relative_path":  "runs\\03_recovery_success\\action_admissibility.json",
+                      "sha256":  "8F425C9970F59A21EAC62442BBD07E9E22D2C75E3F9988FA4B48CD5D4D5C7CA8",
+                      "length_bytes":  522
+                  },
+                  {
+                      "relative_path":  "runs\\03_recovery_success\\display_contract.json",
+                      "sha256":  "47FF77A0E3AE213C26FF8DF0665AF46010168AD9C0D20D7E026741ED7964FC36",
+                      "length_bytes":  1206
+                  },
+                  {
+                      "relative_path":  "runs\\03_recovery_success\\evaluation.json",
+                      "sha256":  "6442E44D89B463A6BE8B571A9D2CD978DA04AF106780DD995ECB6D78823C6D5B",
+                      "length_bytes":  2624
+                  },
+                  {
+                      "relative_path":  "runs\\03_recovery_success\\no_bind_state.json",
+                      "sha256":  "2DF75623D6CA43B47499C2FF5906F40C129ADF2CDBCBCDCB047A609601801147",
+                      "length_bytes":  315
+                  },
+                  {
+                      "relative_path":  "runs\\03_recovery_success\\reconstruction.json",
+                      "sha256":  "2887421CCEF058AF25119F0C505ACB260EEBDE2066B327EBB1F159B077EFD990",
+                      "length_bytes":  1493
+                  },
+                  {
+                      "relative_path":  "runs\\audit_events.jsonl",
+                      "sha256":  "F4F43557C06A09EA9E5D18FD1B786E5FA2DC1F56501131A68FB2A523522A9E97",
+                      "length_bytes":  1432
+                  },
+                  {
+                      "relative_path":  "src\\__init__.py",
+                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                      "length_bytes":  0
+                  },
+                  {
+                      "relative_path":  "src\\__pycache__\\assurance_slice.cpython-311.pyc",
+                      "sha256":  "5867F1BA75D4DD0E78C499A812A3D36585B88596C05FD0DDCC4838E65810F545",
+                      "length_bytes":  42038
+                  },
+                  {
+                      "relative_path":  "src\\assurance_slice.py",
+                      "sha256":  "233F920A431B7E2D619D6D259AE0E6A5603ABF4CD9E31E8D7A740416D8F236CC",
+                      "length_bytes":  38846
+                  },
+                  {
+                      "relative_path":  "state\\evidence_seal.json",
+                      "sha256":  "2302BF8A4DBC02D19E66D82BE725B09A288F7F1058867AC431F7D915430068CB",
+                      "length_bytes":  563
+                  },
+                  {
+                      "relative_path":  "STEP_160_AURORA_17_QC_BATCH_RELEASE_IMPLEMENTATION_SLICE.csv",
+                      "sha256":  "AD78F7B9452DFC6DE900DCD0B8186F99DB8862F88B34362AE458517DEF83E121",
+                      "length_bytes":  685
+                  },
+                  {
+                      "relative_path":  "STEP_160_AURORA_17_QC_BATCH_RELEASE_IMPLEMENTATION_SLICE.json",
+                      "sha256":  "E2A88871D0CAAFD250E976EE55E36DE3733BA53794159B982707C1D4D5F10AE8",
+                      "length_bytes":  10706
+                  },
+                  {
+                      "relative_path":  "STEP_160_AURORA_17_QC_BATCH_RELEASE_IMPLEMENTATION_SLICE.md",
+                      "sha256":  "8F505E513CB2DEA53FB82E59E5B6E0A2FEC0BE635574F3C28ECDAB417DE4C2B9",
+                      "length_bytes":  1805
+                  },
+                  {
+                      "relative_path":  "tests\\__pycache__\\test_assurance_slice.cpython-311.pyc",
+                      "sha256":  "9CDB21140A18DB9EAB0AA7DB69C9A18B5DA0B3A79728EE76E86F76F81D68E374",
+                      "length_bytes":  4181
+                  },
+                  {
+                      "relative_path":  "tests\\test_assurance_slice.py",
+                      "sha256":  "072C55A103252E5ECD181D16D6A2C7838F0932A0560E1581A3182ACF16B4168D",
+                      "length_bytes":  3135
+                  }
+              ]
+}

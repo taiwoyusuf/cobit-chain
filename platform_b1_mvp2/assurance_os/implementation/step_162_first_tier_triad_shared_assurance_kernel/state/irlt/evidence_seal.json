@@ -1,0 +1,12 @@
+{
+  "content_length_bytes": 485,
+  "evidence_id": "EVID-IRLT-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "475e250dc09b2ceb21d84333cf996b00b03e6e94c0942c8945258bdf24081221",
+  "object_id": "A17-IRLT-BATCH-001",
+  "seal_id": "SEAL-a3941123-6aed-4ff6-acf5-4322e270c7fa",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T22:57:24Z",
+  "sealed_by_actor_id": "ACTOR-IRLT-QA-001",
+  "track_id": "IRLT"
+}

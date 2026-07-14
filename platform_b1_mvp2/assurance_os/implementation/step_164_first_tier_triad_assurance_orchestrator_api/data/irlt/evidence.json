@@ -1,0 +1,11 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-IRLT-164-001",
+  "evidence_type": "IRLT_ASSURANCE_PACKAGE",
+  "object_id": "A17-IRLT-BATCH-164-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-IRLT-REVIEWER-001",
+  "source_record_id": "IRLT-SOURCE-164-001",
+  "synthetic": true,
+  "track_id": "IRLT"
+}

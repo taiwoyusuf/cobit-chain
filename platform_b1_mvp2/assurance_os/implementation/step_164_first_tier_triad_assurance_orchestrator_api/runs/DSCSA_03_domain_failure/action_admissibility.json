@@ -1,0 +1,12 @@
+{
+  "admissibility_id": "ADM-d5755d1a-ad9d-4596-ac12-89527130c572",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "rationale": [
+    "DEPENDENCY_UNSATISFIED",
+    "DSCSA_EPCIS_SEQUENCE_BREAK"
+  ],
+  "source_execution_required": true,
+  "track_id": "DSCSA"
+}

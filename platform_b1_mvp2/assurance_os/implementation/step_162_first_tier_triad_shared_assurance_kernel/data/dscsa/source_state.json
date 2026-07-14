@@ -1,0 +1,10 @@
+{
+  "lifecycle_state": "SERIALIZED_AND_AGGREGATED",
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "source_record_id": "DSCSA-SOURCE-001",
+  "source_system_name": "MOCK DSCSA EPCIS AND SERIALIZATION FABRIC",
+  "synthetic": true,
+  "timing_state": "TRANSACTION_WINDOW_VALID",
+  "valid_from_utc": "2026-07-12T22:57:23.9124587Z",
+  "valid_to_utc": "2026-08-12T22:57:23.9124587Z"
+}

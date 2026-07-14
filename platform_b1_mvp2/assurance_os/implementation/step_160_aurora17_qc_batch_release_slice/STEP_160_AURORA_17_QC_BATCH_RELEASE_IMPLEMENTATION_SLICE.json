@@ -1,0 +1,278 @@
+{
+  "architecture_boundaries": {
+    "human_authority": "REQUIRED FOR BINDING RELEASE DECISION",
+    "platform_b1": "LOCAL ASSURANCE EVALUATION ONLY",
+    "platform_b_v1": "ARCHITECTURE LOCKED - NOT MODIFIED",
+    "ramat_vision": "DISPLAY / WITNESS ONLY",
+    "source_system": "OFFICIAL EXECUTION REQUIRED",
+    "thread_d_v1": "ARCHITECTURE LOCKED - NOT MODIFIED"
+  },
+  "backup_verification": {
+    "backup_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+    "backup_integrity_verified": true,
+    "backup_path": "backup\\aurora17_qc_release_evidence.backup.json",
+    "expected_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+    "verified_at_utc": "2026-07-13T22:42:25Z"
+  },
+  "checks": {
+    "backup_integrity": true,
+    "baseline_success": true,
+    "display_only_boundary": true,
+    "fail_closed_no_bind": true,
+    "no_execution_performed": true,
+    "phi_used": false,
+    "platform_b_v1_modified": false,
+    "production_integration_performed": false,
+    "recovery_integrity": true,
+    "recovery_success": true,
+    "tamper_detection": true,
+    "thread_d_v1_modified": false
+  },
+  "generated_at_utc": "2026-07-13T22:42:25Z",
+  "implementation_boundary": "LOCAL NON-PRODUCTION IMPLEMENTATION SLICE ONLY",
+  "implementation_version": "160.1.0",
+  "overall_status": "PASS",
+  "restore_verification": {
+    "expected_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+    "restore_integrity_verified": true,
+    "restored_at_utc": "2026-07-13T22:42:25Z",
+    "restored_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2"
+  },
+  "scenario_count": 3,
+  "scenarios": [
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_consequence_level": "CRITICAL",
+      "action_id": "ACTION-A17-BATCH-RELEASE-001",
+      "action_type": "BATCH_RELEASE",
+      "authority": {
+        "actor_id": "ACTOR-BATCH-RELEASER-001",
+        "authority_current": true,
+        "authority_delegated": false,
+        "authority_id": "AUTH-A17-RELEASER-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_status": "VALID",
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_BATCH_RELEASER",
+        "valid_from_utc": "2026-07-12T22:39:18.6967035Z",
+        "valid_to_utc": "2026-08-12T22:39:18.6967035Z"
+      },
+      "correlation_id": "33752e17-0f48-43aa-9cc9-487e62a7c117",
+      "current_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+      "dependencies": [
+        {
+          "dependency_id": "DEP-QC-RESULTS",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "QC_RESULTS_COMPLETE",
+          "observed_state": "COMPLETE",
+          "required_state": "COMPLETE"
+        },
+        {
+          "dependency_id": "DEP-SOURCE-AGREEMENT",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SOURCE_SYSTEM_AGREEMENT",
+          "observed_state": "AGREED",
+          "required_state": "AGREED"
+        },
+        {
+          "dependency_id": "DEP-DEVIATION",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "CRITICAL_DEVIATIONS_DISPOSITIONED",
+          "observed_state": "ZERO_OPEN_CRITICAL",
+          "required_state": "ZERO_OPEN_CRITICAL"
+        },
+        {
+          "dependency_id": "DEP-SAMPLE-IDENTITY",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SAMPLE_IDENTITY_MATCH",
+          "observed_state": "MATCHED",
+          "required_state": "MATCHED"
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T22:42:25Z",
+      "evaluation_id": "EVAL-fa908e3b-a694-482a-b661-dca5cd343da3",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "human_accountability_identified": true,
+      "human_binding_decision_performed": false,
+      "identity_verified": true,
+      "implementation_version": "160.1.0",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-BATCH-2026-001",
+      "official_source_record_id": "LIMS-A17-QC-001",
+      "official_source_system": "MOCK LIMS",
+      "scenario_name": "01_success_before_tamper",
+      "schema_version": "1.0",
+      "sealed_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+      "security_trust_state": "NORMAL",
+      "source_system_execution_required": true,
+      "timing_valid": true
+    },
+    {
+      "action_admissibility_state": "HELD",
+      "action_consequence_level": "CRITICAL",
+      "action_id": "ACTION-A17-BATCH-RELEASE-001",
+      "action_type": "BATCH_RELEASE",
+      "authority": {
+        "actor_id": "ACTOR-BATCH-RELEASER-001",
+        "authority_current": true,
+        "authority_delegated": false,
+        "authority_id": "AUTH-A17-RELEASER-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_status": "VALID",
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_BATCH_RELEASER",
+        "valid_from_utc": "2026-07-12T22:39:18.6967035Z",
+        "valid_to_utc": "2026-08-12T22:39:18.6967035Z"
+      },
+      "correlation_id": "ab7cc488-1f07-4b98-b2a8-c2d3eecd6f75",
+      "current_hash": "eb5df1d2e410a429928a6c5a8200d96a0cdc4cbd6ed5eb7168150719511a9446",
+      "dependencies": [
+        {
+          "dependency_id": "DEP-QC-RESULTS",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "QC_RESULTS_COMPLETE",
+          "observed_state": "COMPLETE",
+          "required_state": "COMPLETE"
+        },
+        {
+          "dependency_id": "DEP-SOURCE-AGREEMENT",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SOURCE_SYSTEM_AGREEMENT",
+          "observed_state": "AGREED",
+          "required_state": "AGREED"
+        },
+        {
+          "dependency_id": "DEP-DEVIATION",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "CRITICAL_DEVIATIONS_DISPOSITIONED",
+          "observed_state": "ZERO_OPEN_CRITICAL",
+          "required_state": "ZERO_OPEN_CRITICAL"
+        },
+        {
+          "dependency_id": "DEP-SAMPLE-IDENTITY",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SAMPLE_IDENTITY_MATCH",
+          "observed_state": "MATCHED",
+          "required_state": "MATCHED"
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "EVIDENCE INSUFFICIENT",
+        "NO-BIND STATE ACTIVE",
+        "ACTION HELD"
+      ],
+      "evaluated_at_utc": "2026-07-13T22:42:25Z",
+      "evaluation_id": "EVAL-ba1603f4-09ce-4202-8478-9d69e6971a69",
+      "evidence_sufficient": false,
+      "execution_performed": false,
+      "human_accountability_identified": true,
+      "human_binding_decision_performed": false,
+      "identity_verified": true,
+      "implementation_version": "160.1.0",
+      "integrity_state": "REHASH_MISMATCH",
+      "no_bind_reasons": [
+        "EVIDENCE_REHASH_MISMATCH"
+      ],
+      "no_bind_state": "ACTIVE",
+      "object_id": "A17-BATCH-2026-001",
+      "official_source_record_id": "LIMS-A17-QC-001",
+      "official_source_system": "MOCK LIMS",
+      "scenario_name": "02_tamper_failure",
+      "schema_version": "1.0",
+      "sealed_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+      "security_trust_state": "NORMAL",
+      "source_system_execution_required": true,
+      "timing_valid": true
+    },
+    {
+      "action_admissibility_state": "ADMISSIBLE",
+      "action_consequence_level": "CRITICAL",
+      "action_id": "ACTION-A17-BATCH-RELEASE-001",
+      "action_type": "BATCH_RELEASE",
+      "authority": {
+        "actor_id": "ACTOR-BATCH-RELEASER-001",
+        "authority_current": true,
+        "authority_delegated": false,
+        "authority_id": "AUTH-A17-RELEASER-001",
+        "authority_in_scope": true,
+        "authority_present": true,
+        "authority_status": "VALID",
+        "authority_valid": true,
+        "role_id": "AUTHORIZED_BATCH_RELEASER",
+        "valid_from_utc": "2026-07-12T22:39:18.6967035Z",
+        "valid_to_utc": "2026-08-12T22:39:18.6967035Z"
+      },
+      "correlation_id": "65b183a7-f661-4857-9496-47f789be5b9a",
+      "current_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+      "dependencies": [
+        {
+          "dependency_id": "DEP-QC-RESULTS",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "QC_RESULTS_COMPLETE",
+          "observed_state": "COMPLETE",
+          "required_state": "COMPLETE"
+        },
+        {
+          "dependency_id": "DEP-SOURCE-AGREEMENT",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SOURCE_SYSTEM_AGREEMENT",
+          "observed_state": "AGREED",
+          "required_state": "AGREED"
+        },
+        {
+          "dependency_id": "DEP-DEVIATION",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "CRITICAL_DEVIATIONS_DISPOSITIONED",
+          "observed_state": "ZERO_OPEN_CRITICAL",
+          "required_state": "ZERO_OPEN_CRITICAL"
+        },
+        {
+          "dependency_id": "DEP-SAMPLE-IDENTITY",
+          "dependency_status": "SATISFIED",
+          "dependency_type": "SAMPLE_IDENTITY_MATCH",
+          "observed_state": "MATCHED",
+          "required_state": "MATCHED"
+        }
+      ],
+      "dependencies_satisfied": true,
+      "display_states": [
+        "ACTION ADMISSIBLE",
+        "SOURCE-SYSTEM EXECUTION REQUIRED"
+      ],
+      "evaluated_at_utc": "2026-07-13T22:42:25Z",
+      "evaluation_id": "EVAL-f59ca0b8-35f2-4506-b098-9a46edd1a634",
+      "evidence_sufficient": true,
+      "execution_performed": false,
+      "human_accountability_identified": true,
+      "human_binding_decision_performed": false,
+      "identity_verified": true,
+      "implementation_version": "160.1.0",
+      "integrity_state": "REHASH_VERIFIED",
+      "no_bind_reasons": [],
+      "no_bind_state": "INACTIVE",
+      "object_id": "A17-BATCH-2026-001",
+      "official_source_record_id": "LIMS-A17-QC-001",
+      "official_source_system": "MOCK LIMS",
+      "scenario_name": "03_recovery_success",
+      "schema_version": "1.0",
+      "sealed_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+      "security_trust_state": "NORMAL",
+      "source_system_execution_required": true,
+      "timing_valid": true
+    }
+  ],
+  "sealed_evidence_hash": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+  "step": "160",
+  "title": "AURORA-17 QC and Human Batch-Release Implementation Slice"
+}

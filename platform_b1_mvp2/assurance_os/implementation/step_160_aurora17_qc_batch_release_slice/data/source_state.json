@@ -1,0 +1,12 @@
+{
+    "source_system_name":  "MOCK LIMS",
+    "source_record_id":  "LIMS-A17-QC-001",
+    "batch_id":  "A17-BATCH-2026-001",
+    "sample_id":  "A17-SAMPLE-001",
+    "qc_status":  "COMPLETE",
+    "laboratory_result_state":  "VERIFIED",
+    "open_critical_deviations":  0,
+    "release_window_start_utc":  "2026-07-12T22:39:18.6967035Z",
+    "release_window_end_utc":  "2026-08-12T22:39:18.6967035Z",
+    "synthetic":  true
+}

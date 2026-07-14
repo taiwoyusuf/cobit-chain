@@ -1,0 +1,10 @@
+{
+  "lifecycle_state": "PHARMACIST_REVIEW",
+  "object_id": "A17-COMPOUND-PREP-001",
+  "source_record_id": "COMPOUND-SOURCE-001",
+  "source_system_name": "MOCK COMPOUNDING PHARMACY SYSTEM",
+  "synthetic": true,
+  "timing_state": "WITHIN_BEYOND_USE_WINDOW",
+  "valid_from_utc": "2026-07-12T22:57:23.9124587Z",
+  "valid_to_utc": "2026-08-12T22:57:23.9124587Z"
+}

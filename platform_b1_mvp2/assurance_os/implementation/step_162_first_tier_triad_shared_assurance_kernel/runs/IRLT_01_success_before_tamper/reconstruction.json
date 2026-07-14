@@ -1,0 +1,45 @@
+{
+  "action_id": "ACTION-IRLT-RELEASE-CUSTODY-001",
+  "admissibility_reference": "ADM-2a65e775-1aa2-4b9e-8642-e26ce2759c67",
+  "authority_reference": "AUTH-IRLT-001",
+  "chronology": [
+    {
+      "event": "REHASH_EVALUATED",
+      "state": "REHASH_VERIFIED",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "DEPENDENCIES_EVALUATED",
+      "state": true,
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "AUTHORITY_EVALUATED",
+      "state": "VALID",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "NO_BIND_EVALUATED",
+      "state": "INACTIVE",
+      "time": "2026-07-13T22:57:24Z"
+    },
+    {
+      "event": "ADMISSIBILITY_RECORDED",
+      "state": "ACTION_ADMISSIBLE",
+      "time": "2026-07-13T22:57:24Z"
+    }
+  ],
+  "correlation_id": "2f8bba74-1cac-448d-a296-5f051f9fae5c",
+  "current_evidence_hash": "475e250dc09b2ceb21d84333cf996b00b03e6e94c0942c8945258bdf24081221",
+  "evidence_seal_reference": "SEAL-a3941123-6aed-4ff6-acf5-4322e270c7fa",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T22:57:24Z",
+  "no_bind_reference": "NB-fec712b0-0437-4f80-88b0-9d8b558289f6",
+  "object_id": "A17-IRLT-BATCH-001",
+  "official_execution_record": null,
+  "reconstruction_id": "RECON-df066016-769f-4904-8436-e3ce60f25a1b",
+  "scenario_name": "IRLT_01_success_before_tamper",
+  "source_system_reference": "IRLT-SOURCE-001",
+  "track_id": "IRLT",
+  "unresolved_gaps": []
+}

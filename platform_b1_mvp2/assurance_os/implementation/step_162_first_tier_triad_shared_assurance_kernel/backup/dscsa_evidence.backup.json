@@ -1,0 +1,17 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-DSCSA-001",
+  "evidence_type": "DSCSA_TRANSACTION_AND_SERIALIZATION_PACKAGE",
+  "measurements": {
+    "epcis_sequence_valid": true,
+    "serialization_complete": true,
+    "suspect_product_clear": true,
+    "trading_partner_authorized": true,
+    "transaction_evidence_complete": true
+  },
+  "object_id": "A17-DSCSA-SERIAL-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-DSCSA-COMPLIANCE-001",
+  "source_record_id": "DSCSA-SOURCE-001",
+  "synthetic": true
+}

@@ -1,0 +1,26 @@
+{
+    "evidence_id":  "EVID-A17-QC-001",
+    "object_id":  "A17-BATCH-2026-001",
+    "batch_id":  "A17-BATCH-2026-001",
+    "sample_id":  "A17-SAMPLE-001",
+    "source_record_id":  "LIMS-A17-QC-001",
+    "assay_percent":  99.2,
+    "qc_results":  [
+                       {
+                           "test":  "Identity",
+                           "result":  "PASS"
+                       },
+                       {
+                           "test":  "Radiochemical Purity",
+                           "result":  "PASS"
+                       },
+                       {
+                           "test":  "Sterility Review",
+                           "result":  "PASS"
+                       }
+                   ],
+    "review_status":  "REVIEWED",
+    "reviewed_by_actor_id":  "ACTOR-QA-REVIEWER-001",
+    "reviewed_at_utc":  "2026-07-13T22:39:18.6967035Z",
+    "synthetic":  true
+}

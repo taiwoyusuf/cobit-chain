@@ -1,0 +1,29 @@
+{
+  "dependencies": [
+    {
+      "dependency_id": "DSCSA-DEP-001",
+      "dependency_name": "Serialization completion",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-002",
+      "dependency_name": "EPCIS sequence validity",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-003",
+      "dependency_name": "Trading-partner authority",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-004",
+      "dependency_name": "Transaction evidence",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "DSCSA-DEP-005",
+      "dependency_name": "Suspect-product clearance",
+      "satisfied": true
+    }
+  ]
+}

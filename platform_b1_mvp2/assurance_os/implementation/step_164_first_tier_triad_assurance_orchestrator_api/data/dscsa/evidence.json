@@ -1,0 +1,11 @@
+{
+  "assurance_marker": "TRUSTED",
+  "evidence_id": "EVID-DSCSA-164-001",
+  "evidence_type": "DSCSA_ASSURANCE_PACKAGE",
+  "object_id": "A17-DSCSA-SERIAL-164-001",
+  "review_status": "REVIEWED",
+  "reviewed_by_actor_id": "ACTOR-DSCSA-REVIEWER-001",
+  "source_record_id": "DSCSA-SOURCE-164-001",
+  "synthetic": true,
+  "track_id": "DSCSA"
+}

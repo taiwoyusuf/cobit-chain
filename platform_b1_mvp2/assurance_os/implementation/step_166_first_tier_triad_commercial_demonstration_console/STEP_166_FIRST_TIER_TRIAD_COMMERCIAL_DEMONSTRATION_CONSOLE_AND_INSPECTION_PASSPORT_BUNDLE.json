@@ -1,0 +1,43 @@
+{
+  "architecture_boundaries": {
+    "human_authority": "REQUIRED FOR BINDING DECISIONS",
+    "platform_b1": "LOCAL ADVANCED ASSURANCE DEMONSTRATION ONLY",
+    "platform_b_v1": "ARCHITECTURE LOCKED",
+    "production_write_back": false,
+    "ramat_vision": "DISPLAY / WITNESS ONLY",
+    "source_system_execution": "REQUIRED",
+    "thread_d2": "DISPLAY / WITNESS ONLY",
+    "thread_d_v1": "ARCHITECTURE LOCKED"
+  },
+  "authorization_recorded_at_utc": "2026-07-13T23:36:26.4398790Z",
+  "authorization_source": "Explicit user command: next",
+  "checks": {
+    "all_domain_failures_held": true,
+    "all_recoveries_admissible": true,
+    "all_tamper_scenarios_held": true,
+    "console_read_only": true,
+    "no_execution_performed": true,
+    "phi_used": false,
+    "platform_b_v1_modified": false,
+    "production_integration_performed": false,
+    "production_write_back_performed": false,
+    "thread_d_v1_modified": false,
+    "three_display_only_ramat_feeds": true,
+    "three_equal_first_tier_tracks": true,
+    "three_reconstruction_exports": true,
+    "three_sealed_passports": true,
+    "twelve_prebuilt_scenarios": true
+  },
+  "console_count": 1,
+  "display_feed_count": 3,
+  "first_tier_track_count": 3,
+  "generated_at_utc": "2026-07-13T23:36:26Z",
+  "implementation_boundary": "LOCAL SYNTHETIC READ-ONLY COMMERCIAL DEMONSTRATION CONSOLE ONLY",
+  "implementation_version": "166.1.0",
+  "overall_status": "PASS",
+  "passport_count": 3,
+  "reconstruction_count": 3,
+  "scenario_count": 12,
+  "step": "166",
+  "title": "First-Tier Triad Commercial Demonstration Console and Inspection Passport Bundle"
+}

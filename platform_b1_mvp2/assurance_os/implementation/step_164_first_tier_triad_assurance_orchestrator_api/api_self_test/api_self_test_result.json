@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "all_expected_gets_return_200": true,
+    "all_write_methods_rejected": true,
+    "api_read_only": true,
+    "localhost_only": true,
+    "production_write_back": false
+  },
+  "ephemeral_port": 63892,
+  "get_results": {
+    "/evaluation/COMPOUNDING/domain_failure": 200,
+    "/evaluation/DSCSA/recovery": 200,
+    "/evaluation/IRLT/baseline": 200,
+    "/evaluation/IRLT/tamper": 200,
+    "/health": 200,
+    "/passport/COMPOUNDING": 200,
+    "/passport/DSCSA": 200,
+    "/passport/IRLT": 200,
+    "/ramat/COMPOUNDING": 200,
+    "/ramat/DSCSA": 200,
+    "/ramat/IRLT": 200,
+    "/reconstruction/COMPOUNDING": 200,
+    "/reconstruction/DSCSA": 200,
+    "/reconstruction/IRLT": 200,
+    "/scenarios": 200,
+    "/tracks": 200
+  },
+  "host": "127.0.0.1",
+  "status": "PASS",
+  "tested_at_utc": "2026-07-13T23:23:44Z",
+  "write_method_results": {
+    "DELETE": 405,
+    "PATCH": 405,
+    "POST": 405,
+    "PUT": 405
+  }
+}

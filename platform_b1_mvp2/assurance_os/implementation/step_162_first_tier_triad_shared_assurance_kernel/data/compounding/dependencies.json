@@ -1,0 +1,29 @@
+{
+  "dependencies": [
+    {
+      "dependency_id": "COMPOUND-DEP-001",
+      "dependency_name": "Order identity agreement",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-002",
+      "dependency_name": "Formula version",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-003",
+      "dependency_name": "Ingredient release",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-004",
+      "dependency_name": "Label agreement",
+      "satisfied": true
+    },
+    {
+      "dependency_id": "COMPOUND-DEP-005",
+      "dependency_name": "Beyond-use timing",
+      "satisfied": true
+    }
+  ]
+}

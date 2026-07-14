@@ -1,0 +1,60 @@
+{
+    "step":  "160",
+    "implementation_name":  "AURORA-17 QC and Human Batch-Release Assurance Vertical Slice",
+    "implementation_version":  "160.1.0",
+    "implementation_boundary":  "LOCAL NON-PRODUCTION IMPLEMENTATION SLICE ONLY",
+    "language":  "Python",
+    "minimum_python_version":  "3.8",
+    "external_runtime_dependencies":  [
+
+                                      ],
+    "standard_library_modules":  [
+                                     "argparse",
+                                     "csv",
+                                     "datetime",
+                                     "hashlib",
+                                     "json",
+                                     "pathlib",
+                                     "shutil",
+                                     "tempfile",
+                                     "typing",
+                                     "unittest",
+                                     "uuid"
+                                 ],
+    "implemented_capabilities":  [
+                                     "Canonical synthetic batch identity",
+                                     "Mock source-system evidence",
+                                     "SHA-256 evidence sealing",
+                                     "Rehash verification",
+                                     "Workflow dependency evaluation",
+                                     "Authority evaluation",
+                                     "Evidence sufficiency evaluation",
+                                     "Fail-closed No-Bind activation",
+                                     "Action-admissibility record",
+                                     "Display-only RAMAT contract",
+                                     "Audit event journal",
+                                     "Governance reconstruction package",
+                                     "Local backup and integrity-verified restore"
+                                 ],
+    "explicit_exclusions":  [
+                                "No Platform B v1 modification",
+                                "No Thread D v1 modification",
+                                "No production source-system connector",
+                                "No PHI",
+                                "No company production data",
+                                "No autonomous approval",
+                                "No autonomous batch release",
+                                "No real wearable integration",
+                                "No Azure production deployment",
+                                "No regulatory-validation claim"
+                            ],
+    "architecture_boundaries":  {
+                                    "platform_b_v1":  "ARCHITECTURE LOCKED",
+                                    "thread_d_v1":  "ARCHITECTURE LOCKED",
+                                    "platform_b1":  "LOCAL ASSURANCE EVALUATION ONLY",
+                                    "thread_d2":  "DISPLAY / WITNESS ONLY",
+                                    "ramat_vision":  "DISPLAY / WITNESS ONLY",
+                                    "human_authority":  "REQUIRED FOR BINDING RELEASE",
+                                    "source_system_execution":  "REQUIRED"
+                                }
+}

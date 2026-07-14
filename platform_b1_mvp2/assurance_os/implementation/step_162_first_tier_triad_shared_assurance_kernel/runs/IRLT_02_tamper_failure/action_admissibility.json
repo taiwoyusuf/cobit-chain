@@ -1,0 +1,13 @@
+{
+  "action_id": "ACTION-IRLT-RELEASE-CUSTODY-001",
+  "admissibility_id": "ADM-d2343f74-f483-4200-84b4-ab3fdd52d2dd",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "object_id": "A17-IRLT-BATCH-001",
+  "rationale": [
+    "EVIDENCE_REHASH_MISMATCH"
+  ],
+  "source_execution_required": true,
+  "track_id": "IRLT"
+}

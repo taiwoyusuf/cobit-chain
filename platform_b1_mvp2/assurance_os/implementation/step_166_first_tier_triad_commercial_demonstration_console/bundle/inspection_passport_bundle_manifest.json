@@ -1,0 +1,73 @@
+{
+  "bundle_id": "STEP166-FIRST-TIER-TRIAD-BUNDLE",
+  "component_count": 13,
+  "components": [
+    {
+      "length_bytes": 1048,
+      "relative_path": "snapshot/passports/irlt_assurance_passport.json",
+      "sha256": "3d293537ee55610833c08e912b322d5f31390774d4475a1217996d07e0d9904b"
+    },
+    {
+      "length_bytes": 230,
+      "relative_path": "snapshot/passports/irlt_assurance_passport.seal.json",
+      "sha256": "d0c17c79ee146072f6e731578930be902b8808b18c01bfede719a6e5d6474921"
+    },
+    {
+      "length_bytes": 732,
+      "relative_path": "snapshot/ramat/irlt_current_display.json",
+      "sha256": "8c743af9bd70f7e77e69647bcce2f68eb040db92d667936d51c0bc76b9e3c4a0"
+    },
+    {
+      "length_bytes": 652,
+      "relative_path": "snapshot/reconstruction/irlt_current_reconstruction.json",
+      "sha256": "c4596c671548f710b0665cfc4ef804f8adde631599a411488e1bc11cb153dd89"
+    },
+    {
+      "length_bytes": 1058,
+      "relative_path": "snapshot/passports/compounding_assurance_passport.json",
+      "sha256": "c335bbb920ac8ecd12dc4384ae07d6e51b538793db355ea6324bcf7969cd4d93"
+    },
+    {
+      "length_bytes": 230,
+      "relative_path": "snapshot/passports/compounding_assurance_passport.seal.json",
+      "sha256": "bf39262b08c967c5579518863fede2913790fb929f77725288f10ef65eb4819f"
+    },
+    {
+      "length_bytes": 741,
+      "relative_path": "snapshot/ramat/compounding_current_display.json",
+      "sha256": "4f4a6e28b337a881e3dc8a46b8fed416dccf4bf29610c30f7499639d5d95b739"
+    },
+    {
+      "length_bytes": 685,
+      "relative_path": "snapshot/reconstruction/compounding_current_reconstruction.json",
+      "sha256": "201d1d2785cf73524300a6bfb87d9d88ae13b58c456052468c9dd38f63c9c47e"
+    },
+    {
+      "length_bytes": 1065,
+      "relative_path": "snapshot/passports/dscsa_assurance_passport.json",
+      "sha256": "655c1823d569057c8b233045fc47e497d73457277486e0a38d07975ae32bce55"
+    },
+    {
+      "length_bytes": 230,
+      "relative_path": "snapshot/passports/dscsa_assurance_passport.seal.json",
+      "sha256": "8759e520f77dd6aecb8ce377d1d298db1081b231c5687f03c38034aa6f4d5721"
+    },
+    {
+      "length_bytes": 748,
+      "relative_path": "snapshot/ramat/dscsa_current_display.json",
+      "sha256": "d3931cd7c81bc3b1e221f2b97badc1730d63bdbaa9c1c9fa493dba0a90a85609"
+    },
+    {
+      "length_bytes": 658,
+      "relative_path": "snapshot/reconstruction/dscsa_current_reconstruction.json",
+      "sha256": "a40e59332fcbe19dbe0247b0caae1324db91c065d7e6ef1bee0fb15dd1e64f61"
+    },
+    {
+      "length_bytes": 46928,
+      "relative_path": "bundle/inspection_passport_bundle.json",
+      "sha256": "93cf1de1da958c2ad953c33f36c333c638b15b5427b310a7d70a8fd285b0aa0b"
+    }
+  ],
+  "generated_at_utc": "2026-07-13T23:36:26Z",
+  "hash_algorithm": "SHA-256"
+}

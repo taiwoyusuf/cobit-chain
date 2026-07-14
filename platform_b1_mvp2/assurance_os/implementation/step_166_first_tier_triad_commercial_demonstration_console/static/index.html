@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>COBIT-Chain Assurance OS - Triad Demonstration Console</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">COBIT-CHAIN ASSURANCE OS</p>
+      <h1>First-Tier Triad Demonstration Console</h1>
+      <p class="subtitle">IRLT · Compounding Pharmacy · DSCSA</p>
+    </div>
+    <div class="boundary">
+      <span>LOCAL SYNTHETIC</span>
+      <span>READ-ONLY</span>
+      <span>DISPLAY / WITNESS ONLY</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label>
+        Assurance track
+        <select id="trackSelect"></select>
+      </label>
+
+      <label>
+        Demonstration state
+        <select id="scenarioSelect">
+          <option value="baseline">Baseline success</option>
+          <option value="tamper">Evidence tamper</option>
+          <option value="domain_failure">Domain failure</option>
+          <option value="recovery">Verified recovery</option>
+        </select>
+      </label>
+
+      <button id="loadView" type="button">
+        Load prebuilt evidence view
+      </button>
+    </section>
+
+    <section class="status-grid">
+      <article class="card">
+        <h2>Action admissibility</h2>
+        <p id="admissibility" class="state">Loading</p>
+      </article>
+
+      <article class="card">
+        <h2>Evidence integrity</h2>
+        <p id="integrity" class="state">Loading</p>
+      </article>
+
+      <article class="card">
+        <h2>No-Bind governance</h2>
+        <p id="noBind" class="state">Loading</p>
+      </article>
+
+      <article class="card">
+        <h2>Dependencies</h2>
+        <p id="dependencies" class="state">Loading</p>
+      </article>
+    </section>
+
+    <section class="two-column">
+      <article class="panel">
+        <h2>Assurance decision</h2>
+        <dl id="decisionDetails"></dl>
+      </article>
+
+      <article class="panel">
+        <h2>RAMAT Vision preview</h2>
+        <p class="warning">
+          Display / witness only. This interface cannot approve,
+          release, override, execute, dispense, administer, ship,
+          or resolve a No-Bind state.
+        </p>
+        <div id="displayStates" class="chips"></div>
+      </article>
+    </section>
+
+    <section class="two-column">
+      <article class="panel">
+        <h2>Workflow Dependency Assurance Lens</h2>
+        <div id="dependencyList"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Inspection passport</h2>
+        <dl id="passportDetails"></dl>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Governance reconstruction</h2>
+      <pre id="reconstruction"></pre>
+    </section>
+
+    <section class="panel doctrine">
+      <h2>Authority boundary</h2>
+      <p>
+        Action admissibility is not execution. Qualified humans retain
+        binding authority. Official records and executed actions remain
+        in governed source systems.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Step 166 local synthetic commercial demonstration console.
+    No PHI. No production write-back. No regulated execution.
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

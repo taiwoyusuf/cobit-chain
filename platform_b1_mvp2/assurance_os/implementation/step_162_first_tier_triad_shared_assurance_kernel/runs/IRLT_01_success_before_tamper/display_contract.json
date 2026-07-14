@@ -1,0 +1,39 @@
+{
+  "action_id": "ACTION-IRLT-RELEASE-CUSTODY-001",
+  "can_administer": false,
+  "can_approve": false,
+  "can_dispense": false,
+  "can_execute": false,
+  "can_override": false,
+  "can_release": false,
+  "can_resolve_no_bind": false,
+  "can_transfer_real_product": false,
+  "display_authority": "DISPLAY / WITNESS ONLY",
+  "display_contract_id": "DISPLAY-409db432-d068-4e00-a344-2ebef9214402",
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "expires_at_utc": "2026-07-13T23:02:24Z",
+  "generated_at_utc": "2026-07-13T22:57:24Z",
+  "human_prompt": "ASSURANCE CONDITIONS ARE SATISFIED. AUTHORIZED HUMAN DECISION AND OFFICIAL SOURCE-SYSTEM EXECUTION ARE STILL REQUIRED.",
+  "object_id": "A17-IRLT-BATCH-001",
+  "priority_tier": "FIRST-TIER",
+  "prohibited_controls": [
+    "approve",
+    "release",
+    "override",
+    "resolve_no_bind",
+    "execute_action",
+    "edit_source_record",
+    "dispense",
+    "administer",
+    "transfer_real_product"
+  ],
+  "source_of_truth": {
+    "record_id": "IRLT-SOURCE-001",
+    "system": "MOCK IRLT MES-LIMS-CUSTODY FABRIC"
+  },
+  "track_id": "IRLT",
+  "track_name": "IRLT and Radiopharmaceutical Assurance Track"
+}

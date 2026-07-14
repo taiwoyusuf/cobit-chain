@@ -1,0 +1,18 @@
+{
+  "action_id": "ACTION-DSCSA-TRANSFER-164-001",
+  "authority_reference": "AUTH-DSCSA-164-001",
+  "correlation_id": "a38292e6-fdbe-43c5-bfcc-3fe89a9753ff",
+  "evidence_hash": "b7f3a75df16293f856bdac5bc9d6f9c2f55c5c33fecd7eee9703db64fc30d877",
+  "evidence_seal_reference": "SEAL-ab99b4dd-d2ce-49fa-bab1-7b2d65957fde",
+  "execution_performed": false,
+  "generated_at_utc": "2026-07-13T23:23:44Z",
+  "object_id": "A17-DSCSA-SERIAL-164-001",
+  "reconstruction_id": "RECON-ad186615-9686-4438-9dea-4286573e9ec6",
+  "scenario_name": "DSCSA_02_evidence_tamper_failure",
+  "source_system_reference": "DSCSA-SOURCE-164-001",
+  "track_id": "DSCSA",
+  "unresolved_gaps": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ]
+}

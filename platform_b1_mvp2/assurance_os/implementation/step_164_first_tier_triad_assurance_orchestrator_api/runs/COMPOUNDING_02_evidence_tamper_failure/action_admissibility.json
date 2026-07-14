@@ -1,0 +1,12 @@
+{
+  "admissibility_id": "ADM-3506089a-1711-4f17-a418-d24fbc11ae4b",
+  "decision_boundary": "ASSURANCE EVALUATION ONLY - NOT EXECUTION",
+  "decision_state": "ACTION_HELD",
+  "execution_performed": false,
+  "rationale": [
+    "EVIDENCE_REHASH_MISMATCH",
+    "EVIDENCE_TAMPER_INJECTED"
+  ],
+  "source_execution_required": true,
+  "track_id": "COMPOUNDING"
+}

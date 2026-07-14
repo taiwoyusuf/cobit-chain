@@ -1,0 +1,43 @@
+{
+  "action_id": "ACTION-A17-BATCH-RELEASE-001",
+  "allowed_fields": [
+    "object_id",
+    "action_id",
+    "integrity_state",
+    "evidence_sufficient",
+    "authority_state",
+    "no_bind_state",
+    "admissibility_state",
+    "source_system_reference",
+    "generated_at_utc",
+    "expires_at_utc"
+  ],
+  "can_approve": false,
+  "can_execute": false,
+  "can_override": false,
+  "can_release": false,
+  "can_resolve_no_bind": false,
+  "correlation_id": "65b183a7-f661-4857-9496-47f789be5b9a",
+  "display_authority": "DISPLAY / WITNESS ONLY",
+  "display_contract_id": "DISPLAY-d62a9dce-601b-4780-ab47-ae28bdbd1151",
+  "display_states": [
+    "ACTION ADMISSIBLE",
+    "SOURCE-SYSTEM EXECUTION REQUIRED"
+  ],
+  "expires_at_utc": "2026-07-13T22:47:25Z",
+  "generated_at_utc": "2026-07-13T22:42:25Z",
+  "human_prompt": "ASSURANCE CONDITIONS ARE SATISFIED. AUTHORIZED HUMAN DECISION AND SOURCE-SYSTEM EXECUTION ARE STILL REQUIRED.",
+  "object_id": "A17-BATCH-2026-001",
+  "prohibited_controls": [
+    "approve",
+    "release",
+    "override",
+    "resolve_no_bind",
+    "execute_action",
+    "edit_source_record"
+  ],
+  "source_of_truth": {
+    "record_id": "LIMS-A17-QC-001",
+    "system": "MOCK LIMS"
+  }
+}

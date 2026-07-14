@@ -1,0 +1,14 @@
+{
+  "canonical_content_hash": "6bd4372e5eee4959404d796c2d1a20457daf120d33e61fa7f642a3beabac9ddd",
+  "content_length_bytes": 917,
+  "evidence_id": "EVID-A17-QC-001",
+  "hash_algorithm": "SHA-256",
+  "hash_value": "a13350da3ebe69d7bff185538e89484896c1ed850e437ec58f79f1ebc3d431b2",
+  "object_id": "A17-BATCH-2026-001",
+  "schema_version": "1.0",
+  "seal_id": "SEAL-d6effcec-f588-4bec-8f64-b1f61d07f7cf",
+  "seal_status": "SEALED",
+  "sealed_at_utc": "2026-07-13T22:42:25Z",
+  "sealed_by_actor_id": "ACTOR-QA-REVIEWER-001",
+  "source_record_id": "LIMS-A17-QC-001"
+}

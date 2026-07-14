@@ -1,0 +1,12 @@
+{
+  "action_id": "ACTION-IRLT-RELEASE-CUSTODY-001",
+  "activated": false,
+  "display_cannot_resolve": true,
+  "no_bind_id": "NB-fec712b0-0437-4f80-88b0-9d8b558289f6",
+  "no_bind_state": "INACTIVE",
+  "object_id": "A17-IRLT-BATCH-001",
+  "reason_codes": [],
+  "resolution_required": false,
+  "silence_is_not_consent": true,
+  "track_id": "IRLT"
+}
