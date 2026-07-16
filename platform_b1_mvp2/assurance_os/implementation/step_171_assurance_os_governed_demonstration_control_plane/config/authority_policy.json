@@ -1,0 +1,23 @@
+{
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN_ONLY",
+  "fail_closed_states": [
+    "ABSENT",
+    "INVALID",
+    "EXPIRED",
+    "REVOKED",
+    "UNAVAILABLE",
+    "DELEGATION_INVALID",
+    "SILENT"
+  ],
+  "required_dimensions": [
+    "present",
+    "valid",
+    "current",
+    "delegated",
+    "available",
+    "not_expired",
+    "timing_valid"
+  ],
+  "silence_is_consent": false,
+  "software_can_bind": false
+}

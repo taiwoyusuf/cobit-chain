@@ -1,0 +1,24 @@
+{
+  "tracks": [
+    {
+      "code": "AURORA17",
+      "name": "Aurora17 QC Batch Release",
+      "order": 1
+    },
+    {
+      "code": "IRLT",
+      "name": "IRLT",
+      "order": 2
+    },
+    {
+      "code": "COMPOUNDING",
+      "name": "Compounding Pharmacy",
+      "order": 3
+    },
+    {
+      "code": "DSCSA",
+      "name": "DSCSA",
+      "order": 4
+    }
+  ]
+}

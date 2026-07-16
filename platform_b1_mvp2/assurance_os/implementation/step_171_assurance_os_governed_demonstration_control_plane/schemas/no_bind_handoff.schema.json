@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "accountable_human_id": {
+      "type": "string"
+    },
+    "no_bind": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "no_bind",
+    "state",
+    "accountable_human_id"
+  ],
+  "title": "no_bind_handoff",
+  "type": "object"
+}

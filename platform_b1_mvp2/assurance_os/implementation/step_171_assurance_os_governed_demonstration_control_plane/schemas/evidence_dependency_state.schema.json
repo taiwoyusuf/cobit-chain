@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "dependency_passed": {
+      "type": "string"
+    },
+    "evidence_passed": {
+      "type": "string"
+    },
+    "source_state_passed": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_passed",
+    "dependency_passed",
+    "source_state_passed"
+  ],
+  "title": "evidence_dependency_state",
+  "type": "object"
+}

@@ -1,0 +1,12 @@
+{
+  "accountable_role": "SYNTHETIC_ACCOUNTABLE_REVIEWER",
+  "authoritative_source_id": "SYNTHETIC_DSCSA_SOURCE",
+  "code": "DSCSA",
+  "enabled": true,
+  "name": "DSCSA",
+  "order": 4,
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "slug": "dscsa",
+  "synthetic": true
+}

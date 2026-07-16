@@ -1,0 +1,25 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "decision": {
+      "type": "string"
+    },
+    "passport_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "step170_references": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "passport_id",
+    "session_id",
+    "decision",
+    "step170_references"
+  ],
+  "title": "assurance_passport",
+  "type": "object"
+}

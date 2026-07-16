@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "entries": {
+      "type": "array"
+    },
+    "file_count": {
+      "type": "integer"
+    },
+    "package_hash": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "file_count",
+    "entries",
+    "package_hash"
+  ],
+  "title": "evidence_package_manifest",
+  "type": "object"
+}

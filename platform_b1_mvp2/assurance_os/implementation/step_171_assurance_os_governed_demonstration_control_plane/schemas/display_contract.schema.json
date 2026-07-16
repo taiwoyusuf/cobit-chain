@@ -1,0 +1,33 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "can_approve": {
+      "type": "boolean"
+    },
+    "can_bind": {
+      "type": "boolean"
+    },
+    "can_override": {
+      "type": "boolean"
+    },
+    "can_release": {
+      "type": "boolean"
+    },
+    "can_write_back": {
+      "type": "boolean"
+    },
+    "display_only": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "display_only",
+    "can_approve",
+    "can_bind",
+    "can_release",
+    "can_override",
+    "can_write_back"
+  ],
+  "title": "display_contract",
+  "type": "object"
+}

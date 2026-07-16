@@ -1,0 +1,12 @@
+{
+  "accountable_role": "SYNTHETIC_ACCOUNTABLE_REVIEWER",
+  "authoritative_source_id": "SYNTHETIC_IRLT_SOURCE",
+  "code": "IRLT",
+  "enabled": true,
+  "name": "IRLT",
+  "order": 2,
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "slug": "irlt",
+  "synthetic": true
+}

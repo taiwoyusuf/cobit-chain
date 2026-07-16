@@ -1,0 +1,15 @@
+{
+  "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+  "implementation_root": "platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime",
+  "inventory_root": "platform_b1_mvp2/assurance_os/inventory/step_170_assurance_os_integrated_runtime_scope_review",
+  "reference_mode": "GIT_OBJECT_PINNED_READ_ONLY",
+  "required_evidence_classes": [
+    "ACTION_ADMISSIBILITY",
+    "EVALUATION",
+    "PASSPORT",
+    "SEAL",
+    "AUDIT_EVENT",
+    "BACKUP",
+    "RECONSTRUCTION"
+  ]
+}

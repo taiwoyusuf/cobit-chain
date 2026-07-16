@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "evidence": {
+      "type": "array"
+    },
+    "lineage_complete": {
+      "type": "boolean"
+    },
+    "session_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "lineage_complete",
+    "evidence"
+  ],
+  "title": "inspection_reconstruction",
+  "type": "object"
+}

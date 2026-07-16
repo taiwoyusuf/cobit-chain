@@ -1,0 +1,542 @@
+{
+  "canonical_baseline_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+  "manifest_type": "STATIC_SOURCE_MANIFEST",
+  "paths": [
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 1,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/README.md"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 2,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/config/authority_policy.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 3,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/config/evidence_policy.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 4,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/config/runtime_config.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 5,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/config/scenario_registry.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 6,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/config/track_registry.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 7,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/aurora17_01_governed_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 8,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/aurora17_02_evidence_provenance_failure.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 9,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/aurora17_03_dependency_source_disagreement.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 10,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/aurora17_04_authority_or_no_bind_hold.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 11,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/aurora17_05_correction_recovery_revalidation_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 12,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/compounding_01_governed_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 13,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/compounding_02_evidence_provenance_failure.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 14,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/compounding_03_dependency_source_disagreement.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 15,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/compounding_04_authority_or_no_bind_hold.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 16,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/compounding_05_correction_recovery_revalidation_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 17,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/dscsa_01_governed_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 18,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/dscsa_02_evidence_provenance_failure.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 19,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/dscsa_03_dependency_source_disagreement.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 20,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/dscsa_04_authority_or_no_bind_hold.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 21,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/dscsa_05_correction_recovery_revalidation_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 22,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/irlt_01_governed_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 23,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/irlt_02_evidence_provenance_failure.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 24,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/irlt_03_dependency_source_disagreement.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 25,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/irlt_04_authority_or_no_bind_hold.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 26,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/scenarios/irlt_05_correction_recovery_revalidation_success.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 27,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/tracks/aurora17.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 28,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/tracks/compounding.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 29,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/tracks/dscsa.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 30,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/data/tracks/irlt.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 31,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/docs/architecture.md"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 32,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/docs/operating_model.md"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 33,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/manifests/component_manifest.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 34,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/manifests/static_source_manifest.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 35,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/requirements.txt"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 36,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/run_control_plane.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 37,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/action_admissibility.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 38,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/assurance_passport.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 39,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/audit_event.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 40,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/display_contract.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 41,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/evidence_dependency_state.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 42,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/evidence_package_manifest.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 43,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/execution_revalidation.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 44,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/identity_authority_state.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 45,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/inspection_reconstruction.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 46,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/no_bind_handoff.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 47,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/preflight_result.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 48,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/schemas/session_manifest.schema.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 49,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/__init__.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 50,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/authority_revalidation.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 51,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/canonical.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 52,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/control_plane.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 53,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/dependency_assurance.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 54,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/evidence_integrity.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 55,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/hashing.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 56,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/identity_accountability.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 57,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/inspection_reconstruction.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 58,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/no_bind.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 59,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/preflight.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 60,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/scenario_registry.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 61,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/session_manifest.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 62,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/source_state.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 63,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/step170_reference.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 64,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/src/track_registry.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 65,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_authority_revalidation.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 66,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_backup_restore.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 67,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_dependency_assurance.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 68,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_determinism.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 69,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_display_only.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 70,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_evidence_integrity.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 71,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_human_handoff.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 72,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_identity_accountability.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 73,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_inspection_reconstruction.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 74,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_manifest_conformance.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 75,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_no_bind.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 76,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_preflight.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 77,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_security_boundaries.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 78,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_session_manifest.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 79,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_source_state.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 80,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/tests/test_step170_immutability.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 81,
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_171_assurance_os_governed_demonstration_control_plane/verify_control_plane.py"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 82,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/authority_and_binding_boundary.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 83,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/authorized_tracks.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 84,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/fail_closed_conditions.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 85,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/predecessor_freeze_manifest.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 86,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/program_identity.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 87,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/prohibited_and_deferred_scope.json"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 88,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/scope_readme.md"
+    },
+    {
+      "creation_phase": "171C",
+      "hash_state": "VERIFIED_BY_STEP171C_EXTERNAL_LEDGER",
+      "order": 89,
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_171_assurance_os_governed_demonstration_control_plane_scope_review/step170_reference_catalog.json"
+    }
+  ],
+  "program": "STEP_171",
+  "static_file_count": 89
+}

@@ -1,0 +1,33 @@
+{
+  "canonical_baseline_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+  "components": [
+    "CONFIGURATION",
+    "REGISTRIES",
+    "STEP170_REFERENCE",
+    "SESSION_MANIFEST",
+    "PREFLIGHT",
+    "EVIDENCE_INTEGRITY",
+    "DEPENDENCY_ASSURANCE",
+    "SOURCE_STATE",
+    "IDENTITY_ACCOUNTABILITY",
+    "AUTHORITY_REVALIDATION",
+    "PLATFORM_B1_DECISION_CONSUMER",
+    "NO_BIND",
+    "HUMAN_HANDOFF",
+    "AUDIT_LINEAGE",
+    "ASSURANCE_PASSPORT",
+    "DISPLAY_CONTRACT",
+    "INSPECTION_RECONSTRUCTION",
+    "BACKUP_RECOVERY",
+    "INTEGRITY_MANIFEST"
+  ],
+  "configuration_count": 5,
+  "generated_file_count_reserved_for_step171d": 243,
+  "program": "STEP_171",
+  "scenario_fixture_count": 20,
+  "schema_count": 12,
+  "source_module_count": 16,
+  "static_file_count": 89,
+  "test_count": 16,
+  "track_fixture_count": 4
+}

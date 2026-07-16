@@ -1,0 +1,103 @@
+{
+  "authority": {
+    "available": true,
+    "current": true,
+    "delegated": true,
+    "not_expired": true,
+    "present": true,
+    "revoked": false,
+    "silent": false,
+    "timing_valid": true,
+    "valid": true
+  },
+  "dependencies": [
+    {
+      "complete": true,
+      "current": true,
+      "dependency_id": "SYNTHETIC_IRLT_DEPENDENCY",
+      "mapping_valid": true
+    }
+  ],
+  "evidence": {
+    "hash_matches": false,
+    "provenance": "INVALID_PROVENANCE",
+    "seal_valid": false,
+    "sufficient": true
+  },
+  "execution_timing_valid": true,
+  "expected_disposition": "ACTION_HELD",
+  "identity": {
+    "accountable_human_id": "SYNTHETIC_IRLT_ACCOUNTABLE_HUMAN",
+    "accountable_human_identified": true,
+    "identity_id": "SYNTHETIC_IRLT_IDENTITY",
+    "mapping_valid": true,
+    "role_valid": true
+  },
+  "platform_b1_action_admissibility": "NOT_ADMISSIBLE",
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "recovery_applied": false,
+  "scenario_id": "IRLT_02_evidence_provenance_failure",
+  "scenario_type": "EVIDENCE_PROVENANCE_FAILURE",
+  "source_states": [
+    {
+      "agreement": true,
+      "authoritative": true,
+      "available": true,
+      "source_id": "SYNTHETIC_IRLT_SOURCE"
+    }
+  ],
+  "step170_references": [
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "ACTION_ADMISSIBILITY",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/action_admissibility.json",
+      "sha256": "DF7C43256BCB368E08FBB342465B6757267DEB964EEA2C5A156387F64CDF6471"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "EVALUATION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/evaluation.json",
+      "sha256": "87C32C7E2B3ADF4418461049E0543936548C4C415AFD2D2B07D08D5AF66FAAF7"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "PASSPORT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/passport.json",
+      "sha256": "ABD0A5ACC213A1A2D511AB3780FD23B54B28EB0543741AE067B0FEFF67C4D023"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "SEAL",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/seal.json",
+      "sha256": "F60444EE22923147548AC59A525452F514525604386567FB7A74CE5C691D24D1"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "AUDIT_EVENT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/audit_event.json",
+      "sha256": "6F97646BD3111D5582141671B12A048E198ABCDF4CF8790A484EF12258E4F6DF"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "BACKUP",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/backup.json",
+      "sha256": "36EE1842C02AA5D7236E76B086C0E2ADE749A1F729FA3BBB5CA74F95F2BD6517"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "RECONSTRUCTION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/irlt/reconstruction.json",
+      "sha256": "A70F9C50CAB159CF045836AFC6D427CD99471CDB8530CD3BBC0C2AB3721FF0C9"
+    }
+  ],
+  "synthetic": true,
+  "track_code": "IRLT"
+}

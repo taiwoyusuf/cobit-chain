@@ -1,0 +1,103 @@
+{
+  "authority": {
+    "available": true,
+    "current": true,
+    "delegated": true,
+    "not_expired": false,
+    "present": true,
+    "revoked": false,
+    "silent": false,
+    "timing_valid": true,
+    "valid": true
+  },
+  "dependencies": [
+    {
+      "complete": true,
+      "current": true,
+      "dependency_id": "SYNTHETIC_AURORA17_DEPENDENCY",
+      "mapping_valid": true
+    }
+  ],
+  "evidence": {
+    "hash_matches": true,
+    "provenance": "SYNTHETIC",
+    "seal_valid": true,
+    "sufficient": true
+  },
+  "execution_timing_valid": true,
+  "expected_disposition": "ACTION_HELD",
+  "identity": {
+    "accountable_human_id": "SYNTHETIC_AURORA17_ACCOUNTABLE_HUMAN",
+    "accountable_human_identified": true,
+    "identity_id": "SYNTHETIC_AURORA17_IDENTITY",
+    "mapping_valid": true,
+    "role_valid": true
+  },
+  "platform_b1_action_admissibility": "NOT_ADMISSIBLE",
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "recovery_applied": false,
+  "scenario_id": "AURORA17_04_authority_or_no_bind_hold",
+  "scenario_type": "AUTHORITY_OR_NO_BIND_HOLD",
+  "source_states": [
+    {
+      "agreement": true,
+      "authoritative": true,
+      "available": true,
+      "source_id": "SYNTHETIC_AURORA17_SOURCE"
+    }
+  ],
+  "step170_references": [
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "ACTION_ADMISSIBILITY",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/action_admissibility.json",
+      "sha256": "E6F666BAC7E1C516B82547565AF6FAAB9AD5E60EBB257B30DB8237F2C5AC477C"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "EVALUATION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/evaluation.json",
+      "sha256": "A72B01EB5629C6CCFE690A312AD55FCFDC1180693B7AEE9BF7BFE11E6CA1C773"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "PASSPORT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/passport.json",
+      "sha256": "53AF86F2DDD4194F50D72CC2B050D1C2A326AEB13F449C3248FAF0817F038E61"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "SEAL",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/seal.json",
+      "sha256": "E4D02C4BCB0A4922548A7222B4C1B0D6223E6BDC1DEB1A96F0C6387E42B64011"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "AUDIT_EVENT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/audit_event.json",
+      "sha256": "3D78EA05475FF57B6CCCE6869B48AAE4C94B1CCE32BBE41CEF1FF78C7F955030"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "BACKUP",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/backup.json",
+      "sha256": "3BAD30278CB167FF750C74A9874E25882B6C484F42B233A22070A0B20D6B9DEC"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "RECONSTRUCTION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/aurora17/reconstruction.json",
+      "sha256": "5601DE63626222315BB33FF0AF2265C811F7BEFE3BCDB6712FB989B88A54FECE"
+    }
+  ],
+  "synthetic": true,
+  "track_code": "AURORA17"
+}

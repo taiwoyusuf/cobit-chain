@@ -1,0 +1,152 @@
+{
+  "scenario_classes": [
+    "GOVERNED_SUCCESS",
+    "EVIDENCE_PROVENANCE_FAILURE",
+    "DEPENDENCY_SOURCE_DISAGREEMENT",
+    "AUTHORITY_OR_NO_BIND_HOLD",
+    "CORRECTION_RECOVERY_REVALIDATION_SUCCESS"
+  ],
+  "scenario_count": 20,
+  "scenarios": [
+    {
+      "fixture_path": "data/scenarios/aurora17_01_governed_success.json",
+      "order": 1,
+      "scenario_id": "AURORA17_01_governed_success",
+      "scenario_type": "GOVERNED_SUCCESS",
+      "track_code": "AURORA17"
+    },
+    {
+      "fixture_path": "data/scenarios/aurora17_02_evidence_provenance_failure.json",
+      "order": 2,
+      "scenario_id": "AURORA17_02_evidence_provenance_failure",
+      "scenario_type": "EVIDENCE_PROVENANCE_FAILURE",
+      "track_code": "AURORA17"
+    },
+    {
+      "fixture_path": "data/scenarios/aurora17_03_dependency_source_disagreement.json",
+      "order": 3,
+      "scenario_id": "AURORA17_03_dependency_source_disagreement",
+      "scenario_type": "DEPENDENCY_SOURCE_DISAGREEMENT",
+      "track_code": "AURORA17"
+    },
+    {
+      "fixture_path": "data/scenarios/aurora17_04_authority_or_no_bind_hold.json",
+      "order": 4,
+      "scenario_id": "AURORA17_04_authority_or_no_bind_hold",
+      "scenario_type": "AUTHORITY_OR_NO_BIND_HOLD",
+      "track_code": "AURORA17"
+    },
+    {
+      "fixture_path": "data/scenarios/aurora17_05_correction_recovery_revalidation_success.json",
+      "order": 5,
+      "scenario_id": "AURORA17_05_correction_recovery_revalidation_success",
+      "scenario_type": "CORRECTION_RECOVERY_REVALIDATION_SUCCESS",
+      "track_code": "AURORA17"
+    },
+    {
+      "fixture_path": "data/scenarios/irlt_01_governed_success.json",
+      "order": 6,
+      "scenario_id": "IRLT_01_governed_success",
+      "scenario_type": "GOVERNED_SUCCESS",
+      "track_code": "IRLT"
+    },
+    {
+      "fixture_path": "data/scenarios/irlt_02_evidence_provenance_failure.json",
+      "order": 7,
+      "scenario_id": "IRLT_02_evidence_provenance_failure",
+      "scenario_type": "EVIDENCE_PROVENANCE_FAILURE",
+      "track_code": "IRLT"
+    },
+    {
+      "fixture_path": "data/scenarios/irlt_03_dependency_source_disagreement.json",
+      "order": 8,
+      "scenario_id": "IRLT_03_dependency_source_disagreement",
+      "scenario_type": "DEPENDENCY_SOURCE_DISAGREEMENT",
+      "track_code": "IRLT"
+    },
+    {
+      "fixture_path": "data/scenarios/irlt_04_authority_or_no_bind_hold.json",
+      "order": 9,
+      "scenario_id": "IRLT_04_authority_or_no_bind_hold",
+      "scenario_type": "AUTHORITY_OR_NO_BIND_HOLD",
+      "track_code": "IRLT"
+    },
+    {
+      "fixture_path": "data/scenarios/irlt_05_correction_recovery_revalidation_success.json",
+      "order": 10,
+      "scenario_id": "IRLT_05_correction_recovery_revalidation_success",
+      "scenario_type": "CORRECTION_RECOVERY_REVALIDATION_SUCCESS",
+      "track_code": "IRLT"
+    },
+    {
+      "fixture_path": "data/scenarios/compounding_01_governed_success.json",
+      "order": 11,
+      "scenario_id": "COMPOUNDING_01_governed_success",
+      "scenario_type": "GOVERNED_SUCCESS",
+      "track_code": "COMPOUNDING"
+    },
+    {
+      "fixture_path": "data/scenarios/compounding_02_evidence_provenance_failure.json",
+      "order": 12,
+      "scenario_id": "COMPOUNDING_02_evidence_provenance_failure",
+      "scenario_type": "EVIDENCE_PROVENANCE_FAILURE",
+      "track_code": "COMPOUNDING"
+    },
+    {
+      "fixture_path": "data/scenarios/compounding_03_dependency_source_disagreement.json",
+      "order": 13,
+      "scenario_id": "COMPOUNDING_03_dependency_source_disagreement",
+      "scenario_type": "DEPENDENCY_SOURCE_DISAGREEMENT",
+      "track_code": "COMPOUNDING"
+    },
+    {
+      "fixture_path": "data/scenarios/compounding_04_authority_or_no_bind_hold.json",
+      "order": 14,
+      "scenario_id": "COMPOUNDING_04_authority_or_no_bind_hold",
+      "scenario_type": "AUTHORITY_OR_NO_BIND_HOLD",
+      "track_code": "COMPOUNDING"
+    },
+    {
+      "fixture_path": "data/scenarios/compounding_05_correction_recovery_revalidation_success.json",
+      "order": 15,
+      "scenario_id": "COMPOUNDING_05_correction_recovery_revalidation_success",
+      "scenario_type": "CORRECTION_RECOVERY_REVALIDATION_SUCCESS",
+      "track_code": "COMPOUNDING"
+    },
+    {
+      "fixture_path": "data/scenarios/dscsa_01_governed_success.json",
+      "order": 16,
+      "scenario_id": "DSCSA_01_governed_success",
+      "scenario_type": "GOVERNED_SUCCESS",
+      "track_code": "DSCSA"
+    },
+    {
+      "fixture_path": "data/scenarios/dscsa_02_evidence_provenance_failure.json",
+      "order": 17,
+      "scenario_id": "DSCSA_02_evidence_provenance_failure",
+      "scenario_type": "EVIDENCE_PROVENANCE_FAILURE",
+      "track_code": "DSCSA"
+    },
+    {
+      "fixture_path": "data/scenarios/dscsa_03_dependency_source_disagreement.json",
+      "order": 18,
+      "scenario_id": "DSCSA_03_dependency_source_disagreement",
+      "scenario_type": "DEPENDENCY_SOURCE_DISAGREEMENT",
+      "track_code": "DSCSA"
+    },
+    {
+      "fixture_path": "data/scenarios/dscsa_04_authority_or_no_bind_hold.json",
+      "order": 19,
+      "scenario_id": "DSCSA_04_authority_or_no_bind_hold",
+      "scenario_type": "AUTHORITY_OR_NO_BIND_HOLD",
+      "track_code": "DSCSA"
+    },
+    {
+      "fixture_path": "data/scenarios/dscsa_05_correction_recovery_revalidation_success.json",
+      "order": 20,
+      "scenario_id": "DSCSA_05_correction_recovery_revalidation_success",
+      "scenario_type": "CORRECTION_RECOVERY_REVALIDATION_SUCCESS",
+      "track_code": "DSCSA"
+    }
+  ]
+}

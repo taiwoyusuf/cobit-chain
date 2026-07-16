@@ -1,0 +1,32 @@
+{
+  "tracks": [
+    {
+      "code": "AURORA17",
+      "enabled": true,
+      "name": "Aurora17 QC Batch Release",
+      "order": 1,
+      "slug": "aurora17"
+    },
+    {
+      "code": "IRLT",
+      "enabled": true,
+      "name": "IRLT",
+      "order": 2,
+      "slug": "irlt"
+    },
+    {
+      "code": "COMPOUNDING",
+      "enabled": true,
+      "name": "Compounding Pharmacy",
+      "order": 3,
+      "slug": "compounding"
+    },
+    {
+      "code": "DSCSA",
+      "enabled": true,
+      "name": "DSCSA",
+      "order": 4,
+      "slug": "dscsa"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "authority_passed": {
+      "type": "string"
+    },
+    "binding_authority": {
+      "type": "string"
+    },
+    "identity_passed": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "identity_passed",
+    "authority_passed",
+    "binding_authority"
+  ],
+  "title": "identity_authority_state",
+  "type": "object"
+}

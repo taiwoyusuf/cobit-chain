@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "consumed_read_only": {
+      "type": "boolean"
+    },
+    "platform_b1_state": {
+      "type": "string"
+    },
+    "step171_disposition": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "platform_b1_state",
+    "consumed_read_only",
+    "step171_disposition"
+  ],
+  "title": "action_admissibility",
+  "type": "object"
+}

@@ -1,0 +1,103 @@
+{
+  "authority": {
+    "available": true,
+    "current": true,
+    "delegated": true,
+    "not_expired": true,
+    "present": true,
+    "revoked": false,
+    "silent": false,
+    "timing_valid": true,
+    "valid": true
+  },
+  "dependencies": [
+    {
+      "complete": true,
+      "current": true,
+      "dependency_id": "SYNTHETIC_DSCSA_DEPENDENCY",
+      "mapping_valid": true
+    }
+  ],
+  "evidence": {
+    "hash_matches": true,
+    "provenance": "SYNTHETIC",
+    "seal_valid": true,
+    "sufficient": true
+  },
+  "execution_timing_valid": true,
+  "expected_disposition": "ADMISSIBLE_FOR_SIMULATED_HUMAN_HANDOFF",
+  "identity": {
+    "accountable_human_id": "SYNTHETIC_DSCSA_ACCOUNTABLE_HUMAN",
+    "accountable_human_identified": true,
+    "identity_id": "SYNTHETIC_DSCSA_IDENTITY",
+    "mapping_valid": true,
+    "role_valid": true
+  },
+  "platform_b1_action_admissibility": "ADMISSIBLE",
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "recovery_applied": false,
+  "scenario_id": "DSCSA_01_governed_success",
+  "scenario_type": "GOVERNED_SUCCESS",
+  "source_states": [
+    {
+      "agreement": true,
+      "authoritative": true,
+      "available": true,
+      "source_id": "SYNTHETIC_DSCSA_SOURCE"
+    }
+  ],
+  "step170_references": [
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "ACTION_ADMISSIBILITY",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/action_admissibility.json",
+      "sha256": "20E2CF2890C20FD63C4DE452B3D5823C947478804AEA461B1DDAA25F91F4589E"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "EVALUATION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/evaluation.json",
+      "sha256": "E51817772D1E3B92F5E3BA2F724E061445E10B4FACA14E705FED66602FAE1D97"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "PASSPORT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/passport.json",
+      "sha256": "5D3C39274E7AD37A73F2D34E49229EB56286F4E0D3748CCC77FA6253A7CC8802"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "SEAL",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/seal.json",
+      "sha256": "67CDDA9CAACDA4A0257F5823F9EF20CA6D6675E693741F91FF29A7D52BDB41E7"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "AUDIT_EVENT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/audit_event.json",
+      "sha256": "4C73E9CA7197DC02D6F8B45EC4AA3AD31CA8F997739265A03ABCB1BF431A2554"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "BACKUP",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/backup.json",
+      "sha256": "0965621E03D341FEAFEC335421FDEBF475AF45F04AA9F3C440437ABE6B9D53BC"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "RECONSTRUCTION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/dscsa/reconstruction.json",
+      "sha256": "93B5E9186E9ADB6EDCC542F45F867B179ACF2353A561396EFE5A45146D004E29"
+    }
+  ],
+  "synthetic": true,
+  "track_code": "DSCSA"
+}

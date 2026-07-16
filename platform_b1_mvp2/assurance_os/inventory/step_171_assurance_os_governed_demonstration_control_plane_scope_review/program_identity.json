@@ -1,0 +1,9 @@
+{
+  "binding_authority": "IDENTIFIED_ACCOUNTABLE_HUMAN_ONLY",
+  "canonical_baseline_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+  "decision_authority": "PLATFORM_B1",
+  "execution_boundary": "LOCAL_SYNTHETIC_ONLY",
+  "implementation_status": "STATIC_BASELINE",
+  "program": "STEP_171",
+  "title": "Assurance OS Governed Demonstration, Execution-Time Revalidation, and Inspection Reconstruction Control Plane"
+}

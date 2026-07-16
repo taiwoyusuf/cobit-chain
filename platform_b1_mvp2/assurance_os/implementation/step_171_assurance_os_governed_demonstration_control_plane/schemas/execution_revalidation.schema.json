@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "fail_closed": {
+      "type": "boolean"
+    },
+    "logical_stage": {
+      "type": "string"
+    },
+    "passed": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "passed",
+    "logical_stage",
+    "fail_closed"
+  ],
+  "title": "execution_revalidation",
+  "type": "object"
+}

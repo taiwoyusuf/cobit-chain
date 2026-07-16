@@ -1,0 +1,12 @@
+{
+  "accountable_role": "SYNTHETIC_ACCOUNTABLE_REVIEWER",
+  "authoritative_source_id": "SYNTHETIC_AURORA17_SOURCE",
+  "code": "AURORA17",
+  "enabled": true,
+  "name": "Aurora17 QC Batch Release",
+  "order": 1,
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "slug": "aurora17",
+  "synthetic": true
+}

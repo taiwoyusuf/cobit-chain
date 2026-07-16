@@ -1,0 +1,21 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "event_hash": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "previous_event_hash": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "title": "audit_event",
+  "type": "object"
+}

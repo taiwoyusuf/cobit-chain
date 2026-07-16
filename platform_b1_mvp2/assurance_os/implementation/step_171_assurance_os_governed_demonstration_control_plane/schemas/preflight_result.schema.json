@@ -1,0 +1,17 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "checks": {
+      "type": "array"
+    },
+    "passed": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "passed",
+    "checks"
+  ],
+  "title": "preflight_result",
+  "type": "object"
+}

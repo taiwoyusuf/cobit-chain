@@ -1,0 +1,103 @@
+{
+  "authority": {
+    "available": true,
+    "current": true,
+    "delegated": true,
+    "not_expired": true,
+    "present": true,
+    "revoked": false,
+    "silent": false,
+    "timing_valid": true,
+    "valid": true
+  },
+  "dependencies": [
+    {
+      "complete": false,
+      "current": true,
+      "dependency_id": "SYNTHETIC_COMPOUNDING_DEPENDENCY",
+      "mapping_valid": false
+    }
+  ],
+  "evidence": {
+    "hash_matches": true,
+    "provenance": "SYNTHETIC",
+    "seal_valid": true,
+    "sufficient": true
+  },
+  "execution_timing_valid": true,
+  "expected_disposition": "ACTION_HELD",
+  "identity": {
+    "accountable_human_id": "SYNTHETIC_COMPOUNDING_ACCOUNTABLE_HUMAN",
+    "accountable_human_identified": true,
+    "identity_id": "SYNTHETIC_COMPOUNDING_IDENTITY",
+    "mapping_valid": true,
+    "role_valid": true
+  },
+  "platform_b1_action_admissibility": "NOT_ADMISSIBLE",
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "recovery_applied": false,
+  "scenario_id": "COMPOUNDING_03_dependency_source_disagreement",
+  "scenario_type": "DEPENDENCY_SOURCE_DISAGREEMENT",
+  "source_states": [
+    {
+      "agreement": false,
+      "authoritative": true,
+      "available": true,
+      "source_id": "SYNTHETIC_COMPOUNDING_SOURCE"
+    }
+  ],
+  "step170_references": [
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "ACTION_ADMISSIBILITY",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/action_admissibility.json",
+      "sha256": "63C0BFB01A421EA4F446605763C62FC5A5F3125B1AAAE199CBF0E836DFA1FBC4"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "EVALUATION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/evaluation.json",
+      "sha256": "79FD6328165B270DA5961367B13FADCB23E40DA456AFA9CA2A7FECC097808B2E"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "PASSPORT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/passport.json",
+      "sha256": "C815CE9301C4144B0C75EA3315F41BB4718F731FDF475B53EDFD6CE7EF682EF0"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "SEAL",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/seal.json",
+      "sha256": "C818917F8430047AF4F435B757E68B91101A23FBA3139152009F99A664356424"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "AUDIT_EVENT",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/audit_event.json",
+      "sha256": "97205AF102FC051ADFC3AAC1B1C300ADCE94DB7546E2D850B192B0F686D3663B"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "BACKUP",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/backup.json",
+      "sha256": "E6A0BA512AB36C7AFABFCADD3BD6B976627992CE5AFFD00A0E018E9FE6BD5512"
+    },
+    {
+      "canonical_commit": "ea22f14a84f7beeea3f446123059fc65660c38e6",
+      "evidence_class": "RECONSTRUCTION",
+      "read_only": true,
+      "relative_path": "synthetic_step170/compounding/reconstruction.json",
+      "sha256": "FB0F385995A5FD06DEF2D3E27A4FA3F5466E0B7DBC052E51E27815C604ED761E"
+    }
+  ],
+  "synthetic": true,
+  "track_code": "COMPOUNDING"
+}

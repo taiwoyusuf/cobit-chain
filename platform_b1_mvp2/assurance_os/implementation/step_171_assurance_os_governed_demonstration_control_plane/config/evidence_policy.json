@@ -1,0 +1,8 @@
+{
+  "failure_result": "NOT_ADMISSIBLE",
+  "require_hash_match": true,
+  "require_sufficient_evidence": true,
+  "require_valid_seal": true,
+  "required_provenance": "SYNTHETIC",
+  "step170_reference_mode": "GIT_OBJECT_PINNED_READ_ONLY"
+}

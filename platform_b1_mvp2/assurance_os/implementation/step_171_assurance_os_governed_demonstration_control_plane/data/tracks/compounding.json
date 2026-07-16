@@ -1,0 +1,12 @@
+{
+  "accountable_role": "SYNTHETIC_ACCOUNTABLE_REVIEWER",
+  "authoritative_source_id": "SYNTHETIC_COMPOUNDING_SOURCE",
+  "code": "COMPOUNDING",
+  "enabled": true,
+  "name": "Compounding Pharmacy",
+  "order": 3,
+  "provenance": "SYNTHETIC",
+  "real_regulated_action": false,
+  "slug": "compounding",
+  "synthetic": true
+}

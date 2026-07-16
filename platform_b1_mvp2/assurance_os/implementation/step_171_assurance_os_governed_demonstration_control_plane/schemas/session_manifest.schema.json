@@ -1,0 +1,25 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "canonical_baseline_commit": {
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "track_code": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "track_code",
+    "scenario_id",
+    "canonical_baseline_commit"
+  ],
+  "title": "session_manifest",
+  "type": "object"
+}
