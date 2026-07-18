@@ -1,0 +1,17 @@
+STEP 172D - SOURCE-STATE AGREEMENT SUMMARY
+=============================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Source-state disagreement scenarios: 4
+Original conflicting snapshots preserved: 4
+Silent reconciliations performed: 0
+Automatic winner selections performed: 0
+Documented human reviews required: 4
+Unresolved critical disagreements producing ALLOW: 0
+Source-system overwrites performed: 0
+
+DOMAIN	CONFLICT_ID	STATE
+IRLT	IRLT-SC-005-CONFLICT	UNDER_HUMAN_REVIEW
+DSCSA	DSCSA-SC-005-CONFLICT	UNDER_HUMAN_REVIEW
+COMPOUND	COMPOUND-SC-005-CONFLICT	UNDER_HUMAN_REVIEW
+AURORA17	AURORA17-SC-005-CONFLICT	UNDER_HUMAN_REVIEW

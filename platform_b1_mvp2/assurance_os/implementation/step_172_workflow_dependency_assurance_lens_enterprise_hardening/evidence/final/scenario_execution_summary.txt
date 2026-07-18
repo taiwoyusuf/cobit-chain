@@ -1,0 +1,26 @@
+STEP 172D - SCENARIO EXECUTION SUMMARY
+=============================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Governed domains: 4
+Scenario definitions per domain: 22
+Total governed scenario cases: 88
+Canonical input files: 88
+Deterministic result files: 88
+
+DOMAIN	CASES
+IRLT	22
+DSCSA	22
+COMPOUND	22
+AURORA17	22
+
+OUTCOME	COUNT
+DENY	8
+FAIL-CLOSED	20
+NO-BIND	24
+HOLD	28
+ALLOW	8
+
+OUTCOME MISMATCHES	0
+SOURCE-STATE SILENT RECONCILIATIONS	0
+SOFTWARE BINDING ACTIONS	0

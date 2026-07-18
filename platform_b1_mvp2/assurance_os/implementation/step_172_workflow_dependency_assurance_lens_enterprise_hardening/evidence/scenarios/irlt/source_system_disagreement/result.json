@@ -1,0 +1,71 @@
+{
+  "artifact_version": "step_172d_v1",
+  "decision": {
+    "human_binding_authority_required": true,
+    "outcome": "HOLD",
+    "precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "reasons": [
+      "A recoverable dependency, source, evidence, or timing condition requires review."
+    ]
+  },
+  "dimension_results": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true,
+    "escalation_available": true,
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "human_accountability_identified": true,
+    "mapping_present": true,
+    "mapping_valid": true,
+    "no_bind_state": false,
+    "pre_authorized_rule_exists": true,
+    "release_or_execution_condition_satisfied": true,
+    "source_state_agreement": false,
+    "source_state_available": true,
+    "source_state_current": true,
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  },
+  "domain_id": "IRLT",
+  "evaluation_id": "IRLT-SC-005",
+  "expected_outcome": "HOLD",
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "human_binding_authority_required": true,
+  "input_sha256": "5C21B526C2E6DDD7F23A0B0975BE6A140273287B595BBB7C068687CD3EFF4C00",
+  "no_bind_state": false,
+  "outcome_match": true,
+  "ramat_display_only": true,
+  "receipt_sha256": "71E7BE85DA944CBB74F705BC8405116C54CAA21D702C8ABEA95DD2A4F1C38C2A",
+  "scenario_id": "SC-005",
+  "scenario_key": "source_system_disagreement",
+  "source_state_conflict": {
+    "conflict_id": "IRLT-SC-005-CONFLICT",
+    "conflicting_dimensions": [
+      "state_code"
+    ],
+    "documented_human_review_required": true,
+    "original_snapshots_preserved": true,
+    "resolution_state": "UNDER_HUMAN_REVIEW",
+    "silent_reconciliation": false,
+    "snapshot_references": [
+      "IRLT-SNAP-1",
+      "IRLT-SNAP-2"
+    ]
+  },
+  "source_systems_authoritative": true,
+  "synthetic_only": true
+}

@@ -1,0 +1,793 @@
+{
+  "algorithm": "SHA-256",
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Platform B1 evaluates; only an accountable human may bind regulated action.",
+  "controlled_self_reference_rule": {
+    "allowed_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/manifests/file_integrity_manifest.json",
+    "byte_length_token": "CONTROLLED_SELF_REFERENCE",
+    "self_reference_count": 1,
+    "sha256_token": "CONTROLLED_SELF_REFERENCE"
+  },
+  "entries": [
+    {
+      "byte_length": 896,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/README.md",
+      "role": "INVENTORY",
+      "sha256": "9270B2C20457016736E893415D1840B1792E0270901431AFB20C5F7CD500E8EA"
+    },
+    {
+      "byte_length": 1104,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/identity_and_scope.json",
+      "role": "INVENTORY",
+      "sha256": "52EADF2FF23579D704CC665753625CF75AF0800D0EA13B64EC3C5E46320FE403"
+    },
+    {
+      "byte_length": 1013,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/architecture_boundary.json",
+      "role": "INVENTORY",
+      "sha256": "45358C214DED2B3AAFE16D25D7799C51AF4D4FDA4F1A184F13F028309F87E226"
+    },
+    {
+      "byte_length": 1177,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/capability_inventory.json",
+      "role": "INVENTORY",
+      "sha256": "B86C27290CB2BA1250F6010A2C3DB397625DDFC517F2A271394C7691A0FC99B8"
+    },
+    {
+      "byte_length": 1548,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/dependency_dimension_registry.json",
+      "role": "INVENTORY",
+      "sha256": "4BC5932876A3375372E06281643347A2D4270695914BACEBB96E34F9664FE2ED"
+    },
+    {
+      "byte_length": 1676,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/decision_outcome_registry.json",
+      "role": "INVENTORY",
+      "sha256": "7EB1D6381E1B3B9EC67ED2D00016E65CAEB7D046BEE3A7DB51A49DBE2F8472F3"
+    },
+    {
+      "byte_length": 3079,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/domain_track_registry.json",
+      "role": "INVENTORY",
+      "sha256": "A8EC552148D8E3AD16423C54A026FB0E5A43A17A8F19B9BAC8C1024172F0DD99"
+    },
+    {
+      "byte_length": 1066,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/source_system_authority_registry.json",
+      "role": "INVENTORY",
+      "sha256": "9E9294D8785CCCBDDC22B566BD5B7163957A09A165D89A3C9F6384C4E6BD2CF5"
+    },
+    {
+      "byte_length": 1289,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/no_bind_governance_policy.json",
+      "role": "INVENTORY",
+      "sha256": "F565D112799A40D7A92AD445BB7CC975D7E2A0051DD671E141D65524EE8E15ED"
+    },
+    {
+      "byte_length": 1213,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/prohibited_scope_registry.json",
+      "role": "INVENTORY",
+      "sha256": "215FC8A80B7E2F61CCF69D9B679279F95F9AB866F32A8396A864DAE75D5C372A"
+    },
+    {
+      "byte_length": 961,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/evidence_output_registry.json",
+      "role": "INVENTORY",
+      "sha256": "E6B8E03C82466252EB3FBC816EF14A37C43BABB57D4688B97FA347FAD1512742"
+    },
+    {
+      "byte_length": 1040,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/acceptance_gate_registry.json",
+      "role": "INVENTORY",
+      "sha256": "FED95E99F17617B08589944817BAA64E5DDDD934CB9AB02E63AFC857933FD57D"
+    },
+    {
+      "byte_length": 915,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/README.md",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "3F06A7681D2C4CBDAD5A90E5E5C8933B2D0255C72B66BF6E6CA65FFF70BE2E30"
+    },
+    {
+      "byte_length": 1060,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/human_authority_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "D2455E6BB6D224D242BD2A1195A845100805EA3B8C1C8BB7A1049F17A10D4130"
+    },
+    {
+      "byte_length": 1173,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/fail_closed_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "240033E8AF82467BE402D6E42D8FF4180220E9B8B9EBCF6411E04D368C8044FC"
+    },
+    {
+      "byte_length": 1136,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/source_state_resolution_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "F44238F81832D2CA6142304DAD7379B3C60EF71BE6EA3FAC6A9847FFC8F4EBC7"
+    },
+    {
+      "byte_length": 1050,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/escalation_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "BAB19F8B4AEB126FDA9298E94109BC844076F003916F23B17ACDF60408D83F2A"
+    },
+    {
+      "byte_length": 1097,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/timing_and_currency_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "C7F6ABA5799B3108AB32900AC241459B1011BB127AB7555B7A733472AE14B3E5"
+    },
+    {
+      "byte_length": 1039,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/architecture_freeze_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "83AE5226A9CF030464226AB661536CA7E002FDCE57764524CA178F4F1C1719E9"
+    },
+    {
+      "byte_length": 1175,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/governance/prohibited_action_policy.json",
+      "role": "GOVERNANCE_POLICY",
+      "sha256": "A8B1DDC47951264B7720FCC57E3B95706B438F2DAB0AF22E88DF328EAC34D932"
+    },
+    {
+      "byte_length": 1404,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/dependency_chain.schema.json",
+      "role": "SCHEMA",
+      "sha256": "37AB9BD1040F88C91D4873DA26206A15BD519F8834A1A3671FFE46F626B9C569"
+    },
+    {
+      "byte_length": 1820,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/source_state_snapshot.schema.json",
+      "role": "SCHEMA",
+      "sha256": "3F8625D2B2AD74B076BAA5E203402DB0E6EB462AB31155FB3225A0D3A50DD8E0"
+    },
+    {
+      "byte_length": 1544,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/source_state_conflict.schema.json",
+      "role": "SCHEMA",
+      "sha256": "8BADC4CCFE2538B0FC631ACB98E547A58252E591DFFB764F6CD00F704E0F4AA9"
+    },
+    {
+      "byte_length": 1566,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/mapping_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "A0539D4E3E3E559378FC907170794FEE583C1D175E90FD8B43CCEE6B5BAC4D31"
+    },
+    {
+      "byte_length": 1588,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/authority_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "9D896D51BFE9A6F9747A2E71A79428AB7087727923FC844C8BC94CB6521D9519"
+    },
+    {
+      "byte_length": 1556,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/evidence_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "69335B3839A48DCE5C0E8299196212722084245FD0BCC1A98CD427FE48DCC989"
+    },
+    {
+      "byte_length": 1540,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/timing_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "50815EEB68BD1C9E303471108E07EBBD4AA01302509E28D1441BBD4A3AE599E4"
+    },
+    {
+      "byte_length": 1493,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/escalation_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "F82092CDA35733A6A85A9F565E4C6D923FD2A253CD8F5A66482AA127C98CBBD2"
+    },
+    {
+      "byte_length": 1536,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/reconstruction_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "7F000FD9098C7FD2817D23E8D3F8E70D583ADC9262BF30075B40DC839DA94627"
+    },
+    {
+      "byte_length": 1788,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/dependency_evaluation_request.schema.json",
+      "role": "SCHEMA",
+      "sha256": "86F6B06C1BCA0CDD8C50F255F5D4D5EA37CF68015347E7D4B1F61456171D2337"
+    },
+    {
+      "byte_length": 1518,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/dependency_evaluation_response.schema.json",
+      "role": "SCHEMA",
+      "sha256": "2B2577FE115880287B9A0D622E722EDABD9DE745455C7EC858A702F0695EA20C"
+    },
+    {
+      "byte_length": 1575,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/decision_receipt.schema.json",
+      "role": "SCHEMA",
+      "sha256": "FE77236E10E49A5E2C1251E1414E06C1E6BC4E55A04F77635970EB4D3813885C"
+    },
+    {
+      "byte_length": 1531,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/no_bind_receipt.schema.json",
+      "role": "SCHEMA",
+      "sha256": "E024C0706BD8DC0FDE2EB6C2FB7A03F50502F5CB2AA34BB968C238CE308C5862"
+    },
+    {
+      "byte_length": 1496,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/human_review_record.schema.json",
+      "role": "SCHEMA",
+      "sha256": "AD5EDDA82F012BD023875A0ACEA1DFC0EA9559268F8363DE1954E95D661391B3"
+    },
+    {
+      "byte_length": 1407,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/domain_scenario.schema.json",
+      "role": "SCHEMA",
+      "sha256": "CCA74D753DD4C3E0297C40D829456039C7ABFC26959B2E2448AAD32795F8E38E"
+    },
+    {
+      "byte_length": 1486,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/azure_signal_snapshot.schema.json",
+      "role": "SCHEMA",
+      "sha256": "BF98867572ABE81B14BC34C3651C80CBC27BEE5B74BD36C391F831FB1671D464"
+    },
+    {
+      "byte_length": 1938,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/ramat_display_payload.schema.json",
+      "role": "SCHEMA",
+      "sha256": "071BCA706C061EAAB1D8F1504319005585392CC4DF2F1A9CD255AB1DEE22F7AF"
+    },
+    {
+      "byte_length": 1357,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/integrity_manifest.schema.json",
+      "role": "SCHEMA",
+      "sha256": "796C890D8672A485107FAA4059669B557536DF7DC87D7BD0EDB432BD26138922"
+    },
+    {
+      "byte_length": 1414,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/tamper_case.schema.json",
+      "role": "SCHEMA",
+      "sha256": "FEDCB07B25E4967C144E02475724928C0AE5628CD07C1D3546C3A399BCF35B2D"
+    },
+    {
+      "byte_length": 1438,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/recovery_case.schema.json",
+      "role": "SCHEMA",
+      "sha256": "B1F9E71606C9C946C816C01B1C376A21EC306EFD4F2128B0D368E1530E4D2321"
+    },
+    {
+      "byte_length": 1578,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/evaluation_dimensions.json",
+      "role": "CONFIGURATION",
+      "sha256": "4F937D3DD8E856D77BF2A7C8E659362C68FC75A74F06DCA1E518A22F31813DDE"
+    },
+    {
+      "byte_length": 1703,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/decision_rules.json",
+      "role": "CONFIGURATION",
+      "sha256": "2DA42CF6C921CF9E1695A0B1645DAE03356E4673A95262B6BC574F2A5A70F23F"
+    },
+    {
+      "byte_length": 3109,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/domain_tracks.json",
+      "role": "CONFIGURATION",
+      "sha256": "729A3D3DE2734355C0E6D9837E845EC1428FAC25EC79C1C2AC04032E40AA0704"
+    },
+    {
+      "byte_length": 3467,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/scenario_catalog.json",
+      "role": "CONFIGURATION",
+      "sha256": "96AF1ECCEEE2FF4928EB01D90618B771860486AC77B5E6B8873929A8CF057E14"
+    },
+    {
+      "byte_length": 1143,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/source_state_precedence.json",
+      "role": "CONFIGURATION",
+      "sha256": "80317CC42EACA3EC4CDBB2F58D50F58266A9D874E1D488BF02E27ED356908880"
+    },
+    {
+      "byte_length": 1125,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/mapping_validation_rules.json",
+      "role": "CONFIGURATION",
+      "sha256": "A554C35B09D38629A9DA451D35EBC532BF421E0E712EB045831388F1171D3C41"
+    },
+    {
+      "byte_length": 1005,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/evidence_currency_rules.json",
+      "role": "CONFIGURATION",
+      "sha256": "63BDDBF323FB075265C75FC98587782422026BE9A058A579067BB748A61253A6"
+    },
+    {
+      "byte_length": 997,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/timing_windows.json",
+      "role": "CONFIGURATION",
+      "sha256": "6AB49DE1362795787D81FC46B61ECFDC73A0D9ACE355351E08036AB50803DC7E"
+    },
+    {
+      "byte_length": 1408,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/azure_signal_readiness.json",
+      "role": "CONFIGURATION",
+      "sha256": "D8062E991D82351B3A65FE3F88C55C338CD745A5913DF4C67516F6B649EE2664"
+    },
+    {
+      "byte_length": 1351,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/config/ramat_display_contract.json",
+      "role": "CONFIGURATION",
+      "sha256": "52F4AA306E481E812C9724BB3465C62B62B9839EF2861F4F7C22FD2541521329"
+    },
+    {
+      "byte_length": 1114,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/__init__.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "9BBFC2DFA755C926C23BA41EECBEA53754EB596D1EC994DC7B14CD0A2FA4245F"
+    },
+    {
+      "byte_length": 1024,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/models.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "F61DA5C01CA740FA39E8DE3EA8072F923F9CC31CC33B718250EF9C4BDABA523D"
+    },
+    {
+      "byte_length": 880,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/normalization.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "51B52E584BB73FEFA8A7AA5CCD52413FA82DFD2BD53413CA278F38B04F263ED5"
+    },
+    {
+      "byte_length": 1185,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/dependency_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "F212B49D1F88C4C44C27D664339C8ED2B55C45B2982CE6F81540CC442D5F2161"
+    },
+    {
+      "byte_length": 1189,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/source_state_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "1664387FBDEAB449318A1D38424802A7CD83A5EB8E2039BB7F5726EECC2A8D59"
+    },
+    {
+      "byte_length": 835,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/mapping_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "A291FC535C1F4F65AD24C4488C6A3CBDA5C486D6A10764D75483A7103DA71EB5"
+    },
+    {
+      "byte_length": 948,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/evidence_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "C6D44DD16A8B1778FA76DA35C80129D368AEF82E4051856C945B504D10F6DD25"
+    },
+    {
+      "byte_length": 606,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/timing_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "A132758422F68352493661A75F889856FE7E8A576EAB7CFDD162E4DBCDD4CF0C"
+    },
+    {
+      "byte_length": 1427,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/authority_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "97F03C587E89CF34739B6504D8F1233B5F2CE402856219FEBC1D11FBCA06BE6B"
+    },
+    {
+      "byte_length": 1074,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/no_bind_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "9F2EE4C08F84C13695EE14C82900978025B8B19C740D18BFF373C280E71E2322"
+    },
+    {
+      "byte_length": 3216,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/decision_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "C77DD874F456E33C13BB72DF33A9AC029B03A9EAB122E1866C39A7346BCC7BB1"
+    },
+    {
+      "byte_length": 951,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/reconstruction_engine.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "1AFDC0556788EAA0B54C6FB0AF20E7F7A0960293B156ADFA8A9F1A519F7A2F86"
+    },
+    {
+      "byte_length": 638,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/integrity.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "5F7275149882CC6E9A9A189427AA41CE356AD98B1B45672F9BC1D4D24B8A1F0D"
+    },
+    {
+      "byte_length": 1210,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/runtime/cli.py",
+      "role": "SIMULATED_RUNTIME",
+      "sha256": "5B0EBD5C10B367A433795761F615C18447CE50B08562A7981A685D7B741BDBDC"
+    },
+    {
+      "byte_length": 1329,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/irlt/profile.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "F12E56BAD64D69E2847A548E0C24D7F8BF35050AFBB4F9B78670C51C46A4169F"
+    },
+    {
+      "byte_length": 3567,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/irlt/scenarios.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "FAB0BD3E0825B31A9F853D1B88F0483E8BC404EACCC5D7C363BF89F15293B55D"
+    },
+    {
+      "byte_length": 1009,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/irlt/adapter.py",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "8EE1CE95EF4D6208F60F74429ED7C0727CD94FB73F87802EF4930D1206D29F89"
+    },
+    {
+      "byte_length": 1355,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/dscsa/profile.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "1C8510076D5BCC4FBB39D12BBD2E0C8548DA687EAEA6DD46A63F75568E0813A1"
+    },
+    {
+      "byte_length": 3569,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/dscsa/scenarios.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "0A93A35B4C4359D257ED2D780679BE154D7BD7DD29FF1EDB0CB7C1505E02AE99"
+    },
+    {
+      "byte_length": 1038,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/dscsa/adapter.py",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "4F985B0403ECC4904EEF5E71C4E66919B1840D4D5AFCC7907A5AB6DC008C7F29"
+    },
+    {
+      "byte_length": 1389,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/compound_pharmacy/profile.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "B8DAE5F4F70C7F437BBF1ECE7A27943D2DAC7E2FE9BE4C3DDCA7C7C33EDA3E2F"
+    },
+    {
+      "byte_length": 3584,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/compound_pharmacy/scenarios.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "71326BEC399865EF402875A6572ACA2B22CA154CF6DA1E767ED708DFC514BBAB"
+    },
+    {
+      "byte_length": 1056,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/compound_pharmacy/adapter.py",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "12D9A72BCE0A4651DAB2F28962AECB16039B672C30AB1425E9EB64D3D8F6A67C"
+    },
+    {
+      "byte_length": 1323,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/aurora17/profile.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "79CC54794A22F5776E36B533A06CCCADF1A82AE19F71C372075C4A2D4D40774B"
+    },
+    {
+      "byte_length": 3575,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/aurora17/scenarios.json",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "817EE58B9FBDB6BDE44EB31D1025EA05BF4D840B124706B5FC677A086C81C682"
+    },
+    {
+      "byte_length": 999,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/aurora17/adapter.py",
+      "role": "DOMAIN_ADAPTER",
+      "sha256": "633F880631D541D7CFEF2B700E1407E9ACD57F53ECAD33F6BABD985595AACCA9"
+    },
+    {
+      "byte_length": 927,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/README.md",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "FD06ACDEBAA1F53371DA9B8A4B1BEA6C54E83BA439D8DF1B343B4DFFD6EDAA81"
+    },
+    {
+      "byte_length": 1340,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/identity_and_role_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "7DD326B16FC2B59C85F19E2ABAEC3B9B04819248DE1258B570CBD8F9483D3656"
+    },
+    {
+      "byte_length": 1219,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/security_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "C220DFEC34C256DAACA6818961D061A63ED451AF444AD73F8652F03AFB878EF4"
+    },
+    {
+      "byte_length": 1245,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/network_and_api_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "3CC327C417262830EAD9137508E1055B08C53027D35D978500A83FC1744CB4CC"
+    },
+    {
+      "byte_length": 1226,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/data_governance_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "F3FFF7BC793E35EF9C626E31BC8A08EB2109CD9AA31946D9A866F1104070D9A5"
+    },
+    {
+      "byte_length": 1242,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/ai_evidence_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "4BE24BA034186EDF06B8F815B02C1963AA0316A369FD79BA5D3D20E222D3F917"
+    },
+    {
+      "byte_length": 1269,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/event_and_observability_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "A90D0969692B5ADD2A3DEB71ABD2B5AB50204286DC5FA1FA56080D5B6488257F"
+    },
+    {
+      "byte_length": 1266,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/azure_readiness/private_network_and_resilience_signal_contract.json",
+      "role": "AZURE_READINESS_CONTRACT",
+      "sha256": "063A0CFFF67665B72DBC8CECC4905ADFF05C0653D87CAD4BAFD610EDB0C0BEF4"
+    },
+    {
+      "byte_length": 913,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/README.md",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "1C4504168F506BCC66707DC62D0E53BFE0FE869EA451976B5100C9A57E68B3E3"
+    },
+    {
+      "byte_length": 1517,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/display_payload_contract.json",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "F5E3CDB0635B6CFB925E50AB056788F0C969431CA874D391CB18A69CABEB987C"
+    },
+    {
+      "byte_length": 1304,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/no_bind_display_states.json",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "E7C3A71FD73B38BA20624F9382F9E233DB7FD77C5F1288EA02656160F4759436"
+    },
+    {
+      "byte_length": 1303,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/dependency_display_states.json",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "C4A8C6165EF4C809FF8A6458B99C04769AA4856B32F6A9735962491822E773F9"
+    },
+    {
+      "byte_length": 1355,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/azure_signal_display_states.json",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "AFD118E4353575C7BDE9CA69A7FFB59970BAE1D08981B2F3FC8C2A3875904855"
+    },
+    {
+      "byte_length": 1248,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/inspection_reconstruction_display_states.json",
+      "role": "DISPLAY_ONLY_CONTRACT",
+      "sha256": "F666D68A9DCD1A109EC9B7241B30BD6B2E4BDDA650F2D587A84A6C46846729D4"
+    },
+    {
+      "byte_length": 911,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/tests/README.md",
+      "role": "TEST_DEFINITION",
+      "sha256": "4C74E76595F512741D36E5E498B576AA17C2BE263077776B356C6E4CCE316978"
+    },
+    {
+      "byte_length": 1019,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/tests/test_catalog.json",
+      "role": "TEST_DEFINITION",
+      "sha256": "D5DD901BCD614B2CCBB590A4ED911BDAB2E41BDBF3354B0793EE1436933A12C4"
+    },
+    {
+      "byte_length": 1193,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/tests/tamper_catalog.json",
+      "role": "TEST_DEFINITION",
+      "sha256": "A5E5811740A60A17485A0A17412498632B064F39837A8B95E43966455D0A2D82"
+    },
+    {
+      "byte_length": 1086,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/tests/recovery_catalog.json",
+      "role": "TEST_DEFINITION",
+      "sha256": "E71CF334BD573E1D1514729B0104104EDAECBBAEDB23BC51CC2CF2A7BD0C917A"
+    },
+    {
+      "byte_length": 1093,
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/tests/determinism_catalog.json",
+      "role": "TEST_DEFINITION",
+      "sha256": "32E8589855086DA09777AB21BE4C17AEC3ABBA961ED6F8B681C74BF236E22996"
+    },
+    {
+      "byte_length": "CONTROLLED_SELF_REFERENCE",
+      "class": "STATIC",
+      "phase": "172C",
+      "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/manifests/file_integrity_manifest.json",
+      "role": "INTEGRITY_MANIFEST",
+      "sha256": "CONTROLLED_SELF_REFERENCE"
+    }
+  ],
+  "entry_count": 96,
+  "human_binding_authority_required": true,
+  "manifest_id": "STEP172C_STATIC_FILE_INTEGRITY_MANIFEST",
+  "platform_b1_decision_engine": true,
+  "prohibited_content_rule": "No PHI, production data, credentials, live integration, source write-back, approval, release, override, or physical control.",
+  "purpose": "Define the exact package-integrity manifest and controlled self-reference rule.",
+  "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/manifests/file_integrity_manifest.json",
+  "role": "INTEGRITY_MANIFEST",
+  "source_systems_authoritative": true,
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}

@@ -1,0 +1,80 @@
+{
+  "artifact_version": "step_172d_v1",
+  "authority_record": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": false,
+    "authority_valid": true,
+    "escalation_available": true,
+    "human_accountability_identified": true,
+    "pre_authorized_rule_exists": true
+  },
+  "dependency_chain": {
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true
+  },
+  "domain": {
+    "id": "COMPOUND",
+    "name": "Sterile compound-pharmacy operations",
+    "path": "compound_pharmacy",
+    "priority": "FIRST_TIER"
+  },
+  "evaluation_id": "COMPOUND-SC-011",
+  "evidence_record": {
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "synthetic": true
+  },
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "mapping_record": {
+    "mapping_present": true,
+    "mapping_valid": true
+  },
+  "no_bind_state": true,
+  "regulated_object_id": "SYNTH-COMPOUND-OBJECT-001",
+  "release_or_execution_condition_satisfied": true,
+  "scenario_id": "SC-011",
+  "scenario_key": "authority_absent",
+  "source_state_conflict": null,
+  "source_state_snapshots": [
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "CC03E4A3969AC80417C2E8A496DAA57C504A2A4793F1B4F87B2856B786D60A6E",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-COMPOUND-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "COMPOUND-SNAP-1",
+      "source_record_id": "COMPOUND-REC-1",
+      "source_system_id": "COMPOUND_SOURCE_A",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    },
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "4CFE31CD836EA4841DAD1AD4168A1F5BD98F8D8ECB9E2F87F06F3750A935EDEC",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-COMPOUND-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "COMPOUND-SNAP-2",
+      "source_record_id": "COMPOUND-REC-2",
+      "source_system_id": "COMPOUND_SOURCE_B",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    }
+  ],
+  "synthetic_only": true,
+  "timing_record": {
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "additional_properties": false,
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Platform B1 evaluates; only an accountable human may bind regulated action.",
+  "human_binding_authority_required": true,
+  "platform_b1_decision_engine": true,
+  "prohibited_content_rule": "No PHI, production data, credentials, live integration, source write-back, approval, release, override, or physical control.",
+  "properties": {
+    "dimension_results": {
+      "type": "array"
+    },
+    "evaluation_id": {
+      "type": "string"
+    },
+    "human_review_required": {
+      "type": "string"
+    },
+    "no_bind_state": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "reasons": {
+      "type": "array"
+    }
+  },
+  "purpose": "Define an exact governed record or interface schema.",
+  "record_type": "dependency_evaluation_response",
+  "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/schemas/dependency_evaluation_response.schema.json",
+  "required": [
+    "evaluation_id",
+    "dimension_results",
+    "outcome",
+    "reasons",
+    "no_bind_state",
+    "human_review_required"
+  ],
+  "role": "SCHEMA",
+  "schema_dialect": "JSON Schema compatible",
+  "source_systems_authoritative": true,
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "type": "object",
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}

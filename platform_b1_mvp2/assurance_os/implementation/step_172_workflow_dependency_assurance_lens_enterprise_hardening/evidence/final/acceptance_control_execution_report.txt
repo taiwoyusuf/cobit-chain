@@ -1,0 +1,35 @@
+STEP 172D - ACCEPTANCE CONTROL EXECUTION REPORT
+==================================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Acceptance controls executed: 24
+Acceptance controls passed: 24
+Acceptance controls failed: 0
+
+CONTROL_ID	CONTROL	RESULT	OBSERVATION
+AC-001	Deterministic execution	PASS	All 16 deterministic execution cases passed.
+AC-002	Repeatability	PASS	All 16 repeatability cases passed.
+AC-003	Exact manifest compliance	PASS	Locked manifest contains 356 unique CREATE paths.
+AC-004	Exact static-file count	PASS	All 96 static files match the Step 172C ledger.
+AC-005	Exact generated-file count	PASS	Generation pipeline is locked to exactly 260 paths and final closure verifies the count.
+AC-006	Dependency presence	PASS	Missing mandatory dependency produces FAIL-CLOSED.
+AC-007	Dependency identity	PASS	Dependency identity mismatch produces DENY.
+AC-008	Dependency currency	PASS	Stale dependency produces HOLD.
+AC-009	Source-state availability	PASS	Unavailable mandatory source state produces FAIL-CLOSED.
+AC-010	Source-state agreement	PASS	Source-state disagreement produces HOLD and preserves both snapshots.
+AC-011	Mapping validity	PASS	Invalid required mapping produces FAIL-CLOSED.
+AC-012	Evidence presence	PASS	Missing required evidence produces HOLD.
+AC-013	Evidence integrity	PASS	Evidence tampering produces DENY and all 20 tamper cases are detected.
+AC-014	Evidence currency	PASS	Expired evidence produces HOLD.
+AC-015	Workflow sequence	PASS	Workflow sequence violation produces FAIL-CLOSED.
+AC-016	Timing validity	PASS	Timing expiration produces HOLD.
+AC-017	Authority validity	PASS	Absent or expired authority produces NO-BIND.
+AC-018	Approver availability	PASS	Unavailable approver produces NO-BIND.
+AC-019	Escalation validity	PASS	Unavailable required escalation produces NO-BIND.
+AC-020	Human accountability	PASS	Human accountability is required for binding action.
+AC-021	RAMAT display boundary	PASS	RAMAT Vision and Thread D2 remain display-only.
+AC-022	Azure-readiness boundary	PASS	Azure signals are synthetic readiness signals only; no deployment occurs.
+AC-023	Architecture-freeze compliance	PASS	Platform B v1, Thread D v1, and predecessor commits remain unchanged.
+AC-024	Security and prohibited-content compliance	PASS	Synthetic-only boundary and prohibited-content controls are enforced.
+
+FINAL PACKAGE CLOSURE VERIFICATION: REQUIRED AND PERFORMED BY STEP 172D

@@ -1,0 +1,58 @@
+{
+  "artifact_version": "step_172d_v1",
+  "decision": {
+    "human_binding_authority_required": true,
+    "outcome": "HOLD",
+    "precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "reasons": [
+      "A recoverable dependency, source, evidence, or timing condition requires review."
+    ]
+  },
+  "dimension_results": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true,
+    "escalation_available": true,
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "human_accountability_identified": true,
+    "mapping_present": true,
+    "mapping_valid": true,
+    "no_bind_state": false,
+    "pre_authorized_rule_exists": true,
+    "release_or_execution_condition_satisfied": true,
+    "source_state_agreement": true,
+    "source_state_available": true,
+    "source_state_current": false,
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  },
+  "domain_id": "DSCSA",
+  "evaluation_id": "DSCSA-SC-007",
+  "expected_outcome": "HOLD",
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "human_binding_authority_required": true,
+  "input_sha256": "A523028C846CA9DAA15262EF956EBDDA5BB07223A27FE91CF9634CD2B29CB5A2",
+  "no_bind_state": false,
+  "outcome_match": true,
+  "ramat_display_only": true,
+  "receipt_sha256": "C9D4957126818AEF6CB90EA1DDE159742E3279B72027314C64DEBF1546122999",
+  "scenario_id": "SC-007",
+  "scenario_key": "delayed_middleware_or_interface_state",
+  "source_state_conflict": null,
+  "source_systems_authoritative": true,
+  "synthetic_only": true
+}

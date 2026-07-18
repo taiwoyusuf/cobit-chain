@@ -1,0 +1,58 @@
+{
+  "artifact_version": "step_172d_v1",
+  "decision": {
+    "human_binding_authority_required": true,
+    "outcome": "DENY",
+    "precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "reasons": [
+      "A deny-precedence integrity or prohibited-action condition exists."
+    ]
+  },
+  "dimension_results": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true,
+    "escalation_available": true,
+    "evidence_current": true,
+    "evidence_integrity_valid": false,
+    "evidence_present": true,
+    "human_accountability_identified": true,
+    "mapping_present": true,
+    "mapping_valid": true,
+    "no_bind_state": false,
+    "pre_authorized_rule_exists": true,
+    "release_or_execution_condition_satisfied": true,
+    "source_state_agreement": true,
+    "source_state_available": true,
+    "source_state_current": true,
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  },
+  "domain_id": "IRLT",
+  "evaluation_id": "IRLT-SC-009",
+  "expected_outcome": "DENY",
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "human_binding_authority_required": true,
+  "input_sha256": "8EFA2369A228E3FCB8CE517C0864EDD0945F2AABE0F9E10A3DC9DC746E7803C7",
+  "no_bind_state": false,
+  "outcome_match": true,
+  "ramat_display_only": true,
+  "receipt_sha256": "47A5E9CCDB26E0D45F3EAE0998DEE0573DCD00979B0F5C4F78A99A0A131DBDA8",
+  "scenario_id": "SC-009",
+  "scenario_key": "evidence_tampering",
+  "source_state_conflict": null,
+  "source_systems_authoritative": true,
+  "synthetic_only": true
+}

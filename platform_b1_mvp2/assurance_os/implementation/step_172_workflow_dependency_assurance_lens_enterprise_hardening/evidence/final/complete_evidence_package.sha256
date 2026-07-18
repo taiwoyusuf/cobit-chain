@@ -1,0 +1,12 @@
+STEP 172D - COMPLETE EVIDENCE PACKAGE SEAL
+==================================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Algorithm: SHA-256
+Package paths: 356
+Static paths: 96
+Generated paths: 260
+Complete checksum-ledger SHA-256: E2972C1A411B486B6B6AACE0CE8E4BAD5ADC45038619497E455B454A2432BC35
+Complete 356-file ledger SHA-256: 81E0331D19C8BA1BB9778261E2890EA39EABB3D368EE77CD746ECDA5D5702DE2
+Package seal rule: the package seal is the SHA-256 of complete_evidence_checksums.tsv.
+Final package SHA-256: E2972C1A411B486B6B6AACE0CE8E4BAD5ADC45038619497E455B454A2432BC35

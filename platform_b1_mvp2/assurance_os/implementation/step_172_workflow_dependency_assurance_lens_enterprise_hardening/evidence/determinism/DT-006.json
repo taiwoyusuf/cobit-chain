@@ -1,0 +1,19 @@
+{
+  "artifact_version": "step_172d_v1",
+  "case_id": "DT-006",
+  "checks": {
+    "audit_chain_match": true,
+    "decision_outcome_match": true,
+    "dimension_results_match": true,
+    "evidence_references_match": true,
+    "final_package_projection_match": true,
+    "normalized_input_match": true,
+    "reason_ordering_match": true,
+    "receipt_content_match": true,
+    "sha256_match": true
+  },
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "passed": true,
+  "scenario_key": "unavailable_source_state",
+  "source_evaluation_id": "IRLT-SC-006"
+}

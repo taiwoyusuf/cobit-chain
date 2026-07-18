@@ -1,0 +1,58 @@
+{
+  "artifact_version": "step_172d_v1",
+  "decision": {
+    "human_binding_authority_required": true,
+    "outcome": "FAIL-CLOSED",
+    "precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "reasons": [
+      "A critical dependency, source, mapping, or sequence condition failed."
+    ]
+  },
+  "dimension_results": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true,
+    "escalation_available": true,
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "human_accountability_identified": true,
+    "mapping_present": true,
+    "mapping_valid": false,
+    "no_bind_state": false,
+    "pre_authorized_rule_exists": true,
+    "release_or_execution_condition_satisfied": true,
+    "source_state_agreement": true,
+    "source_state_available": true,
+    "source_state_current": true,
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  },
+  "domain_id": "COMPOUND",
+  "evaluation_id": "COMPOUND-SC-004",
+  "expected_outcome": "FAIL-CLOSED",
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "human_binding_authority_required": true,
+  "input_sha256": "F0D5E9BBC5454234FC3F24ED64144B7A3858024B9B2A9EFCB800D589BA9B25C6",
+  "no_bind_state": false,
+  "outcome_match": true,
+  "ramat_display_only": true,
+  "receipt_sha256": "D77027D7665F5D03C12C4FE1F53A0D982DF9892C09E56450706D12347B29BA63",
+  "scenario_id": "SC-004",
+  "scenario_key": "invalid_mapping",
+  "source_state_conflict": null,
+  "source_systems_authoritative": true,
+  "synthetic_only": true
+}

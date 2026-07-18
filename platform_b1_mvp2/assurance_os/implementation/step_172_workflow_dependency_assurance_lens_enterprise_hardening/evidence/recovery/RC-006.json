@@ -1,0 +1,12 @@
+{
+  "altered_sha256": "E8A27A914ADB441A93EFEEF096FF39819D960553E2A947A360D568BF9CC3C95A",
+  "artifact_version": "step_172d_v1",
+  "baseline_sha256": "60F9DEE46705E2D64C9F6CB7696970B90A2FA20846D3929BF823E543ABCF04E9",
+  "case_id": "RC-006",
+  "destructive_operation_used": false,
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "passed": true,
+  "production_recovery_used": false,
+  "recovered_sha256": "60F9DEE46705E2D64C9F6CB7696970B90A2FA20846D3929BF823E543ABCF04E9",
+  "repository_reset_used": false
+}

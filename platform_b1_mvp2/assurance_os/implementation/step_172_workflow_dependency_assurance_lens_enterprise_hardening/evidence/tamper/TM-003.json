@@ -1,0 +1,11 @@
+{
+  "artifact_version": "step_172d_v1",
+  "baseline_sha256": "D276A51ABE53867DB06BE5B2807E9F1E203D786BCF8E8354DC9653E988E67672",
+  "case_id": "TM-003",
+  "detected": true,
+  "expected_detection": true,
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "static_baseline_modified": false,
+  "tamper_type": "mapping_change",
+  "tampered_sha256": "DC97FC10D41A94811D528F1ECCCA248C5C99B4A0D774DD4ABCE68510F0F6DAD8"
+}

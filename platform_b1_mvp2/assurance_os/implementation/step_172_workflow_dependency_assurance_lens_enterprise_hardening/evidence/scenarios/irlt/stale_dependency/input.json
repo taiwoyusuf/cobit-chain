@@ -1,0 +1,80 @@
+{
+  "artifact_version": "step_172d_v1",
+  "authority_record": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "escalation_available": true,
+    "human_accountability_identified": true,
+    "pre_authorized_rule_exists": true
+  },
+  "dependency_chain": {
+    "dependency_current": false,
+    "dependency_identity_valid": true,
+    "dependency_present": true
+  },
+  "domain": {
+    "id": "IRLT",
+    "name": "IRLT radiopharmaceutical operations",
+    "path": "irlt",
+    "priority": "FIRST_TIER"
+  },
+  "evaluation_id": "IRLT-SC-002",
+  "evidence_record": {
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "synthetic": true
+  },
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "mapping_record": {
+    "mapping_present": true,
+    "mapping_valid": true
+  },
+  "no_bind_state": false,
+  "regulated_object_id": "SYNTH-IRLT-OBJECT-001",
+  "release_or_execution_condition_satisfied": true,
+  "scenario_id": "SC-002",
+  "scenario_key": "stale_dependency",
+  "source_state_conflict": null,
+  "source_state_snapshots": [
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "9E43268E395DF27C53730D4B3AEA17E6167EB7BDBD8C14F3257D7E17CEAEB239",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-IRLT-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "IRLT-SNAP-1",
+      "source_record_id": "IRLT-REC-1",
+      "source_system_id": "IRLT_SOURCE_A",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    },
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "0E516AD14D9D31D8D9E86F1C7C6FBC7B20D8C77F67CC916E98FCE09195E6422D",
+      "current": false,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-IRLT-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "IRLT-SNAP-2",
+      "source_record_id": "IRLT-REC-2",
+      "source_system_id": "IRLT_SOURCE_B",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    }
+  ],
+  "synthetic_only": true,
+  "timing_record": {
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  }
+}

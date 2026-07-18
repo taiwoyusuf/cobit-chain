@@ -1,0 +1,32 @@
+STEP 172D - TAMPER TEST SUMMARY
+====================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Tamper cases executed: 20
+Expected alterations detected: 20
+Undetected alterations: 0
+Static baseline files modified: 0
+Malicious payloads executed: 0
+Destructive commands executed: 0
+
+CASE_ID	TAMPER_TYPE	DETECTED
+TM-001	content_digest_change	True
+TM-002	identity_change	True
+TM-003	mapping_change	True
+TM-004	authority_change	True
+TM-005	timing_change	True
+TM-006	source_snapshot_change	True
+TM-007	decision_receipt_change	True
+TM-008	audit_chain_break	True
+TM-009	content_digest_change	True
+TM-010	identity_change	True
+TM-011	mapping_change	True
+TM-012	authority_change	True
+TM-013	timing_change	True
+TM-014	source_snapshot_change	True
+TM-015	decision_receipt_change	True
+TM-016	audit_chain_break	True
+TM-017	content_digest_change	True
+TM-018	identity_change	True
+TM-019	mapping_change	True
+TM-020	authority_change	True

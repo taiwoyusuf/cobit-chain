@@ -1,0 +1,31 @@
+STEP 172D - DETERMINISM AND REPEATABILITY SUMMARY
+==================================================================================================================================================================================================================
+
+Fixed deterministic timestamp: 2026-01-01T00:00:00Z
+Determinism cases executed: 16
+Determinism cases passed: 16
+Determinism cases failed: 0
+Live network dependency used: False
+System clock dependency used: False
+Random-value dependency used: False
+Cloud-service dependency used: False
+Production-system dependency used: False
+Physical-device dependency used: False
+
+CASE_ID	PASSED	SOURCE_EVALUATION
+DT-001	True	IRLT-SC-001
+DT-002	True	IRLT-SC-002
+DT-003	True	IRLT-SC-003
+DT-004	True	IRLT-SC-004
+DT-005	True	IRLT-SC-005
+DT-006	True	IRLT-SC-006
+DT-007	True	IRLT-SC-007
+DT-008	True	IRLT-SC-008
+DT-009	True	IRLT-SC-009
+DT-010	True	IRLT-SC-010
+DT-011	True	IRLT-SC-011
+DT-012	True	IRLT-SC-012
+DT-013	True	IRLT-SC-013
+DT-014	True	IRLT-SC-014
+DT-015	True	IRLT-SC-015
+DT-016	True	IRLT-SC-016

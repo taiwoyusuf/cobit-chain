@@ -1,0 +1,80 @@
+{
+  "artifact_version": "step_172d_v1",
+  "authority_record": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": false,
+    "escalation_available": true,
+    "human_accountability_identified": true,
+    "pre_authorized_rule_exists": true
+  },
+  "dependency_chain": {
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true
+  },
+  "domain": {
+    "id": "DSCSA",
+    "name": "DSCSA verification and exception management",
+    "path": "dscsa",
+    "priority": "FIRST_TIER"
+  },
+  "evaluation_id": "DSCSA-SC-014",
+  "evidence_record": {
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "synthetic": true
+  },
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "mapping_record": {
+    "mapping_present": true,
+    "mapping_valid": true
+  },
+  "no_bind_state": true,
+  "regulated_object_id": "SYNTH-DSCSA-OBJECT-001",
+  "release_or_execution_condition_satisfied": true,
+  "scenario_id": "SC-014",
+  "scenario_key": "silent_approval_state",
+  "source_state_conflict": null,
+  "source_state_snapshots": [
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "C3601251CD010B1A66D400C3D176633B2FB7A5EE78F0A08C267A4D1D84B981FD",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-DSCSA-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "DSCSA-SNAP-1",
+      "source_record_id": "DSCSA-REC-1",
+      "source_system_id": "DSCSA_SOURCE_A",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    },
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "7FF9E92729344FC6C5E3A94E1AF4EE3C19A570969364C285B3333BB4DCBE87AB",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-DSCSA-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "DSCSA-SNAP-2",
+      "source_record_id": "DSCSA-REC-2",
+      "source_system_id": "DSCSA_SOURCE_B",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    }
+  ],
+  "synthetic_only": true,
+  "timing_record": {
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  }
+}

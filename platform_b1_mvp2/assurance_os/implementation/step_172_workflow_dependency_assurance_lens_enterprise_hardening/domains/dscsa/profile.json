@@ -1,0 +1,34 @@
+{
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Platform B1 evaluates; only an accountable human may bind regulated action.",
+  "dependencies": [
+    "package_identity",
+    "trading_partner_identity",
+    "epcis_state",
+    "verification_state",
+    "suspect_product_state",
+    "exception_resolution",
+    "human_authority"
+  ],
+  "domain_id": "DSCSA",
+  "human_binding_authority_required": true,
+  "name": "DSCSA verification and exception management",
+  "objects": [
+    "package_identifier",
+    "epcis_event",
+    "vrs_response",
+    "trading_partner",
+    "verification_request",
+    "exception_record"
+  ],
+  "platform_b1_decision_engine": true,
+  "priority": "FIRST_TIER",
+  "prohibited_content_rule": "No PHI, production data, credentials, live integration, source write-back, approval, release, override, or physical control.",
+  "purpose": "Provide a synthetic governed domain profile, scenarios, or adapter.",
+  "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/dscsa/profile.json",
+  "role": "DOMAIN_ADAPTER",
+  "source_systems_authoritative": true,
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}

@@ -1,0 +1,9 @@
+{
+  "artifact_version": "step_172d_v1",
+  "control_id": "AC-019",
+  "control_name": "Escalation validity",
+  "final_closure_verification_required": false,
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "observation": "Unavailable required escalation produces NO-BIND.",
+  "result": "PASS"
+}

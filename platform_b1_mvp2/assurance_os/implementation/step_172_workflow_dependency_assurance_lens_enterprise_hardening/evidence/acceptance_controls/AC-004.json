@@ -1,0 +1,9 @@
+{
+  "artifact_version": "step_172d_v1",
+  "control_id": "AC-004",
+  "control_name": "Exact static-file count",
+  "final_closure_verification_required": false,
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "observation": "All 96 static files match the Step 172C ledger.",
+  "result": "PASS"
+}

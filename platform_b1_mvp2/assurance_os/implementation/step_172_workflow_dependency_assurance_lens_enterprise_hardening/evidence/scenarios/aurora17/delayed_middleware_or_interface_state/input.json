@@ -1,0 +1,80 @@
+{
+  "artifact_version": "step_172d_v1",
+  "authority_record": {
+    "action_consequence_level": "HIGH",
+    "approver_available": true,
+    "authority_current": true,
+    "authority_delegated": true,
+    "authority_present": true,
+    "authority_valid": true,
+    "escalation_available": true,
+    "human_accountability_identified": true,
+    "pre_authorized_rule_exists": true
+  },
+  "dependency_chain": {
+    "dependency_current": true,
+    "dependency_identity_valid": true,
+    "dependency_present": true
+  },
+  "domain": {
+    "id": "AURORA17",
+    "name": "Aurora17 QC batch-release demonstration",
+    "path": "aurora17",
+    "priority": "GOVERNED_DEMONSTRATION"
+  },
+  "evaluation_id": "AURORA17-SC-007",
+  "evidence_record": {
+    "evidence_current": true,
+    "evidence_integrity_valid": true,
+    "evidence_present": true,
+    "synthetic": true
+  },
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "mapping_record": {
+    "mapping_present": true,
+    "mapping_valid": true
+  },
+  "no_bind_state": false,
+  "regulated_object_id": "SYNTH-AURORA17-OBJECT-001",
+  "release_or_execution_condition_satisfied": true,
+  "scenario_id": "SC-007",
+  "scenario_key": "delayed_middleware_or_interface_state",
+  "source_state_conflict": null,
+  "source_state_snapshots": [
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "F1D95D1C7D6B34E8FE3E52B6D89538FFCF922BBEF4BE071154D326F7AE59EF22",
+      "current": true,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-AURORA17-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "AURORA17-SNAP-1",
+      "source_record_id": "AURORA17-REC-1",
+      "source_system_id": "AURORA17_SOURCE_A",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    },
+    {
+      "authoritative_state": true,
+      "availability_state": "AVAILABLE",
+      "content_digest": "3513D9B1AD258C72F554F2662C70698B8365908C22C109A51D524809BF0F2729",
+      "current": false,
+      "observed_at": "2026-01-01T00:00:00Z",
+      "regulated_object_id": "SYNTH-AURORA17-OBJECT-001",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "snapshot_id": "AURORA17-SNAP-2",
+      "source_record_id": "AURORA17-REC-2",
+      "source_system_id": "AURORA17_SOURCE_B",
+      "source_system_role": "AUTHORITATIVE_SOURCE",
+      "state_code": "READY",
+      "state_version": "1"
+    }
+  ],
+  "synthetic_only": true,
+  "timing_record": {
+    "timing_valid": true,
+    "workflow_sequence_valid": true
+  }
+}

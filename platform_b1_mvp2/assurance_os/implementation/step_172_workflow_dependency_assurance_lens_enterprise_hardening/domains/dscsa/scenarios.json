@@ -1,0 +1,129 @@
+{
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Platform B1 evaluates; only an accountable human may bind regulated action.",
+  "domain_id": "DSCSA",
+  "execution_state": "DEFINED_NOT_EXECUTED",
+  "human_binding_authority_required": true,
+  "platform_b1_decision_engine": true,
+  "prohibited_content_rule": "No PHI, production data, credentials, live integration, source write-back, approval, release, override, or physical control.",
+  "purpose": "Provide a synthetic governed domain profile, scenarios, or adapter.",
+  "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/domains/dscsa/scenarios.json",
+  "role": "DOMAIN_ADAPTER",
+  "scenario_count": 22,
+  "scenarios": [
+    {
+      "expected_outcome": "FAIL-CLOSED",
+      "key": "missing_dependency",
+      "scenario_id": "SC-001"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "stale_dependency",
+      "scenario_id": "SC-002"
+    },
+    {
+      "expected_outcome": "DENY",
+      "key": "mismatched_identity",
+      "scenario_id": "SC-003"
+    },
+    {
+      "expected_outcome": "FAIL-CLOSED",
+      "key": "invalid_mapping",
+      "scenario_id": "SC-004"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "source_system_disagreement",
+      "scenario_id": "SC-005"
+    },
+    {
+      "expected_outcome": "FAIL-CLOSED",
+      "key": "unavailable_source_state",
+      "scenario_id": "SC-006"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "delayed_middleware_or_interface_state",
+      "scenario_id": "SC-007"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "evidence_missing",
+      "scenario_id": "SC-008"
+    },
+    {
+      "expected_outcome": "DENY",
+      "key": "evidence_tampering",
+      "scenario_id": "SC-009"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "evidence_expiration",
+      "scenario_id": "SC-010"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "authority_absent",
+      "scenario_id": "SC-011"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "authority_expired",
+      "scenario_id": "SC-012"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "approver_unavailable",
+      "scenario_id": "SC-013"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "silent_approval_state",
+      "scenario_id": "SC-014"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "escalation_unavailable",
+      "scenario_id": "SC-015"
+    },
+    {
+      "expected_outcome": "FAIL-CLOSED",
+      "key": "workflow_sequence_violation",
+      "scenario_id": "SC-016"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "timing_expiration",
+      "scenario_id": "SC-017"
+    },
+    {
+      "expected_outcome": "HOLD",
+      "key": "permitted_hold",
+      "scenario_id": "SC-018"
+    },
+    {
+      "expected_outcome": "NO-BIND",
+      "key": "no_bind_hold",
+      "scenario_id": "SC-019"
+    },
+    {
+      "expected_outcome": "FAIL-CLOSED",
+      "key": "fail_closed_denial",
+      "scenario_id": "SC-020"
+    },
+    {
+      "expected_outcome": "ALLOW",
+      "key": "successful_dependency_agreement",
+      "scenario_id": "SC-021"
+    },
+    {
+      "expected_outcome": "ALLOW",
+      "key": "inspection_reconstruction",
+      "scenario_id": "SC-022"
+    }
+  ],
+  "source_systems_authoritative": true,
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}

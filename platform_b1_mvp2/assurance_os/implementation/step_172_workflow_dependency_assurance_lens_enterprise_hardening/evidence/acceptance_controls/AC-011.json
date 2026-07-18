@@ -1,0 +1,9 @@
+{
+  "artifact_version": "step_172d_v1",
+  "control_id": "AC-011",
+  "control_name": "Mapping validity",
+  "final_closure_verification_required": false,
+  "fixed_timestamp": "2026-01-01T00:00:00Z",
+  "observation": "Invalid required mapping produces FAIL-CLOSED.",
+  "result": "PASS"
+}

@@ -1,0 +1,33 @@
+{
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Platform B1 evaluates; only an accountable human may bind regulated action.",
+  "human_binding_authority_required": true,
+  "platform_b1_decision_engine": true,
+  "prohibited_actions": [
+    "approve",
+    "release",
+    "override",
+    "write_back",
+    "reconcile_source_states",
+    "resolve_hold",
+    "bind_regulated_action"
+  ],
+  "prohibited_content_rule": "No PHI, production data, credentials, live integration, source write-back, approval, release, override, or physical control.",
+  "purpose": "Define display-only RAMAT Vision and Thread D2 outputs.",
+  "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_172_workflow_dependency_assurance_lens_enterprise_hardening/ramat_display/dependency_display_states.json",
+  "role": "DISPLAY_ONLY_CONTRACT",
+  "source_systems_authoritative": true,
+  "states": [
+    "DEPENDENCIES AGREED",
+    "DEPENDENCY MISSING",
+    "DEPENDENCY STALE",
+    "IDENTITY MISMATCH",
+    "MAPPING INVALID",
+    "SOURCE STATES DISAGREE",
+    "SOURCE STATE UNAVAILABLE",
+    "HUMAN REVIEW REQUIRED"
+  ],
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}

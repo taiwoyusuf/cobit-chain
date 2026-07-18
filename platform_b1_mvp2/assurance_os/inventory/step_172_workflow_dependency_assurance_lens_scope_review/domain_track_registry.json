@@ -1,0 +1,107 @@
+{
+  "artifact_version": "step_172c_v1",
+  "authority_boundary": "Planning-approved inventory only; no regulated action authority.",
+  "human_binding_authority_required": true,
+  "platform_b1_decision_engine": true,
+  "prohibited_content_rule": "No PHI, production data, credentials, write-back, approval, release, or hardware control.",
+  "purpose": "Define Step 172 governed inventory, scope, registry, or acceptance boundary.",
+  "relative_path": "platform_b1_mvp2/assurance_os/inventory/step_172_workflow_dependency_assurance_lens_scope_review/domain_track_registry.json",
+  "role": "INVENTORY",
+  "source_systems_authoritative": true,
+  "synthetic_only": true,
+  "thread_d2_display_only": true,
+  "tracks": [
+    {
+      "dependencies": [
+        "identity_agreement",
+        "instrument_state",
+        "middleware_state",
+        "lis_state",
+        "result_verification",
+        "timing_window",
+        "human_release_authority"
+      ],
+      "domain_id": "IRLT",
+      "name": "IRLT radiopharmaceutical operations",
+      "objects": [
+        "accession",
+        "sample",
+        "instrument_result",
+        "middleware_state",
+        "lis_state",
+        "batch",
+        "release_condition"
+      ],
+      "priority": "FIRST_TIER"
+    },
+    {
+      "dependencies": [
+        "package_identity",
+        "trading_partner_identity",
+        "epcis_state",
+        "verification_state",
+        "suspect_product_state",
+        "exception_resolution",
+        "human_authority"
+      ],
+      "domain_id": "DSCSA",
+      "name": "DSCSA verification and exception management",
+      "objects": [
+        "package_identifier",
+        "epcis_event",
+        "vrs_response",
+        "trading_partner",
+        "verification_request",
+        "exception_record"
+      ],
+      "priority": "FIRST_TIER"
+    },
+    {
+      "dependencies": [
+        "prescription_identity",
+        "formulation_mapping",
+        "ingredient_identity",
+        "environmental_state",
+        "training_current",
+        "beyond_use_validity",
+        "human_release_authority"
+      ],
+      "domain_id": "COMPOUND",
+      "name": "Sterile compound-pharmacy operations",
+      "objects": [
+        "prescription",
+        "formulation",
+        "ingredient",
+        "environmental_state",
+        "training_state",
+        "beyond_use_state",
+        "release_condition"
+      ],
+      "priority": "FIRST_TIER"
+    },
+    {
+      "dependencies": [
+        "sample_identity",
+        "instrument_state",
+        "method_version",
+        "result_integrity",
+        "review_state",
+        "batch_state",
+        "human_release_authority"
+      ],
+      "domain_id": "AURORA17",
+      "name": "Aurora17 QC batch-release demonstration",
+      "objects": [
+        "sample",
+        "instrument",
+        "method",
+        "result",
+        "review",
+        "batch",
+        "release_condition"
+      ],
+      "priority": "GOVERNED_DEMONSTRATION"
+    }
+  ],
+  "workstream": "Platform B1 Workflow Dependency Assurance Lens Enterprise Hardening and Cross-System Source-State Agreement"
+}
