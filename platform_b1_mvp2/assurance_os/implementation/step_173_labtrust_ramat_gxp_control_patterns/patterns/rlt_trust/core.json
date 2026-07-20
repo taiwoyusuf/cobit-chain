@@ -1,0 +1,70 @@
+{
+  "decision_outcomes": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "decision_rules": [
+    {
+      "outcome": "DENY",
+      "priority": 1,
+      "when": "prohibited_or_disqualifying_condition"
+    },
+    {
+      "outcome": "FAIL-CLOSED",
+      "priority": 2,
+      "when": "required_state_untrusted_or_not_evaluable"
+    },
+    {
+      "outcome": "NO-BIND",
+      "priority": 3,
+      "when": "authority_or_admissibility_insufficient"
+    },
+    {
+      "outcome": "HOLD",
+      "priority": 4,
+      "when": "recoverable_review_or_evidence_pending"
+    },
+    {
+      "outcome": "ALLOW",
+      "priority": 5,
+      "when": "all_required_conditions_satisfied"
+    }
+  ],
+  "doctrine": "Trust requires aligned procedure, identity, validation, measurement, environment, authority, method, source state, evidence, review, and reconstruction conditions.",
+  "family": "Rlt Trust",
+  "human_authority": {
+    "accountable_human_preserved": true,
+    "automated_regulated_release_allowed": false
+  },
+  "pattern_id": "PATTERN-RLT_TRUST",
+  "reconstruction": {
+    "authority_trace_required": true,
+    "decision_trace_required": true,
+    "source_snapshots_required": true
+  },
+  "required_inputs": [
+    "equipment_state",
+    "application_state",
+    "environment_state",
+    "operator_authority",
+    "review_state",
+    "evidence_state"
+  ],
+  "schema_version": "1.0.0",
+  "source_authority": {
+    "official_records_remain_in_source_systems": true,
+    "silent_reconciliation_allowed": false,
+    "source_disagreement_must_be_preserved": true
+  },
+  "synthetic_only": true
+}

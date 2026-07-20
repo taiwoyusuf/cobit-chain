@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attributable": {
+      "type": "boolean"
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "reconstructable": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "references": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "complete",
+    "current",
+    "attributable",
+    "reconstructable",
+    "references"
+  ],
+  "title": "Evidence State",
+  "type": "object"
+}

@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-14",
+  "evidence": [
+    "SC-06 permits ALLOW when synthetic environmental conditions are acceptable."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-14-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

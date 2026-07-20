@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "binding_authority": {
+      "const": false,
+      "type": "boolean"
+    },
+    "displayed_outcome": {
+      "enum": [
+        "DENY",
+        "FAIL-CLOSED",
+        "NO-BIND",
+        "HOLD",
+        "ALLOW"
+      ],
+      "type": "string"
+    },
+    "platform_b1_outcome": {
+      "enum": [
+        "DENY",
+        "FAIL-CLOSED",
+        "NO-BIND",
+        "HOLD",
+        "ALLOW"
+      ],
+      "type": "string"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "platform_b1_outcome",
+    "displayed_outcome",
+    "binding_authority"
+  ],
+  "title": "Ramat Display State",
+  "type": "object"
+}

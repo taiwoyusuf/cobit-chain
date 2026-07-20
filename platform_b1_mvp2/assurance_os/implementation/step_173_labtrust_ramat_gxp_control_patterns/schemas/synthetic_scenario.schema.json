@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "conditional_rule": {
+      "type": "string"
+    },
+    "expected_primary_outcome": {
+      "enum": [
+        "DENY",
+        "FAIL-CLOSED",
+        "NO-BIND",
+        "HOLD",
+        "ALLOW"
+      ],
+      "type": "string"
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "scenario_id",
+    "title",
+    "inputs",
+    "expected_primary_outcome",
+    "conditional_rule"
+  ],
+  "title": "Synthetic Scenario",
+  "type": "object"
+}

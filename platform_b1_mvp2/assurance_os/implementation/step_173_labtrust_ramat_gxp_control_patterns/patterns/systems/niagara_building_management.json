@@ -1,0 +1,37 @@
+{
+  "mapped_control_families": [
+    "ENVIRONMENTAL_READINESS",
+    "POWER_COLD_CHAIN",
+    "RAMAT_DISPLAY"
+  ],
+  "pattern_id": "SYSTEM-NIAGARA_BUILDING_MANAGEMENT",
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_hold",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "required_signals": [
+    "facility_state",
+    "utility_state",
+    "alarm_state",
+    "dependency_state",
+    "control_state_evidence"
+  ],
+  "schema_version": "1.0.0",
+  "source_authority": {
+    "official_record_retained_in_source": true,
+    "silent_reconciliation_allowed": false
+  },
+  "source_family": "BUILDING_MANAGEMENT",
+  "synthetic_only": true
+}

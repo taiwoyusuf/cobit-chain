@@ -1,0 +1,11 @@
+{
+  "precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "rule": "The first applicable outcome in this sequence governs.",
+  "schema_version": "1.0.0"
+}

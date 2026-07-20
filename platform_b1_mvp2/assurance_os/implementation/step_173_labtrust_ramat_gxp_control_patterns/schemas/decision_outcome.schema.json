@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "binding_authority": {
+      "type": "boolean"
+    },
+    "outcome": {
+      "enum": [
+        "DENY",
+        "FAIL-CLOSED",
+        "NO-BIND",
+        "HOLD",
+        "ALLOW"
+      ],
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "outcome",
+    "reasons",
+    "binding_authority"
+  ],
+  "title": "Decision Outcome",
+  "type": "object"
+}

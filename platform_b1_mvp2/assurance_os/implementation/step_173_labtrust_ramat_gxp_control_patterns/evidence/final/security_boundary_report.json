@@ -1,0 +1,19 @@
+{
+  "accountable_human_authority_preserved": true,
+  "company_specific_data_present": false,
+  "credentials_present": false,
+  "deployment_instructions_present": false,
+  "destructive_actions_present": false,
+  "hardware_commands_present": false,
+  "patient_data_present": false,
+  "platform_b1_decision_engine": true,
+  "production_data_present": false,
+  "production_endpoints_present": false,
+  "ramat_vision_display_only": true,
+  "real_regulated_records_present": false,
+  "schema_version": "1.0.0",
+  "source_disagreement_silently_reconciled": false,
+  "source_system_writeback_present": false,
+  "status": "PASS",
+  "synthetic": true
+}

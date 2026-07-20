@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "traceability": {
+    "acceptance_control_ids": [
+      "AC-01",
+      "AC-02",
+      "AC-03",
+      "AC-04",
+      "AC-05",
+      "AC-06",
+      "AC-07",
+      "AC-08",
+      "AC-09",
+      "AC-10",
+      "AC-11",
+      "AC-12",
+      "AC-13",
+      "AC-14",
+      "AC-15",
+      "AC-16",
+      "AC-17",
+      "AC-18",
+      "AC-19",
+      "AC-20"
+    ],
+    "doctrine": [
+      "LabTrust",
+      "No-Bind Governance",
+      "Human authority preservation",
+      "Source-system authority",
+      "Independent reconstruction"
+    ],
+    "generated_manifest_count": 60,
+    "scenario_ids": [
+      "SC-01",
+      "SC-02",
+      "SC-03",
+      "SC-04",
+      "SC-05",
+      "SC-06",
+      "SC-07",
+      "SC-08",
+      "SC-09",
+      "SC-10",
+      "SC-11",
+      "SC-12"
+    ],
+    "static_manifest_count": 160
+  }
+}

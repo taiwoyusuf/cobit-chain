@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "alarm_active": {
+      "type": "boolean"
+    },
+    "excursion_active": {
+      "type": "boolean"
+    },
+    "impact_review_complete": {
+      "type": "boolean"
+    },
+    "monitored_state_acceptable": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "room_ready": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    },
+    "utility_state_acceptable": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "monitored_state_acceptable",
+    "utility_state_acceptable",
+    "alarm_active",
+    "excursion_active",
+    "impact_review_complete",
+    "room_ready"
+  ],
+  "title": "Environmental Readiness",
+  "type": "object"
+}

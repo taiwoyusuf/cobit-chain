@@ -1,0 +1,11 @@
+{
+  "byte_identical": true,
+  "digest_identical": true,
+  "first_sha256": "695DCEC3574BE8FEFDEF4EFAD5109AF7E4A5F2D3B5D5F3BE218D728933F3E3BB",
+  "record_id": "DETERMINISM-05",
+  "schema_version": "1.0.0",
+  "second_sha256": "695DCEC3574BE8FEFDEF4EFAD5109AF7E4A5F2D3B5D5F3BE218D728933F3E3BB",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "blob_hash"
+}

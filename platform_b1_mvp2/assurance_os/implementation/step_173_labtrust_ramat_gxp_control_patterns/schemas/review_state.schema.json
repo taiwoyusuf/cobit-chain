@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "quality_disposition_required": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "review_complete": {
+      "type": "boolean"
+    },
+    "review_required": {
+      "type": "boolean"
+    },
+    "reviewer_authority_current": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "review_required",
+    "review_complete",
+    "reviewer_authority_current",
+    "quality_disposition_required"
+  ],
+  "title": "Review State",
+  "type": "object"
+}

@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accountable_human_required": {
+      "type": "boolean"
+    },
+    "authority_current": {
+      "type": "boolean"
+    },
+    "authority_present": {
+      "type": "boolean"
+    },
+    "authority_sufficient": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "authority_present",
+    "authority_current",
+    "authority_sufficient",
+    "accountable_human_required"
+  ],
+  "title": "Authority State",
+  "type": "object"
+}

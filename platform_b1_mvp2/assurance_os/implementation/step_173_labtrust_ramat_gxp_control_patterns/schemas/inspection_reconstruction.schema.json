@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority_trace": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "control_evaluations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "decision_trace": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "source_snapshots": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "source_snapshots",
+    "control_evaluations",
+    "decision_trace",
+    "authority_trace",
+    "complete"
+  ],
+  "title": "Inspection Reconstruction",
+  "type": "object"
+}

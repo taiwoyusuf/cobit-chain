@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-03",
+  "evidence": [
+    "Configured outcome set equals ALLOW, HOLD, NO-BIND, DENY, and FAIL-CLOSED."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-03-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

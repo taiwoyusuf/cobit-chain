@@ -1,0 +1,95 @@
+{
+  "authority_policy": {
+    "accountable_human_preserved": true,
+    "autonomous_regulated_release": false,
+    "no_bind_when_authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "company_specific_data_present": false,
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "expected_primary_outcome": "NO-BIND",
+  "inputs": {
+    "calibration_current": true,
+    "identity_confirmed": true,
+    "weekly_verification_current": false
+  },
+  "inspection_reconstruction": {
+    "authority_trace": [
+      "Platform B1 decision authority preserved.",
+      "Accountable-human regulated authority preserved.",
+      "RAMAT Vision binding authority absent."
+    ],
+    "complete": true,
+    "control_evaluations": [
+      "Required use-time verification is missing or expired."
+    ],
+    "decision_trace": [
+      "Evaluate DENY",
+      "Evaluate FAIL-CLOSED",
+      "Evaluate NO-BIND",
+      "Evaluate HOLD",
+      "Evaluate ALLOW",
+      "Select NO-BIND"
+    ],
+    "review_trace": [
+      "Required review state preserved in scenario inputs."
+    ],
+    "source_snapshot_sha256": "D6D5ED3F3CF31C31863573E8F145F52E13BB72DD6383DE75930163120B0E497F",
+    "source_snapshots": [
+      {
+        "field": "calibration_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "identity_confirmed",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "weekly_verification_current",
+        "synthetic": true,
+        "value": false
+      }
+    ]
+  },
+  "observed_outcome": "NO-BIND",
+  "patient_data_present": false,
+  "production_data_present": false,
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "bind_regulated_action",
+      "override",
+      "reconcile_source_states",
+      "release",
+      "replace_accountable_human",
+      "replace_official_record",
+      "resolve_hold",
+      "write_back"
+    ]
+  },
+  "reasons": [
+    "Required use-time verification is missing or expired."
+  ],
+  "record_id": "SC-03-RESULT",
+  "scenario_id": "SC-03",
+  "schema_version": "1.0.0",
+  "source_state_policy": {
+    "official_records_remain_in_sources": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_snapshots_preserved": true
+  },
+  "status": "PASS",
+  "synthetic": true,
+  "title": "Pipette Verification Missing"
+}

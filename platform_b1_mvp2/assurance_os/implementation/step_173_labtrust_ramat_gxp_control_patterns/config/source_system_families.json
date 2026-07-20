@@ -1,0 +1,58 @@
+{
+  "official_records_remain_in_sources": true,
+  "schema_version": "1.0.0",
+  "source_families": [
+    {
+      "description": "Synthetic controlled spreadsheet lifecycle and execution-copy source.",
+      "id": "VALIDATED_SPREADSHEET"
+    },
+    {
+      "description": "Synthetic liquid-delivery equipment identity, verification, and calibration source.",
+      "id": "PIPETTE"
+    },
+    {
+      "description": "Synthetic weighing-equipment day-of-use and qualification source.",
+      "id": "BALANCE"
+    },
+    {
+      "description": "Synthetic laboratory application migration-readiness source.",
+      "id": "MIGRATION_APPLICATION"
+    },
+    {
+      "description": "Synthetic airborne-particle monitoring source.",
+      "id": "PARTICLE_MONITORING"
+    },
+    {
+      "description": "Synthetic temperature, humidity, pressure, alarm, and excursion source.",
+      "id": "ENVIRONMENTAL_MONITORING"
+    },
+    {
+      "description": "Synthetic facility-control and utility-dependency source.",
+      "id": "BUILDING_MANAGEMENT"
+    },
+    {
+      "description": "Synthetic analytical instrument, method, result, and review source.",
+      "id": "ANALYTICAL_RESULT_PLATFORM"
+    },
+    {
+      "description": "Synthetic container-closure integrity equipment and result source.",
+      "id": "CONTAINER_CLOSURE_TESTING"
+    },
+    {
+      "description": "Synthetic maintenance, service, support, and lifecycle source.",
+      "id": "MAINTENANCE_MANAGEMENT"
+    },
+    {
+      "description": "Synthetic owner, support, relationship, and lifecycle source.",
+      "id": "CONFIGURATION_MANAGEMENT"
+    },
+    {
+      "description": "Synthetic utility, UPS, transfer, and generator event source.",
+      "id": "POWER_TRANSFER"
+    },
+    {
+      "description": "Synthetic cold-chain state, excursion, review, and disposition source.",
+      "id": "COLD_CHAIN"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "decision_engine": {
+      "const": "Platform B1",
+      "type": "string"
+    },
+    "permitted_actions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "prohibited_actions": {
+      "items": {
+        "enum": [
+          "approve",
+          "release",
+          "override",
+          "write_back",
+          "reconcile_source_states",
+          "resolve_hold",
+          "bind_regulated_action",
+          "replace_official_record",
+          "replace_accountable_human"
+        ],
+        "type": "string"
+      },
+      "minItems": 9,
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "permitted_actions",
+    "prohibited_actions",
+    "decision_engine"
+  ],
+  "title": "Ramat Display Contract",
+  "type": "object"
+}

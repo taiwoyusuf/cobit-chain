@@ -1,0 +1,17 @@
+{
+  "conditional_rule": "Use NO-BIND when required accountable authority is absent or unavailable.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "audit_check_passed": true,
+    "controlled_template_current": true,
+    "executed_copy_created": true,
+    "quality_review_complete": false,
+    "reviewer_complete": false
+  },
+  "record_id": "SC-01",
+  "scenario_id": "SC-01",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Validated Spreadsheet Assurance"
+}

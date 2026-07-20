@@ -1,0 +1,18 @@
+{
+  "conditional_rule": "Use NO-BIND when no accountable cutover authority exists.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "backup_evidence_present": true,
+    "configuration_owner_current": true,
+    "hypercare_owner_present": false,
+    "restore_test_complete": false,
+    "synthetic_credential_governance_current": true,
+    "target_architecture_defined": true
+  },
+  "record_id": "SC-09",
+  "scenario_id": "SC-09",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Migration Readiness"
+}

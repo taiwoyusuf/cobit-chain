@@ -1,0 +1,13 @@
+{
+  "candidate": "synthetic prohibited-marker test value",
+  "detected": true,
+  "expected_detection": "Content-control scanner rejects prohibited material",
+  "external_side_effect": false,
+  "governing_outcome": "DENY",
+  "record_id": "TAMPER-07",
+  "rejected": true,
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "prohibited_content_injection"
+}

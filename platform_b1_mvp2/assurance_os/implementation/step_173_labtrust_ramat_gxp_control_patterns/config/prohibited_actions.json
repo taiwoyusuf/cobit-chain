@@ -1,0 +1,14 @@
+{
+  "ramat_vision_prohibited_actions": [
+    "approve",
+    "release",
+    "override",
+    "write_back",
+    "reconcile_source_states",
+    "resolve_hold",
+    "bind_regulated_action",
+    "replace_official_record",
+    "replace_accountable_human"
+  ],
+  "schema_version": "1.0.0"
+}

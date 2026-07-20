@@ -1,0 +1,113 @@
+{
+  "authority_policy": {
+    "accountable_human_preserved": true,
+    "autonomous_regulated_release": false,
+    "no_bind_when_authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "company_specific_data_present": false,
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "backup_evidence_present": true,
+    "configuration_owner_current": true,
+    "hypercare_owner_present": false,
+    "restore_test_complete": false,
+    "synthetic_credential_governance_current": true,
+    "target_architecture_defined": true
+  },
+  "inspection_reconstruction": {
+    "authority_trace": [
+      "Platform B1 decision authority preserved.",
+      "Accountable-human regulated authority preserved.",
+      "RAMAT Vision binding authority absent."
+    ],
+    "complete": true,
+    "control_evaluations": [
+      "Restore evidence and post-cutover operational ownership are incomplete."
+    ],
+    "decision_trace": [
+      "Evaluate DENY",
+      "Evaluate FAIL-CLOSED",
+      "Evaluate NO-BIND",
+      "Evaluate HOLD",
+      "Evaluate ALLOW",
+      "Select HOLD"
+    ],
+    "review_trace": [
+      "Required review state preserved in scenario inputs."
+    ],
+    "source_snapshot_sha256": "45F7AC7680F81EE802580D6C2EDDC99AE228547AC20304B35802130BFFE24846",
+    "source_snapshots": [
+      {
+        "field": "backup_evidence_present",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "configuration_owner_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "hypercare_owner_present",
+        "synthetic": true,
+        "value": false
+      },
+      {
+        "field": "restore_test_complete",
+        "synthetic": true,
+        "value": false
+      },
+      {
+        "field": "synthetic_credential_governance_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "target_architecture_defined",
+        "synthetic": true,
+        "value": true
+      }
+    ]
+  },
+  "observed_outcome": "HOLD",
+  "patient_data_present": false,
+  "production_data_present": false,
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "bind_regulated_action",
+      "override",
+      "reconcile_source_states",
+      "release",
+      "replace_accountable_human",
+      "replace_official_record",
+      "resolve_hold",
+      "write_back"
+    ]
+  },
+  "reasons": [
+    "Restore evidence and post-cutover operational ownership are incomplete."
+  ],
+  "record_id": "SC-09-RESULT",
+  "scenario_id": "SC-09",
+  "schema_version": "1.0.0",
+  "source_state_policy": {
+    "official_records_remain_in_sources": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_snapshots_preserved": true
+  },
+  "status": "PASS",
+  "synthetic": true,
+  "title": "Migration Readiness"
+}

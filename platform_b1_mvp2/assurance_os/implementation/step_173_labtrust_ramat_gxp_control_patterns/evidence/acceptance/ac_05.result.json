@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-05",
+  "evidence": [
+    "SC-03 and SC-10 produce NO-BIND when admissibility or authority is insufficient."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-05-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

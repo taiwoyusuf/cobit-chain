@@ -1,0 +1,52 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "decision_rules": {
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "family": {
+      "type": "string"
+    },
+    "human_authority_required": {
+      "type": "boolean"
+    },
+    "pattern_id": {
+      "type": "string"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "required_inputs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "pattern_id",
+    "family",
+    "required_inputs",
+    "decision_rules",
+    "human_authority_required"
+  ],
+  "title": "Control Pattern",
+  "type": "object"
+}

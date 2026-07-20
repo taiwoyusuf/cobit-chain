@@ -1,0 +1,17 @@
+{
+  "conditional_rule": "Use HOLD for unresolved excursion review and NO-BIND when disposition authority is unavailable.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "ALLOW",
+  "inputs": {
+    "cold_chain_excursion_detected": false,
+    "generator_state_recorded": true,
+    "transfer_recorded": true,
+    "ups_bridge_recorded": true,
+    "utility_power_failed": true
+  },
+  "record_id": "SC-11",
+  "scenario_id": "SC-11",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Power and Cold-Chain Dependency"
+}

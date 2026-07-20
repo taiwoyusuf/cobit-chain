@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "dependency_mismatches": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "edges": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "nodes": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "nodes",
+    "edges",
+    "dependency_mismatches"
+  ],
+  "title": "Equipment Reality Graph",
+  "type": "object"
+}

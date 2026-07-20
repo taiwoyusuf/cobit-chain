@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "maintenance_current": {
+      "type": "boolean"
+    },
+    "obsolescence_risk": {
+      "type": "string"
+    },
+    "owner_current": {
+      "type": "boolean"
+    },
+    "parts_available": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "retirement_required": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "support_current": {
+      "type": "boolean"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "maintenance_current",
+    "support_current",
+    "parts_available",
+    "owner_current",
+    "obsolescence_risk",
+    "retirement_required"
+  ],
+  "title": "Maintenance Lifecycle",
+  "type": "object"
+}

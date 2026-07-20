@@ -1,0 +1,30 @@
+{
+  "acceptance_control_count": 20,
+  "failed": 0,
+  "passed": 20,
+  "result_paths": [
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_01.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_02.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_03.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_04.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_05.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_06.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_07.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_08.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_09.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_10.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_11.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_12.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_13.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_14.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_15.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_16.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_17.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_18.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_19.result.json",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/acceptance/ac_20.result.json"
+  ],
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

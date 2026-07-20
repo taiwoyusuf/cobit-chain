@@ -1,0 +1,15 @@
+{
+  "conditional_rule": "HOLD is permitted only when a governed remediation path and authorized reviewer are identified.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "NO-BIND",
+  "inputs": {
+    "calibration_current": true,
+    "identity_confirmed": true,
+    "weekly_verification_current": false
+  },
+  "record_id": "SC-03",
+  "scenario_id": "SC-03",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Pipette Verification Missing"
+}

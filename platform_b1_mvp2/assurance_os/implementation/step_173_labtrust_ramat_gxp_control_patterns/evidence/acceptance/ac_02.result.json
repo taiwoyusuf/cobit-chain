@@ -1,0 +1,14 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-02",
+  "evidence": [
+    "Step 173C sealed evidence confirms zero generated paths existed at Step 173C exit.",
+    "Step 173D creates only the locked generated set."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-02-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

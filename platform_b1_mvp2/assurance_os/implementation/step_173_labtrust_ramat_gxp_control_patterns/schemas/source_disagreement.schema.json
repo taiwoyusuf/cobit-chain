@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "disagreement_present": {
+      "type": "boolean"
+    },
+    "human_review_required": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "silently_reconciled": {
+      "const": false,
+      "type": "boolean"
+    },
+    "source_snapshot_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "type": "array"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "disagreement_present",
+    "source_snapshot_ids",
+    "silently_reconciled",
+    "human_review_required"
+  ],
+  "title": "Source Disagreement",
+  "type": "object"
+}

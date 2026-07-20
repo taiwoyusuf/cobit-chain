@@ -1,0 +1,13 @@
+{
+  "byte_length": 1826,
+  "original_sha256": "0ED5D3611313E5ABEB24974CA2B2384FDD634048656B532F22802B92705FC794",
+  "record_id": "RECOVERY-03",
+  "repository_write_performed": false,
+  "restoration_match": true,
+  "restored_sha256": "0ED5D3611313E5ABEB24974CA2B2384FDD634048656B532F22802B92705FC794",
+  "schema_version": "1.0.0",
+  "source_relative_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/patterns/labtrust/core.json",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "pattern_restore"
+}

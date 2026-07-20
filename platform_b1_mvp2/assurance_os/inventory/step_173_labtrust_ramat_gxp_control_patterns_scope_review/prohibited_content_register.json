@@ -1,0 +1,21 @@
+{
+  "prohibited_content": [
+    "internal_procedure_text",
+    "internal_document_identifiers",
+    "personal_names",
+    "email_addresses",
+    "screenshots",
+    "internal_asset_identifiers",
+    "real_regulated_records",
+    "production_data",
+    "patient_or_subject_data",
+    "credentials",
+    "access_tokens",
+    "private_keys",
+    "certificates",
+    "production_endpoints",
+    "hardware_commands",
+    "deployment_instructions"
+  ],
+  "schema_version": "1.0.0"
+}

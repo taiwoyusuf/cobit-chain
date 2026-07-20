@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0.0",
+  "traceability": [
+    {
+      "control_id": "AC-01",
+      "future_result_path": "evidence/acceptance/ac_01.result.json",
+      "requirement": "The implementation footprint equals the locked 160 STATIC / 173C paths."
+    },
+    {
+      "control_id": "AC-02",
+      "future_result_path": "evidence/acceptance/ac_02.result.json",
+      "requirement": "None of the 60 GENERATED / 173D paths exists after Step 173C."
+    },
+    {
+      "control_id": "AC-03",
+      "future_result_path": "evidence/acceptance/ac_03.result.json",
+      "requirement": "Only ALLOW, HOLD, NO-BIND, DENY, and FAIL-CLOSED are permitted."
+    },
+    {
+      "control_id": "AC-04",
+      "future_result_path": "evidence/acceptance/ac_04.result.json",
+      "requirement": "DENY precedes FAIL-CLOSED, NO-BIND, HOLD, and ALLOW."
+    },
+    {
+      "control_id": "AC-05",
+      "future_result_path": "evidence/acceptance/ac_05.result.json",
+      "requirement": "Insufficient authority or admissibility cannot produce ALLOW."
+    },
+    {
+      "control_id": "AC-06",
+      "future_result_path": "evidence/acceptance/ac_06.result.json",
+      "requirement": "Required accountable-human review, disposition, approval, or release cannot be automated."
+    },
+    {
+      "control_id": "AC-07",
+      "future_result_path": "evidence/acceptance/ac_07.result.json",
+      "requirement": "Conflicting source snapshots remain represented and are not silently reconciled."
+    },
+    {
+      "control_id": "AC-08",
+      "future_result_path": "evidence/acceptance/ac_08.result.json",
+      "requirement": "RAMAT Vision cannot approve, release, override, write back, resolve a hold, or bind action."
+    },
+    {
+      "control_id": "AC-09",
+      "future_result_path": "evidence/acceptance/ac_09.result.json",
+      "requirement": "Pending required review produces HOLD or NO-BIND, never ALLOW."
+    },
+    {
+      "control_id": "AC-10",
+      "future_result_path": "evidence/acceptance/ac_10.result.json",
+      "requirement": "Current verification, calibration, intended-use match, and supporting balance may permit ALLOW."
+    },
+    {
+      "control_id": "AC-11",
+      "future_result_path": "evidence/acceptance/ac_11.result.json",
+      "requirement": "Missing or expired verification prevents ALLOW."
+    },
+    {
+      "control_id": "AC-12",
+      "future_result_path": "evidence/acceptance/ac_12.result.json",
+      "requirement": "Current checks, minimum-weight suitability, and standards may permit ALLOW."
+    },
+    {
+      "control_id": "AC-13",
+      "future_result_path": "evidence/acceptance/ac_13.result.json",
+      "requirement": "Incomplete required requalification prevents ALLOW."
+    },
+    {
+      "control_id": "AC-14",
+      "future_result_path": "evidence/acceptance/ac_14.result.json",
+      "requirement": "Acceptable monitored conditions may permit ALLOW."
+    },
+    {
+      "control_id": "AC-15",
+      "future_result_path": "evidence/acceptance/ac_15.result.json",
+      "requirement": "An unresolved excursion prevents ALLOW."
+    },
+    {
+      "control_id": "AC-16",
+      "future_result_path": "evidence/acceptance/ac_16.result.json",
+      "requirement": "Pending required review prevents reportable reliance."
+    },
+    {
+      "control_id": "AC-17",
+      "future_result_path": "evidence/acceptance/ac_17.result.json",
+      "requirement": "Missing restore evidence or operational ownership prevents cutover ALLOW."
+    },
+    {
+      "control_id": "AC-18",
+      "future_result_path": "evidence/acceptance/ac_18.result.json",
+      "requirement": "Missing ownership, support, or lifecycle authority produces NO-BIND."
+    },
+    {
+      "control_id": "AC-19",
+      "future_result_path": "evidence/acceptance/ac_19.result.json",
+      "requirement": "Outcome reflects transition evidence, excursion state, and accountable-human disposition."
+    },
+    {
+      "control_id": "AC-20",
+      "future_result_path": "evidence/acceptance/ac_20.result.json",
+      "requirement": "The package uses synthetic data and preserves independent reconstruction evidence."
+    }
+  ]
+}

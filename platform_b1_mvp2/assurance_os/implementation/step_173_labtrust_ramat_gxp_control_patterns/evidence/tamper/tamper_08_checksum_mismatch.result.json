@@ -1,0 +1,13 @@
+{
+  "candidate": "0000000000000000000000000000000000000000000000000000000000000000",
+  "detected": true,
+  "expected_detection": "Byte ledger and file digest differ",
+  "external_side_effect": false,
+  "governing_outcome": "FAIL-CLOSED",
+  "record_id": "TAMPER-08",
+  "rejected": true,
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "checksum_mismatch"
+}

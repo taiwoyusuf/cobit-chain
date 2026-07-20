@@ -1,0 +1,99 @@
+{
+  "outcome_distribution": {
+    "ALLOW": 4,
+    "DENY": 0,
+    "FAIL-CLOSED": 1,
+    "HOLD": 5,
+    "NO-BIND": 2
+  },
+  "results": [
+    {
+      "observed_outcome": "HOLD",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_01_validated_spreadsheet_assurance.result.json",
+      "scenario_id": "SC-01",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "ALLOW",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_02_pipette_measurement_integrity.result.json",
+      "scenario_id": "SC-02",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "NO-BIND",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_03_pipette_verification_missing.result.json",
+      "scenario_id": "SC-03",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "ALLOW",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_04_balance_day_of_use_assurance.result.json",
+      "scenario_id": "SC-04",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "FAIL-CLOSED",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_05_balance_requalification_required.result.json",
+      "scenario_id": "SC-05",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "ALLOW",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_06_environmental_readiness.result.json",
+      "scenario_id": "SC-06",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "HOLD",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_07_environmental_excursion.result.json",
+      "scenario_id": "SC-07",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "HOLD",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_08_analytical_result_reliance.result.json",
+      "scenario_id": "SC-08",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "HOLD",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_09_migration_readiness.result.json",
+      "scenario_id": "SC-09",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "NO-BIND",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_10_cmdb_authority_gap.result.json",
+      "scenario_id": "SC-10",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "ALLOW",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_11_power_cold_chain_dependency.result.json",
+      "scenario_id": "SC-11",
+      "status": "PASS"
+    },
+    {
+      "observed_outcome": "HOLD",
+      "reconstruction_complete": true,
+      "result_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence/scenarios/scenario_12_ramat_vision_display_only.result.json",
+      "scenario_id": "SC-12",
+      "status": "PASS"
+    }
+  ],
+  "scenario_count": 12,
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

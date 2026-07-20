@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "baseline_current": {
+      "type": "boolean"
+    },
+    "configuration_aligned": {
+      "type": "boolean"
+    },
+    "context_of_use_current": {
+      "type": "boolean"
+    },
+    "dependencies_aligned": {
+      "type": "boolean"
+    },
+    "evidence_current": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "standing": {
+      "enum": [
+        "CURRENT",
+        "DRIFT_DETECTED",
+        "UNCERTAIN",
+        "ASSESSMENT_REQUIRED"
+      ],
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "baseline_current",
+    "configuration_aligned",
+    "dependencies_aligned",
+    "context_of_use_current",
+    "evidence_current",
+    "standing"
+  ],
+  "title": "Validation Standing",
+  "type": "object"
+}

@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "calibration_current": {
+      "type": "boolean"
+    },
+    "identity_confirmed": {
+      "type": "boolean"
+    },
+    "range_suitable": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "reference_standard_current": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    },
+    "traceability_current": {
+      "type": "boolean"
+    },
+    "verification_current": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "identity_confirmed",
+    "calibration_current",
+    "verification_current",
+    "traceability_current",
+    "range_suitable",
+    "reference_standard_current"
+  ],
+  "title": "Measurement Integrity",
+  "type": "object"
+}

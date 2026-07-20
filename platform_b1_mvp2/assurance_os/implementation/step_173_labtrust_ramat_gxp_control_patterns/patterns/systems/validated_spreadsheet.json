@@ -1,0 +1,38 @@
+{
+  "mapped_control_families": [
+    "SPREADSHEETTRUST",
+    "VALIDATION_STANDING",
+    "INSPECTION_RECONSTRUCTION"
+  ],
+  "pattern_id": "SYSTEM-VALIDATED_SPREADSHEET",
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_hold",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "required_signals": [
+    "controlled_template",
+    "executed_copy",
+    "formula_integrity",
+    "audit_check",
+    "review",
+    "quality_disposition"
+  ],
+  "schema_version": "1.0.0",
+  "source_authority": {
+    "official_record_retained_in_source": true,
+    "silent_reconciliation_allowed": false
+  },
+  "source_family": "VALIDATED_SPREADSHEET",
+  "synthetic_only": true
+}

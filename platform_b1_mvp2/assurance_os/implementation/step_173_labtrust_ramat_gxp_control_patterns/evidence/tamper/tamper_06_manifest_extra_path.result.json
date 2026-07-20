@@ -1,0 +1,13 @@
+{
+  "candidate": "unauthorized/example.json",
+  "detected": true,
+  "expected_detection": "Path is not present in locked manifest",
+  "external_side_effect": false,
+  "governing_outcome": "FAIL-CLOSED",
+  "record_id": "TAMPER-06",
+  "rejected": true,
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "manifest_extra_path"
+}

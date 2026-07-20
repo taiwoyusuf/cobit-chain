@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "asset_identity": {
+      "type": "string"
+    },
+    "calibration_state": {
+      "type": "string"
+    },
+    "dependencies": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "lifecycle_state": {
+      "type": "string"
+    },
+    "maintenance_state": {
+      "type": "string"
+    },
+    "owner_state": {
+      "type": "string"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "support_state": {
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    },
+    "validation_state": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "asset_identity",
+    "owner_state",
+    "support_state",
+    "lifecycle_state",
+    "validation_state",
+    "calibration_state",
+    "maintenance_state",
+    "dependencies"
+  ],
+  "title": "Equipment Passport",
+  "type": "object"
+}

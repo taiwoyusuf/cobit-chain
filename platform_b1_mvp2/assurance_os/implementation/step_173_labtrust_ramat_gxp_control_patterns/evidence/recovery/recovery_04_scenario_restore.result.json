@@ -1,0 +1,13 @@
+{
+  "byte_length": 516,
+  "original_sha256": "04847C8A5371D0B28521248375320701B96330DD03E965CB78B15BD80F623E1A",
+  "record_id": "RECOVERY-04",
+  "repository_write_performed": false,
+  "restoration_match": true,
+  "restored_sha256": "04847C8A5371D0B28521248375320701B96330DD03E965CB78B15BD80F623E1A",
+  "schema_version": "1.0.0",
+  "source_relative_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/scenarios/scenario_01_validated_spreadsheet_assurance.json",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "scenario_restore"
+}

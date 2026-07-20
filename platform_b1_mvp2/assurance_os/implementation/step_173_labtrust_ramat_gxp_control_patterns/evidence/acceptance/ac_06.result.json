@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-06",
+  "evidence": [
+    "Scenario evidence preserves accountable-human review and disposition authority."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-06-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

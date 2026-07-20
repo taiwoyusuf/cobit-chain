@@ -1,0 +1,53 @@
+{
+  "scenario_acceptance": [
+    {
+      "expected_primary_outcome": "HOLD",
+      "scenario_id": "SC-01"
+    },
+    {
+      "expected_primary_outcome": "ALLOW",
+      "scenario_id": "SC-02"
+    },
+    {
+      "expected_primary_outcome": "NO-BIND",
+      "scenario_id": "SC-03"
+    },
+    {
+      "expected_primary_outcome": "ALLOW",
+      "scenario_id": "SC-04"
+    },
+    {
+      "expected_primary_outcome": "FAIL-CLOSED",
+      "scenario_id": "SC-05"
+    },
+    {
+      "expected_primary_outcome": "ALLOW",
+      "scenario_id": "SC-06"
+    },
+    {
+      "expected_primary_outcome": "HOLD",
+      "scenario_id": "SC-07"
+    },
+    {
+      "expected_primary_outcome": "HOLD",
+      "scenario_id": "SC-08"
+    },
+    {
+      "expected_primary_outcome": "HOLD",
+      "scenario_id": "SC-09"
+    },
+    {
+      "expected_primary_outcome": "NO-BIND",
+      "scenario_id": "SC-10"
+    },
+    {
+      "expected_primary_outcome": "ALLOW",
+      "scenario_id": "SC-11"
+    },
+    {
+      "expected_primary_outcome": "HOLD",
+      "scenario_id": "SC-12"
+    }
+  ],
+  "schema_version": "1.0.0"
+}

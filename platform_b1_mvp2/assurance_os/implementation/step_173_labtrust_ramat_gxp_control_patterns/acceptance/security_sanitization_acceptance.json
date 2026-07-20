@@ -1,0 +1,11 @@
+{
+  "requirements": [
+    "synthetic_only",
+    "no_patient_or_subject_data",
+    "no_production_data",
+    "no_internal_procedure_content",
+    "no_credentials_or_endpoints",
+    "no_external_connection"
+  ],
+  "schema_version": "1.0.0"
+}

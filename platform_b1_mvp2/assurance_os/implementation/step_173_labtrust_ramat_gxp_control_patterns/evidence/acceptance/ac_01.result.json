@@ -1,0 +1,14 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-01",
+  "evidence": [
+    "Locked manifest contains 220 unique CREATE paths.",
+    "Combined package verification confirms 220 exact paths."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-01-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

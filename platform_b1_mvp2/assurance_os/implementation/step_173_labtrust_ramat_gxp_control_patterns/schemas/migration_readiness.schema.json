@@ -1,0 +1,60 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "backup_evidence_present": {
+      "type": "boolean"
+    },
+    "current_architecture_defined": {
+      "type": "boolean"
+    },
+    "cutover_authority_current": {
+      "type": "boolean"
+    },
+    "data_reconciled": {
+      "type": "boolean"
+    },
+    "hypercare_owner_present": {
+      "type": "boolean"
+    },
+    "owner_present": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "restore_test_complete": {
+      "type": "boolean"
+    },
+    "rollback_ready": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    },
+    "target_architecture_defined": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "current_architecture_defined",
+    "target_architecture_defined",
+    "data_reconciled",
+    "backup_evidence_present",
+    "restore_test_complete",
+    "rollback_ready",
+    "owner_present",
+    "hypercare_owner_present",
+    "cutover_authority_current"
+  ],
+  "title": "Migration Readiness",
+  "type": "object"
+}

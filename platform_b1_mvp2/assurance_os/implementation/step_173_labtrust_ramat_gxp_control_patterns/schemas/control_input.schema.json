@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "evidence_references": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "source_family": {
+      "type": "string"
+    },
+    "state": {
+      "type": "object"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "source_family",
+    "state",
+    "evidence_references"
+  ],
+  "title": "Control Input",
+  "type": "object"
+}

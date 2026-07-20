@@ -1,0 +1,13 @@
+{
+  "byte_length": 155671,
+  "original_sha256": "9A8FBF01151687C674AB490EE23AA3A3F3E8CAE822F5760DD2F9D2EAD5D35785",
+  "record_id": "RECOVERY-01",
+  "repository_write_performed": false,
+  "restoration_match": true,
+  "restored_sha256": "9A8FBF01151687C674AB490EE23AA3A3F3E8CAE822F5760DD2F9D2EAD5D35785",
+  "schema_version": "1.0.0",
+  "source_relative_path": "platform_b1_mvp2/assurance_os/inventory/step_173_labtrust_ramat_gxp_control_patterns_scope_review/exact_create_only_manifest.json",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "manifest_restore"
+}

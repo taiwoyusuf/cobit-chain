@@ -1,0 +1,37 @@
+{
+  "mapped_control_families": [
+    "CMDB_AUTHORITY",
+    "EQUIPMENT_PASSPORT"
+  ],
+  "pattern_id": "SYSTEM-CMDB_AUTHORITY",
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_hold",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "required_signals": [
+    "owner",
+    "support_group",
+    "lifecycle_state",
+    "relationships",
+    "service_mapping",
+    "authority_state"
+  ],
+  "schema_version": "1.0.0",
+  "source_authority": {
+    "official_record_retained_in_source": true,
+    "silent_reconciliation_allowed": false
+  },
+  "source_family": "CONFIGURATION_MANAGEMENT",
+  "synthetic_only": true
+}

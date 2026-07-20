@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-20",
+  "evidence": [
+    "All generated scenario evidence is synthetic and includes independent reconstruction packages."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-20-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

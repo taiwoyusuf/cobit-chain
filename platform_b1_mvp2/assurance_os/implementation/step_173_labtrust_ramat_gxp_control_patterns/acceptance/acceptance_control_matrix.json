@@ -1,0 +1,105 @@
+{
+  "controls": [
+    {
+      "id": "AC-01",
+      "name": "Exact manifest integrity",
+      "requirement": "The implementation footprint equals the locked 160 STATIC / 173C paths."
+    },
+    {
+      "id": "AC-02",
+      "name": "Generated-path exclusion",
+      "requirement": "None of the 60 GENERATED / 173D paths exists after Step 173C."
+    },
+    {
+      "id": "AC-03",
+      "name": "Outcome completeness",
+      "requirement": "Only ALLOW, HOLD, NO-BIND, DENY, and FAIL-CLOSED are permitted."
+    },
+    {
+      "id": "AC-04",
+      "name": "Decision precedence",
+      "requirement": "DENY precedes FAIL-CLOSED, NO-BIND, HOLD, and ALLOW."
+    },
+    {
+      "id": "AC-05",
+      "name": "No-Bind Governance",
+      "requirement": "Insufficient authority or admissibility cannot produce ALLOW."
+    },
+    {
+      "id": "AC-06",
+      "name": "Human authority preservation",
+      "requirement": "Required accountable-human review, disposition, approval, or release cannot be automated."
+    },
+    {
+      "id": "AC-07",
+      "name": "Source disagreement preservation",
+      "requirement": "Conflicting source snapshots remain represented and are not silently reconciled."
+    },
+    {
+      "id": "AC-08",
+      "name": "RAMAT display-only boundary",
+      "requirement": "RAMAT Vision cannot approve, release, override, write back, resolve a hold, or bind action."
+    },
+    {
+      "id": "AC-09",
+      "name": "Spreadsheet assurance",
+      "requirement": "Pending required review produces HOLD or NO-BIND, never ALLOW."
+    },
+    {
+      "id": "AC-10",
+      "name": "Pipette current-state assurance",
+      "requirement": "Current verification, calibration, intended-use match, and supporting balance may permit ALLOW."
+    },
+    {
+      "id": "AC-11",
+      "name": "Pipette missing verification",
+      "requirement": "Missing or expired verification prevents ALLOW."
+    },
+    {
+      "id": "AC-12",
+      "name": "Balance day-of-use assurance",
+      "requirement": "Current checks, minimum-weight suitability, and standards may permit ALLOW."
+    },
+    {
+      "id": "AC-13",
+      "name": "Balance requalification",
+      "requirement": "Incomplete required requalification prevents ALLOW."
+    },
+    {
+      "id": "AC-14",
+      "name": "Environmental readiness",
+      "requirement": "Acceptable monitored conditions may permit ALLOW."
+    },
+    {
+      "id": "AC-15",
+      "name": "Environmental excursion",
+      "requirement": "An unresolved excursion prevents ALLOW."
+    },
+    {
+      "id": "AC-16",
+      "name": "Analytical-result review",
+      "requirement": "Pending required review prevents reportable reliance."
+    },
+    {
+      "id": "AC-17",
+      "name": "Migration readiness",
+      "requirement": "Missing restore evidence or operational ownership prevents cutover ALLOW."
+    },
+    {
+      "id": "AC-18",
+      "name": "CMDB authority gap",
+      "requirement": "Missing ownership, support, or lifecycle authority produces NO-BIND."
+    },
+    {
+      "id": "AC-19",
+      "name": "Power and cold-chain dependency",
+      "requirement": "Outcome reflects transition evidence, excursion state, and accountable-human disposition."
+    },
+    {
+      "id": "AC-20",
+      "name": "Sanitization and reconstruction",
+      "requirement": "The package uses synthetic data and preserves independent reconstruction evidence."
+    }
+  ],
+  "schema_version": "1.0.0"
+}

@@ -1,0 +1,16 @@
+{
+  "conditional_rule": "The interface may display the gap but cannot bind regulated action.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "NO-BIND",
+  "inputs": {
+    "asset_exists": true,
+    "lifecycle_state_certain": false,
+    "owner_present": false,
+    "support_group_present": false
+  },
+  "record_id": "SC-10",
+  "scenario_id": "SC-10",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "CMDB Authority Gap"
+}

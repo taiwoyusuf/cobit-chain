@@ -1,0 +1,14 @@
+{
+  "conditional_rule": "HOLD is permitted only when regulated use is physically and procedurally prevented.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "FAIL-CLOSED",
+  "inputs": {
+    "relocation_or_status_change": true,
+    "requalification_complete": false
+  },
+  "record_id": "SC-05",
+  "scenario_id": "SC-05",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Balance Requalification Required"
+}

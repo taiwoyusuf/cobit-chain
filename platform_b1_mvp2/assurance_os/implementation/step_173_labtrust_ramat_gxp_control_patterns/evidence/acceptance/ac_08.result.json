@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-08",
+  "evidence": [
+    "SC-12 preserves display-only behavior and Platform B1 decision authority."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-08-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

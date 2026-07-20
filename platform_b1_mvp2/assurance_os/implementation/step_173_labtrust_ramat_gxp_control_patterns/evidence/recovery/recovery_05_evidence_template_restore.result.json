@@ -1,0 +1,13 @@
+{
+  "byte_length": 267,
+  "original_sha256": "42A2FE53D7A50D70C8FCF9B0BC0BD5ADA94F1D6D42EC42C12A7445EC5EE8A9B5",
+  "record_id": "RECOVERY-05",
+  "repository_write_performed": false,
+  "restoration_match": true,
+  "restored_sha256": "42A2FE53D7A50D70C8FCF9B0BC0BD5ADA94F1D6D42EC42C12A7445EC5EE8A9B5",
+  "schema_version": "1.0.0",
+  "source_relative_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/evidence_templates/scenario_execution_template.json",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "evidence_template_restore"
+}

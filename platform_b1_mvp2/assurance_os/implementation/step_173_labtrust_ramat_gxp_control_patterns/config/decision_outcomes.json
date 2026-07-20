@@ -1,0 +1,30 @@
+{
+  "outcomes": [
+    {
+      "code": "DENY",
+      "meaning": "A prohibited, invalid, disqualifying, or expressly rejected condition prevents the assessed action.",
+      "precedence": 1
+    },
+    {
+      "code": "FAIL-CLOSED",
+      "meaning": "Required state cannot be trusted or safely evaluated, so permission is not produced.",
+      "precedence": 2
+    },
+    {
+      "code": "NO-BIND",
+      "meaning": "Evidence may be displayed and preserved, but regulated action cannot bind because authority or admissibility is insufficient.",
+      "precedence": 3
+    },
+    {
+      "code": "HOLD",
+      "meaning": "The action is paused pending a known review, evidence item, disposition, or recoverable dependency.",
+      "precedence": 4
+    },
+    {
+      "code": "ALLOW",
+      "meaning": "All required evidence, dependency, review, and authority conditions are satisfied.",
+      "precedence": 5
+    }
+  ],
+  "schema_version": "1.0.0"
+}

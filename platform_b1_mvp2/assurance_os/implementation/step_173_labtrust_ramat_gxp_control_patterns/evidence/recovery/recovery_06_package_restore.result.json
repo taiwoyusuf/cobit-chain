@@ -1,0 +1,13 @@
+{
+  "byte_length": 4107,
+  "original_sha256": "D33EE0A565AF3BF610CDEDF8AAC0E4BF635B87E48B1DB04906523C7A660FD500",
+  "record_id": "RECOVERY-06",
+  "repository_write_performed": false,
+  "restoration_match": true,
+  "restored_sha256": "D33EE0A565AF3BF610CDEDF8AAC0E4BF635B87E48B1DB04906523C7A660FD500",
+  "schema_version": "1.0.0",
+  "source_relative_path": "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns/acceptance/traceability_matrix.json",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "package_restore"
+}

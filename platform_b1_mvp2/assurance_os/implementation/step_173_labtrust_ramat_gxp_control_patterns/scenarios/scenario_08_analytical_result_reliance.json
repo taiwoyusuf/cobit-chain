@@ -1,0 +1,18 @@
+{
+  "conditional_rule": "Use NO-BIND when required reviewer authority is invalid or unavailable.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "analyst_authority_current": true,
+    "environment_acceptable": true,
+    "instrument_state_current": true,
+    "method_state_current": true,
+    "review_complete": false,
+    "synthetic_result_exists": true
+  },
+  "record_id": "SC-08",
+  "scenario_id": "SC-08",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Analytical Result Reliance"
+}

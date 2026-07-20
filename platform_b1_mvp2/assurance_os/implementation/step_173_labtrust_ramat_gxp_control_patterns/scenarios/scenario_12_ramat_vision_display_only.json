@@ -1,0 +1,16 @@
+{
+  "conditional_rule": "The displayed state must equal the Platform B1 state and creates no independent authority.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "displayed_outcome": "HOLD",
+    "platform_b1_outcome": "HOLD",
+    "synthetic_asset_scanned": true,
+    "write_back_attempted": false
+  },
+  "record_id": "SC-12",
+  "scenario_id": "SC-12",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "RAMAT Vision GxP Display"
+}

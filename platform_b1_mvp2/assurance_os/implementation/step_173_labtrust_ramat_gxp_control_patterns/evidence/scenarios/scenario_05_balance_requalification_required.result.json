@@ -1,0 +1,89 @@
+{
+  "authority_policy": {
+    "accountable_human_preserved": true,
+    "autonomous_regulated_release": false,
+    "no_bind_when_authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "company_specific_data_present": false,
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "expected_primary_outcome": "FAIL-CLOSED",
+  "inputs": {
+    "relocation_or_status_change": true,
+    "requalification_complete": false
+  },
+  "inspection_reconstruction": {
+    "authority_trace": [
+      "Platform B1 decision authority preserved.",
+      "Accountable-human regulated authority preserved.",
+      "RAMAT Vision binding authority absent."
+    ],
+    "complete": true,
+    "control_evaluations": [
+      "A material status change requires completed requalification before reliance."
+    ],
+    "decision_trace": [
+      "Evaluate DENY",
+      "Evaluate FAIL-CLOSED",
+      "Evaluate NO-BIND",
+      "Evaluate HOLD",
+      "Evaluate ALLOW",
+      "Select FAIL-CLOSED"
+    ],
+    "review_trace": [
+      "Required review state preserved in scenario inputs."
+    ],
+    "source_snapshot_sha256": "03FB7CA24CBD73D0534C7836F45C323E1B5DB845C2AA6389DADD4F0339AA8E30",
+    "source_snapshots": [
+      {
+        "field": "relocation_or_status_change",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "requalification_complete",
+        "synthetic": true,
+        "value": false
+      }
+    ]
+  },
+  "observed_outcome": "FAIL-CLOSED",
+  "patient_data_present": false,
+  "production_data_present": false,
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "bind_regulated_action",
+      "override",
+      "reconcile_source_states",
+      "release",
+      "replace_accountable_human",
+      "replace_official_record",
+      "resolve_hold",
+      "write_back"
+    ]
+  },
+  "reasons": [
+    "A material status change requires completed requalification before reliance."
+  ],
+  "record_id": "SC-05-RESULT",
+  "scenario_id": "SC-05",
+  "schema_version": "1.0.0",
+  "source_state_policy": {
+    "official_records_remain_in_sources": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_snapshots_preserved": true
+  },
+  "status": "PASS",
+  "synthetic": true,
+  "title": "Balance Requalification Required"
+}

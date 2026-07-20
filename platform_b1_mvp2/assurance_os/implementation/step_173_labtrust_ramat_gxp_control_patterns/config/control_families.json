@@ -1,0 +1,85 @@
+{
+  "control_families": [
+    {
+      "id": "LABTRUST",
+      "name": "LabTrust",
+      "objective": "Evaluate whether laboratory action, evidence, dependencies, review, and authority agree."
+    },
+    {
+      "id": "SPREADSHEETTRUST",
+      "name": "SpreadsheetTrust",
+      "objective": "Evaluate controlled template, executed copy, formula integrity, provenance, review, and reportability."
+    },
+    {
+      "id": "PIPETTETRUST",
+      "name": "PipetteTrust",
+      "objective": "Evaluate identity, verification, calibration, intended use, supporting balance, and use-time evidence."
+    },
+    {
+      "id": "BALANCETRUST",
+      "name": "BalanceTrust",
+      "objective": "Evaluate identity, day-of-use checks, minimum weight, standards, environment, and requalification."
+    },
+    {
+      "id": "EQUIPMENT_PASSPORT",
+      "name": "Equipment Passport",
+      "objective": "Represent asset identity, owner, lifecycle, validation, calibration, maintenance, dependencies, and evidence."
+    },
+    {
+      "id": "VALIDATION_STANDING",
+      "name": "Validation Standing Assurance",
+      "objective": "Evaluate whether validation assumptions, configuration, dependencies, context of use, and evidence remain current."
+    },
+    {
+      "id": "MEASUREMENT_INTEGRITY",
+      "name": "Measurement Integrity Assurance",
+      "objective": "Evaluate calibration, verification, traceability, range, standards, and measurement-chain validity."
+    },
+    {
+      "id": "ENVIRONMENTAL_READINESS",
+      "name": "Environmental Readiness Assurance",
+      "objective": "Evaluate monitored conditions, utilities, alarms, excursions, room readiness, and impact review."
+    },
+    {
+      "id": "ANALYTICAL_RESULT_RELIANCE",
+      "name": "Analytical Result Reliance Assurance",
+      "objective": "Evaluate instrument, method, analyst, environment, raw evidence, review, and reportability."
+    },
+    {
+      "id": "MAINTENANCE_LIFECYCLE",
+      "name": "Maintenance and Lifecycle Assurance",
+      "objective": "Evaluate maintenance, support, parts, ownership, obsolescence, and retirement state."
+    },
+    {
+      "id": "CMDB_AUTHORITY",
+      "name": "CMDB Authority and Ownership Assurance",
+      "objective": "Evaluate ownership, support, lifecycle, relationships, mapping, and configuration authority."
+    },
+    {
+      "id": "RLT_TRUST",
+      "name": "RLT-Trust",
+      "objective": "Evaluate synthetic radiopharmaceutical laboratory operational dependencies and evidence."
+    },
+    {
+      "id": "MIGRATION_TRUST",
+      "name": "MigrationTrust",
+      "objective": "Evaluate architecture, data, backup, restore, rollback, ownership, hypercare, and cutover authority."
+    },
+    {
+      "id": "RAMAT_DISPLAY",
+      "name": "RAMAT Vision GxP Display State Library",
+      "objective": "Display Platform B1 assurance state without creating binding authority."
+    },
+    {
+      "id": "INSPECTION_RECONSTRUCTION",
+      "name": "Inspection Reconstruction Passport",
+      "objective": "Preserve independently reconstructable source, evidence, decision, review, and authority context."
+    },
+    {
+      "id": "EQUIPMENT_REALITY_GRAPH",
+      "name": "Regulated Equipment Reality Graph",
+      "objective": "Represent dependencies among assets, methods, environment, utilities, maintenance, review, evidence, and authority."
+    }
+  ],
+  "schema_version": "1.0.0"
+}

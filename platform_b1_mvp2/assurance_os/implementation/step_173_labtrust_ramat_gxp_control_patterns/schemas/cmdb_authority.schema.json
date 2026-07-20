@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority_current": {
+      "type": "boolean"
+    },
+    "lifecycle_state_current": {
+      "type": "boolean"
+    },
+    "owner_present": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "relationships_current": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "service_mapping_current": {
+      "type": "boolean"
+    },
+    "support_group_present": {
+      "type": "boolean"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "owner_present",
+    "support_group_present",
+    "lifecycle_state_current",
+    "relationships_current",
+    "service_mapping_current",
+    "authority_current"
+  ],
+  "title": "Cmdb Authority",
+  "type": "object"
+}

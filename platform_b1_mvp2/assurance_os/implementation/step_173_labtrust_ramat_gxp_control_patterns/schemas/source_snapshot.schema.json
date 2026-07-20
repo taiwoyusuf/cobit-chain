@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authoritative_for": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "captured_sequence": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "captured_state": {
+      "type": "object"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "source_family": {
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "source_family",
+    "captured_state",
+    "captured_sequence",
+    "authoritative_for"
+  ],
+  "title": "Source Snapshot",
+  "type": "object"
+}

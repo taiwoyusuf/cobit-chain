@@ -1,0 +1,15 @@
+{
+  "conditional_rule": "No unresolved alarm, excursion, or authority condition may exist.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "ALLOW",
+  "inputs": {
+    "environmental_state_acceptable": true,
+    "particle_state_acceptable": true,
+    "room_readiness_current": true
+  },
+  "record_id": "SC-06",
+  "scenario_id": "SC-06",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Environmental Readiness"
+}

@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-10",
+  "evidence": [
+    "SC-02 permits ALLOW when pipette and supporting-balance conditions are current."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-10-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

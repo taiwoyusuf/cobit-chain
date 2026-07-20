@@ -1,0 +1,113 @@
+{
+  "authority_policy": {
+    "accountable_human_preserved": true,
+    "autonomous_regulated_release": false,
+    "no_bind_when_authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "company_specific_data_present": false,
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "analyst_authority_current": true,
+    "environment_acceptable": true,
+    "instrument_state_current": true,
+    "method_state_current": true,
+    "review_complete": false,
+    "synthetic_result_exists": true
+  },
+  "inspection_reconstruction": {
+    "authority_trace": [
+      "Platform B1 decision authority preserved.",
+      "Accountable-human regulated authority preserved.",
+      "RAMAT Vision binding authority absent."
+    ],
+    "complete": true,
+    "control_evaluations": [
+      "Synthetic result exists, but required review remains incomplete."
+    ],
+    "decision_trace": [
+      "Evaluate DENY",
+      "Evaluate FAIL-CLOSED",
+      "Evaluate NO-BIND",
+      "Evaluate HOLD",
+      "Evaluate ALLOW",
+      "Select HOLD"
+    ],
+    "review_trace": [
+      "Required review state preserved in scenario inputs."
+    ],
+    "source_snapshot_sha256": "74F8E44BFB5AACEE3FEEFA6E5266D0DA4ACB452CDEB9E41B440D6B0B295B5D03",
+    "source_snapshots": [
+      {
+        "field": "analyst_authority_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "environment_acceptable",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "instrument_state_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "method_state_current",
+        "synthetic": true,
+        "value": true
+      },
+      {
+        "field": "review_complete",
+        "synthetic": true,
+        "value": false
+      },
+      {
+        "field": "synthetic_result_exists",
+        "synthetic": true,
+        "value": true
+      }
+    ]
+  },
+  "observed_outcome": "HOLD",
+  "patient_data_present": false,
+  "production_data_present": false,
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "bind_regulated_action",
+      "override",
+      "reconcile_source_states",
+      "release",
+      "replace_accountable_human",
+      "replace_official_record",
+      "resolve_hold",
+      "write_back"
+    ]
+  },
+  "reasons": [
+    "Synthetic result exists, but required review remains incomplete."
+  ],
+  "record_id": "SC-08-RESULT",
+  "scenario_id": "SC-08",
+  "schema_version": "1.0.0",
+  "source_state_policy": {
+    "official_records_remain_in_sources": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_snapshots_preserved": true
+  },
+  "status": "PASS",
+  "synthetic": true,
+  "title": "Analytical Result Reliance"
+}

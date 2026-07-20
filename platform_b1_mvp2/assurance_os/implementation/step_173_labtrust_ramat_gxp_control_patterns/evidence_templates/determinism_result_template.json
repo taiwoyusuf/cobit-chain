@@ -1,0 +1,13 @@
+{
+  "generated_in_step_173c": false,
+  "required_fields": [
+    "record_id",
+    "status",
+    "evidence",
+    "checksum"
+  ],
+  "reserved_for_step_173d": true,
+  "schema_version": "1.0.0",
+  "synthetic_only": true,
+  "template_type": "determinism_result_template"
+}

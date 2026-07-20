@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-18",
+  "evidence": [
+    "SC-10 produces NO-BIND when configuration ownership or lifecycle authority is incomplete."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-18-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

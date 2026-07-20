@@ -1,0 +1,17 @@
+{
+  "conditional_rule": "No higher-precedence condition may be active.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "ALLOW",
+  "inputs": {
+    "calibration_current": true,
+    "identity_confirmed": true,
+    "intended_use_match": true,
+    "supporting_balance_current": true,
+    "weekly_verification_current": true
+  },
+  "record_id": "SC-02",
+  "scenario_id": "SC-02",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Pipette Measurement Integrity"
+}

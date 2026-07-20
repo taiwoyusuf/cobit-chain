@@ -1,0 +1,13 @@
+{
+  "authority_boundary_preserved": true,
+  "control_id": "AC-16",
+  "evidence": [
+    "SC-08 prevents reportable reliance while required result review is pending."
+  ],
+  "hardware_connection": false,
+  "production_connection": false,
+  "record_id": "AC-16-RESULT",
+  "schema_version": "1.0.0",
+  "status": "PASS",
+  "synthetic": true
+}

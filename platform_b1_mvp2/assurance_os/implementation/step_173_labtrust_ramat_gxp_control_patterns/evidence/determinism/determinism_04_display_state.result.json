@@ -1,0 +1,11 @@
+{
+  "byte_identical": true,
+  "digest_identical": true,
+  "first_sha256": "C659229D672A2D1075611BA744319AA7AB386DB09F282F343F1240358E03EC0F",
+  "record_id": "DETERMINISM-04",
+  "schema_version": "1.0.0",
+  "second_sha256": "C659229D672A2D1075611BA744319AA7AB386DB09F282F343F1240358E03EC0F",
+  "status": "PASS",
+  "synthetic": true,
+  "test": "display_state"
+}

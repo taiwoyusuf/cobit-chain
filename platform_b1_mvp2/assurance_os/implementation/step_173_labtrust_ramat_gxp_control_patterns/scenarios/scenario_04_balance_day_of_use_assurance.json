@@ -1,0 +1,18 @@
+{
+  "conditional_rule": "No higher-precedence condition may be active.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "ALLOW",
+  "inputs": {
+    "accuracy_passed": true,
+    "day_of_use_check_current": true,
+    "identity_confirmed": true,
+    "minimum_weight_acceptable": true,
+    "reference_weight_current": true,
+    "repeatability_passed": true
+  },
+  "record_id": "SC-04",
+  "scenario_id": "SC-04",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Balance Day-of-Use Assurance"
+}

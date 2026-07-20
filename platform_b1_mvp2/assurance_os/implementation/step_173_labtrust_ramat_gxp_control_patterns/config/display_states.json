@@ -1,0 +1,96 @@
+{
+  "binding_authority": false,
+  "display_states": {
+    "allow": {
+      "category": "DECISION",
+      "code": "ALLOW",
+      "meaning": "All required assurance conditions are satisfied.",
+      "severity": "INFORMATIONAL"
+    },
+    "authority_unavailable": {
+      "category": "AUTHORITY",
+      "code": "AUTHORITY NO LONGER EXERCISABLE",
+      "meaning": "Required accountable authority is absent, expired, unavailable, or insufficient.",
+      "severity": "CRITICAL"
+    },
+    "context_changed": {
+      "category": "ASSURANCE",
+      "code": "CONTEXT OF USE CHANGED",
+      "meaning": "The intended or actual context of use differs from the governed baseline.",
+      "severity": "HIGH"
+    },
+    "deny": {
+      "category": "DECISION",
+      "code": "DENY",
+      "meaning": "A prohibited or disqualifying condition prevents the action.",
+      "severity": "CRITICAL"
+    },
+    "dependency_mismatch": {
+      "category": "ASSURANCE",
+      "code": "DEPENDENCY STATE MISMATCH",
+      "meaning": "One or more required dependency states disagree or are incompatible.",
+      "severity": "HIGH"
+    },
+    "evidence_expired": {
+      "category": "ASSURANCE",
+      "code": "EVIDENCE NO LONGER CURRENT",
+      "meaning": "Required evidence is expired, superseded, incomplete, or no longer applicable.",
+      "severity": "HIGH"
+    },
+    "fail_closed": {
+      "category": "DECISION",
+      "code": "FAIL-CLOSED",
+      "meaning": "Required state cannot be trusted or safely evaluated.",
+      "severity": "CRITICAL"
+    },
+    "hold": {
+      "category": "DECISION",
+      "code": "HOLD",
+      "meaning": "A known review, evidence item, disposition, or recoverable dependency remains pending.",
+      "severity": "WARNING"
+    },
+    "human_judgment_required": {
+      "category": "AUTHORITY",
+      "code": "HUMAN GMP JUDGMENT REQUIRED",
+      "meaning": "A regulated decision requires accountable-human review or disposition.",
+      "severity": "HIGH"
+    },
+    "independent_reconstruction_available": {
+      "category": "EVIDENCE",
+      "code": "INDEPENDENT RECONSTRUCTION AVAILABLE",
+      "meaning": "The evidence package supports independent reconstruction of the assessed event.",
+      "severity": "INFORMATIONAL"
+    },
+    "no_bind": {
+      "category": "DECISION",
+      "code": "NO-BIND",
+      "meaning": "The interface cannot bind regulated action because authority or admissibility is insufficient.",
+      "severity": "HIGH"
+    },
+    "revalidation_required": {
+      "category": "ASSURANCE",
+      "code": "REVALIDATION ASSESSMENT REQUIRED",
+      "meaning": "A governed human assessment is required to determine revalidation need.",
+      "severity": "HIGH"
+    },
+    "validation_current": {
+      "category": "ASSURANCE",
+      "code": "VALIDATION STANDING CURRENT",
+      "meaning": "Validation assumptions, configuration, dependencies, and context remain current.",
+      "severity": "INFORMATIONAL"
+    },
+    "validation_drift": {
+      "category": "ASSURANCE",
+      "code": "VALIDATION ASSUMPTION DRIFT DETECTED",
+      "meaning": "A validated assumption or governed dependency has materially changed.",
+      "severity": "HIGH"
+    },
+    "validation_uncertain": {
+      "category": "ASSURANCE",
+      "code": "VALIDATION STANDING UNCERTAIN",
+      "meaning": "Current validation standing cannot be established from available evidence.",
+      "severity": "HIGH"
+    }
+  },
+  "schema_version": "1.0.0"
+}

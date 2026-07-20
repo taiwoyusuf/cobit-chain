@@ -1,0 +1,41 @@
+{
+  "mapped_control_families": [
+    "LABTRUST",
+    "EQUIPMENT_PASSPORT",
+    "VALIDATION_STANDING",
+    "MAINTENANCE_LIFECYCLE"
+  ],
+  "pattern_id": "SYSTEM-GENERIC_LAB_EQUIPMENT",
+  "ramat_vision": {
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_hold",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "required_signals": [
+    "identity",
+    "validation",
+    "calibration",
+    "maintenance",
+    "environment",
+    "operator_authority",
+    "review",
+    "evidence"
+  ],
+  "schema_version": "1.0.0",
+  "source_authority": {
+    "official_record_retained_in_source": true,
+    "silent_reconciliation_allowed": false
+  },
+  "source_family": "GENERIC_LAB_EQUIPMENT",
+  "synthetic_only": true
+}

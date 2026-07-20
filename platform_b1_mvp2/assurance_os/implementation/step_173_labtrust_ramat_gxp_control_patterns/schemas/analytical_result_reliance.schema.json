@@ -1,0 +1,52 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "analyst_authorized": {
+      "type": "boolean"
+    },
+    "environment_acceptable": {
+      "type": "boolean"
+    },
+    "instrument_current": {
+      "type": "boolean"
+    },
+    "method_current": {
+      "type": "boolean"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "reportable": {
+      "type": "boolean"
+    },
+    "result_exists": {
+      "type": "boolean"
+    },
+    "review_complete": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "instrument_current",
+    "method_current",
+    "analyst_authorized",
+    "environment_acceptable",
+    "result_exists",
+    "review_complete",
+    "reportable"
+  ],
+  "title": "Analytical Result Reliance",
+  "type": "object"
+}

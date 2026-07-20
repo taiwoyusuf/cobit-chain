@@ -1,0 +1,15 @@
+{
+  "conditional_rule": "Use NO-BIND when required disposition authority cannot be exercised.",
+  "executed_in_step_173c": false,
+  "expected_primary_outcome": "HOLD",
+  "inputs": {
+    "excursion_detected": true,
+    "impact_review_complete": false,
+    "source_snapshots_preserved": true
+  },
+  "record_id": "SC-07",
+  "scenario_id": "SC-07",
+  "schema_version": "1.0.0",
+  "synthetic": true,
+  "title": "Environmental Excursion"
+}

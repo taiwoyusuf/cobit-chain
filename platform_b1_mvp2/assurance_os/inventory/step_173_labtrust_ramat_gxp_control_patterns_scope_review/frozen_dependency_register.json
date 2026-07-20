@@ -1,0 +1,15 @@
+{
+  "closed_historical_dependencies": [
+    "Steps 148B through 172"
+  ],
+  "frozen_dependencies": [
+    "Platform B v1",
+    "Thread D v1"
+  ],
+  "modification_authorized": false,
+  "schema_version": "1.0.0",
+  "sealed_evidence_dependencies": [
+    "Step 173A",
+    "Step 173B"
+  ]
+}

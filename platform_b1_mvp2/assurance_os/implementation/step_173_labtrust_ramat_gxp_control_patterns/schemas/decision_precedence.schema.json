@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "precedence": {
+      "maxItems": 5,
+      "minItems": 5,
+      "prefixItems": [
+        {
+          "const": "DENY"
+        },
+        {
+          "const": "FAIL-CLOSED"
+        },
+        {
+          "const": "NO-BIND"
+        },
+        {
+          "const": "HOLD"
+        },
+        {
+          "const": "ALLOW"
+        }
+      ],
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "synthetic",
+    "precedence"
+  ],
+  "title": "Decision Precedence",
+  "type": "object"
+}
