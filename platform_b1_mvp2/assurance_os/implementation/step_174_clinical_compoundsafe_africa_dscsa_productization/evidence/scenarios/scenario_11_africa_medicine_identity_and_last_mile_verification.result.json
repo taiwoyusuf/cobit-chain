@@ -1,0 +1,89 @@
+{
+  "accountable_human_preserved": true,
+  "application_runtime_network_used": false,
+  "artifact_id": "generated_4e035563fa0b13d01f34ae6c",
+  "artifact_type": "generated_scenario_result",
+  "authority_insufficient": false,
+  "cloud_connection_used": false,
+  "configuration_digest": "7E98651EF6F087075EAFD6645E53954DBB8347092C514ACB481C2BA7E7CE1B5A",
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "4A896C381F29DE16E6668B2D1EBBA4597DF2F54B85D6DD27256E0378838A00A9",
+  "evidence_insufficient": false,
+  "external_runtime_network_used": false,
+  "family": "AFRICA",
+  "hardware_connection_used": false,
+  "input_digest": "251F46100B52324CA16F6D017EA632F835E420858F872EB0D731D1F7787B5143",
+  "inspection_reconstruction": {
+    "complete": true,
+    "generated": true,
+    "required": true
+  },
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "AFRICA",
+    "file_family": "GENERATED_SCENARIO_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/scenarios/scenario_11_africa_medicine_identity_and_last_mile_verification.result.json"
+  },
+  "no_bind_activated": false,
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "ALLOW",
+  "official_records": "remain_in_external_source_systems",
+  "permitted_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY"
+  ],
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "scenario_id": "SC-11",
+  "scenario_name": "Africa Medicine Identity and Last-Mile Verification",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state_policy": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}

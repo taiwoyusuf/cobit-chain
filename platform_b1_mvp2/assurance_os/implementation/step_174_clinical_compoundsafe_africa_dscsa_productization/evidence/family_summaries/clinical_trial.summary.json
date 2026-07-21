@@ -1,0 +1,73 @@
+{
+  "accountable_human_preserved": true,
+  "all_reconstructable": true,
+  "all_synthetic": true,
+  "artifact_id": "generated_98ef5016259f6976a84790c3",
+  "artifact_type": "generated_family_summary",
+  "cloud_connection_used": false,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "A9EF327B87E956494AFD747F5F17C6AF090C56A30FD322085FC4E22B76C49F42",
+  "external_runtime_network_used": false,
+  "family": "CLINICAL_TRIAL",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CLINICAL_TRIAL",
+    "file_family": "GENERATED_FAMILY_SUMMARY",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/family_summaries/clinical_trial.summary.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "outcome_counts": {
+    "ALLOW": 2,
+    "FAIL-CLOSED": 1,
+    "HOLD": 1,
+    "NO-BIND": 1
+  },
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "scenario_count": 5,
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true
+}

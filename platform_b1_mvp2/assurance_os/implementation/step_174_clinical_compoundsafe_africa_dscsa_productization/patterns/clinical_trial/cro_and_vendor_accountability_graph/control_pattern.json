@@ -1,0 +1,112 @@
+{
+  "accountable_human_policy": "regulated_judgment_remains_human_accountability",
+  "artifact_id": "platform_b1_mvp2_assurance_os_implementation_step_174_clinical_compoundsafe_africa_dscsa_productization_patterns_clinical_trial_cro_and_vendor_accountability_graph_control_pattern_json",
+  "artifact_type": "static_synthetic_control_pattern",
+  "capability_name": "CRO and Vendor Accountability Graph",
+  "checks": [
+    "source_identity_and_provenance",
+    "authority_validity_and_sufficiency",
+    "dependency_alignment",
+    "evidence_completeness_and_integrity",
+    "review_and_disposition_state",
+    "public_source_validation_when_claim_language_is_involved"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "family": "CLINICAL_TRIAL",
+  "generated_result_created": false,
+  "generated_result_step": "174D",
+  "governance": {
+    "artifact_family": "CLINICAL_TRIAL",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "SYNTHETIC_CONTROL_PATTERN",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "inputs": [
+    "synthetic_identity_state",
+    "synthetic_source_state",
+    "synthetic_authority_state",
+    "synthetic_evidence_state",
+    "synthetic_dependency_state",
+    "synthetic_review_state"
+  ],
+  "official_record_policy": "external_source_systems_remain_authoritative",
+  "outputs": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "planning_assumption": true,
+  "public_source_validation_required": true,
+  "ramat_vision_policy": {
+    "allowed": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "prohibited": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "synthetic_only": true
+}

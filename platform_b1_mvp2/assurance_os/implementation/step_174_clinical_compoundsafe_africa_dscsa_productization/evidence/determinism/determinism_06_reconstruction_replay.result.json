@@ -1,0 +1,69 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_ada9e1290761a7eed1e284cb",
+  "artifact_type": "generated_determinism_result",
+  "cloud_connection_used": false,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "definition_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/determinism/definitions/reconstruction_replay.json",
+  "determinism_id": "DETERMINISM-06",
+  "digests_match": true,
+  "evidence_digest": "30F603AFA0250318F0D1F5850814358DFC53039DF62C75D701EE20D4382BF1D5",
+  "external_runtime_network_used": false,
+  "first_replay_digest": "906431B841C82B6B847165EA81AB00A2948634C4F5466482F123DD4F8CD1658D",
+  "governing_outcome": "ALLOW",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CROSS_FAMILY",
+    "file_family": "GENERATED_DETERMINISM_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/determinism/determinism_06_reconstruction_replay.result.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "second_replay_digest": "906431B841C82B6B847165EA81AB00A2948634C4F5466482F123DD4F8CD1658D",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true
+}

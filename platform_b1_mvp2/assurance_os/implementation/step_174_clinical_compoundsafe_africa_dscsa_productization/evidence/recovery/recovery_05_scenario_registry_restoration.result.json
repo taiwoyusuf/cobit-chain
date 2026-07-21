@@ -1,0 +1,70 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_306431849a9fd9744546def2",
+  "artifact_type": "generated_recovery_result",
+  "cloud_connection_used": false,
+  "controlled_baseline_used": true,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "definition_digest": "1EC77555D140C63F66241E0F5B60E97798E56A13D1B85B0AEE035962AD0C9C5C",
+  "definition_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/recovery/definitions/scenario_registry_restoration.json",
+  "evidence_digest": "2CEBE9AE45C5A8D0339AF1E1C1B699FC79C2C088DBFE01A7DE724B7BD324A1A1",
+  "external_runtime_network_used": false,
+  "governing_outcome": "ALLOW",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CROSS_FAMILY",
+    "file_family": "GENERATED_RECOVERY_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/recovery/recovery_05_scenario_registry_restoration.result.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "production_interaction_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "recovered_deterministically": true,
+  "recovery_id": "RECOVERY-05",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true
+}

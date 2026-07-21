@@ -1,0 +1,72 @@
+{
+  "artifact_id": "platform_b1_mvp2_assurance_os_implementation_step_174_clinical_compoundsafe_africa_dscsa_productization_scope_authorized_roots_json",
+  "artifact_role": "Static cross-family control artifact",
+  "authority_boundary": "Platform B1 and accountable-human governance only; official records remain external source-system records",
+  "authorized_roots": [
+    "platform_b1_mvp2/assurance_os/inventory/step_174_clinical_compoundsafe_africa_dscsa_productization_scope_review",
+    "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization"
+  ],
+  "authorized_static_phase": "174C",
+  "closed_roots": [
+    "platform_b1_mvp2/assurance_os/inventory/step_173_labtrust_ramat_gxp_control_patterns_scope_review",
+    "platform_b1_mvp2/assurance_os/implementation/step_173_labtrust_ramat_gxp_control_patterns"
+  ],
+  "generated_phase": "174D",
+  "generated_phase_authorized": false,
+  "governance": {
+    "artifact_family": "CROSS_FAMILY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "SCOPE_AND_BOUNDARY",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "live_connections_permitted": false,
+  "planning_assumption": true,
+  "production_data_permitted": false,
+  "prohibited_rule": "No live integration, production data, binding RAMAT action, unvalidated regulatory claim, deployment, or hardware command",
+  "public_source_validation_required": true,
+  "purpose": "Define future cross-family doctrine, scope, authority, decision, evidence, maturity, and validation controls.",
+  "synthetic_only": true
+}

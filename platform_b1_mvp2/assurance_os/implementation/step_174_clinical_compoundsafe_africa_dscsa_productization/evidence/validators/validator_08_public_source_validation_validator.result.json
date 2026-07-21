@@ -1,0 +1,86 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_7ecc96f63cc78c96cc5fd8b9",
+  "artifact_type": "generated_validator_result",
+  "cloud_connection_used": false,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "deterministic": true,
+  "evidence_digest": "BF5631D13BE31433B8B5AA49357CF57B16B7C3C0E2A6292B8F5F5430B100CFE2",
+  "external_runtime_network_used": false,
+  "governing_outcome": "ALLOW",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CROSS_FAMILY",
+    "file_family": "GENERATED_VALIDATOR_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/validators/validator_08_public_source_validation_validator.result.json"
+  },
+  "metadata": {
+    "cloud_allowed": false,
+    "generated_evidence_step": "174D",
+    "hardware_allowed": false,
+    "network_allowed": false,
+    "planning_assumption": true,
+    "process_execution_allowed": false,
+    "production_data_allowed": false,
+    "remote_system_allowed": false,
+    "synthetic_only": true,
+    "validator_id": "public_source_validation_validator"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true,
+  "valid": true,
+  "validation_result": {
+    "context_used": true,
+    "errors": [],
+    "valid": true,
+    "validator_id": "public_source_validation_validator"
+  },
+  "validator_id": "public_source_validation_validator",
+  "validator_source": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/validators/public_source_validation_validator.py"
+}

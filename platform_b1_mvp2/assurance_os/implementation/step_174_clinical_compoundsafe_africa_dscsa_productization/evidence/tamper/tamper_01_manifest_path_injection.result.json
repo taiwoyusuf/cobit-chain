@@ -1,0 +1,70 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_fa669ee2311046447bb83c5b",
+  "artifact_type": "generated_tamper_result",
+  "canonical_static_file_modified": false,
+  "cloud_connection_used": false,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "definition_digest": "B074B5C37B21B4D1B4BA69B0940EF96970AF2D83766BC56DB609F68F70471C85",
+  "definition_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/tamper/definitions/manifest_path_injection.json",
+  "evidence_digest": "8EDB5E2947C71200005E10AF143A5AE7D1522EDF3558603C5B84358CD0258C45",
+  "external_runtime_network_used": false,
+  "governing_outcome": "DENY",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CROSS_FAMILY",
+    "file_family": "GENERATED_TAMPER_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/tamper/tamper_01_manifest_path_injection.result.json"
+  },
+  "mutation_applied_to_copy_only": true,
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true,
+  "tamper_detected": true,
+  "tamper_id": "TAMPER-01"
+}

@@ -1,0 +1,596 @@
+{
+  "artifact_id": "platform_b1_mvp2_assurance_os_inventory_step_174_clinical_compoundsafe_africa_dscsa_productization_scope_review_capability_traceability_json",
+  "artifact_role": "Governed inventory artifact",
+  "authority_boundary": "Platform B1 and accountable-human governance only; official records remain external source-system records",
+  "capability_count": 89,
+  "capability_traceability": [
+    {
+      "capability_name": "Trial Oversight Passport",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/trial_oversight_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/trial_oversight_passport.schema.json"
+    },
+    {
+      "capability_name": "Participant Protection Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/participant_protection_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/participant_protection_assurance.schema.json"
+    },
+    {
+      "capability_name": "Consent Integrity Passport",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/consent_integrity_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/consent_integrity_passport.schema.json"
+    },
+    {
+      "capability_name": "TrialSignalTrust",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/trialsignaltrust/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/trialsignaltrust.schema.json"
+    },
+    {
+      "capability_name": "Trial Signal Passport",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/trial_signal_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/trial_signal_passport.schema.json"
+    },
+    {
+      "capability_name": "Endpoint Integrity Ledger",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/endpoint_integrity_ledger/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/endpoint_integrity_ledger.schema.json"
+    },
+    {
+      "capability_name": "AI Trial Decision Passport",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/ai_trial_decision_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/ai_trial_decision_passport.schema.json"
+    },
+    {
+      "capability_name": "Trial Dependency Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/trial_dependency_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/trial_dependency_assurance.schema.json"
+    },
+    {
+      "capability_name": "Decentralized Trial Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/decentralized_trial_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/decentralized_trial_assurance.schema.json"
+    },
+    {
+      "capability_name": "Clinical Trial AI Change Control",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/clinical_trial_ai_change_control/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/clinical_trial_ai_change_control.schema.json"
+    },
+    {
+      "capability_name": "SafetySignalTrust",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/safetysignaltrust/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/safetysignaltrust.schema.json"
+    },
+    {
+      "capability_name": "Trial Mortality and Serious Harm Reconstruction",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/trial_mortality_and_serious_harm_reconstruction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/trial_mortality_and_serious_harm_reconstruction.schema.json"
+    },
+    {
+      "capability_name": "Investigational Product Chain of Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/investigational_product_chain_of_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/investigational_product_chain_of_assurance.schema.json"
+    },
+    {
+      "capability_name": "Clinical Data Lineage Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/clinical_data_lineage_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/clinical_data_lineage_assurance.schema.json"
+    },
+    {
+      "capability_name": "CRO and Vendor Accountability Graph",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/cro_and_vendor_accountability_graph/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/cro_and_vendor_accountability_graph.schema.json"
+    },
+    {
+      "capability_name": "FDA RTCT Readiness Console",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/fda_rtct_readiness_console/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/fda_rtct_readiness_console.schema.json"
+    },
+    {
+      "capability_name": "EU CTIS Readiness Console",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/eu_ctis_readiness_console/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/eu_ctis_readiness_console.schema.json"
+    },
+    {
+      "capability_name": "Inspection Reconstruction Passport",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/inspection_reconstruction_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/inspection_reconstruction_passport.schema.json"
+    },
+    {
+      "capability_name": "Clinical Trial Power and Cold-Chain Assurance",
+      "family": "CLINICAL_TRIAL",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/clinical_trial/clinical_trial_power_and_cold_chain_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/clinical_trial/clinical_trial_power_and_cold_chain_assurance.schema.json"
+    },
+    {
+      "capability_name": "Preparation Passport",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/preparation_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/preparation_passport.schema.json"
+    },
+    {
+      "capability_name": "Formula Integrity Passport",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/formula_integrity_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/formula_integrity_passport.schema.json"
+    },
+    {
+      "capability_name": "Operator Competency Passport",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/operator_competency_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/operator_competency_passport.schema.json"
+    },
+    {
+      "capability_name": "Cleanroom Readiness Passport",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/cleanroom_readiness_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/cleanroom_readiness_passport.schema.json"
+    },
+    {
+      "capability_name": "Environmental State Assurance",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/environmental_state_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/environmental_state_assurance.schema.json"
+    },
+    {
+      "capability_name": "BalanceTrust Dependency",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/balancetrust_dependency/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/balancetrust_dependency.schema.json"
+    },
+    {
+      "capability_name": "PipetteTrust Dependency",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/pipettetrust_dependency/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/pipettetrust_dependency.schema.json"
+    },
+    {
+      "capability_name": "Sterility Evidence Passport",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/sterility_evidence_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/sterility_evidence_passport.schema.json"
+    },
+    {
+      "capability_name": "Ingredient Identity and Supplier Assurance",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/ingredient_identity_and_supplier_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/ingredient_identity_and_supplier_assurance.schema.json"
+    },
+    {
+      "capability_name": "Preparation-to-Patient Genealogy",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/preparation_to_patient_genealogy/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/preparation_to_patient_genealogy.schema.json"
+    },
+    {
+      "capability_name": "Contamination Propagation Reconstruction",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/contamination_propagation_reconstruction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/contamination_propagation_reconstruction.schema.json"
+    },
+    {
+      "capability_name": "Compound Recall Command Center",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/compound_recall_command_center/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/compound_recall_command_center.schema.json"
+    },
+    {
+      "capability_name": "Power-to-Product Consequence Assurance",
+      "family": "COMPOUNDSAFE",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/compoundsafe/power_to_product_consequence_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/compoundsafe/power_to_product_consequence_assurance.schema.json"
+    },
+    {
+      "capability_name": "African Trial Oversight Node",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/african_trial_oversight_node/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/african_trial_oversight_node.schema.json"
+    },
+    {
+      "capability_name": "African Participant Protection Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/african_participant_protection_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/african_participant_protection_passport.schema.json"
+    },
+    {
+      "capability_name": "Community Engagement Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/community_engagement_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/community_engagement_assurance.schema.json"
+    },
+    {
+      "capability_name": "Multilingual Consent Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/multilingual_consent_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/multilingual_consent_assurance.schema.json"
+    },
+    {
+      "capability_name": "Local Investigator Authority Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/local_investigator_authority_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/local_investigator_authority_passport.schema.json"
+    },
+    {
+      "capability_name": "Ethics and Regulatory Standing Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/ethics_and_regulatory_standing_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/ethics_and_regulatory_standing_passport.schema.json"
+    },
+    {
+      "capability_name": "Site and Laboratory Readiness Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/site_and_laboratory_readiness_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/site_and_laboratory_readiness_passport.schema.json"
+    },
+    {
+      "capability_name": "Power / Generator / UPS / Cold-Chain Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/power_generator_ups_cold_chain_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/power_generator_ups_cold_chain_assurance.schema.json"
+    },
+    {
+      "capability_name": "Offline Trial Evidence Node",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/offline_trial_evidence_node/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/offline_trial_evidence_node.schema.json"
+    },
+    {
+      "capability_name": "Sponsor-Country Evidence Symmetry",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/sponsor_country_evidence_symmetry/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/sponsor_country_evidence_symmetry.schema.json"
+    },
+    {
+      "capability_name": "Benefit-Sharing and Post-Trial Access Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/benefit_sharing_and_post_trial_access_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/benefit_sharing_and_post_trial_access_passport.schema.json"
+    },
+    {
+      "capability_name": "Local Data Sovereignty Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/local_data_sovereignty_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/local_data_sovereignty_assurance.schema.json"
+    },
+    {
+      "capability_name": "African Serious Harm Reconstruction",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/african_serious_harm_reconstruction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/african_serious_harm_reconstruction.schema.json"
+    },
+    {
+      "capability_name": "Community Follow-Up and Retention Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/community_follow_up_and_retention_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/community_follow_up_and_retention_assurance.schema.json"
+    },
+    {
+      "capability_name": "Medicine Identity Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/medicine_identity_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/medicine_identity_passport.schema.json"
+    },
+    {
+      "capability_name": "Authorized Supply Entity Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/authorized_supply_entity_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/authorized_supply_entity_passport.schema.json"
+    },
+    {
+      "capability_name": "Manufacturer and Importer Standing",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/manufacturer_and_importer_standing/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/manufacturer_and_importer_standing.schema.json"
+    },
+    {
+      "capability_name": "Distribution Event Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/distribution_event_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/distribution_event_assurance.schema.json"
+    },
+    {
+      "capability_name": "EPCIS Event Integrity Layer",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/epcis_event_integrity_layer/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/epcis_event_integrity_layer.schema.json"
+    },
+    {
+      "capability_name": "Suspect Product Command Center",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/suspect_product_command_center/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/suspect_product_command_center.schema.json"
+    },
+    {
+      "capability_name": "Counterfeit and Diversion Intelligence",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/counterfeit_and_diversion_intelligence/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/counterfeit_and_diversion_intelligence.schema.json"
+    },
+    {
+      "capability_name": "Recall Reconstruction Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/recall_reconstruction_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/recall_reconstruction_passport.schema.json"
+    },
+    {
+      "capability_name": "Donation and Public-Health Supply Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/donation_and_public_health_supply_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/donation_and_public_health_supply_assurance.schema.json"
+    },
+    {
+      "capability_name": "Cold-Chain Evidence Passport",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/cold_chain_evidence_passport/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/cold_chain_evidence_passport.schema.json"
+    },
+    {
+      "capability_name": "Last-Mile Clinic and Pharmacy Assurance",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/last_mile_clinic_and_pharmacy_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/last_mile_clinic_and_pharmacy_assurance.schema.json"
+    },
+    {
+      "capability_name": "Offline Verification Node",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/offline_verification_node/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/offline_verification_node.schema.json"
+    },
+    {
+      "capability_name": "SMS / USSD / QR / NFC Verification",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/sms_ussd_qr_nfc_verification/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/sms_ussd_qr_nfc_verification.schema.json"
+    },
+    {
+      "capability_name": "National Traceability Control Tower",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/national_traceability_control_tower/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/national_traceability_control_tower.schema.json"
+    },
+    {
+      "capability_name": "African Union Medicine Assurance Graph",
+      "family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/africa/african_union_medicine_assurance_graph/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/africa/african_union_medicine_assurance_graph.schema.json"
+    },
+    {
+      "capability_name": "Transaction Information Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/transaction_information_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/transaction_information_assurance.schema.json"
+    },
+    {
+      "capability_name": "Transaction History / Transaction Statement Assurance Where Applicable",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/transaction_history_transaction_statement_assurance_where_applicable/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/transaction_history_transaction_statement_assurance_where_applicable.schema.json"
+    },
+    {
+      "capability_name": "EPCIS Event Integrity Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/epcis_event_integrity_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/epcis_event_integrity_assurance.schema.json"
+    },
+    {
+      "capability_name": "VRS Exception Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/vrs_exception_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/vrs_exception_assurance.schema.json"
+    },
+    {
+      "capability_name": "Saleable-Return Verification Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/saleable_return_verification_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/saleable_return_verification_assurance.schema.json"
+    },
+    {
+      "capability_name": "Suspect and Illegitimate Product Event Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/suspect_and_illegitimate_product_event_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/suspect_and_illegitimate_product_event_assurance.schema.json"
+    },
+    {
+      "capability_name": "Trading Partner Authorization Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/trading_partner_authorization_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/trading_partner_authorization_assurance.schema.json"
+    },
+    {
+      "capability_name": "Product Identifier and Serialization Assurance",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/product_identifier_and_serialization_assurance/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/product_identifier_and_serialization_assurance.schema.json"
+    },
+    {
+      "capability_name": "Exception-Management Evidence Package",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/exception_management_evidence_package/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/exception_management_evidence_package.schema.json"
+    },
+    {
+      "capability_name": "Recall and Quarantine Reconstruction",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/recall_and_quarantine_reconstruction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/recall_and_quarantine_reconstruction.schema.json"
+    },
+    {
+      "capability_name": "Authorized Distributor and Dispenser Authority Map",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/authorized_distributor_and_dispenser_authority_map/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/authorized_distributor_and_dispenser_authority_map.schema.json"
+    },
+    {
+      "capability_name": "DSCSA-to-Operational Trust Graph",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/dscsa_to_operational_trust_graph/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/dscsa_to_operational_trust_graph.schema.json"
+    },
+    {
+      "capability_name": "DSCSA Regulatory Inspection Package",
+      "family": "DSCSA_EPCIS_VRS",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/dscsa/dscsa_regulatory_inspection_package/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/dscsa/dscsa_regulatory_inspection_package.schema.json"
+    },
+    {
+      "capability_name": "COBIT-Chain Public Product Packaging",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/cobit_chain_public_product_packaging/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/cobit_chain_public_product_packaging.schema.json"
+    },
+    {
+      "capability_name": "Platform A Commercial Packaging",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/platform_a_commercial_packaging/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/platform_a_commercial_packaging.schema.json"
+    },
+    {
+      "capability_name": "Platform B1 Enterprise Assurance Engine Packaging",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/platform_b1_enterprise_assurance_engine_packaging/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/platform_b1_enterprise_assurance_engine_packaging.schema.json"
+    },
+    {
+      "capability_name": "LabTrust Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/labtrust_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/labtrust_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "RLT-Trust Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/rlt_trust_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/rlt_trust_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "Trial Assurance Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/trial_assurance_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/trial_assurance_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "CompoundSafe Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/compoundsafe_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/compoundsafe_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "Africa Traceability Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/africa_traceability_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/africa_traceability_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "DSCSA Assurance Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/dscsa_assurance_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/dscsa_assurance_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "RAMAT Vision Product Page Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/ramat_vision_product_page_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/ramat_vision_product_page_direction.schema.json"
+    },
+    {
+      "capability_name": "Trust Center Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/trust_center_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/trust_center_direction.schema.json"
+    },
+    {
+      "capability_name": "Pilot-Package Direction",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/pilot_package_direction/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/pilot_package_direction.schema.json"
+    },
+    {
+      "capability_name": "Founder Evidence and USCIS Support Packaging",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/founder_evidence_and_uscis_support_packaging/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/founder_evidence_and_uscis_support_packaging.schema.json"
+    },
+    {
+      "capability_name": "PhD / Publication / AEBOK Alignment",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/phd_publication_aebok_alignment/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/phd_publication_aebok_alignment.schema.json"
+    },
+    {
+      "capability_name": "Buyer Personas, Demo Stories, Non-Claim Language, and Maturity-Status Labeling",
+      "family": "COMMERCIAL_PRODUCTIZATION",
+      "pattern_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/patterns/commercial/buyer_personas_demo_stories_non_claim_language_and_maturity_status_labeling/control_pattern.json",
+      "schema_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/schemas/commercial/buyer_personas_demo_stories_non_claim_language_and_maturity_status_labeling.schema.json"
+    }
+  ],
+  "governance": {
+    "artifact_family": "INVENTORY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "INVENTORY_AND_SCOPE_REVIEW",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "planning_assumption": true,
+  "prohibited_rule": "No live integration, production data, binding RAMAT action, unvalidated regulatory claim, deployment, or hardware command",
+  "public_source_validation_required": true,
+  "purpose": "Record controlled Step 174 scope, boundaries, traceability, evidence, and execution-gate requirements.",
+  "synthetic_only": true
+}

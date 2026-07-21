@@ -1,0 +1,280 @@
+{
+  "artifact_id": "platform_b1_mvp2_assurance_os_implementation_step_174_clinical_compoundsafe_africa_dscsa_productization_config_scenario_registry_json",
+  "artifact_role": "Static cross-family control artifact",
+  "authority_boundary": "Platform B1 and accountable-human governance only; official records remain external source-system records",
+  "executed_in_step_174c": false,
+  "governance": {
+    "artifact_family": "CROSS_FAMILY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "SCENARIO_CONFIGURATION",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "planning_assumption": true,
+  "prohibited_rule": "No live integration, production data, binding RAMAT action, unvalidated regulatory claim, deployment, or hardware command",
+  "public_source_validation_required": true,
+  "purpose": "Define future cross-family doctrine, scope, authority, decision, evidence, maturity, and validation controls.",
+  "scenario_count": 20,
+  "scenarios": [
+    {
+      "family": "CLINICAL_TRIAL",
+      "id": "SC-01",
+      "name": "Clinical Trial Consent Integrity",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic participant identity, consent version, language support, investigator authority, and site authority."
+    },
+    {
+      "family": "CLINICAL_TRIAL",
+      "id": "SC-02",
+      "name": "Clinical Trial Serious Harm Reconstruction",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic serious-harm event, consent, site, investigator, product, safety review, notification, and accountable-human review."
+    },
+    {
+      "family": "CLINICAL_TRIAL",
+      "id": "SC-03",
+      "name": "Clinical Endpoint and AI Decision Assurance",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic endpoint result, AI recommendation, model state, change control, evidence, and human judgment."
+    },
+    {
+      "family": "CLINICAL_TRIAL",
+      "id": "SC-04",
+      "name": "Clinical Trial Vendor and CRO Accountability",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic vendor dependency, audit trail, source inconsistency, sponsor oversight, and accountable authority."
+    },
+    {
+      "family": "CLINICAL_TRIAL",
+      "id": "SC-05",
+      "name": "Clinical Trial Power and Cold-Chain Dependency",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic power, UPS, generator, temperature, excursion, site impact, product impact, and disposition evidence."
+    },
+    {
+      "family": "COMPOUNDSAFE",
+      "id": "SC-06",
+      "name": "CompoundSafe Preparation Passport",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic formula, ingredient, operator, equipment, cleanroom, sterility, review, and external official records."
+    },
+    {
+      "family": "COMPOUNDSAFE",
+      "id": "SC-07",
+      "name": "CompoundSafe Formula Integrity",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND",
+        "DENY"
+      ],
+      "summary": "Synthetic formula-version mismatch, operator authority, reviewer authority, and evidence."
+    },
+    {
+      "family": "COMPOUNDSAFE",
+      "id": "SC-08",
+      "name": "CompoundSafe Contamination Propagation Reconstruction",
+      "permitted_outcomes": [
+        "HOLD",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic ingredient, preparation, equipment, environment, recipient, recall, and consequence dependencies."
+    },
+    {
+      "family": "AFRICA",
+      "id": "SC-09",
+      "name": "Africa Trial Ethics and Local Authority",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic ethics standing, local investigator authority, language, community engagement, and sponsor-country evidence symmetry."
+    },
+    {
+      "family": "AFRICA",
+      "id": "SC-10",
+      "name": "Africa Offline Trial Evidence Node",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic offline evidence capture, synchronization state, source authority, and accountable authority."
+    },
+    {
+      "family": "AFRICA",
+      "id": "SC-11",
+      "name": "Africa Medicine Identity and Last-Mile Verification",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND",
+        "DENY"
+      ],
+      "summary": "Synthetic medicine identity, authorization, distribution, cold-chain, clinic, pharmacy, and last-mile evidence."
+    },
+    {
+      "family": "AFRICA",
+      "id": "SC-12",
+      "name": "Africa Suspect Product and Diversion Investigation",
+      "permitted_outcomes": [
+        "HOLD",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic manufacturer, importer, distributor, clinic, pharmacy, last-mile, suspect-product, counterfeit, and diversion evidence."
+    },
+    {
+      "family": "DSCSA",
+      "id": "SC-13",
+      "name": "DSCSA EPCIS Event Integrity",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND"
+      ],
+      "summary": "Synthetic event chain, event identity, product identifier, partner authority, and chain continuity."
+    },
+    {
+      "family": "DSCSA",
+      "id": "SC-14",
+      "name": "DSCSA VRS and Saleable-Return Exception",
+      "permitted_outcomes": [
+        "HOLD",
+        "NO-BIND",
+        "DENY"
+      ],
+      "summary": "Synthetic trading partner, product identifier, verification response, and exception evidence."
+    },
+    {
+      "family": "DSCSA",
+      "id": "SC-15",
+      "name": "DSCSA Suspect and Illegitimate Product",
+      "permitted_outcomes": [
+        "HOLD",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic quarantine, notification, investigation, disposition, recall, and accountable review."
+    },
+    {
+      "family": "COMMERCIAL",
+      "id": "SC-16",
+      "name": "Commercial Trust Center Maturity Disclosure",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD"
+      ],
+      "summary": "Synthetic product claim, maturity label, non-claim language, validation status, evidence status, and publication readiness."
+    },
+    {
+      "family": "CROSS_FAMILY",
+      "id": "SC-17",
+      "name": "RAMAT Vision Cross-Family Display",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic Platform B1 assurance state and display-only request with prohibited binding actions."
+    },
+    {
+      "family": "CROSS_FAMILY",
+      "id": "SC-18",
+      "name": "Cross-Family No-Bind Governance",
+      "permitted_outcomes": [
+        "NO-BIND"
+      ],
+      "summary": "Synthetic insufficient evidence or authority, external official records, and represented source disagreement."
+    },
+    {
+      "family": "CROSS_FAMILY",
+      "id": "SC-19",
+      "name": "Cross-Family Inspection Reconstruction",
+      "permitted_outcomes": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "summary": "Synthetic evidence, authority, source state, precedence, outcome, and display-only reconstruction."
+    },
+    {
+      "family": "CROSS_FAMILY",
+      "id": "SC-20",
+      "name": "Public-Source Validation Gate",
+      "permitted_outcomes": [
+        "HOLD"
+      ],
+      "summary": "Synthetic proposed product or regulatory language with unresolved authoritative public-source validation."
+    }
+  ],
+  "synthetic_only": true
+}

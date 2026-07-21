@@ -1,0 +1,102 @@
+{
+  "additional_properties": false,
+  "artifact_id": "platform_b1_mvp2_assurance_os_implementation_step_174_clinical_compoundsafe_africa_dscsa_productization_schemas_africa_donation_and_public_health_supply_assurance_schema_json",
+  "artifact_type": "static_synthetic_schema",
+  "governance": {
+    "artifact_family": "AFRICA_TRIAL_MEDICINE_TRACEABILITY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "CAPABILITY_SCHEMA",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "planning_assumption": true,
+  "properties": {
+    "authority_state": {
+      "type": "object"
+    },
+    "decision_state": {
+      "enum": [
+        "ALLOW",
+        "HOLD",
+        "NO-BIND",
+        "DENY",
+        "FAIL-CLOSED"
+      ],
+      "type": "string"
+    },
+    "evidence_references": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "ramat_vision_state": {
+      "type": "object"
+    },
+    "source_states": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "synthetic": {
+      "const": true,
+      "type": "boolean"
+    }
+  },
+  "public_source_validation_required": true,
+  "required": [
+    "synthetic",
+    "source_states",
+    "authority_state",
+    "evidence_references",
+    "decision_state",
+    "ramat_vision_state"
+  ],
+  "schema_dialect": "deterministic_planning_schema_v1",
+  "synthetic_only": true,
+  "title": "Donation and Public-Health Supply Assurance",
+  "type": "object"
+}

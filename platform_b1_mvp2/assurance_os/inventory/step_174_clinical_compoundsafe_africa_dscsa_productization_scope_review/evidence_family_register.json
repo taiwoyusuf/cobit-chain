@@ -1,0 +1,69 @@
+{
+  "artifact_id": "platform_b1_mvp2_assurance_os_inventory_step_174_clinical_compoundsafe_africa_dscsa_productization_scope_review_evidence_family_register_json",
+  "artifact_role": "Governed inventory artifact",
+  "artifact_type": "inventory_and_scope_review",
+  "authority_boundary": "Platform B1 and accountable-human governance only; official records remain external source-system records",
+  "controls": [
+    "synthetic_only",
+    "official_records_external",
+    "accountable_human_preserved",
+    "source_disagreement_represented",
+    "ramat_display_only",
+    "no_bind_when_insufficient",
+    "public_source_validation_required"
+  ],
+  "governance": {
+    "artifact_family": "INVENTORY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "INVENTORY_AND_SCOPE_REVIEW",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "planning_assumption": true,
+  "prohibited_rule": "No live integration, production data, binding RAMAT action, unvalidated regulatory claim, deployment, or hardware command",
+  "public_source_validation_required": true,
+  "purpose": "Record controlled Step 174 scope, boundaries, traceability, evidence, and execution-gate requirements.",
+  "synthetic_only": true
+}

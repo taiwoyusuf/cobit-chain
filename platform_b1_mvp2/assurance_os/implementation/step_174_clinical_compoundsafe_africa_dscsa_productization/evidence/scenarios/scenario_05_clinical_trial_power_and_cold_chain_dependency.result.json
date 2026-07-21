@@ -1,0 +1,89 @@
+{
+  "accountable_human_preserved": true,
+  "application_runtime_network_used": false,
+  "artifact_id": "generated_77ab090578f062482518731d",
+  "artifact_type": "generated_scenario_result",
+  "authority_insufficient": false,
+  "cloud_connection_used": false,
+  "configuration_digest": "7E98651EF6F087075EAFD6645E53954DBB8347092C514ACB481C2BA7E7CE1B5A",
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "4024F005E737D60500BDF8EF9A42C30821AD3574A804AC385C36205B9F70F2E3",
+  "evidence_insufficient": false,
+  "external_runtime_network_used": false,
+  "family": "CLINICAL_TRIAL",
+  "hardware_connection_used": false,
+  "input_digest": "AFD2F70EDE5C44557E584BF1927FA241933B2F8C58FBE8D4414B128867DB3CC5",
+  "inspection_reconstruction": {
+    "complete": true,
+    "generated": true,
+    "required": true
+  },
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CLINICAL_TRIAL",
+    "file_family": "GENERATED_SCENARIO_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/scenarios/scenario_05_clinical_trial_power_and_cold_chain_dependency.result.json"
+  },
+  "no_bind_activated": false,
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "ALLOW",
+  "official_records": "remain_in_external_source_systems",
+  "permitted_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "FAIL-CLOSED"
+  ],
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "scenario_id": "SC-05",
+  "scenario_name": "Clinical Trial Power and Cold-Chain Dependency",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state_policy": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}

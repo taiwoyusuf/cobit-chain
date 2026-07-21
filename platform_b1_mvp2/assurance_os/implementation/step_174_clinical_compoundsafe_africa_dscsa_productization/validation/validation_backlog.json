@@ -1,0 +1,195 @@
+{
+  "artifact_id": "platform_b1_mvp2_assurance_os_implementation_step_174_clinical_compoundsafe_africa_dscsa_productization_validation_validation_backlog_json",
+  "artifact_role": "Static validation-control model",
+  "authority_boundary": "Platform B1 and accountable-human governance only; official records remain external source-system records",
+  "current_claims_authorized": 0,
+  "governance": {
+    "artifact_family": "CROSS_FAMILY",
+    "decision_authority": "platform_b1_and_accountable_human",
+    "decision_outcomes": [
+      "ALLOW",
+      "HOLD",
+      "NO-BIND",
+      "DENY",
+      "FAIL-CLOSED"
+    ],
+    "decision_precedence": [
+      "DENY",
+      "FAIL-CLOSED",
+      "NO-BIND",
+      "HOLD",
+      "ALLOW"
+    ],
+    "file_family": "PUBLIC_SOURCE_VALIDATION_CONTROL",
+    "generated_evidence_created": false,
+    "generated_evidence_step": "174D",
+    "no_bind_rule": "activate_when_evidence_or_authority_is_insufficient",
+    "official_records": "remain_in_external_source_systems",
+    "planning_assumption": true,
+    "public_source_validation_required": true,
+    "ramat_vision": {
+      "allowed_functions": [
+        "display",
+        "witness",
+        "request",
+        "review"
+      ],
+      "binding_authority": false,
+      "prohibited_actions": [
+        "approve",
+        "release",
+        "override",
+        "write_back",
+        "reconcile_source_states",
+        "resolve_holds",
+        "bind_regulated_action",
+        "replace_official_record",
+        "replace_accountable_human"
+      ]
+    },
+    "source_disagreement_policy": "represent_without_silent_reconciliation",
+    "status": "controlled_local_static_implementation",
+    "step": "174C",
+    "synthetic_only": true
+  },
+  "planning_assumption": true,
+  "prohibited_rule": "No live integration, production data, binding RAMAT action, unvalidated regulatory claim, deployment, or hardware command",
+  "public_source_validation_required": true,
+  "purpose": "Define future public-source validation control for validation_backlog.",
+  "synthetic_only": true,
+  "validated_items": 0,
+  "validation_items": [
+    {
+      "id": "VAL-001",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Clinical-trial oversight and participant protection",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-002",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Consent and electronic-consent expectations",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-003",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Serious-harm and safety reporting",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-004",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Decentralized and technology-enabled trials",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-005",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "AI-supported clinical decision processes",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-006",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Trial registration and submission-console terminology",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-007",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Compounding quality, sterility, and preparation controls",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-008",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Ingredient, supplier, genealogy, and recall controls",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-009",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Country-specific African trial ethics and authority",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-010",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Community engagement, benefit sharing, and post-trial access",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-011",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Country-specific data sovereignty and cross-border data",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-012",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "African medicine traceability programs",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-013",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Regional African medicine-assurance institutions",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-014",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Power, UPS, generator, temperature, and cold-chain controls",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-015",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "DSCSA statutory and regulatory requirements",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-016",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "EPCIS standards and implementation profiles",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-017",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "VRS and saleable-return exception workflows",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-018",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Trading-partner authorization",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-019",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Suspect, illegitimate, quarantine, recall, and notification",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-020",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Website, privacy, accessibility, and marketing language",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-021",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Cybersecurity, identity, logging, and evidence integrity",
+      "unvalidated_outcome": "HOLD"
+    },
+    {
+      "id": "VAL-022",
+      "status": "NOT_VALIDATED_IN_STEP_174C",
+      "topic": "Inspection, academic, publication, and immigration evidence use",
+      "unvalidated_outcome": "HOLD"
+    }
+  ]
+}

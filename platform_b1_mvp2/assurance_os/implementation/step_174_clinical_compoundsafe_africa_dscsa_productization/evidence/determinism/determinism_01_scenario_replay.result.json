@@ -1,0 +1,69 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_007dbc891e2c95623c18018f",
+  "artifact_type": "generated_determinism_result",
+  "cloud_connection_used": false,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "definition_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/determinism/definitions/scenario_replay.json",
+  "determinism_id": "DETERMINISM-01",
+  "digests_match": true,
+  "evidence_digest": "9B4BC28A08315CF2DBC1A4DD9C5F3AF398118EDEA3578C04BE734DD51DC5C2A0",
+  "external_runtime_network_used": false,
+  "first_replay_digest": "D630FBA8F6B6CAF5C1883854D2983A45988E38068A8574257C8845D69FF20732",
+  "governing_outcome": "ALLOW",
+  "hardware_connection_used": false,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "CROSS_FAMILY",
+    "file_family": "GENERATED_DETERMINISM_RESULT",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/determinism/determinism_01_scenario_replay.result.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "second_replay_digest": "D630FBA8F6B6CAF5C1883854D2983A45988E38068A8574257C8845D69FF20732",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "status": "PASS",
+  "step": "174D",
+  "synthetic": true
+}

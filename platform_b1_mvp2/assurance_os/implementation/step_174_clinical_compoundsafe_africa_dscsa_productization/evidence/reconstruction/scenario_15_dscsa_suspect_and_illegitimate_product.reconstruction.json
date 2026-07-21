@@ -1,0 +1,84 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_e63e1296e816b3df7a58b7bb",
+  "artifact_type": "generated_inspection_reconstruction",
+  "authority_state": {
+    "accountable_human_preserved": true,
+    "authority_insufficient": false,
+    "platform_b1_is_decision_engine": true
+  },
+  "cloud_connection_used": false,
+  "complete": true,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "14D35575C4AA6594A8BAE56F22FDFB237D261A2FB70846DFBB354A5080E4E3A7",
+  "evidence_state": {
+    "evidence_insufficient": true,
+    "scenario_result_digest": "6AD6FE9A226747C16534D19DF352CF82522646EE9E366B1EE1DC7ECD3241E79D",
+    "synthetic": true
+  },
+  "external_runtime_network_used": false,
+  "hardware_connection_used": false,
+  "independently_reconstructable": true,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "DSCSA",
+    "file_family": "GENERATED_INSPECTION_RECONSTRUCTION",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/reconstruction/scenario_15_dscsa_suspect_and_illegitimate_product.reconstruction.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "FAIL-CLOSED",
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "reconstruction_id": "RECONSTRUCTION-15",
+  "scenario_id": "SC-15",
+  "scenario_name": "DSCSA Suspect and Illegitimate Product",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}

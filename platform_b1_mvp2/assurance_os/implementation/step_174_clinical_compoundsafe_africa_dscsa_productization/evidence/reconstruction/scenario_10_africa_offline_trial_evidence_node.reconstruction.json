@@ -1,0 +1,84 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_2966c63d26bdb16b9c9a5cae",
+  "artifact_type": "generated_inspection_reconstruction",
+  "authority_state": {
+    "accountable_human_preserved": true,
+    "authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "cloud_connection_used": false,
+  "complete": true,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "7DFED9507F0C9D4DD622AED800763697569B87DA37D49741F0E1EEF23A6C5080",
+  "evidence_state": {
+    "evidence_insufficient": true,
+    "scenario_result_digest": "7FDD98C29232D8C9F4851ECAAD281782BEEFED7913AF7DADA7F4BA2BF21C4DE8",
+    "synthetic": true
+  },
+  "external_runtime_network_used": false,
+  "hardware_connection_used": false,
+  "independently_reconstructable": true,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "AFRICA",
+    "file_family": "GENERATED_INSPECTION_RECONSTRUCTION",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/reconstruction/scenario_10_africa_offline_trial_evidence_node.reconstruction.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "HOLD",
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "reconstruction_id": "RECONSTRUCTION-10",
+  "scenario_id": "SC-10",
+  "scenario_name": "Africa Offline Trial Evidence Node",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}

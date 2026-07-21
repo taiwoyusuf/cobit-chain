@@ -1,0 +1,84 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_4f68917919610a03d73cf541",
+  "artifact_type": "generated_inspection_reconstruction",
+  "authority_state": {
+    "accountable_human_preserved": true,
+    "authority_insufficient": false,
+    "platform_b1_is_decision_engine": true
+  },
+  "cloud_connection_used": false,
+  "complete": true,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "9E2F90AC7F87FB720B9543B4527A6FF38AA7448923E378184DBE51E77072C249",
+  "evidence_state": {
+    "evidence_insufficient": true,
+    "scenario_result_digest": "5D7283A3B0A01951CFDBDC9923B6911591347F73CA0C226C07704F9C0DF2F3E1",
+    "synthetic": true
+  },
+  "external_runtime_network_used": false,
+  "hardware_connection_used": false,
+  "independently_reconstructable": true,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "COMPOUNDSAFE",
+    "file_family": "GENERATED_INSPECTION_RECONSTRUCTION",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/reconstruction/scenario_08_compoundsafe_contamination_propagation_reconstruction.reconstruction.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "FAIL-CLOSED",
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "reconstruction_id": "RECONSTRUCTION-08",
+  "scenario_id": "SC-08",
+  "scenario_name": "CompoundSafe Contamination Propagation Reconstruction",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": false,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}

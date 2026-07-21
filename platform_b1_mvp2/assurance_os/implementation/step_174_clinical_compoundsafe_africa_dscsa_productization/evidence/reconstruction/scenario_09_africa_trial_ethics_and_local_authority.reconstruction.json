@@ -1,0 +1,84 @@
+{
+  "accountable_human_preserved": true,
+  "artifact_id": "generated_d5125fbfef639f27b5ec2c77",
+  "artifact_type": "generated_inspection_reconstruction",
+  "authority_state": {
+    "accountable_human_preserved": true,
+    "authority_insufficient": true,
+    "platform_b1_is_decision_engine": true
+  },
+  "cloud_connection_used": false,
+  "complete": true,
+  "decision_outcomes": [
+    "ALLOW",
+    "HOLD",
+    "NO-BIND",
+    "DENY",
+    "FAIL-CLOSED"
+  ],
+  "decision_precedence": [
+    "DENY",
+    "FAIL-CLOSED",
+    "NO-BIND",
+    "HOLD",
+    "ALLOW"
+  ],
+  "evidence_digest": "A2C97E1813D2B5D5917483C383D8951E6331BE9885F7453A42A15A90CC6D6662",
+  "evidence_state": {
+    "evidence_insufficient": true,
+    "scenario_result_digest": "6A9972D34130673DF8B1F9CBD674F0E02D3BC778D544422A48D625D2A7A97C59",
+    "synthetic": true
+  },
+  "external_runtime_network_used": false,
+  "hardware_connection_used": false,
+  "independently_reconstructable": true,
+  "manifest": {
+    "action": "CREATE",
+    "class": "GENERATED",
+    "family": "AFRICA",
+    "file_family": "GENERATED_INSPECTION_RECONSTRUCTION",
+    "phase": "174D",
+    "relative_path": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/reconstruction/scenario_09_africa_trial_ethics_and_local_authority.reconstruction.json"
+  },
+  "no_bind_when_evidence_or_authority_insufficient": true,
+  "observed_outcome": "NO-BIND",
+  "official_records": "remain_in_external_source_systems",
+  "planning_assumption": true,
+  "platform_b1_is_decision_engine": true,
+  "production_connection_used": false,
+  "public_source_validation_required": true,
+  "ramat_vision": {
+    "allowed_functions": [
+      "display",
+      "witness",
+      "request",
+      "review"
+    ],
+    "binding_authority": false,
+    "display_only": true,
+    "prohibited_actions": [
+      "approve",
+      "release",
+      "override",
+      "write_back",
+      "reconcile_source_states",
+      "resolve_holds",
+      "bind_regulated_action",
+      "replace_official_record",
+      "replace_accountable_human"
+    ]
+  },
+  "real_data_used": false,
+  "reconstruction_id": "RECONSTRUCTION-09",
+  "scenario_id": "SC-09",
+  "scenario_name": "Africa Trial Ethics and Local Authority",
+  "source_disagreement_policy": "represent_without_silent_reconciliation",
+  "source_state": {
+    "official_records_remain_external": true,
+    "silently_reconciled": false,
+    "source_disagreement_present": true,
+    "source_disagreement_represented": true
+  },
+  "step": "174D",
+  "synthetic": true
+}
