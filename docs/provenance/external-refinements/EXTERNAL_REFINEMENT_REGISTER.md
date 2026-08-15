@@ -1,49 +1,62 @@
-# COBIT-Chain™ External Refinement Register
+# COBIT-Chain™ Three-Person Architecture Reconciliation Register
 
-This register preserves the three currently tracked external architecture/refinement sources while separating prior COBIT-Chain doctrine from externally prompted refinements.
+This register preserves the currently tracked public architecture/governance comparison involving Greggory Don Butler, Greg Malpass, and Ravi Shankar NRK while keeping COBIT-Chain capability ownership evidence-bounded.
 
-> Exact source URLs, post dates, screenshots, or archived copies should be added as evidence attachments before making any priority comparison.
+The comparison rule is difference-first: preserve COBIT-Chain concepts already supported by earlier project evidence, suppress duplicate capability creation, and record genuinely useful strengthening without converting a public-source comparison into an implementation claim.
+
+Exact source dates, archived copies, earlier COBIT-Chain artifacts, hashes, commits, submissions, and publications should be retained where priority chronology matters.
 
 ## Greggory Don Butler
 
-Reconciled themes: institutional/constitutional memory; trajectory governance; continuing consequence after an individual decision; historical validity versus present reliance; obligations that persist beyond the original decision event.
+Reconciled themes include institutional/constitutional memory, trajectory governance, continuing consequence after an individual decision, historical validity versus present reliance, source/reality qualification, cumulative route burden, governance meta-assurance, future-reliance requalification, and obligations that persist beyond the original decision event.
 
-Treatment: reconcile against existing passports, obligation/evidence chains, validation standing, historical-validity/current-reliance controls; classify genuinely new strengthening as EXTERNAL_REFINEMENT or ROADMAP_ONLY; do not claim implementation until repository evidence establishes it.
+COBIT-Chain treatment: reconcile these themes against existing passports, obligation/evidence chains, Validation Standing Assurance, No-Bind Governance, Outcome Correspondence, route-complete consequence assurance, evidence/reliance standing, and historical-validity/current-reliance controls. Where earlier COBIT-Chain evidence already establishes the concept, retain it as COBIT-Chain doctrine/capability chronology. Where a later comparison materially sharpens a mechanism, record the delta without claiming implementation until repository evidence establishes it.
 
 ## Greg Malpass
 
-Reconciled themes: MEMORY_STANDING; Pre-Inference Memory Admissibility Boundary; provenance, authority, consent, retention, freshness/currentness, applicability; revocation and correction reachability; quarantine; separate authority to retrieve → infer → act; descendant-decision/consequence handling after memory revocation or correction.
+Reconciled themes include persistent memory standing, pre-inference memory/context admissibility, provenance, authority, consent, retention, freshness/currentness, applicability, revocation and correction reachability, quarantine, separate authority to retrieve → infer → act, memory-purpose/inference/transmission controls, provider severance/portability, and descendant-decision/consequence handling after memory revocation or correction.
 
-Treatment: preserve as governed-memory architecture refinement; connect to evidence integrity, action admissibility, No-Bind Governance, authority standing, and future memory governance; implementation remains evidence-bounded.
+COBIT-Chain treatment: connect to SERAPH, Knowledge Graph Evidence Assurance, Action Admissibility, No-Bind Governance, authority standing, Always-On Agent Black Box, Autopilot Agent Assurance Passport, recovery/reconstruction, and future governed-memory mechanisms. Implementation remains evidence-bounded.
 
 ## Ravi Shankar NRK
 
-Reconciled themes: Duty Horizon & Non-Resettable Aging; obligation age surviving reassignment, transfer, renewal, or successor ownership; resolver admissibility and continuity; revocation effectiveness; delegation-scope monotonicity; out-of-band restraint/enforcement; graduated containment; recovery; assumption/basis standing.
+Reconciled themes include Duty Horizon & Non-Resettable Aging, obligation age surviving reassignment/transfer/renewal/successor ownership, decision-to-bind standing continuity, standing/disposition clocks, resolver admissibility and continuity, basis/criteria currency, revocation effectiveness, delegation-scope monotonicity, continuing reliance/residency, cross-system handoff, out-of-band restraint/enforcement, graduated containment, recovery/unwinding, divergence, human adjudication readiness, and aggregate-agent consequence assurance.
 
-Treatment: preserve duty age independently of current custodian; distinguish reassignment from satisfaction or reset; maintain roadmap links to authority delegation/currency/revocation, recovery/re-closure, consequence graphs, and restraint controls.
+COBIT-Chain treatment: preserve duty age independently of current custodian; distinguish reassignment from satisfaction/reset; separate decision-time, interval-continuity, and bind-time standing; maintain roadmap links to authority delegation/currency/revocation, recovery/re-closure, consequence graphs, restraint controls, and aggregate-agent assurance.
 
-## Cross-cutting refinement families
+## Integrated reconciliation families
 
-1. Rule / basis standing
-2. Decision-to-bind continuity
-3. Persistent-memory and pre-inference governance
-4. Meta-assurance / assurance-of-the-assurance mechanism
-5. Trajectory and downstream-consequence burden
-6. Continuing reliance, residency and unwinding
-7. Divergence and human adjudication
-8. Sovereignty / portability
-9. Revocation effectiveness
-10. Delegation monotonicity
-11. Out-of-band restraint
-12. Graduated containment
-13. Assumption standing
-14. Memory-revocation descendant invalidation
-15. Epistemic independence
-16. Trigger evidence versus continuing standing
-17. Post-revocation consequence reconciliation
+1. Governance Basis Standing Assurance
+2. Temporal Standing, Binding & Disposition Assurance
+3. Persistent Memory & Pre-Inference Governance
+4. Evidence Reliance & Governance Meta-Assurance
+5. Route Burden, Attachment & Restraint Proof
+6. Continuing Reliance, Residency & Governed Unwinding
+7. Aggregate Agent, Divergence & Human Adjudication Assurance
+8. Sovereignty, Portability & Dependency Assurance
+
+## Additional precision controls retained
+
+- rule/basis standing;
+- decision-to-bind continuity;
+- persistent-memory and pre-inference governance;
+- assurance-of-the-assurance / meta-assurance;
+- trajectory and downstream-consequence burden;
+- continuing reliance, residency and unwinding;
+- divergence and informed human adjudication;
+- sovereignty and portability;
+- revocation effectiveness;
+- delegation monotonicity;
+- out-of-band restraint;
+- graduated containment;
+- assumption standing;
+- memory-revocation descendant reevaluation/invalidation;
+- epistemic independence;
+- trigger evidence versus continuing standing;
+- post-revocation consequence reconciliation.
 
 ## Current implementation claim
 
-NO_NEW_IMPLEMENTATION_CLAIM_CREATED_BY_THIS_REGISTER
+`NO_NEW_IMPLEMENTATION_CLAIM_CREATED_BY_THIS_REGISTER`
 
-This file documents architecture/provenance only and must not be used as evidence that the above mechanisms are already implemented.
+This register records architecture reconciliation and chronology. Capability status must continue to be proved by authoritative repository and governed test evidence.
