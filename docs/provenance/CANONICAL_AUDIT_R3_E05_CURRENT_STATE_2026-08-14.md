@@ -1,8 +1,8 @@
 # Canonical Audit R3 — E05 Current Governed State
 
-Evidence cutoff: 14 August 2026 21:27 -04:00.
+Evidence cutoff: 14 August 2026 21:57 -04:00.
 
-This note records state only. It does not authorize execution, rerun, retry, freeze, or R3-E06.
+This note records state only. It does not itself execute R4B, Runner R10, T001-T052, E05 R7, any successor candidate, or R3-E06.
 
 ## Runner R10 / helper-path state
 
@@ -24,7 +24,7 @@ Therefore:
 
 ## Successor execution-chain construction
 
-Independent Control authorized one construction-only effort for a Runner R10 successor Launch Gate, Operator, and single-use execution wrapper candidate chain. Construction did not authorize governed Runner execution.
+Independent Control authorized one construction-only effort for a Runner R10 successor Launch Gate, Operator, and single-use execution wrapper candidate chain. Construction authority did not authorize governed Runner execution.
 
 ### R1
 
@@ -48,7 +48,7 @@ R3 stopped during wrapper construction at:
 
 `WRAPPER_BIND_GENERATED_LAUNCH_GATE_R7_SIZE expected 1 source anchors, observed 0. STOP.`
 
-This is a construction-harness/source-anchor mismatch. It is not evidence of Runner R10 runtime failure.
+This was a construction-harness/source-anchor mismatch. It was not evidence of Runner R10 runtime failure.
 
 ## Read-only frozen R6 wrapper size-anchor inventory
 
@@ -61,7 +61,7 @@ Exact source-anchor counts:
 - `EXPECTED_OPERATOR_SIZE_36403_COUNT = 1`;
 - `EXPECTED_LAUNCH_GATE_SIZE_25451_COUNT = 0`;
 - `EXPECTED_RUNNER_SIZE_93477_COUNT = 0`;
-- revision-qualified operator/Launch Gate/Runner size tokens: all 0.
+- revision-qualified operator/Launch Gate/Runner size tokens: all `0`.
 
 Therefore the frozen predecessor wrapper carries an explicit operator-size dependency binding only. It does not carry Launch Gate or Runner size assignments. Narrow repair implication: operator transformation remains exact/mandatory; Launch Gate and Runner size transformations are absent predecessor variants and must not be invented.
 
@@ -93,7 +93,7 @@ Classification:
 
 No R4A harness execution, Runner R10 execution, T001-T052 execution, E05 R7 execution, successor execution, or R3-E06 execution occurred.
 
-## R4B valid development candidate creation
+## R4B valid candidate creation
 
 R4B was constructed directly from exact R3 while preserving invalid R4 and R4A as historical evidence.
 
@@ -107,7 +107,7 @@ Evidence-supported R4B repair:
 - Launch Gate expected source count changed `1 -> 0`;
 - Runner expected source count changed `1 -> 0`.
 
-R4B verification results:
+R4B creation verification results:
 - initial source runtime type: `System.String`;
 - final source runtime type: `System.String`;
 - parse error count: `0`;
@@ -121,19 +121,60 @@ R4B identity:
 - SHA-256: `E17994782814BFBFCBC497AD5C62DB08C9E8D1F147BA0F5EAE76BB3DB4179F6D`;
 - size: `83286`.
 
-Classification:
+## R4B independent read-only static review
 
-`R4B_STATUS = DEVELOPMENT_CANDIDATE_CREATED_NOT_EXECUTED`
+The completed independent static review established:
 
-`R4B_INDEPENDENT_READ_ONLY_STATIC_REVIEW = REQUIRED_NEXT`
+- exact R4B identity and size match;
+- Windows PowerShell 5.1 parser compatibility;
+- exact wrapper size-binding cardinality contract `1 / 0 / 0`;
+- required lineage and bounded-scope declarations exactly once;
+- no authority widening;
+- zero prohibited external-command surface;
+- exact whole-source reverse-normalization to exact R3;
+- R4B and R3 post-review immutability;
+- no construction-harness execution or governed successor execution.
 
-R4B is the first candidate in the R4/R4A/R4B sequence that established the intended repair contract and exact reverse-normalization to R3. This does not authorize execution or freeze.
+Terminal review state:
+
+`R4B_STATIC_REVIEW = PASS`
+
+`R4B_STATUS_BEFORE_DISPOSITION = DEVELOPMENT_CANDIDATE_REVIEWED_NOT_FROZEN`
+
+## R4B Independent Control disposition
+
+Independent Control selected:
+
+`A. ACCEPT_AND_FREEZE_R4B_AUTHORIZE_ONE_R4B_CONSTRUCTION_HARNESS_EXECUTION_ONLY`
+
+Controlling state after disposition:
+
+`R4B_STATIC_REVIEW = ACCEPTED`
+
+`R4B_FROZEN_SHA256 = E17994782814BFBFCBC497AD5C62DB08C9E8D1F147BA0F5EAE76BB3DB4179F6D`
+
+`R4B_FROZEN_SIZE = 83286`
+
+`R4B_STATUS = APPROVED_AND_FROZEN_FOR_ONE_CONSTRUCTION_HARNESS_EXECUTION`
+
+`R4B_CONSTRUCTION_HARNESS_EXECUTION = AUTHORIZED_ONCE`
+
+`R4B_CONSTRUCTION_HARNESS_EXECUTION_RETRY = NOT_AUTHORIZED`
+
+`R4B_CONSTRUCTION_HARNESS_EXECUTION_RERUN = NOT_AUTHORIZED`
+
+The one authorized R4B execution may perform only the bounded successor-chain candidate construction embodied by exact frozen R4B and subject to its fail-closed checks.
+
+It does not authorize execution of generated Launch Gate, Operator, wrapper candidates, Runner R10, E05 R7, T001-T052, or R3-E06.
+
+After the one authorized construction-harness execution, any generated successor-chain candidate artifacts require independent read-only static review and a separate Independent Control disposition before any further execution authority can exist.
 
 ## Controlling boundary
 
 - `R4_EXECUTED = FALSE`
 - `R4A_EXECUTED = FALSE`
 - `R4B_CONSTRUCTION_HARNESS_EXECUTED = FALSE`
+- `R4B_CONSTRUCTION_HARNESS_EXECUTION = AUTHORIZED_ONCE`
 - `RUNNER_R10_EXECUTION = NOT_AUTHORIZED`
 - `T001_T052_EXECUTION = NOT_AUTHORIZED`
 - `E05_R7_EXECUTION = NOT_AUTHORIZED`
@@ -143,4 +184,4 @@ R4B is the first candidate in the R4/R4A/R4B sequence that established the inten
 - `R3_E06 = NOT_AUTHORIZED`
 - `INDEPENDENT_CONTROL_LAYER_ROLE = PRESERVED`
 
-No later work may treat the helper-only PASS, invalid R4/R4A files, or the unexecuted R4B development candidate as full Runner R10 or E05 runtime acceptance.
+No later work may treat the helper-only PASS, invalid R4/R4A files, R4B static-review PASS, or R4B construction authorization as full Runner R10 or E05 runtime acceptance.
