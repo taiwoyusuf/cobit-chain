@@ -1,6 +1,6 @@
 # Canonical Audit R3 — E05 Current Governed State
 
-Evidence cutoff: 14 August 2026 20:47:24 -04:00.
+Evidence cutoff: 14 August 2026 21:09 -04:00.
 
 This note records state only. It does not authorize execution, rerun, retry, freeze, or R3-E06.
 
@@ -55,6 +55,33 @@ R3 stopped during wrapper construction at:
 `WRAPPER_BIND_GENERATED_LAUNCH_GATE_R7_SIZE expected 1 source anchors, observed 0. STOP.`
 
 This is a construction-harness/source-anchor mismatch. It is not evidence of Runner R10 runtime failure.
+
+## Read-only frozen R6 wrapper size-anchor inventory
+
+A subsequent read-only inventory verified the exact frozen/consumed R6 wrapper before inspecting its dependency-size assignment surface.
+
+Frozen wrapper identity:
+- SHA-256: `4C55648E61B4D477EC4978F6E2F8183775398B95D6DAD844E787492A513E8846`;
+- size: `16611`;
+- identity gate: PASS.
+
+Exact source-anchor counts:
+- `EXPECTED_OPERATOR_SIZE_36403_COUNT = 1`;
+- `EXPECTED_LAUNCH_GATE_SIZE_25451_COUNT = 0`;
+- `EXPECTED_RUNNER_SIZE_93477_COUNT = 0`;
+- any generic operator-size assignment: 1 (`$ExpectedOperatorSize = 36403`);
+- any generic Launch Gate-size assignment: 0;
+- any generic Runner-size assignment: 0;
+- revision-qualified operator/Launch Gate/Runner size tokens: all 0.
+
+Therefore the frozen predecessor wrapper carries an explicit operator-size dependency binding only. It does not carry Launch Gate or Runner size assignments. The R3 requirement that each of those absent source variants occur exactly once is unsupported by the predecessor source and should not be converted into a new dependency binding merely to satisfy the construction harness.
+
+Narrow repair implication:
+- preserve the operator-size transformation as mandatory/exact;
+- treat Launch Gate-size and Runner-size wrapper transformations as absent optional predecessor variants (expected source-anchor cardinality 0);
+- preserve hash/file identity bindings, reverse-normalization, parser/static-contract gates, no-execution boundaries, and all other construction semantics unchanged.
+
+`READ_ONLY_R6_WRAPPER_SIZE_ANCHOR_INVENTORY_R1 = COMPLETE`
 
 ## Controlling boundary
 
