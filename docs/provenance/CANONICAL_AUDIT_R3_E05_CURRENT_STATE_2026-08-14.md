@@ -1,6 +1,6 @@
 # Canonical Audit R3 — E05 Current Governed State
 
-Evidence cutoff: 14 August 2026 21:09 -04:00.
+Evidence cutoff: 14 August 2026 21:17 -04:00.
 
 This note records state only. It does not authorize execution, rerun, retry, freeze, or R3-E06.
 
@@ -83,6 +83,38 @@ Narrow repair implication:
 
 `READ_ONLY_R6_WRAPPER_SIZE_ANCHOR_INVENTORY_R1 = COMPLETE`
 
+## R4 construction-harness candidate creation attempt
+
+A subsequent attempt was made to create an R4 construction-harness candidate only. The attempt did not execute the R4 harness, Runner R10, T001-T052, E05 R7, successor execution, or R3-E06.
+
+The first transformation helper (`Replace-R4ExactOnce`) wrote a diagnostic line to the success output stream and also returned the transformed source string. Because PowerShell functions return all uncaptured success-stream output, assigning the helper call to `$Source` converted `$Source` from a single `System.String` into a multi-element `System.Object[]`.
+
+Evidence of the defect:
+- the first helper call succeeded far enough to emit its diagnostic output;
+- the immediately following helper call failed parameter binding with `Cannot convert value to type System.String` for `-Text $Source`;
+- all later helper calls that required `[string]$Text` failed for the same reason;
+- the intended R4 cardinality repairs were therefore not established;
+- variables derived from those failed calls were unset;
+- although `Parser.ParseInput` reported zero parse errors and a file was later written, those facts do not establish that the intended R4 source transformation occurred because `$Source` was already the wrong runtime type.
+
+A file was written at:
+`C:\Users\YUSUFTAIWO\Downloads\CANONICAL_AUDIT_R3_E05_RUNNER_R10_SUCCESSOR_EXECUTION_CHAIN_CANDIDATE_CONSTRUCTION_IMPLEMENTATION_R4.txt`
+
+Observed identity:
+- SHA-256: `23E0F99FFECA7ABECDD963DEA25753C4BBB9FD5328A8EEF20928D9385964BC16`;
+- size: `82909`.
+
+This file is classified:
+
+`R4_FILE_23E0F99F... = INVALID_CONSTRUCTION_HARNESS_CANDIDATE_DO_NOT_EXECUTE`
+
+It must not be used as the basis for static acceptance, execution, freeze, or successor-chain construction. Its existence is historical evidence of the failed R4 candidate-creation attempt only.
+
+The exact repair required for a replacement candidate is to ensure transformation helpers emit diagnostics outside the success pipeline or use `Write-Host`/`Write-Verbose`/captured metadata so that the transformed source remains a single `System.String` at every stage. The replacement candidate must also prove the intended cardinalities before any file write:
+- operator-size source anchor expected count = 1;
+- Launch Gate-size source anchor expected count = 0;
+- Runner-size source anchor expected count = 0.
+
 ## Controlling boundary
 
 - `RUNNER_R10_EXECUTION = NOT_AUTHORIZED`
@@ -94,4 +126,4 @@ Narrow repair implication:
 - `R3_E06 = NOT_AUTHORIZED`
 - `INDEPENDENT_CONTROL_LAYER_ROLE = PRESERVED`
 
-No later work may treat the helper-only PASS as full Runner R10 or E05 runtime acceptance.
+No later work may treat the helper-only PASS as full Runner R10 or E05 runtime acceptance, and the invalid R4 file must never be treated as an accepted construction candidate.
