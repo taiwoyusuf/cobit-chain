@@ -1,6 +1,6 @@
 # Canonical Audit R3 — E05 Current Governed State
 
-Evidence cutoff: 14 August 2026 21:17 -04:00.
+Evidence cutoff: 14 August 2026 21:27 -04:00.
 
 This note records state only. It does not authorize execution, rerun, retry, freeze, or R3-E06.
 
@@ -28,17 +28,11 @@ Independent Control authorized one construction-only effort for a Runner R10 suc
 
 ### R1
 
-Stopped because an optional Launch Gate self-lineage variant was misclassified as mandatory.
-
-- final candidate files written: 0;
-- governed execution occurred: false.
+Stopped because an optional Launch Gate self-lineage variant was misclassified as mandatory. No final candidate files were written and no governed execution occurred.
 
 ### R2
 
-Continued under the same bounded construction authority with only the R1 harness expectation repaired. It progressed through Launch Gate R7 and Operator R7 Rev1 in-memory construction, then stopped because generic dependency-size variables in the wrapper were misidentified as revision-qualified.
-
-- final candidate files written: 0;
-- governed execution occurred: false.
+Continued under the same bounded construction authority with only the R1 harness expectation repaired. It progressed through Launch Gate R7 and Operator R7 Rev1 in-memory construction, then stopped because generic dependency-size variables in the wrapper were misidentified as revision-qualified. No final candidate files were written and no governed execution occurred.
 
 ### R3
 
@@ -58,8 +52,6 @@ This is a construction-harness/source-anchor mismatch. It is not evidence of Run
 
 ## Read-only frozen R6 wrapper size-anchor inventory
 
-A subsequent read-only inventory verified the exact frozen/consumed R6 wrapper before inspecting its dependency-size assignment surface.
-
 Frozen wrapper identity:
 - SHA-256: `4C55648E61B4D477EC4978F6E2F8183775398B95D6DAD844E787492A513E8846`;
 - size: `16611`;
@@ -69,54 +61,79 @@ Exact source-anchor counts:
 - `EXPECTED_OPERATOR_SIZE_36403_COUNT = 1`;
 - `EXPECTED_LAUNCH_GATE_SIZE_25451_COUNT = 0`;
 - `EXPECTED_RUNNER_SIZE_93477_COUNT = 0`;
-- any generic operator-size assignment: 1 (`$ExpectedOperatorSize = 36403`);
-- any generic Launch Gate-size assignment: 0;
-- any generic Runner-size assignment: 0;
 - revision-qualified operator/Launch Gate/Runner size tokens: all 0.
 
-Therefore the frozen predecessor wrapper carries an explicit operator-size dependency binding only. It does not carry Launch Gate or Runner size assignments. The R3 requirement that each of those absent source variants occur exactly once is unsupported by the predecessor source and should not be converted into a new dependency binding merely to satisfy the construction harness.
-
-Narrow repair implication:
-- preserve the operator-size transformation as mandatory/exact;
-- treat Launch Gate-size and Runner-size wrapper transformations as absent optional predecessor variants (expected source-anchor cardinality 0);
-- preserve hash/file identity bindings, reverse-normalization, parser/static-contract gates, no-execution boundaries, and all other construction semantics unchanged.
+Therefore the frozen predecessor wrapper carries an explicit operator-size dependency binding only. It does not carry Launch Gate or Runner size assignments. Narrow repair implication: operator transformation remains exact/mandatory; Launch Gate and Runner size transformations are absent predecessor variants and must not be invented.
 
 `READ_ONLY_R6_WRAPPER_SIZE_ANCHOR_INVENTORY_R1 = COMPLETE`
 
-## R4 construction-harness candidate creation attempt
+## R4 invalid candidate
 
-A subsequent attempt was made to create an R4 construction-harness candidate only. The attempt did not execute the R4 harness, Runner R10, T001-T052, E05 R7, successor execution, or R3-E06.
+R4 candidate creation failed because helper diagnostic output contaminated the success pipeline and converted `$Source` from `System.String` into `System.Object[]`. A file was nevertheless written.
 
-The first transformation helper (`Replace-R4ExactOnce`) wrote a diagnostic line to the success output stream and also returned the transformed source string. Because PowerShell functions return all uncaptured success-stream output, assigning the helper call to `$Source` converted `$Source` from a single `System.String` into a multi-element `System.Object[]`.
-
-Evidence of the defect:
-- the first helper call succeeded far enough to emit its diagnostic output;
-- the immediately following helper call failed parameter binding with `Cannot convert value to type System.String` for `-Text $Source`;
-- all later helper calls that required `[string]$Text` failed for the same reason;
-- the intended R4 cardinality repairs were therefore not established;
-- variables derived from those failed calls were unset;
-- although `Parser.ParseInput` reported zero parse errors and a file was later written, those facts do not establish that the intended R4 source transformation occurred because `$Source` was already the wrong runtime type.
-
-A file was written at:
-`C:\Users\YUSUFTAIWO\Downloads\CANONICAL_AUDIT_R3_E05_RUNNER_R10_SUCCESSOR_EXECUTION_CHAIN_CANDIDATE_CONSTRUCTION_IMPLEMENTATION_R4.txt`
-
-Observed identity:
+Identity:
 - SHA-256: `23E0F99FFECA7ABECDD963DEA25753C4BBB9FD5328A8EEF20928D9385964BC16`;
 - size: `82909`.
 
-This file is classified:
+Classification:
 
-`R4_FILE_23E0F99F... = INVALID_CONSTRUCTION_HARNESS_CANDIDATE_DO_NOT_EXECUTE`
+`R4 = INVALID_CONSTRUCTION_HARNESS_CANDIDATE_DO_NOT_EXECUTE`
 
-It must not be used as the basis for static acceptance, execution, freeze, or successor-chain construction. Its existence is historical evidence of the failed R4 candidate-creation attempt only.
+## R4A invalid candidate
 
-The exact repair required for a replacement candidate is to ensure transformation helpers emit diagnostics outside the success pipeline or use `Write-Host`/`Write-Verbose`/captured metadata so that the transformed source remains a single `System.String` at every stage. The replacement candidate must also prove the intended cardinalities before any file write:
-- operator-size source anchor expected count = 1;
-- Launch Gate-size source anchor expected count = 0;
-- Runner-size source anchor expected count = 0.
+R4A corrected the success-stream contamination and began with `$Source` as `System.String`, but its line-array helper contract rejected embedded blank-string elements in the split source. Therefore neither intended size-cardinality repair executed before the candidate file was written.
+
+Identity:
+- SHA-256: `8FA60C2F2FE275621A3B9E42A4AF5A363B2D88C168B24EF505BDF92295D04DBD`;
+- size: `86071`.
+
+Classification:
+
+`R4A = INVALID_CONSTRUCTION_HARNESS_CANDIDATE_DO_NOT_EXECUTE`
+
+No R4A harness execution, Runner R10 execution, T001-T052 execution, E05 R7 execution, successor execution, or R3-E06 execution occurred.
+
+## R4B valid development candidate creation
+
+R4B was constructed directly from exact R3 while preserving invalid R4 and R4A as historical evidence.
+
+Pre-repair construction-harness contract observed in R3:
+- operator expected count: `1`;
+- Launch Gate expected count: `1`;
+- Runner expected count: `1`.
+
+Evidence-supported R4B repair:
+- operator expected source count remains `1`;
+- Launch Gate expected source count changed `1 -> 0`;
+- Runner expected source count changed `1 -> 0`.
+
+R4B verification results:
+- initial source runtime type: `System.String`;
+- final source runtime type: `System.String`;
+- parse error count: `0`;
+- prohibited authorization-widening token counts: all `0`;
+- exact reverse normalization to R3: `TRUE`;
+- exact R3 source unchanged after creation: `TRUE`;
+- invalid R4 unchanged after creation: `TRUE`;
+- invalid R4A unchanged after creation: `TRUE`.
+
+R4B identity:
+- SHA-256: `E17994782814BFBFCBC497AD5C62DB08C9E8D1F147BA0F5EAE76BB3DB4179F6D`;
+- size: `83286`.
+
+Classification:
+
+`R4B_STATUS = DEVELOPMENT_CANDIDATE_CREATED_NOT_EXECUTED`
+
+`R4B_INDEPENDENT_READ_ONLY_STATIC_REVIEW = REQUIRED_NEXT`
+
+R4B is the first candidate in the R4/R4A/R4B sequence that established the intended repair contract and exact reverse-normalization to R3. This does not authorize execution or freeze.
 
 ## Controlling boundary
 
+- `R4_EXECUTED = FALSE`
+- `R4A_EXECUTED = FALSE`
+- `R4B_CONSTRUCTION_HARNESS_EXECUTED = FALSE`
 - `RUNNER_R10_EXECUTION = NOT_AUTHORIZED`
 - `T001_T052_EXECUTION = NOT_AUTHORIZED`
 - `E05_R7_EXECUTION = NOT_AUTHORIZED`
@@ -126,4 +143,4 @@ The exact repair required for a replacement candidate is to ensure transformatio
 - `R3_E06 = NOT_AUTHORIZED`
 - `INDEPENDENT_CONTROL_LAYER_ROLE = PRESERVED`
 
-No later work may treat the helper-only PASS as full Runner R10 or E05 runtime acceptance, and the invalid R4 file must never be treated as an accepted construction candidate.
+No later work may treat the helper-only PASS, invalid R4/R4A files, or the unexecuted R4B development candidate as full Runner R10 or E05 runtime acceptance.
