@@ -93,6 +93,43 @@ Refinement: agent-capable API enablement should trigger execution-surface discov
 ### AR-09 — Meta-Assurance
 Provide evidence that the assurance mechanism itself was current, applicable, correctly configured, and independently reconstructable when relied upon.
 
+## Three-person integrated refinement synchronization — 14 August 2026
+
+The Greggory Don Butler / Greg Malpass / Ravi Shankar NRK comparison is synchronized through:
+
+`THREE_PERSON_REFINEMENT_CONTRACT_R3_2026-08-14.md`
+
+The following refinements are now explicit roadmap/challenge contracts:
+
+1. Revocation Effectiveness;
+2. Delegation Scope Monotonicity;
+3. Independent Mechanical / Out-of-Band Restraint;
+4. Graduated Containment;
+5. Assumption / Basis Standing;
+6. Memory Revocation Effectiveness & Descendant Invalidation;
+7. Epistemic Independence;
+8. Trigger Evidence vs Continuing Standing Separation;
+9. Post-Revocation Consequence Reconciliation.
+
+Additional preserved mechanisms from the historical reconciliation include:
+
+- Decision-to-Bind Standing Continuity;
+- Standing Continuity Clock;
+- Governed Disposition Clock;
+- resolver/refusal admissibility;
+- governed memory and pre-inference context admission;
+- Evidence-to-Claim Reliance Standing;
+- Governance Determination Meta-Assurance;
+- route-complete cumulative burden;
+- non-occurrence / prevented-consequence evidence;
+- continuing reliance / residency;
+- provider severance / sovereignty / portability;
+- divergence and human adjudication readiness.
+
+No ninth top-level family is created.
+
+`CAPABILITY_78 = NOT_JUSTIFIED`
+
 ## Additional implementation/challenge invariants
 
 - `DATA_ACCESSIBLE != DATA_SEMANTICALLY_UNDERSTOOD != DATA_AUTHORIZED_FOR_PURPOSE != DATA_SUITABLE_FOR_INFERENCE != ACTION_ADMISSIBLE`.
@@ -103,6 +140,11 @@ Provide evidence that the assurance mechanism itself was current, applicable, co
 - parent authority loss must not silently leave derivative authority alive;
 - `REASSESSMENT_TRIGGER != STANDING_LOST`;
 - `AUTHORIZED_COMMIT != SUCCESSFUL_EXECUTION != INTENDED_OUTCOME`.
+- `REVOCATION_REQUESTED != REVOCATION_EFFECTIVE`.
+- `DELEGATED_AUTHORITY_CHILD ⊆ EFFECTIVE_AUTHORITY_PARENT` unless separately and independently granted.
+- `HUMAN_REVIEW_OCCURRED != HUMAN_COULD_INDEPENDENTLY_EVALUATE_THE_BASIS`.
+- `CANONICAL_MEMORY_REVOKED != MEMORY_REVOCATION_EFFECTIVE`.
+- `REVOCATION_EFFECTIVE != CONSEQUENCES_RECONCILED`.
 
 ## Required gate before coding
 Each tranche must first be reconciled against authoritative current first-party repository evidence and classified as one of:
