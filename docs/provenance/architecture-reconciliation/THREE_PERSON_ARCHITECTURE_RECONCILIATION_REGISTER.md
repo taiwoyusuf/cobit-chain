@@ -1,16 +1,14 @@
 # COBIT-Chain™ Three-Person Architecture Reconciliation Register
 
-This register preserves the currently tracked public architecture/governance comparison involving Greggory Don Butler, Greg Malpass, and Ravi Shankar NRK while keeping COBIT-Chain capability ownership evidence-bounded.
+This register preserves the architecture/governance comparison involving Greggory Don Butler, Greg Malpass, and Ravi Shankar NRK while keeping COBIT-Chain capability ownership and implementation status evidence-bounded.
 
-The comparison rule is difference-first: preserve COBIT-Chain concepts already supported by earlier project evidence, suppress duplicate capability creation, and record genuinely useful strengthening without converting a public-source comparison into an implementation claim.
-
-Exact source dates, archived copies, earlier COBIT-Chain artifacts, hashes, commits, submissions, and publications should be retained where priority chronology matters.
+The comparison rule is difference-first: preserve COBIT-Chain concepts already supported by earlier project evidence, suppress duplicate capability creation, and retain materially useful strengthening without converting a public-source comparison into an implementation claim.
 
 ## Greggory Don Butler
 
 Reconciled themes include institutional/constitutional memory, trajectory governance, continuing consequence after an individual decision, historical validity versus present reliance, source/reality qualification, cumulative route burden, governance meta-assurance, future-reliance requalification, and obligations that persist beyond the original decision event.
 
-COBIT-Chain treatment: reconcile these themes against existing passports, obligation/evidence chains, Validation Standing Assurance, No-Bind Governance, Outcome Correspondence, route-complete consequence assurance, evidence/reliance standing, and historical-validity/current-reliance controls. Where earlier COBIT-Chain evidence already establishes the concept, retain it as COBIT-Chain doctrine/capability chronology. Where a later comparison materially sharpens a mechanism, record the delta without claiming implementation until repository evidence establishes it.
+COBIT-Chain treatment: reconcile these themes against existing passports, obligation/evidence chains, Validation Standing Assurance, No-Bind Governance, Outcome Correspondence, route-complete consequence assurance, evidence/reliance standing, and historical-validity/current-reliance controls. Where earlier COBIT-Chain evidence establishes the concept, retain it as COBIT-Chain doctrine/capability chronology. Where a later comparison materially sharpens a mechanism, preserve the refinement without claiming implementation until repository evidence establishes it.
 
 ## Greg Malpass
 
@@ -35,28 +33,8 @@ COBIT-Chain treatment: preserve duty age independently of current custodian; dis
 7. Aggregate Agent, Divergence & Human Adjudication Assurance
 8. Sovereignty, Portability & Dependency Assurance
 
-## Additional precision controls retained
-
-- rule/basis standing;
-- decision-to-bind continuity;
-- persistent-memory and pre-inference governance;
-- assurance-of-the-assurance / meta-assurance;
-- trajectory and downstream-consequence burden;
-- continuing reliance, residency and unwinding;
-- divergence and informed human adjudication;
-- sovereignty and portability;
-- revocation effectiveness;
-- delegation monotonicity;
-- out-of-band restraint;
-- graduated containment;
-- assumption standing;
-- memory-revocation descendant reevaluation/invalidation;
-- epistemic independence;
-- trigger evidence versus continuing standing;
-- post-revocation consequence reconciliation.
-
 ## Current implementation claim
 
 `NO_NEW_IMPLEMENTATION_CLAIM_CREATED_BY_THIS_REGISTER`
 
-This register records architecture reconciliation and chronology. Capability status must continue to be proved by authoritative repository and governed test evidence.
+Capability status must continue to be proved by authoritative repository and governed test evidence.
