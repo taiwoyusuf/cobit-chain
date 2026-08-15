@@ -33,8 +33,36 @@ COBIT-Chain treatment: preserve duty age independently of current custodian; dis
 7. Aggregate Agent, Divergence & Human Adjudication Assurance
 8. Sovereignty, Portability & Dependency Assurance
 
+## GitHub priority and provenance synchronization
+
+The controlled priority record is maintained in:
+
+`THREE_PERSON_PRIORITY_EVIDENCE_LEDGER_2026-08-14.md`
+
+The integrated nine-refinement contract is maintained in:
+
+`THREE_PERSON_REFINEMENT_CONTRACT_R3_2026-08-14.md`
+
+These records explicitly separate:
+
+- prior COBIT-Chain concept evidence;
+- pre-existing convergence;
+- source-informed refinement;
+- roadmap-only status;
+- candidate / implementation / verification status.
+
+They also preserve the rule that a later GitHub commit cannot retroactively create an earlier invention date.
+
+Operational synchronization target:
+
+`GITHUB_DOCUMENTARY_STATE_LAG_TARGET <= 1 GOVERNED_MILESTONE`
+
 ## Current implementation claim
 
 `NO_NEW_IMPLEMENTATION_CLAIM_CREATED_BY_THIS_REGISTER`
+
+`CAPABILITY_78 = NOT_JUSTIFIED`
+
+`NEW_TOP_LEVEL_FAMILY = NO`
 
 Capability status must continue to be proved by authoritative repository and governed test evidence.
