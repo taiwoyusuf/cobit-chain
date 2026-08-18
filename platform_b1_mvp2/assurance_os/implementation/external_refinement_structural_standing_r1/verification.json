@@ -1,0 +1,34 @@
+{
+  "contract": "COBITChain.ExternalCorpusStructuralStandingR1Verification.v1",
+  "date": "2026-08-17",
+  "branch": "feature/external-corpus-operating-envelope-r1",
+  "new_top_level_capability": false,
+  "implemented_controls": [
+    "STRUCTURAL_OPERATING_ENVELOPE_STANDING",
+    "REPLAY_LEGITIMACY_AND_PROMOTION_STANDING",
+    "INTERACTING_DECISION_CONDITION_STANDING"
+  ],
+  "deterministic_tests": {
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "verification_method": "Local Python execution of the exact evaluator logic before commit; committed unittest scenarios preserve the same cases.",
+  "github_ci_run": "NOT_CLAIMED",
+  "external_source_material_is_implementation_evidence": false,
+  "first_party_code_is_implementation_evidence_for": "non-binding deterministic contract/challenge layer only",
+  "live_operational_enforcement": "NOT_ESTABLISHED",
+  "gxp_validation": "NOT_ESTABLISHED",
+  "regulatory_acceptance": "NOT_ESTABLISHED",
+  "authority": "NONE",
+  "no_bind": true,
+  "invariants": [
+    "CURRENT_VALUES_WITHIN_LIMITS != QUALIFIED_OPERATING_REGIME_PRESERVED",
+    "REPLAY_SUCCEEDED != CURRENT_LEGITIMACY_ESTABLISHED",
+    "PROOF_PRESENT != CUSTODY_COMPLETE",
+    "PERSISTENCE != PROMOTION_TO_CONSEQUENCE",
+    "ALL_COMPONENT_DECISIONS_VALID != COMBINED_OPERATING_CONDITION_VALID",
+    "FIRST_PARTY_CODE_EXISTS != LIVE_OPERATIONAL_ENFORCEMENT"
+  ]
+}
