@@ -1,0 +1,79 @@
+name: Cloud Resilience R1 - Azure Backup
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  BACKUP_CONTAINER: cobit-chain
+
+jobs:
+  azure-backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout complete Git history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all refs and tags
+        run: |
+          git fetch --all --tags --prune
+
+      - name: Build recoverable Git bundle and repository archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p backup
+          git bundle create backup/cobit-chain.bundle --all
+          git archive --format=tar.gz --output=backup/cobit-chain-${GITHUB_SHA}.tar.gz ${GITHUB_SHA}
+          sha256sum backup/* > backup/SHA256SUMS.txt
+          printf '{"repository":"%s","commit":"%s","run_id":"%s","run_attempt":"%s","created_utc":"%s"}\n' \
+            "${GITHUB_REPOSITORY}" "${GITHUB_SHA}" "${GITHUB_RUN_ID}" "${GITHUB_RUN_ATTEMPT}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > backup/manifest.json
+
+      - name: Azure login using federated identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_BACKUP_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_BACKUP_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_BACKUP_SUBSCRIPTION_ID }}
+
+      - name: Upload immutable-addressed backup set
+        shell: bash
+        env:
+          STORAGE_ACCOUNT: ${{ vars.AZURE_BACKUP_STORAGE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          test -n "${STORAGE_ACCOUNT}"
+          PREFIX="git-bundles/${GITHUB_SHA}/run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          az storage blob upload-batch \
+            --account-name "${STORAGE_ACCOUNT}" \
+            --auth-mode login \
+            --destination "${BACKUP_CONTAINER}" \
+            --destination-path "${PREFIX}" \
+            --source backup \
+            --overwrite false
+
+      - name: Verify uploaded manifest exists
+        shell: bash
+        env:
+          STORAGE_ACCOUNT: ${{ vars.AZURE_BACKUP_STORAGE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          PREFIX="git-bundles/${GITHUB_SHA}/run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          EXISTS=$(az storage blob exists \
+            --account-name "${STORAGE_ACCOUNT}" \
+            --auth-mode login \
+            --container-name "${BACKUP_CONTAINER}" \
+            --name "${PREFIX}/manifest.json" \
+            --query exists -o tsv)
+          test "${EXISTS}" = "true"
