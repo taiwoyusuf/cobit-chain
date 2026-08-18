@@ -1,0 +1,92 @@
+name: Cloud Resilience R1 - Azure Read-Only Discovery
+
+on:
+  push:
+    branches:
+      - feature/cloud-resilience-r1
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Azure using existing GitHub OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Read-only Azure estate discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p azure-discovery
+
+          az account show --output json > azure-discovery/account.json
+          az group list --output json > azure-discovery/resource-groups.json
+          az resource list --output json > azure-discovery/resources.json
+          az webapp list --output json > azure-discovery/webapps.json
+          az storage account list --output json > azure-discovery/storage-accounts.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('azure-discovery')
+          account = json.loads((root / 'account.json').read_text())
+          groups = json.loads((root / 'resource-groups.json').read_text())
+          resources = json.loads((root / 'resources.json').read_text())
+          webapps = json.loads((root / 'webapps.json').read_text())
+          stores = json.loads((root / 'storage-accounts.json').read_text())
+
+          summary = {
+              'subscription_name': account.get('name'),
+              'subscription_id': account.get('id'),
+              'tenant_id': account.get('tenantId'),
+              'resource_groups': [
+                  {'name': x.get('name'), 'location': x.get('location')}
+                  for x in groups
+              ],
+              'webapps': [
+                  {
+                      'name': x.get('name'),
+                      'resourceGroup': x.get('resourceGroup'),
+                      'state': x.get('state'),
+                      'defaultHostName': x.get('defaultHostName'),
+                      'kind': x.get('kind'),
+                  }
+                  for x in webapps
+              ],
+              'storage_accounts': [
+                  {
+                      'name': x.get('name'),
+                      'resourceGroup': x.get('resourceGroup'),
+                      'location': x.get('primaryLocation'),
+                      'sku': (x.get('sku') or {}).get('name'),
+                      'kind': x.get('kind'),
+                  }
+                  for x in stores
+              ],
+              'resource_count': len(resources),
+          }
+          (root / 'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload read-only discovery artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-read-only-discovery
+          path: azure-discovery/
+          retention-days: 7
+
+      - name: Azure logout
+        if: always()
+        run: az logout
