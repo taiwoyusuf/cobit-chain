@@ -1,6 +1,7 @@
 {
   "version": "r1",
   "default": "deny",
+  "evidence_record": "MCP_CATALOG_RECONCILIATION.md",
   "tools": [
     "subscription_list",
     "group_list",
@@ -27,6 +28,7 @@
     "R1 exposes only tools reconciled as read-only and non-secret against current Azure MCP documentation.",
     "No wildcard entries are permitted.",
     "Any unmatched tool is denied.",
-    "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list."
+    "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list.",
+    "Read-only tools whose responses are marked Secret=true are excluded from R1."
   ]
 }
