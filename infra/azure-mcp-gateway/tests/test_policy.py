@@ -6,11 +6,12 @@ from app.policy import PolicyDenied, authorize_tool, is_prohibited, load_allowli
 
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_ALLOWLIST = {"subscription_list", "group_list", "group_resource_list"}
 
 
 def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
     allowlist = load_allowlist(ROOT / "config" / "allowlist.json")
-    assert allowlist == {"subscription_list", "group_list"}
+    assert allowlist == EXPECTED_ALLOWLIST
     assert all("*" not in tool for tool in allowlist)
 
 
@@ -36,9 +37,9 @@ def test_prohibited_operation_names_are_blocked(tool_name: str) -> None:
 
 def test_unlisted_tool_is_denied() -> None:
     with pytest.raises(PolicyDenied):
-        authorize_tool("vm_get", {"subscription_list"})
+        authorize_tool("vm_get", EXPECTED_ALLOWLIST)
 
 
-def test_explicit_safe_tool_is_allowed() -> None:
-    authorize_tool("subscription_list", {"subscription_list", "group_list"})
-    authorize_tool("group_list", {"subscription_list", "group_list"})
+def test_explicit_safe_tools_are_allowed() -> None:
+    for tool_name in EXPECTED_ALLOWLIST:
+        authorize_tool(tool_name, EXPECTED_ALLOWLIST)
