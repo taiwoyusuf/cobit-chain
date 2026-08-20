@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
     allowlist = load_allowlist(ROOT / "config" / "allowlist.json")
-    assert allowlist
+    assert allowlist == {"subscription_list", "group_list"}
     assert all("*" not in tool for tool in allowlist)
 
 
@@ -36,8 +36,9 @@ def test_prohibited_operation_names_are_blocked(tool_name: str) -> None:
 
 def test_unlisted_tool_is_denied() -> None:
     with pytest.raises(PolicyDenied):
-        authorize_tool("vm_get", {"subscriptions_list"})
+        authorize_tool("vm_get", {"subscription_list"})
 
 
 def test_explicit_safe_tool_is_allowed() -> None:
-    authorize_tool("subscriptions_list", {"subscriptions_list"})
+    authorize_tool("subscription_list", {"subscription_list", "group_list"})
+    authorize_tool("group_list", {"subscription_list", "group_list"})
