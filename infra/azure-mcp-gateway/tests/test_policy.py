@@ -8,6 +8,7 @@ from app.policy import PolicyDenied, authorize_tool, is_prohibited, load_allowli
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_ALLOWLIST = {"subscription_list", "group_list", "group_resource_list"}
+EXPECTED_VERSION = "r1-catalog-reconciled-2026-08-20"
 
 
 def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
@@ -18,6 +19,7 @@ def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
 
 def test_each_allowed_tool_has_verified_non_secret_catalog_evidence() -> None:
     data = json.loads((ROOT / "config" / "allowlist.json").read_text(encoding="utf-8"))
+    assert data["version"] == EXPECTED_VERSION
     evidence_record = data["evidence_record"]
     assert (ROOT / evidence_record).is_file()
     reconciliation = data["catalog_reconciliation"]
