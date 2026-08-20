@@ -20,6 +20,7 @@ def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
 def test_each_allowed_tool_has_verified_non_secret_catalog_evidence() -> None:
     data = json.loads((ROOT / "config" / "allowlist.json").read_text(encoding="utf-8"))
     assert data["version"] == EXPECTED_VERSION
+    assert data["catalog_state"] == "frozen"
     evidence_record = data["evidence_record"]
     assert (ROOT / evidence_record).is_file()
     reconciliation = data["catalog_reconciliation"]
