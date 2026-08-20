@@ -42,19 +42,11 @@ Azure Resource Manager read surfaces
 
 ## Security boundary
 
-The gateway SHALL:
+The gateway SHALL require PKCE, never use a client secret, deny unmatched tools, prohibit write/RBAC/credential operations, redact authentication material from evidence, and keep deployment behind a separate gate.
 
-1. require PKCE (`S256`) for interactive authorization;
-2. never require or store a client secret;
-3. deny any tool or operation not explicitly present in `config/allowlist.json`;
-4. deny operation names associated with create/update/delete/write/action/assign/grant/role/permission/key/secret/credential flows even if accidentally added to a broader upstream surface;
-5. never expose OAuth access or refresh tokens in application logs or evidence records;
-6. generate an evidence event for each policy decision and upstream invocation attempt;
-7. keep R1 deployment planning separate from deployment execution.
+## Frozen R1 allow-list
 
-## Reconciled R1 allow-list
-
-The executable R1 inventory surface is:
+The executable R1 inventory surface is exactly:
 
 - `subscription_list`
 - `group_list`
@@ -62,7 +54,7 @@ The executable R1 inventory surface is:
 
 Each has been reconciled against current Azure MCP documentation as read-only and non-secret. No other Azure MCP tool is authorized for R1.
 
-See `MCP_CATALOG_RECONCILIATION.md` for the evidence decision record.
+CI requires every allow-listed tool to have a matching verified catalog-evidence entry. See `MCP_CATALOG_RECONCILIATION.md`.
 
 ## R1 files
 
@@ -70,9 +62,10 @@ See `MCP_CATALOG_RECONCILIATION.md` for the evidence decision record.
 - `app/auth.py` - PKCE generation and OAuth URL/token-exchange helpers.
 - `app/policy.py` - deny-by-default allow-list and prohibited-operation checks.
 - `app/evidence.py` - structured evidence logging with token/header redaction.
-- `config/allowlist.json` - R1 permitted read-only MCP tools.
-- `tests/test_policy.py` - policy invariants.
-- `MCP_CATALOG_RECONCILIATION.md` - current tool annotation reconciliation.
+- `config/allowlist.json` - frozen R1 permitted read-only MCP tools plus catalog evidence metadata.
+- `tests/test_policy.py` - policy and catalog-evidence invariants.
+- `MCP_CATALOG_RECONCILIATION.md` - frozen R1 tool annotation reconciliation.
+- `DEPLOYMENT_READINESS.md` - next live inventory gate.
 - `DEPLOYMENT_PLAN.md` - deployment plan only; no deployment is performed by R1.
 
 ## Non-goals for R1
@@ -85,4 +78,6 @@ See `MCP_CATALOG_RECONCILIATION.md` for the evidence decision record.
 
 ## Status
 
-Scaffold and deployment-readiness preparation only. Draft PR required. Deployment remains gated until live Azure inventory is captured through an authorized Azure-connected execution path.
+`MCP_CATALOG_RECONCILED / DEPLOYMENT_READINESS_PREPARED / AZURE_INVENTORY_NOT_YET_CAPTURED`
+
+Deployment remains gated until live Azure inventory is captured through an authorized Azure-connected execution path.
