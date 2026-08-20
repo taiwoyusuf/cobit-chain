@@ -1,5 +1,5 @@
 {
-  "version": "r1",
+  "version": "r1-catalog-reconciled-2026-08-20",
   "default": "deny",
   "evidence_record": "MCP_CATALOG_RECONCILIATION.md",
   "tools": [
