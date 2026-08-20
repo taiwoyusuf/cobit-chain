@@ -3,14 +3,28 @@
   "default": "deny",
   "tools": [
     "subscription_list",
-    "group_list"
-  ],
-  "candidate_expansion_after_catalog_reconciliation": [
+    "group_list",
     "group_resource_list"
   ],
+  "catalog_reconciliation": {
+    "subscription_list": {
+      "read_only": true,
+      "secret": false,
+      "status": "verified"
+    },
+    "group_list": {
+      "read_only": true,
+      "secret": false,
+      "status": "verified"
+    },
+    "group_resource_list": {
+      "read_only": true,
+      "secret": false,
+      "status": "verified"
+    }
+  },
   "notes": [
-    "R1 starts with the smallest currently verified read-only inventory surface.",
-    "Candidate tools are not executable until deliberately moved into tools after live catalog and annotation reconciliation.",
+    "R1 exposes only tools reconciled as read-only and non-secret against current Azure MCP documentation.",
     "No wildcard entries are permitted.",
     "Any unmatched tool is denied.",
     "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list."
