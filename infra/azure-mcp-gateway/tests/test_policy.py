@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,19 @@ def test_allowlist_is_deny_by_default_and_no_wildcards() -> None:
     allowlist = load_allowlist(ROOT / "config" / "allowlist.json")
     assert allowlist == EXPECTED_ALLOWLIST
     assert all("*" not in tool for tool in allowlist)
+
+
+def test_each_allowed_tool_has_verified_non_secret_catalog_evidence() -> None:
+    data = json.loads((ROOT / "config" / "allowlist.json").read_text(encoding="utf-8"))
+    evidence_record = data["evidence_record"]
+    assert (ROOT / evidence_record).is_file()
+    reconciliation = data["catalog_reconciliation"]
+    assert set(reconciliation) == EXPECTED_ALLOWLIST
+    for tool_name in EXPECTED_ALLOWLIST:
+        evidence = reconciliation[tool_name]
+        assert evidence["status"] == "verified"
+        assert evidence["read_only"] is True
+        assert evidence["secret"] is False
 
 
 @pytest.mark.parametrize(
