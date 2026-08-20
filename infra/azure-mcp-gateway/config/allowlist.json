@@ -1,0 +1,23 @@
+{
+  "version": "r1-catalog-reconciled-2026-08-20",
+  "default": "deny",
+  "evidence_record": "MCP_CATALOG_RECONCILIATION.md",
+  "catalog_state": "frozen",
+  "tools": [
+    "subscription_list",
+    "group_list",
+    "group_resource_list"
+  ],
+  "catalog_reconciliation": {
+    "subscription_list": {"read_only": true, "secret": false, "status": "verified"},
+    "group_list": {"read_only": true, "secret": false, "status": "verified"},
+    "group_resource_list": {"read_only": true, "secret": false, "status": "verified"}
+  },
+  "notes": [
+    "No wildcard entries are permitted.",
+    "Any unmatched tool is denied.",
+    "Secret/key/RBAC/write/action/create/update/delete operations remain prohibited.",
+    "Read-only tools with Secret=true remain excluded.",
+    "Any expansion requires new evidence and tests in the draft PR."
+  ]
+}

@@ -1,0 +1,115 @@
+name: Azure MCP Gateway R1 Read-Only Inventory
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-inventory.yml"
+      - "infra/azure-mcp-gateway/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify inventory workflow remains read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-inventory.yml
+          grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
+
+          while IFS= read -r line; do
+            command="$(echo "$line" | sed -E 's/^[[:space:]]+//')"
+            case "$command" in
+              "az account show "*|"az group list "*|"az resource list "*) ;;
+              *)
+                echo "Forbidden Azure command: $command"
+                exit 1
+                ;;
+            esac
+          done < <(grep -E '^[[:space:]]+az ' "$workflow")
+
+          echo "PASS: PR guard confirms live inventory is main-only and permits only account show, group list, and resource list"
+
+  live-inventory:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Azure with existing repository OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Capture read-only Azure inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p inventory
+
+          az account show \
+            --query '{subscriptionId:id,subscriptionName:name,tenantId:tenantId,userType:user.type,state:state}' \
+            -o json > inventory/account.json
+
+          az group list \
+            --query '[].{name:name,location:location,provisioningState:properties.provisioningState}' \
+            -o json > inventory/resource-groups.json
+
+          az resource list \
+            --resource-type Microsoft.App/managedEnvironments \
+            --query '[].{name:name,resourceGroup:resourceGroup,location:location,id:id}' \
+            -o json > inventory/container-app-environments.json
+
+          az resource list \
+            --resource-type Microsoft.App/containerApps \
+            --query '[].{name:name,resourceGroup:resourceGroup,location:location,id:id}' \
+            -o json > inventory/container-apps.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('inventory')
+          account = json.loads((root / 'account.json').read_text())
+          groups = json.loads((root / 'resource-groups.json').read_text())
+          envs = json.loads((root / 'container-app-environments.json').read_text())
+          apps = json.loads((root / 'container-apps.json').read_text())
+
+          summary = {
+              'schema': 'cobit-chain.azure-mcp-gateway.inventory.r1',
+              'mode': 'read-only',
+              'subscriptionId': account.get('subscriptionId'),
+              'subscriptionName': account.get('subscriptionName'),
+              'tenantId': account.get('tenantId'),
+              'subscriptionState': account.get('state'),
+              'resourceGroupCount': len(groups),
+              'containerAppsEnvironmentCount': len(envs),
+              'containerAppsCount': len(apps),
+              'candidateExistingHostingBoundary': bool(envs),
+              'azureMutationPerformed': False,
+              'rbacMutationPerformed': False,
+              'secretOrKeyRetrieved': False,
+          }
+          (root / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload governed inventory evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-inventory
+          path: inventory/
+          if-no-files-found: error
+          retention-days: 7
