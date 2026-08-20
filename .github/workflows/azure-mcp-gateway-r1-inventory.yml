@@ -1,6 +1,10 @@
 name: Azure MCP Gateway R1 Read-Only Inventory
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-inventory.yml"
+      - "infra/azure-mcp-gateway/**"
   push:
     branches:
       - "feature/azure-mcp-gateway-r1"
