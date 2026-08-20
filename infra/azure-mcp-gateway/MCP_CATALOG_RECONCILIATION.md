@@ -45,4 +45,6 @@ Upstream annotations are evidence inputs, not the enforcement boundary. R1 still
 
 `subscription_list`, `group_list`, and `group_resource_list` are the complete R1 Azure inventory surface for the next live proof.
 
+The matching allow-list declares `catalog_state = frozen`, and CI enforces that every admitted tool has a verified `read_only=true` and `secret=false` evidence entry.
+
 No additional Azure MCP tool is authorized by this reconciliation. Any expansion requires a new evidence decision and test change in the draft PR.
