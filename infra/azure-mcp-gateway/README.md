@@ -1,21 +1,20 @@
 # Azure MCP Gateway R1
 
-Read-only, PKCE-compliant gateway scaffold for controlled access to Azure ARM MCP from COBIT-Chain / Platform B1.
+Read-only, PKCE-compliant gateway scaffold for controlled access to Azure MCP from COBIT-Chain / Platform B1.
 
 ## R1 invariant
 
 R1 is **read-only**. It must not perform Azure mutations, RBAC changes, secret/key retrieval, credential export, or any operation outside the explicit allow-list.
 
-## Upstream Azure ARM MCP
+## Upstream Azure MCP
 
-- Endpoint: `https://mcp.management.azure.com`
-- Entra application: `ChatGPT COBIT-Chain Azure ARM`
-- Client ID: `1054f42d-2133-42f3-a024-a1ea065e8b53`
-- Tenant ID: `f8683fda-4956-4620-9e26-a1a14bbec914`
-- Delegated scope: `api://22bfbae3-f4e7-485f-be43-8cee15065084/MCP.Access`
-- Additional OAuth scope: `offline_access`
+- Default endpoint: `https://mcp.management.azure.com`
+- Tenant ID, public client ID, redirect URI and delegated scope are deployment configuration supplied through environment variables.
+- Additional OAuth scope may include `offline_access` when the registered client and upstream authorization contract require refresh tokens.
+- No client secret is used by this R1 scaffold.
+- Authorization Code + PKCE (`S256`) is the required browser flow.
 
-No client secret is used by this R1 scaffold. Authorization Code + PKCE is the required browser flow.
+No real token, secret, key, connection string or tenant-specific credential belongs in this repository.
 
 ## Architecture
 
@@ -34,7 +33,7 @@ Azure MCP Gateway R1
         |
         | bearer token, allowed read-only call only
         v
-Azure ARM MCP
+Azure MCP
 https://mcp.management.azure.com
         |
         v
@@ -52,6 +51,15 @@ The gateway SHALL:
 5. never expose OAuth access or refresh tokens in application logs or evidence records;
 6. generate an evidence event for each policy decision and upstream invocation attempt;
 7. keep R1 deployment planning separate from deployment execution.
+
+## Initial R1 allow-list
+
+The executable allow-list intentionally starts with only:
+
+- `subscription_list`
+- `group_list`
+
+Both are read-only inventory operations. `group_resource_list` is recorded only as a candidate expansion and remains denied until the live Azure MCP tool catalog and annotations are reconciled during the deployment gate.
 
 ## R1 files
 
