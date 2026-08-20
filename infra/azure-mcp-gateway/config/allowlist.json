@@ -1,0 +1,17 @@
+{
+  "version": "r1",
+  "default": "deny",
+  "tools": [
+    "subscriptions_list",
+    "resource_groups_list",
+    "resource_groups_get",
+    "resources_list",
+    "resources_get"
+  ],
+  "notes": [
+    "Tool identifiers must be reconciled against the live Azure ARM MCP tool catalog before deployment.",
+    "No wildcard entries are permitted.",
+    "Any unmatched tool is denied.",
+    "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list."
+  ]
+}
