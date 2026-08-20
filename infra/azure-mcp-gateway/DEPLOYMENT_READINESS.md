@@ -6,6 +6,25 @@ Status: **READY FOR READ-ONLY AZURE INVENTORY; NOT YET DEPLOYED**
 
 This gate determines whether an existing Azure Container Apps hosting boundary can support Gateway R1 without creating or modifying RBAC, retrieving secrets/keys, or widening the gateway's read-only MCP policy.
 
+## Completed evidence gates
+
+- R1 gateway scaffold exists on `feature/azure-mcp-gateway-r1`.
+- Draft PR remains open.
+- CI baseline passes.
+- Deny-by-default policy is implemented.
+- PKCE is required.
+- Secret/key/RBAC/write operations remain prohibited.
+- Deployment guardrail tests are present.
+- Azure MCP catalog reconciliation is complete for the R1 inventory surface.
+
+## Reconciled R1 live-proof tools
+
+- `subscription_list`
+- `group_list`
+- `group_resource_list`
+
+Each is admitted only because current Azure MCP documentation describes the corresponding operation as Read Only = true and Secret = false. No additional tool is authorized.
+
 ## Current Microsoft-aligned assumptions
 
 - Azure Container Apps supports HTTP health probes, including startup, liveness, and readiness probes.
@@ -21,12 +40,7 @@ Run:
 bash scripts/readiness_inventory.sh
 ```
 
-The script is intentionally limited to:
-
-- signed-in account/subscription metadata;
-- resource-group inventory;
-- Container Apps environment inventory;
-- Container Apps application inventory.
+The script is intentionally limited to signed-in account/subscription metadata, resource-group inventory, Container Apps environment inventory, and Container Apps application inventory.
 
 ## Required decision output
 
@@ -38,8 +52,9 @@ The inventory must establish, without mutation:
 4. Whether a suitable existing logging boundary is already attached to that environment.
 5. Whether a naming collision exists for the proposed gateway application.
 6. Whether the signed-in principal already has sufficient rights to deploy later.
+7. Which existing resource group will be used for the one scoped `group_resource_list` live proof.
 
-If item 6 is false, record the gap and stop. Gateway R1 does not create or modify role assignments.
+If sufficient deployment rights are absent, record the gap and stop. Gateway R1 does not create or modify role assignments.
 
 ## Proposed application configuration after deployment authorization
 
@@ -47,34 +62,22 @@ If item 6 is false, record the gap and stop. Gateway R1 does not create or modif
 - Container port: `8000`.
 - External HTTPS ingress only when required for the OAuth callback/client path.
 - Health endpoint: `/healthz`.
-- Startup/liveness/readiness health checks should target the application port and health endpoint.
-- Non-secret environment variables only:
-  - `AZURE_TENANT_ID`
-  - `AZURE_CLIENT_ID`
-  - `AZURE_REDIRECT_URI`
-  - `AZURE_MCP_SCOPE`
-  - `AZURE_MCP_URL`
-- No access token, refresh token, client secret, storage key, Key Vault secret, certificate private key, or connection string is committed or provided as a deployment environment variable.
+- Startup/liveness/readiness health checks target the application port and health endpoint.
+- Non-secret environment variables only: `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_REDIRECT_URI`, `AZURE_MCP_SCOPE`, and `AZURE_MCP_URL`.
+- No access token, refresh token, client secret, storage key, Key Vault secret, certificate private key, or connection string is committed or supplied as a deployment environment variable.
 
 ## Stop conditions
 
-Do not proceed to deployment if the read-only inventory indicates that deployment would require:
+Do not proceed to deployment if the read-only inventory indicates that deployment would require creating/changing a role assignment, Contributor/Owner elevation, retrieving sensitive material, creating a new Azure hosting boundary without separate authorization, widening the reviewed R1 allow-list, or enabling an ungated Azure mutation workflow.
 
-- creating/changing a role assignment;
-- Contributor/Owner elevation;
-- retrieving a secret, key, connection string, certificate private key, or credential;
-- creating a new Azure hosting boundary without separate authorization;
-- increasing the gateway allow-list beyond the reviewed R1 tools;
-- enabling a deployment workflow that can mutate Azure without a separate explicit deployment gate.
+## Current canonical state
+
+`CI_PASS / MCP_CATALOG_RECONCILED / DEPLOYMENT_READINESS_PREPARED / AZURE_INVENTORY_NOT_YET_CAPTURED`
 
 ## Next status transition
 
-Only after read-only Azure inventory is captured can the state move from:
-
-`CI_PASS / DEPLOYMENT_READINESS_PREPARED`
-
-to:
+Only after read-only Azure inventory is captured can the state move to:
 
 `AZURE_INVENTORY_RECONCILED / DEPLOYMENT_COMMANDS_PREPARED`
 
-Actual deployment is a later explicit action.
+Actual deployment remains a later explicit action.
