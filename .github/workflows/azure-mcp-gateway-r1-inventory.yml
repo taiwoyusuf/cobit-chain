@@ -24,13 +24,20 @@ jobs:
         run: |
           set -euo pipefail
           workflow=.github/workflows/azure-mcp-gateway-r1-inventory.yml
-          forbidden='az (group|resource|containerapp|role|ad|keyvault|storage).* (create|update|delete|set|assign|add|remove|restart|secret|keys|connection-string)|az role assignment|az keyvault secret|az storage account keys|--show-values'
-          if grep -Eiq "$forbidden" "$workflow"; then
-            echo "Forbidden mutation or sensitive retrieval pattern found"
-            exit 1
-          fi
           grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
-          echo "PASS: PR guard confirms live inventory is main-only and read-only"
+
+          while IFS= read -r line; do
+            command="$(echo "$line" | sed -E 's/^[[:space:]]+//')"
+            case "$command" in
+              "az account show "*|"az group list "*|"az resource list "*) ;;
+              *)
+                echo "Forbidden Azure command: $command"
+                exit 1
+                ;;
+            esac
+          done < <(grep -E '^[[:space:]]+az ' "$workflow")
+
+          echo "PASS: PR guard confirms live inventory is main-only and permits only account show, group list, and resource list"
 
   live-inventory:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
