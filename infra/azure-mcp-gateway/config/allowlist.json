@@ -2,14 +2,15 @@
   "version": "r1",
   "default": "deny",
   "tools": [
-    "subscriptions_list",
-    "resource_groups_list",
-    "resource_groups_get",
-    "resources_list",
-    "resources_get"
+    "subscription_list",
+    "group_list"
+  ],
+  "candidate_expansion_after_catalog_reconciliation": [
+    "group_resource_list"
   ],
   "notes": [
-    "Tool identifiers must be reconciled against the live Azure ARM MCP tool catalog before deployment.",
+    "R1 starts with the smallest currently verified read-only inventory surface.",
+    "Candidate tools are not executable until deliberately moved into tools after live catalog and annotation reconciliation.",
     "No wildcard entries are permitted.",
     "Any unmatched tool is denied.",
     "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list."
