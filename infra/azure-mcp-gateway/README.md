@@ -52,14 +52,17 @@ The gateway SHALL:
 6. generate an evidence event for each policy decision and upstream invocation attempt;
 7. keep R1 deployment planning separate from deployment execution.
 
-## Initial R1 allow-list
+## Reconciled R1 allow-list
 
-The executable allow-list intentionally starts with only:
+The executable R1 inventory surface is:
 
 - `subscription_list`
 - `group_list`
+- `group_resource_list`
 
-Both are read-only inventory operations. `group_resource_list` is recorded only as a candidate expansion and remains denied until the live Azure MCP tool catalog and annotations are reconciled during the deployment gate.
+Each has been reconciled against current Azure MCP documentation as read-only and non-secret. No other Azure MCP tool is authorized for R1.
+
+See `MCP_CATALOG_RECONCILIATION.md` for the evidence decision record.
 
 ## R1 files
 
@@ -69,6 +72,7 @@ Both are read-only inventory operations. `group_resource_list` is recorded only 
 - `app/evidence.py` - structured evidence logging with token/header redaction.
 - `config/allowlist.json` - R1 permitted read-only MCP tools.
 - `tests/test_policy.py` - policy invariants.
+- `MCP_CATALOG_RECONCILIATION.md` - current tool annotation reconciliation.
 - `DEPLOYMENT_PLAN.md` - deployment plan only; no deployment is performed by R1.
 
 ## Non-goals for R1
@@ -81,4 +85,4 @@ Both are read-only inventory operations. `group_resource_list` is recorded only 
 
 ## Status
 
-Scaffold only. Draft PR required. Deployment remains a planning activity until separately authorized.
+Scaffold and deployment-readiness preparation only. Draft PR required. Deployment remains gated until live Azure inventory is captured through an authorized Azure-connected execution path.
