@@ -78,6 +78,6 @@ CI requires every allow-listed tool to have a matching verified catalog-evidence
 
 ## Status
 
-`MCP_CATALOG_RECONCILED / DEPLOYMENT_READINESS_PREPARED / AZURE_INVENTORY_NOT_YET_CAPTURED`
+`CI_PASS_BASELINE / MCP_CATALOG_RECONCILED_AND_FROZEN / DEPLOYMENT_READINESS_PREPARED / AZURE_INVENTORY_NOT_YET_CAPTURED`
 
 Deployment remains gated until live Azure inventory is captured through an authorized Azure-connected execution path.
