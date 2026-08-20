@@ -5,20 +5,35 @@ on:
     paths:
       - ".github/workflows/azure-mcp-gateway-r1-inventory.yml"
       - "infra/azure-mcp-gateway/**"
-  push:
-    branches:
-      - "feature/azure-mcp-gateway-r1"
-    paths:
-      - ".github/workflows/azure-mcp-gateway-r1-inventory.yml"
-      - "infra/azure-mcp-gateway/**"
   workflow_dispatch:
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
 jobs:
-  inventory:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify inventory workflow remains read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-inventory.yml
+          forbidden='az (group|resource|containerapp|role|ad|keyvault|storage).* (create|update|delete|set|assign|add|remove|restart|secret|keys|connection-string)|az role assignment|az keyvault secret|az storage account keys|--show-values'
+          if grep -Eiq "$forbidden" "$workflow"; then
+            echo "Forbidden mutation or sensitive retrieval pattern found"
+            exit 1
+          fi
+          grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
+          echo "PASS: PR guard confirms live inventory is main-only and read-only"
+
+  live-inventory:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
