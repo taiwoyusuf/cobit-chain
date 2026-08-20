@@ -9,28 +9,15 @@
     "group_resource_list"
   ],
   "catalog_reconciliation": {
-    "subscription_list": {
-      "read_only": true,
-      "secret": false,
-      "status": "verified"
-    },
-    "group_list": {
-      "read_only": true,
-      "secret": false,
-      "status": "verified"
-    },
-    "group_resource_list": {
-      "read_only": true,
-      "secret": false,
-      "status": "verified"
-    }
+    "subscription_list": {"read_only": true, "secret": false, "status": "verified"},
+    "group_list": {"read_only": true, "secret": false, "status": "verified"},
+    "group_resource_list": {"read_only": true, "secret": false, "status": "verified"}
   },
   "notes": [
-    "R1 exposes only tools reconciled as read-only and non-secret against current Azure MCP documentation.",
     "No wildcard entries are permitted.",
     "Any unmatched tool is denied.",
-    "Credential, secret, key, RBAC, write, action, create, update and delete operations are prohibited independently of this list.",
-    "Read-only tools whose responses are marked Secret=true are excluded from R1.",
-    "Any catalog expansion requires a new evidence decision and test change in the draft PR."
+    "Secret/key/RBAC/write/action/create/update/delete operations remain prohibited.",
+    "Read-only tools with Secret=true remain excluded.",
+    "Any expansion requires new evidence and tests in the draft PR."
   ]
 }
