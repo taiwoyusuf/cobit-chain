@@ -18,6 +18,7 @@ from .challenge import (
     RESOURCE_GROUP_NAME,
     build_group_resource_arguments,
     canonical_digest,
+    catalog_structure_evidence,
     extract_subscription_id,
     find_tool_schema,
     response_summary,
@@ -200,6 +201,7 @@ async def ta14_greg_challenge(
         "mcp_protocol": {},
         "claims": [
             "The frozen canonical tool identifiers correspond to authenticated live-catalog identifiers only by exact match or an explicitly approved Azure MCP prefix.",
+            "Catalog response-shape reconciliation parses only explicit MCP tools arrays or JSON content envelopes and does not relax authorization policy.",
             "A positive proof marked success received a live Azure MCP response and records only a SHA-256 digest and structural summary.",
             "A negative proof marked denied was rejected locally before any upstream MCP request was sent.",
         ],
@@ -230,6 +232,7 @@ async def ta14_greg_challenge(
 
         catalog = await client.list_tools()
         record["catalog_sha256"] = canonical_digest(catalog)
+        record["catalog_structure"] = catalog_structure_evidence(catalog)
         schemas: dict[str, dict[str, Any] | None] = {}
         for tool_name in FROZEN_R1_TOOLS:
             schema = find_tool_schema(catalog, tool_name)
