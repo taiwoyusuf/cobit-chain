@@ -1,0 +1,144 @@
+name: Azure MCP Gateway R1 Create Hosting Boundary
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-create-hosting-boundary.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify R1 boundary workflow scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-create-hosting-boundary.yml
+
+          grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
+
+          mapfile -t az_lines < <(grep -E '^[[:space:]]+az ' "$workflow" | sed -E 's/^[[:space:]]+//')
+          forbidden='az role assignment|az ad |az keyvault|az storage account keys|get-shared-keys|listkeys|listsecrets|connection-string|--client-secret|az containerapp create|az containerapp update|az containerapp secret'
+
+          for line in "${az_lines[@]}"; do
+            if grep -Eiq "$forbidden" <<<"$line"; then
+              echo "Forbidden RBAC, credential, secret/key, or application-deployment operation found: $line"
+              exit 1
+            fi
+            case "$line" in
+              "az account show"*|"az provider show"*|"az group create"*|"az group show"*|"az containerapp env create"*|"az containerapp env show"*|"az monitor log-analytics workspace list"*) ;;
+              *) echo "Unexpected Azure CLI command: $line"; exit 1 ;;
+            esac
+          done
+
+          echo "PASS: hosting-boundary workflow is main-only and constrained to the authorized R1 resource boundary"
+
+  create-boundary:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      LOCATION: eastus2
+      RESOURCE_GROUP: rg-cobitchain-gateway-r1
+      CONTAINERAPPS_ENV: cae-cobitchain-gateway-r1-eus2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Azure with existing repository OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Preflight provider registration without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          az account show --query '{name:name,state:state}' -o json
+          APP_STATE=$(az provider show --namespace Microsoft.App --query registrationState -o tsv)
+          LOG_STATE=$(az provider show --namespace Microsoft.OperationalInsights --query registrationState -o tsv)
+          echo "Microsoft.App registrationState=$APP_STATE"
+          echo "Microsoft.OperationalInsights registrationState=$LOG_STATE"
+          if [ "$APP_STATE" != "Registered" ] || [ "$LOG_STATE" != "Registered" ]; then
+            echo "STOP: required resource providers are not already registered. R1 will not register providers implicitly."
+            exit 20
+          fi
+
+      - name: Create authorized minimal hosting boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          az group create \
+            --name "$RESOURCE_GROUP" \
+            --location "$LOCATION" \
+            --tags workload=cobit-chain component=azure-mcp-gateway revision=r1 governance=read-only-mcp \
+            -o json > resource-group-create.json
+
+          az containerapp env create \
+            --name "$CONTAINERAPPS_ENV" \
+            --resource-group "$RESOURCE_GROUP" \
+            --location "$LOCATION" \
+            --tags workload=cobit-chain component=azure-mcp-gateway revision=r1 \
+            -o json > containerapps-env-create.json
+
+      - name: Verify created boundary without sensitive retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+
+          az group show \
+            --name "$RESOURCE_GROUP" \
+            --query '{name:name,location:location,provisioningState:properties.provisioningState,id:id}' \
+            -o json > evidence/resource-group.json
+
+          az containerapp env show \
+            --name "$CONTAINERAPPS_ENV" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query '{name:name,location:location,provisioningState:properties.provisioningState,id:id,defaultDomain:properties.defaultDomain}' \
+            -o json > evidence/containerapps-environment.json
+
+          az monitor log-analytics workspace list \
+            --resource-group "$RESOURCE_GROUP" \
+            --query '[].{name:name,location:location,provisioningState:provisioningState,id:id}' \
+            -o json > evidence/log-analytics-workspaces.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('evidence')
+          rg = json.loads((root / 'resource-group.json').read_text())
+          env = json.loads((root / 'containerapps-environment.json').read_text())
+          workspaces = json.loads((root / 'log-analytics-workspaces.json').read_text())
+          summary = {
+              'schema': 'cobit-chain.azure-mcp-gateway.hosting-boundary.r1',
+              'resourceGroup': rg.get('name'),
+              'resourceGroupState': rg.get('provisioningState'),
+              'containerAppsEnvironment': env.get('name'),
+              'containerAppsEnvironmentState': env.get('provisioningState'),
+              'logAnalyticsWorkspaceCount': len(workspaces),
+              'gatewayApplicationDeployed': False,
+              'rbacMutationPerformed': False,
+              'secretOrKeyRetrieved': False,
+          }
+          (root / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload governed hosting-boundary evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-hosting-boundary
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
