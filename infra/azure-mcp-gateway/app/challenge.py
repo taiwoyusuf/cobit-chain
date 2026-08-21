@@ -52,6 +52,24 @@ def find_tool_schema(catalog_response: Any, tool_name: str) -> dict[str, Any] | 
     return None
 
 
+def tool_schema_evidence(tool_schema: dict[str, Any] | None) -> dict[str, Any]:
+    if not tool_schema:
+        return {"present_in_live_catalog": False}
+    input_schema = tool_schema.get("inputSchema") or tool_schema.get("input_schema") or {}
+    annotations = tool_schema.get("annotations") if isinstance(tool_schema.get("annotations"), dict) else {}
+    return {
+        "present_in_live_catalog": True,
+        "input_schema_sha256": canonical_digest(input_schema),
+        "required_parameters": sorted(input_schema.get("required") or []) if isinstance(input_schema, dict) else [],
+        "annotations": {
+            "readOnlyHint": annotations.get("readOnlyHint"),
+            "destructiveHint": annotations.get("destructiveHint"),
+            "idempotentHint": annotations.get("idempotentHint"),
+            "openWorldHint": annotations.get("openWorldHint"),
+        },
+    }
+
+
 def _walk_for_subscription_id(value: Any) -> str | None:
     if isinstance(value, dict):
         preferred = ("subscriptionId", "subscription_id", "id")
