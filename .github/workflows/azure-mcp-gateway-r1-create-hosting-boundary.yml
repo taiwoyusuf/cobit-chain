@@ -26,14 +26,14 @@ jobs:
 
           grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
 
-          forbidden='az role assignment|az ad |az keyvault|az storage account keys|get-shared-keys|listkeys|listsecrets|connection-string|--client-secret|az containerapp create|az containerapp update|az containerapp secret'
-          if grep -Eiq "$forbidden" "$workflow"; then
-            echo "Forbidden RBAC, credential, secret/key, or application-deployment operation found"
-            exit 1
-          fi
-
           mapfile -t az_lines < <(grep -E '^[[:space:]]+az ' "$workflow" | sed -E 's/^[[:space:]]+//')
+          forbidden='az role assignment|az ad |az keyvault|az storage account keys|get-shared-keys|listkeys|listsecrets|connection-string|--client-secret|az containerapp create|az containerapp update|az containerapp secret'
+
           for line in "${az_lines[@]}"; do
+            if grep -Eiq "$forbidden" <<<"$line"; then
+              echo "Forbidden RBAC, credential, secret/key, or application-deployment operation found: $line"
+              exit 1
+            fi
             case "$line" in
               "az account show"*|"az provider show"*|"az group create"*|"az group show"*|"az containerapp env create"*|"az containerapp env show"*|"az monitor log-analytics workspace list"*) ;;
               *) echo "Unexpected Azure CLI command: $line"; exit 1 ;;
