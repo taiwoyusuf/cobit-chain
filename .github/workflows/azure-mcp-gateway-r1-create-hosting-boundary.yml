@@ -25,22 +25,26 @@ jobs:
           workflow=.github/workflows/azure-mcp-gateway-r1-create-hosting-boundary.yml
 
           grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
+          grep -Fq "az provider register --namespace Microsoft.App --wait" "$workflow"
 
-          mapfile -t az_lines < <(grep -E '^[[:space:]]+az ' "$workflow" | sed -E 's/^[[:space:]]+//')
-          forbidden='az role assignment|az ad |az keyvault|az storage account keys|get-shared-keys|listkeys|listsecrets|connection-string|--client-secret|az containerapp create|az containerapp update|az containerapp secret'
+          forbidden='az role assignment|az ad |az keyvault|az storage account keys|get-shared-keys|listkeys|listsecrets|connection-string|--client-secret|az containerapp create|az containerapp update|az containerapp secret|az provider unregister|az provider register --namespace Microsoft.OperationalInsights'
 
-          for line in "${az_lines[@]}"; do
+          while IFS= read -r line; do
             if grep -Eiq "$forbidden" <<<"$line"; then
-              echo "Forbidden RBAC, credential, secret/key, or application-deployment operation found: $line"
+              echo "Forbidden RBAC, credential, secret/key, application-deployment, or provider operation found: $line"
               exit 1
             fi
+          done < <(grep -E 'az (account|provider|group|containerapp|monitor)' "$workflow" | grep -v "forbidden='" | grep -v 'case ')
+
+          mapfile -t direct_az_lines < <(grep -E '^[[:space:]]+az ' "$workflow" | sed -E 's/^[[:space:]]+//')
+          for line in "${direct_az_lines[@]}"; do
             case "$line" in
-              "az account show"*|"az provider show"*|"az group create"*|"az group show"*|"az containerapp env create"*|"az containerapp env show"*|"az monitor log-analytics workspace list"*) ;;
-              *) echo "Unexpected Azure CLI command: $line"; exit 1 ;;
+              "az account show"*|"az provider register --namespace Microsoft.App --wait"*|"az group create"*|"az group show"*|"az containerapp env create"*|"az containerapp env show"*|"az monitor log-analytics workspace list"*) ;;
+              *) echo "Unexpected direct Azure CLI command: $line"; exit 1 ;;
             esac
           done
 
-          echo "PASS: hosting-boundary workflow is main-only and constrained to the authorized R1 resource boundary"
+          echo "PASS: workflow permits only the authorized Microsoft.App registration plus the previously authorized R1 hosting boundary"
 
   create-boundary:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
@@ -60,18 +64,32 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
 
-      - name: Preflight provider registration without mutation
+      - name: Register authorized Microsoft.App provider and verify prerequisites
         shell: bash
         run: |
           set -euo pipefail
           az account show --query '{name:name,state:state}' -o json
+
           APP_STATE=$(az provider show --namespace Microsoft.App --query registrationState -o tsv)
           LOG_STATE=$(az provider show --namespace Microsoft.OperationalInsights --query registrationState -o tsv)
-          echo "Microsoft.App registrationState=$APP_STATE"
+          echo "Microsoft.App registrationState(before)=$APP_STATE"
           echo "Microsoft.OperationalInsights registrationState=$LOG_STATE"
-          if [ "$APP_STATE" != "Registered" ] || [ "$LOG_STATE" != "Registered" ]; then
-            echo "STOP: required resource providers are not already registered. R1 will not register providers implicitly."
-            exit 20
+
+          if [ "$LOG_STATE" != "Registered" ]; then
+            echo "STOP: Microsoft.OperationalInsights is not registered. This authorization does not permit registering it."
+            exit 21
+          fi
+
+          if [ "$APP_STATE" != "Registered" ]; then
+            echo "Registering only the explicitly authorized provider: Microsoft.App"
+            az provider register --namespace Microsoft.App --wait
+          fi
+
+          APP_STATE_AFTER=$(az provider show --namespace Microsoft.App --query registrationState -o tsv)
+          echo "Microsoft.App registrationState(after)=$APP_STATE_AFTER"
+          if [ "$APP_STATE_AFTER" != "Registered" ]; then
+            echo "STOP: Microsoft.App did not reach Registered state."
+            exit 22
           fi
 
       - name: Create authorized minimal hosting boundary
@@ -127,6 +145,7 @@ jobs:
               'containerAppsEnvironment': env.get('name'),
               'containerAppsEnvironmentState': env.get('provisioningState'),
               'logAnalyticsWorkspaceCount': len(workspaces),
+              'microsoftAppProviderRegistered': True,
               'gatewayApplicationDeployed': False,
               'rbacMutationPerformed': False,
               'secretOrKeyRetrieved': False,
