@@ -199,7 +199,7 @@ async def ta14_greg_challenge(
         "catalog_evidence": {},
         "mcp_protocol": {},
         "claims": [
-            "The three frozen tools were present in the authenticated live catalog if marked present.",
+            "The frozen canonical tool identifiers correspond to authenticated live-catalog identifiers only by exact match or an explicitly approved Azure MCP prefix.",
             "A positive proof marked success received a live Azure MCP response and records only a SHA-256 digest and structural summary.",
             "A negative proof marked denied was rejected locally before any upstream MCP request was sent.",
         ],
@@ -234,7 +234,7 @@ async def ta14_greg_challenge(
         for tool_name in FROZEN_R1_TOOLS:
             schema = find_tool_schema(catalog, tool_name)
             schemas[tool_name] = schema
-            record["catalog_evidence"][tool_name] = tool_schema_evidence(schema)
+            record["catalog_evidence"][tool_name] = tool_schema_evidence(schema, canonical_name=tool_name)
 
         subscription_response = await client.call_tool("subscription_list", {})
         record["positive_proofs"]["subscription_list"] = {
