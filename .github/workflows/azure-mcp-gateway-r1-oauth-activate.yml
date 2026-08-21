@@ -89,14 +89,31 @@ jobs:
               "AZURE_MCP_URL=$MCP_URL" \
             --output none
 
-      - name: Verify health and PKCE redirect
+      - name: Verify health and PKCE redirect after rollout
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p evidence
 
           curl -fsS "$APP_BASE_URL/healthz" > evidence/healthz.json
-          curl -sS -D evidence/oauth-start-headers.txt -o /dev/null "$APP_BASE_URL/oauth/start"
+
+          : > evidence/oauth-start-attempts.txt
+          location_found=0
+          for attempt in $(seq 1 30); do
+            status=$(curl -sS -D evidence/oauth-start-headers.txt -o evidence/oauth-start-body.txt -w '%{http_code}' "$APP_BASE_URL/oauth/start" || true)
+            printf 'attempt=%s status=%s\n' "$attempt" "$status" >> evidence/oauth-start-attempts.txt
+            if grep -qi '^location:' evidence/oauth-start-headers.txt; then
+              location_found=1
+              break
+            fi
+            sleep 3
+          done
+
+          if [ "$location_found" -ne 1 ]; then
+            echo "STOP: /oauth/start never returned a Location header after rollout wait"
+            cat evidence/oauth-start-attempts.txt
+            exit 1
+          fi
 
           python - <<'PY'
           import json
