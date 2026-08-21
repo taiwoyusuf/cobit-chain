@@ -1,0 +1,198 @@
+name: Azure MCP Gateway R1 Bootstrap Deploy
+
+on:
+  pull_request:
+    paths:
+      - "infra/azure-mcp-gateway/**"
+      - ".github/workflows/azure-mcp-gateway-r1-bootstrap-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify frozen R1 policy and deployment scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd infra/azure-mcp-gateway
+          python -m pip install -r requirements.txt
+          python -m pytest -q
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('config/allowlist.json').read_text())
+          allowed = set(data['allowed_tools'])
+          expected = {'subscription_list', 'group_list', 'group_resource_list'}
+          if allowed != expected:
+              raise SystemExit(f'R1 allow-list changed: {sorted(allowed)}')
+          if data.get('catalog_state') != 'frozen':
+              raise SystemExit('R1 catalog_state must remain frozen')
+          print('PASS: frozen R1 three-tool surface preserved')
+          PY
+
+          workflow=../../.github/workflows/azure-mcp-gateway-r1-bootstrap-deploy.yml
+          forbidden='az role assignment|az ad |az keyvault|listkeys|listsecrets|connection-string|--client-secret|az provider register|az provider unregister|az group create|az group delete|az containerapp env create|az containerapp env delete|registry-password|registry-username'
+          while IFS= read -r line; do
+            if grep -Eiq "$forbidden" <<<"$line"; then
+              echo "Forbidden operation found: $line"
+              exit 1
+            fi
+          done < <(grep -E 'az (account|provider|group|containerapp|role|ad|keyvault)' "$workflow" | grep -v "forbidden='")
+
+          echo "PASS: deployment workflow contains no RBAC, provider, secret/key, resource-group, or managed-environment mutation"
+
+      - name: Build gateway image locally
+        run: docker build -t cobitchain-gateway-r1:pr infra/azure-mcp-gateway
+
+  deploy-bootstrap:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      RESOURCE_GROUP: rg-cobitchain-gateway-r1
+      CONTAINERAPPS_ENV: cae-cobitchain-gateway-r1-eus2
+      CONTAINER_APP: ca-cobitchain-gateway-r1
+      IMAGE: ghcr.io/taiwoyusuf/cobit-chain-azure-mcp-gateway-r1:${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify frozen R1 policy before publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd infra/azure-mcp-gateway
+          python -m pip install -r requirements.txt
+          python -m pytest -q
+
+      - name: Build immutable gateway image
+        run: docker build -t "$IMAGE" infra/azure-mcp-gateway
+
+      - name: Publish image to GitHub Container Registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "$IMAGE"
+          docker logout ghcr.io
+
+      - name: Require anonymous image pull before Azure deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker image rm "$IMAGE"
+          if ! docker pull "$IMAGE"; then
+            echo "STOP: GHCR image is not anonymously pullable. Make the linked package public; R1 will not introduce registry credentials or secrets."
+            exit 31
+          fi
+          echo "PASS: image can be pulled anonymously without registry credentials"
+
+      - name: Login to Azure with existing repository OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Verify existing deployment boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          az account show --query '{name:name,state:state}' -o json
+          az group show --name "$RESOURCE_GROUP" --query '{name:name,location:location}' -o json
+          az containerapp env show \
+            --name "$CONTAINERAPPS_ENV" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query '{name:name,location:location,provisioningState:properties.provisioningState}' \
+            -o json
+
+      - name: Create one-replica Gateway R1 bootstrap app
+        shell: bash
+        run: |
+          set -euo pipefail
+          az containerapp create \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --environment "$CONTAINERAPPS_ENV" \
+            --image "$IMAGE" \
+            --target-port 8000 \
+            --ingress external \
+            --min-replicas 1 \
+            --max-replicas 1 \
+            --cpu 0.25 \
+            --memory 0.5Gi \
+            --env-vars AZURE_MCP_URL=https://mcp.management.azure.com \
+            --tags workload=cobit-chain component=azure-mcp-gateway revision=r1 phase=bootstrap \
+            -o none
+
+      - name: Verify deployed bootstrap and health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          az containerapp show \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query '{name:name,provisioningState:properties.provisioningState,latestRevisionName:properties.latestRevisionName,fqdn:properties.configuration.ingress.fqdn,image:properties.template.containers[0].image,minReplicas:properties.template.scale.minReplicas,maxReplicas:properties.template.scale.maxReplicas}' \
+            -o json > evidence/container-app.json
+
+          FQDN=$(python - <<'PY'
+          import json
+          print(json.load(open('evidence/container-app.json'))['fqdn'])
+          PY
+          )
+
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error "https://${FQDN}/healthz" > evidence/healthz.json; then
+              break
+            fi
+            if [ "$attempt" -eq 18 ]; then
+              echo "STOP: deployed app did not pass /healthz within the verification window"
+              exit 32
+            fi
+            sleep 10
+          done
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          app = json.loads(Path('evidence/container-app.json').read_text())
+          health = json.loads(Path('evidence/healthz.json').read_text())
+          if health != {'status': 'ok', 'mode': 'r1-read-only'}:
+              raise SystemExit(f'Unexpected health response: {health}')
+          summary = {
+              'schema': 'cobit-chain.azure-mcp-gateway.bootstrap-deploy.r1',
+              'containerApp': app.get('name'),
+              'provisioningState': app.get('provisioningState'),
+              'latestRevisionName': app.get('latestRevisionName'),
+              'fqdn': app.get('fqdn'),
+              'image': app.get('image'),
+              'minReplicas': app.get('minReplicas'),
+              'maxReplicas': app.get('maxReplicas'),
+              'healthz': health,
+              'oauthConfigured': False,
+              'mcpLiveProofExecuted': False,
+              'rbacMutationPerformedByWorkflow': False,
+              'registryCredentialUsedByAzure': False,
+          }
+          Path('evidence/summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload governed bootstrap evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-bootstrap-deploy
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
