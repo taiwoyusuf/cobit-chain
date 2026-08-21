@@ -55,18 +55,88 @@ def catalog_identifier_match_mode(live_name: str, canonical_name: str) -> str | 
     return None
 
 
+def _tool_list_from_value(value: Any) -> list[dict[str, Any]]:
+    """Extract MCP tool descriptors from known catalog response shapes only.
+
+    Azure MCP transports may surface `tools/list` either as the normal
+    `result.tools` structure or as JSON embedded in MCP content. This helper parses
+    only explicit `tools` arrays and JSON content envelopes; it never authorizes a
+    tool and never performs fuzzy name matching.
+    """
+    found: list[dict[str, Any]] = []
+
+    if isinstance(value, dict):
+        tools = value.get("tools")
+        if isinstance(tools, list):
+            found.extend(item for item in tools if isinstance(item, dict) and isinstance(item.get("name"), str))
+
+        content = value.get("content")
+        if isinstance(content, list):
+            for item in content:
+                if isinstance(item, dict):
+                    text = item.get("text")
+                    if isinstance(text, str):
+                        try:
+                            parsed = json.loads(text)
+                        except (json.JSONDecodeError, TypeError):
+                            parsed = None
+                        if parsed is not None:
+                            found.extend(_tool_list_from_value(parsed))
+                    found.extend(_tool_list_from_value({k: v for k, v in item.items() if k != "text"}))
+                elif isinstance(item, str):
+                    try:
+                        parsed = json.loads(item)
+                    except (json.JSONDecodeError, TypeError):
+                        parsed = None
+                    if parsed is not None:
+                        found.extend(_tool_list_from_value(parsed))
+
+        result = value.get("result")
+        if result is not None:
+            found.extend(_tool_list_from_value(result))
+
+    elif isinstance(value, list):
+        if all(isinstance(item, dict) and isinstance(item.get("name"), str) for item in value):
+            found.extend(value)
+        else:
+            for item in value:
+                found.extend(_tool_list_from_value(item))
+
+    elif isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            parsed = None
+        if parsed is not None:
+            found.extend(_tool_list_from_value(parsed))
+
+    deduped: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in found:
+        name = item.get("name")
+        if isinstance(name, str) and name not in seen:
+            seen.add(name)
+            deduped.append(item)
+    return deduped
+
+
+def catalog_structure_evidence(catalog_response: Any) -> dict[str, Any]:
+    tools = _tool_list_from_value(catalog_response)
+    names = sorted(item["name"] for item in tools if isinstance(item.get("name"), str))
+    evidence: dict[str, Any] = {
+        "extracted_tool_count": len(names),
+        "tool_identifiers_sha256": canonical_digest(names),
+    }
+    if isinstance(catalog_response, dict):
+        evidence["top_level_keys"] = sorted(str(key) for key in catalog_response.keys())[:30]
+        result = catalog_response.get("result")
+        if isinstance(result, dict):
+            evidence["result_keys"] = sorted(str(key) for key in result.keys())[:30]
+    return evidence
+
+
 def find_tool_schema(catalog_response: Any, tool_name: str) -> dict[str, Any] | None:
-    if not isinstance(catalog_response, dict):
-        return None
-    result = catalog_response.get("result")
-    if not isinstance(result, dict):
-        return None
-    tools = result.get("tools")
-    if not isinstance(tools, list):
-        return None
-    for tool in tools:
-        if not isinstance(tool, dict):
-            continue
+    for tool in _tool_list_from_value(catalog_response):
         live_name = tool.get("name")
         if isinstance(live_name, str) and catalog_identifier_match_mode(live_name, tool_name):
             return tool
