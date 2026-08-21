@@ -1,0 +1,162 @@
+name: Azure MCP Gateway R1 OAuth Activate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-oauth-activate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify activation workflow boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-oauth-activate.yml
+          while IFS= read -r line; do
+            command="$(echo "$line" | sed -E 's/^[[:space:]]+//')"
+            case "$command" in
+              "az containerapp show "*|"az containerapp update "*) ;;
+              *)
+                echo "Forbidden Azure command: $command"
+                exit 1
+                ;;
+            esac
+          done < <(grep -E '^[[:space:]]+az ' "$workflow")
+
+          if grep -Eq '^[[:space:]]+az[[:space:]]+(role|ad|keyvault|account keys|storage account keys|provider|group create)' "$workflow"; then
+            echo "STOP: forbidden Azure mutation surface"
+            exit 1
+          fi
+
+          echo "PASS: activation workflow is limited to Container App show/update"
+
+  activate-oauth:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      RESOURCE_GROUP: rg-cobitchain-gateway-r1
+      CONTAINER_APP: ca-cobitchain-gateway-r1
+      TENANT_ID: f8683fda-4956-4620-9e26-a1a14bbec914
+      CLIENT_ID: 1054f42d-2133-42f3-a024-a1ea065e8b53
+      REDIRECT_URI: https://ca-cobitchain-gateway-r1.redcliff-45b94d4c.eastus2.azurecontainerapps.io/oauth/callback
+      MCP_SCOPE: api://22bfbae3-f4e7-485f-be43-8cee15065084/MCP.Access offline_access
+      MCP_URL: https://mcp.management.azure.com
+      APP_BASE_URL: https://ca-cobitchain-gateway-r1.redcliff-45b94d4c.eastus2.azurecontainerapps.io
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Azure with existing repository OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Verify target Container App exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          az containerapp show \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query '{name:name,provisioningState:properties.provisioningState,fqdn:properties.configuration.ingress.fqdn}' \
+            -o json
+
+      - name: Activate non-secret OAuth runtime configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          az containerapp update \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --set-env-vars \
+              "AZURE_TENANT_ID=$TENANT_ID" \
+              "AZURE_CLIENT_ID=$CLIENT_ID" \
+              "AZURE_REDIRECT_URI=$REDIRECT_URI" \
+              "AZURE_MCP_SCOPE=$MCP_SCOPE" \
+              "AZURE_MCP_URL=$MCP_URL" \
+            --output none
+
+      - name: Verify health and PKCE redirect
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+
+          curl -fsS "$APP_BASE_URL/healthz" > evidence/healthz.json
+          curl -sS -D evidence/oauth-start-headers.txt -o /dev/null "$APP_BASE_URL/oauth/start"
+
+          python - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          from pathlib import Path
+
+          health = json.loads(Path('evidence/healthz.json').read_text())
+          headers = Path('evidence/oauth-start-headers.txt').read_text().splitlines()
+          location = None
+          status_line = headers[0] if headers else ''
+          for line in headers:
+              if line.lower().startswith('location:'):
+                  location = line.split(':', 1)[1].strip()
+                  break
+
+          if not location:
+              raise SystemExit('STOP: /oauth/start did not return a Location header')
+
+          parsed = urllib.parse.urlparse(location)
+          query = urllib.parse.parse_qs(parsed.query)
+
+          expected_scope = os.environ['MCP_SCOPE']
+          expected_redirect = os.environ['REDIRECT_URI']
+          checks = {
+              'health_ok': health.get('status') == 'ok',
+              'mode_r1_read_only': health.get('mode') == 'r1-read-only',
+              'redirect_host_is_entra': parsed.netloc == 'login.microsoftonline.com',
+              'redirect_tenant_matches': parsed.path.startswith('/' + os.environ['TENANT_ID'] + '/oauth2/v2.0/authorize'),
+              'client_id_matches': (query.get('client_id') or [None])[0] == os.environ['CLIENT_ID'],
+              'redirect_uri_matches': (query.get('redirect_uri') or [None])[0] == expected_redirect,
+              'scope_matches': (query.get('scope') or [None])[0] == expected_scope,
+              'response_type_code': (query.get('response_type') or [None])[0] == 'code',
+              'pkce_s256': (query.get('code_challenge_method') or [None])[0] == 'S256',
+              'state_present': bool((query.get('state') or [None])[0]),
+              'code_challenge_present': bool((query.get('code_challenge') or [None])[0]),
+          }
+
+          summary = {
+              'schema': 'cobit-chain.azure-mcp-gateway.oauth-activation.r1',
+              'status_line': status_line,
+              'checks': checks,
+              'all_checks_pass': all(checks.values()),
+              'client_secret_used': False,
+              'entra_mutation_performed': False,
+              'rbac_mutation_performed': False,
+              'mcp_tool_call_performed': False,
+          }
+          Path('evidence/summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+
+          if not summary['all_checks_pass']:
+              raise SystemExit('STOP: OAuth runtime activation verification failed')
+          PY
+
+      - name: Upload OAuth activation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-oauth-activation
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 7
