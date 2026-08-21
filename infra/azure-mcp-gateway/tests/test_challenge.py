@@ -3,6 +3,7 @@ from app.challenge import (
     build_group_resource_arguments,
     canonical_digest,
     catalog_identifier_match_mode,
+    catalog_structure_evidence,
     extract_subscription_id,
     find_tool_schema,
     tool_schema_evidence,
@@ -97,6 +98,58 @@ def test_live_catalog_arbitrary_suffix_is_rejected() -> None:
     assert find_tool_schema(catalog, "group_list") is None
     assert catalog_identifier_match_mode("dangerous_subscription_list", "subscription_list") is None
     assert catalog_identifier_match_mode("other/group_list", "group_list") is None
+
+
+def test_catalog_tools_can_be_extracted_from_json_text_content() -> None:
+    catalog = {
+        "result": {
+            "content": [
+                {
+                    "type": "text",
+                    "text": '{"tools":[{"name":"azmcp_subscription_list","inputSchema":{"type":"object"}},{"name":"azmcp_group_list","inputSchema":{"type":"object"}}]}',
+                }
+            ]
+        }
+    }
+    sub = find_tool_schema(catalog, "subscription_list")
+    group = find_tool_schema(catalog, "group_list")
+    assert sub is not None and sub["name"] == "azmcp_subscription_list"
+    assert group is not None and group["name"] == "azmcp_group_list"
+    structure = catalog_structure_evidence(catalog)
+    assert structure["extracted_tool_count"] == 2
+    assert structure["top_level_keys"] == ["result"]
+    assert structure["result_keys"] == ["content"]
+    assert "tool_identifiers_sha256" in structure
+
+
+def test_catalog_tools_can_be_extracted_from_direct_list_payload() -> None:
+    catalog = {
+        "result": {
+            "content": [
+                {
+                    "type": "text",
+                    "text": '[{"name":"subscription_list","inputSchema":{"type":"object"}}]',
+                }
+            ]
+        }
+    }
+    schema = find_tool_schema(catalog, "subscription_list")
+    assert schema is not None
+    assert schema["name"] == "subscription_list"
+
+
+def test_catalog_content_does_not_relax_identifier_matching() -> None:
+    catalog = {
+        "result": {
+            "content": [
+                {
+                    "type": "text",
+                    "text": '{"tools":[{"name":"dangerous_subscription_list","inputSchema":{"type":"object"}}]}',
+                }
+            ]
+        }
+    }
+    assert find_tool_schema(catalog, "subscription_list") is None
 
 
 def test_group_resource_arguments_follow_live_schema_names() -> None:
