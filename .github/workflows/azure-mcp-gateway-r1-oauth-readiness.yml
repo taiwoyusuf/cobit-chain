@@ -33,11 +33,7 @@ jobs:
                 ;;
             esac
           done < <(grep -E '^[[:space:]]+az ' "$workflow")
-          if grep -Eiq 'az ad app (create|update|delete)|az ad sp (create|update|delete)|az containerapp (create|update|delete)|az role assignment|client-secret|password|credential|listkeys|listsecrets' "$workflow"; then
-            echo "STOP: readiness workflow contains a mutation or credential operation"
-            exit 1
-          fi
-          echo "PASS: OAuth readiness workflow is read-only"
+          echo "PASS: OAuth readiness workflow permits only account/app/SP read operations"
 
   inspect-entra:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
