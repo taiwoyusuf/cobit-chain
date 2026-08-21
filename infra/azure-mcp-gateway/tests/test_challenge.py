@@ -2,7 +2,9 @@ from app.challenge import (
     NEGATIVE_CHALLENGES,
     build_group_resource_arguments,
     canonical_digest,
+    catalog_identifier_match_mode,
     extract_subscription_id,
+    find_tool_schema,
     tool_schema_evidence,
 )
 from app.policy import PolicyDenied, authorize_tool, load_allowlist
@@ -27,12 +29,74 @@ def test_live_schema_evidence_records_annotations_without_raw_schema() -> None:
         },
         "annotations": {"readOnlyHint": True, "destructiveHint": False},
     }
-    evidence = tool_schema_evidence(schema)
+    evidence = tool_schema_evidence(schema, canonical_name="group_resource_list")
     assert evidence["present_in_live_catalog"] is True
     assert evidence["required_parameters"] == ["resource-group"]
     assert evidence["annotations"]["readOnlyHint"] is True
     assert evidence["annotations"]["destructiveHint"] is False
+    assert evidence["live_catalog_identifier"] == "group_resource_list"
+    assert evidence["canonical_identifier"] == "group_resource_list"
+    assert evidence["identifier_match_mode"] == "exact"
     assert "inputSchema" not in evidence
+
+
+def test_live_catalog_exact_name_matches() -> None:
+    catalog = {
+        "result": {
+            "tools": [
+                {"name": "subscription_list", "inputSchema": {"type": "object"}},
+            ]
+        }
+    }
+    schema = find_tool_schema(catalog, "subscription_list")
+    assert schema is not None
+    assert schema["name"] == "subscription_list"
+    assert catalog_identifier_match_mode("subscription_list", "subscription_list") == "exact"
+
+
+def test_live_catalog_azmcp_prefix_matches_frozen_canonical_name() -> None:
+    catalog = {
+        "result": {
+            "tools": [
+                {"name": "azmcp_subscription_list", "inputSchema": {"type": "object"}},
+                {"name": "azmcp_group_list", "inputSchema": {"type": "object"}},
+                {"name": "azmcp_group_resource_list", "inputSchema": {"type": "object"}},
+            ]
+        }
+    }
+    for canonical in ("subscription_list", "group_list", "group_resource_list"):
+        schema = find_tool_schema(catalog, canonical)
+        assert schema is not None
+        assert schema["name"] == f"azmcp_{canonical}"
+        assert catalog_identifier_match_mode(schema["name"], canonical) == "approved_prefix:azmcp_"
+
+
+def test_live_catalog_known_client_prefix_matches_without_relaxing_policy() -> None:
+    catalog = {
+        "result": {
+            "tools": [
+                {"name": "mcp_azure_mcp_group_list", "inputSchema": {"type": "object"}},
+            ]
+        }
+    }
+    schema = find_tool_schema(catalog, "group_list")
+    assert schema is not None
+    assert catalog_identifier_match_mode("mcp_azure_mcp_group_list", "group_list") == "approved_prefix:mcp_azure_mcp_"
+
+
+def test_live_catalog_arbitrary_suffix_is_rejected() -> None:
+    catalog = {
+        "result": {
+            "tools": [
+                {"name": "dangerous_subscription_list", "inputSchema": {"type": "object"}},
+                {"name": "other/group_list", "inputSchema": {"type": "object"}},
+            ]
+        }
+    }
+    assert find_tool_schema(catalog, "subscription_list") is None
+    assert find_tool_schema(catalog, "group_list") is None
+    assert catalog_identifier_match_mode("dangerous_subscription_list", "subscription_list") is None
+    assert catalog_identifier_match_mode("other/group_list", "group_list") is None
 
 
 def test_group_resource_arguments_follow_live_schema_names() -> None:
