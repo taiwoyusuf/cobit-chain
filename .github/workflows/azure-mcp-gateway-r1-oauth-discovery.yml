@@ -1,0 +1,146 @@
+name: Azure MCP Gateway R1 OAuth Discovery
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-oauth-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover-oauth:
+    runs-on: ubuntu-latest
+    env:
+      MCP_URL: https://mcp.management.azure.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify discovery-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-oauth-discovery.yml
+          if grep -Eiq 'az (group|containerapp|role|ad|keyvault|provider)|Authorization:|Bearer |client-secret|listkeys|listsecrets|connection-string' "$workflow"; then
+            echo "STOP: OAuth discovery workflow contains a prohibited authenticated or Azure mutation surface"
+            exit 1
+          fi
+          echo "PASS: discovery workflow is unauthenticated and read-only"
+
+      - name: Probe Azure MCP authorization metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+
+          python - <<'PY'
+          import json
+          import re
+          import ssl
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+
+          MCP_URL = "https://mcp.management.azure.com"
+          ALLOWED_HOSTS = {"mcp.management.azure.com", "login.microsoftonline.com"}
+
+          def request(url, *, method="GET", data=None, headers=None):
+              parsed = urllib.parse.urlparse(url)
+              if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
+                  raise SystemExit(f"STOP: refusing unexpected OAuth discovery host: {url}")
+              req = urllib.request.Request(url, method=method, data=data, headers=headers or {})
+              try:
+                  with urllib.request.urlopen(req, timeout=20, context=ssl.create_default_context()) as resp:
+                      return resp.status, dict(resp.headers.items()), resp.read()
+              except urllib.error.HTTPError as exc:
+                  return exc.code, dict(exc.headers.items()), exc.read()
+
+          def sanitize_headers(headers):
+              blocked = {"authorization", "proxy-authorization", "set-cookie", "cookie"}
+              return {k: v for k, v in headers.items() if k.lower() not in blocked}
+
+          rpc = json.dumps({"jsonrpc":"2.0","id":"oauth-discovery-r1","method":"tools/list","params":{}}).encode()
+          status, headers, body = request(
+              MCP_URL,
+              method="POST",
+              data=rpc,
+              headers={"Content-Type":"application/json", "Accept":"application/json, text/event-stream"},
+          )
+          safe_headers = sanitize_headers(headers)
+          Path("evidence/upstream-challenge.json").write_text(json.dumps({
+              "url": MCP_URL,
+              "status": status,
+              "headers": safe_headers,
+              "body_preview": body[:1000].decode("utf-8", "replace"),
+          }, indent=2) + "\n")
+
+          challenge = next((v for k, v in headers.items() if k.lower() == "www-authenticate"), "")
+          match = re.search(r'resource_metadata="([^"]+)"', challenge)
+          candidates = []
+          if match:
+              candidates.append(match.group(1))
+          candidates.extend([
+              MCP_URL + "/.well-known/oauth-protected-resource",
+              "https://mcp.management.azure.com/.well-known/oauth-protected-resource",
+          ])
+
+          seen = set()
+          metadata_records = []
+          resolved = None
+          for url in candidates:
+              if url in seen:
+                  continue
+              seen.add(url)
+              try:
+                  m_status, m_headers, m_body = request(url)
+              except SystemExit:
+                  raise
+              except Exception as exc:
+                  metadata_records.append({"url": url, "error_type": type(exc).__name__})
+                  continue
+              record = {
+                  "url": url,
+                  "status": m_status,
+                  "headers": sanitize_headers(m_headers),
+                  "body_preview": m_body[:2000].decode("utf-8", "replace"),
+              }
+              try:
+                  parsed_body = json.loads(m_body.decode("utf-8"))
+                  record["json"] = parsed_body
+                  if m_status == 200 and isinstance(parsed_body, dict) and (
+                      "authorization_servers" in parsed_body or "scopes_supported" in parsed_body
+                  ):
+                      resolved = parsed_body
+              except Exception:
+                  pass
+              metadata_records.append(record)
+
+          Path("evidence/protected-resource-probes.json").write_text(json.dumps(metadata_records, indent=2) + "\n")
+
+          summary = {
+              "schema": "cobit-chain.azure-mcp-gateway.oauth-discovery.r1",
+              "upstream": MCP_URL,
+              "challenge_status": status,
+              "www_authenticate_present": bool(challenge),
+              "resource_metadata_from_challenge": match.group(1) if match else None,
+              "protected_resource": resolved.get("resource") if resolved else None,
+              "authorization_servers": resolved.get("authorization_servers") if resolved else None,
+              "scopes_supported": resolved.get("scopes_supported") if resolved else None,
+              "authenticated_request_performed": False,
+              "azure_mutation_performed": False,
+              "secret_or_key_retrieval_performed": False,
+          }
+          Path("evidence/summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload OAuth discovery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-oauth-discovery
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
