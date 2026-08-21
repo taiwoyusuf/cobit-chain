@@ -32,12 +32,17 @@ jobs:
           import json
           from pathlib import Path
           data = json.loads(Path('config/allowlist.json').read_text())
-          allowed = set(data['allowed_tools'])
+          allowed = set(data['tools'])
           expected = {'subscription_list', 'group_list', 'group_resource_list'}
           if allowed != expected:
               raise SystemExit(f'R1 allow-list changed: {sorted(allowed)}')
           if data.get('catalog_state') != 'frozen':
               raise SystemExit('R1 catalog_state must remain frozen')
+          reconciliation = data.get('catalog_reconciliation', {})
+          for tool in expected:
+              record = reconciliation.get(tool, {})
+              if record.get('read_only') is not True or record.get('secret') is not False or record.get('status') != 'verified':
+                  raise SystemExit(f'Catalog evidence invalid for {tool}: {record}')
           print('PASS: frozen R1 three-tool surface preserved')
           PY
 
