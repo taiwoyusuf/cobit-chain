@@ -68,6 +68,12 @@ jobs:
       CONTAINERAPPS_ENV: cae-cobitchain-gateway-r1-eus2
       CONTAINER_APP: ca-cobitchain-gateway-r1
       IMAGE: ghcr.io/taiwoyusuf/cobit-chain-azure-mcp-gateway-r1:${{ github.sha }}
+      AZURE_TENANT_ID: f8683fda-4956-4620-9e26-a1a14bbec914
+      AZURE_CLIENT_ID: 1054f42d-2133-42f3-a024-a1ea065e8b53
+      AZURE_REDIRECT_URI: https://ca-cobitchain-gateway-r1.redcliff-45b94d4c.eastus2.azurecontainerapps.io/oauth/callback
+      AZURE_MCP_SCOPE: api://22bfbae3-f4e7-485f-be43-8cee15065084/MCP.Access offline_access
+      AZURE_MCP_URL: https://mcp.management.azure.com
+      APP_BASE_URL: https://ca-cobitchain-gateway-r1.redcliff-45b94d4c.eastus2.azurecontainerapps.io
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,7 +127,7 @@ jobs:
             --query '{name:name,location:location,provisioningState:properties.provisioningState}' \
             -o json
 
-      - name: Create one-replica Gateway R1 bootstrap app
+      - name: Create or update one-replica Gateway R1 app with preserved OAuth runtime
         shell: bash
         run: |
           set -euo pipefail
@@ -136,11 +142,16 @@ jobs:
             --max-replicas 1 \
             --cpu 0.25 \
             --memory 0.5Gi \
-            --env-vars AZURE_MCP_URL=https://mcp.management.azure.com \
+            --env-vars \
+              "AZURE_TENANT_ID=$AZURE_TENANT_ID" \
+              "AZURE_CLIENT_ID=$AZURE_CLIENT_ID" \
+              "AZURE_REDIRECT_URI=$AZURE_REDIRECT_URI" \
+              "AZURE_MCP_SCOPE=$AZURE_MCP_SCOPE" \
+              "AZURE_MCP_URL=$AZURE_MCP_URL" \
             --tags workload=cobit-chain component=azure-mcp-gateway revision=r1 phase=bootstrap \
             -o none
 
-      - name: Verify deployed bootstrap and health endpoint
+      - name: Verify deployed app, health, and PKCE start
         shell: bash
         run: |
           set -euo pipefail
@@ -168,13 +179,50 @@ jobs:
             sleep 10
           done
 
+          rm -f evidence/oauth-start-headers.txt
+          for attempt in $(seq 1 18); do
+            curl -sS -D evidence/oauth-start-headers.txt -o /dev/null "$APP_BASE_URL/oauth/start" || true
+            if grep -qi '^location:' evidence/oauth-start-headers.txt; then
+              break
+            fi
+            if [ "$attempt" -eq 18 ]; then
+              echo "STOP: /oauth/start did not expose a PKCE redirect after deployment"
+              cat evidence/oauth-start-headers.txt
+              exit 33
+            fi
+            sleep 5
+          done
+
           python - <<'PY'
           import json
+          import os
+          import urllib.parse
           from pathlib import Path
+
           app = json.loads(Path('evidence/container-app.json').read_text())
           health = json.loads(Path('evidence/healthz.json').read_text())
           if health != {'status': 'ok', 'mode': 'r1-read-only'}:
               raise SystemExit(f'Unexpected health response: {health}')
+
+          headers = Path('evidence/oauth-start-headers.txt').read_text().splitlines()
+          location = next((line.split(':', 1)[1].strip() for line in headers if line.lower().startswith('location:')), None)
+          if not location:
+              raise SystemExit('OAuth start verification did not capture Location header')
+          parsed = urllib.parse.urlparse(location)
+          query = urllib.parse.parse_qs(parsed.query)
+          oauth_checks = {
+              'redirect_host_is_entra': parsed.netloc == 'login.microsoftonline.com',
+              'client_id_matches': (query.get('client_id') or [None])[0] == os.environ['AZURE_CLIENT_ID'],
+              'redirect_uri_matches': (query.get('redirect_uri') or [None])[0] == os.environ['AZURE_REDIRECT_URI'],
+              'scope_matches': (query.get('scope') or [None])[0] == os.environ['AZURE_MCP_SCOPE'],
+              'response_type_code': (query.get('response_type') or [None])[0] == 'code',
+              'pkce_s256': (query.get('code_challenge_method') or [None])[0] == 'S256',
+              'state_present': bool((query.get('state') or [None])[0]),
+              'code_challenge_present': bool((query.get('code_challenge') or [None])[0]),
+          }
+          if not all(oauth_checks.values()):
+              raise SystemExit(f'OAuth runtime verification failed: {oauth_checks}')
+
           summary = {
               'schema': 'cobit-chain.azure-mcp-gateway.bootstrap-deploy.r1',
               'containerApp': app.get('name'),
@@ -185,7 +233,9 @@ jobs:
               'minReplicas': app.get('minReplicas'),
               'maxReplicas': app.get('maxReplicas'),
               'healthz': health,
-              'oauthConfigured': False,
+              'oauthConfigured': True,
+              'oauthChecks': oauth_checks,
+              'clientSecretUsed': False,
               'mcpLiveProofExecuted': False,
               'rbacMutationPerformedByWorkflow': False,
               'registryCredentialUsedByAzure': False,
