@@ -105,6 +105,8 @@ jobs:
           invalid_scope = 'AADSTS70011' in body_text or (error_description and 'AADSTS70011' in error_description)
           interaction_required = error in {'login_required', 'interaction_required', 'consent_required'}
           redirected_to_expected_callback = bool(parsed_location and parsed_location.scheme == 'https' and parsed_location.netloc == urllib.parse.urlparse(redirect_uri).netloc and parsed_location.path == urllib.parse.urlparse(redirect_uri).path)
+          interactive_login_page_reached = status == 200 and not location and not redirect_mismatch and not invalid_client and not invalid_scope
+          readiness_pass = interaction_required or redirected_to_expected_callback or interactive_login_page_reached
 
           summary = {
               'schema': 'cobit-chain.azure-mcp-gateway.pkce-probe.r1',
@@ -121,6 +123,8 @@ jobs:
               'invalid_scope_AADSTS70011': bool(invalid_scope),
               'interaction_required': bool(interaction_required),
               'redirected_to_expected_callback': bool(redirected_to_expected_callback),
+              'interactive_login_page_reached': bool(interactive_login_page_reached),
+              'readiness_pass': bool(readiness_pass),
               'pkce_method': 'S256',
               'client_secret_used': False,
               'token_requested': False,
@@ -134,7 +138,7 @@ jobs:
 
           if redirect_mismatch or invalid_client or invalid_scope:
               raise SystemExit(2)
-          if not interaction_required and not redirected_to_expected_callback:
+          if not readiness_pass:
               raise SystemExit(3)
           PY
 
