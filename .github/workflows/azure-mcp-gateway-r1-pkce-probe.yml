@@ -1,0 +1,152 @@
+name: Azure MCP Gateway R1 PKCE Probe
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/azure-mcp-gateway-r1-pkce-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pkce-probe:
+    runs-on: ubuntu-latest
+    env:
+      TENANT_ID: f8683fda-4956-4620-9e26-a1a14bbec914
+      CLIENT_ID: 1054f42d-2133-42f3-a024-a1ea065e8b53
+      REDIRECT_URI: https://ca-cobitchain-gateway-r1.redcliff-45b94d4c.eastus2.azurecontainerapps.io/oauth/callback
+      SCOPE: api://22bfbae3-f4e7-485f-be43-8cee15065084/MCP.Access offline_access
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify probe is unauthenticated and mutation-free
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/azure-mcp-gateway-r1-pkce-probe.yml
+          if grep -Eq '^[[:space:]]+az[[:space:]]' "$workflow"; then
+            echo "STOP: PKCE probe contains an Azure CLI command"
+            exit 1
+          fi
+          if grep -Eq '^[[:space:]]+uses:[[:space:]]+azure/login@' "$workflow"; then
+            echo "STOP: PKCE probe contains Azure login"
+            exit 1
+          fi
+          echo "PASS: PKCE probe is protocol-only and unauthenticated"
+
+      - name: Probe Entra authorization endpoint with PKCE
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+
+          python - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import secrets
+          import urllib.parse
+          import urllib.request
+          import urllib.error
+          from pathlib import Path
+
+          tenant = os.environ['TENANT_ID']
+          client_id = os.environ['CLIENT_ID']
+          redirect_uri = os.environ['REDIRECT_URI']
+          scope = os.environ['SCOPE']
+
+          verifier = secrets.token_urlsafe(64)
+          challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b'=').decode()
+          state = secrets.token_urlsafe(24)
+
+          params = {
+              'client_id': client_id,
+              'response_type': 'code',
+              'redirect_uri': redirect_uri,
+              'response_mode': 'query',
+              'scope': scope,
+              'state': state,
+              'code_challenge': challenge,
+              'code_challenge_method': 'S256',
+              'prompt': 'none',
+          }
+          url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize?" + urllib.parse.urlencode(params)
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect)
+          status = None
+          headers = {}
+          body = b''
+          try:
+              with opener.open(url, timeout=20) as resp:
+                  status = resp.status
+                  headers = dict(resp.headers.items())
+                  body = resp.read()
+          except urllib.error.HTTPError as exc:
+              status = exc.code
+              headers = dict(exc.headers.items())
+              body = exc.read()
+
+          location = next((v for k, v in headers.items() if k.lower() == 'location'), None)
+          parsed_location = urllib.parse.urlparse(location) if location else None
+          query = urllib.parse.parse_qs(parsed_location.query) if parsed_location else {}
+          error = (query.get('error') or [None])[0]
+          error_description = (query.get('error_description') or [None])[0]
+
+          body_text = body[:5000].decode('utf-8', 'replace')
+          redirect_mismatch = 'AADSTS50011' in body_text or (error_description and 'AADSTS50011' in error_description)
+          invalid_client = 'AADSTS700016' in body_text or (error_description and 'AADSTS700016' in error_description)
+          invalid_scope = 'AADSTS70011' in body_text or (error_description and 'AADSTS70011' in error_description)
+          interaction_required = error in {'login_required', 'interaction_required', 'consent_required'}
+          redirected_to_expected_callback = bool(parsed_location and parsed_location.scheme == 'https' and parsed_location.netloc == urllib.parse.urlparse(redirect_uri).netloc and parsed_location.path == urllib.parse.urlparse(redirect_uri).path)
+          interactive_login_page_reached = status == 200 and not location and not redirect_mismatch and not invalid_client and not invalid_scope
+          readiness_pass = interaction_required or redirected_to_expected_callback or interactive_login_page_reached
+
+          summary = {
+              'schema': 'cobit-chain.azure-mcp-gateway.pkce-probe.r1',
+              'tenant_id': tenant,
+              'client_id': client_id,
+              'redirect_uri': redirect_uri,
+              'scope': scope,
+              'http_status': status,
+              'location_host': parsed_location.netloc if parsed_location else None,
+              'location_path': parsed_location.path if parsed_location else None,
+              'oauth_error': error,
+              'redirect_uri_mismatch_AADSTS50011': bool(redirect_mismatch),
+              'invalid_client_AADSTS700016': bool(invalid_client),
+              'invalid_scope_AADSTS70011': bool(invalid_scope),
+              'interaction_required': bool(interaction_required),
+              'redirected_to_expected_callback': bool(redirected_to_expected_callback),
+              'interactive_login_page_reached': bool(interactive_login_page_reached),
+              'readiness_pass': bool(readiness_pass),
+              'pkce_method': 'S256',
+              'client_secret_used': False,
+              'token_requested': False,
+              'entra_mutation_performed': False,
+              'azure_mutation_performed': False,
+          }
+
+          Path('evidence/summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          Path('evidence/body-preview.txt').write_text(body_text)
+          print(json.dumps(summary, indent=2))
+
+          if redirect_mismatch or invalid_client or invalid_scope:
+              raise SystemExit(2)
+          if not readiness_pass:
+              raise SystemExit(3)
+          PY
+
+      - name: Upload PKCE probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-gateway-r1-pkce-probe
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 7
