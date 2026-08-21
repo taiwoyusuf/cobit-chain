@@ -14,6 +14,10 @@ NEGATIVE_CHALLENGES = (
 )
 
 RESOURCE_GROUP_NAME = "rg-cobitchain-gateway-r1"
+APPROVED_LIVE_TOOL_PREFIXES = (
+    "azmcp_",
+    "mcp_azure_mcp_",
+)
 _UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
@@ -37,6 +41,20 @@ def response_summary(value: Any) -> dict[str, Any]:
     return summary
 
 
+def catalog_identifier_match_mode(live_name: str, canonical_name: str) -> str | None:
+    """Reconcile only exact or explicitly approved Azure MCP catalog prefixes.
+
+    Arbitrary suffix matching is intentionally forbidden so a different tool cannot
+    become eligible merely because its name happens to end with a frozen R1 name.
+    """
+    if live_name == canonical_name:
+        return "exact"
+    for prefix in APPROVED_LIVE_TOOL_PREFIXES:
+        if live_name == f"{prefix}{canonical_name}":
+            return f"approved_prefix:{prefix}"
+    return None
+
+
 def find_tool_schema(catalog_response: Any, tool_name: str) -> dict[str, Any] | None:
     if not isinstance(catalog_response, dict):
         return None
@@ -47,17 +65,21 @@ def find_tool_schema(catalog_response: Any, tool_name: str) -> dict[str, Any] | 
     if not isinstance(tools, list):
         return None
     for tool in tools:
-        if isinstance(tool, dict) and tool.get("name") == tool_name:
+        if not isinstance(tool, dict):
+            continue
+        live_name = tool.get("name")
+        if isinstance(live_name, str) and catalog_identifier_match_mode(live_name, tool_name):
             return tool
     return None
 
 
-def tool_schema_evidence(tool_schema: dict[str, Any] | None) -> dict[str, Any]:
+def tool_schema_evidence(tool_schema: dict[str, Any] | None, canonical_name: str | None = None) -> dict[str, Any]:
     if not tool_schema:
         return {"present_in_live_catalog": False}
     input_schema = tool_schema.get("inputSchema") or tool_schema.get("input_schema") or {}
     annotations = tool_schema.get("annotations") if isinstance(tool_schema.get("annotations"), dict) else {}
-    return {
+    live_name = tool_schema.get("name") if isinstance(tool_schema.get("name"), str) else None
+    evidence: dict[str, Any] = {
         "present_in_live_catalog": True,
         "input_schema_sha256": canonical_digest(input_schema),
         "required_parameters": sorted(input_schema.get("required") or []) if isinstance(input_schema, dict) else [],
@@ -68,6 +90,12 @@ def tool_schema_evidence(tool_schema: dict[str, Any] | None) -> dict[str, Any]:
             "openWorldHint": annotations.get("openWorldHint"),
         },
     }
+    if live_name is not None:
+        evidence["live_catalog_identifier"] = live_name
+    if canonical_name is not None and live_name is not None:
+        evidence["canonical_identifier"] = canonical_name
+        evidence["identifier_match_mode"] = catalog_identifier_match_mode(live_name, canonical_name)
+    return evidence
 
 
 def _walk_for_subscription_id(value: Any) -> str | None:
