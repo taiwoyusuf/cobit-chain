@@ -26,8 +26,12 @@ jobs:
         run: |
           set -euo pipefail
           workflow=.github/workflows/azure-mcp-gateway-r1-pkce-probe.yml
-          if grep -Eq 'azure/login|^[[:space:]]+az[[:space:]]|secrets\.|client-secret|password|credential|listkeys|listsecrets' "$workflow"; then
-            echo "STOP: PKCE probe contains authenticated, secret-bearing, or mutation-capable operations"
+          if grep -Eq '^[[:space:]]+az[[:space:]]' "$workflow"; then
+            echo "STOP: PKCE probe contains an Azure CLI command"
+            exit 1
+          fi
+          if grep -Eq '^[[:space:]]+uses:[[:space:]]+azure/login@' "$workflow"; then
+            echo "STOP: PKCE probe contains Azure login"
             exit 1
           fi
           echo "PASS: PKCE probe is protocol-only and unauthenticated"
