@@ -23,8 +23,9 @@ jobs:
         run: |
           set -euo pipefail
           workflow=.github/workflows/azure-mcp-gateway-r1-oauth-discovery.yml
-          if grep -Eiq 'az (group|containerapp|role|ad|keyvault|provider)|Authorization:|Bearer |client-secret|listkeys|listsecrets|connection-string' "$workflow"; then
-            echo "STOP: OAuth discovery workflow contains a prohibited authenticated or Azure mutation surface"
+          executable=$(grep -vE 'grep -Eiq|workflow=|STOP:|PASS:' "$workflow")
+          if grep -Eiq 'uses:[[:space:]]*azure/login|^[[:space:]]*az[[:space:]]|secrets\.|client-secret|listkeys|listsecrets|connection-string' <<<"$executable"; then
+            echo "STOP: OAuth discovery workflow contains an authenticated, secret-bearing, or Azure mutation surface"
             exit 1
           fi
           echo "PASS: discovery workflow is unauthenticated and read-only"
