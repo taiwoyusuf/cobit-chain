@@ -186,10 +186,10 @@ async def ta14_greg_challenge(
 
     started = datetime.now(timezone.utc)
     record: dict[str, Any] = {
-        "schema": "cobit-chain.ta14.greg-evidence.r1",
-        "challenge_id": "TA14-VSA-GREG-R1-001",
+        "schema": "cobit-chain.ta14.greg-evidence.r2",
+        "challenge_id": "TA14-VSA-GREG-R1-002",
         "started_at_utc": started.isoformat(),
-        "bounded_question": "Can the deployed gateway exercise only its frozen read-only Azure MCP surface while refusing prohibited write, RBAC, secret, and key routes?",
+        "bounded_question": "Can the deployed gateway execute its frozen read-only Azure MCP calls while containing the authenticated live upstream catalog so that every non-frozen advertised route is refused before upstream execution?",
         "gateway_mode": "r1-read-only",
         "frozen_tools": list(FROZEN_R1_TOOLS),
         "upstream": UPSTREAM_MCP_URL,
@@ -197,15 +197,18 @@ async def ta14_greg_challenge(
         "oauth_token_in_evidence": False,
         "positive_proofs": {},
         "negative_policy_proofs": [],
+        "catalog_surface_policy_proofs": [],
         "catalog_evidence": {},
         "mcp_protocol": {},
         "claims": [
-            "The frozen canonical tool identifiers correspond to authenticated live-catalog identifiers only by exact match or an explicitly approved Azure MCP prefix.",
-            "Catalog response-shape reconciliation parses only explicit MCP tools arrays or JSON content envelopes and does not relax authorization policy.",
+            "The three frozen read-only canonical calls are tested by live authenticated execution, regardless of whether the upstream tools/list catalog advertises those callable aliases.",
+            "Every tool identifier advertised by the authenticated live catalog is separately evaluated against the frozen local R1 policy without sending that policy challenge upstream.",
+            "A catalog-surface containment PASS means every advertised non-frozen route was denied locally before upstream execution.",
             "A positive proof marked success received a live Azure MCP response and records only a SHA-256 digest and structural summary.",
             "A negative proof marked denied was rejected locally before any upstream MCP request was sent.",
         ],
         "non_claims": [
+            "This proof does not claim that Azure MCP tools/list advertises the three callable frozen aliases.",
             "This proof does not establish authority to perform Azure write operations.",
             "This proof does not establish that every Azure read operation is safe or applicable in every future context.",
             "This proof does not bypass human authority or expand the frozen R1 allow-list.",
@@ -238,6 +241,25 @@ async def ta14_greg_challenge(
             schema = find_tool_schema(catalog, tool_name)
             schemas[tool_name] = schema
             record["catalog_evidence"][tool_name] = tool_schema_evidence(schema, canonical_name=tool_name)
+
+        for live_tool_name in record["catalog_structure"].get("live_tool_identifiers") or []:
+            expected_decision = "allow" if live_tool_name in FROZEN_R1_TOOLS else "deny"
+            actual_decision = "allow"
+            reason = None
+            try:
+                authorize_tool(live_tool_name, ALLOWLIST)
+            except PolicyDenied as exc:
+                actual_decision = "deny"
+                reason = str(exc)
+            record["catalog_surface_policy_proofs"].append(
+                {
+                    "tool": live_tool_name,
+                    "expected_decision": expected_decision,
+                    "decision": actual_decision,
+                    "upstream_request_sent": False,
+                    "reason": reason,
+                }
+            )
 
         subscription_response = await client.call_tool("subscription_list", {})
         record["positive_proofs"]["subscription_list"] = {
@@ -294,13 +316,19 @@ async def ta14_greg_challenge(
 
     positive_complete = set(record["positive_proofs"].keys()) == set(FROZEN_R1_TOOLS)
     positives_pass = positive_complete and all(item.get("success") for item in record["positive_proofs"].values())
-    catalog_pass = all(item.get("present_in_live_catalog") for item in record["catalog_evidence"].values()) if record["catalog_evidence"] else False
+    catalog_correspondence_established = all(item.get("present_in_live_catalog") for item in record["catalog_evidence"].values()) if record["catalog_evidence"] else False
+    catalog_surface_proofs = record["catalog_surface_policy_proofs"]
+    catalog_surface_containment_pass = bool(catalog_surface_proofs) and all(
+        item["decision"] == item["expected_decision"] and item["upstream_request_sent"] is False
+        for item in catalog_surface_proofs
+    )
     negatives_pass = all(item["decision"] == "deny" and item["upstream_request_sent"] is False for item in record["negative_policy_proofs"])
     record["result"] = {
-        "catalog_pass": catalog_pass,
+        "catalog_correspondence_established": catalog_correspondence_established,
+        "catalog_surface_containment_pass": catalog_surface_containment_pass,
         "positive_live_read_pass": positives_pass,
         "negative_restraint_pass": negatives_pass,
-        "overall_pass": catalog_pass and positives_pass and negatives_pass and "live_proof_error" not in record,
+        "overall_pass": catalog_surface_containment_pass and positives_pass and negatives_pass and "live_proof_error" not in record,
     }
     record["completed_at_utc"] = datetime.now(timezone.utc).isoformat()
     record["evidence_sha256"] = canonical_digest(record)
