@@ -1,0 +1,94 @@
+{
+  "epistemic_classes": [
+    "DOCUMENTARY",
+    "OBSERVED",
+    "MEASURED",
+    "DERIVED",
+    "INFERRED"
+  ],
+  "evidence_objects": {
+    "E1": {
+      "current_applicability_after_C2": {
+        "P1": "REMAINS_APPLICABLE",
+        "P2": "REMAINS_APPLICABLE_FOR_IDENTITY_CALIBRATION_TIMESTAMP_BASIS",
+        "P3": "INSUFFICIENT_FOR_QB2",
+        "P4": "REMAINS_APPLICABLE_FOR_CRITERION_IN_BOUNDED_CASE",
+        "P5": "INSUFFICIENT_FOR_QB2",
+        "P6": "INSUFFICIENT_FOR_QB2",
+        "P7": "INSUFFICIENT_FOR_QB2"
+      },
+      "epistemic_modalities": [
+        "DOCUMENTARY",
+        "MEASURED"
+      ],
+      "purpose": "Establish QB1 historical qualification basis",
+      "supports_at_T0": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7"
+      ],
+      "time": "T0"
+    },
+    "E2": {
+      "does_not_address": [
+        "P6"
+      ],
+      "epistemic_modalities": [
+        "OBSERVED",
+        "MEASURED"
+      ],
+      "purpose": "Re-establish current CWZ-01 representativeness and U1 monitoring mapping under QB2",
+      "supports": [
+        "P3",
+        "P5"
+      ],
+      "time": "T4"
+    },
+    "E3": {
+      "class": "MEASURED",
+      "purpose": "Re-establish recovery standing under QB2/current load",
+      "supports": [
+        "P6"
+      ],
+      "time": "T5"
+    },
+    "I1": {
+      "cannot_satisfy": [
+        "P3"
+      ],
+      "class": "INFERRED",
+      "confidence": 0.97,
+      "purpose": "Synthetic model estimate of acceptable CWZ-01 condition",
+      "reason": "High-confidence inference is not admitted as direct current representativeness evidence in this challenge.",
+      "supports": [],
+      "time": "T3"
+    },
+    "M1": {
+      "class": "MEASURED",
+      "does_not_by_itself_support": [
+        "P3",
+        "P5",
+        "P6",
+        "P7"
+      ],
+      "facts": {
+        "alarm_state": "NONE",
+        "differential_pressure_pa": 12.0,
+        "values_unchanged_from_T0": true,
+        "within_synthetic_limits": true
+      },
+      "purpose": "Current MP-01 measurements after C2",
+      "supports": [
+        "P2",
+        "P4"
+      ],
+      "time": "T2_T3"
+    }
+  },
+  "invariant": "An evidence object's authenticity does not automatically establish current applicability.",
+  "schema": "vsa.environment.evidence_registry.r2a"
+}

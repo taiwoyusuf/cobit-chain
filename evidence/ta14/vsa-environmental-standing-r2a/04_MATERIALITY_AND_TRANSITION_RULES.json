@@ -1,0 +1,45 @@
+{
+  "rules": [
+    {
+      "if": "change does not alter any evidence applicability basis for proposition",
+      "rule_id": "R1",
+      "then": "preserve current proposition standing"
+    },
+    {
+      "if": "change alters a relied-upon physical/context basis and current evidence has not yet re-established applicability",
+      "rule_id": "R2",
+      "then": "REASSESSMENT_REQUIRED"
+    },
+    {
+      "if": "at the governed reassessment checkpoint, required current evidence for a material proposition remains absent or insufficient",
+      "rule_id": "R3",
+      "then": "NOT_ESTABLISHED"
+    },
+    {
+      "if": "new evidence specifically satisfies the current evidence requirement for a proposition",
+      "rule_id": "R4",
+      "then": "that proposition may return to SUPPORTABLE"
+    },
+    {
+      "if": "a supporting proposition is restored",
+      "rule_id": "R5",
+      "then": "do not automatically restore propositions that depend on it; evaluate each dependent proposition against its own current requirements"
+    },
+    {
+      "if": "historical evidence was valid at T0 and later context changes",
+      "rule_id": "R6",
+      "then": "preserve T0 historical standing; do not rewrite it retroactively"
+    },
+    {
+      "if": "all monitored values are within limits but representativeness is not established",
+      "rule_id": "R7",
+      "then": "do not infer current environmental qualification from in-limit values alone"
+    }
+  ],
+  "schema": "vsa.environment.materiality_rules.r2a",
+  "standing_states": [
+    "SUPPORTABLE",
+    "REASSESSMENT_REQUIRED",
+    "NOT_ESTABLISHED"
+  ]
+}

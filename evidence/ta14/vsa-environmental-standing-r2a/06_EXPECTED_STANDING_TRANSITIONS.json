@@ -1,0 +1,74 @@
+{
+  "P4_support_basis_at_T2_T3": "M1 current differential-pressure measurement + still-applicable E1 synthetic pressure criterion; C2 is immaterial to P4.",
+  "T3_checkpoint_semantics": "T3 is the governed reassessment checkpoint. Material propositions with unresolved required current evidence move from REASSESSMENT_REQUIRED to NOT_ESTABLISHED under Rule R3.",
+  "headline_result_at_T3": {
+    "alarm": "NONE",
+    "bms_dashboard": "GREEN",
+    "calibration": "CURRENT",
+    "current_environmental_validation_standing": "NOT_ESTABLISHED",
+    "ems_dashboard": "GREEN",
+    "historical_qualification_authentic": true,
+    "values_within_limits": true
+  },
+  "historical_preservation": {
+    "T0_P7": "SUPPORTABLE",
+    "rule": "Later changes do not rewrite T0 historical standing."
+  },
+  "schema": "vsa.environment.expected_transitions.r2a",
+  "states": {
+    "T0": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "SUPPORTABLE",
+      "P4": "SUPPORTABLE",
+      "P5": "SUPPORTABLE",
+      "P6": "SUPPORTABLE",
+      "P7": "SUPPORTABLE"
+    },
+    "T1": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "SUPPORTABLE",
+      "P4": "SUPPORTABLE",
+      "P5": "SUPPORTABLE",
+      "P6": "SUPPORTABLE",
+      "P7": "SUPPORTABLE"
+    },
+    "T2": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "REASSESSMENT_REQUIRED",
+      "P4": "SUPPORTABLE",
+      "P5": "REASSESSMENT_REQUIRED",
+      "P6": "REASSESSMENT_REQUIRED",
+      "P7": "REASSESSMENT_REQUIRED"
+    },
+    "T3": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "NOT_ESTABLISHED",
+      "P4": "SUPPORTABLE",
+      "P5": "NOT_ESTABLISHED",
+      "P6": "NOT_ESTABLISHED",
+      "P7": "NOT_ESTABLISHED"
+    },
+    "T4": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "SUPPORTABLE",
+      "P4": "SUPPORTABLE",
+      "P5": "SUPPORTABLE",
+      "P6": "NOT_ESTABLISHED",
+      "P7": "NOT_ESTABLISHED"
+    },
+    "T5": {
+      "P1": "SUPPORTABLE",
+      "P2": "SUPPORTABLE",
+      "P3": "SUPPORTABLE",
+      "P4": "SUPPORTABLE",
+      "P5": "SUPPORTABLE",
+      "P6": "SUPPORTABLE",
+      "P7": "SUPPORTABLE"
+    }
+  }
+}
