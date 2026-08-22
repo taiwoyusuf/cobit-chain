@@ -1,0 +1,49 @@
+{
+  "dependencies": [
+    {
+      "from": "P1",
+      "to": "P2",
+      "type": "required"
+    },
+    {
+      "from": "P2",
+      "to": "P3",
+      "type": "required"
+    },
+    {
+      "from": "P3",
+      "to": "P5",
+      "type": "required"
+    },
+    {
+      "from": "P5",
+      "to": "P7",
+      "type": "required"
+    },
+    {
+      "from": "P6",
+      "to": "P7",
+      "type": "required"
+    },
+    {
+      "from": "P4",
+      "to": "P7",
+      "type": "required"
+    }
+  ],
+  "independence_notes": [
+    "P4 does not depend on P3 in this synthetic case.",
+    "A materiality event affecting P3 does not automatically alter P4.",
+    "P1 may remain SUPPORTABLE while P3/P5/P6/P7 require reassessment."
+  ],
+  "propositions": {
+    "P1": "Instrument identity and calibration standing",
+    "P2": "Current measurement authenticity at MP-01",
+    "P3": "MP-01 measurement representativeness for CWZ-01",
+    "P4": "Pressure-cascade applicability under current configuration",
+    "P5": "Environmental monitoring representativeness for intended use U1",
+    "P6": "Environmental recovery standing under current configuration/load",
+    "P7": "Overall environmental qualification standing for intended use U1"
+  },
+  "schema": "vsa.environment.proposition_graph.r1"
+}

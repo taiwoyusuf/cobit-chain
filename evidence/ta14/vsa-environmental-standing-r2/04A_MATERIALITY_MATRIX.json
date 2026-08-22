@@ -1,0 +1,40 @@
+{
+  "changes": {
+    "C1": {
+      "classification": "IMMATERIAL",
+      "description": "Asset display-label change",
+      "proposition_materiality": {
+        "P1": false,
+        "P2": false,
+        "P3": false,
+        "P4": false,
+        "P5": false,
+        "P6": false,
+        "P7": false
+      }
+    },
+    "C2": {
+      "classification": "MATERIAL_BY_PROPOSITION",
+      "description": "Equipment installation changes geometry, local airflow, and process load from G1/A1/L1 to G2/A2/L2",
+      "proposition_materiality": {
+        "P1": false,
+        "P2": false,
+        "P3": true,
+        "P4": false,
+        "P5": true,
+        "P6": true,
+        "P7": true
+      },
+      "reason_by_proposition": {
+        "P1": "Instrument identity/calibration basis unchanged.",
+        "P2": "Measurement authenticity at MP-01 remains established.",
+        "P3": "Representativeness basis was established under G1/A1, not current G2/A2.",
+        "P4": "Pressure-cascade proposition is intentionally independent of C2 in this bounded case.",
+        "P5": "Depends on current P3 representativeness and current U1 monitoring mapping.",
+        "P6": "Recovery evidence must be re-established under QB2/current load.",
+        "P7": "Depends on P4, P5, and P6."
+      }
+    }
+  },
+  "schema": "vsa.environment.materiality_matrix.r2"
+}

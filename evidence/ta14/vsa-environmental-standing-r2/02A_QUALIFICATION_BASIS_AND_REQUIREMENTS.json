@@ -1,0 +1,80 @@
+{
+  "environment_id": "ENV-01",
+  "historical_preservation_rule": "QB1 and its T0 conclusions remain historical facts and are not overwritten by QB2.",
+  "intended_use": "U1",
+  "proposition_requirements": {
+    "P1": {
+      "required_current_evidence": [
+        "device_identity",
+        "calibration_status"
+      ]
+    },
+    "P2": {
+      "required_current_evidence": [
+        "P1_SUPPORTABLE",
+        "measurement_record",
+        "timestamp_integrity"
+      ]
+    },
+    "P3": {
+      "required_current_evidence": [
+        "P2_SUPPORTABLE",
+        "current_sensor_to_CWZ_relationship",
+        "current_geometry_airflow_basis"
+      ]
+    },
+    "P4": {
+      "independent_of_C2_for_this_case": true,
+      "required_current_evidence": [
+        "current_pressure_measurement",
+        "current_pressure_criterion"
+      ]
+    },
+    "P5": {
+      "required_current_evidence": [
+        "P3_SUPPORTABLE",
+        "current_monitoring_mapping_for_U1"
+      ]
+    },
+    "P6": {
+      "required_current_evidence": [
+        "current_recovery_study_under_QB2"
+      ]
+    },
+    "P7": {
+      "closure_logic": "P4 AND P5 AND P6",
+      "required_current_evidence": [
+        "P4_SUPPORTABLE",
+        "P5_SUPPORTABLE",
+        "P6_SUPPORTABLE"
+      ]
+    }
+  },
+  "qualification_basis_versions": {
+    "QB1": {
+      "airflow_configuration": "A1",
+      "critical_work_zone": "CWZ-01",
+      "effective_at": "T0",
+      "geometry": "G1",
+      "monitoring_point": "MP-01",
+      "occupancy_profile": "O1",
+      "operating_state": "STEADY_STATE",
+      "process_load": "L1",
+      "sensor_topology": "S1",
+      "status": "HISTORICALLY_SUPPORTABLE"
+    },
+    "QB2": {
+      "airflow_configuration": "A2",
+      "critical_work_zone": "CWZ-01",
+      "effective_at": "T2",
+      "geometry": "G2",
+      "monitoring_point": "MP-01",
+      "occupancy_profile": "O1",
+      "operating_state": "STEADY_STATE",
+      "process_load": "L2",
+      "sensor_topology": "S1",
+      "status": "CURRENT_REASSESSMENT_BASIS"
+    }
+  },
+  "schema": "vsa.environment.qualification_basis_requirements.r2"
+}

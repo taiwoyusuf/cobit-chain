@@ -1,0 +1,112 @@
+{
+  "schema": "vsa.environment.synthetic.events.r1",
+  "timeline": [
+    {
+      "event": "BASELINE_QUALIFIED",
+      "evidence": [
+        "E1"
+      ],
+      "facts": {
+        "airflow": "A1",
+        "geometry": "G1",
+        "occupancy": "O1",
+        "operating_state": "STEADY_STATE",
+        "process_load": "L1",
+        "sensor_topology": "S1"
+      },
+      "time": "T0"
+    },
+    {
+      "change_id": "C1",
+      "changed_fields": [
+        "asset_display_label"
+      ],
+      "event": "IMMATERIAL_DISPLAY_LABEL_CHANGE",
+      "time": "T1",
+      "unchanged_material_fields": [
+        "geometry",
+        "airflow",
+        "sensor_topology",
+        "process_load",
+        "occupancy",
+        "operating_state",
+        "intended_use",
+        "sensor_to_cwz_relationship"
+      ]
+    },
+    {
+      "affected_propositions": [
+        "P3",
+        "P5",
+        "P6",
+        "P7"
+      ],
+      "change_id": "C2",
+      "event": "MATERIAL_PHYSICAL_CONTEXT_CHANGE",
+      "facts": {
+        "airflow": "A2",
+        "alarm_state": "NONE",
+        "all_monitored_values_within_limits": true,
+        "calibration_standing": "SUPPORTABLE",
+        "current_context": "G2/A2",
+        "current_values": {
+          "differential_pressure_pa": 12.0,
+          "humidity_rh_pct": 45.0,
+          "particle_index": 0.41,
+          "temperature_c": 21.2
+        },
+        "geometry": "G2",
+        "monitoring_point_moved": false,
+        "old_representativeness_basis": "G1/A1",
+        "process_load": "L2",
+        "sensor_topology": "S1",
+        "synthetic_values_unchanged_from_T0": true
+      },
+      "time": "T2",
+      "unaffected_propositions": [
+        "P1",
+        "P2",
+        "P4"
+      ]
+    },
+    {
+      "event": "REASSESSMENT_INCOMPLETE",
+      "evidence": [
+        "M1",
+        "I1"
+      ],
+      "fact": "Measured values remain in-limit and unchanged, with 0.97-confidence inference for CWZ-01, but no G2/A2/L2 representativeness or recovery evidence is admitted.",
+      "time": "T3"
+    },
+    {
+      "E2": {
+        "does_not_address": [
+          "P6"
+        ],
+        "supports": [
+          "P3",
+          "P5"
+        ],
+        "type": "synthetic remapping/airflow evidence"
+      },
+      "event": "PARTIAL_NEW_EVIDENCE",
+      "evidence": [
+        "E2"
+      ],
+      "time": "T4"
+    },
+    {
+      "E3": {
+        "supports": [
+          "P6"
+        ],
+        "type": "synthetic recovery study under G2/A2/current load"
+      },
+      "event": "FINAL_RECOVERY_EVIDENCE",
+      "evidence": [
+        "E3"
+      ],
+      "time": "T5"
+    }
+  ]
+}
