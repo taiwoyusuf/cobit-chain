@@ -1,0 +1,559 @@
+{
+  "baseline": {
+    "baseline_state": {
+      "airflow_configuration": "A1",
+      "critical_work_zone": "CWZ-01",
+      "geometry": "G1",
+      "monitoring_point": "MP-01",
+      "occupancy_profile": "O1",
+      "operating_state": "STEADY_STATE",
+      "process_load": "L1",
+      "sensor_topology": "S1"
+    },
+    "environment_id": "ENV-01",
+    "intended_use": "U1",
+    "monitoring_point": {
+      "calibration_standing": "SUPPORTABLE",
+      "identity_standing": "SUPPORTABLE",
+      "synthetic_acceptance_ranges": {
+        "differential_pressure_pa": [
+          8.0,
+          20.0
+        ],
+        "humidity_rh_pct": [
+          30.0,
+          60.0
+        ],
+        "particle_index": [
+          0.0,
+          1.0
+        ],
+        "temperature_c": [
+          18.0,
+          25.0
+        ]
+      },
+      "synthetic_values": {
+        "differential_pressure_pa": 12.0,
+        "humidity_rh_pct": 45.0,
+        "particle_index": 0.41,
+        "temperature_c": 21.2
+      },
+      "timestamp_integrity": "SUPPORTABLE"
+    },
+    "qualification_evidence": {
+      "covered_propositions": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7"
+      ],
+      "evidence_id": "E1",
+      "historically_authentic": true,
+      "qualified_relationship": "MP-01 represents CWZ-01 under G1/A1/L1/O1/STEADY_STATE"
+    },
+    "schema": "vsa.environment.synthetic.baseline.r1"
+  },
+  "bounded_proposition": "Can historically supportable environmental qualification evidence remain authentic while becoming insufficient to establish current validation standing after a material physical/context change alters measurement representativeness or evidence applicability, even when instruments remain calibrated and monitored values remain within their original limits, and can VSA selectively restore only propositions for which new evidence actually re-establishes standing?",
+  "deterministic_evaluator_spec": {
+    "algorithm": [
+      "Preserve historical standing as immutable time-indexed state.",
+      "Consult proposition-by-change materiality matrix.",
+      "Immaterial change preserves current standing.",
+      "Material change with unmet current evidence requirement -> REASSESSMENT_REQUIRED.",
+      "At reassessment checkpoint, still unmet -> NOT_ESTABLISHED.",
+      "MEASURED in-limit values support P2 but do not substitute for P3 representativeness.",
+      "INFERRED I1 cannot restore P3/P5/P6/P7.",
+      "Restore only when proposition-specific current evidence requirements are satisfied.",
+      "P7 SUPPORTABLE iff P4, P5, and P6 are all SUPPORTABLE."
+    ],
+    "p7_closure": "P7 = SUPPORTABLE iff P4 == SUPPORTABLE AND P5 == SUPPORTABLE AND P6 == SUPPORTABLE.",
+    "schema": "vsa.environment.deterministic_evaluator.r2"
+  },
+  "events": {
+    "schema": "vsa.environment.synthetic.events.r1",
+    "timeline": [
+      {
+        "event": "BASELINE_QUALIFIED",
+        "evidence": [
+          "E1"
+        ],
+        "facts": {
+          "airflow": "A1",
+          "geometry": "G1",
+          "occupancy": "O1",
+          "operating_state": "STEADY_STATE",
+          "process_load": "L1",
+          "sensor_topology": "S1"
+        },
+        "time": "T0"
+      },
+      {
+        "change_id": "C1",
+        "changed_fields": [
+          "asset_display_label"
+        ],
+        "event": "IMMATERIAL_DISPLAY_LABEL_CHANGE",
+        "time": "T1",
+        "unchanged_material_fields": [
+          "geometry",
+          "airflow",
+          "sensor_topology",
+          "process_load",
+          "occupancy",
+          "operating_state",
+          "intended_use",
+          "sensor_to_cwz_relationship"
+        ]
+      },
+      {
+        "affected_propositions": [
+          "P3",
+          "P5",
+          "P6",
+          "P7"
+        ],
+        "change_id": "C2",
+        "event": "MATERIAL_PHYSICAL_CONTEXT_CHANGE",
+        "facts": {
+          "airflow": "A2",
+          "alarm_state": "NONE",
+          "all_monitored_values_within_limits": true,
+          "calibration_standing": "SUPPORTABLE",
+          "current_context": "G2/A2",
+          "current_values": {
+            "differential_pressure_pa": 12.0,
+            "humidity_rh_pct": 45.0,
+            "particle_index": 0.41,
+            "temperature_c": 21.2
+          },
+          "geometry": "G2",
+          "monitoring_point_moved": false,
+          "old_representativeness_basis": "G1/A1",
+          "process_load": "L2",
+          "sensor_topology": "S1",
+          "synthetic_values_unchanged_from_T0": true
+        },
+        "time": "T2",
+        "unaffected_propositions": [
+          "P1",
+          "P2",
+          "P4"
+        ]
+      },
+      {
+        "event": "REASSESSMENT_INCOMPLETE",
+        "evidence": [
+          "M1",
+          "I1"
+        ],
+        "fact": "Measured values remain in-limit and unchanged, with 0.97-confidence inference for CWZ-01, but no G2/A2/L2 representativeness or recovery evidence is admitted.",
+        "time": "T3"
+      },
+      {
+        "E2": {
+          "does_not_address": [
+            "P6"
+          ],
+          "supports": [
+            "P3",
+            "P5"
+          ],
+          "type": "synthetic remapping/airflow evidence"
+        },
+        "event": "PARTIAL_NEW_EVIDENCE",
+        "evidence": [
+          "E2"
+        ],
+        "time": "T4"
+      },
+      {
+        "E3": {
+          "supports": [
+            "P6"
+          ],
+          "type": "synthetic recovery study under G2/A2/current load"
+        },
+        "event": "FINAL_RECOVERY_EVIDENCE",
+        "evidence": [
+          "E3"
+        ],
+        "time": "T5"
+      }
+    ]
+  },
+  "evidence_registry": {
+    "evidence": {
+      "E1": {
+        "authentic": true,
+        "class": "DOCUMENTARY",
+        "current_applicability_after_C2": {
+          "P1": true,
+          "P2": true,
+          "P3": false,
+          "P4": true,
+          "P5": false,
+          "P6": false,
+          "P7": false
+        },
+        "purpose": "baseline qualification",
+        "scope": "G1/A1/L1/O1/STEADY_STATE/U1",
+        "supports": [
+          "P1",
+          "P2",
+          "P3",
+          "P4",
+          "P5",
+          "P6",
+          "P7"
+        ]
+      },
+      "E2": {
+        "authentic": true,
+        "class": "DOCUMENTARY+MEASURED",
+        "does_not_address": [
+          "P6"
+        ],
+        "purpose": "re-mapping/airflow evidence under changed configuration",
+        "scope": "G2/A2/L2/current/U1",
+        "supports": [
+          "P3",
+          "P5"
+        ]
+      },
+      "E3": {
+        "authentic": true,
+        "class": "DOCUMENTARY+MEASURED",
+        "purpose": "recovery study under changed configuration/load",
+        "scope": "G2/A2/L2/current/U1",
+        "supports": [
+          "P6"
+        ]
+      },
+      "I1": {
+        "cannot_restore": [
+          "P3",
+          "P5",
+          "P6",
+          "P7"
+        ],
+        "class": "INFERRED",
+        "confidence": 0.97,
+        "purpose": "model-estimated CWZ-01 state",
+        "scope": "G2/A2/L2"
+      },
+      "M1": {
+        "authentic": true,
+        "class": "MEASURED",
+        "does_not_by_itself_support": [
+          "P3",
+          "P5",
+          "P6",
+          "P7"
+        ],
+        "purpose": "current MP-01 values",
+        "scope": "MP-01 at T2/T3",
+        "supports": [
+          "P2"
+        ],
+        "values": {
+          "differential_pressure_pa": 12.0,
+          "humidity_rh_pct": 45.0,
+          "particle_index": 0.41,
+          "temperature_c": 21.2
+        },
+        "within_limits": true
+      }
+    },
+    "schema": "vsa.environment.evidence_registry.r2"
+  },
+  "expected_transitions": {
+    "headline_result_at_T3": {
+      "alarm": "NONE",
+      "bms_dashboard": "GREEN",
+      "calibration": "CURRENT",
+      "current_environmental_validation_standing": "NOT_ESTABLISHED",
+      "ems_dashboard": "GREEN",
+      "historical_qualification_authentic": true,
+      "values_within_limits": true
+    },
+    "historical_preservation": {
+      "T0_P7": "SUPPORTABLE",
+      "rule": "Later changes do not rewrite T0 historical standing."
+    },
+    "schema": "vsa.environment.expected_transitions.r1",
+    "states": {
+      "T0": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "SUPPORTABLE",
+        "P4": "SUPPORTABLE",
+        "P5": "SUPPORTABLE",
+        "P6": "SUPPORTABLE",
+        "P7": "SUPPORTABLE"
+      },
+      "T1": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "SUPPORTABLE",
+        "P4": "SUPPORTABLE",
+        "P5": "SUPPORTABLE",
+        "P6": "SUPPORTABLE",
+        "P7": "SUPPORTABLE"
+      },
+      "T2": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "REASSESSMENT_REQUIRED",
+        "P4": "SUPPORTABLE",
+        "P5": "REASSESSMENT_REQUIRED",
+        "P6": "REASSESSMENT_REQUIRED",
+        "P7": "REASSESSMENT_REQUIRED"
+      },
+      "T3": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "NOT_ESTABLISHED",
+        "P4": "SUPPORTABLE",
+        "P5": "NOT_ESTABLISHED",
+        "P6": "NOT_ESTABLISHED",
+        "P7": "NOT_ESTABLISHED"
+      },
+      "T4": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "SUPPORTABLE",
+        "P4": "SUPPORTABLE",
+        "P5": "SUPPORTABLE",
+        "P6": "NOT_ESTABLISHED",
+        "P7": "NOT_ESTABLISHED"
+      },
+      "T5": {
+        "P1": "SUPPORTABLE",
+        "P2": "SUPPORTABLE",
+        "P3": "SUPPORTABLE",
+        "P4": "SUPPORTABLE",
+        "P5": "SUPPORTABLE",
+        "P6": "SUPPORTABLE",
+        "P7": "SUPPORTABLE"
+      }
+    }
+  },
+  "materiality_matrix": {
+    "changes": {
+      "C1": {
+        "description": "asset display label change only",
+        "propositions": {
+          "P1": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P2": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P3": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P4": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P5": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P6": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          },
+          "P7": {
+            "material": false,
+            "reason": "No relied-upon physical/context/evidence basis changed."
+          }
+        }
+      },
+      "C2": {
+        "description": "equipment installation changes geometry G1->G2, airflow A1->A2, process load L1->L2; MP-01 remains fixed and calibrated",
+        "propositions": {
+          "P1": {
+            "material": false,
+            "reason": "Instrument identity/calibration unchanged."
+          },
+          "P2": {
+            "material": false,
+            "reason": "Measurement authenticity at MP-01 unchanged."
+          },
+          "P3": {
+            "material": true,
+            "reason": "Representativeness was evidenced under G1/A1/L1, not G2/A2/L2."
+          },
+          "P4": {
+            "material": false,
+            "reason": "Synthetic pressure-cascade basis remains unchanged in this bounded case."
+          },
+          "P5": {
+            "material": true,
+            "reason": "Depends on current P3 and current mapping applicability."
+          },
+          "P6": {
+            "material": true,
+            "reason": "Prior recovery evidence was generated under G1/A1/L1, not G2/A2/L2."
+          },
+          "P7": {
+            "material": true,
+            "reason": "Depends on P5 and P6, both materially affected."
+          }
+        }
+      }
+    },
+    "schema": "vsa.environment.materiality_matrix.r2"
+  },
+  "materiality_rules": {
+    "rules": [
+      {
+        "if": "change does not alter any evidence applicability basis for proposition",
+        "rule_id": "R1",
+        "then": "preserve current proposition standing"
+      },
+      {
+        "if": "change alters a relied-upon physical/context basis and current evidence has not yet re-established applicability",
+        "rule_id": "R2",
+        "then": "REASSESSMENT_REQUIRED"
+      },
+      {
+        "if": "required reassessment evidence is absent or insufficient after materiality is established",
+        "rule_id": "R3",
+        "then": "NOT_ESTABLISHED"
+      },
+      {
+        "if": "new evidence specifically satisfies the current evidence requirement for a proposition",
+        "rule_id": "R4",
+        "then": "that proposition may return to SUPPORTABLE"
+      },
+      {
+        "if": "parent/root proposition is restored",
+        "rule_id": "R5",
+        "then": "do not automatically restore descendants; evaluate each descendant's own current requirements"
+      },
+      {
+        "if": "historical evidence was valid at T0 and later context changes",
+        "rule_id": "R6",
+        "then": "preserve T0 historical standing; do not rewrite it retroactively"
+      },
+      {
+        "if": "all monitored values are within limits but representativeness is not established",
+        "rule_id": "R7",
+        "then": "do not infer current environmental qualification from in-limit values alone"
+      }
+    ],
+    "schema": "vsa.environment.materiality_rules.r1",
+    "standing_states": [
+      "SUPPORTABLE",
+      "REASSESSMENT_REQUIRED",
+      "NOT_ESTABLISHED"
+    ]
+  },
+  "package_id": "TA14_VSA_ENV_FOUNDING_DEMONSTRATION_PACKAGE_R2",
+  "proposition_graph": {
+    "dependencies": [
+      {
+        "from": "P1",
+        "to": "P2",
+        "type": "required"
+      },
+      {
+        "from": "P2",
+        "to": "P3",
+        "type": "required"
+      },
+      {
+        "from": "P3",
+        "to": "P5",
+        "type": "required"
+      },
+      {
+        "from": "P5",
+        "to": "P7",
+        "type": "required"
+      },
+      {
+        "from": "P6",
+        "to": "P7",
+        "type": "required"
+      },
+      {
+        "from": "P4",
+        "to": "P7",
+        "type": "required"
+      }
+    ],
+    "independence_notes": [
+      "P4 does not depend on P3 in this synthetic case.",
+      "A materiality event affecting P3 does not automatically alter P4.",
+      "P1 may remain SUPPORTABLE while P3/P5/P6/P7 require reassessment."
+    ],
+    "propositions": {
+      "P1": "Instrument identity and calibration standing",
+      "P2": "Current measurement authenticity at MP-01",
+      "P3": "MP-01 measurement representativeness for CWZ-01",
+      "P4": "Pressure-cascade applicability under current configuration",
+      "P5": "Environmental monitoring representativeness for intended use U1",
+      "P6": "Environmental recovery standing under current configuration/load",
+      "P7": "Overall environmental qualification standing for intended use U1"
+    },
+    "schema": "vsa.environment.proposition_graph.r1"
+  },
+  "qualification_basis": {
+    "baseline_context": {
+      "airflow": "A1",
+      "geometry": "G1",
+      "occupancy": "O1",
+      "operating_state": "STEADY_STATE",
+      "process_load": "L1",
+      "sensor_topology": "S1"
+    },
+    "criterion_set_id": "SYNTH-ENV-CRITERIA-01",
+    "criterion_set_version": "1.0",
+    "historical_rule": "T0 standing remains historically true even if current applicability later changes.",
+    "intended_use": "U1",
+    "proposition_requirements": {
+      "P1": [
+        "instrument identity current",
+        "calibration evidence current"
+      ],
+      "P2": [
+        "P1 SUPPORTABLE",
+        "timestamp integrity current",
+        "measurement record intact"
+      ],
+      "P3": [
+        "P2 SUPPORTABLE",
+        "current representativeness evidence for MP-01 -> CWZ-01 under current geometry/airflow/load/state"
+      ],
+      "P4": [
+        "current pressure-cascade evidence under current configuration"
+      ],
+      "P5": [
+        "P3 SUPPORTABLE",
+        "current environmental mapping/monitoring applicability evidence for U1"
+      ],
+      "P6": [
+        "current recovery evidence under current geometry/airflow/load/state"
+      ],
+      "P7": [
+        "P4 SUPPORTABLE",
+        "P5 SUPPORTABLE",
+        "P6 SUPPORTABLE"
+      ]
+    },
+    "qualification_basis_id": "QB-ENV-01-U1-R1",
+    "schema": "vsa.environment.qualification_basis.r2"
+  },
+  "status": "PARTICIPANT_SUBMISSION_CANDIDATE_NOT_YET_ADMITTED",
+  "working_title": "VSA Environmental Validation Standing Under Hidden Physical Context Drift"
+}
