@@ -76,10 +76,6 @@ Authority doctrine:
 
 RAMAT Vision remains an observation/display/witness layer. It must not approve, override, release, reconcile conflicting source states, or independently bind regulated action. Cross-platform work must use controlled contracts and must not merge repositories or duplicate shared domain logic.
 
-## Architecture reconciliation
-
-The public architecture/governance comparison involving Greggory Don Butler, Greg Malpass, and Ravi Shankar NRK has been reconciled difference-first against existing COBIT-Chain doctrine and roadmap. Duplicate capability creation is prohibited. Current reconciliation outcomes are retained in a separate three-person architecture reconciliation register and remain evidence-bounded.
-
 ## GitHub limitation
 
 This backfill makes the public documentary state substantially more current. It does not prove that every local post-21-July implementation file has been mirrored to GitHub. Byte-level code/evidence synchronization still requires exact current local Git inventory, secret/sensitive-content review, and governed commit selection.

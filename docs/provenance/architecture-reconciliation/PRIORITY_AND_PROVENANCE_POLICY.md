@@ -1,7 +1,7 @@
 # COBIT-Chain™ Priority and Provenance Policy
 
 ## Objective
-Create a defensible chronology for concepts, architecture comparisons, refinements, implementations, and verification evidence.
+Create a defensible chronology for COBIT-Chain concepts, implementations, and verification evidence.
 
 ## Evidence hierarchy
 1. public commit/tag/release with immutable Git object identity;
@@ -12,9 +12,7 @@ Create a defensible chronology for concepts, architecture comparisons, refinemen
 6. retrospective narrative only.
 
 ## Classification
-- `PRIOR_COBIT_CHAIN_CONCEPT` — supported by COBIT-Chain evidence dated before the compared source.
-- `PARALLEL_CONVERGENCE` — independently developed with insufficient evidence to establish priority.
-- `SOURCE_INFORMED_REFINEMENT` — a later comparison materially sharpened or added a mechanism.
+- `PRIOR_COBIT_CHAIN_CONCEPT` — supported by dated COBIT-Chain evidence.
 - `ROADMAP_ONLY` — accepted direction, not implemented.
 - `CANDIDATE` — constructed but not accepted/frozen.
 - `IMPLEMENTED_UNVERIFIED` — code exists but governed acceptance is absent.
@@ -24,4 +22,4 @@ Create a defensible chronology for concepts, architecture comparisons, refinemen
 Never use a later GitHub commit to claim an earlier invention date. A later commit may document and hash earlier evidence, but the earlier evidence itself must support the priority claim.
 
 ## Attribution and ownership chronology
-Where earlier COBIT-Chain evidence establishes the concept, preserve it explicitly as COBIT-Chain chronology. Where another published source materially contributes a distinct refinement, preserve factual provenance rather than claiming unsupported authorship. This policy is evidentiary, not argumentative.
+Capability and priority statements must be supported by the project's own dated evidence. Public-facing provenance records should identify what COBIT-Chain evidence establishes and avoid unnecessary comparative working notes. This policy is evidentiary, not argumentative.
