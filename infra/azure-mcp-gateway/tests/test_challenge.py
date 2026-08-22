@@ -42,13 +42,7 @@ def test_live_schema_evidence_records_annotations_without_raw_schema() -> None:
 
 
 def test_live_catalog_exact_name_matches() -> None:
-    catalog = {
-        "result": {
-            "tools": [
-                {"name": "subscription_list", "inputSchema": {"type": "object"}},
-            ]
-        }
-    }
+    catalog = {"result": {"tools": [{"name": "subscription_list", "inputSchema": {"type": "object"}}]}}
     schema = find_tool_schema(catalog, "subscription_list")
     assert schema is not None
     assert schema["name"] == "subscription_list"
@@ -73,13 +67,7 @@ def test_live_catalog_azmcp_prefix_matches_frozen_canonical_name() -> None:
 
 
 def test_live_catalog_known_client_prefix_matches_without_relaxing_policy() -> None:
-    catalog = {
-        "result": {
-            "tools": [
-                {"name": "mcp_azure_mcp_group_list", "inputSchema": {"type": "object"}},
-            ]
-        }
-    }
+    catalog = {"result": {"tools": [{"name": "mcp_azure_mcp_group_list", "inputSchema": {"type": "object"}}]}}
     schema = find_tool_schema(catalog, "group_list")
     assert schema is not None
     assert catalog_identifier_match_mode("mcp_azure_mcp_group_list", "group_list") == "approved_prefix:mcp_azure_mcp_"
@@ -117,19 +105,34 @@ def test_catalog_tools_can_be_extracted_from_json_text_content() -> None:
     assert group is not None and group["name"] == "azmcp_group_list"
     structure = catalog_structure_evidence(catalog)
     assert structure["extracted_tool_count"] == 2
+    assert structure["live_tool_identifiers"] == ["azmcp_group_list", "azmcp_subscription_list"]
     assert structure["top_level_keys"] == ["result"]
     assert structure["result_keys"] == ["content"]
     assert "tool_identifiers_sha256" in structure
+
+
+def test_catalog_structure_exposes_names_only_not_tool_details() -> None:
+    catalog = {
+        "result": {
+            "tools": [
+                {"name": "public_tool_a", "description": "detail", "inputSchema": {"private_field": "not-returned"}},
+                {"name": "public_tool_b", "annotations": {"readOnlyHint": True}},
+            ]
+        }
+    }
+    structure = catalog_structure_evidence(catalog)
+    assert structure["live_tool_identifiers"] == ["public_tool_a", "public_tool_b"]
+    serialized = str(structure)
+    assert "not-returned" not in serialized
+    assert "description" not in serialized
+    assert "annotations" not in serialized
 
 
 def test_catalog_tools_can_be_extracted_from_direct_list_payload() -> None:
     catalog = {
         "result": {
             "content": [
-                {
-                    "type": "text",
-                    "text": '[{"name":"subscription_list","inputSchema":{"type":"object"}}]',
-                }
+                {"type": "text", "text": '[{"name":"subscription_list","inputSchema":{"type":"object"}}]'}
             ]
         }
     }
@@ -142,10 +145,7 @@ def test_catalog_content_does_not_relax_identifier_matching() -> None:
     catalog = {
         "result": {
             "content": [
-                {
-                    "type": "text",
-                    "text": '{"tools":[{"name":"dangerous_subscription_list","inputSchema":{"type":"object"}}]}',
-                }
+                {"type": "text", "text": '{"tools":[{"name":"dangerous_subscription_list","inputSchema":{"type":"object"}}]}'}
             ]
         }
     }
@@ -156,10 +156,7 @@ def test_group_resource_arguments_follow_live_schema_names() -> None:
     schema = {
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "subscription": {"type": "string"},
-                "resource-group": {"type": "string"},
-            },
+            "properties": {"subscription": {"type": "string"}, "resource-group": {"type": "string"}},
             "required": ["resource-group"],
         }
     }
@@ -168,20 +165,11 @@ def test_group_resource_arguments_follow_live_schema_names() -> None:
         resource_group="rg-proof",
         subscription_id="11111111-1111-1111-1111-111111111111",
     )
-    assert args == {
-        "subscription": "11111111-1111-1111-1111-111111111111",
-        "resource-group": "rg-proof",
-    }
+    assert args == {"subscription": "11111111-1111-1111-1111-111111111111", "resource-group": "rg-proof"}
 
 
 def test_group_resource_arguments_stop_if_required_parameter_cannot_be_resolved() -> None:
-    schema = {
-        "inputSchema": {
-            "type": "object",
-            "properties": {"tenant": {"type": "string"}},
-            "required": ["tenant"],
-        }
-    }
+    schema = {"inputSchema": {"type": "object", "properties": {"tenant": {"type": "string"}}, "required": ["tenant"]}}
     with pytest.raises(ValueError):
         build_group_resource_arguments(schema, resource_group="rg-proof", subscription_id=None)
 
@@ -190,10 +178,7 @@ def test_subscription_id_can_be_found_inside_structured_mcp_text() -> None:
     response = {
         "result": {
             "content": [
-                {
-                    "type": "text",
-                    "text": '[{"subscriptionId":"11111111-1111-1111-1111-111111111111","name":"Example"}]',
-                }
+                {"type": "text", "text": '[{"subscriptionId":"11111111-1111-1111-1111-111111111111","name":"Example"}]'}
             ]
         }
     }

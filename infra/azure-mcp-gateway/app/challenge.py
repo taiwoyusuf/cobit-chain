@@ -125,6 +125,7 @@ def catalog_structure_evidence(catalog_response: Any) -> dict[str, Any]:
     names = sorted(item["name"] for item in tools if isinstance(item.get("name"), str))
     evidence: dict[str, Any] = {
         "extracted_tool_count": len(names),
+        "live_tool_identifiers": names,
         "tool_identifiers_sha256": canonical_digest(names),
     }
     if isinstance(catalog_response, dict):
