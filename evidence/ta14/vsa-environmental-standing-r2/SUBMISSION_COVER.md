@@ -5,13 +5,10 @@
 **Submission status:** Participant evidence-surface candidate for TA-14 independent challenge.
 
 This submission contains only the technical materials necessary to inspect and replay the bounded proposition:
-baseline evidence, physical/context changes, proposition graph, materiality rules, standing transitions,
-claims/non-claims/assumptions, replay protocol, provenance boundary, and machine-readable evidence.
+baseline evidence, qualification basis and proposition requirements, physical/context changes, proposition graph,
+materiality rules and matrix, standing transitions, evidence registry, claims/non-claims/assumptions,
+replay protocol, provenance boundary, and machine-readable evidence.
 
-Excluded from this submission:
-- private publication strategy;
-- private immigration/USCIS strategy;
-- internal commercialization notes;
-- internal adversarial-review notes.
+Excluded from this submission are private strategy, commercialization, publication-planning, and internal-review materials.
 
 The excluded materials are not part of the admitted evidence surface and should not influence the TA-14 finding.
