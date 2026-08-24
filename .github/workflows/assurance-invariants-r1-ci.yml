@@ -1,0 +1,31 @@
+name: Assurance Invariants R1 CI
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_175_assurance_invariants_r1/**'
+      - '.github/workflows/assurance-invariants-r1-ci.yml'
+  push:
+    branches:
+      - feature/assurance-invariants-r1
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_175_assurance_invariants_r1/**'
+      - '.github/workflows/assurance-invariants-r1-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_175_assurance_invariants_r1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run deterministic assurance invariant tests
+        run: python -m unittest -v test_assurance_invariants.py
