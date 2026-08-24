@@ -6,6 +6,7 @@ from assurance_invariants import (
     examine_partial_evidence,
     evaluate_intervention_viability,
     evaluate_restraint_claim,
+    evaluate_trust_anchor_succession,
 )
 
 
@@ -95,6 +96,35 @@ class AssuranceInvariantTests(unittest.TestCase):
             consequence_observed_prevented=True,
         )
         self.assertEqual(result["state"], "VERIFIED_RESTRAINT")
+
+    def test_unrelated_successor_cannot_inherit_historical_checkpoint(self):
+        result = evaluate_trust_anchor_succession(
+            predecessor_anchor="K1",
+            successor_anchor="K2",
+            predecessor_authorized=True,
+            successor_cryptographically_capable=True,
+            succession_event_present=False,
+            succession_event_authenticated=False,
+            succession_scope_valid=False,
+            succession_current=False,
+        )
+        self.assertEqual(result["successor_authority_standing"], "NOT_ESTABLISHED")
+        self.assertEqual(result["reason"], "SUCCESSION_EVENT_NOT_ESTABLISHED")
+        self.assertTrue(result["fail_closed"])
+
+    def test_authenticated_current_scoped_succession_can_be_supportable(self):
+        result = evaluate_trust_anchor_succession(
+            predecessor_anchor="K1",
+            successor_anchor="K2",
+            predecessor_authorized=True,
+            successor_cryptographically_capable=True,
+            succession_event_present=True,
+            succession_event_authenticated=True,
+            succession_scope_valid=True,
+            succession_current=True,
+        )
+        self.assertEqual(result["successor_authority_standing"], "SUPPORTABLE")
+        self.assertTrue(result["succession_established"])
 
 
 if __name__ == "__main__":
