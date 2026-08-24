@@ -1,0 +1,63 @@
+{
+  "shared_assurance_updates": {
+    "step_175": [
+      "ABSENCE_UNRESOLVED",
+      "CONTROL_BASIS_STANDING",
+      "PARTIAL_EVIDENCE_EXAMINATION",
+      "INTERVENTION_VIABILITY",
+      "RESTRAINT_CLAIM_SUFFICIENCY",
+      "AUTHORIZED_TRUST_ANCHOR_SUCCESSION"
+    ],
+    "step_176": [
+      "STATE_CONDITIONED_OPERATING_ENVELOPE_STANDING",
+      "OBSERVATION_CHANNEL_FIDELITY",
+      "TEMPORAL_RESOLUTION_STANDING",
+      "DETECTION_QUANTIFICATION_STANDING",
+      "MEASUREMENT_REGIME_BRIDGE",
+      "INTERFACE_COMPOSITION_STANDING",
+      "FUSION_DEPENDENCY_STANDING",
+      "SOURCE_ATTRIBUTION_STANDING",
+      "TIME_INDEXED_STANDING",
+      "DECISION_POLICY_STANDING",
+      "HUMAN_OVERSIGHT_CAPACITY_STANDING",
+      "TRANSFER_DELIVERY_FIDELITY"
+    ]
+  },
+  "service_lanes": [
+    "CONTINUOUS_ASSURANCE",
+    "BOUNDED_ASSURANCE_REVIEW",
+    "ARCHITECTURE_EVIDENCE_PROVENANCE",
+    "ENTERPRISE_ASSURANCE_DEPLOYMENT"
+  ],
+  "commercial_non_evidentiary_invariant": "Payment, registration, subscription, review purchase, or commercial participation MUST NOT establish or increase technical assurance standing.",
+  "domains": {
+    "RAMAT_VISION": {
+      "apply_shared_updates": true,
+      "focus": ["physical_context_witness", "observation_channel_fidelity", "source_attribution", "temporal_resolution", "human_oversight_capacity"]
+    },
+    "CLINICAL_TRIAL_ASSURANCE": {
+      "apply_shared_updates": true,
+      "focus": ["participant_site_trial_identity", "consent_reliance", "eligibility_evidence", "investigational_product_state", "cold_chain", "safety_handoff", "vendor_cro_dependency"]
+    },
+    "RADIOPHARMA_ASSURANCE": {
+      "apply_shared_updates": true,
+      "focus": ["radionuclide_product_identity", "activity_measurement", "decay_time_integrity", "sterile_environmental_standing", "dose_patient_identity", "transport_custody"]
+    },
+    "ALARA_RADIOLOGICAL_OPERATIONS_ASSURANCE": {
+      "apply_shared_updates": true,
+      "focus": ["worker_authorization", "instrument_standing", "dose_rate_context", "contamination_airborne_state", "intervention_viability", "stop_work_and_reentry"]
+    },
+    "COMPOUNDSAFE": {
+      "apply_shared_updates": true,
+      "focus": ["formulation_component_identity", "measurement_standing", "cleanroom_environment", "personnel_qualification", "sterility_endotoxin", "pharmacist_release_authority"]
+    },
+    "LABTRUST": {
+      "apply_shared_updates": true,
+      "focus": ["sample_chain_of_custody", "method_specification_version", "instrument_calibration_applicability", "raw_data_audit_trail", "oos_oot", "downstream_reliance"]
+    },
+    "DSCSA_ASSURANCE": {
+      "apply_shared_updates": true,
+      "focus": ["gtin_serial_lot_expiry", "epcis_event_integrity", "trading_partner_standing", "verification_evidence", "exception_quarantine", "recall_reconstruction"]
+    }
+  }
+}
