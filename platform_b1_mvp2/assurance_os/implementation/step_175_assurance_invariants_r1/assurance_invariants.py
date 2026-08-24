@@ -15,11 +15,7 @@ VSA_STATES = {
 
 
 def classify_absence(*, observed: bool, search_sufficient: bool) -> dict:
-    """Distinguish missing evidence from established nonexistence.
-
-    ABSENCE_UNRESOLVED means an item was not observed, but the examination was
-    insufficient to establish that the item does not exist.
-    """
+    """Distinguish missing evidence from established nonexistence."""
     if observed:
         state = "PRESENT"
         established_absence = False
@@ -40,12 +36,7 @@ def classify_absence(*, observed: bool, search_sufficient: bool) -> dict:
 
 
 def evaluate_control_basis(conditions: list[dict]) -> dict:
-    """Evaluate whether the basis of a control remains supportable.
-
-    This is distinct from whether the control code/process executed correctly.
-    Each required condition is evaluated for presence, currency, integrity and
-    agreement. Unresolved absence is preserved explicitly.
-    """
+    """Evaluate whether the basis of a control remains supportable."""
     evaluated = []
     failures = []
     unresolved = []
@@ -111,12 +102,7 @@ def examine_partial_evidence(
     required_dimensions: list[str],
     evidence: list[dict],
 ) -> dict:
-    """Apply the Partial-Evidence Examination invariant.
-
-    Added evidence can narrow, preserve or support a conclusion, but cannot
-    expose certainty beyond the dimensions that are currently established.
-    Conflicting evidence prevents SUPPORTABLE standing.
-    """
+    """Apply the Partial-Evidence Examination invariant."""
     if prior_state not in VSA_STATES:
         raise ValueError("unknown prior_state")
 
@@ -143,7 +129,6 @@ def examine_partial_evidence(
         resulting_state = "NOT_ESTABLISHED"
         reason = "REQUIRED_EVIDENCE_CONFLICTING"
     elif missing:
-        # Do not upgrade to SUPPORTABLE while required dimensions remain absent.
         if prior_state == "SUPPORTABLE":
             resulting_state = "REASSESSMENT_REQUIRED"
         elif prior_state == "CONDITIONALLY_SUPPORTABLE":
@@ -217,4 +202,72 @@ def evaluate_restraint_claim(
         "alternate_paths_excluded": bool(alternate_paths_excluded),
         "consequence_observed_prevented": bool(consequence_observed_prevented),
         "binding_decision_made": False,
+    }
+
+
+def evaluate_trust_anchor_succession(
+    *,
+    predecessor_anchor: str,
+    successor_anchor: str,
+    predecessor_authorized: bool,
+    successor_cryptographically_capable: bool,
+    succession_event_present: bool,
+    succession_event_authenticated: bool,
+    succession_scope_valid: bool,
+    succession_current: bool,
+) -> dict:
+    """Require independently supportable predecessor-to-successor authority continuity.
+
+    A historical checkpoint or valid predecessor does not automatically grant
+    current standing to an unrelated replacement key. This extends Step 159's
+    key-lifecycle/revocation design without replacing it.
+    """
+    same_anchor = predecessor_anchor == successor_anchor
+
+    if same_anchor:
+        succession_required = False
+        succession_established = predecessor_authorized
+    else:
+        succession_required = True
+        succession_established = all([
+            predecessor_authorized,
+            successor_cryptographically_capable,
+            succession_event_present,
+            succession_event_authenticated,
+            succession_scope_valid,
+            succession_current,
+        ])
+
+    if not predecessor_authorized:
+        standing = "NOT_ESTABLISHED"
+        reason = "PREDECESSOR_AUTHORITY_NOT_ESTABLISHED"
+    elif not successor_cryptographically_capable:
+        standing = "NOT_ESTABLISHED"
+        reason = "SUCCESSOR_CRYPTOGRAPHIC_CAPABILITY_NOT_ESTABLISHED"
+    elif succession_required and not succession_event_present:
+        standing = "NOT_ESTABLISHED"
+        reason = "SUCCESSION_EVENT_NOT_ESTABLISHED"
+    elif succession_required and not succession_event_authenticated:
+        standing = "NOT_ESTABLISHED"
+        reason = "SUCCESSION_EVENT_NOT_AUTHENTICATED"
+    elif succession_required and not succession_scope_valid:
+        standing = "NOT_ESTABLISHED"
+        reason = "SUCCESSION_SCOPE_NOT_VALID"
+    elif succession_required and not succession_current:
+        standing = "NOT_ESTABLISHED"
+        reason = "SUCCESSION_NOT_CURRENT"
+    else:
+        standing = "SUPPORTABLE"
+        reason = "AUTHORIZED_TRUST_ANCHOR_SUCCESSION_ESTABLISHED"
+
+    return {
+        "predecessor_anchor": predecessor_anchor,
+        "successor_anchor": successor_anchor,
+        "same_anchor": same_anchor,
+        "succession_required": succession_required,
+        "succession_established": succession_established,
+        "successor_authority_standing": standing,
+        "reason": reason,
+        "binding_decision_made": False,
+        "fail_closed": standing != "SUPPORTABLE",
     }
