@@ -1,0 +1,32 @@
+name: Step 182 Commit Execution Outcome Correspondence
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_182_commit_execution_outcome_correspondence_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1/**'
+      - '.github/workflows/step182-commit-execution-outcome-correspondence.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_182_commit_execution_outcome_correspondence_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1/**'
+      - '.github/workflows/step182-commit-execution-outcome-correspondence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-correspondence-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_182_commit_execution_outcome_correspondence_r1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Step 182 deterministic correspondence tests
+        run: python -m unittest -v test_commit_execution_outcome_correspondence.py
