@@ -1,0 +1,34 @@
+name: Step 179 Boundary Enforcement Non-Bypass
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_179_boundary_enforcement_nonbypass_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/authority_no_bind.py'
+      - '.github/workflows/step179-boundary-enforcement-nonbypass.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_179_boundary_enforcement_nonbypass_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_170_assurance_os_integrated_runtime/src/authority_no_bind.py'
+      - '.github/workflows/step179-boundary-enforcement-nonbypass.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-integration-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_179_boundary_enforcement_nonbypass_r1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Step 179 deterministic integration tests
+        run: python -m unittest -v test_boundary_enforcement.py
