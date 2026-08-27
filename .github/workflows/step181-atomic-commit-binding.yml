@@ -1,0 +1,32 @@
+name: Step 181 Atomic Commit Binding
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_180_execution_time_revalidation_r1/**'
+      - '.github/workflows/step181-atomic-commit-binding.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_180_execution_time_revalidation_r1/**'
+      - '.github/workflows/step181-atomic-commit-binding.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-atomic-binding-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Step 181 deterministic atomic binding tests
+        run: python -m unittest -v test_atomic_commit_binding.py
