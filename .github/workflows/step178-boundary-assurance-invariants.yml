@@ -1,0 +1,30 @@
+name: Step 178 Boundary Assurance Invariants
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1/**'
+      - '.github/workflows/step178-boundary-assurance-invariants.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1/**'
+      - '.github/workflows/step178-boundary-assurance-invariants.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-unit-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Step 178 deterministic tests
+        run: python -m unittest -v test_boundary_assurance.py
