@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL / BRANCH-ONLY**
 
-This package implements only assurance refinements that were identified in the Aug. 29 watch/backfill material and were not found as first-class constructs on current `main` (`26cca1695bcbc0ad3139f7b655b6bd0adf257f4f`). It intentionally reuses the existing Step 178+ shared assurance core rather than creating duplicate modules.
+This package implements assurance refinements identified in the Aug. 29 watch/backfill material that were not found as first-class constructs on current `main` (`26cca1695bcbc0ad3139f7b655b6bd0adf257f4f`). It intentionally reuses the existing Step 178+ shared assurance core rather than creating duplicate modules.
 
 ## Implemented refinements
 
@@ -19,6 +19,16 @@ This package implements only assurance refinements that were identified in the A
 11. Shared-Condition / Common-Cause Exposure Standing
 12. Document Parse Fidelity Standing
 13. Tool Sequence & Information-Flow Standing
+14. Source-to-Artifact Correspondence
+15. Test Semantic Correspondence
+16. Claim Strength Ceiling
+17. Normative Completeness Standing
+18. Control Failure Cause Classification
+19. Agency Justification / Maximum Delegation Class
+20. Registry Resolution Standing
+21. Instance-Bound Evidence Sufficiency
+22. Physical-Digital Temporal Correspondence
+23. Institutional Independence Standing
 
 ## Existing concepts deliberately not duplicated
 
@@ -38,6 +48,13 @@ Current main already contains, among other controls, assurance-control capacity,
 - `COMMON_CONDITION_CHANGED != ALL_DEPENDENTS_FAILED`
 - `PARSED_TEXT != SOURCE_MEANING_PRESERVED`
 - `TOOL_A_AUTHORIZED + TOOL_B_AUTHORIZED != A_TO_B_FLOW_AUTHORIZED`
+- `ARTIFACT_DIGEST != SOURCE_TO_ARTIFACT_CORRESPONDENCE`
+- `TEST_LABEL != ACTUAL_TESTED_PROPERTY`
+- `REPEATED_SUCCESS != UNIVERSAL_CLAIM`
+- `FACTUAL_CORRECTNESS != NORMATIVE_COMPLETENESS`
+- `SYSTEM_STANDING != INSTANCE_STANDING`
+- `CLOCK_SYNCHRONIZATION != PHYSICAL_DIGITAL_CORRESPONDENCE`
+- `ROLE_SEPARATION_ON_DIAGRAM != INSTITUTIONAL_INDEPENDENCE`
 
 ## Evidence / provenance boundary
 
@@ -45,7 +62,11 @@ The attached watch documents are external research and public-landscape inputs. 
 
 ## Test status
 
-`python3 -m unittest -v` -> **13/13 PASS** before repository publication.
+Two deterministic test files exercise **23 bounded invariants total; 23/23 PASS** in the pre-publication local run.
+
+## Deferred rather than implemented as runtime gates
+
+Research/productization items such as `CAUSAL_WORLD_MODEL_ASSURANCE`, `ENTERPRISE_AUTONOMY_EXPOSURE_STANDING`, federated assurance productization, public Assurance Corpus/Mission Control, Academy/competency surfaces, and independent eBPF/network enforcement remain research/demo/v2 work. They are not silently promoted into current runtime authority.
 
 ## Merge status
 
