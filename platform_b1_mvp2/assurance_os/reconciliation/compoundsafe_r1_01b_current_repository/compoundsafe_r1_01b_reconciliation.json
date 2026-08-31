@@ -39,8 +39,10 @@
   ],
   "current_productization_evidence": {
     "family_summary": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/family_summaries/compoundsafe.summary.json",
-    "status": "SUPPORTED_BOUNDED_SYNTHETIC",
-    "synthetic_only": true,
+    "observed_status": "PASS",
+    "observed_step": "174D",
+    "observed_all_synthetic": true,
+    "bounded_interpretation": "CURRENT_CANONICAL_SYNTHETIC_PRODUCTIZATION_EVIDENCE_PRESENT",
     "binding_release_authority_created": false
   },
   "reconciliation_disposition": {
@@ -68,7 +70,7 @@
   "external_artifact_boundary": {
     "untracked_local_backups_or_reference_materials_exhaustively_compared": false,
     "status": "NOT_ESTABLISHED",
-    "effect": "DOES_NOT_REOPEN_TRACKED_REPOSITORY_RECONCILIATION; ANY LATER AUTHORITATIVE EXTERNAL ARTIFACT IS A NEW EVIDENCE INPUT REQUIRING DELTA_RECONCILIATION",
+    "effect": "DOES_NOT_REOPEN_TRACKED_REPOSITORY_RECONCILIATION; ANY LATER AUTHORITATIVE EXTERNAL ARTIFACT IS A NEW EVIDENCE INPUT REQUIRING_DELTA_RECONCILIATION",
     "overclaim_prohibited": "TRACKED_REPOSITORY_SEAL != PROOF_THAT_NO_UNTRACKED_EXTERNAL_ARTIFACT_EXISTS"
   },
   "prohibited_promotions": [
