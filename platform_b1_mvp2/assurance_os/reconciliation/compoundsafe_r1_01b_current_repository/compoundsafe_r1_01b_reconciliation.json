@@ -1,0 +1,82 @@
+{
+  "contract": "COBITChain.CompoundSafe.R1-01B.CurrentRepositoryReconciliation.v1",
+  "record_date": "2026-08-31",
+  "authorization": "USER_AUTHORIZED_CURRENT_REPOSITORY_RECONCILIATION",
+  "repository": "taiwoyusuf/cobit-chain",
+  "scope": "current first-party repository plus preserved Step 148B historical repository baseline",
+  "current_repository_inventory": {
+    "status": "ESTABLISHED_FOR_TRACKED_REPOSITORY_SCOPE",
+    "canonical_productization_root": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization",
+    "shared_domain_mapping": "platform_b1_mvp2/assurance_os/implementation/step_177_service_lane_domain_profile_r1/domain_profile_update_map.json",
+    "master_capability_register": "platform_b1_mvp2/assurance_os/inventory/step_149_master_capability_architecture_register/step_149_master_capability_architecture_register.json",
+    "historical_repository_baseline": "platform_b1_mvp2/assurance_os/inventory/step_148b_reconciled/step_148b_reconciled_module_baseline.json"
+  },
+  "step_148b_compoundsafe_baseline": {
+    "module_id": "COMPOUNDING",
+    "baseline_classification": "PROTOTYPE WORKING",
+    "matched_file_count": 24,
+    "implementation_file_count": 1,
+    "declared_active_source_count": 1,
+    "declared_authoritative_evidence_count": 24,
+    "retained_evidence_path_count": 12,
+    "test_file_count": 1,
+    "manifest_file_count": 1,
+    "maturity_ceiling": "WORKING_PROTOTYPE_ONLY_NOT_PRODUCTION_MATURITY"
+  },
+  "preserved_legacy_retained_objects": [
+    "sterile_compounding_audit_pack_register.csv",
+    "sterile_compounding_connector_approval_board.csv",
+    "sterile_compounding_connector_test_cases.csv",
+    "sterile_compounding_custody_audit_link_register.csv",
+    "sterile_compounding_custody_health_register.csv",
+    "sterile_compounding_data_contract_register.csv",
+    "sterile_compounding_field_mapping_matrix.csv",
+    "sterile_compounding_implementation_decision_matrix.csv",
+    "sterile_compounding_lineage_register.csv",
+    "sterile_compounding_mock_ingestion_lab.csv",
+    "sterile_compounding_nonprod_poc_plan.csv",
+    "sterile_compounding_platform_health_entry.csv"
+  ],
+  "current_productization_evidence": {
+    "family_summary": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/family_summaries/compoundsafe.summary.json",
+    "status": "SUPPORTED_BOUNDED_SYNTHETIC",
+    "synthetic_only": true,
+    "binding_release_authority_created": false
+  },
+  "reconciliation_disposition": {
+    "legacy_retained_objects": "PRESERVE_AS_HISTORICAL_OR_PROTOTYPE_EVIDENCE",
+    "step_174_productization": "CURRENT_CANONICAL_SYNTHETIC_PRODUCTIZATION_PATH",
+    "step_177_shared_semantics": "CONSUME_SHARED_CORE_DO_NOT_REBUILD",
+    "legacy_autonomous_release_interpretation": "CONFLICTING_AUTHORITY_REJECTED",
+    "pharmacist_release_authority": "PRESERVED",
+    "official_records": "REMAIN_EXTERNAL_GOVERNED_SOURCE_SYSTEMS"
+  },
+  "nonduplication": {
+    "shared_identity_provenance": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "evidence_admission_integrity": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "validation_standing": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "measurement_integrity": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "authority_no_bind": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "dependency_environment_outcome_reconstruction": "REUSE_SHARED_COBIT_CHAIN_CORE",
+    "domain_specific_compounding_rules": "COMPOUNDSAFE_PROFILE_OWNS_DOMAIN_SEMANTICS"
+  },
+  "r1_01_status": {
+    "R1-01A_documentary_estate_reconciliation": "COMPLETE",
+    "R1-01B_current_first_party_repository_reconciliation": "COMPLETE_FOR_TRACKED_REPOSITORY_SCOPE",
+    "R1-01_repository_architecture_reconciliation": "SEALED_FOR_TRACKED_REPOSITORY_SCOPE"
+  },
+  "external_artifact_boundary": {
+    "untracked_local_backups_or_reference_materials_exhaustively_compared": false,
+    "status": "NOT_ESTABLISHED",
+    "effect": "DOES_NOT_REOPEN_TRACKED_REPOSITORY_RECONCILIATION; ANY LATER AUTHORITATIVE EXTERNAL ARTIFACT IS A NEW EVIDENCE INPUT REQUIRING DELTA_RECONCILIATION",
+    "overclaim_prohibited": "TRACKED_REPOSITORY_SEAL != PROOF_THAT_NO_UNTRACKED_EXTERNAL_ARTIFACT_EXISTS"
+  },
+  "prohibited_promotions": [
+    "production_validation",
+    "GxP_regulatory_acceptance",
+    "autonomous_release",
+    "pharmacist_replacement",
+    "real_patient_or_pharmacy_data_use",
+    "external_backup_exhaustiveness_claim"
+  ]
+}
