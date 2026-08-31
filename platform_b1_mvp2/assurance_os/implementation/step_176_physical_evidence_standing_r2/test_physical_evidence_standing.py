@@ -21,6 +21,51 @@ class PhysicalEvidenceStandingTests(unittest.TestCase):
         r = evaluate_operating_envelope(calibrated=True, authenticated=True, healthy=True, inside_validated_state_space=False)
         self.assertEqual(r["state"], "REASSESSMENT_REQUIRED")
 
+    def test_structural_change_blocks_silent_envelope_inheritance(self):
+        r = evaluate_operating_envelope(
+            calibrated=True,
+            authenticated=True,
+            healthy=True,
+            inside_validated_state_space=True,
+            structural_change_detected=True,
+        )
+        self.assertEqual(r["state"], "REASSESSMENT_REQUIRED")
+        self.assertEqual(r["reason"], "STRUCTURAL_OPERATING_REGIME_CHANGED")
+
+    def test_bifurcation_requires_reassessment(self):
+        r = evaluate_operating_envelope(
+            calibrated=True,
+            authenticated=True,
+            healthy=True,
+            inside_validated_state_space=True,
+            bifurcation_detected=True,
+        )
+        self.assertEqual(r["state"], "REASSESSMENT_REQUIRED")
+        self.assertEqual(r["reason"], "OPERATING_REGIME_BIFURCATED")
+
+    def test_envelope_identity_change_requires_reassessment(self):
+        r = evaluate_operating_envelope(
+            calibrated=True,
+            authenticated=True,
+            healthy=True,
+            inside_validated_state_space=True,
+            qualified_envelope_id="E1",
+            current_envelope_id="E2",
+        )
+        self.assertEqual(r["state"], "REASSESSMENT_REQUIRED")
+        self.assertEqual(r["reason"], "QUALIFIED_OPERATING_ENVELOPE_ID_CHANGED")
+
+    def test_no_supportable_corridor_fails_closed(self):
+        r = evaluate_operating_envelope(
+            calibrated=True,
+            authenticated=True,
+            healthy=True,
+            inside_validated_state_space=True,
+            corridor_supported=False,
+        )
+        self.assertEqual(r["state"], "NOT_ESTABLISHED")
+        self.assertEqual(r["reason"], "NO_SUPPORTABLE_OPERATING_CORRIDOR")
+
     def test_observation_channel_fidelity(self):
         r = evaluate_observation_channel(channel_validated=True, transport_loss_material=True, witness_perturbation_material=False)
         self.assertEqual(r["state"], "REASSESSMENT_REQUIRED")
