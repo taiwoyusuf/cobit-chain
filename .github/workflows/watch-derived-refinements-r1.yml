@@ -6,6 +6,7 @@ on:
       - feature/watch-derived-assurance-refinements-r1
     paths:
       - 'platform_b1_mvp2/assurance_os/research/watch_derived_refinements_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_176_physical_evidence_standing_r2/**'
       - 'platform_b1_mvp2/assurance_os/implementation/step_177_service_lane_domain_profile_r1/domain_profile_update_map.json'
       - 'platform_b1_mvp2/assurance_os/implementation/step_183_recovery_reclosure_r1/**'
       - '.github/workflows/watch-derived-refinements-r1.yml'
@@ -29,6 +30,10 @@ jobs:
       - name: Validate Step 177 domain map JSON
         run: |
           python -m json.tool platform_b1_mvp2/assurance_os/implementation/step_177_service_lane_domain_profile_r1/domain_profile_update_map.json >/dev/null
+
+      - name: Run Step 176 physical-evidence standing tests
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_176_physical_evidence_standing_r2
+        run: python -m unittest discover -v -p 'test_*.py'
 
       - name: Run watch-derived research tests
         working-directory: platform_b1_mvp2/assurance_os/research/watch_derived_refinements_r1
