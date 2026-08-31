@@ -8,9 +8,36 @@ def _result(state, reason, **extra):
     return {"state": state, "reason": reason, "binding_decision_made": False, **extra}
 
 
-def evaluate_operating_envelope(*, calibrated, authenticated, healthy, inside_validated_state_space):
+def evaluate_operating_envelope(
+    *,
+    calibrated,
+    authenticated,
+    healthy,
+    inside_validated_state_space,
+    corridor_supported=True,
+    structural_change_detected=False,
+    topology_changed=False,
+    bifurcation_detected=False,
+    qualified_envelope_id=None,
+    current_envelope_id=None,
+):
+    """Evaluate current operating-envelope standing without silent regime inheritance.
+
+    The original Step 176 instrument/state-space checks remain authoritative.
+    Optional structural-regime inputs sharpen the same control: green current
+    values do not establish that the qualified operating regime is unchanged.
+    """
     if not all([calibrated, authenticated, healthy]):
         return _result("NOT_ESTABLISHED", "INSTRUMENT_STANDING_DEFECT")
+    if not corridor_supported:
+        return _result("NOT_ESTABLISHED", "NO_SUPPORTABLE_OPERATING_CORRIDOR")
+    if bifurcation_detected:
+        return _result("REASSESSMENT_REQUIRED", "OPERATING_REGIME_BIFURCATED")
+    if structural_change_detected or topology_changed:
+        return _result("REASSESSMENT_REQUIRED", "STRUCTURAL_OPERATING_REGIME_CHANGED")
+    if qualified_envelope_id is not None and current_envelope_id is not None:
+        if str(qualified_envelope_id) != str(current_envelope_id):
+            return _result("REASSESSMENT_REQUIRED", "QUALIFIED_OPERATING_ENVELOPE_ID_CHANGED")
     if not inside_validated_state_space:
         return _result("REASSESSMENT_REQUIRED", "OUTSIDE_VALIDATED_OPERATING_ENVELOPE")
     return _result("SUPPORTABLE", "OPERATING_ENVELOPE_SUPPORTED")
