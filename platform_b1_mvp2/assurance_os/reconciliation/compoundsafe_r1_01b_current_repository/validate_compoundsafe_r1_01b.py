@@ -66,10 +66,23 @@ def validate() -> dict:
         raise AssertionError("recorded retained-object set does not match Step 148B baseline")
 
     summary = load_json(summary_path)
-    if summary.get("standing") != "SUPPORTED_BOUNDED_SYNTHETIC":
-        raise AssertionError("CompoundSafe current summary lost bounded synthetic standing")
-    if not summary.get("synthetic", False):
-        raise AssertionError("CompoundSafe current summary must remain synthetic")
+    observed = record["current_productization_evidence"]
+    if summary.get("family") != "COMPOUNDSAFE":
+        raise AssertionError("family summary is not CompoundSafe")
+    if summary.get("status") != observed["observed_status"]:
+        raise AssertionError("CompoundSafe current summary status changed")
+    if summary.get("step") != observed["observed_step"]:
+        raise AssertionError("CompoundSafe current summary step changed")
+    if bool(summary.get("all_synthetic")) != observed["observed_all_synthetic"]:
+        raise AssertionError("CompoundSafe current summary synthetic boundary changed")
+    if not summary.get("synthetic", False) or summary.get("real_data_used", True):
+        raise AssertionError("CompoundSafe current summary must remain synthetic with no real data")
+    if not summary.get("accountable_human_preserved", False):
+        raise AssertionError("accountable human boundary is not preserved")
+    if not summary.get("ramat_vision", {}).get("display_only", False):
+        raise AssertionError("RAMAT Vision display-only boundary is not preserved")
+    if summary.get("ramat_vision", {}).get("binding_authority", True):
+        raise AssertionError("RAMAT Vision must not acquire binding authority")
 
     domain_map = load_json(domain_map_path)
     domains = domain_map.get("domains", {})
@@ -89,7 +102,7 @@ def validate() -> dict:
         "status": "PASS",
         "tracked_repository_inventory": "ESTABLISHED",
         "legacy_retained_objects_verified": len(expected_retained),
-        "current_compoundsafe_productization": "SUPPORTED_BOUNDED_SYNTHETIC",
+        "current_compoundsafe_productization": "PASS_BOUNDED_SYNTHETIC",
         "shared_domain_mapping": "ESTABLISHED",
         "R1-01B": "COMPLETE_FOR_TRACKED_REPOSITORY_SCOPE",
         "external_untracked_artifact_exhaustiveness": "NOT_ESTABLISHED",
