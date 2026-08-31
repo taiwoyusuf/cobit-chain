@@ -1,0 +1,119 @@
+name: Cloud Resilience R2 - Safe Azure Backup
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cloud-resilience-r2-safe.yml'
+      - 'Docs/resilience/CLOUD_RESILIENCE_R2_SAFE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  BACKUP_CONTAINER: cobit-chain
+
+jobs:
+  pr-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify safe cloud-resilience boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/cloud-resilience-r2-safe.yml
+          grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
+          if grep -Eq 'storage account keys list|role assignment create|az ad |federated-credential create|group create|storage account create|container create' "$workflow"; then
+            echo 'Forbidden bootstrap or privilege mutation found.'
+            exit 1
+          fi
+          grep -Fq -- '--auth-mode login' "$workflow"
+          echo 'PASS: workflow contains no key retrieval, Entra/RBAC mutation, or infrastructure bootstrap.'
+
+  backup:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build recoverable backup objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p backup
+          git fetch --all --tags --prune
+          git bundle create backup/cobit-chain.bundle --all
+          git archive --format=tar.gz --output="backup/cobit-chain-${GITHUB_SHA}.tar.gz" "${GITHUB_SHA}"
+          sha256sum backup/cobit-chain.bundle "backup/cobit-chain-${GITHUB_SHA}.tar.gz" > backup/SHA256SUMS.txt
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          manifest = {
+              'schema': 'cobit-chain.cloud-resilience.r2.safe',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'commit': os.environ['GITHUB_SHA'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'git_bundle_present': True,
+              'commit_archive_present': True,
+              'credential_material_embedded': False,
+              'azure_rbac_mutation_performed': False,
+              'azure_entra_mutation_performed': False,
+              'storage_key_retrieved': False,
+          }
+          Path('backup/manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Require pre-authorized storage target
+        shell: bash
+        env:
+          STORAGE_ACCOUNT: ${{ vars.AZURE_BACKUP_STORAGE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          test -n "${STORAGE_ACCOUNT:-}" || { echo 'AZURE_BACKUP_STORAGE_ACCOUNT is not configured; stopping without mutation.'; exit 1; }
+
+      - name: Login using existing repository OIDC identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2FC8A5E8F61495A9CB4ACB0B58E28AD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D884FA39892D4344B62F0349686E8CFC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC26792611F64D18BB153A5D6855C23F }}
+
+      - name: Upload immutable-addressed backup set using Entra auth only
+        shell: bash
+        env:
+          STORAGE_ACCOUNT: ${{ vars.AZURE_BACKUP_STORAGE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          prefix="git-bundles/${GITHUB_SHA}/run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          az storage blob upload-batch \
+            --account-name "${STORAGE_ACCOUNT}" \
+            --auth-mode login \
+            --destination "${BACKUP_CONTAINER}" \
+            --destination-path "${prefix}" \
+            --source backup \
+            --overwrite false \
+            --only-show-errors
+
+      - name: Verify uploaded objects without secret/key retrieval
+        shell: bash
+        env:
+          STORAGE_ACCOUNT: ${{ vars.AZURE_BACKUP_STORAGE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          prefix="git-bundles/${GITHUB_SHA}/run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          for name in manifest.json SHA256SUMS.txt cobit-chain.bundle "cobit-chain-${GITHUB_SHA}.tar.gz"; do
+            exists="$(az storage blob exists --account-name "${STORAGE_ACCOUNT}" --auth-mode login --container-name "${BACKUP_CONTAINER}" --name "${prefix}/${name}" --query exists -o tsv --only-show-errors)"
+            test "${exists}" = true
+          done
+          echo 'CLOUD_RESILIENCE_R2_UPLOAD_VERIFICATION=PASS'
+
+      - name: Azure logout
+        if: always()
+        run: az logout
