@@ -26,7 +26,8 @@ jobs:
           set -euo pipefail
           workflow=.github/workflows/cloud-resilience-r2-safe.yml
           grep -Fq "if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'" "$workflow"
-          if grep -Eq 'storage account keys list|role assignment create|az ad |federated-credential create|group create|storage account create|container create' "$workflow"; then
+          # Exclude the guard's own pattern line before scanning so the guard cannot self-match.
+          if grep -Ev 'if grep -Eq|grep -Ev' "$workflow" | grep -Eq 'storage account keys list|role assignment create|az ad |federated-credential create|group create|storage account create|container create'; then
             echo 'Forbidden bootstrap or privilege mutation found.'
             exit 1
           fi
