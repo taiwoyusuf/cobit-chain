@@ -48,6 +48,8 @@ def evaluate_recovery_reclosure(
 
     Open non-blocking duties may survive re-entry. Open blocking duties may not.
     Historical failure/divergence facts are never rewritten by later recovery.
+    A supportable re-closure does not deactivate No-Bind or create execution authority;
+    downstream authority and action-admissibility evaluation remain separate.
     """
 
     prior_state = prior_outcome_result.get("correspondence_standing")
@@ -67,7 +69,7 @@ def evaluate_recovery_reclosure(
             "blocking_obligations": blocking,
             "open_obligations_preserved": opened,
             "return_to_reliance_supportable": None,
-            "no_bind_state": "UNCHANGED",
+            "no_bind_state": "UNCHANGED_SEPARATE_AUTHORITY_REQUIRED",
             "historical_facts_rewritten": False,
             "binding_authority_granted": False,
             "reason": "RECLOSURE_NOT_REQUIRED_FOR_THIS_ROUTE",
@@ -131,7 +133,7 @@ def evaluate_recovery_reclosure(
         "independent_outcome_reverification_required": independent_outcome_reverification_required,
         "independent_outcome_reverified": independent_reverified,
         "return_to_reliance_supportable": supportable,
-        "no_bind_state": "INACTIVE" if supportable else "ACTIVE",
+        "no_bind_state": "SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED" if supportable else "ACTIVE",
         "historical_facts_rewritten": False,
         "binding_authority_granted": False,
         "reason": reason,
