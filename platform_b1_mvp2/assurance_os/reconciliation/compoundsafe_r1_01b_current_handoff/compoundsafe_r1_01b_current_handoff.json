@@ -1,0 +1,121 @@
+{
+  "contract": "COBITChain.CompoundSafe.R1-01B.ControlledCurrentHandoff.v2",
+  "record_date": "2026-08-31",
+  "purpose": "Record current first-party deltas that are now directly established on COBIT-Chain main while preserving the Canonical Audit R3 handoff requirement before the overall R1-01 estate can be sealed.",
+  "governing_state": {
+    "R1-01A_documentary_estate_reconciliation": "COMPLETE",
+    "R1-01B_current_first_party_repository_reconciliation": "PARTIALLY_RESOLVED_AWAITING_CANONICAL_AUDIT_R3_HANDOFF",
+    "R1-01_overall": "NOT_SEALED",
+    "R1-02": "NOT_AUTHORIZED_UNTIL_R1-01_SEALED"
+  },
+  "authority_doctrine": {
+    "legacy_autonomous_release_interpretation": "CONFLICTING_AUTHORITY_REJECTED",
+    "nonbinding_release_readiness_assessment": "ACCEPTED",
+    "accountable_pharmacist_release_authority": "CANONICAL",
+    "ramat_binding_release_authority": false,
+    "platform_b1_binding_release_authority": false
+  },
+  "current_cobit_chain_evidence": {
+    "step_174_compoundsafe_summary": "platform_b1_mvp2/assurance_os/implementation/step_174_clinical_compoundsafe_africa_dscsa_productization/evidence/family_summaries/compoundsafe.summary.json",
+    "step_177_domain_map": "platform_b1_mvp2/assurance_os/implementation/step_177_service_lane_domain_profile_r1/domain_profile_update_map.json",
+    "step_175_restraint_test_result": "platform_b1_mvp2/assurance_os/implementation/step_175_assurance_invariants_r1/TEST_RESULT_2026-08-24.md",
+    "step_181_atomic_binding": "platform_b1_mvp2/assurance_os/implementation/step_181_atomic_commit_binding_r1/README.md",
+    "step_182_outcome_correspondence": "platform_b1_mvp2/assurance_os/implementation/step_182_commit_execution_outcome_correspondence_r1/README.md",
+    "step_183_recovery_reclosure": "platform_b1_mvp2/assurance_os/implementation/step_183_recovery_reclosure_r1/README.md",
+    "step_178_boundary_capsule": "platform_b1_mvp2/assurance_os/implementation/step_178_boundary_assurance_invariants_r1/boundary_assurance.py",
+    "experimental_authority_revocation": "platform_b1_mvp2/assurance_os/research/watch_derived_refinements_r1/assurance_refinements.py",
+    "supplier_dependency_roadmap": "docs/architecture/STRATEGIC_AI_PARTNERSHIP_ASSURANCE_R1.md"
+  },
+  "classification_deltas_since_r1_01a": {
+    "Verified_Restraint": {
+      "prior": "ROADMAP_ONLY",
+      "current": "IMPLEMENTED_SHARED_CORE_INTERNALLY_VERIFIED_BOUNDED",
+      "basis": "Step 175 restraint claim sufficiency plus preserved 11/11 deterministic test result",
+      "production_claim": false
+    },
+    "Atomic_Evaluated_to_Committed_Object_Binding": {
+      "prior": "ROADMAP_ONLY",
+      "current": "IMPLEMENTED_BOUNDED_CANDIDATE",
+      "basis": "Step 181 current implementation; PR-head CI run 33098323843 succeeded",
+      "production_claim": false
+    },
+    "Outcome_Correspondence": {
+      "prior": "ROADMAP_ONLY",
+      "current": "IMPLEMENTED_BOUNDED_CANDIDATE",
+      "basis": "Step 182 current implementation; PR-head CI run 33124845798 succeeded",
+      "production_claim": false
+    },
+    "Recovery_Reclosure": {
+      "prior": "ROADMAP_ONLY",
+      "current": "IMPLEMENTED_SHARED_CORE_BOUNDED_CANDIDATE",
+      "basis": "Step 183 current implementation plus CompoundSafe domain mapping; hardened source was exercised in successful combined CI before merge",
+      "production_claim": false
+    },
+    "Independent_Assurance_Capsule": {
+      "prior": "ROADMAP_ONLY",
+      "current": "ROADMAP_ONLY",
+      "basis": "Step 178 Boundary Assurance Capsule is not evidence of an independently reproducible assurance capsule"
+    },
+    "Supplier_Procurement_Dependency_Graph": {
+      "prior": "ROADMAP_ONLY",
+      "current": "ROADMAP_ONLY",
+      "basis": "Current evidence remains architecture/roadmap only"
+    },
+    "Full_Authority_Delegation_Currency_Expiry_Revocation_Graph": {
+      "prior": "ROADMAP_ONLY",
+      "current": "ROADMAP_ONLY",
+      "basis": "Revocation propagation exists only as watch-derived experimental logic; no complete numbered-step authority graph is established"
+    },
+    "Continuing_Reliance_or_Standing_Transfer": {
+      "current": "ROADMAP_ONLY_OR_EXPERIMENTAL_ONLY",
+      "basis": "Step 183 re-closure and outcome-to-next-cycle experimental logic do not establish a full standing-transfer/inheritance engine"
+    },
+    "BUD_Standing": {
+      "current": "NEW_OR_UNVERIFIED_DOMAIN_PROFILE",
+      "basis": "No authoritative current CompoundSafe BUD-standing implementation has yet been established"
+    },
+    "Compounding_Preparation_Covenant": {
+      "current": "NEW_OR_UNVERIFIED_DOMAIN_PROFILE",
+      "basis": "No exact current aggregation object has yet been established"
+    },
+    "Agent_Contribution_Covenant": {
+      "current": "NEW_OR_UNVERIFIED_DOMAIN_PROFILE",
+      "basis": "Existing agent passport substrate does not itself prove this CompoundSafe covenant exists"
+    }
+  },
+  "ramat_current_state": {
+    "repository": "taiwoyusuf/ramat-vision",
+    "connector_access_observed": true,
+    "main_contains_all_draft_governance_work": false,
+    "open_draft_prs_observed": [1, 2, 3],
+    "effect": "RAMAT current-main versus draft/wiring state must be reconciled before any CompoundSafe WIRED claim",
+    "raw_repository_zip_needed_from_user": false
+  },
+  "canonical_audit_r3_handoff_required": {
+    "R3-DEP-01": "authoritative current Platform B1 normalized inventory",
+    "R3-DEP-02": "authoritative current RAMAT Vision normalized inventory",
+    "R3-DEP-03": "current discovery/content-characterization evidence",
+    "R3-DEP-04": "current cross-repository reconciliation evidence for RAMAT <-> Platform B1",
+    "R3-DEP-05": "deferred-requirements reconciliation/current promotion evidence",
+    "R3-DEP-06": "current duplicate/overlap findings",
+    "R3-DEP-07": "current integrity/hash/version/capture-correlation evidence"
+  },
+  "acceptable_user_handoff": [
+    "Canonical Audit R3 normalized inventory JSON/CSV/manifest for Platform B1",
+    "Canonical Audit R3 normalized inventory JSON/CSV/manifest for RAMAT Vision",
+    "R3 discovery/content-characterization output",
+    "R3 cross-repository reconciliation/candidate output",
+    "R3 final handoff manifest plus checksum/hash record if packaged",
+    "the governed R3 handoff ZIP only if those outputs are bundled rather than separately available"
+  ],
+  "not_needed_from_user": [
+    "raw COBIT-Chain repository ZIP",
+    "raw RAMAT Vision repository ZIP",
+    "production pharmacy records",
+    "PHI or patient data",
+    "live compounding records",
+    "pharmacist credentials or secrets"
+  ],
+  "seal_rule": "Current GitHub evidence may resolve individual matrix rows, but R1-01 overall SHALL NOT become SEALED until the governed Canonical Audit R3 current inventory/reconciliation handoff closes the remaining Platform B1 and RAMAT estate requirements.",
+  "no_competing_audit": true
+}
