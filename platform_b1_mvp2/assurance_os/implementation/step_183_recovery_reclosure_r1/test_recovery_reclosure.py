@@ -35,6 +35,7 @@ class RecoveryReclosureTests(unittest.TestCase):
         self.assertTrue(result["return_to_reliance_supportable"])
         self.assertFalse(result["historical_facts_rewritten"])
         self.assertFalse(result["binding_authority_granted"])
+        self.assertEqual(result["no_bind_state"], "SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED")
 
     def test_partial_recovery_does_not_establish_reclosure(self):
         recovery = {"recovery_standing": "PARTIAL"}
@@ -93,6 +94,7 @@ class RecoveryReclosureTests(unittest.TestCase):
         result = self.evaluate(required=False)
         self.assertEqual(result["reclosure_standing"], "NOT_APPLICABLE")
         self.assertFalse(result["binding_authority_granted"])
+        self.assertEqual(result["no_bind_state"], "UNCHANGED_SEPARATE_AUTHORITY_REQUIRED")
 
 
 if __name__ == "__main__":
