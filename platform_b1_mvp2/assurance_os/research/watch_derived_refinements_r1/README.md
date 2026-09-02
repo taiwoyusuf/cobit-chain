@@ -1,8 +1,8 @@
 # Watch-Derived Assurance Refinements R1
 
-Status: **EXPERIMENTAL / BRANCH-ONLY**
+Status: **EXPERIMENTAL / RECONCILED RESEARCH SURFACE**
 
-This package implements assurance refinements identified in the Aug. 29–31 watch/backfill material that were not found as first-class constructs on current `main` (`26cca1695bcbc0ad3139f7b655b6bd0adf257f4f`). It intentionally reuses the existing Step 178+ shared assurance core rather than creating duplicate modules.
+This package implements assurance refinements identified in the Aug. 29–Sept. 2 watch/backfill material that were not already first-class constructs on the reconciled `main`. It intentionally reuses the existing Step 175–183 shared assurance core rather than creating duplicate modules.
 
 ## Implemented refinements
 
@@ -51,13 +51,28 @@ This package implements assurance refinements identified in the Aug. 29–31 wat
 38. Demonstration Participation Record
 39. Framework-Neutral Qualification Envelope
 
-See `AUG31_RECONCILIATION.md` for the detailed mapping, non-duplication decisions, domain implications, and deferred items.
+### Sept. 2 additive set
+
+40. Independent Reproduction Standing
+41. Assurance Test-Harness Integrity
+42. Challenge Population & Selection Provenance Standing
+43. Evidence Reconstruction Provenance / Non-Retroactive Recovery
+44. Criteria Standing
+45. Active Mandate Re-attestation
+46. Human Oversight Capability Preservation Standing
+47. Human Oversight Standing & Credential Disposition Separation
+48. Gate Discrimination Health / Population-Level Control Effectiveness
+49. Institutional State Origin Standing
+50. Physical Authorization Context Standing
+51. Observation / Measurement Event Existence Standing
+
+See `AUG31_RECONCILIATION.md` and `SEP02_RECONCILIATION.md` for detailed mappings, non-duplication decisions, provenance corrections, and deferred items.
 
 ## Existing concepts deliberately not duplicated
 
-Current main already contains, among other controls, assurance-control capacity, epistemic-class preservation, boundary assurance capsules, typed recovery standing, Processing Authority Standing, Disposition Standing, Action Admissibility, No-Bind, proposition-specific VSA reassessment/selective restoration, and reconstruction. Those remain authoritative shared-core dependencies for this package rather than being reimplemented here.
+Current main already contains, among other controls, assurance-control capacity, epistemic-class preservation, Boundary Assurance Capsules, typed recovery standing, Processing Authority Standing, Disposition Standing, Action Admissibility, No-Bind, proposition-specific VSA reassessment/selective restoration, physical evidence standing, execution-time revalidation, atomic commit binding, outcome correspondence, and recovery/re-closure. Those remain authoritative dependencies rather than being reimplemented here.
 
-R3A/C02 configured physical-witness evidence also remains a separate frozen experimental/evidence lineage and is not reimplemented by this branch.
+R3A/C02 configured physical-witness evidence remains a separate frozen experimental/evidence lineage and is not reimplemented by this package.
 
 ## Core non-substitution rules
 
@@ -96,23 +111,35 @@ R3A/C02 configured physical-witness evidence also remains a separate frozen expe
 - `PARTICIPATION != AUTHORSHIP != OWNERSHIP != CERTIFICATION != AUTHORITY`
 - `QUALIFICATION != AUTHORITY`
 - `CROSS_ARCHITECTURE_REVIEW != ONTOLOGY_CONVERGENCE`
+- `REPRODUCIBLE_PACKAGE != INDEPENDENTLY_REPRODUCED`
+- `CONTROL_TEST_PASS != TEST_HARNESS_TRUSTWORTHY`
+- `PASS_ON_SELECTED_CHALLENGES != SUPPORT_FOR_UNEXAMINED_CLAIM_SURFACE`
+- `RECONSTRUCTED_RECORD != ORIGINAL_RECORD`
+- `QUALIFIED_UNDER_K1 + CURRENT_CRITERIA_K2 != CURRENTLY_QUALIFIED`
+- `MANDATE_RECORD_CURRENT != MANDATE_STANDING_DEMONSTRATED`
+- `APPROVAL_EVENT != MEANINGFUL_HUMAN_OVERSIGHT`
+- `CREDENTIAL_VALID != CURRENT_SCOPE_VALID`
+- `GATE_PRESENT != GATE_MEANINGFULLY_DISCRIMINATING`
+- `CLIENT_STATE != INSTITUTIONAL_STATE`
+- `PRIOR_AUTHORIZATION != PRESENT_EXECUTION_PERMISSION`
+- `RECORD_EXISTS != SAMPLE_COLLECTED != MEASUREMENT_PERFORMED != DECISION_SUPPORTED`
 
 ## Evidence / provenance boundary
 
-The attached watch documents are external research and public-landscape inputs. They are not implementation evidence for COBIT-Chain. This R1 package is an independent COBIT-Chain implementation of generic assurance problems extracted from those inputs. Similar terminology does not establish derivation, ownership, architectural equivalence, certification, regulatory acceptance, or production validity.
+The watch documents are external research and public-landscape inputs. They are not implementation evidence for COBIT-Chain. This package is an independent COBIT-Chain implementation of generic assurance problems extracted from those inputs. Similar terminology does not establish derivation, ownership, architectural equivalence, certification, regulatory acceptance, or production validity.
+
+The Sept. 2 reconciliation also records the S3DVS registry-ID correction and explicitly prohibits carrying the withdrawn `TA-14-AIGR-000027` association forward as current S3DVS provenance.
 
 ## Test status
 
-The earlier two deterministic test files exercised **23 bounded invariants; 23/23 PASS** in their documented pre-publication local run.
+The Aug. 29–31 baseline documented **39 bounded refinement/test propositions** before the Sept. 2 additions.
 
-The Aug. 31 additions were separately executed locally before commit in two deterministic test files: **16/16 PASS**.
+The Sept. 2 module adds **12 deterministic test cases** across 12 difference-first refinements. CI status must be observed on the feature branch/PR before these additions can be represented as GitHub-hosted passing evidence.
 
-Combined current experimental inventory: **39 bounded refinement/test propositions**, while preserving that passing local tests are not certification, regulatory acceptance, or production validation.
+Combined experimental inventory: **51 bounded refinement propositions**. A passing test remains evidence only for the exercised software property; it is not certification, regulatory acceptance, production validation, or deployment authority.
 
-## Deferred rather than implemented as runtime gates
+## Deferred rather than duplicated
 
-Research/productization items such as `CAUSAL_WORLD_MODEL_ASSURANCE`, `ENTERPRISE_AUTONOMY_EXPOSURE_STANDING`, federated external standing declarations, assurance throughput/headroom benchmarking, OEM/data-center witness demonstrations, public Assurance Corpus/Mission Control, Academy/competency surfaces, independent eBPF/network enforcement, and cross-architecture production interoperability remain research/demo/v2 work. They are not silently promoted into current runtime authority.
+Items such as federated standing declarations, assurance throughput/headroom benchmarking, OEM/data-center witness demonstrations, public corpus/Mission Control, Academy/competency surfaces, hardware/eBPF/network enforcement, and production cross-architecture interoperability remain research/demo/v2 work unless separately authorized and implemented.
 
-## Merge status
-
-Do not merge to `main` merely because these tests pass. Each refinement remains bounded experimental work until reconciled with the numbered Step sequence, publication chronology, Step 183 recovery/re-closure work, domain-profile acceptance criteria, and the now-satisfied R3A/C02 external determination lineage.
+The future R4 physical-witness proposition should compose existing Step 176, Step 180–183, and Sept. 2 authorization-context refinements rather than create a parallel runtime engine.
