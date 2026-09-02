@@ -3,7 +3,16 @@ name: Watch-Derived Assurance Refinements R1
 on:
   push:
     branches:
-      - feature/watch-derived-assurance-refinements-r1
+      - 'feature/**'
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/watch_derived_refinements_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_176_physical_evidence_standing_r2/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_177_service_lane_domain_profile_r1/domain_profile_update_map.json'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_183_recovery_reclosure_r1/**'
+      - '.github/workflows/watch-derived-refinements-r1.yml'
+  pull_request:
+    branches:
+      - main
     paths:
       - 'platform_b1_mvp2/assurance_os/research/watch_derived_refinements_r1/**'
       - 'platform_b1_mvp2/assurance_os/implementation/step_176_physical_evidence_standing_r2/**'
