@@ -41,7 +41,19 @@
       "EVIDENCE_PLANE_SURVIVABILITY",
       "REPAIRABILITY_ROUTING_STANDING",
       "PERSISTENT_MEMORY_ADMISSIBILITY",
-      "OUTCOME_TO_NEXT_CYCLE_INHERITANCE"
+      "OUTCOME_TO_NEXT_CYCLE_INHERITANCE",
+      "INDEPENDENT_REPRODUCTION_STANDING",
+      "ASSURANCE_TEST_HARNESS_INTEGRITY",
+      "CHALLENGE_POPULATION_SELECTION_PROVENANCE_STANDING",
+      "EVIDENCE_RECONSTRUCTION_PROVENANCE_STANDING",
+      "CRITERIA_STANDING",
+      "ACTIVE_MANDATE_REATTESTATION",
+      "HUMAN_OVERSIGHT_CAPABILITY_PRESERVATION_STANDING",
+      "HUMAN_OVERSIGHT_CREDENTIAL_DISPOSITION_SEPARATION",
+      "GATE_DISCRIMINATION_HEALTH",
+      "INSTITUTIONAL_STATE_ORIGIN_STANDING",
+      "PHYSICAL_AUTHORIZATION_CONTEXT_STANDING",
+      "OBSERVATION_MEASUREMENT_EVENT_EXISTENCE_STANDING"
     ]
   },
   "classification_rule": "A control MUST be listed under a numbered step only when that numbered step contains the first-party executable implementation. Watch-derived experimental controls remain explicitly classified as experimental until separately absorbed into a numbered implementation step.",
@@ -64,6 +76,9 @@
         "digital_proxy_non_authority",
         "evidence_plane_survivability",
         "measurement_context_representativeness",
+        "observation_measurement_event_existence",
+        "physical_authorization_context",
+        "independent_reproduction",
         "outcome_to_next_cycle_inheritance",
         "sensor_actuator_retirement_and_reclosure"
       ]
@@ -79,6 +94,10 @@
         "safety_handoff",
         "vendor_cro_dependency",
         "refusal_survivability",
+        "human_oversight_capability_preservation",
+        "human_oversight_credential_disposition",
+        "criteria_standing",
+        "active_mandate_reattestation",
         "digital_proxy_non_authority",
         "persistent_memory_admissibility",
         "derived_endpoint_measurement_semantics",
@@ -97,6 +116,9 @@
         "transport_custody",
         "measurement_unit_scale_semantics",
         "measurement_context_representativeness",
+        "observation_measurement_event_existence",
+        "criteria_standing",
+        "physical_authorization_context",
         "physical_delivery_outcome_correspondence",
         "residual_execution_routes",
         "recovery_reentry_reclosure"
@@ -112,7 +134,9 @@
         "intervention_viability",
         "stop_work_and_reentry",
         "refusal_survivability",
+        "human_oversight_capability_preservation",
         "measurement_context_representativeness",
+        "physical_authorization_context",
         "residual_authority_after_retirement",
         "blocking_radiological_obligations",
         "reentry_reclosure"
@@ -128,7 +152,10 @@
         "sterility_endotoxin",
         "pharmacist_release_authority",
         "sterile_process_refusal_survivability",
+        "human_oversight_credential_disposition",
         "environmental_representativeness",
+        "observation_measurement_event_existence",
+        "criteria_standing",
         "capa_remediation_liveness",
         "workflow_instrument_retirement",
         "release_readiness_reclosure"
@@ -145,6 +172,8 @@
         "downstream_reliance",
         "measurement_semantics",
         "sampling_path_representativeness",
+        "observation_measurement_event_existence",
+        "criteria_standing",
         "definition_evidence_correspondence",
         "persistent_analytical_context",
         "oos_oot_obligation_liveness",
@@ -162,6 +191,8 @@
         "recall_reconstruction",
         "delegated_atp_authority",
         "evidence_plane_survivability",
+        "evidence_reconstruction_provenance",
+        "institutional_state_origin",
         "investigation_obligation_liveness",
         "release_from_quarantine_reclosure"
       ]
@@ -171,7 +202,11 @@
     "LINEAGE_CHALLENGE_RECORD",
     "ARCHITECTURE_INFLUENCE_PROVENANCE_LEDGER",
     "DEMONSTRATION_PARTICIPATION_RECORD",
-    "FRAMEWORK_NEUTRAL_QUALIFICATION_ENVELOPE"
+    "FRAMEWORK_NEUTRAL_QUALIFICATION_ENVELOPE",
+    "INDEPENDENT_REPRODUCTION_STANDING",
+    "CHALLENGE_POPULATION_SELECTION_PROVENANCE_STANDING",
+    "EVIDENCE_RECONSTRUCTION_PROVENANCE_STANDING",
+    "ASSURANCE_TEST_HARNESS_INTEGRITY"
   ],
   "nonduplication_rule": "Domain profiles consume shared assurance semantics and MUST NOT rebuild shared evidence, standing, authority, measurement, recovery, reclosure, or publication-provenance engines."
 }
