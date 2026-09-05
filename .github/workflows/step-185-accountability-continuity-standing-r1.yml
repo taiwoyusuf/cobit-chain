@@ -25,6 +25,6 @@ jobs:
           python -m py_compile \
             platform_b1_mvp2/assurance_os/implementation/step_185_accountability_continuity_standing_r1/accountability_continuity_standing.py \
             platform_b1_mvp2/assurance_os/implementation/step_185_accountability_continuity_standing_r1/test_accountability_continuity_standing.py
-      - name: Run Step 185 41-test hardened candidate regression suite
+      - name: Run Step 185 45-test hardened candidate regression suite
         working-directory: platform_b1_mvp2/assurance_os/implementation/step_185_accountability_continuity_standing_r1
         run: python -m unittest -v test_accountability_continuity_standing.py
