@@ -2,8 +2,8 @@
 
 Research-only adapter around the frozen Step 184 R1 evaluator. This module does
 not modify, fork, or replace the frozen evaluator. It derives explicit R1 input
-records from bounded scenario traces and evaluates metamorphic properties around
-that frozen interface.
+records from bounded scenario traces, preserves the raw frozen-R1 result, and
+applies research-only successor guards where R2 has established a material delta.
 """
 
 from __future__ import annotations
@@ -15,6 +15,9 @@ from typing import Mapping
 
 FROZEN_R1_BLOB = "607694656829b294b7d9d1b5cd742eebce5dd0b5"
 FROZEN_R1_TEST_BLOB = "2d0d4d9e6d3edf14ad3e98973db0cc5aaece0711"
+
+CLOSED = "RESIDUAL_CONSEQUENCE_CLOSED_WITHIN_DECLARED_SCOPE"
+NOT_ESTABLISHED = "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED"
 
 _R1_PATH = (
     Path(__file__).resolve().parents[2]
@@ -67,6 +70,29 @@ def _base_upstream() -> tuple[dict, dict, dict]:
     return execution, outcome, reclosure
 
 
+def _ordered_events(trace: Mapping[str, object]) -> list[Mapping[str, object]]:
+    events = list(trace.get("events", []))
+    if not all(isinstance(event, Mapping) for event in events):
+        raise ValueError("R2_EVENTS_INVALID")
+
+    try:
+        ordered = sorted(events, key=lambda item: int(item.get("sequence", -1)))
+        sequences = [int(item.get("sequence", -1)) for item in ordered]
+    except (TypeError, ValueError):
+        raise ValueError("R2_EVENT_SEQUENCE_INVALID") from None
+
+    if any(seq < 0 for seq in sequences) or len(sequences) != len(set(sequences)):
+        raise ValueError("R2_EVENT_SEQUENCE_INVALID")
+    return ordered
+
+
+def _last_sequence(ordered: list[Mapping[str, object]], kind: str) -> int | None:
+    return max(
+        (int(event["sequence"]) for event in ordered if event.get("kind") == kind),
+        default=None,
+    )
+
+
 def derive_r1_inputs(trace: Mapping[str, object]) -> dict:
     """Derive explicit frozen-R1 inputs from an R2 scenario trace.
 
@@ -79,27 +105,10 @@ def derive_r1_inputs(trace: Mapping[str, object]) -> dict:
     if domain not in DOMAINS:
         raise ValueError("R2_DOMAIN_NOT_RECOGNIZED")
 
-    events = list(trace.get("events", []))
-    if not all(isinstance(event, Mapping) for event in events):
-        raise ValueError("R2_EVENTS_INVALID")
-
-    ordered = sorted(events, key=lambda item: int(item.get("sequence", -1)))
-    sequences = [int(item.get("sequence", -1)) for item in ordered]
-    if any(seq < 0 for seq in sequences) or len(sequences) != len(set(sequences)):
-        raise ValueError("R2_EVENT_SEQUENCE_INVALID")
-
-    last_observation = max(
-        (int(e["sequence"]) for e in ordered if e.get("kind") == "OBSERVATION"),
-        default=None,
-    )
-    last_material_change = max(
-        (int(e["sequence"]) for e in ordered if e.get("kind") == "MATERIAL_CHANGE"),
-        default=None,
-    )
-    last_stop = max(
-        (int(e["sequence"]) for e in ordered if e.get("kind") == "STOP"),
-        default=None,
-    )
+    ordered = _ordered_events(trace)
+    last_observation = _last_sequence(ordered, "OBSERVATION")
+    last_material_change = _last_sequence(ordered, "MATERIAL_CHANGE")
+    last_stop = _last_sequence(ordered, "STOP")
 
     observation_current = last_observation is not None
     if last_material_change is not None and (last_observation is None or last_observation < last_material_change):
@@ -165,7 +174,34 @@ def derive_r1_inputs(trace: Mapping[str, object]) -> dict:
     }
 
 
-def evaluate_trace(trace: Mapping[str, object]) -> dict:
+def _r2_temporal_reasons(trace: Mapping[str, object], inputs: Mapping[str, object]) -> list[str]:
+    """Return research-only successor reasons not representable in frozen R1."""
+    reasons: list[str] = []
+    consequence = inputs["consequence_state"]
+
+    # Material delta RC2-TERM-01: explicit termination evidence is required for
+    # closure whether or not a STOP command occurred.
+    if consequence.get("consequence_termination_observed") is not True:
+        reasons.append("CONSEQUENCE_TERMINATION_NOT_OBSERVED")
+
+    # Material delta RC2-TEMP-01: if a trace explicitly identifies when Step 183
+    # re-closure was evaluated, a later material change makes that re-closure
+    # historical until Step 183 is evaluated again after the change.
+    ordered = _ordered_events(trace)
+    last_material_change = _last_sequence(ordered, "MATERIAL_CHANGE")
+    last_reclosure = _last_sequence(ordered, "RECLOSURE_EVALUATED")
+    if (
+        last_material_change is not None
+        and last_reclosure is not None
+        and last_reclosure < last_material_change
+    ):
+        reasons.append("RECLOSURE_BASIS_STALE_AFTER_MATERIAL_CHANGE")
+
+    return sorted(set(reasons))
+
+
+def evaluate_trace_raw_r1(trace: Mapping[str, object]) -> dict:
+    """Expose frozen R1 behavior unchanged for differential/reproduction tests."""
     inputs = derive_r1_inputs(trace)
     result = _r1.evaluate_residual_consequence_assurance(**inputs)
     return {
@@ -173,4 +209,38 @@ def evaluate_trace(trace: Mapping[str, object]) -> dict:
         "r1_blob_expected": FROZEN_R1_BLOB,
         "r1_test_blob_expected": FROZEN_R1_TEST_BLOB,
         "r1_result": result,
+        "derived_inputs": inputs,
+    }
+
+
+def evaluate_trace(trace: Mapping[str, object]) -> dict:
+    """Evaluate a trace through frozen R1 plus bounded R2 successor guards.
+
+    Frozen R1 output is preserved verbatim under ``raw_r1_result``. R2 only
+    narrows a positive closure when a reproduced successor condition is not
+    established; it never upgrades a blocked R1 result into a positive result.
+    """
+    raw = evaluate_trace_raw_r1(trace)
+    inputs = raw["derived_inputs"]
+    raw_result = raw["r1_result"]
+    r2_reasons = _r2_temporal_reasons(trace, inputs)
+
+    result = dict(raw_result)
+    combined_reasons = sorted(set(list(raw_result.get("reasons", [])) + r2_reasons))
+    result["reasons"] = combined_reasons
+
+    if r2_reasons and raw_result.get("residual_consequence_standing") == CLOSED:
+        result["residual_consequence_standing"] = NOT_ESTABLISHED
+        result["reason"] = "R2_SUCCESSOR_PRECONDITION_NOT_ESTABLISHED"
+        result["return_to_reliance_supportable"] = False
+        result["no_bind_state"] = "ACTIVE"
+        result["action_hold_required"] = True
+
+    return {
+        "domain": trace.get("domain"),
+        "r1_blob_expected": FROZEN_R1_BLOB,
+        "r1_test_blob_expected": FROZEN_R1_TEST_BLOB,
+        "raw_r1_result": raw_result,
+        "r2_result": result,
+        "r2_successor_reasons": r2_reasons,
     }
