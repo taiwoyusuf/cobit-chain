@@ -1,0 +1,31 @@
+name: Accountability Continuity Standing R1 Research Suite
+
+on:
+  push:
+    branches:
+      - research/accountability-continuity-standing-r1
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1/**'
+      - '.github/workflows/accountability-continuity-standing-r1.yml'
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1/**'
+      - '.github/workflows/accountability-continuity-standing-r1.yml'
+
+jobs:
+  research-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile research evaluator and tests
+        run: |
+          python -m py_compile \
+            platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1/accountability_continuity_standing.py \
+            platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1/test_accountability_continuity_standing.py \
+            platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1/test_context_decoupling.py
+      - name: Run Accountability Continuity Standing R1 research suite
+        working-directory: platform_b1_mvp2/assurance_os/research/accountability_continuity_standing_r1
+        run: python -m unittest -v
