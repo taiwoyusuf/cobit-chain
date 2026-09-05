@@ -14,8 +14,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 
+CLOSED = "RESIDUAL_CONSEQUENCE_CLOSED_WITHIN_DECLARED_SCOPE"
+
+
 def _result(standing: str, reason: str, reasons: list[str], **extra) -> dict:
-    blocked = standing != "RESIDUAL_CONSEQUENCE_CLOSED_WITHIN_DECLARED_SCOPE"
+    blocked = standing != CLOSED
     return {
         "residual_consequence_standing": standing,
         "reason": reason,
@@ -29,6 +32,87 @@ def _result(standing: str, reason: str, reasons: list[str], **extra) -> dict:
         "irlt_mag_state_changed": False,
         **extra,
     }
+
+
+def _required_bool(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> bool | None:
+    """Return an explicitly supplied bool; missing/invalid values fail closed."""
+    if field not in record:
+        reasons.append(f"{prefix}_{field.upper()}_MISSING")
+        return None
+    value = record.get(field)
+    if type(value) is not bool:
+        reasons.append(f"{prefix}_{field.upper()}_INVALID")
+        return None
+    return value
+
+
+def _required_nonnegative_int(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> int | None:
+    """Reject coercion and booleans; malformed counts become bounded uncertainty."""
+    if field not in record:
+        reasons.append(f"{prefix}_{field.upper()}_MISSING")
+        return None
+    value = record.get(field)
+    if type(value) is not int or value < 0:
+        reasons.append(f"{prefix}_{field.upper()}_INVALID")
+        return None
+    return value
+
+
+def _validate_upstream_contracts(
+    execution_time_result: Mapping[str, object],
+    outcome_result: Mapping[str, object],
+    reclosure_result: Mapping[str, object],
+    reasons: list[str],
+) -> tuple[object, object, object]:
+    """Validate the declared non-binding output contracts of Steps 180, 182, 183."""
+    execution_standing = execution_time_result.get("execution_time_standing")
+    outcome_standing = outcome_result.get("correspondence_standing")
+    reclosure_standing = reclosure_result.get("reclosure_standing")
+
+    if execution_standing != "SUPPORTABLE":
+        reasons.append("EXECUTION_TIME_STANDING_NOT_SUPPORTABLE")
+    if execution_time_result.get("execution_time_decision") != "ADMISSIBLE":
+        reasons.append("EXECUTION_TIME_DECISION_NOT_ADMISSIBLE")
+    if execution_time_result.get("no_bind_state") != "INACTIVE":
+        reasons.append("EXECUTION_TIME_NO_BIND_NOT_INACTIVE")
+    if execution_time_result.get("binding_authority_granted") is not False:
+        reasons.append("EXECUTION_TIME_NONAUTHORITY_CONTRACT_NOT_ESTABLISHED")
+    if execution_time_result.get("prior_decision_preserved_as_history") is not True:
+        reasons.append("EXECUTION_TIME_HISTORY_PRESERVATION_NOT_ESTABLISHED")
+
+    if outcome_standing != "OUTCOME_CORRESPONDENCE_SUPPORTABLE":
+        reasons.append("OUTCOME_CORRESPONDENCE_NOT_SUPPORTABLE")
+    if outcome_result.get("commit_occurred") is not True:
+        reasons.append("OUTCOME_COMMIT_FACT_NOT_ESTABLISHED")
+    if outcome_result.get("execution_succeeded") is not True:
+        reasons.append("OUTCOME_EXECUTION_SUCCESS_NOT_ESTABLISHED")
+    if outcome_result.get("intended_outcome_established") is not True:
+        reasons.append("INTENDED_OUTCOME_NOT_ESTABLISHED")
+    if outcome_result.get("no_bind_state") != "INACTIVE":
+        reasons.append("OUTCOME_NO_BIND_NOT_INACTIVE")
+    if outcome_result.get("binding_authority_granted") is not False:
+        reasons.append("OUTCOME_NONAUTHORITY_CONTRACT_NOT_ESTABLISHED")
+    historical_facts = outcome_result.get("historical_facts")
+    if not isinstance(historical_facts, Mapping):
+        reasons.append("OUTCOME_HISTORICAL_FACTS_MISSING")
+    else:
+        if historical_facts.get("commit_occurred") is not True:
+            reasons.append("OUTCOME_HISTORICAL_COMMIT_FACT_NOT_PRESERVED")
+        if historical_facts.get("execution_succeeded") is not True:
+            reasons.append("OUTCOME_HISTORICAL_EXECUTION_FACT_NOT_PRESERVED")
+
+    if reclosure_standing != "RECLOSURE_SUPPORTABLE":
+        reasons.append("PRIOR_RECLOSURE_NOT_SUPPORTABLE")
+    if reclosure_result.get("return_to_reliance_supportable") is not True:
+        reasons.append("PRIOR_RETURN_TO_RELIANCE_NOT_SUPPORTABLE")
+    if reclosure_result.get("no_bind_state") != "SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED":
+        reasons.append("RECLOSURE_NO_BIND_CONTRACT_NOT_ESTABLISHED")
+    if reclosure_result.get("binding_authority_granted") is not False:
+        reasons.append("RECLOSURE_NONAUTHORITY_CONTRACT_NOT_ESTABLISHED")
+    if reclosure_result.get("historical_facts_rewritten") is not False:
+        reasons.append("RECLOSURE_HISTORY_PRESERVATION_NOT_ESTABLISHED")
+
+    return execution_standing, outcome_standing, reclosure_standing
 
 
 def evaluate_residual_consequence_assurance(
@@ -49,7 +133,8 @@ def evaluate_residual_consequence_assurance(
     STOP SUCCESS != CONSEQUENCE TERMINATION
     RECOVERY != RECLOSURE != RETURN TO RELIANCE
 
-    A positive result is non-binding and still requires separate current authority
+    Unknown safety-critical negative states do not default to benign values. A
+    positive result is non-binding and still requires separate current authority
     and Action Admissibility evaluation before any new consequence-producing action.
     """
 
@@ -69,77 +154,108 @@ def evaluate_residual_consequence_assurance(
 
     reasons: list[str] = []
 
-    execution_standing = execution_time_result.get("execution_time_standing")
-    outcome_standing = outcome_result.get("correspondence_standing")
-    reclosure_standing = reclosure_result.get("reclosure_standing")
+    execution_standing, outcome_standing, reclosure_standing = _validate_upstream_contracts(
+        execution_time_result, outcome_result, reclosure_result, reasons
+    )
 
-    if execution_standing != "SUPPORTABLE":
-        reasons.append("EXECUTION_TIME_STANDING_NOT_SUPPORTABLE")
-    if outcome_standing != "OUTCOME_CORRESPONDENCE_SUPPORTABLE":
-        reasons.append("OUTCOME_CORRESPONDENCE_NOT_SUPPORTABLE")
-    if reclosure_standing != "RECLOSURE_SUPPORTABLE":
-        reasons.append("PRIOR_RECLOSURE_NOT_SUPPORTABLE")
+    history_preserved = _required_bool(consequence_state, "historical_event_preserved", reasons, "CONSEQUENCE")
+    authority_current_at_boundary = _required_bool(
+        consequence_state, "authority_current_at_irreversible_boundary", reasons, "CONSEQUENCE"
+    )
+    irreversible_boundary_crossed = _required_bool(
+        consequence_state, "irreversible_boundary_crossed", reasons, "CONSEQUENCE"
+    )
+    stop_succeeded = _required_bool(consequence_state, "stop_command_succeeded", reasons, "CONSEQUENCE")
+    termination_observed = _required_bool(
+        consequence_state, "consequence_termination_observed", reasons, "CONSEQUENCE"
+    )
+    partial_irreversible = _required_bool(
+        consequence_state, "partial_irreversible_consequence", reasons, "CONSEQUENCE"
+    )
+    residual_propagation = _required_bool(
+        consequence_state, "residual_propagation_active", reasons, "CONSEQUENCE"
+    )
+    latent_window_open = _required_bool(
+        consequence_state, "latent_consequence_window_open", reasons, "CONSEQUENCE"
+    )
+    residual_effects = _required_bool(consequence_state, "residual_effects_present", reasons, "CONSEQUENCE")
+    current_physical = _required_bool(
+        consequence_state, "current_physical_correspondence_established", reasons, "CONSEQUENCE"
+    )
+    witness_qualified = _required_bool(
+        consequence_state, "witness_proposition_qualified", reasons, "CONSEQUENCE"
+    )
+    observation_current = _required_bool(consequence_state, "observation_current", reasons, "CONSEQUENCE")
 
-    history_preserved = consequence_state.get("historical_event_preserved") is True
-    if not history_preserved:
+    if history_preserved is False:
         reasons.append("HISTORICAL_EVENT_PRESERVATION_NOT_ESTABLISHED")
-
-    authority_current_at_boundary = consequence_state.get("authority_current_at_irreversible_boundary") is True
-    irreversible_boundary_crossed = consequence_state.get("irreversible_boundary_crossed") is True
-    if irreversible_boundary_crossed and not authority_current_at_boundary:
+    if irreversible_boundary_crossed is True and authority_current_at_boundary is not True:
         reasons.append("AUTHORITY_NOT_CURRENT_AT_IRREVERSIBLE_BOUNDARY")
-
-    stop_succeeded = consequence_state.get("stop_command_succeeded") is True
-    termination_observed = consequence_state.get("consequence_termination_observed") is True
-    if stop_succeeded and not termination_observed:
+    if stop_succeeded is True and termination_observed is not True:
         reasons.append("STOP_SUCCESS_WITHOUT_CONSEQUENCE_TERMINATION_EVIDENCE")
-
-    partial_irreversible = consequence_state.get("partial_irreversible_consequence") is True
-    residual_propagation = consequence_state.get("residual_propagation_active") is True
-    latent_window_open = consequence_state.get("latent_consequence_window_open") is True
-    residual_effects = consequence_state.get("residual_effects_present") is True
-
-    if partial_irreversible:
+    if partial_irreversible is True:
         reasons.append("PARTIAL_IRREVERSIBLE_CONSEQUENCE_PRESENT")
-    if residual_propagation:
+    if residual_propagation is True:
         reasons.append("RESIDUAL_PROPAGATION_ACTIVE")
-    if latent_window_open:
+    if latent_window_open is True:
         reasons.append("LATENT_CONSEQUENCE_WINDOW_OPEN")
-    if residual_effects:
+    if residual_effects is True:
         reasons.append("RESIDUAL_EFFECTS_PRESENT")
-
-    if consequence_state.get("current_physical_correspondence_established") is not True:
+    if current_physical is False:
         reasons.append("CURRENT_PHYSICAL_CORRESPONDENCE_NOT_ESTABLISHED")
-    if consequence_state.get("witness_proposition_qualified") is not True:
+    if witness_qualified is False:
         reasons.append("WITNESS_NOT_QUALIFIED_FOR_TERMINATION_PROPOSITION")
-    if consequence_state.get("observation_current") is not True:
+    if observation_current is False:
         reasons.append("CONSEQUENCE_OBSERVATION_NOT_CURRENT")
 
-    contradiction_present = evidence_state.get("contradiction_present") is True
-    if contradiction_present:
+    contradiction_present = _required_bool(evidence_state, "contradiction_present", reasons, "EVIDENCE")
+    independent_domains = _required_bool(
+        evidence_state, "independent_failure_domains_established", reasons, "EVIDENCE"
+    )
+    negative_basis = _required_bool(evidence_state, "negative_evidence_basis_complete", reasons, "EVIDENCE")
+
+    if contradiction_present is True:
         reasons.append("CONTRADICTORY_CONSEQUENCE_EVIDENCE_PRESENT")
-    if evidence_state.get("independent_failure_domains_established") is not True:
+    if independent_domains is False:
         reasons.append("WITNESS_FAILURE_DOMAIN_INDEPENDENCE_NOT_ESTABLISHED")
-    if evidence_state.get("negative_evidence_basis_complete") is not True:
+    if negative_basis is False:
         reasons.append("NEGATIVE_EVIDENCE_BASIS_NOT_ESTABLISHED")
 
-    competing_claims = int(race_retry_state.get("active_competing_claim_count", 0) or 0)
-    if competing_claims > 1:
-        if race_retry_state.get("single_winner_serialized") is not True:
+    competing_claims = _required_nonnegative_int(
+        race_retry_state, "active_competing_claim_count", reasons, "RACE_RETRY"
+    )
+    retry_requested = _required_bool(race_retry_state, "retry_requested", reasons, "RACE_RETRY")
+
+    if competing_claims is not None and competing_claims > 1:
+        winner_serialized = _required_bool(
+            race_retry_state, "single_winner_serialized", reasons, "RACE_RETRY"
+        )
+        losing_retired = _required_bool(
+            race_retry_state, "losing_claims_retired", reasons, "RACE_RETRY"
+        )
+        if winner_serialized is False:
             reasons.append("COMPETING_EXECUTION_CLAIMS_NOT_SERIALIZED")
-        if race_retry_state.get("losing_claims_retired") is not True:
+        if losing_retired is False:
             reasons.append("LOSING_EXECUTION_CLAIMS_NOT_RETIRED")
 
-    retry_requested = race_retry_state.get("retry_requested") is True
-    if retry_requested:
-        if race_retry_state.get("prior_attempt_consequence_state_known") is not True:
+    if retry_requested is True:
+        prior_state_known = _required_bool(
+            race_retry_state, "prior_attempt_consequence_state_known", reasons, "RACE_RETRY"
+        )
+        idempotency_matches = _required_bool(
+            race_retry_state, "idempotency_identity_matches", reasons, "RACE_RETRY"
+        )
+        duplicate_prevention = _required_bool(
+            race_retry_state, "duplicate_consequence_prevention_established", reasons, "RACE_RETRY"
+        )
+        if prior_state_known is False:
             reasons.append("PRIOR_ATTEMPT_CONSEQUENCE_STATE_UNKNOWN")
-        if race_retry_state.get("idempotency_identity_matches") is not True:
+        if idempotency_matches is False:
             reasons.append("IDEMPOTENCY_IDENTITY_NOT_ESTABLISHED")
-        if race_retry_state.get("duplicate_consequence_prevention_established") is not True:
+        if duplicate_prevention is False:
             reasons.append("DUPLICATE_CONSEQUENCE_PREVENTION_NOT_ESTABLISHED")
 
-    if contradiction_present:
+    if contradiction_present is True:
         standing = "RESIDUAL_CONSEQUENCE_CONTRADICTED"
         reason = "CONTRADICTORY_EVIDENCE_PREVENTS_CLOSURE"
     elif any(r in reasons for r in (
@@ -163,7 +279,7 @@ def evaluate_residual_consequence_assurance(
         standing = "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED"
         reason = "ONE_OR_MORE_CLOSURE_PRECONDITIONS_NOT_ESTABLISHED"
     else:
-        standing = "RESIDUAL_CONSEQUENCE_CLOSED_WITHIN_DECLARED_SCOPE"
+        standing = CLOSED
         reason = "CURRENT_TERMINATION_AND_RECLOSURE_BASIS_ESTABLISHED"
 
     return _result(
