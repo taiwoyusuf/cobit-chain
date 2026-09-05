@@ -2,7 +2,13 @@
 
 Status: `IMPLEMENTED_BOUNDED_CANDIDATE`
 
-Review posture: `REVIEWED_NOT_FROZEN` pending final post-review CI confirmation.
+Governed configuration posture: `APPROVED_AND_FROZEN`
+
+Verification posture: `SYNTHETICALLY_VERIFIED`
+
+Review posture: `INTERNAL_STATIC_REVIEW_COMPLETE`
+
+Merge posture: `NOT_MERGED`
 
 ## Purpose
 
@@ -94,6 +100,17 @@ The canonical Step 184 candidate is promoted from the bounded `research/residual
 
 External watch material, including Gary Williams / Elias Keystone and Ravi Shankar, remains external source material only. It may supply adversarial prompts but is not COBIT-Chain implementation evidence and does not establish novelty or patentability.
 
+## Freeze identity
+
+The governed frozen executable/test payload is recorded in `FREEZE_MANIFEST_2026-09-05.md` and binds:
+
+- `residual_consequence_assurance.py` blob `607694656829b294b7d9d1b5cd742eebce5dd0b5`;
+- `test_residual_consequence_assurance.py` blob `2d0d4d9e6d3edf14ad3e98973db0cc5aaece0711`;
+- tested commit `d22455efa35177f6e2375867edf77ded7ba5ff7e`; and
+- successful GitHub Actions run `33944915338`.
+
+Any later substantive executable/test-contract change requires explicit unfreeze/re-review or a successor revision with R1 chronology preserved.
+
 ## Architectural boundaries
 
 - `AUTHORITY = NONE`
@@ -108,6 +125,6 @@ External watch material, including Gary Williams / Elias Keystone and Ravi Shank
 
 ## Maturity
 
-`IMPLEMENTED_BOUNDED_CANDIDATE`
+`IMPLEMENTED_BOUNDED_CANDIDATE` / `SYNTHETICALLY_VERIFIED` / `APPROVED_AND_FROZEN`
 
-Static review status is `REVIEWED_NOT_FROZEN`; this is not independent third-party assurance. A passing deterministic test suite supports only the declared software challenge behavior. It does not establish production readiness, operational validation, certification, regulator acceptance, or independent assurance.
+The freeze is a governed configuration freeze, not independent third-party assurance. A passing deterministic test suite supports only the declared software challenge behavior. It does not establish production readiness, operational validation, certification, regulator acceptance, or independent assurance.
