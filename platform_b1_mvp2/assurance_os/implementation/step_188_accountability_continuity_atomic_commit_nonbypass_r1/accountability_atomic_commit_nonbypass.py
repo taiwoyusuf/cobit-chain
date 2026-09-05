@@ -3,9 +3,12 @@
 This bounded adapter composes frozen Step 187 Accountability Continuity
 Commit-Time Revalidation with existing Step 181 Atomic Commit Binding.
 
-It verifies exact cross-result/input correspondence. It does not replace Step 181,
-grant authority, authorize commit/execution, consume a commit token, execute a
-physical/regulated action, or modify IRLT-MAG state.
+The hardened configuration re-establishes the Step 187 current-state binding at
+the atomic boundary, reproduces Step 181 verification from the exact token and
+commit inputs, and then requires exact cross-control correspondence.
+
+It does not replace Step 181, grant authority, authorize commit/execution,
+consume a commit token, execute a physical/regulated action, or modify IRLT-MAG.
 """
 
 from __future__ import annotations
@@ -37,6 +40,8 @@ STEP181_SNAPSHOT_FIELDS = (
     "environment_context_hash",
 )
 
+STEP187_SNAPSHOT_FIELDS = ("action_id",) + STEP181_SNAPSHOT_FIELDS
+
 
 def _valid_nonempty(value: object) -> bool:
     return type(value) is str and bool(value.strip())
@@ -52,9 +57,9 @@ def canonical_payload_digest(record: Mapping[str, object]) -> str | None:
 
 
 def step181_digest(value: Mapping[str, object]) -> str | None:
-    """Reproduce Step 181's canonical digest shape (hex without prefix)."""
+    """Reproduce Step 181 canonical digest shape (hex without prefix)."""
     try:
-        payload = json.dumps(dict(value), sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        payload = json.dumps(dict(value), sort_keys=True, separators=(",", ":"))
     except (TypeError, ValueError):
         return None
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -78,9 +83,55 @@ def verification_input_payload(
     }
 
 
+def reproduce_step181_verify(
+    *,
+    token: Mapping[str, object],
+    commit_snapshot: Mapping[str, object],
+    action_id: str,
+    transaction_id: str,
+    commit_nonce: str,
+) -> dict[str, object] | None:
+    """Reproduce Step 181 verify_atomic_commit for token_consumed=False."""
+    if not isinstance(token, Mapping) or not isinstance(commit_snapshot, Mapping):
+        return None
+
+    reasons: list[str] = []
+    if token.get("token_state") != "ISSUED":
+        reasons.append("VALID_COMMIT_TOKEN_NOT_PRESENT")
+    if token.get("action_id") != action_id:
+        reasons.append("ACTION_CHANGED_AFTER_REVALIDATION")
+    if token.get("transaction_id") != transaction_id:
+        reasons.append("TRANSACTION_CHANGED_AFTER_REVALIDATION")
+    if token.get("commit_nonce") != commit_nonce:
+        reasons.append("COMMIT_NONCE_MISMATCH")
+    if token.get("object_hash") != commit_snapshot.get("object_hash"):
+        reasons.append("OBJECT_CHANGED_BETWEEN_REVALIDATION_AND_COMMIT")
+
+    snapshot_digest = step181_digest(commit_snapshot)
+    if snapshot_digest is None:
+        return None
+    if token.get("snapshot_digest") != snapshot_digest:
+        reasons.append("COMMIT_STATE_CHANGED_AFTER_REVALIDATION")
+
+    blocked = bool(reasons)
+    return {
+        "atomic_commit_standing": "SUPPORTABLE" if not blocked else "NO_BIND",
+        "commit_decision": "COMMIT_ROUTE_ADMISSIBLE" if not blocked else "NOT_ADMISSIBLE",
+        "no_bind_state": "INACTIVE" if not blocked else "ACTIVE",
+        "action_held": blocked,
+        "token_consumption_required_on_commit": not blocked,
+        "reasons": sorted(set(reasons)),
+        "evaluated_to_committed_binding_verified": not blocked,
+        "binding_authority_granted": False,
+        "physical_action_executed": False,
+    }
+
+
 def evaluate_accountability_atomic_commit_nonbypass(
     *,
     step187_result: Mapping[str, object],
+    step187_commit_binding_record: Mapping[str, object],
+    step187_current_snapshot: Mapping[str, object],
     step181_token: Mapping[str, object],
     step181_commit_result: Mapping[str, object],
     commit_snapshot: Mapping[str, object],
@@ -113,7 +164,7 @@ def evaluate_accountability_atomic_commit_nonbypass(
     transaction = expected_transaction_id.strip() if _valid_nonempty(expected_transaction_id) else None
     nonce = expected_commit_nonce.strip() if _valid_nonempty(expected_commit_nonce) else None
 
-    # Frozen Step 187 contract.
+    # Frozen Step 187 result contract.
     if not isinstance(step187_result, Mapping):
         reasons.append("STEP_187_RESULT_MISSING_OR_INVALID")
     else:
@@ -152,6 +203,71 @@ def evaluate_accountability_atomic_commit_nonbypass(
             reasons.append("STEP_187_ACTION_MISMATCH")
         if obj is not None and step187_result.get("expected_object_hash") != obj:
             reasons.append("STEP_187_OBJECT_MISMATCH")
+
+    # Re-establish the exact Step 187 current-state binding at this boundary.
+    if not isinstance(step187_current_snapshot, Mapping):
+        reasons.append("STEP_187_CURRENT_SNAPSHOT_MISSING_OR_INVALID")
+    else:
+        for field in STEP187_SNAPSHOT_FIELDS:
+            if field not in step187_current_snapshot:
+                reasons.append("STEP_187_CURRENT_" + field.upper() + "_MISSING")
+        if step187_current_snapshot.get("authority_current") is not True:
+            reasons.append("STEP_187_CURRENT_AUTHORITY_NOT_ESTABLISHED")
+        if action is not None and step187_current_snapshot.get("action_id") != action:
+            reasons.append("STEP_187_CURRENT_ACTION_MISMATCH")
+        if obj is not None and step187_current_snapshot.get("object_hash") != obj:
+            reasons.append("STEP_187_CURRENT_OBJECT_MISMATCH")
+
+    if not isinstance(step187_commit_binding_record, Mapping):
+        reasons.append("STEP_187_COMMIT_BINDING_RECORD_MISSING_OR_INVALID")
+    else:
+        for field in (
+            "declared_scope_id",
+            "action_id",
+            "object_hash",
+            "commit_point_id",
+            "commit_binding_evidence_ref",
+            "commit_binding_basis_version",
+            "step186_result_digest",
+            "step180_result_digest",
+            "current_snapshot_digest",
+            "step186_evaluator_blob",
+            "step186_test_blob",
+            "step180_evaluator_blob",
+            "step180_test_blob",
+        ):
+            if not _valid_nonempty(step187_commit_binding_record.get(field)):
+                reasons.append("STEP_187_BINDING_" + field.upper() + "_MISSING_OR_INVALID")
+        if step187_commit_binding_record.get("binding_traceable") is not True:
+            reasons.append("STEP_187_BINDING_NOT_TRACEABLE")
+        if step187_commit_binding_record.get("binding_current") is not True:
+            reasons.append("STEP_187_BINDING_NOT_CURRENT")
+        if step187_commit_binding_record.get("binding_ambiguity_present") is not False:
+            reasons.append("STEP_187_BINDING_AMBIGUOUS_OR_INVALID")
+        if step187_commit_binding_record.get("binding_temporal_ordering_established") is not True:
+            reasons.append("STEP_187_BINDING_TEMPORAL_ORDERING_NOT_ESTABLISHED")
+        if step187_commit_binding_record.get("binding_change_assessment_complete") is not True:
+            reasons.append("STEP_187_BINDING_CHANGE_ASSESSMENT_INCOMPLETE")
+        material_change = step187_commit_binding_record.get("material_change_after_commit_binding")
+        revalidated = step187_commit_binding_record.get("commit_binding_revalidated_after_latest_material_change")
+        if type(material_change) is not bool:
+            reasons.append("STEP_187_BINDING_MATERIAL_CHANGE_STATE_INVALID")
+        if type(revalidated) is not bool:
+            reasons.append("STEP_187_BINDING_REVALIDATION_STATE_INVALID")
+        if material_change is True and revalidated is not True:
+            reasons.append("STEP_187_BINDING_STALE_AFTER_MATERIAL_CHANGE")
+        if scope is not None and step187_commit_binding_record.get("declared_scope_id") != scope:
+            reasons.append("STEP_187_BINDING_SCOPE_MISMATCH")
+        if action is not None and step187_commit_binding_record.get("action_id") != action:
+            reasons.append("STEP_187_BINDING_ACTION_MISMATCH")
+        if obj is not None and step187_commit_binding_record.get("object_hash") != obj:
+            reasons.append("STEP_187_BINDING_OBJECT_MISMATCH")
+        if isinstance(step187_current_snapshot, Mapping):
+            snapshot_digest = canonical_payload_digest(step187_current_snapshot)
+            if snapshot_digest is None:
+                reasons.append("STEP_187_CURRENT_SNAPSHOT_DIGEST_NOT_COMPUTABLE")
+            elif step187_commit_binding_record.get("current_snapshot_digest") != snapshot_digest:
+                reasons.append("STEP_187_BINDING_CURRENT_SNAPSHOT_DIGEST_MISMATCH")
 
     # Step 181 issued-token contract plus deterministic token reconstruction.
     if not isinstance(step181_token, Mapping):
@@ -192,7 +308,42 @@ def evaluate_accountability_atomic_commit_nonbypass(
         elif step181_token.get("token_id") != expected_token_id:
             reasons.append("STEP_181_TOKEN_ID_MISMATCH")
 
-    # Step 181 verification result contract.
+    # Exact commit snapshot correspondence.
+    if not isinstance(commit_snapshot, Mapping):
+        reasons.append("COMMIT_SNAPSHOT_MISSING_OR_INVALID")
+    else:
+        for field in STEP181_SNAPSHOT_FIELDS:
+            if field not in commit_snapshot:
+                reasons.append("COMMIT_" + field.upper() + "_MISSING")
+        if commit_snapshot.get("authority_current") is not True:
+            reasons.append("COMMIT_AUTHORITY_NOT_CURRENT")
+        if obj is not None and commit_snapshot.get("object_hash") != obj:
+            reasons.append("COMMIT_OBJECT_MISMATCH")
+        snapshot_digest = step181_digest(commit_snapshot)
+        if snapshot_digest is None:
+            reasons.append("COMMIT_SNAPSHOT_STEP_181_DIGEST_NOT_COMPUTABLE")
+        elif isinstance(step181_token, Mapping) and step181_token.get("snapshot_digest") != snapshot_digest:
+            reasons.append("STEP_181_TOKEN_SNAPSHOT_DIGEST_MISMATCH")
+
+    # Cross-snapshot equality: Step 187 state must still be the Step 181 commit state.
+    if isinstance(step187_current_snapshot, Mapping) and isinstance(commit_snapshot, Mapping):
+        for field in STEP181_SNAPSHOT_FIELDS:
+            if step187_current_snapshot.get(field) != commit_snapshot.get(field):
+                reasons.append("STEP_187_TO_STEP_181_" + field.upper() + "_MISMATCH")
+
+    # Reproduce Step 181 verification from exact inputs and require exact result equality.
+    reproduced_step181_result = None
+    if isinstance(step181_token, Mapping) and isinstance(commit_snapshot, Mapping):
+        reproduced_step181_result = reproduce_step181_verify(
+            token=step181_token,
+            commit_snapshot=commit_snapshot,
+            action_id=expected_action_id,
+            transaction_id=expected_transaction_id,
+            commit_nonce=expected_commit_nonce,
+        )
+        if reproduced_step181_result is None:
+            reasons.append("STEP_181_COMMIT_RESULT_REPRODUCTION_NOT_COMPUTABLE")
+
     if not isinstance(step181_commit_result, Mapping):
         reasons.append("STEP_181_COMMIT_RESULT_MISSING_OR_INVALID")
     else:
@@ -212,23 +363,8 @@ def evaluate_accountability_atomic_commit_nonbypass(
         commit_reasons = step181_commit_result.get("reasons")
         if type(commit_reasons) is not list or commit_reasons:
             reasons.append("STEP_181_SUPPORTABLE_COMMIT_RESULT_REASONS_INVALID")
-
-    # Exact commit snapshot correspondence, including Step 181 digest semantics.
-    if not isinstance(commit_snapshot, Mapping):
-        reasons.append("COMMIT_SNAPSHOT_MISSING_OR_INVALID")
-    else:
-        for field in STEP181_SNAPSHOT_FIELDS:
-            if field not in commit_snapshot:
-                reasons.append("COMMIT_" + field.upper() + "_MISSING")
-        if commit_snapshot.get("authority_current") is not True:
-            reasons.append("COMMIT_AUTHORITY_NOT_CURRENT")
-        if obj is not None and commit_snapshot.get("object_hash") != obj:
-            reasons.append("COMMIT_OBJECT_MISMATCH")
-        snapshot_digest = step181_digest(commit_snapshot)
-        if snapshot_digest is None:
-            reasons.append("COMMIT_SNAPSHOT_STEP_181_DIGEST_NOT_COMPUTABLE")
-        elif isinstance(step181_token, Mapping) and step181_token.get("snapshot_digest") != snapshot_digest:
-            reasons.append("STEP_181_TOKEN_SNAPSHOT_DIGEST_MISMATCH")
+        if reproduced_step181_result is not None and dict(step181_commit_result) != reproduced_step181_result:
+            reasons.append("STEP_181_COMMIT_RESULT_NOT_REPRODUCIBLE_FROM_EXACT_INPUTS")
 
     # Explicit Step 188 binding evidence.
     if not isinstance(atomic_binding_record, Mapping):
@@ -244,6 +380,8 @@ def evaluate_accountability_atomic_commit_nonbypass(
             "binding_evidence_ref",
             "binding_basis_version",
             "step187_result_digest",
+            "step187_commit_binding_record_digest",
+            "step187_current_snapshot_digest",
             "step181_token_digest",
             "step181_commit_result_digest",
             "commit_snapshot_digest",
@@ -299,39 +437,29 @@ def evaluate_accountability_atomic_commit_nonbypass(
             if atomic_binding_record.get(field) != expected:
                 reasons.append(reason)
 
+        digest_inputs = (
+            ("step187_result_digest", step187_result, "STEP_187_PAYLOAD_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_STEP_187_PAYLOAD_DIGEST_MISMATCH"),
+            ("step187_commit_binding_record_digest", step187_commit_binding_record, "STEP_187_BINDING_RECORD_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_STEP_187_BINDING_RECORD_DIGEST_MISMATCH"),
+            ("step187_current_snapshot_digest", step187_current_snapshot, "STEP_187_CURRENT_SNAPSHOT_PAYLOAD_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_STEP_187_CURRENT_SNAPSHOT_DIGEST_MISMATCH"),
+            ("step181_token_digest", step181_token, "STEP_181_TOKEN_PAYLOAD_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_STEP_181_TOKEN_DIGEST_MISMATCH"),
+            ("step181_commit_result_digest", step181_commit_result, "STEP_181_COMMIT_RESULT_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_STEP_181_COMMIT_RESULT_DIGEST_MISMATCH"),
+            ("commit_snapshot_digest", commit_snapshot, "COMMIT_SNAPSHOT_PAYLOAD_DIGEST_NOT_COMPUTABLE", "ATOMIC_BINDING_COMMIT_SNAPSHOT_DIGEST_MISMATCH"),
+        )
+        for field, payload, not_computable_reason, mismatch_reason in digest_inputs:
+            if isinstance(payload, Mapping):
+                digest = canonical_payload_digest(payload)
+                if digest is None:
+                    reasons.append(not_computable_reason)
+                elif atomic_binding_record.get(field) != digest:
+                    reasons.append(mismatch_reason)
+
         if isinstance(step187_result, Mapping):
-            digest = canonical_payload_digest(step187_result)
-            if digest is None:
-                reasons.append("STEP_187_PAYLOAD_DIGEST_NOT_COMPUTABLE")
-            elif atomic_binding_record.get("step187_result_digest") != digest:
-                reasons.append("ATOMIC_BINDING_STEP_187_PAYLOAD_DIGEST_MISMATCH")
             if atomic_binding_record.get("declared_scope_id") != step187_result.get("expected_scope_id"):
                 reasons.append("ATOMIC_BINDING_SCOPE_DOES_NOT_MATCH_STEP_187")
             if atomic_binding_record.get("action_id") != step187_result.get("expected_action_id"):
                 reasons.append("ATOMIC_BINDING_ACTION_DOES_NOT_MATCH_STEP_187")
             if atomic_binding_record.get("object_hash") != step187_result.get("expected_object_hash"):
                 reasons.append("ATOMIC_BINDING_OBJECT_DOES_NOT_MATCH_STEP_187")
-
-        if isinstance(step181_token, Mapping):
-            digest = canonical_payload_digest(step181_token)
-            if digest is None:
-                reasons.append("STEP_181_TOKEN_PAYLOAD_DIGEST_NOT_COMPUTABLE")
-            elif atomic_binding_record.get("step181_token_digest") != digest:
-                reasons.append("ATOMIC_BINDING_STEP_181_TOKEN_DIGEST_MISMATCH")
-
-        if isinstance(step181_commit_result, Mapping):
-            digest = canonical_payload_digest(step181_commit_result)
-            if digest is None:
-                reasons.append("STEP_181_COMMIT_RESULT_DIGEST_NOT_COMPUTABLE")
-            elif atomic_binding_record.get("step181_commit_result_digest") != digest:
-                reasons.append("ATOMIC_BINDING_STEP_181_COMMIT_RESULT_DIGEST_MISMATCH")
-
-        if isinstance(commit_snapshot, Mapping):
-            digest = canonical_payload_digest(commit_snapshot)
-            if digest is None:
-                reasons.append("COMMIT_SNAPSHOT_PAYLOAD_DIGEST_NOT_COMPUTABLE")
-            elif atomic_binding_record.get("commit_snapshot_digest") != digest:
-                reasons.append("ATOMIC_BINDING_COMMIT_SNAPSHOT_DIGEST_MISMATCH")
 
         if isinstance(step181_token, Mapping) and isinstance(commit_snapshot, Mapping):
             verification_payload = verification_input_payload(
@@ -364,9 +492,13 @@ def evaluate_accountability_atomic_commit_nonbypass(
         "expected_commit_nonce": expected_commit_nonce,
         "reasons": sorted(set(reasons)),
         "step_187_result_consumed": True,
+        "step_187_binding_record_consumed": True,
+        "step_187_current_snapshot_consumed": True,
         "step_181_token_consumed_as_evidence": True,
         "step_181_commit_result_consumed": True,
         "commit_snapshot_consumed": True,
+        "step_181_commit_result_reproduced": reproduced_step181_result is not None,
+        "cross_snapshot_state_equality_checked": True,
         "atomic_cross_binding_checked": True,
         "source_identity_checked": True,
         "payload_digest_binding_checked": True,
