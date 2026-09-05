@@ -24,7 +24,8 @@ jobs:
         run: |
           python -m py_compile \
             platform_b1_mvp2/assurance_os/implementation/step_187_accountability_continuity_commit_time_revalidation_r1/accountability_commit_time_revalidation.py \
-            platform_b1_mvp2/assurance_os/implementation/step_187_accountability_continuity_commit_time_revalidation_r1/test_accountability_commit_time_revalidation.py
-      - name: Run Step 187 27-test candidate regression suite
+            platform_b1_mvp2/assurance_os/implementation/step_187_accountability_continuity_commit_time_revalidation_r1/test_accountability_commit_time_revalidation.py \
+            platform_b1_mvp2/assurance_os/implementation/step_187_accountability_continuity_commit_time_revalidation_r1/test_static_hardening.py
+      - name: Run Step 187 31-test hardened candidate regression suite
         working-directory: platform_b1_mvp2/assurance_os/implementation/step_187_accountability_continuity_commit_time_revalidation_r1
-        run: python -m unittest -v test_accountability_commit_time_revalidation.py
+        run: python -m unittest -v test_accountability_commit_time_revalidation.py test_static_hardening.py
