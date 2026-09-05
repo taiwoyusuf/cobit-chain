@@ -1,0 +1,36 @@
+name: Residual-Consequence R2 Reproducibility Suite
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/residual_consequence_r2/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1/**'
+      - '.github/workflows/residual-consequence-r2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproducibility-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile frozen Step 184 R1 evaluator
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1
+        run: python -m py_compile residual_consequence_assurance.py
+
+      - name: Compile R2 harness and tests
+        working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r2
+        run: python -m py_compile residual_consequence_r2.py test_residual_consequence_r2.py
+
+      - name: Run R2 reproducibility and metamorphic suite
+        working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r2
+        run: python -m unittest -v test_residual_consequence_r2.py
