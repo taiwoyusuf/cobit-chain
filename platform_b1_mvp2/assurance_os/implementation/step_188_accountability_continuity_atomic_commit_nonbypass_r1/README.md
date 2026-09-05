@@ -1,6 +1,6 @@
 # Step 188 — Accountability Continuity Atomic Commit Non-Bypass R1
 
-Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Purpose
 
@@ -82,7 +82,7 @@ Existing Step 181:
 
 Source identity is correspondence evidence only; it is not external authenticity, certification or provenance manufacture.
 
-## Hardened verification
+## Frozen verification
 
 Tested commit:
 `7b8720573b83d1a97df1afe00005f4fb771250c0`
@@ -96,11 +96,17 @@ Evaluator blob:
 Regression blob:
 `1946c4763ecdf0a56e2ed8cc998308aefdac803f`
 
-Workflow run:
+Hardened workflow run:
 `33987107691` — `SUCCESS`
 
 Regression suite:
 **38 deterministic tests — SUCCESS**
+
+Final pre-freeze documentation head:
+`a95786c48d5d28a3f33ad2094c463d2a5ce31dba`
+
+Final pre-freeze documentation CI:
+`33987214769` — `SUCCESS`
 
 Static-review disposition:
 `STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
@@ -109,6 +115,13 @@ Records:
 
 - `STATIC_REVIEW_2026-09-05.md`
 - `TEST_RESULT_2026-09-05.md`
+- `FREEZE_MANIFEST_2026-09-05.md`
+
+Formal disposition:
+
+`STEP_188_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
 
 ## Non-authority boundary
 
@@ -137,4 +150,4 @@ Frozen Step 187, Step 181, Step 182, frozen Steps 185/186, Step 184 R1/R2, PR #9
 
 ## Maturity boundary
 
-Step 188 is freeze-eligible but not frozen. Freeze, merge, production validation, field validation, external authenticity, independent assurance, certification, regulator acceptance, novelty and patentability remain separate governed decisions.
+Step 188 R1 is formally frozen but remains unmerged. Merge, production validation, field validation, external authenticity, independent assurance, certification, regulator acceptance, novelty and patentability remain separate governed decisions.
