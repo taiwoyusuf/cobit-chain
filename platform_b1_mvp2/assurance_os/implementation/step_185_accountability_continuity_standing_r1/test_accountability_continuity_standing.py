@@ -9,7 +9,6 @@ from accountability_continuity_standing import (
     evaluate_accountability_continuity,
 )
 
-
 SCOPE_ID = "AI-WORKFLOW-001:CONSEQUENCE-SCOPE-A"
 BASE_RESPONSIBILITY = {
     "responsible_party_count": 4,
@@ -27,6 +26,8 @@ BASE_ACCOUNTABILITY = {
     "accountability_ambiguity_present": False,
     "orphaned_accountability": False,
     "conflicting_accountability_claims_present": False,
+    "accountability_temporal_ordering_established": True,
+    "accountability_material_change_assessment_complete": True,
     "material_change_after_accountability_assignment": False,
     "accountability_revalidated_after_latest_material_change": False,
 }
@@ -150,6 +151,36 @@ class Step185CandidateStandingTests(unittest.TestCase):
         r = evaluate(accountability={"conflicting_accountability_claims_present": True})
         self.assertEqual(r["accountability_continuity_standing"], CONTRADICTED)
         self.assertIn("CONFLICTING_ACCOUNTABILITY_CLAIMS_PRESENT", r["reasons"])
+
+    def test_temporal_ordering_must_be_established(self):
+        r = evaluate(accountability={"accountability_temporal_ordering_established": False})
+        self.assertEqual(r["accountability_continuity_standing"], NOT_ESTABLISHED)
+        self.assertIn("ACCOUNTABILITY_TEMPORAL_ORDERING_NOT_ESTABLISHED", r["reasons"])
+
+    def test_material_change_assessment_must_be_complete(self):
+        r = evaluate(accountability={"accountability_material_change_assessment_complete": False})
+        self.assertEqual(r["accountability_continuity_standing"], NOT_ESTABLISHED)
+        self.assertIn("ACCOUNTABILITY_MATERIAL_CHANGE_ASSESSMENT_INCOMPLETE", r["reasons"])
+
+    def test_missing_temporal_ordering_fails_closed(self):
+        a = dict(BASE_ACCOUNTABILITY)
+        a.pop("accountability_temporal_ordering_established")
+        r = evaluate_accountability_continuity(
+            responsibility_context=dict(BASE_RESPONSIBILITY), accountability_state=a,
+            handoff_state=dict(BASE_HANDOFF), evidence_state=dict(BASE_EVIDENCE),
+        )
+        self.assertEqual(r["accountability_continuity_standing"], NOT_ESTABLISHED)
+        self.assertIn("ACCOUNTABILITY_ACCOUNTABILITY_TEMPORAL_ORDERING_ESTABLISHED_MISSING", r["reasons"])
+
+    def test_missing_material_change_assessment_fails_closed(self):
+        a = dict(BASE_ACCOUNTABILITY)
+        a.pop("accountability_material_change_assessment_complete")
+        r = evaluate_accountability_continuity(
+            responsibility_context=dict(BASE_RESPONSIBILITY), accountability_state=a,
+            handoff_state=dict(BASE_HANDOFF), evidence_state=dict(BASE_EVIDENCE),
+        )
+        self.assertEqual(r["accountability_continuity_standing"], NOT_ESTABLISHED)
+        self.assertIn("ACCOUNTABILITY_ACCOUNTABILITY_MATERIAL_CHANGE_ASSESSMENT_COMPLETE_MISSING", r["reasons"])
 
     def test_material_change_requires_accountability_revalidation(self):
         r = evaluate(accountability={"material_change_after_accountability_assignment": True, "accountability_revalidated_after_latest_material_change": False})
