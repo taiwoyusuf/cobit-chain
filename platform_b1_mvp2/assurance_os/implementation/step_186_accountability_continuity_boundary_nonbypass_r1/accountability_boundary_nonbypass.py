@@ -10,6 +10,8 @@ Admissibility, perform execution, or modify IRLT-MAG state.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Mapping
 
 
@@ -24,6 +26,12 @@ def _valid_nonempty(value: object) -> bool:
     return type(value) is str and bool(value.strip())
 
 
+def canonical_result_digest(record: Mapping[str, object]) -> str:
+    """Return deterministic SHA-256 over the exact consumed mapping payload."""
+    payload = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def evaluate_accountability_boundary_nonbypass(
     *,
     accountability_result: Mapping[str, object],
@@ -36,9 +44,9 @@ def evaluate_accountability_boundary_nonbypass(
 ) -> dict[str, object]:
     """Fail closed unless accountability and boundary results are exactly bound.
 
-    The binding record is evidence input. This adapter verifies structural and
-    cross-result correspondence; it does not manufacture provenance for that
-    record or independently prove the truth of an upstream system's assertions.
+    The binding record is evidence input. This adapter verifies structural,
+    temporal, digest, and cross-result correspondence; it does not manufacture
+    provenance or independently prove the truth of upstream assertions.
     """
 
     reasons: list[str] = []
@@ -55,7 +63,6 @@ def evaluate_accountability_boundary_nonbypass(
     action = expected_action_id.strip() if _valid_nonempty(expected_action_id) else None
     obj = expected_object_hash.strip() if _valid_nonempty(expected_object_hash) else None
 
-    # Frozen Step 185 contract correspondence.
     if not isinstance(accountability_result, Mapping):
         reasons.append("STEP_185_RESULT_MISSING_OR_INVALID")
     else:
@@ -76,7 +83,6 @@ def evaluate_accountability_boundary_nonbypass(
         if scope is not None and accountability_result.get("declared_scope_id") != scope:
             reasons.append("STEP_185_DECLARED_SCOPE_MISMATCH")
 
-    # Existing Step 179 boundary-enforcement result correspondence.
     if not isinstance(boundary_enforcement_result, Mapping):
         reasons.append("STEP_179_RESULT_MISSING_OR_INVALID")
     else:
@@ -95,7 +101,6 @@ def evaluate_accountability_boundary_nonbypass(
         if obj is not None and boundary_enforcement_result.get("requested_object_hash") != obj:
             reasons.append("STEP_179_REQUESTED_OBJECT_MISMATCH")
 
-    # Explicit scope/action/object binding evidence.
     if not isinstance(binding_record, Mapping):
         reasons.append("SCOPE_ACTION_OBJECT_BINDING_RECORD_MISSING_OR_INVALID")
     else:
@@ -105,6 +110,8 @@ def evaluate_accountability_boundary_nonbypass(
             "object_hash": "BINDING_OBJECT_HASH",
             "binding_evidence_ref": "BINDING_EVIDENCE_REF",
             "binding_basis_version": "BINDING_BASIS_VERSION",
+            "step185_result_digest": "STEP_185_RESULT_DIGEST",
+            "step179_result_digest": "STEP_179_RESULT_DIGEST",
         }
         for field, reason_prefix in binding_fields.items():
             if not _valid_nonempty(binding_record.get(field)):
@@ -116,6 +123,10 @@ def evaluate_accountability_boundary_nonbypass(
             reasons.append("SCOPE_ACTION_OBJECT_BINDING_NOT_CURRENT")
         if binding_record.get("binding_ambiguity_present") is not False:
             reasons.append("SCOPE_ACTION_OBJECT_BINDING_AMBIGUOUS_OR_INVALID")
+        if binding_record.get("binding_temporal_ordering_established") is not True:
+            reasons.append("BINDING_TEMPORAL_ORDERING_NOT_ESTABLISHED")
+        if binding_record.get("binding_change_assessment_complete") is not True:
+            reasons.append("BINDING_CHANGE_ASSESSMENT_INCOMPLETE")
 
         if scope is not None and binding_record.get("declared_scope_id") != scope:
             reasons.append("BINDING_SCOPE_MISMATCH")
@@ -124,13 +135,16 @@ def evaluate_accountability_boundary_nonbypass(
         if obj is not None and binding_record.get("object_hash") != obj:
             reasons.append("BINDING_OBJECT_MISMATCH")
 
-        # Cross-result correspondence, not merely caller-expected-value matching.
         if isinstance(accountability_result, Mapping):
             if binding_record.get("declared_scope_id") != accountability_result.get("declared_scope_id"):
                 reasons.append("BINDING_SCOPE_DOES_NOT_MATCH_STEP_185_RESULT")
+            if binding_record.get("step185_result_digest") != canonical_result_digest(accountability_result):
+                reasons.append("BINDING_STEP_185_PAYLOAD_DIGEST_MISMATCH")
         if isinstance(boundary_enforcement_result, Mapping):
             if binding_record.get("object_hash") != boundary_enforcement_result.get("requested_object_hash"):
                 reasons.append("BINDING_OBJECT_DOES_NOT_MATCH_STEP_179_RESULT")
+            if binding_record.get("step179_result_digest") != canonical_result_digest(boundary_enforcement_result):
+                reasons.append("BINDING_STEP_179_PAYLOAD_DIGEST_MISMATCH")
 
     blocked = bool(reasons)
 
@@ -149,6 +163,8 @@ def evaluate_accountability_boundary_nonbypass(
         "step_185_result_consumed": True,
         "step_179_result_consumed": True,
         "scope_action_object_binding_checked": True,
+        "payload_digest_binding_checked": True,
+        "binding_temporal_currentness_checked": True,
         "binding_provenance_manufactured": False,
         "binding_authority_granted": False,
         "action_admissibility_granted": False,
