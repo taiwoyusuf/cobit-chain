@@ -3,6 +3,7 @@ import unittest
 from accountability_boundary_nonbypass import (
     INTEGRATION_NOT_ESTABLISHED,
     INTEGRATION_SUPPORTABLE,
+    canonical_result_digest,
     evaluate_accountability_boundary_nonbypass,
 )
 
@@ -31,23 +32,34 @@ STEP179 = {
     "requested_object_hash": OBJECT,
 }
 
-BINDING = {
-    "declared_scope_id": SCOPE,
-    "action_id": ACTION,
-    "object_hash": OBJECT,
-    "binding_evidence_ref": "EVIDENCE-REF-001",
-    "binding_basis_version": "1.0",
-    "binding_traceable": True,
-    "binding_current": True,
-    "binding_ambiguity_present": False,
-}
+
+def binding_for(step185=None, step179=None):
+    s185 = dict(STEP185) if step185 is None else step185
+    s179 = dict(STEP179) if step179 is None else step179
+    return {
+        "declared_scope_id": SCOPE,
+        "action_id": ACTION,
+        "object_hash": OBJECT,
+        "binding_evidence_ref": "EVIDENCE-REF-001",
+        "binding_basis_version": "1.0",
+        "binding_traceable": True,
+        "binding_current": True,
+        "binding_ambiguity_present": False,
+        "binding_temporal_ordering_established": True,
+        "binding_change_assessment_complete": True,
+        "step185_result_digest": canonical_result_digest(s185),
+        "step179_result_digest": canonical_result_digest(s179),
+    }
 
 
 def run(*, step185=None, step179=None, binding=None, scope=SCOPE, action=ACTION, obj=OBJECT):
+    s185 = dict(STEP185) if step185 is None else step185
+    s179 = dict(STEP179) if step179 is None else step179
+    b = binding_for(s185, s179) if binding is None else binding
     return evaluate_accountability_boundary_nonbypass(
-        accountability_result=dict(STEP185) if step185 is None else step185,
-        boundary_enforcement_result=dict(STEP179) if step179 is None else step179,
-        binding_record=dict(BINDING) if binding is None else binding,
+        accountability_result=s185,
+        boundary_enforcement_result=s179,
+        binding_record=b,
         expected_scope_id=scope,
         expected_action_id=action,
         expected_object_hash=obj,
@@ -62,6 +74,8 @@ class Step186Tests(unittest.TestCase):
         self.assertEqual(r["integration_decision"], "ACCOUNTABILITY_BOUNDARY_PREREQUISITES_SUPPORTABLE")
         self.assertEqual(r["no_bind_state"], "SEPARATE_EXECUTION_TIME_REVALIDATION_REQUIRED")
         self.assertFalse(r["execution_authorized"])
+        self.assertTrue(r["payload_digest_binding_checked"])
+        self.assertTrue(r["binding_temporal_currentness_checked"])
 
     def test_step185_failure_blocks(self):
         s = dict(STEP185)
@@ -92,39 +106,87 @@ class Step186Tests(unittest.TestCase):
         self.assertIn("STEP_179_REQUESTED_OBJECT_MISMATCH", r["reasons"])
 
     def test_binding_scope_mismatch_blocks(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["declared_scope_id"] = "OTHER"
         r = run(binding=b)
         self.assertIn("BINDING_SCOPE_MISMATCH", r["reasons"])
         self.assertIn("BINDING_SCOPE_DOES_NOT_MATCH_STEP_185_RESULT", r["reasons"])
 
     def test_binding_action_mismatch_blocks(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["action_id"] = "OTHER-ACTION"
         r = run(binding=b)
         self.assertIn("BINDING_ACTION_MISMATCH", r["reasons"])
 
     def test_binding_object_mismatch_blocks(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["object_hash"] = "sha256:other"
         r = run(binding=b)
         self.assertIn("BINDING_OBJECT_MISMATCH", r["reasons"])
         self.assertIn("BINDING_OBJECT_DOES_NOT_MATCH_STEP_179_RESULT", r["reasons"])
 
     def test_binding_must_be_traceable(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["binding_traceable"] = False
         self.assertIn("SCOPE_ACTION_OBJECT_BINDING_NOT_TRACEABLE", run(binding=b)["reasons"])
 
     def test_binding_must_be_current(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["binding_current"] = False
         self.assertIn("SCOPE_ACTION_OBJECT_BINDING_NOT_CURRENT", run(binding=b)["reasons"])
 
     def test_binding_ambiguity_blocks(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["binding_ambiguity_present"] = True
         self.assertIn("SCOPE_ACTION_OBJECT_BINDING_AMBIGUOUS_OR_INVALID", run(binding=b)["reasons"])
+
+    def test_binding_temporal_ordering_required(self):
+        b = binding_for()
+        b["binding_temporal_ordering_established"] = False
+        self.assertIn("BINDING_TEMPORAL_ORDERING_NOT_ESTABLISHED", run(binding=b)["reasons"])
+
+    def test_binding_change_assessment_required(self):
+        b = binding_for()
+        b["binding_change_assessment_complete"] = False
+        self.assertIn("BINDING_CHANGE_ASSESSMENT_INCOMPLETE", run(binding=b)["reasons"])
+
+    def test_missing_binding_temporal_ordering_fails_closed(self):
+        b = binding_for()
+        b.pop("binding_temporal_ordering_established")
+        self.assertIn("BINDING_TEMPORAL_ORDERING_NOT_ESTABLISHED", run(binding=b)["reasons"])
+
+    def test_missing_binding_change_assessment_fails_closed(self):
+        b = binding_for()
+        b.pop("binding_change_assessment_complete")
+        self.assertIn("BINDING_CHANGE_ASSESSMENT_INCOMPLETE", run(binding=b)["reasons"])
+
+    def test_step185_payload_swap_detected_by_digest(self):
+        b = binding_for()
+        s = dict(STEP185)
+        s["accountable_owner_id"] = "SWAPPED-OWNER"
+        r = run(step185=s, binding=b)
+        self.assertIn("BINDING_STEP_185_PAYLOAD_DIGEST_MISMATCH", r["reasons"])
+
+    def test_step179_payload_swap_detected_by_digest(self):
+        b = binding_for()
+        s = dict(STEP179)
+        s["consequence_mode"] = "RECOVERY"
+        r = run(step179=s, binding=b)
+        self.assertIn("BINDING_STEP_179_PAYLOAD_DIGEST_MISMATCH", r["reasons"])
+
+    def test_missing_step185_digest_fails_closed(self):
+        b = binding_for()
+        b.pop("step185_result_digest")
+        r = run(binding=b)
+        self.assertIn("STEP_185_RESULT_DIGEST_MISSING_OR_INVALID", r["reasons"])
+        self.assertIn("BINDING_STEP_185_PAYLOAD_DIGEST_MISMATCH", r["reasons"])
+
+    def test_missing_step179_digest_fails_closed(self):
+        b = binding_for()
+        b.pop("step179_result_digest")
+        r = run(binding=b)
+        self.assertIn("STEP_179_RESULT_DIGEST_MISSING_OR_INVALID", r["reasons"])
+        self.assertIn("BINDING_STEP_179_PAYLOAD_DIGEST_MISMATCH", r["reasons"])
 
     def test_missing_binding_record_blocks(self):
         r = run(binding={})
@@ -161,7 +223,7 @@ class Step186Tests(unittest.TestCase):
         self.assertIn("EXPECTED_OBJECT_HASH_MISSING_OR_INVALID", run(obj="")["reasons"])
 
     def test_caller_override_rejected_when_blocked(self):
-        b = dict(BINDING)
+        b = binding_for()
         b["binding_current"] = False
         self.assertTrue(run(binding=b)["caller_override_rejected"])
 
@@ -172,6 +234,7 @@ class Step186Tests(unittest.TestCase):
         self.assertFalse(r["execution_authorized"])
         self.assertFalse(r["physical_action_executed"])
         self.assertFalse(r["irlt_mag_state_changed"])
+        self.assertFalse(r["binding_provenance_manufactured"])
 
 
 if __name__ == "__main__":
