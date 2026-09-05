@@ -33,6 +33,23 @@ The suite tests whether the architecture preserves uncertainty, contradiction, r
    - Recovery does not erase the disturbed historical event.
    - Return to reliance requires current-world correspondence, current criteria, current evidence, current authority, closure of blocking residual obligations, and independent re-verification where required.
 
+## R1.1 adversarial hardening
+
+R1.1 expands the challenge surface without adding new top-level controls. The eight hardening attacks are:
+
+1. **Revocation during transition** — authority may disappear after execution begins but before an irreversible consequence boundary is crossed. Continuing authority must be re-established at that boundary; otherwise the route is held or residual-consequence review is required.
+2. **Competing execution claims** — multiple agents/processes may simultaneously appear eligible for the same consequence. A single serialized winner and retirement of losing claims must be established before consequence.
+3. **Retry / replay / duplicate consequence** — retryability is not harmless when the prior physical or financial consequence state is unknown. Retry requires known prior state, matching idempotency identity, and established duplicate-consequence prevention.
+4. **Partial irreversible consequence** — a successful STOP or failed completion can still leave a partial consequence that cannot be undone. Partial irreversible consequence blocks re-closure.
+5. **Delayed / latent consequence** — immediate observations may look acceptable while a consequence remains physically capable of manifesting later. Re-closure is blocked while the declared latent observation window remains open.
+6. **False witness independence** — two witnesses sharing a material clock, network, sensor, database, model, power supply, or other failure domain count as one dependency domain, not two independent corroborators.
+7. **Contradictory digital and physical witnesses** — a digital execution receipt and an independent physical witness may disagree. The contradiction is preserved rather than normalized into a successful state.
+8. **Residual propagation after STOP** — execution termination is not consequence termination. Heat, pressure, radiation, contamination, settlement, fluid/drug transfer, data propagation, or another residual process may continue after the stop command succeeds.
+
+These attacks sharpen the consequence-side distinction:
+
+`AUTHORITY WITHDRAWN != EXECUTION TERMINATED != CONSEQUENCE TERMINATED != RECLOSURE ESTABLISHED`
+
 ## Existing controls reused, not reimplemented
 
 This package is intentionally a research challenge layer over existing controls, including:
@@ -54,6 +71,9 @@ Those shared controls remain authoritative for their respective semantics. This 
 - `NOT_DETECTED != ABSENT`
 - `EVIDENCE_SERVICE_UNAVAILABLE != NO_CONTRADICTION_FOUND`
 - `EXECUTION_SUCCESS != INTENDED_OUTCOME_ESTABLISHED`
+- `STOP_SUCCESS != CONSEQUENCE_TERMINATION`
+- `RETRY_REQUEST != DUPLICATE_CONSEQUENCE_SAFE`
+- `MULTIPLE_ELIGIBLE_CLAIMS != SINGLE_CONSEQUENCE_ROUTE`
 - `RECOVERY != RECLOSURE`
 - `RECLOSURE != RETURN_TO_RELIANCE`
 - Shared failure domains must remain explicit.
