@@ -3,9 +3,29 @@ import unittest
 from residual_consequence_assurance import evaluate_residual_consequence_assurance
 
 
-BASE_EXEC = {"execution_time_standing": "SUPPORTABLE"}
-BASE_OUTCOME = {"correspondence_standing": "OUTCOME_CORRESPONDENCE_SUPPORTABLE"}
-BASE_RECLOSURE = {"reclosure_standing": "RECLOSURE_SUPPORTABLE"}
+BASE_EXEC = {
+    "execution_time_standing": "SUPPORTABLE",
+    "execution_time_decision": "ADMISSIBLE",
+    "no_bind_state": "INACTIVE",
+    "binding_authority_granted": False,
+    "prior_decision_preserved_as_history": True,
+}
+BASE_OUTCOME = {
+    "correspondence_standing": "OUTCOME_CORRESPONDENCE_SUPPORTABLE",
+    "commit_occurred": True,
+    "execution_succeeded": True,
+    "intended_outcome_established": True,
+    "historical_facts": {"commit_occurred": True, "execution_succeeded": True},
+    "no_bind_state": "INACTIVE",
+    "binding_authority_granted": False,
+}
+BASE_RECLOSURE = {
+    "reclosure_standing": "RECLOSURE_SUPPORTABLE",
+    "return_to_reliance_supportable": True,
+    "no_bind_state": "SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED",
+    "binding_authority_granted": False,
+    "historical_facts_rewritten": False,
+}
 BASE_CONSEQUENCE = {
     "historical_event_preserved": True,
     "authority_current_at_irreversible_boundary": True,
@@ -44,9 +64,9 @@ def evaluate(**overrides):
     evidence = dict(BASE_EVIDENCE)
     evidence.update(overrides.pop("evidence", {}))
     return evaluate_residual_consequence_assurance(
-        execution_time_result=overrides.pop("execution", BASE_EXEC),
-        outcome_result=overrides.pop("outcome", BASE_OUTCOME),
-        reclosure_result=overrides.pop("reclosure", BASE_RECLOSURE),
+        execution_time_result=overrides.pop("execution", dict(BASE_EXEC)),
+        outcome_result=overrides.pop("outcome", dict(BASE_OUTCOME)),
+        reclosure_result=overrides.pop("reclosure", dict(BASE_RECLOSURE)),
         consequence_state=consequence,
         race_retry_state=race_retry,
         evidence_state=evidence,
@@ -115,7 +135,9 @@ class Step184ResidualConsequenceAssuranceTests(unittest.TestCase):
         self.assertIn("DUPLICATE_CONSEQUENCE_PREVENTION_NOT_ESTABLISHED", r["reasons"])
 
     def test_prior_outcome_must_be_supportable(self):
-        r = evaluate(outcome={"correspondence_standing": "OUTCOME_DIVERGED"})
+        outcome = dict(BASE_OUTCOME)
+        outcome["correspondence_standing"] = "OUTCOME_DIVERGED"
+        r = evaluate(outcome=outcome)
         self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
         self.assertIn("OUTCOME_CORRESPONDENCE_NOT_SUPPORTABLE", r["reasons"])
 
@@ -123,6 +145,74 @@ class Step184ResidualConsequenceAssuranceTests(unittest.TestCase):
         r = evaluate(evidence={"negative_evidence_basis_complete": False})
         self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
         self.assertIn("NEGATIVE_EVIDENCE_BASIS_NOT_ESTABLISHED", r["reasons"])
+
+    def test_missing_negative_residual_flag_fails_closed(self):
+        consequence = dict(BASE_CONSEQUENCE)
+        consequence.pop("residual_propagation_active")
+        r = evaluate_residual_consequence_assurance(
+            execution_time_result=dict(BASE_EXEC),
+            outcome_result=dict(BASE_OUTCOME),
+            reclosure_result=dict(BASE_RECLOSURE),
+            consequence_state=consequence,
+            race_retry_state=dict(BASE_RACE_RETRY),
+            evidence_state=dict(BASE_EVIDENCE),
+        )
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("CONSEQUENCE_RESIDUAL_PROPAGATION_ACTIVE_MISSING", r["reasons"])
+
+    def test_missing_contradiction_state_fails_closed(self):
+        evidence = dict(BASE_EVIDENCE)
+        evidence.pop("contradiction_present")
+        r = evaluate_residual_consequence_assurance(
+            execution_time_result=dict(BASE_EXEC),
+            outcome_result=dict(BASE_OUTCOME),
+            reclosure_result=dict(BASE_RECLOSURE),
+            consequence_state=dict(BASE_CONSEQUENCE),
+            race_retry_state=dict(BASE_RACE_RETRY),
+            evidence_state=evidence,
+        )
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("EVIDENCE_CONTRADICTION_PRESENT_MISSING", r["reasons"])
+
+    def test_missing_retry_state_fails_closed(self):
+        race_retry = dict(BASE_RACE_RETRY)
+        race_retry.pop("retry_requested")
+        r = evaluate_residual_consequence_assurance(
+            execution_time_result=dict(BASE_EXEC),
+            outcome_result=dict(BASE_OUTCOME),
+            reclosure_result=dict(BASE_RECLOSURE),
+            consequence_state=dict(BASE_CONSEQUENCE),
+            race_retry_state=race_retry,
+            evidence_state=dict(BASE_EVIDENCE),
+        )
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("RACE_RETRY_RETRY_REQUESTED_MISSING", r["reasons"])
+
+    def test_malformed_competing_claim_count_fails_closed_without_exception(self):
+        r = evaluate(race_retry={"active_competing_claim_count": "2"})
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("RACE_RETRY_ACTIVE_COMPETING_CLAIM_COUNT_INVALID", r["reasons"])
+
+    def test_supportable_label_cannot_override_upstream_non_authority_contract(self):
+        forged = dict(BASE_EXEC)
+        forged["binding_authority_granted"] = True
+        r = evaluate(execution=forged)
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("EXECUTION_TIME_NONAUTHORITY_CONTRACT_NOT_ESTABLISHED", r["reasons"])
+
+    def test_supportable_outcome_label_requires_intended_outcome_fact(self):
+        forged = dict(BASE_OUTCOME)
+        forged["intended_outcome_established"] = False
+        r = evaluate(outcome=forged)
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("INTENDED_OUTCOME_NOT_ESTABLISHED", r["reasons"])
+
+    def test_supportable_reclosure_label_requires_nonbinding_contract(self):
+        forged = dict(BASE_RECLOSURE)
+        forged["no_bind_state"] = "INACTIVE"
+        r = evaluate(reclosure=forged)
+        self.assertEqual(r["residual_consequence_standing"], "RESIDUAL_CONSEQUENCE_STANDING_NOT_ESTABLISHED")
+        self.assertIn("RECLOSURE_NO_BIND_CONTRACT_NOT_ESTABLISHED", r["reasons"])
 
 
 if __name__ == "__main__":
