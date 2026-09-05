@@ -1,6 +1,6 @@
 # Step 187 — Accountability Continuity Commit-Time Revalidation R1
 
-Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Step 187 establishes whether the exact accountability/boundary result remains bo
 
 A separate commit-time binding must be established.
 
-## Hardened invariants
+## Frozen invariants
 
 - `ACCOUNTABILITY_BOUNDARY_SUPPORTABLE != COMMIT_TIME_ACCOUNTABILITY_CONTINUITY`
 - `EXECUTION_TIME_ADMISSIBLE != COMMIT_AUTHORIZED`
@@ -43,7 +43,7 @@ Repository step numbers represent implementation chronology, not semantic lifecy
 
 ## Source identity contract
 
-Step 187 checks the frozen Step 186 evaluator/test identities and the current Step 180 evaluator/test identities used by this candidate:
+Step 187 checks the frozen Step 186 evaluator/test identities and the Step 180 evaluator/test identities used by this frozen configuration:
 
 - Step 186 evaluator: `356d7b249dff4c0c48be24e6470f2519cae0594d`
 - Step 186 tests: `a9acc4cdc0d1288999744760eac2223d55963a54`
@@ -68,7 +68,7 @@ The separate commit-binding record must contain:
 
 Missing/malformed digests, missing/wrong source identity, swapped payloads, and non-JSON upstream payloads fail closed.
 
-## Static-review corrections
+## Static-review corrections included in freeze
 
 ### 1. Step 186 result-contract completeness
 
@@ -77,17 +77,21 @@ The initial Step 187 subset did not explicitly require:
 - `separate_execution_time_revalidation_required = True`;
 - `historical_facts_rewritten = False`.
 
-The hardened candidate now requires both.
+The frozen configuration requires both.
 
 ### 2. Step 180 supportable-change consistency
 
-A supportable Step 180 result containing changed dimensions must reconcile all changed dimensions to its immaterial-change set, with no material or unclassified changes remaining.
+A supportable Step 180 result containing changed dimensions must reconcile all changed dimensions exactly to its immaterial-change set, with no material or unclassified changes remaining.
 
 `STEP_180_SUPPORTABLE_WITH_CHANGES -> CHANGED_DIMENSIONS = IMMATERIAL_CHANGES`
 
-## Hardened verification
+### 3. Malformed/replayed binding evidence
 
-Tested commit:
+Missing digests, missing source identity, swapped payloads, and non-JSON upstream payloads fail closed.
+
+## Frozen executable identity
+
+Hardened tested commit:
 `d209c3e9584e963fca69f9004b201b497a4d4ae8`
 
 Tested tree:
@@ -108,10 +112,13 @@ Workflow run:
 Regression suite:
 **34 deterministic tests — SUCCESS**
 
-Static-review disposition:
-`STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
+Pre-freeze documentation-head run:
+`33978812210` — candidate job `SUCCESS`
 
-Records:
+Freeze record:
+- `FREEZE_MANIFEST_2026-09-05.md`
+
+Review/evidence records:
 - `STATIC_REVIEW_2026-09-05.md`
 - `TEST_RESULT_2026-09-05.md`
 
@@ -139,6 +146,10 @@ Step 187 verifies source identity and exact payload correspondence. It does not 
 
 Step 180, frozen Step 185, frozen Step 186, Step 184 R1/R2, PR #95-#101, and IRLT-MAG remain untouched.
 
-## Maturity boundary
+## Freeze discipline
 
-Step 187 is freeze-eligible but not frozen. Freeze, merge, production validation, external authenticity, field validation, independent assurance, certification, regulator acceptance, novelty, and patentability remain separate governed decisions.
+Step 187 R1 is an `APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION` and remains `NOT_MERGED`.
+
+Any substantive future change to the frozen evaluator, primary regression contract, or static-hardening regression contract requires explicit unfreeze, re-review, complete re-test, and new freeze evidence, or a clearly identified successor revision.
+
+Freeze does not establish production readiness, external authenticity, field validation, independent assurance, certification, regulator acceptance, novelty, or patentability.
