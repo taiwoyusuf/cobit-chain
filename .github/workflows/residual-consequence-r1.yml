@@ -1,0 +1,32 @@
+name: Residual-Consequence R1 Challenge Suite
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/residual_consequence_r1/**'
+      - '.github/workflows/residual-consequence-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-challenge-suite:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile bounded evaluator and tests
+        run: python -m py_compile residual_consequence_r1.py test_residual_consequence_r1.py
+
+      - name: Run adversarial challenge suite
+        run: python -m unittest -v test_residual_consequence_r1.py
