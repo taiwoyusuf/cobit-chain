@@ -1,12 +1,7 @@
 """Step 184 — Residual-Consequence Assurance R2 candidate.
 
-R2 preserves the frozen R1 consequence boundary and implements two reproduced
-successor deltas established in the isolated R2 research lane:
-
-1. consequence closure always requires explicit termination evidence, whether or
-   not a STOP command occurred; and
-2. a Step 183 re-closure proposition that predates a later material change cannot
-   support closure until re-closure is evaluated again after that change.
+R2 preserves the frozen R1 consequence boundary and implements reproduced
+successor deltas established in the isolated R2 research lane.
 
 This evaluator does not execute actions, grant authority, close regulated
 investigations, or modify IRLT-MAG state.
@@ -39,7 +34,6 @@ def _result(standing: str, reason: str, reasons: list[str], **extra) -> dict:
 
 
 def _required_bool(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> bool | None:
-    """Return an explicitly supplied bool; missing/invalid values fail closed."""
     if field not in record:
         reasons.append(f"{prefix}_{field.upper()}_MISSING")
         return None
@@ -51,7 +45,6 @@ def _required_bool(record: Mapping[str, object], field: str, reasons: list[str],
 
 
 def _required_nonnegative_int(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> int | None:
-    """Reject coercion and booleans; malformed counts become bounded uncertainty."""
     if field not in record:
         reasons.append(f"{prefix}_{field.upper()}_MISSING")
         return None
@@ -68,7 +61,6 @@ def _validate_upstream_contracts(
     reclosure_result: Mapping[str, object],
     reasons: list[str],
 ) -> tuple[object, object, object]:
-    """Validate the declared non-binding output contracts of Steps 180, 182, 183."""
     execution_standing = execution_time_result.get("execution_time_standing")
     outcome_standing = outcome_result.get("correspondence_standing")
     reclosure_standing = reclosure_result.get("reclosure_standing")
@@ -131,16 +123,12 @@ def evaluate_residual_consequence_assurance(
 ) -> dict:
     """Evaluate whether residual consequence is closed within a declared scope.
 
-    R2 preserves the R1 distinctions and adds:
+    R2 adds these successor invariants:
 
     CONSEQUENCE CLOSURE -> EXPLICIT TERMINATION EVIDENCE
     MATERIAL CHANGE AFTER RECLOSURE -> RECLOSURE REEVALUATION REQUIRED
-
-    A positive result remains non-binding and still requires separate current
-    Authority Standing and Action Admissibility before any new consequence-producing
-    action.
+    NEGATIVE TEMPORAL CLAIM -> TEMPORAL ORDERING + MATERIAL-CHANGE ASSESSMENT
     """
-
     if not all(isinstance(x, Mapping) for x in (
         execution_time_result,
         outcome_result,
@@ -157,65 +145,43 @@ def evaluate_residual_consequence_assurance(
         )
 
     reasons: list[str] = []
-
     execution_standing, outcome_standing, reclosure_standing = _validate_upstream_contracts(
         execution_time_result, outcome_result, reclosure_result, reasons
     )
 
     history_preserved = _required_bool(consequence_state, "historical_event_preserved", reasons, "CONSEQUENCE")
-    authority_current_at_boundary = _required_bool(
-        consequence_state, "authority_current_at_irreversible_boundary", reasons, "CONSEQUENCE"
-    )
-    irreversible_boundary_crossed = _required_bool(
-        consequence_state, "irreversible_boundary_crossed", reasons, "CONSEQUENCE"
-    )
+    authority_current_at_boundary = _required_bool(consequence_state, "authority_current_at_irreversible_boundary", reasons, "CONSEQUENCE")
+    irreversible_boundary_crossed = _required_bool(consequence_state, "irreversible_boundary_crossed", reasons, "CONSEQUENCE")
     stop_succeeded = _required_bool(consequence_state, "stop_command_succeeded", reasons, "CONSEQUENCE")
-    termination_observed = _required_bool(
-        consequence_state, "consequence_termination_observed", reasons, "CONSEQUENCE"
-    )
-    partial_irreversible = _required_bool(
-        consequence_state, "partial_irreversible_consequence", reasons, "CONSEQUENCE"
-    )
-    residual_propagation = _required_bool(
-        consequence_state, "residual_propagation_active", reasons, "CONSEQUENCE"
-    )
-    latent_window_open = _required_bool(
-        consequence_state, "latent_consequence_window_open", reasons, "CONSEQUENCE"
-    )
+    termination_observed = _required_bool(consequence_state, "consequence_termination_observed", reasons, "CONSEQUENCE")
+    partial_irreversible = _required_bool(consequence_state, "partial_irreversible_consequence", reasons, "CONSEQUENCE")
+    residual_propagation = _required_bool(consequence_state, "residual_propagation_active", reasons, "CONSEQUENCE")
+    latent_window_open = _required_bool(consequence_state, "latent_consequence_window_open", reasons, "CONSEQUENCE")
     residual_effects = _required_bool(consequence_state, "residual_effects_present", reasons, "CONSEQUENCE")
-    current_physical = _required_bool(
-        consequence_state, "current_physical_correspondence_established", reasons, "CONSEQUENCE"
-    )
-    witness_qualified = _required_bool(
-        consequence_state, "witness_proposition_qualified", reasons, "CONSEQUENCE"
-    )
+    current_physical = _required_bool(consequence_state, "current_physical_correspondence_established", reasons, "CONSEQUENCE")
+    witness_qualified = _required_bool(consequence_state, "witness_proposition_qualified", reasons, "CONSEQUENCE")
     observation_current = _required_bool(consequence_state, "observation_current", reasons, "CONSEQUENCE")
 
-    material_change_after_reclosure = _required_bool(
-        temporal_state, "material_change_after_reclosure", reasons, "TEMPORAL"
-    )
+    temporal_ordering_established = _required_bool(temporal_state, "temporal_ordering_established", reasons, "TEMPORAL")
+    material_change_assessment_complete = _required_bool(temporal_state, "material_change_assessment_complete", reasons, "TEMPORAL")
+    material_change_after_reclosure = _required_bool(temporal_state, "material_change_after_reclosure", reasons, "TEMPORAL")
     reclosure_reevaluated_after_change = _required_bool(
-        temporal_state,
-        "reclosure_reevaluated_after_latest_material_change",
-        reasons,
-        "TEMPORAL",
+        temporal_state, "reclosure_reevaluated_after_latest_material_change", reasons, "TEMPORAL"
     )
 
     if history_preserved is False:
         reasons.append("HISTORICAL_EVENT_PRESERVATION_NOT_ESTABLISHED")
     if irreversible_boundary_crossed is True and authority_current_at_boundary is not True:
         reasons.append("AUTHORITY_NOT_CURRENT_AT_IRREVERSIBLE_BOUNDARY")
-
-    # R2 successor delta RC2-TERM-01: explicit consequence termination evidence
-    # is required for any positive closure, independently of whether STOP occurred.
     if termination_observed is False:
         reasons.append("CONSEQUENCE_TERMINATION_NOT_OBSERVED")
     if stop_succeeded is True and termination_observed is not True:
         reasons.append("STOP_SUCCESS_WITHOUT_CONSEQUENCE_TERMINATION_EVIDENCE")
 
-    # R2 successor delta RC2-TEMP-01: Step 183 re-closure is a historical
-    # proposition if a material change occurs afterward. It must be re-evaluated
-    # after the latest material change before it can support current closure.
+    if temporal_ordering_established is False:
+        reasons.append("TEMPORAL_ORDERING_NOT_ESTABLISHED")
+    if material_change_assessment_complete is False:
+        reasons.append("MATERIAL_CHANGE_ASSESSMENT_INCOMPLETE")
     if material_change_after_reclosure is True and reclosure_reevaluated_after_change is not True:
         reasons.append("RECLOSURE_BASIS_STALE_AFTER_MATERIAL_CHANGE")
 
@@ -235,11 +201,8 @@ def evaluate_residual_consequence_assurance(
         reasons.append("CONSEQUENCE_OBSERVATION_NOT_CURRENT")
 
     contradiction_present = _required_bool(evidence_state, "contradiction_present", reasons, "EVIDENCE")
-    independent_domains = _required_bool(
-        evidence_state, "independent_failure_domains_established", reasons, "EVIDENCE"
-    )
+    independent_domains = _required_bool(evidence_state, "independent_failure_domains_established", reasons, "EVIDENCE")
     negative_basis = _required_bool(evidence_state, "negative_evidence_basis_complete", reasons, "EVIDENCE")
-
     if contradiction_present is True:
         reasons.append("CONTRADICTORY_CONSEQUENCE_EVIDENCE_PRESENT")
     if independent_domains is False:
@@ -247,33 +210,20 @@ def evaluate_residual_consequence_assurance(
     if negative_basis is False:
         reasons.append("NEGATIVE_EVIDENCE_BASIS_NOT_ESTABLISHED")
 
-    competing_claims = _required_nonnegative_int(
-        race_retry_state, "active_competing_claim_count", reasons, "RACE_RETRY"
-    )
+    competing_claims = _required_nonnegative_int(race_retry_state, "active_competing_claim_count", reasons, "RACE_RETRY")
     retry_requested = _required_bool(race_retry_state, "retry_requested", reasons, "RACE_RETRY")
-
     if competing_claims is not None and competing_claims > 1:
-        winner_serialized = _required_bool(
-            race_retry_state, "single_winner_serialized", reasons, "RACE_RETRY"
-        )
-        losing_retired = _required_bool(
-            race_retry_state, "losing_claims_retired", reasons, "RACE_RETRY"
-        )
+        winner_serialized = _required_bool(race_retry_state, "single_winner_serialized", reasons, "RACE_RETRY")
+        losing_retired = _required_bool(race_retry_state, "losing_claims_retired", reasons, "RACE_RETRY")
         if winner_serialized is False:
             reasons.append("COMPETING_EXECUTION_CLAIMS_NOT_SERIALIZED")
         if losing_retired is False:
             reasons.append("LOSING_EXECUTION_CLAIMS_NOT_RETIRED")
 
     if retry_requested is True:
-        prior_state_known = _required_bool(
-            race_retry_state, "prior_attempt_consequence_state_known", reasons, "RACE_RETRY"
-        )
-        idempotency_matches = _required_bool(
-            race_retry_state, "idempotency_identity_matches", reasons, "RACE_RETRY"
-        )
-        duplicate_prevention = _required_bool(
-            race_retry_state, "duplicate_consequence_prevention_established", reasons, "RACE_RETRY"
-        )
+        prior_state_known = _required_bool(race_retry_state, "prior_attempt_consequence_state_known", reasons, "RACE_RETRY")
+        idempotency_matches = _required_bool(race_retry_state, "idempotency_identity_matches", reasons, "RACE_RETRY")
+        duplicate_prevention = _required_bool(race_retry_state, "duplicate_consequence_prevention_established", reasons, "RACE_RETRY")
         if prior_state_known is False:
             reasons.append("PRIOR_ATTEMPT_CONSEQUENCE_STATE_UNKNOWN")
         if idempotency_matches is False:
@@ -319,6 +269,8 @@ def evaluate_residual_consequence_assurance(
         authority_current_at_irreversible_boundary=authority_current_at_boundary,
         stop_command_succeeded=stop_succeeded,
         consequence_termination_observed=termination_observed,
+        temporal_ordering_established=temporal_ordering_established,
+        material_change_assessment_complete=material_change_assessment_complete,
         material_change_after_reclosure=material_change_after_reclosure,
         reclosure_reevaluated_after_latest_material_change=reclosure_reevaluated_after_change,
         partial_irreversible_consequence=partial_irreversible,
