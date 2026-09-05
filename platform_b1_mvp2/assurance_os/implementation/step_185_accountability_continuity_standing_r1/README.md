@@ -1,12 +1,12 @@
 # Step 185 — Accountability Continuity Standing R1
 
-Status: `IMPLEMENTED_BOUNDED_CANDIDATE / STATIC_REVIEW_HARDENING_APPLIED / NOT_FROZEN / NOT_MERGED`
+Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
 
 ## Purpose
 
 Establish whether accountable ownership for a declared consequence scope remains identifiable, current, accepted, evidenced, and continuous across organizational, system, vendor, institutional, shift, or agent handoffs.
 
-Step 185 does **not** create another RACI engine and does **not** grant authority. It converts the research finding from PR #99 into a bounded shared-core candidate standing proposition.
+Step 185 does **not** create another RACI engine and does **not** grant authority. It formalizes the materially distinct shared-core standing proposition established in PR #99 research.
 
 ## Core distinctions
 
@@ -15,19 +15,6 @@ Step 185 does **not** create another RACI engine and does **not** grant authorit
 - `AUTHORITY != CAPABILITY`
 - `SHARED_RESPONSIBILITY != ACCOUNTABILITY_DILUTION`
 - `ACTION_TRACEABILITY != ACCOUNTABILITY_TRACEABILITY`
-
-## Core continuity invariant
-
-`ACCOUNTABILITY_HANDOFF -> IDENTIFIED_SUCCESSOR + ACCEPTED_SCOPE + CURRENT_MANDATE + PRESERVED_OBLIGATIONS + TRACEABLE_TRANSFER`
-
-Additional candidate invariants:
-
-- `ACCOUNTABILITY_CONTINUITY_SUPPORTABLE != AUTHORITY_GRANTED`
-- `VALID_AUTHORITY != ACCOUNTABILITY_CONTINUITY`
-- `ACCOUNTABILITY_CONTINUITY_NOT_SUPPORTABLE -> ACTION_ADMISSIBILITY_NOT_SUPPORTABLE_ON_ACCOUNTABILITY_BASIS`
-- `MATERIAL_CHANGE_AFTER_ACCOUNTABILITY_ASSIGNMENT -> ACCOUNTABILITY_REVALIDATION_REQUIRED`
-- `ACCOUNTABILITY_RESULT_REUSE -> EXACT_DECLARED_SCOPE_BINDING_REQUIRED`
-- `COMPOSITION_INPUT -> STEP_185_RESULT_CONTRACT_VERIFIED`
 
 ## Semantic placement
 
@@ -38,39 +25,46 @@ Additional candidate invariants:
 → `Execution-Time Revalidation`
 → `Commit / Execution`
 
-Step numbering records implementation chronology:
-
 `STEP_NUMBER = IMPLEMENTATION_CHRONOLOGY`
 
 `STEP_NUMBER != SEMANTIC_LIFECYCLE_ORDER`
 
-Therefore the chronological label Step 185 does not imply that Accountability Continuity occurs semantically after Step 184 Residual-Consequence Assurance.
+Step 185 therefore does not imply that Accountability Continuity occurs semantically after Step 184 Residual-Consequence Assurance.
 
-## Existing-control reuse / non-duplication
+## Candidate invariants
 
-- AI Accountability RACI Matrix Engine remains authoritative for lifecycle role and decision-right assignment.
-- Production Ownership Continuity Assurance remains the Platform B operational ownership-continuity capability.
-- ShiftTrust Escalation Lineage remains the shift/escalation-specific inheritance capability.
-- Step 170 remains authoritative for Authority Standing / No-Bind and existing Action Admissibility.
-- Step 178 remains authoritative for Disposition Standing and other boundary assurance invariants.
-- Step 179 remains authoritative for existing boundary enforcement.
-- Step 180 remains authoritative for evaluation-to-commit execution-time revalidation.
-- Step 184 R1/R2 remain untouched and authoritative for their frozen residual-consequence configurations.
+`ACCOUNTABILITY_HANDOFF -> IDENTIFIED_SUCCESSOR + ACCEPTED_SCOPE + CURRENT_MANDATE + PRESERVED_OBLIGATIONS + TRACEABLE_TRANSFER`
 
-Step 185 adds only the missing reusable standing proposition: **continuity of accountable ownership for the declared consequence scope**.
+`ACCOUNTABILITY_CONTINUITY_SUPPORTABLE != AUTHORITY_GRANTED`
 
-## Candidate composition adapter
+`VALID_AUTHORITY != ACCOUNTABILITY_CONTINUITY`
 
-`enforce_accountability_prerequisite(...)` is a bounded integration/test surface. It proves:
+`ACCOUNTABILITY_CONTINUITY_NOT_SUPPORTABLE -> ACTION_ADMISSIBILITY_NOT_SUPPORTABLE_ON_ACCOUNTABILITY_BASIS`
+
+`MATERIAL_CHANGE_AFTER_ACCOUNTABILITY_ASSIGNMENT -> ACCOUNTABILITY_REVALIDATION_REQUIRED`
+
+`NEGATIVE_OR_CURRENT_ACCOUNTABILITY_CLAIM -> TEMPORAL_ORDERING_ESTABLISHED + MATERIAL_CHANGE_ASSESSMENT_COMPLETE`
+
+`ACCOUNTABILITY_RESULT_REUSE -> EXACT_DECLARED_SCOPE_BINDING_REQUIRED`
+
+`COMPOSITION_INPUT -> STEP_185_RESULT_CONTRACT_VERIFIED`
+
+## Non-duplication
+
+Step 185 does not replace the AI Accountability RACI Matrix Engine, Production Ownership Continuity Assurance, ShiftTrust Escalation Lineage, Step 170 Authority Standing/No-Bind, Step 178 Disposition Standing, Step 179 Boundary Enforcement, Step 180 Execution-Time Revalidation, or Step 184 R1/R2 Residual-Consequence Assurance.
+
+It adds only the reusable standing proposition for continuity of accountable ownership over a declared consequence scope.
+
+## Composition surface
+
+`enforce_accountability_prerequisite(...)` proves that:
 
 1. otherwise-valid authority cannot manufacture missing Accountability Continuity;
 2. supportable Accountability Continuity cannot manufacture authority;
-3. when both prerequisites are supportable, separate Action Admissibility is still required;
-4. a caller request for `ADMISSIBLE` cannot bypass either prerequisite;
-5. a supportable Step 185 result cannot be silently reused for another consequence scope;
-6. a minimal or foreign caller-fabricated result cannot impersonate the Step 185 output contract.
-
-The hardened adapter checks the expected declared scope, `candidate_revision`, supportable standing, supportable accountability basis, expected Step 185 No-Bind contract, and non-authority/non-manufacture boundary before composition.
+3. both supportable prerequisites still require separate Action Admissibility;
+4. caller-requested `ADMISSIBLE` cannot bypass either prerequisite;
+5. Step 185 output reuse requires exact declared-scope binding;
+6. a foreign/minimal favorable mapping cannot impersonate the Step 185 result contract.
 
 It does not modify Step 170, Step 179, or Step 180.
 
@@ -81,45 +75,60 @@ It does not modify Step 170, Step 179, or Step 180.
 - `ACCOUNTABILITY_HANDOFF_NOT_ESTABLISHED`
 - `ACCOUNTABILITY_CONTINUITY_CONTRADICTED`
 
-Supportable standing:
+Supportable:
 `no_bind_state = SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED`
 
-Blocked standing:
+Blocked:
 `no_bind_state = ACTIVE`
 
-## Candidate static-review hardening
+## Static-review corrections
 
-The initial 37-test candidate passed CI, but static review identified a candidate-specific permissiveness risk: the composition adapter accepted a minimal favorable mapping containing only supportable standing/basis values. That could permit a caller to fabricate a favorable upstream shape or reuse a valid result for a different declared scope.
+### 1. Composition input spoof / scope-reuse risk
 
-The adapter was hardened to fail closed unless:
+The initial candidate accepted a minimal favorable upstream result shape. The adapter was hardened to verify Step 185 revision, standing, basis, No-Bind contract, non-authority/non-manufacture boundary, exact declared scope, and separate Authority Standing.
 
-- `candidate_revision == STEP_185_R1`;
-- the Step 185 standing and accountability basis are supportable;
-- the Step 185 supportable No-Bind contract is exact;
-- Step 185 has not claimed binding authority or manufactured accountability;
-- the result's `declared_scope_id` matches an explicit `expected_scope_id`;
-- separate Authority Standing remains valid and No-Bind inactive.
+### 2. Negative temporal/currentness assertion risk
 
-Four anti-spoof/scope-binding regression tests were added.
+The candidate initially allowed `material_change_after_accountability_assignment=False` without proving temporal ordering and material-change assessment completeness. It now requires both explicitly and fails closed if either is missing, malformed, or false.
+
+No further material fail-open was established in the bounded static review after these corrections.
+
+## Verification
+
+Hardened tested commit:
+`a91ebe1f1a5870efc99af35019ea6ffc0a027cf9`
+
+Evaluator blob:
+`14f1c3a4551b94d33941d2978421658da824ba28`
+
+Deterministic test blob:
+`ce0d31df66beb3a161b52cf509051d62c2af0145`
+
+Workflow run:
+`33969556029` — `SUCCESS`
+
+Regression count:
+**45 deterministic tests**.
+
+Records:
+- `STATIC_REVIEW_2026-09-05.md`
+- `TEST_RESULT_2026-09-05.md`
 
 ## Non-authority boundary
 
-Every evaluator/composition result preserves:
+Every Step 185 evaluator/composition result preserves:
 
-- `binding_authority_granted = False`
+- `binding_authority_granted = False`;
+- no Action Admissibility grant;
 - no regulated release/disposition authorization;
 - no physical action execution;
-- no accountability manufactured by the evaluator;
+- no accountability manufacture;
 - no historical-fact rewriting;
 - no IRLT-MAG state change.
 
-A failed Step 185 result does not declare that legal or institutional authority ceased to exist. It establishes only that the declared accountability basis is not supportable for reliance/admissibility in the evaluated scope.
+A failed Step 185 result means the declared accountability basis is not supportable for reliance/admissibility in the evaluated scope. It does not declare that legal or institutional authority ceased to exist.
 
-## Candidate tests
-
-The hardened deterministic candidate suite contains **41 tests** covering accountable-owner identity/resolvability, declared scope, current mandate/acceptance, ambiguity/orphaning/conflict, accountability-specific evidence, material-change revalidation, handoff continuity, responsibility/accountability decoupling, execution/accountability traceability decoupling, non-authority behavior, authority/accountability non-bypass composition, exact result-contract validation, and declared-scope binding.
-
-## Research lineage
+## Research / provenance lineage
 
 Research result: `MATERIAL_DISTINCTNESS_ESTABLISHED_AT_RESEARCH_LEVEL`
 
@@ -133,8 +142,8 @@ External public discussion remains a challenge/validation signal only:
 
 ## Protected boundaries
 
-This candidate must not modify or unfreeze Step 184 R1, Step 184 R2, PR #95, PR #96, PR #97, PR #98, or IRLT-MAG. RAMAT remains witness/context only.
+Step 184 R1, Step 184 R2, PR #95, PR #96, PR #97, PR #98, and IRLT-MAG remain untouched. RAMAT remains witness/context only.
 
 ## Maturity boundary
 
-The candidate source and hardened deterministic tests are present. Until hardened candidate CI and final candidate static review are preserved, Step 185 must not be represented as frozen, canonical, production validated, independently assured, certified, regulator accepted, or production ready.
+Step 185 is **freeze-eligible but not frozen**. Freeze, merge, production validation, independent assurance, certification, and regulator acceptance are separate governed decisions and are not implied by this candidate state.
