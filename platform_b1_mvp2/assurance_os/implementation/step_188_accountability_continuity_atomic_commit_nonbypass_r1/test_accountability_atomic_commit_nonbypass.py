@@ -57,6 +57,34 @@ SNAPSHOT = {
     "environment_context_hash": "sha256:env",
 }
 
+STEP187_SNAPSHOT = {"action_id": ACTION, **SNAPSHOT}
+
+
+def step187_binding_for(snapshot=None):
+    snap = dict(STEP187_SNAPSHOT) if snapshot is None else snapshot
+    return {
+        "declared_scope_id": SCOPE,
+        "action_id": ACTION,
+        "object_hash": OBJECT,
+        "commit_point_id": "COMMIT-001",
+        "commit_binding_evidence_ref": "EVIDENCE-COMMIT-001",
+        "commit_binding_basis_version": "1.0",
+        "binding_traceable": True,
+        "binding_current": True,
+        "binding_ambiguity_present": False,
+        "binding_temporal_ordering_established": True,
+        "binding_change_assessment_complete": True,
+        "material_change_after_commit_binding": False,
+        "commit_binding_revalidated_after_latest_material_change": False,
+        "step186_result_digest": "sha256:step186",
+        "step180_result_digest": "sha256:step180",
+        "current_snapshot_digest": canonical_payload_digest(snap),
+        "step186_evaluator_blob": "356d7b249dff4c0c48be24e6470f2519cae0594d",
+        "step186_test_blob": "a9acc4cdc0d1288999744760eac2223d55963a54",
+        "step180_evaluator_blob": "c5d84fc6532632a282fe4f80fbbec9bd3594772f",
+        "step180_test_blob": "07ce7a902be2542d77bd50f70892680e54af026a",
+    }
+
 
 def token_for(snapshot=None, action=ACTION, transaction=TRANSACTION, nonce=NONCE):
     snap = dict(SNAPSHOT) if snapshot is None else snapshot
@@ -97,8 +125,11 @@ COMMIT_RESULT = {
 }
 
 
-def binding_for(step187=None, token=None, commit_result=None, snapshot=None):
+def binding_for(step187=None, step187_binding=None, step187_snapshot=None,
+                token=None, commit_result=None, snapshot=None):
     s187 = dict(STEP187) if step187 is None else step187
+    s187snap = dict(STEP187_SNAPSHOT) if step187_snapshot is None else step187_snapshot
+    s187bind = step187_binding_for(s187snap) if step187_binding is None else step187_binding
     tok = token_for() if token is None else token
     result = dict(COMMIT_RESULT) if commit_result is None else commit_result
     snap = dict(SNAPSHOT) if snapshot is None else snapshot
@@ -115,7 +146,7 @@ def binding_for(step187=None, token=None, commit_result=None, snapshot=None):
         "object_hash": OBJECT,
         "transaction_id": TRANSACTION,
         "commit_nonce": NONCE,
-        "commit_point_id": "COMMIT-POINT-001",
+        "commit_point_id": "ATOMIC-COMMIT-001",
         "binding_evidence_ref": "EVIDENCE-ATOMIC-001",
         "binding_basis_version": "1.0",
         "binding_traceable": True,
@@ -126,6 +157,8 @@ def binding_for(step187=None, token=None, commit_result=None, snapshot=None):
         "material_change_after_atomic_binding": False,
         "atomic_binding_revalidated_after_latest_material_change": False,
         "step187_result_digest": canonical_payload_digest(s187),
+        "step187_commit_binding_record_digest": canonical_payload_digest(s187bind),
+        "step187_current_snapshot_digest": canonical_payload_digest(s187snap),
         "step181_token_digest": canonical_payload_digest(tok),
         "step181_commit_result_digest": canonical_payload_digest(result),
         "commit_snapshot_digest": canonical_payload_digest(snap),
@@ -138,16 +171,21 @@ def binding_for(step187=None, token=None, commit_result=None, snapshot=None):
     }
 
 
-def run(*, step187=None, token=None, commit_result=None, snapshot=None, binding=None,
-        scope=SCOPE, action=ACTION, obj=OBJECT, transaction=TRANSACTION, nonce=NONCE,
-        caller="COMMIT"):
+def run(*, step187=None, step187_binding=None, step187_snapshot=None,
+        token=None, commit_result=None, snapshot=None, binding=None,
+        scope=SCOPE, action=ACTION, obj=OBJECT, transaction=TRANSACTION,
+        nonce=NONCE, caller="COMMIT"):
     s187 = dict(STEP187) if step187 is None else step187
+    s187snap = dict(STEP187_SNAPSHOT) if step187_snapshot is None else step187_snapshot
+    s187bind = step187_binding_for(s187snap) if step187_binding is None else step187_binding
     tok = token_for() if token is None else token
     result = dict(COMMIT_RESULT) if commit_result is None else commit_result
     snap = dict(SNAPSHOT) if snapshot is None else snapshot
-    b = binding_for(s187, tok, result, snap) if binding is None else binding
+    b = binding_for(s187, s187bind, s187snap, tok, result, snap) if binding is None else binding
     return evaluate_accountability_atomic_commit_nonbypass(
         step187_result=s187,
+        step187_commit_binding_record=s187bind,
+        step187_current_snapshot=s187snap,
         step181_token=tok,
         step181_commit_result=result,
         commit_snapshot=snap,
@@ -167,6 +205,7 @@ class Step188Tests(unittest.TestCase):
         self.assertEqual(r["atomic_accountability_standing"], SUPPORTABLE)
         self.assertEqual(r["atomic_accountability_decision"], "ACCOUNTABILITY_ATOMIC_COMMIT_PREREQUISITES_SUPPORTABLE")
         self.assertEqual(r["no_bind_state"], "SEPARATE_AUTHORIZED_COMMIT_EXECUTION_AND_TOKEN_CONSUMPTION_REQUIRED")
+        self.assertTrue(r["step_181_commit_result_reproduced"])
         self.assertFalse(r["commit_authorized"])
 
     def test_step187_failure_blocks(self):
@@ -185,6 +224,38 @@ class Step188Tests(unittest.TestCase):
     def test_step187_cannot_claim_commit_authority(self):
         s = dict(STEP187); s["commit_authorized"] = True
         self.assertIn("STEP_187_COMMIT_AUTHORITY_BOUNDARY_INVALID", run(step187=s)["reasons"])
+
+    def test_step187_binding_snapshot_digest_must_match(self):
+        b187 = step187_binding_for(); b187["current_snapshot_digest"] = "sha256:bad"
+        self.assertIn("STEP_187_BINDING_CURRENT_SNAPSHOT_DIGEST_MISMATCH", run(step187_binding=b187)["reasons"])
+
+    def test_step187_binding_currentness_contract_required(self):
+        b187 = step187_binding_for(); b187["binding_current"] = False
+        self.assertIn("STEP_187_BINDING_NOT_CURRENT", run(step187_binding=b187)["reasons"])
+        b187 = step187_binding_for(); b187["binding_temporal_ordering_established"] = False
+        self.assertIn("STEP_187_BINDING_TEMPORAL_ORDERING_NOT_ESTABLISHED", run(step187_binding=b187)["reasons"])
+        b187 = step187_binding_for(); b187["binding_change_assessment_complete"] = False
+        self.assertIn("STEP_187_BINDING_CHANGE_ASSESSMENT_INCOMPLETE", run(step187_binding=b187)["reasons"])
+
+    def test_step187_binding_material_change_requires_revalidation(self):
+        b187 = step187_binding_for(); b187["material_change_after_commit_binding"] = True
+        self.assertIn("STEP_187_BINDING_STALE_AFTER_MATERIAL_CHANGE", run(step187_binding=b187)["reasons"])
+
+    def test_cross_snapshot_evidence_change_blocks_even_when_object_same(self):
+        s187snap = dict(STEP187_SNAPSHOT); s187snap["evidence_digest"] = "sha256:older-evidence"
+        b187 = step187_binding_for(s187snap)
+        r = run(step187_snapshot=s187snap, step187_binding=b187)
+        self.assertIn("STEP_187_TO_STEP_181_EVIDENCE_DIGEST_MISMATCH", r["reasons"])
+
+    def test_cross_snapshot_configuration_change_blocks(self):
+        s187snap = dict(STEP187_SNAPSHOT); s187snap["configuration_hash"] = "sha256:old-config"
+        b187 = step187_binding_for(s187snap)
+        self.assertIn("STEP_187_TO_STEP_181_CONFIGURATION_HASH_MISMATCH", run(step187_snapshot=s187snap, step187_binding=b187)["reasons"])
+
+    def test_cross_snapshot_environment_change_blocks(self):
+        s187snap = dict(STEP187_SNAPSHOT); s187snap["environment_context_hash"] = "sha256:old-env"
+        b187 = step187_binding_for(s187snap)
+        self.assertIn("STEP_187_TO_STEP_181_ENVIRONMENT_CONTEXT_HASH_MISMATCH", run(step187_snapshot=s187snap, step187_binding=b187)["reasons"])
 
     def test_invalid_step181_token_blocks(self):
         t = token_for(); t["token_state"] = "NOT_ISSUED"
@@ -220,6 +291,10 @@ class Step188Tests(unittest.TestCase):
         c = dict(COMMIT_RESULT); c["commit_decision"] = "NOT_ADMISSIBLE"
         self.assertIn("STEP_181_COMMIT_ROUTE_NOT_ADMISSIBLE", run(commit_result=c)["reasons"])
 
+    def test_step181_result_must_reproduce_from_exact_inputs(self):
+        c = dict(COMMIT_RESULT); c["forged_extra"] = True
+        self.assertIn("STEP_181_COMMIT_RESULT_NOT_REPRODUCIBLE_FROM_EXACT_INPUTS", run(commit_result=c)["reasons"])
+
     def test_token_consumption_requirement_must_survive(self):
         c = dict(COMMIT_RESULT); c["token_consumption_required_on_commit"] = False
         self.assertIn("STEP_181_TOKEN_CONSUMPTION_REQUIREMENT_NOT_ESTABLISHED", run(commit_result=c)["reasons"])
@@ -242,6 +317,17 @@ class Step188Tests(unittest.TestCase):
         s = dict(STEP187); s["expected_action_id"] = "SWAPPED"
         self.assertIn("ATOMIC_BINDING_STEP_187_PAYLOAD_DIGEST_MISMATCH", run(step187=s, binding=b)["reasons"])
 
+    def test_step187_binding_record_swap_detected(self):
+        b = binding_for()
+        b187 = step187_binding_for(); b187["commit_binding_basis_version"] = "2.0"
+        self.assertIn("ATOMIC_BINDING_STEP_187_BINDING_RECORD_DIGEST_MISMATCH", run(step187_binding=b187, binding=b)["reasons"])
+
+    def test_step187_snapshot_payload_swap_detected(self):
+        b = binding_for()
+        s187snap = dict(STEP187_SNAPSHOT); s187snap["criteria_version"] = "v2"
+        b187 = step187_binding_for(s187snap)
+        self.assertIn("ATOMIC_BINDING_STEP_187_CURRENT_SNAPSHOT_DIGEST_MISMATCH", run(step187_snapshot=s187snap, step187_binding=b187, binding=b)["reasons"])
+
     def test_step181_token_payload_swap_detected(self):
         b = binding_for()
         t = token_for(); t["transaction_id"] = "SWAPPED"
@@ -249,7 +335,7 @@ class Step188Tests(unittest.TestCase):
 
     def test_step181_commit_result_payload_swap_detected(self):
         b = binding_for()
-        c = dict(COMMIT_RESULT); c["extra"] = "changed"
+        c = dict(COMMIT_RESULT); c["forged_extra"] = "changed"
         self.assertIn("ATOMIC_BINDING_STEP_181_COMMIT_RESULT_DIGEST_MISMATCH", run(commit_result=c, binding=b)["reasons"])
 
     def test_commit_snapshot_payload_swap_detected(self):
