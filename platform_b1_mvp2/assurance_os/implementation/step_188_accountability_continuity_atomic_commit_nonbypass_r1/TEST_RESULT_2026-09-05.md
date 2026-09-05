@@ -1,8 +1,8 @@
-# Step 188 Accountability Continuity Atomic Commit Non-Bypass R1 — Candidate Test Result
+# Step 188 Accountability Continuity Atomic Commit Non-Bypass R1 — Frozen Test Result
 
 **Date:** 2026-09-05
 
-**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Candidate branch
 
@@ -47,6 +47,12 @@ Result:
 Substantive result:
 **38 deterministic tests — SUCCESS**
 
+Final pre-freeze documentation head:
+`a95786c48d5d28a3f33ad2094c463d2a5ce31dba`
+
+Final pre-freeze documentation CI:
+`33987214769` — `SUCCESS`
+
 ## Initial candidate chronology
 
 Initial candidate run:
@@ -59,39 +65,7 @@ Static review nevertheless found SR-188-01, a material hidden-state/result-decou
 
 ## Hardened behaviors established
 
-The 38-test configuration demonstrates bounded fail-closed behavior for:
-
-- non-supportable or malformed Step 187 result contracts;
-- Step 187 scope/action/object mismatch;
-- Step 187 current-snapshot digest mismatch;
-- Step 187 binding traceability/currentness/ambiguity failure;
-- Step 187 temporal-ordering/change-assessment failure;
-- Step 187 post-binding material change without revalidation;
-- same-object but different evidence digest across Step 187 and Step 181;
-- same-object but different configuration across Step 187 and Step 181;
-- same-object but different environment context across Step 187 and Step 181;
-- invalid or non-single-use Step 181 token;
-- token action/transaction/nonce/object mismatch;
-- deterministic Step 181 token-ID forgery detection;
-- non-supportable Step 181 commit result;
-- Step 181 commit result not exactly reproducible from exact verification inputs;
-- current commit authority failure;
-- commit snapshot object mismatch;
-- Step 181 token/snapshot digest mismatch;
-- Step 187 result substitution;
-- Step 187 binding-record substitution;
-- Step 187 current-snapshot substitution;
-- Step 181 token substitution;
-- Step 181 commit-result substitution;
-- commit-snapshot substitution;
-- Step 181 verification-input-bundle substitution;
-- wrong Step 187/Step 181 source identities in the Step 188 binding record;
-- Step 188 binding traceability/currentness/ambiguity failure;
-- Step 188 temporal-ordering/change-assessment failure;
-- post-Step-188-binding material change without revalidation;
-- missing expected scope/action/object/transaction/nonce;
-- caller override rejection;
-- strict non-authority/non-commit/non-execution/non-token-consumption behavior.
+The 38-test configuration demonstrates bounded fail-closed behavior for malformed/non-supportable Step 187 results, scope/action/object mismatch, binding/current-snapshot substitution or digest mismatch, temporal/change-assessment failures, same-object deeper-state mismatch, invalid or substituted Step 181 tokens/results/snapshots, deterministic token-ID forgery, non-reproducible Step 181 commit results, source-identity substitution, Step 188 binding failures, caller override attempts, and strict non-authority/non-commit/non-execution/non-token-consumption behavior.
 
 ## Key invariants verified
 
@@ -119,6 +93,17 @@ Step 188 never grants binding authority, Action Admissibility, commit authorizat
 
 Step 188 re-establishes state correspondence using the supplied Step 187 binding evidence and exact snapshots. It does not independently prove the historical provenance of those supplied records or external authenticity of underlying evidence.
 
+## Formal freeze
+
+Freeze record:
+`FREEZE_MANIFEST_2026-09-05.md`
+
+Governed disposition:
+
+`STEP_188_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
+
 ## Non-claims
 
-This result does not establish production readiness, field validation, external authenticity, independent assurance, certification, regulator acceptance, novelty, patentability, or merge approval.
+This frozen result does not establish production readiness, field validation, external authenticity, independent assurance, certification, regulator acceptance, novelty, patentability, or merge approval.
