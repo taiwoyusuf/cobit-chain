@@ -5,6 +5,7 @@ on:
     paths:
       - 'platform_b1_mvp2/assurance_os/research/residual_consequence_r2/**'
       - 'platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r2/**'
       - '.github/workflows/residual-consequence-r2.yml'
   workflow_dispatch:
 
@@ -27,10 +28,18 @@ jobs:
         working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1
         run: python -m py_compile residual_consequence_assurance.py
 
-      - name: Compile R2 harness and tests
+      - name: Compile R2 research harness and tests
         working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r2
         run: python -m py_compile residual_consequence_r2.py test_residual_consequence_r2.py
 
-      - name: Run R2 reproducibility and metamorphic suite
+      - name: Run R2 research reproducibility and metamorphic suite
         working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r2
         run: python -m unittest -v test_residual_consequence_r2.py
+
+      - name: Compile Step 184 R2 candidate and regression tests
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r2
+        run: python -m py_compile residual_consequence_assurance.py test_residual_consequence_assurance.py
+
+      - name: Run Step 184 R2 candidate regression suite
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r2
+        run: python -m unittest -v test_residual_consequence_assurance.py
