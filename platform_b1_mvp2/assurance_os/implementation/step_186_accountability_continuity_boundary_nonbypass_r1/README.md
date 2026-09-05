@@ -1,6 +1,6 @@
 # Step 186 — Accountability Continuity Boundary Non-Bypass R1
 
-Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Step 186 establishes whether the declared accountability scope, requested action
 
 A separate scope/action/object correspondence must be established.
 
-## Core invariants
+## Frozen invariants
 
 - `STEP_185_ACCOUNTABILITY_CONTINUITY != STEP_179_BOUNDARY_ADMISSIBILITY`
 - `VALID_ACCOUNTABILITY != VALID_BOUNDARY_ENFORCEMENT`
@@ -54,7 +54,7 @@ It adds only a bounded correspondence/non-bypass layer between a Step 185 result
 
 ## Binding evidence contract
 
-The hardened candidate requires a separate binding record containing:
+The frozen configuration requires a separate binding record containing:
 
 - `declared_scope_id`;
 - `action_id`;
@@ -71,13 +71,13 @@ The hardened candidate requires a separate binding record containing:
 
 The evaluator computes deterministic canonical SHA-256 digests over the consumed mappings and verifies structural, temporal, digest, and cross-result correspondence. It does not manufacture the provenance or truth of the binding record.
 
-## Static-review corrections
+## Static-review corrections included in freeze
 
 ### 1. Bare currentness assertion
 
 The initial candidate accepted `binding_current = True` without proving temporal ordering or change-assessment completeness.
 
-Correction:
+Frozen correction:
 
 `BINDING_CURRENT -> BINDING_TEMPORAL_ORDERING_ESTABLISHED + BINDING_CHANGE_ASSESSMENT_COMPLETE`
 
@@ -85,13 +85,13 @@ Correction:
 
 The initial binding record was not cryptographically tied to the exact Step 185 and Step 179 payloads it claimed to connect.
 
-Correction:
+Frozen correction:
 
 `BINDING_RECORD -> EXACT_STEP_185_PAYLOAD_DIGEST + EXACT_STEP_179_PAYLOAD_DIGEST`
 
 If either upstream payload changes, the prior binding record no longer supports the composition.
 
-## Verification
+## Frozen executable identity
 
 Hardened tested commit:
 `011e1b00e59ec41f7f9d28039ac800f960027ea1`
@@ -111,10 +111,10 @@ Workflow run:
 Regression suite:
 **29 deterministic tests — SUCCESS**
 
-Static-review disposition:
-`STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
+Freeze record:
+- `FREEZE_MANIFEST_2026-09-05.md`
 
-Records:
+Review/evidence records:
 - `STATIC_REVIEW_2026-09-05.md`
 - `TEST_RESULT_2026-09-05.md`
 
@@ -128,14 +128,19 @@ Every Step 186 result preserves:
 - `physical_action_executed = False`;
 - `binding_provenance_manufactured = False`;
 - `historical_facts_rewritten = False`;
-- `irlt_mag_state_changed = False`.
+- `irlt_mag_state_changed = False`;
+- `separate_execution_time_revalidation_required = True`.
 
 A supportable Step 186 result still requires separate Step 180 execution-time revalidation before commit/execution.
 
 ## Protected boundaries
 
-Frozen Step 185 evaluator/test blobs, Step 184 R1/R2, PR #95-#100, and IRLT-MAG remain untouched.
+Frozen Step 185 evaluator/test blobs and freeze manifest, Step 184 R1/R2, PR #95-#100, and IRLT-MAG remain untouched.
 
-## Maturity boundary
+## Freeze discipline
 
-Step 186 is freeze-eligible but not frozen. Freeze, merge, production validation, independent assurance, certification, and regulator acceptance remain separate governed decisions.
+Step 186 R1 is an `APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION` and remains `NOT_MERGED`.
+
+Any substantive future change to the frozen evaluator or deterministic test blob requires explicit unfreeze, re-review, re-test, and new freeze evidence, or a clearly identified successor revision.
+
+Freeze does not establish production readiness, field validation, independent third-party assurance, certification, regulator acceptance, novelty, or patentability.
