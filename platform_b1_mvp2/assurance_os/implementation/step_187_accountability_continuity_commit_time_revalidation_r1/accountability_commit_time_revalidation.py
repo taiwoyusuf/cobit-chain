@@ -98,7 +98,9 @@ def evaluate_accountability_commit_time_revalidation(
             (step186_result.get("action_admissibility_granted") is False, "STEP_186_ACTION_ADMISSIBILITY_BOUNDARY_INVALID"),
             (step186_result.get("execution_authorized") is False, "STEP_186_EXECUTION_BOUNDARY_INVALID"),
             (step186_result.get("physical_action_executed") is False, "STEP_186_PHYSICAL_ACTION_BOUNDARY_INVALID"),
+            (step186_result.get("historical_facts_rewritten") is False, "STEP_186_HISTORY_BOUNDARY_INVALID"),
             (step186_result.get("irlt_mag_state_changed") is False, "STEP_186_IRLT_BOUNDARY_INVALID"),
+            (step186_result.get("separate_execution_time_revalidation_required") is True, "STEP_186_EXECUTION_REVALIDATION_REQUIREMENT_NOT_ESTABLISHED"),
         )
         for ok, reason in checks:
             if not ok:
@@ -145,12 +147,21 @@ def evaluate_accountability_commit_time_revalidation(
         elif decision_age > max_age:
             reasons.append("STEP_180_PRIOR_DECISION_STALE")
 
+        changed_dimensions = step180_result.get("changed_dimensions")
+        immaterial_changes = step180_result.get("immaterial_changes")
         material_changes = step180_result.get("material_changes")
         unclassified_changes = step180_result.get("unclassified_changes")
+        if type(changed_dimensions) is not list:
+            reasons.append("STEP_180_CHANGED_DIMENSIONS_CONTRACT_INVALID")
+        if type(immaterial_changes) is not list:
+            reasons.append("STEP_180_IMMATERIAL_CHANGE_CONTRACT_INVALID")
         if type(material_changes) is not list or material_changes:
             reasons.append("STEP_180_MATERIAL_CHANGE_CONTRACT_INVALID")
         if type(unclassified_changes) is not list or unclassified_changes:
             reasons.append("STEP_180_UNCLASSIFIED_CHANGE_CONTRACT_INVALID")
+        if type(changed_dimensions) is list and type(immaterial_changes) is list:
+            if sorted(changed_dimensions) != sorted(immaterial_changes):
+                reasons.append("STEP_180_SUPPORTABLE_CHANGE_CLASSIFICATION_INCONSISTENT")
 
     # Current commit snapshot identity/correspondence.
     if not isinstance(current_snapshot, Mapping):
