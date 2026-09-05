@@ -20,9 +20,7 @@ release/disposition, or modify IRLT-MAG state.
 """
 
 from __future__ import annotations
-
 from collections.abc import Mapping
-
 
 SUPPORTABLE = "ACCOUNTABILITY_CONTINUITY_SUPPORTABLE"
 NOT_ESTABLISHED = "ACCOUNTABILITY_CONTINUITY_NOT_ESTABLISHED"
@@ -93,23 +91,14 @@ def evaluate_accountability_continuity(
     evidence_state: Mapping[str, object],
 ) -> dict[str, object]:
     """Evaluate Accountability Continuity for one declared consequence scope."""
-
     if not all(isinstance(x, Mapping) for x in (
-        responsibility_context,
-        accountability_state,
-        handoff_state,
-        evidence_state,
+        responsibility_context, accountability_state, handoff_state, evidence_state
     )):
-        return _result(
-            NOT_ESTABLISHED,
-            "REQUIRED_INPUT_MAPPING_MISSING",
-            ["REQUIRED_INPUT_MAPPING_MISSING"],
-        )
+        return _result(NOT_ESTABLISHED, "REQUIRED_INPUT_MAPPING_MISSING", ["REQUIRED_INPUT_MAPPING_MISSING"])
 
     reasons: list[str] = []
     handoff_reasons: list[str] = []
 
-    # Context only; these cannot establish or defeat accountability standing.
     responsible_party_count = _optional_nonnegative_int(responsibility_context, "responsible_party_count")
     shared_responsibility_declared = _optional_bool(responsibility_context, "shared_responsibility_declared")
     responsibility_assignment_complete = _optional_bool(responsibility_context, "responsibility_assignment_complete")
@@ -123,17 +112,18 @@ def evaluate_accountability_continuity(
     acceptance_current = _required_bool(accountability_state, "accountability_acceptance_current", reasons, "ACCOUNTABILITY")
     ambiguity_present = _required_bool(accountability_state, "accountability_ambiguity_present", reasons, "ACCOUNTABILITY")
     orphaned = _required_bool(accountability_state, "orphaned_accountability", reasons, "ACCOUNTABILITY")
-    conflicting_claims = _required_bool(
-        accountability_state, "conflicting_accountability_claims_present", reasons, "ACCOUNTABILITY"
+    conflicting_claims = _required_bool(accountability_state, "conflicting_accountability_claims_present", reasons, "ACCOUNTABILITY")
+    temporal_ordering_established = _required_bool(
+        accountability_state, "accountability_temporal_ordering_established", reasons, "ACCOUNTABILITY"
+    )
+    material_change_assessment_complete = _required_bool(
+        accountability_state, "accountability_material_change_assessment_complete", reasons, "ACCOUNTABILITY"
     )
     material_change_after_assignment = _required_bool(
         accountability_state, "material_change_after_accountability_assignment", reasons, "ACCOUNTABILITY"
     )
     revalidated_after_material_change = _required_bool(
-        accountability_state,
-        "accountability_revalidated_after_latest_material_change",
-        reasons,
-        "ACCOUNTABILITY",
+        accountability_state, "accountability_revalidated_after_latest_material_change", reasons, "ACCOUNTABILITY"
     )
 
     if owner_identified is False:
@@ -152,15 +142,15 @@ def evaluate_accountability_continuity(
         reasons.append("ACCOUNTABILITY_ORPHANED")
     if conflicting_claims is True:
         reasons.append("CONFLICTING_ACCOUNTABILITY_CLAIMS_PRESENT")
+    if temporal_ordering_established is False:
+        reasons.append("ACCOUNTABILITY_TEMPORAL_ORDERING_NOT_ESTABLISHED")
+    if material_change_assessment_complete is False:
+        reasons.append("ACCOUNTABILITY_MATERIAL_CHANGE_ASSESSMENT_INCOMPLETE")
     if material_change_after_assignment is True and revalidated_after_material_change is not True:
         reasons.append("ACCOUNTABILITY_BASIS_STALE_AFTER_MATERIAL_CHANGE")
 
-    assignment_traceable = _required_bool(
-        evidence_state, "accountability_assignment_traceable", reasons, "EVIDENCE"
-    )
-    acceptance_traceable = _required_bool(
-        evidence_state, "accountability_acceptance_traceable", reasons, "EVIDENCE"
-    )
+    assignment_traceable = _required_bool(evidence_state, "accountability_assignment_traceable", reasons, "EVIDENCE")
+    acceptance_traceable = _required_bool(evidence_state, "accountability_acceptance_traceable", reasons, "EVIDENCE")
     decision_point_traceable = _required_bool(evidence_state, "decision_point_traceable", reasons, "EVIDENCE")
     outcome_owner_traceable = _required_bool(evidence_state, "outcome_owner_traceable", reasons, "EVIDENCE")
     evidence_current = _required_bool(evidence_state, "accountability_evidence_current", reasons, "EVIDENCE")
@@ -179,22 +169,14 @@ def evaluate_accountability_continuity(
 
     handoff_occurred = _required_bool(handoff_state, "handoff_occurred", reasons, "HANDOFF")
     successor_owner_id: str | None = None
-
     if handoff_occurred is True:
         successor_identified = _required_bool(handoff_state, "successor_owner_identified", handoff_reasons, "HANDOFF")
         successor_owner_id = _required_nonempty_str(handoff_state, "successor_owner_id", handoff_reasons, "HANDOFF")
-        successor_acceptance = _required_bool(
-            handoff_state, "successor_acceptance_current", handoff_reasons, "HANDOFF"
-        )
+        successor_acceptance = _required_bool(handoff_state, "successor_acceptance_current", handoff_reasons, "HANDOFF")
         scope_preserved = _required_bool(handoff_state, "scope_preserved_across_handoff", handoff_reasons, "HANDOFF")
-        obligations_preserved = _required_bool(
-            handoff_state, "obligations_preserved_across_handoff", handoff_reasons, "HANDOFF"
-        )
+        obligations_preserved = _required_bool(handoff_state, "obligations_preserved_across_handoff", handoff_reasons, "HANDOFF")
         transfer_traceable = _required_bool(handoff_state, "transfer_traceable", handoff_reasons, "HANDOFF")
-        predecessor_disposition = _required_bool(
-            handoff_state, "predecessor_scope_disposition_established", handoff_reasons, "HANDOFF"
-        )
-
+        predecessor_disposition = _required_bool(handoff_state, "predecessor_scope_disposition_established", handoff_reasons, "HANDOFF")
         if successor_identified is False:
             handoff_reasons.append("HANDOFF_SUCCESSOR_NOT_IDENTIFIED")
         if successor_acceptance is False:
@@ -211,7 +193,6 @@ def evaluate_accountability_continuity(
             handoff_reasons.append("CURRENT_ACCOUNTABLE_OWNER_DOES_NOT_MATCH_HANDOFF_SUCCESSOR")
 
     reasons.extend(handoff_reasons)
-
     if conflicting_claims is True:
         standing = CONTRADICTED
         reason = "CONFLICTING_ACCOUNTABILITY_CLAIMS_PREVENT_CONTINUITY"
@@ -226,9 +207,7 @@ def evaluate_accountability_continuity(
         reason = "CURRENT_ACCOUNTABILITY_CONTINUITY_ESTABLISHED_FOR_DECLARED_SCOPE"
 
     return _result(
-        standing,
-        reason,
-        reasons,
+        standing, reason, reasons,
         declared_scope_id=declared_scope_id,
         accountable_owner_id=accountable_owner_id,
         responsible_party_count=responsible_party_count,
@@ -237,28 +216,24 @@ def evaluate_accountability_continuity(
         execution_actor_traceable=execution_actor_traceable,
         handoff_occurred=handoff_occurred,
         handoff_successor_owner_id=successor_owner_id,
+        accountability_temporal_ordering_established=temporal_ordering_established,
+        accountability_material_change_assessment_complete=material_change_assessment_complete,
         material_change_after_accountability_assignment=material_change_after_assignment,
         accountability_revalidated_after_latest_material_change=revalidated_after_material_change,
     )
 
 
 def enforce_accountability_prerequisite(
-    *,
-    accountability_result: Mapping[str, object],
-    authority_result: Mapping[str, object],
-    expected_scope_id: str,
-    caller_requested_decision: str,
+    *, accountability_result: Mapping[str, object], authority_result: Mapping[str, object],
+    expected_scope_id: str, caller_requested_decision: str,
 ) -> dict[str, object]:
     """Fail closed unless a scope-bound Step 185 result and separate authority support composition."""
-
     reasons: list[str] = []
-
     valid_expected_scope = type(expected_scope_id) is str and bool(expected_scope_id.strip())
     if not valid_expected_scope:
         reasons.append("EXPECTED_SCOPE_ID_MISSING_OR_INVALID")
 
-    accountability_contract_valid = isinstance(accountability_result, Mapping)
-    if not accountability_contract_valid:
+    if not isinstance(accountability_result, Mapping):
         reasons.append("ACCOUNTABILITY_RESULT_MISSING_OR_INVALID")
     else:
         if accountability_result.get("candidate_revision") != "STEP_185_R1":
@@ -273,8 +248,7 @@ def enforce_accountability_prerequisite(
             reasons.append("ACCOUNTABILITY_RESULT_AUTHORITY_BOUNDARY_INVALID")
         if accountability_result.get("accountability_manufactured_by_evaluator") is not False:
             reasons.append("ACCOUNTABILITY_RESULT_MANUFACTURE_BOUNDARY_INVALID")
-        result_scope = accountability_result.get("declared_scope_id")
-        if valid_expected_scope and result_scope != expected_scope_id.strip():
+        if valid_expected_scope and accountability_result.get("declared_scope_id") != expected_scope_id.strip():
             reasons.append("ACCOUNTABILITY_RESULT_SCOPE_MISMATCH")
 
     authority_valid = (
