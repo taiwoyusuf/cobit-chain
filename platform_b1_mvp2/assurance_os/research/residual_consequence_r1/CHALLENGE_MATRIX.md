@@ -16,6 +16,34 @@
 | RC1-OUT-03 | Outcome Correspondence / Re-closure | Intended outcome occurred but residual effect remains | `RECLOSURE_NOT_ESTABLISHED` |
 | RC1-OUT-04 | Outcome Correspondence / Re-closure | Independent re-verification required but missing | `RECLOSURE_NOT_ESTABLISHED` |
 | RC1-OUT-05 | Outcome Correspondence / Re-closure | All bounded closure conditions supportable | `RECLOSURE_SUPPORTABLE`, but separate authority/action-admissibility remains required |
+| RC1-TRN-01 | Outcome Correspondence / Re-closure | Authority revoked after commit but before irreversible consequence; stop is too late | `RESIDUAL_CONSEQUENCE_REVIEW_REQUIRED` |
+| RC1-RACE-01 | Outcome Correspondence / Re-closure | Agent A and Agent B are both eligible for the same consequence with no serialized winner | `RACE_UNRESOLVED`; No-Bind active |
+| RC1-RPL-01 | Outcome Correspondence / Re-closure | Retry requested while prior consequence state is unknown | `RETRY_NOT_SUPPORTABLE` |
+| RC1-OUT-06 | Outcome Correspondence / Re-closure | STOP/failed completion leaves a partial irreversible consequence | `RECLOSURE_NOT_ESTABLISHED` |
+| RC1-OUT-07 | Outcome Correspondence / Re-closure | Latent consequence remains possible and observation window is incomplete | `RECLOSURE_NOT_ESTABLISHED` |
+| RC1-CON-05 | Contradiction + Independence | Digital log and RAMAT/other witness share the same PTP clock failure domain | Apparent 2 supports = 1 independent domain |
+| RC1-CON-06 | Contradiction + Independence | Digital execution receipt says success; independent physical witness contradicts | `CONTRADICTED`, preserve both |
+| RC1-OUT-08 | Outcome Correspondence / Re-closure | STOP is established but consequence continues propagating | `RECLOSURE_NOT_ESTABLISHED`; preserve residual consequence |
+
+## R1.1 hardening interpretation
+
+The added attacks test whether assurance survives the interval between authorization and physical consequence rather than only evaluating point-in-time permission. They deliberately distinguish:
+
+`AUTHORITY CURRENT AT START`
+
+from
+
+`AUTHORITY CURRENT AT COMMIT`
+
+from
+
+`AUTHORITY CURRENT AT IRREVERSIBLE BOUNDARY`.
+
+They also distinguish:
+
+`EXECUTION STOPPED != CONSEQUENCE STOPPED`.
+
+A successful stop can therefore coexist with an unresolved residual consequence when the physical, financial, information, radiological, environmental, or other effect is already propagating.
 
 ## Non-substitution rules
 
