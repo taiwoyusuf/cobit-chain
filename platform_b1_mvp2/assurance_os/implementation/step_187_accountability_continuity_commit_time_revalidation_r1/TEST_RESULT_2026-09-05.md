@@ -1,8 +1,8 @@
-# Step 187 Accountability Continuity Commit-Time Revalidation R1 — Candidate Test Result
+# Step 187 Accountability Continuity Commit-Time Revalidation R1 — Test Result
 
 **Date:** 2026-09-05
 
-**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Candidate branch
 
@@ -16,14 +16,14 @@
 
 `feda2183398102d8a39a370b102acc8f637da04c`
 
-## Tested executable identity
+## Frozen executable identity
 
 `accountability_commit_time_revalidation.py`
 
 Git blob SHA:
 `8e00cbe56eca71997d6b87b7657a0549f8082d77`
 
-## Deterministic contract identities
+## Frozen deterministic contract identities
 
 Primary regression contract:
 `test_accountability_commit_time_revalidation.py`
@@ -42,7 +42,7 @@ Git blob SHA:
 Workflow:
 `Step 187 Accountability Continuity Commit-Time Revalidation R1 Candidate`
 
-Run ID:
+Hardened substantive run:
 `33978748395`
 
 Run number:
@@ -53,6 +53,9 @@ Result:
 
 Substantive result:
 **34 deterministic tests — SUCCESS**
+
+Pre-freeze documentation-head verification:
+`33978812210` — candidate job `SUCCESS`
 
 ## Behaviors established
 
@@ -80,7 +83,7 @@ The hardened suite demonstrates bounded fail-closed behavior for:
 - caller override rejection;
 - strict non-authority/non-commit/non-execution behavior.
 
-## Key invariants verified
+## Frozen invariants verified
 
 `STEP_186_SUPPORTABLE + STEP_180_ADMISSIBLE != ACCOUNTABILITY_COMMIT_TIME_CONTINUITY_ESTABLISHED`
 
@@ -97,6 +100,17 @@ The hardened suite demonstrates bounded fail-closed behavior for:
 `STEP_186_SUPPORTABLE_REUSE -> HISTORICAL_FACTS_NOT_REWRITTEN`
 
 `STEP_180_SUPPORTABLE_WITH_CHANGES -> CHANGED_DIMENSIONS = IMMATERIAL_CHANGES`
+
+## Freeze disposition
+
+Freeze manifest:
+`FREEZE_MANIFEST_2026-09-05.md`
+
+Governed disposition:
+
+`STEP_187_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
 
 ## Non-authority result
 
