@@ -61,6 +61,8 @@ BASE_EVIDENCE = {
     "negative_evidence_basis_complete": True,
 }
 BASE_TEMPORAL = {
+    "temporal_ordering_established": True,
+    "material_change_assessment_complete": True,
     "material_change_after_reclosure": False,
     "reclosure_reevaluated_after_latest_material_change": False,
 }
@@ -124,8 +126,49 @@ class Step184ResidualConsequenceAssuranceR2Tests(unittest.TestCase):
         })
         self.assertEqual(r["residual_consequence_standing"], CLOSED)
 
+    def test_temporal_ordering_must_be_established(self):
+        r = evaluate(temporal={"temporal_ordering_established": False})
+        self.assertEqual(r["residual_consequence_standing"], NOT_ESTABLISHED)
+        self.assertIn("TEMPORAL_ORDERING_NOT_ESTABLISHED", r["reasons"])
+
+    def test_material_change_assessment_must_be_complete(self):
+        r = evaluate(temporal={"material_change_assessment_complete": False})
+        self.assertEqual(r["residual_consequence_standing"], NOT_ESTABLISHED)
+        self.assertIn("MATERIAL_CHANGE_ASSESSMENT_INCOMPLETE", r["reasons"])
+
+    def test_missing_temporal_ordering_fails_closed(self):
+        temporal = dict(BASE_TEMPORAL)
+        temporal.pop("temporal_ordering_established")
+        r = evaluate_residual_consequence_assurance(
+            execution_time_result=dict(BASE_EXEC),
+            outcome_result=dict(BASE_OUTCOME),
+            reclosure_result=dict(BASE_RECLOSURE),
+            consequence_state=dict(BASE_CONSEQUENCE),
+            race_retry_state=dict(BASE_RACE_RETRY),
+            evidence_state=dict(BASE_EVIDENCE),
+            temporal_state=temporal,
+        )
+        self.assertEqual(r["residual_consequence_standing"], NOT_ESTABLISHED)
+        self.assertIn("TEMPORAL_TEMPORAL_ORDERING_ESTABLISHED_MISSING", r["reasons"])
+
+    def test_missing_material_change_assessment_fails_closed(self):
+        temporal = dict(BASE_TEMPORAL)
+        temporal.pop("material_change_assessment_complete")
+        r = evaluate_residual_consequence_assurance(
+            execution_time_result=dict(BASE_EXEC),
+            outcome_result=dict(BASE_OUTCOME),
+            reclosure_result=dict(BASE_RECLOSURE),
+            consequence_state=dict(BASE_CONSEQUENCE),
+            race_retry_state=dict(BASE_RACE_RETRY),
+            evidence_state=dict(BASE_EVIDENCE),
+            temporal_state=temporal,
+        )
+        self.assertEqual(r["residual_consequence_standing"], NOT_ESTABLISHED)
+        self.assertIn("TEMPORAL_MATERIAL_CHANGE_ASSESSMENT_COMPLETE_MISSING", r["reasons"])
+
     def test_missing_temporal_material_change_state_fails_closed(self):
-        temporal = {"reclosure_reevaluated_after_latest_material_change": False}
+        temporal = dict(BASE_TEMPORAL)
+        temporal.pop("material_change_after_reclosure")
         r = evaluate_residual_consequence_assurance(
             execution_time_result=dict(BASE_EXEC),
             outcome_result=dict(BASE_OUTCOME),
@@ -139,7 +182,8 @@ class Step184ResidualConsequenceAssuranceR2Tests(unittest.TestCase):
         self.assertIn("TEMPORAL_MATERIAL_CHANGE_AFTER_RECLOSURE_MISSING", r["reasons"])
 
     def test_missing_reclosure_reevaluation_state_fails_closed(self):
-        temporal = {"material_change_after_reclosure": False}
+        temporal = dict(BASE_TEMPORAL)
+        temporal.pop("reclosure_reevaluated_after_latest_material_change")
         r = evaluate_residual_consequence_assurance(
             execution_time_result=dict(BASE_EXEC),
             outcome_result=dict(BASE_OUTCOME),
