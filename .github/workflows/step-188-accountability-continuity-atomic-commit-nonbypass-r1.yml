@@ -1,0 +1,30 @@
+name: Step 188 Accountability Continuity Atomic Commit Non-Bypass R1 Candidate
+
+on:
+  push:
+    branches:
+      - candidate/step-188-accountability-continuity-atomic-commit-nonbypass-r1
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_188_accountability_continuity_atomic_commit_nonbypass_r1/**'
+      - '.github/workflows/step-188-accountability-continuity-atomic-commit-nonbypass-r1.yml'
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_188_accountability_continuity_atomic_commit_nonbypass_r1/**'
+      - '.github/workflows/step-188-accountability-continuity-atomic-commit-nonbypass-r1.yml'
+
+jobs:
+  candidate-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile Step 188 candidate
+        run: |
+          python -m py_compile \
+            platform_b1_mvp2/assurance_os/implementation/step_188_accountability_continuity_atomic_commit_nonbypass_r1/accountability_atomic_commit_nonbypass.py \
+            platform_b1_mvp2/assurance_os/implementation/step_188_accountability_continuity_atomic_commit_nonbypass_r1/test_accountability_atomic_commit_nonbypass.py
+      - name: Run Step 188 candidate regression suite
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_188_accountability_continuity_atomic_commit_nonbypass_r1
+        run: python -m unittest -v test_accountability_atomic_commit_nonbypass.py
