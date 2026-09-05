@@ -1,0 +1,30 @@
+name: Step 189 Accountability Post-Commit Correspondence Non-Bypass R1 Candidate
+
+on:
+  push:
+    branches:
+      - candidate/step-189-accountability-postcommit-correspondence-nonbypass-r1
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/**'
+      - '.github/workflows/step-189-accountability-postcommit-correspondence-nonbypass-r1.yml'
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/**'
+      - '.github/workflows/step-189-accountability-postcommit-correspondence-nonbypass-r1.yml'
+
+jobs:
+  candidate-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile Step 189 candidate
+        run: |
+          python -m py_compile \
+            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/accountability_postcommit_correspondence_nonbypass.py \
+            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/test_accountability_postcommit_correspondence_nonbypass.py
+      - name: Run Step 189 candidate regression suite
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1
+        run: python -m unittest -v test_accountability_postcommit_correspondence_nonbypass.py
