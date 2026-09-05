@@ -92,12 +92,7 @@ def evaluate_accountability_continuity(
     handoff_state: Mapping[str, object],
     evidence_state: Mapping[str, object],
 ) -> dict[str, object]:
-    """Evaluate Accountability Continuity for one declared consequence scope.
-
-    Standing depends only on accountability, handoff, and accountability-specific
-    evidence propositions. Responsibility metadata and execution-actor traceability
-    remain contextual observations and cannot manufacture or defeat this standing.
-    """
+    """Evaluate Accountability Continuity for one declared consequence scope."""
 
     if not all(isinstance(x, Mapping) for x in (
         responsibility_context,
@@ -114,6 +109,7 @@ def evaluate_accountability_continuity(
     reasons: list[str] = []
     handoff_reasons: list[str] = []
 
+    # Context only; these cannot establish or defeat accountability standing.
     responsible_party_count = _optional_nonnegative_int(responsibility_context, "responsible_party_count")
     shared_responsibility_declared = _optional_bool(responsibility_context, "shared_responsibility_declared")
     responsibility_assignment_complete = _optional_bool(responsibility_context, "responsibility_assignment_complete")
@@ -250,30 +246,42 @@ def enforce_accountability_prerequisite(
     *,
     accountability_result: Mapping[str, object],
     authority_result: Mapping[str, object],
+    expected_scope_id: str,
     caller_requested_decision: str,
 ) -> dict[str, object]:
-    """Bounded composition proving Accountability Continuity is non-bypassable.
-
-    This does not replace Authority Standing or Action Admissibility. It only proves
-    that otherwise-valid authority cannot manufacture missing accountability
-    continuity, and supportable accountability cannot manufacture authority.
-    """
+    """Fail closed unless a scope-bound Step 185 result and separate authority support composition."""
 
     reasons: list[str] = []
 
-    accountability_supportable = (
-        isinstance(accountability_result, Mapping)
-        and accountability_result.get("accountability_continuity_standing") == SUPPORTABLE
-        and accountability_result.get("accountability_basis_supportable") is True
-    )
+    valid_expected_scope = type(expected_scope_id) is str and bool(expected_scope_id.strip())
+    if not valid_expected_scope:
+        reasons.append("EXPECTED_SCOPE_ID_MISSING_OR_INVALID")
+
+    accountability_contract_valid = isinstance(accountability_result, Mapping)
+    if not accountability_contract_valid:
+        reasons.append("ACCOUNTABILITY_RESULT_MISSING_OR_INVALID")
+    else:
+        if accountability_result.get("candidate_revision") != "STEP_185_R1":
+            reasons.append("ACCOUNTABILITY_RESULT_REVISION_NOT_ESTABLISHED")
+        if accountability_result.get("accountability_continuity_standing") != SUPPORTABLE:
+            reasons.append("ACCOUNTABILITY_CONTINUITY_NOT_SUPPORTABLE")
+        if accountability_result.get("accountability_basis_supportable") is not True:
+            reasons.append("ACCOUNTABILITY_BASIS_NOT_SUPPORTABLE")
+        if accountability_result.get("no_bind_state") != "SEPARATE_AUTHORITY_AND_ACTION_ADMISSIBILITY_REQUIRED":
+            reasons.append("ACCOUNTABILITY_RESULT_NO_BIND_CONTRACT_INVALID")
+        if accountability_result.get("binding_authority_granted") is not False:
+            reasons.append("ACCOUNTABILITY_RESULT_AUTHORITY_BOUNDARY_INVALID")
+        if accountability_result.get("accountability_manufactured_by_evaluator") is not False:
+            reasons.append("ACCOUNTABILITY_RESULT_MANUFACTURE_BOUNDARY_INVALID")
+        result_scope = accountability_result.get("declared_scope_id")
+        if valid_expected_scope and result_scope != expected_scope_id.strip():
+            reasons.append("ACCOUNTABILITY_RESULT_SCOPE_MISMATCH")
+
     authority_valid = (
         isinstance(authority_result, Mapping)
         and authority_result.get("authority_valid") is True
         and authority_result.get("no_bind_state") == "INACTIVE"
     )
-
-    if not accountability_supportable:
-        reasons.append("ACCOUNTABILITY_CONTINUITY_NOT_SUPPORTABLE")
     if not authority_valid:
         reasons.append("SEPARATE_AUTHORITY_STANDING_NOT_SUPPORTABLE")
 
@@ -283,11 +291,13 @@ def enforce_accountability_prerequisite(
         "composition_decision": "NOT_ADMISSIBLE" if blocked else "ACCOUNTABILITY_AND_AUTHORITY_PREREQUISITES_SUPPORTABLE",
         "no_bind_state": "ACTIVE" if blocked else "SEPARATE_ACTION_ADMISSIBILITY_REQUIRED",
         "action_held": blocked,
+        "expected_scope_id": expected_scope_id,
         "caller_requested_decision": caller_requested_decision,
         "caller_override_rejected": blocked and caller_requested_decision == "ADMISSIBLE",
-        "reasons": sorted(reasons),
+        "reasons": sorted(set(reasons)),
         "accountability_continuity_consumed": True,
         "authority_standing_consumed": True,
+        "scope_binding_checked": True,
         "binding_authority_granted": False,
         "action_admissibility_granted": False,
         "physical_action_executed": False,
