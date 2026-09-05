@@ -20,11 +20,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compile Step 189 candidate
+      - name: Compile Step 189 candidate and hardening
         run: |
           python -m py_compile \
             platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/accountability_postcommit_correspondence_nonbypass.py \
-            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/test_accountability_postcommit_correspondence_nonbypass.py
-      - name: Run Step 189 candidate regression suite
+            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/accountability_postcommit_correspondence_nonbypass_hardened.py \
+            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/test_accountability_postcommit_correspondence_nonbypass.py \
+            platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1/test_accountability_postcommit_correspondence_nonbypass_hardened.py
+      - name: Run Step 189 candidate and hardening regression suites
         working-directory: platform_b1_mvp2/assurance_os/implementation/step_189_accountability_postcommit_correspondence_nonbypass_r1
-        run: python -m unittest -v test_accountability_postcommit_correspondence_nonbypass.py
+        run: python -m unittest -v test_accountability_postcommit_correspondence_nonbypass.py test_accountability_postcommit_correspondence_nonbypass_hardened.py
