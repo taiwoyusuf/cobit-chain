@@ -1,7 +1,7 @@
 # Step 185 Accountability Continuity Standing R1 — Candidate Test Result
 
 **Date:** 2026-09-05  
-**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Candidate branch
 
@@ -10,6 +10,10 @@
 ## Hardened tested commit
 
 `a91ebe1f1a5870efc99af35019ea6ffc0a027cf9`
+
+## Tested Git tree
+
+`46e859953cfd9975deb5400b59894c4fcd84a18c`
 
 ## Tested executable identity
 
@@ -95,12 +99,27 @@ It establishes bounded behavior for:
 
 `COMPOSITION_INPUT -> STEP_185_RESULT_CONTRACT_VERIFIED`
 
+## Freeze disposition
+
+Static-review disposition:
+
+`STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
+
+Governed freeze decision:
+
+`STEP_185_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
+
+Freeze manifest:
+`FREEZE_MANIFEST_2026-09-05.md`
+
+The freeze binds the tested evaluator/test blob identities above. Later documentation-only commits do not rewrite the tested executable identity or the historical CI result.
+
 ## Non-authority result
 
-The candidate never grants binding authority or Action Admissibility and never executes physical action. A supportable Step 185 standing requires separate Authority Standing and Action Admissibility.
+The frozen candidate never grants binding authority or Action Admissibility and never executes physical action. A supportable Step 185 standing requires separate Authority Standing and Action Admissibility.
 
 ## Non-claims
 
-This CI result does not establish production readiness, independent third-party assurance, field validation, certification, regulator acceptance, novelty, patentability, or merge approval.
-
-Step 185 remains a bounded candidate unless and until a separate governed freeze decision is taken.
+The freeze and CI result do not establish production readiness, independent third-party assurance, field validation, certification, regulator acceptance, novelty, patentability, or merge approval.
