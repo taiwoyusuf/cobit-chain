@@ -2,54 +2,168 @@
 
 **Date:** 2026-09-05
 
-**Disposition:** `STATIC_REVIEW_MATERIAL_GAP_FOUND / HARDENING_REQUIRED / NOT_FREEZE_ELIGIBLE`
+**Disposition:** `STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
 
-## Reviewed proposition
+## Scope
+
+Review the Step 188 bounded integration layer for fail-open behavior, semantic duplication, result-shape spoofing, hidden-state substitution, token/result replay, source-identity confusion, temporal-currentness gaps, authority manufacture, and improper modification of protected upstream controls.
+
+## Core proposition reviewed
 
 `STEP_187_SUPPORTABLE + STEP_181_COMMIT_ROUTE_ADMISSIBLE != ACCOUNTABILITY_ATOMIC_COMMIT_BINDING_ESTABLISHED`
 
-The initial Step 188 candidate correctly composes frozen Step 187 with existing Step 181 and establishes exact scope/action/object/transaction/nonce, token, commit-result, commit-snapshot, source-identity, payload-digest, temporal-currentness, and non-authority checks.
+## Initial candidate finding
 
-Initial native CI:
-- run `33986965037`
-- result `SUCCESS`
-- 29 deterministic tests `OK`
+The initial candidate passed 29 deterministic tests but contained a material cross-layer weakness.
 
-## Material gap identified
+### SR-188-01 — favorable-result / hidden-state decoupling
 
-Frozen Step 187's public result carries the expected declared scope, action and object plus composition/No-Bind/non-authority flags, but it does **not** carry the exact digest of the current snapshot that Step 187 consumed.
+The first version bound the visible Step 187 result and favorable Step 181 commit result, but Step 187's output does not expose the digest of the internally consumed current snapshot, and Step 181's favorable verification result does not carry the exact verification input bundle.
 
-Step 181's token binds its own exact current snapshot using `snapshot_digest`. The initial Step 188 candidate proves that the Step 181 token and commit snapshot correspond exactly to each other, and that their object corresponds to Step 187. However, without consuming Step 187's original commit-binding evidence record (or another exact derivative of its current-snapshot digest), Step 188 cannot prove that the Step 181 snapshot is the **same full snapshot** that Step 187 relied upon.
+Therefore two favorable-looking results could agree on scope/action/object while deeper evidence/configuration/environment state came from different evaluations.
 
-Therefore the following substitution can remain structurally possible while retaining the same object hash:
+Initial CI therefore did **not** justify freeze eligibility despite passing tests.
 
-- same `object_hash`;
-- different `evidence_digest`, `criteria_version`, `configuration_hash`, or `environment_context_hash`;
-- Step 187 result remains superficially scope/action/object compatible;
-- Step 181 token is internally valid for the substituted snapshot.
+## Hardened correction
 
-This is a material continuity seam, not a documentation-only issue.
+### 1. Re-establish Step 187 current-state binding
 
-## Required successor hardening
+The hardened evaluator consumes:
 
-Step 188 must consume the Step 187 commit-binding evidence record, or an equivalent non-caller-assertable exact derivative, and require:
+- the frozen Step 187 result;
+- the Step 187 commit-binding record;
+- the Step 187 current snapshot.
 
-`STEP_187_CURRENT_SNAPSHOT_DIGEST == STEP_181_TOKEN_BOUND_SNAPSHOT_DIGEST`
+It requires the binding record's `current_snapshot_digest` to equal the deterministic digest of the exact supplied Step 187 snapshot and rechecks scope/action/object, traceability, currentness, ambiguity, temporal ordering, change-assessment completeness, and post-binding material-change/revalidation state.
 
-with deterministic correspondence across the differing digest encodings used by Step 187 and Step 181.
+This is an independent re-establishment of the state-binding proposition at Step 188. It does not claim cryptographic proof that the re-supplied record is historically identical to the object originally supplied to Step 187 unless that historical provenance is established externally.
 
-Recommended hardened invariant:
+### 2. Exact Step 187-to-Step 181 state equality
 
-`ACCOUNTABILITY_ATOMIC_COMMIT_RELIANCE -> EXACT_STEP_187_CURRENT_SNAPSHOT == EXACT_STEP_181_TOKEN_SNAPSHOT == EXACT_COMMIT_SNAPSHOT`
+For every Step 181 commit-state dimension, Step 188 requires equality between the Step 187 current snapshot and the Step 181 commit snapshot:
 
-The hardened Step 188 binding record should also bind the exact consumed Step 187 commit-binding-record payload digest so a historical or substituted Step 187 binding record cannot be replayed.
+- object hash;
+- authority-current state;
+- evidence digest;
+- criteria version;
+- configuration hash;
+- environment-context hash.
 
-## Non-claims
+Therefore same-object-but-different-evidence/configuration/environment states fail closed.
 
-The initial 29-test PASS remains valid evidence for the behaviors actually tested. It does **not** establish freeze eligibility after this material static-review finding.
+Invariant:
 
-## Governed posture
+`ATOMIC_ACCOUNTABILITY_RELIANCE -> STEP_187_CURRENT_STATE = STEP_181_COMMIT_STATE`
 
-`IMPLEMENTED_BOUNDED_CANDIDATE / INITIAL_CI_SUCCESS / MATERIAL_STATIC_REVIEW_GAP_FOUND / HARDENING_REQUIRED / NOT_FROZEN / NOT_MERGED`
+### 3. Deterministic Step 181 verification reproduction
 
-No modification to frozen Step 187, Step 181, Step 182, frozen Steps 185/186, Step 184 R1/R2, PR #95-#102, or IRLT-MAG is authorized by this review.
+The hardened evaluator reproduces the bounded semantics of Step 181 `verify_atomic_commit(..., token_consumed=False)` using:
+
+- exact token;
+- exact commit snapshot;
+- exact action;
+- exact transaction;
+- exact commit nonce.
+
+The supplied Step 181 commit result must equal the reproduced result exactly. A favorable-shaped or extra-field forged result therefore fails closed.
+
+Invariant:
+
+`STEP_181_COMMIT_RESULT_REUSE -> REPRODUCIBLE_FROM_EXACT_VERIFICATION_INPUTS`
+
+### 4. Exact payload binding
+
+The Step 188 binding record binds deterministic digests of:
+
+- frozen Step 187 result;
+- Step 187 commit-binding record;
+- Step 187 current snapshot;
+- Step 181 token;
+- Step 181 commit result;
+- Step 181 commit snapshot;
+- Step 181 verification-input bundle.
+
+Any substitution invalidates the binding.
+
+### 5. Token identity and replay boundary
+
+Step 188 reconstructs the Step 181 token ID from action, transaction, nonce, object and snapshot digest. It requires Step 181's single-use and token-consumption-required contracts, but it does **not** consume the token itself.
+
+`TOKEN_CONSUMPTION_REQUIRED != TOKEN_CONSUMED_BY_EVALUATOR`
+
+Actual atomic token consumption remains the responsibility of the separate authorized commit mechanism.
+
+## External provenance / authenticity boundary
+
+Step 188 establishes source identity correspondence, deterministic payload correspondence, state equality and bounded semantic reproduction. It does not independently prove external authenticity of upstream evidence, historical provenance of supplied records, institutional identity, or the truth of the physical world.
+
+Those remain separate evidence/provenance/witness concerns.
+
+## Non-authority review
+
+Every supportable or blocked result preserves:
+
+- no binding authority granted;
+- no Action Admissibility granted by Step 188;
+- no commit authorization;
+- no execution authorization;
+- no token consumption by evaluator;
+- no physical action execution;
+- no regulated release/disposition authorization;
+- no provenance manufacture;
+- no historical fact rewriting;
+- no IRLT-MAG state change.
+
+## Non-duplication review
+
+Step 188 does not replace:
+
+- Step 181 atomic token issuance/verification and replay protection;
+- Step 182 commit/execution/outcome correspondence;
+- Step 187 Accountability Continuity Commit-Time Revalidation;
+- human/institutional authority;
+- an authorized commit/execution mechanism.
+
+Step 188 adds only the missing cross-control accountability-to-atomic-commit non-bypass composition.
+
+## Protected-boundary review
+
+No modification was made to:
+
+- frozen Step 187 executable/test payloads;
+- Step 181;
+- Step 182;
+- frozen Steps 185/186;
+- Step 184 R1/R2;
+- PR #95-#102;
+- IRLT-MAG.
+
+## Hardened verification
+
+Tested commit:
+`7b8720573b83d1a97df1afe00005f4fb771250c0`
+
+Tested tree:
+`c8968d11b8c34121d8317e80c0cc80c2c0046578`
+
+Evaluator blob:
+`e75ef018802c7ca2370fd54ee9864709c50a81d7`
+
+Regression blob:
+`1946c4763ecdf0a56e2ed8cc998308aefdac803f`
+
+CI run:
+`33987107691` — `SUCCESS`
+
+Substantive result:
+**38 deterministic tests — SUCCESS**
+
+## Final static-review conclusion
+
+After correction of SR-188-01, no additional material fail-open was established within this bounded review.
+
+Disposition:
+
+`STATIC_REVIEW_PASS / FREEZE_ELIGIBLE_BOUNDED_CONFIGURATION`
+
+This is not production validation, external authenticity, independent third-party assurance, certification, regulator acceptance, novelty, patentability, or merge authorization.
