@@ -38,17 +38,6 @@ def _required_bool(record: Mapping[str, object], field: str, reasons: list[str],
     return value
 
 
-def _required_nonnegative_int(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> int | None:
-    if field not in record:
-        reasons.append(f"{prefix}_{field.upper()}_MISSING")
-        return None
-    value = record.get(field)
-    if type(value) is not int or value < 0:
-        reasons.append(f"{prefix}_{field.upper()}_INVALID")
-        return None
-    return value
-
-
 def _required_nonempty_str(record: Mapping[str, object], field: str, reasons: list[str], prefix: str) -> str | None:
     if field not in record:
         reasons.append(f"{prefix}_{field.upper()}_MISSING")
@@ -58,6 +47,16 @@ def _required_nonempty_str(record: Mapping[str, object], field: str, reasons: li
         reasons.append(f"{prefix}_{field.upper()}_INVALID")
         return None
     return value.strip()
+
+
+def _optional_bool(record: Mapping[str, object], field: str) -> bool | None:
+    value = record.get(field)
+    return value if type(value) is bool else None
+
+
+def _optional_nonnegative_int(record: Mapping[str, object], field: str) -> int | None:
+    value = record.get(field)
+    return value if type(value) is int and value >= 0 else None
 
 
 def _result(standing: str, reason: str, reasons: list[str], **extra: object) -> dict[str, object]:
@@ -90,14 +89,10 @@ def evaluate_accountability_continuity(
 ) -> dict[str, object]:
     """Evaluate accountability continuity for one declared consequence scope.
 
-    Positive standing requires a resolvable current accountable entity for the
-    declared scope. If a handoff occurred, the successor must be identified,
-    accepted, scope-consistent, obligation-preserving, traceable, and reflected as
-    the current accountable owner.
-
-    Responsibility completeness is reported but does not substitute for or define
-    accountability. A downstream composition may separately require complete RACI
-    or responsibility standing.
+    Accountability standing depends only on accountability, handoff, and
+    accountability-evidence propositions. Responsibility metadata and execution
+    actor traceability are contextual observations: they are reported when present
+    but cannot manufacture or defeat accountability standing by themselves.
     """
 
     if not all(isinstance(x, Mapping) for x in (
@@ -115,15 +110,10 @@ def evaluate_accountability_continuity(
     reasons: list[str] = []
     handoff_reasons: list[str] = []
 
-    responsible_party_count = _required_nonnegative_int(
-        responsibility_context, "responsible_party_count", reasons, "RESPONSIBILITY"
-    )
-    shared_responsibility_declared = _required_bool(
-        responsibility_context, "shared_responsibility_declared", reasons, "RESPONSIBILITY"
-    )
-    responsibility_assignment_complete = _required_bool(
-        responsibility_context, "responsibility_assignment_complete", reasons, "RESPONSIBILITY"
-    )
+    # Context only. These values cannot establish or defeat accountability standing.
+    responsible_party_count = _optional_nonnegative_int(responsibility_context, "responsible_party_count")
+    shared_responsibility_declared = _optional_bool(responsibility_context, "shared_responsibility_declared")
+    responsibility_assignment_complete = _optional_bool(responsibility_context, "responsibility_assignment_complete")
 
     declared_scope_id = _required_nonempty_str(accountability_state, "declared_scope_id", reasons, "ACCOUNTABILITY")
     owner_identified = _required_bool(accountability_state, "accountable_owner_identified", reasons, "ACCOUNTABILITY")
@@ -175,7 +165,10 @@ def evaluate_accountability_continuity(
     decision_point_traceable = _required_bool(evidence_state, "decision_point_traceable", reasons, "EVIDENCE")
     outcome_owner_traceable = _required_bool(evidence_state, "outcome_owner_traceable", reasons, "EVIDENCE")
     evidence_current = _required_bool(evidence_state, "accountability_evidence_current", reasons, "EVIDENCE")
-    execution_actor_traceable = _required_bool(evidence_state, "execution_actor_traceable", reasons, "EVIDENCE")
+
+    # Context only. Actor traceability is useful for execution/outcome assurance but
+    # cannot substitute for accountability traceability and is not required here.
+    execution_actor_traceable = _optional_bool(evidence_state, "execution_actor_traceable")
 
     if assignment_traceable is False:
         reasons.append("ACCOUNTABILITY_ASSIGNMENT_NOT_TRACEABLE")
@@ -223,9 +216,6 @@ def evaluate_accountability_continuity(
 
     reasons.extend(handoff_reasons)
 
-    # Strong precedence: contradictory accountability claims are preserved rather
-    # than averaged or resolved by responsibility count, execution evidence, or a
-    # later handoff assertion.
     if conflicting_claims is True:
         standing = CONTRADICTED
         reason = "CONFLICTING_ACCOUNTABILITY_CLAIMS_PREVENT_CONTINUITY"
