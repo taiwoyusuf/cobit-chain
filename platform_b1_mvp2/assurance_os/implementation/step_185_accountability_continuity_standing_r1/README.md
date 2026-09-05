@@ -1,6 +1,6 @@
 # Step 185 — Accountability Continuity Standing R1
 
-Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+Status: `IMPLEMENTED_BOUNDED_CANDIDATE / SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Purpose
 
@@ -31,7 +31,7 @@ Step 185 does **not** create another RACI engine and does **not** grant authorit
 
 Step 185 therefore does not imply that Accountability Continuity occurs semantically after Step 184 Residual-Consequence Assurance.
 
-## Candidate invariants
+## Frozen invariants
 
 `ACCOUNTABILITY_HANDOFF -> IDENTIFIED_SUCCESSOR + ACCEPTED_SCOPE + CURRENT_MANDATE + PRESERVED_OBLIGATIONS + TRACEABLE_TRANSFER`
 
@@ -81,7 +81,7 @@ Supportable:
 Blocked:
 `no_bind_state = ACTIVE`
 
-## Static-review corrections
+## Static-review corrections included in the freeze
 
 ### 1. Composition input spoof / scope-reuse risk
 
@@ -93,10 +93,13 @@ The candidate initially allowed `material_change_after_accountability_assignment
 
 No further material fail-open was established in the bounded static review after these corrections.
 
-## Verification
+## Frozen executable identity
 
 Hardened tested commit:
 `a91ebe1f1a5870efc99af35019ea6ffc0a027cf9`
+
+Tested Git tree:
+`46e859953cfd9975deb5400b59894c4fcd84a18c`
 
 Evaluator blob:
 `14f1c3a4551b94d33941d2978421658da824ba28`
@@ -110,9 +113,18 @@ Workflow run:
 Regression count:
 **45 deterministic tests**.
 
-Records:
+Freeze record:
+`FREEZE_MANIFEST_2026-09-05.md`
+
+Supporting records:
 - `STATIC_REVIEW_2026-09-05.md`
 - `TEST_RESULT_2026-09-05.md`
+
+Canonical frozen statement:
+
+`STEP_185_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
 
 ## Non-authority boundary
 
@@ -144,6 +156,12 @@ External public discussion remains a challenge/validation signal only:
 
 Step 184 R1, Step 184 R2, PR #95, PR #96, PR #97, PR #98, and IRLT-MAG remain untouched. RAMAT remains witness/context only.
 
+## Change control
+
+The evaluator and deterministic regression contract are frozen at the blob identities above. Any substantive change requires explicit unfreeze/re-review/re-test and a new freeze record, or a successor revision that preserves Step 185 R1 chronology.
+
+Documentation-only evidence may be appended without changing the frozen executable identity.
+
 ## Maturity boundary
 
-Step 185 is **freeze-eligible but not frozen**. Freeze, merge, production validation, independent assurance, certification, and regulator acceptance are separate governed decisions and are not implied by this candidate state.
+`APPROVED_AND_FROZEN` is a bounded configuration status only. It does not mean merged to `main`, production validated, independently assured, certified, regulator accepted, or production ready.
