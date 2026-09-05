@@ -1,7 +1,7 @@
-# Step 186 Accountability Continuity Boundary Non-Bypass R1 — Candidate Test Result
+# Step 186 Accountability Continuity Boundary Non-Bypass R1 — Test Result
 
 **Date:** 2026-09-05  
-**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / FREEZE_ELIGIBLE / NOT_FROZEN / NOT_MERGED`
+**Status:** `SYNTHETICALLY_VERIFIED / INTERNAL_STATIC_REVIEW_COMPLETE / APPROVED_AND_FROZEN / NOT_MERGED`
 
 ## Candidate branch
 
@@ -71,7 +71,7 @@ The hardened suite demonstrates bounded fail-closed behavior for:
 - caller override rejection;
 - strict non-authority and non-execution behavior.
 
-## Key invariants verified
+## Key frozen invariants
 
 `STEP_185_SUPPORTABLE + STEP_179_ADMISSIBLE != ACCOUNTABILITY_BOUNDARY_BINDING_ESTABLISHED`
 
@@ -83,10 +83,24 @@ The hardened suite demonstrates bounded fail-closed behavior for:
 
 `UPSTREAM_PAYLOAD_CHANGE -> PRIOR_BINDING_RECORD_NOT_SUPPORTABLE`
 
+## Freeze decision
+
+Freeze manifest:
+
+`FREEZE_MANIFEST_2026-09-05.md`
+
+Governed disposition:
+
+`STEP_186_R1 = APPROVED_AND_FROZEN_BOUNDED_CONFIGURATION`
+
+`MERGE = NOT_TAKEN`
+
+The frozen identities are the tested evaluator and deterministic test blobs listed above. Documentation-only commits after the hardened tested commit do not rewrite the historical CI result or frozen executable identity.
+
 ## Non-authority result
 
 Step 186 never grants binding authority, Action Admissibility, or execution permission. A supportable result still requires separate Step 180 execution-time revalidation before commit/execution.
 
 ## Non-claims
 
-This result does not establish production readiness, external authenticity of the binding evidence, independent third-party assurance, field validation, certification, regulator acceptance, novelty, patentability, or merge approval.
+This frozen bounded configuration does not establish production readiness, external authenticity of the binding evidence, independent third-party assurance, field validation, certification, regulator acceptance, novelty, patentability, or merge approval.
