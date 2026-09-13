@@ -13,9 +13,9 @@ __pycache__/
 .lesshst
 
 # ============================================================
-# COBIT-Chain local development ignores
+# Local development / public-repository safety ignores
 # Do not commit local backups, terminal dumps, secrets, caches,
-# virtual environments, or generated local audit clutter.
+# virtual environments, credentials, or generated local clutter.
 # ============================================================
 
 # Python cache/build
@@ -50,6 +50,38 @@ secrets.*
 *.key
 *.pfx
 *.p12
+*.jks
+*.keystore
+*.crt
+*.cer
+*.der
+credentials.json
+credentials*.json
+service-account*.json
+service_account*.json
+client-secret*.json
+client_secret*.json
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+.npmrc
+.pypirc
+pip.conf
+netrc
+.netrc
+
+# Infrastructure state / local cloud credentials
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+*.tfvars
+local.settings.json
+.azure/
+.aws/
+.gcloud/
+.kube/config
 
 # Flask/local runtime
 instance/
