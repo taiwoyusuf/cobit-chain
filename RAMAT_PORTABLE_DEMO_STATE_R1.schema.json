@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ramat:portable-demo-state:r1",
+  "title": "RAMAT Portable Demo State R1",
+  "description": "Synthetic portable demonstration state for RAMAT Vision. This schema defines display, witness, authority, history, and synchronization fields only; it does not grant execution authority or represent production/clinical validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "device_id",
+    "demo_version",
+    "scenario_id",
+    "mission_state",
+    "connectivity",
+    "authority",
+    "history",
+    "sync"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "RAMAT_PORTABLE_DEMO_STATE_R1"
+    },
+    "device_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "demo_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenario_id": {
+      "type": "string",
+      "enum": [
+        "NOMINAL_SUPPORTED",
+        "MEASUREMENT_APPLICABILITY_EXPIRED",
+        "PHYSICAL_DIGITAL_CONFLICT",
+        "RECOVERY_WITHOUT_RESTORATION"
+      ]
+    },
+    "mission_state": {
+      "type": "string",
+      "enum": [
+        "SUPPORTED",
+        "HOLD",
+        "CONFLICTING",
+        "UNKNOWN"
+      ]
+    },
+    "connectivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "is_cached"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["ONLINE", "OFFLINE"]
+        },
+        "is_cached": {
+          "type": "boolean"
+        },
+        "last_sync_time": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "witness": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Bounded physical/contextual observations. Presence of witness data does not itself create decision authority."
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluator", "accountable_authority_separate", "watch_grants_authority"],
+      "properties": {
+        "evaluator": {
+          "type": "string",
+          "const": "COBIT-Chain/VSA"
+        },
+        "accountable_authority_separate": {
+          "type": "boolean",
+          "const": true
+        },
+        "watch_grants_authority": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_time", "state", "event_type"],
+        "properties": {
+          "event_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "arrival_time": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["SUPPORTED", "HOLD", "CONFLICTING", "UNKNOWN"]
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "preserved": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "sync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requested", "completed"],
+      "properties": {
+        "requested": {
+          "type": "boolean"
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "endpoint_class": {
+          "type": "string",
+          "const": "synthetic-ramat-gateway"
+        }
+      }
+    }
+  }
+}
