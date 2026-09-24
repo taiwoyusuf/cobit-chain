@@ -1,0 +1,34 @@
+[
+  {
+    "scenario_id": "NOMINAL_SUPPORTED",
+    "label": "Nominal / SUPPORTED",
+    "mission_state": "SUPPORTED",
+    "reason": "Declared synthetic prerequisites remain applicable.",
+    "connectivity_mode": "ONLINE",
+    "historical_hold_preserved": false
+  },
+  {
+    "scenario_id": "MEASUREMENT_APPLICABILITY_EXPIRED",
+    "label": "Measurement applicability expired / HOLD",
+    "mission_state": "HOLD",
+    "reason": "Required measurement evidence is no longer supportable for present reliance.",
+    "connectivity_mode": "ONLINE",
+    "historical_hold_preserved": true
+  },
+  {
+    "scenario_id": "PHYSICAL_DIGITAL_CONFLICT",
+    "label": "Physical-digital conflict / CONFLICTING",
+    "mission_state": "CONFLICTING",
+    "reason": "Bounded physical/contextual observation conflicts with assumed digital state.",
+    "connectivity_mode": "ONLINE",
+    "historical_hold_preserved": true
+  },
+  {
+    "scenario_id": "RECOVERY_WITHOUT_RESTORATION",
+    "label": "Recovery without restoration / HOLD",
+    "mission_state": "HOLD",
+    "reason": "Local recovery does not automatically restore prior mission supportability.",
+    "connectivity_mode": "OFFLINE",
+    "historical_hold_preserved": true
+  }
+]
