@@ -1,0 +1,40 @@
+name: Residual-Consequence R1 Challenge Suite
+
+on:
+  pull_request:
+    paths:
+      - 'platform_b1_mvp2/assurance_os/research/residual_consequence_r1/**'
+      - 'platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1/**'
+      - '.github/workflows/residual-consequence-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-challenge-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile research challenge evaluator and tests
+        working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r1
+        run: python -m py_compile residual_consequence_r1.py test_residual_consequence_r1.py
+
+      - name: Run research adversarial challenge suite
+        working-directory: platform_b1_mvp2/assurance_os/research/residual_consequence_r1
+        run: python -m unittest -v test_residual_consequence_r1.py
+
+      - name: Compile canonical Step 184 evaluator and tests
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1
+        run: python -m py_compile residual_consequence_assurance.py test_residual_consequence_assurance.py
+
+      - name: Run canonical Step 184 deterministic suite
+        working-directory: platform_b1_mvp2/assurance_os/implementation/step_184_residual_consequence_assurance_r1
+        run: python -m unittest -v test_residual_consequence_assurance.py
