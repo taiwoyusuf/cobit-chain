@@ -9,7 +9,7 @@ from typing import Any
 
 import httpx
 from fastapi import Cookie, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 from pydantic import BaseModel
 
 from .auth import build_authorization_url, create_pkce_pair, create_state, exchange_code, load_oauth_config
@@ -34,6 +34,34 @@ ALLOWLIST = load_allowlist(APP_ROOT / "config" / "allowlist.json")
 UPSTREAM_MCP_URL = os.getenv("AZURE_MCP_URL", "https://mcp.management.azure.com")
 SESSION_COOKIE = "cobit_chain_gateway_r1"
 FROZEN_R1_TOOLS = ("subscription_list", "group_list", "group_resource_list")
+
+MCP_TOOL_DESCRIPTORS = [
+    {
+        "name": "subscription_list",
+        "description": "List Azure subscriptions available to the authenticated identity. Read-only and non-secret.",
+        "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
+        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": True},
+    },
+    {
+        "name": "group_list",
+        "description": "List Azure resource groups available to the authenticated identity. Read-only and non-secret.",
+        "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
+        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": True},
+    },
+    {
+        "name": "group_resource_list",
+        "description": "List resources in one Azure resource group. Read-only and non-secret.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "resource-group": {"type": "string", "description": "Azure resource group name."}
+            },
+            "required": ["resource-group"],
+            "additionalProperties": True,
+        },
+        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": True},
+    },
+]
 
 app = FastAPI(title="COBIT-Chain Azure MCP Gateway R1", version="0.1.0")
 
@@ -96,6 +124,147 @@ async def oauth_callback(code: str, state: str) -> RedirectResponse:
         max_age=3600,
     )
     return response
+
+
+
+def _jsonrpc_result(request_id: Any, result: Any) -> JSONResponse:
+    return JSONResponse({"jsonrpc": "2.0", "id": request_id, "result": result})
+
+
+def _jsonrpc_error(request_id: Any, code: int, message: str) -> JSONResponse:
+    return JSONResponse({"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}})
+
+
+def _bearer_token(request: Request) -> str | None:
+    authorization = request.headers.get("authorization", "")
+    if not authorization.lower().startswith("bearer "):
+        return None
+    token = authorization[7:].strip()
+    return token or None
+
+
+@app.post("/mcp")
+async def mcp_streamable_http(request: Request) -> Response:
+    """Minimal MCP Streamable HTTP surface for ChatGPT tool discovery and calls.
+
+    R1 intentionally exposes only the frozen three-tool read-only allow-list.
+    OAuth bearer tokens are never logged or persisted by this route; they are
+    forwarded only to the upstream Azure MCP server for the duration of a call.
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        return _jsonrpc_error(None, -32700, "Parse error")
+
+    if not isinstance(payload, dict) or payload.get("jsonrpc") != "2.0":
+        return _jsonrpc_error(payload.get("id") if isinstance(payload, dict) else None, -32600, "Invalid Request")
+
+    request_id = payload.get("id")
+    method = payload.get("method")
+    params = payload.get("params") or {}
+
+    if method == "initialize":
+        protocol_version = (params.get("protocolVersion") if isinstance(params, dict) else None) or "2025-03-26"
+        return _jsonrpc_result(
+            request_id,
+            {
+                "protocolVersion": protocol_version,
+                "capabilities": {"tools": {"listChanged": False}},
+                "serverInfo": {"name": "cobit-chain-azure-mcp-gateway-r1", "version": "0.2.0"},
+            },
+        )
+
+    if method == "notifications/initialized":
+        return Response(status_code=202)
+
+    if method == "ping":
+        return _jsonrpc_result(request_id, {})
+
+    if method == "tools/list":
+        return _jsonrpc_result(request_id, {"tools": MCP_TOOL_DESCRIPTORS})
+
+    if method != "tools/call":
+        return _jsonrpc_error(request_id, -32601, "Method not found")
+
+    if not isinstance(params, dict):
+        return _jsonrpc_error(request_id, -32602, "Invalid params")
+
+    tool_name = params.get("name")
+    arguments = params.get("arguments") or {}
+    if not isinstance(tool_name, str) or not isinstance(arguments, dict):
+        return _jsonrpc_error(request_id, -32602, "Invalid params")
+
+    try:
+        authorize_tool(tool_name, ALLOWLIST)
+    except PolicyDenied:
+        emit_event(
+            event_type="chatgpt_mcp_policy_decision",
+            session_id=None,
+            tool_name=tool_name,
+            decision="deny",
+            detail={"request_path": str(request.url.path)},
+        )
+        return _jsonrpc_error(request_id, -32003, "R1 policy denied this operation")
+
+    access_token = _bearer_token(request)
+    if access_token is None:
+        return JSONResponse(
+            {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32001, "message": "OAuth bearer token required"}},
+            status_code=401,
+            headers={"WWW-Authenticate": 'Bearer resource_metadata="/.well-known/oauth-protected-resource"'},
+        )
+
+    emit_event(
+        event_type="chatgpt_mcp_policy_decision",
+        session_id=None,
+        tool_name=tool_name,
+        decision="allow",
+        detail={"argument_names": sorted(arguments.keys()), "request_path": str(request.url.path)},
+    )
+
+    client = MCPHTTPClient(url=UPSTREAM_MCP_URL, access_token=access_token)
+    try:
+        await client.initialize()
+        upstream = await client.call_tool(tool_name, arguments)
+    except (MCPProtocolError, httpx.HTTPError) as exc:
+        emit_event(
+            event_type="chatgpt_mcp_upstream_result",
+            session_id=None,
+            tool_name=tool_name,
+            decision="error",
+            detail={"error_type": type(exc).__name__},
+        )
+        return _jsonrpc_error(request_id, -32002, "Azure MCP upstream request failed")
+    finally:
+        await client.close()
+
+    emit_event(
+        event_type="chatgpt_mcp_upstream_result",
+        session_id=None,
+        tool_name=tool_name,
+        decision="allow",
+        detail={"response_shape": "jsonrpc"},
+    )
+
+    if isinstance(upstream, dict) and "error" in upstream:
+        error = upstream.get("error")
+        if isinstance(error, dict):
+            return JSONResponse({"jsonrpc": "2.0", "id": request_id, "error": error})
+        return _jsonrpc_error(request_id, -32002, "Azure MCP upstream returned an error")
+
+    result = upstream.get("result") if isinstance(upstream, dict) else upstream
+    return _jsonrpc_result(request_id, result)
+
+
+@app.get("/.well-known/oauth-protected-resource")
+async def oauth_protected_resource() -> dict[str, Any]:
+    config = load_oauth_config()
+    return {
+        "resource": UPSTREAM_MCP_URL,
+        "authorization_servers": [f"https://login.microsoftonline.com/{config.tenant_id}/v2.0"],
+        "scopes_supported": [scope for scope in config.scope.split() if scope != "offline_access"],
+        "bearer_methods_supported": ["header"],
+    }
 
 
 @app.post("/mcp/invoke")
